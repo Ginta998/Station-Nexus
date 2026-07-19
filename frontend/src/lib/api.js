@@ -48,3 +48,11 @@ export const deleteSubscriber = (id) => api.delete(`/subscribers/${id}`).then((r
 // site settings
 export const getSettings = () => api.get("/settings").then((r) => r.data);
 export const updateSettings = (p) => api.put("/settings", p).then((r) => r.data);
+
+// intro / boot screen
+export const uploadIntroVideo = (file) => {
+  const fd = new FormData(); fd.append("file", file);
+  return api.post("/intro/video", fd).then((r) => r.data);
+};
+export const deleteIntroVideo = () => api.delete("/intro/video").then((r) => r.data);
+export const introVideoUrl = () => `${API}/intro/video`;

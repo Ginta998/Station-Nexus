@@ -126,3 +126,21 @@ body {
 
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .reveal.is-visible { opacity: 1; transform: none; }
+
+/* ===== Boot intro ===== */
+.intro-root { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #050505; }
+.intro-out { animation: introFadeOut 0.6s ease forwards; }
+@keyframes introFadeOut { to { opacity: 0; visibility: hidden; } }
+
+@keyframes introSun { 0% { transform: scale(0); opacity: 0; } 40% { opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes introSunGlow { 0%,100% { box-shadow: 0 0 60px 10px var(--brand); } 50% { box-shadow: 0 0 120px 30px var(--brand); } }
+@keyframes introKanjiPop { 0% { opacity: 0; transform: scale(1.6); letter-spacing: .4em; } 60% { opacity: 1; } 100% { opacity: 1; transform: scale(1); letter-spacing: .1em; } }
+@keyframes introSlash { 0% { transform: translateX(-120%) rotate(-8deg); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateX(120%) rotate(-8deg); opacity: 0; } }
+@keyframes introWord { 0% { opacity: 0; transform: translateY(14px); filter: blur(6px); } 100% { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes introDrift { 0% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.4) rotate(var(--dr)); } 60% { opacity: .5; } 100% { opacity: 0; transform: translate(0,0) scale(.6) rotate(0); } }
+@keyframes introGlitch { 0%,100% { transform: translate(0,0); } 20% { transform: translate(-3px,2px); } 40% { transform: translate(3px,-2px); } 60% { transform: translate(-2px,-1px); } 80% { transform: translate(2px,1px); } }
+@keyframes introScan { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
+@keyframes introInk { 0% { transform: scale(0); opacity: 0; } 30% { opacity: .9; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes introBarWipe { 0% { width: 0; } 100% { width: 100%; } }
+.intro-skip { position: absolute; bottom: 28px; right: 28px; z-index: 2; }
+.intro-hint { position: absolute; bottom: 30px; left: 0; right: 0; text-align: center; font-size: 12px; letter-spacing: .2em; }

@@ -166,6 +166,8 @@ class SiteSettings(BaseModel):
     instagram: str = "Brichel_louzala"
     youtube: str = "Brichel Louzala"
     default_ambience_id: Optional[str] = ""
+    intro_type: str = "tengoku"   # animation key or "video"
+    intro_has_video: bool = False
 
 
 def slugify(s: str) -> str:
@@ -400,6 +402,36 @@ async def update_settings(payload: SiteSettings):
     data["key"] = "site"
     await db.settings.update_one({"key": "site"}, {"$set": data}, upsert=True)
     return payload
+
+
+MAX_INTRO_BYTES = 10 * 1024 * 1024
+
+
+@api_router.post("/intro/video")
+async def upload_intro_video(file: UploadFile = File(...)):
+    data = await file.read()
+    if len(data) > MAX_INTRO_BYTES:
+        raise HTTPException(413, "Vidéo trop volumineuse (max 10 Mo)")
+    b64 = base64.b64encode(data).decode("utf-8")
+    await db.intro_media.update_one({"key": "intro"},
+        {"$set": {"key": "intro", "data": b64, "content_type": file.content_type or "video/mp4"}}, upsert=True)
+    await db.settings.update_one({"key": "site"}, {"$set": {"intro_has_video": True}}, upsert=True)
+    return {"ok": True}
+
+
+@api_router.get("/intro/video")
+async def stream_intro_video():
+    media = await db.intro_media.find_one({"key": "intro"}, {"_id": 0})
+    if not media:
+        raise HTTPException(404, "Aucune vidéo d'intro")
+    return Response(content=base64.b64decode(media["data"]), media_type=media.get("content_type", "video/mp4"))
+
+
+@api_router.delete("/intro/video")
+async def delete_intro_video():
+    await db.intro_media.delete_many({"key": "intro"})
+    await db.settings.update_one({"key": "site"}, {"$set": {"intro_has_video": False}}, upsert=True)
+    return {"ok": True}
 
 
 # ---------------- Seed ----------------

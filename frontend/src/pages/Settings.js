@@ -5,11 +5,14 @@ import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline,
 import { toast } from "sonner";
 import { THEMES } from "@/lib/themes";
 import { SOUND_PACKS } from "@/lib/sound";
+import { INTROS } from "@/lib/intro";
+import BootIntro from "@/components/BootIntro";
 import { useApp } from "@/context/AppContext";
 import {
   listAmbiences, createAmbience, updateAmbience, uploadAmbienceAudio, deleteAmbience, ambienceUrl,
   listCategories, createCategory, updateCategory, deleteCategory,
   listSubscribers, deleteSubscriber, getSettings, updateSettings,
+  uploadIntroVideo, deleteIntroVideo,
 } from "@/lib/api";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
@@ -156,6 +159,77 @@ function SubscribersManager() {
   );
 }
 
+function IntroManager() {
+  const { isAdmin } = useApp();
+  const { data: settings, refetch } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
+  const [off, setOff] = useState(localStorage.getItem("sx_intro_off") === "1");
+  const [preview, setPreview] = useState(null);
+  const curType = settings?.intro_type || "tengoku";
+  const hasVideo = !!settings?.intro_has_video;
+
+  const toggleOff = () => { const nv = !off; setOff(nv); localStorage.setItem("sx_intro_off", nv ? "1" : "0"); };
+  const chooseType = async (t) => { await updateSettings({ ...settings, intro_type: t }); toast.success("Intro par défaut mise à jour"); refetch(); };
+  const upload = async (file) => {
+    if (!file) return;
+    try { await uploadIntroVideo(file); toast.success("Vidéo d'intro importée"); refetch(); }
+    catch { toast.error("Vidéo trop lourde (max 10 Mo) ?"); }
+  };
+  const delVideo = async () => {
+    await deleteIntroVideo();
+    if (curType === "video") await updateSettings({ ...settings, intro_type: "tengoku", intro_has_video: false });
+    toast.success("Vidéo supprimée"); refetch();
+  };
+
+  return (
+    <div data-testid="intro-manager">
+      <label className="flex items-center gap-2 text-sm cursor-pointer mb-4" style={{ color: "var(--text-primary)" }}>
+        <input type="checkbox" data-testid="intro-enabled" checked={!off} onChange={toggleOff} /> Afficher l'écran de démarrage (une fois par session)
+      </label>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {INTROS.map((it) => (
+          <div key={it.key} data-testid={`intro-${it.key}`} className="p-4 border" style={{ ...fs, background: "var(--bg-secondary)", outline: curType === it.key ? "2px solid var(--brand)" : "none" }}>
+            <div className="flex items-baseline justify-between">
+              <span className="font-display text-lg" style={{ color: "var(--text-primary)" }}>{it.label}</span>
+              <span className="font-display" style={{ color: "var(--brand)" }}>{it.kanji}</span>
+            </div>
+            <p className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>{it.tagline}</p>
+            <div className="flex items-center gap-3 mt-3">
+              <button data-testid={`intro-preview-${it.key}`} onClick={() => setPreview({ type: it.key, hasVideo: false })} className="text-xs" style={{ color: "var(--brand)" }}><IoPlay /> Aperçu</button>
+              {isAdmin && curType !== it.key && <button data-testid={`intro-choose-${it.key}`} onClick={() => chooseType(it.key)} className="text-xs" style={{ color: "var(--text-secondary)" }}>Définir</button>}
+              {curType === it.key && <span className="text-xs flex items-center gap-1" style={{ color: "var(--brand)" }}><IoStar size={11} /> Par défaut</span>}
+            </div>
+          </div>
+        ))}
+
+        {/* video card */}
+        <div className="p-4 border" style={{ ...fs, background: "var(--bg-secondary)", outline: curType === "video" ? "2px solid var(--brand)" : "none" }} data-testid="intro-video-card">
+          <div className="flex items-baseline justify-between">
+            <span className="font-display text-lg" style={{ color: "var(--text-primary)" }}>Ma vidéo</span>
+            <span className="font-display" style={{ color: "var(--brand)" }}>🎬</span>
+          </div>
+          <p className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>{hasVideo ? "Vidéo importée" : "Aucune vidéo (max 10 Mo)"}</p>
+          <div className="flex items-center gap-3 mt-3 flex-wrap">
+            {hasVideo && <button onClick={() => setPreview({ type: "video", hasVideo: true })} className="text-xs" style={{ color: "var(--brand)" }} data-testid="intro-preview-video"><IoPlay /> Aperçu</button>}
+            {isAdmin && (
+              <>
+                <label className="text-xs cursor-pointer" style={{ color: "var(--brand)" }} data-testid="intro-video-upload">
+                  <IoCloudUploadOutline /> {hasVideo ? "Remplacer" : "Importer"}
+                  <input type="file" accept="video/*" hidden onChange={(e) => upload(e.target.files?.[0])} />
+                </label>
+                {hasVideo && curType !== "video" && <button onClick={() => chooseType("video")} className="text-xs" style={{ color: "var(--text-secondary)" }} data-testid="intro-choose-video">Définir</button>}
+                {hasVideo && <button onClick={delVideo} className="text-xs" style={{ color: "var(--brand)" }}><IoTrashOutline /></button>}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {preview && <BootIntro type={preview.type} hasVideo={preview.hasVideo} onDone={() => setPreview(null)} />}
+    </div>
+  );
+}
+
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx } = useApp();
@@ -237,6 +311,10 @@ export default function Settings() {
 
         <Section title="Ambiance sonore de l'app" extra="— choisis ou uploade">
           <AmbienceManager />
+        </Section>
+
+        <Section title="Écran de démarrage" extra="— intro type PS2 / Steam">
+          <IntroManager />
         </Section>
 
         <Section title="Thèmes" extra="— 12 ambiances">
