@@ -27,9 +27,12 @@ export default function CommentsSection({ creationId }) {
 
   return (
     <div className="mt-12" data-testid="comments-section">
-      <h3 className="font-display text-xl mb-4 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+      <h3 className="font-display text-xl mb-2 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
         <IoChatbubbleEllipsesOutline style={{ color: "var(--brand)" }} /> Commentaires <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{comments.length}</span>
       </h3>
+      <p className="text-sm mb-5 max-w-xl leading-relaxed" style={{ color: "var(--text-secondary)" }} data-testid="comment-prompt">
+        Ton avis compte énormément ✨ Qu'as-tu ressenti en découvrant cette création ? Partage ton émotion, ton passage préféré ou un petit mot d'encouragement — avec bienveillance et respect. Chaque message fait vivre l'univers un peu plus fort. 🌸
+      </p>
 
       <div className="flex flex-col sm:flex-row gap-2 mb-6">
         <input data-testid="comment-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ton nom"

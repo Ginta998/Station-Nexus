@@ -11,6 +11,19 @@ const LS = {
 };
 const DEFAULT_PIN = "1234";
 
+function fadeTo(audio, target, ms, onDone) {
+  if (!audio) return;
+  if (audio._fade) clearInterval(audio._fade);
+  const start = audio.volume;
+  const steps = 14;
+  let i = 0;
+  audio._fade = setInterval(() => {
+    i++;
+    audio.volume = Math.max(0, Math.min(1, start + (target - start) * (i / steps)));
+    if (i >= steps) { clearInterval(audio._fade); audio._fade = null; if (onDone) onDone(); }
+  }, Math.max(16, ms / steps));
+}
+
 export function AppProvider({ children }) {
   const [theme, setThemeState] = useState(() => localStorage.getItem(LS.theme) || "tengoku");
   const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem(LS.admin) === "1");
@@ -35,6 +48,7 @@ export function AppProvider({ children }) {
 
   const cardAudio = useRef(null);
   const appAudio = useRef(null);
+  const cardActiveRef = useRef(false); // synchronous guard: is a card ambient active?
 
   if (!cardAudio.current && typeof Audio !== "undefined") { cardAudio.current = new Audio(); cardAudio.current.loop = true; }
   if (!appAudio.current && typeof Audio !== "undefined") { appAudio.current = new Audio(); appAudio.current.loop = true; }
@@ -57,29 +71,33 @@ export function AppProvider({ children }) {
     }
   }, []); // eslint-disable-line
 
-  // app ambience control
+  // app ambience control (never overlaps with a card ambient)
   const startAppAmbience = useCallback(() => {
     const a = appAudio.current;
     if (!a || !ambienceId || muted) return;
-    if (isPlaying) return; // a card ambient is active
+    if (cardActiveRef.current) return;            // a card ambient owns the audio channel
+    if (!a.paused && a.dataset.aid === ambienceId) return; // already playing this track
     if (a.dataset.aid !== ambienceId) { a.src = ambienceUrl(ambienceId); a.dataset.aid = ambienceId; }
-    a.volume = musicVolume * 0.85;
-    a.play().then(() => setAppPlaying(true)).catch(() => setAppPlaying(false));
-  }, [ambienceId, muted, isPlaying, musicVolume]);
+    a.volume = 0;
+    a.play().then(() => { setAppPlaying(true); fadeTo(a, musicVolume * 0.85, 500); }).catch(() => setAppPlaying(false));
+  }, [ambienceId, muted, musicVolume]);
 
-  const stopAppAmbience = useCallback(() => {
-    const a = appAudio.current; if (a) a.pause(); setAppPlaying(false);
+  const stopAppAmbience = useCallback((immediate) => {
+    const a = appAudio.current; if (!a) return;
+    setAppPlaying(false);
+    if (immediate || a.paused) { a.pause(); }
+    else { fadeTo(a, 0, 250, () => a.pause()); }
   }, []);
 
   useEffect(() => {
-    if (!ambienceId || muted) { stopAppAmbience(); return; }
-    startAppAmbience();
+    if (!ambienceId || muted) { stopAppAmbience(true); return; }
+    if (!cardActiveRef.current) startAppAmbience();
   }, [ambienceId, muted, startAppAmbience, stopAppAmbience]);
 
   const startRef = useRef(startAppAmbience);
   startRef.current = startAppAmbience;
   useEffect(() => {
-    const kick = () => { startRef.current(); };
+    const kick = () => { if (!cardActiveRef.current) startRef.current(); };
     const events = ["pointerdown", "click", "keydown", "touchstart"];
     events.forEach((e) => window.addEventListener(e, kick, { passive: true }));
     return () => events.forEach((e) => window.removeEventListener(e, kick));
@@ -105,15 +123,33 @@ export function AppProvider({ children }) {
 
   const playAmbient = useCallback((id) => {
     const a = cardAudio.current; if (!a) return;
-    if (playingId === id && isPlaying) { a.pause(); setIsPlaying(false); startAppAmbience(); return; }
-    stopAppAmbience();
-    a.src = audioUrl(id); a.volume = muted ? 0 : musicVolume;
-    a.play().then(() => { setPlayingId(id); setIsPlaying(true); }).catch(() => { setPlayingId(id); setIsPlaying(false); });
+    // toggle off if this card is already playing
+    if (playingId === id && isPlaying) {
+      cardActiveRef.current = false;
+      fadeTo(a, 0, 250, () => a.pause());
+      setIsPlaying(false);
+      startAppAmbience();
+      return;
+    }
+    // starting (or switching) a card ambient — take exclusive ownership
+    cardActiveRef.current = true;
+    stopAppAmbience(true); // cut app ambience immediately, no overlap
+    a.src = audioUrl(id);
+    a.volume = 0;
+    a.play().then(() => {
+      setPlayingId(id); setIsPlaying(true);
+      if (!muted) fadeTo(a, musicVolume, 400);
+    }).catch(() => { setPlayingId(id); setIsPlaying(false); });
   }, [playingId, isPlaying, musicVolume, muted, startAppAmbience, stopAppAmbience]);
 
   const stopAmbient = useCallback(() => {
-    const a = cardAudio.current; if (a) { a.pause(); a.currentTime = 0; }
-    setIsPlaying(false); setPlayingId(null); startAppAmbience();
+    const a = cardAudio.current;
+    cardActiveRef.current = false;
+    if (a) {
+      fadeTo(a, 0, 200, () => { a.pause(); a.currentTime = 0; });
+    }
+    setIsPlaying(false); setPlayingId(null);
+    startAppAmbience();
   }, [startAppAmbience]);
 
   const value = {
