@@ -31,8 +31,17 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - P2: Migrer FastAPI on_event → lifespan ; status_code 201 sur création.
 - P2: Recherche/filtre texte, favoris, mode plein écran immersif.
 
+## Implemented — Itération 3 (2026-07-19)
+- Ambiance de l'app en autoplay (reprise après geste utilisateur, coupée par l'ambiance d'une fiche puis restaurée).
+- Fond immersif personnalisable par fiche : image dédiée + curseurs flou & assombrissement (Home + Detail).
+- 9 packs de sons UI synthétisés (zen, retro, neo, koto, arcade, glass, vapor, taiko, crystal) + perso + silence (12 tuiles).
+- Sélecteur d'icônes (émojis) pour les ambiances de l'app.
+- Galerie d'images par fiche (grille + lightbox) et intégrations réseaux (YouTube en iframe, Wattpad/autres en boutons).
+- Bouton Contact agrandi et libellé dans la barre du haut.
+- Tests : backend 9/9 (+ régressions), frontend 100%.
+
 ## Next Tasks
-- Selon retours utilisateur : uploader ses vrais posters + musiques, remplir la catégorie Séries.
+- Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
 ## Implemented — Itération 2 (2026-07-19)
 - Onglet virtuel « Toutes mes créations » en première page + badges de catégorie sur cartes et fiches.
