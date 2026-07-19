@@ -1,0 +1,23 @@
+{
+  "summary": "Iteration 6 re-verifies audio no-overlap invariant after fix in AppContext.js (cardActiveRef.current=false moved INSIDE fadeTo onDone at lines 129 and 147, plus startAppAmbience early-returns when cardAudio is not paused at line 79). Frontend-only. Same instrumentation as iter5: hooked HTMLMediaElement.play + window.Audio via add_init_script, single page.goto('/') + SPA nav via pushState+PopStateEvent to /oeuvre/<cre>, sampled every 20ms across all phases. Real WAV uploads on TEST_I6_Amb + TEST_I6_Cre. ALL PHASES NOW PASS: BOOT/GESTURE/E_IDLE/SETUP_STOP/E_IDLE_DETAIL/A_LAUNCH/A_STEADY/B_STOP/B_STEADY/C_RELAUNCH/C_STEADY/D_UNMOUNT/D_STEADY = 0ms overlap, max_concurrent=1. The previously-broken B_STOP and SETUP_STOP paths (240ms overlap in iter5) are confirmed 0ms. App ambience autoplay after gesture works. Fade still occurs (audio sample retention crosses the 250ms fade window as tick counts show — no drop in 'playing' count during transitions). Cleanup: TEST_I6_* creation + ambience deleted.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/tests/overlap_test_iter6.py", "/app/test_reports/iteration_6_overlap.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Fix looks correct: (1) cardActiveRef.current=false is now set INSIDE fadeTo onDone callbacks in both playAmbient toggle-off (line 129) and stopAmbient (line 147); (2) startAppAmbience() has an additional guard `if (cardAudio.current && !cardAudio.current.paused) return;` (line 79). Together they defeat the racing window-level click listener that used to kick startAppAmbience mid-fade.",
+    "Minor consistency: the else-branch of stopAmbient (line 148-152) still sets cardActiveRef.current=false synchronously — this is safe because a.paused is already true so no fade is in progress and no overlap can occur, but a code reviewer might prefer symmetry."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped)", "frontend": "13/13 phases pass (was 11/13 in iter5)"},
+  "test_credentials": "Admin PIN: 1234 (localStorage sx_pin / sx_admin=1)",
+  "seed_data_creation": "Created + deleted per run: TEST_I6_Amb ambience (1s 440Hz WAV) and TEST_I6_Cre creation (category=manga, 1s 660Hz WAV).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "The audio no-overlap invariant is now fully satisfied. Test file at /app/tests/overlap_test_iter6.py can be re-run with REACT_APP_BACKEND_URL env var. Uses playwright chromium headless with --autoplay-policy=no-user-gesture-required, hooks HTMLMediaElement.play + window.Audio, samples window.__audios every 20ms.",
+  "rca of the issue": "Previously (iter5): STOP-direction click on [data-testid='detail-ambient'] set cardActiveRef.current=false SYNCHRONOUSLY at the top of the toggle-off/stopAmbient branch, then the same click event bubbled to the window-level 'click' listener which called startAppAmbience() immediately — producing 240ms (12 ticks × 20ms) of dual-audio overlap during the 250ms fadeTo. FIX (verified in iter6): (a) cardActiveRef.current=false moved INSIDE fadeTo onDone (AppContext.js:129,147), so the window listener during click-bubble still sees cardActiveRef===true and no-ops; (b) startAppAmbience additionally short-circuits when cardAudio.current is not paused (line 79). Both B_STOP and SETUP_STOP now measure 0ms overlap over multiple 60+ tick sampling windows."
+}

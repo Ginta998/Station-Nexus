@@ -76,6 +76,7 @@ export function AppProvider({ children }) {
     const a = appAudio.current;
     if (!a || !ambienceId || muted) return;
     if (cardActiveRef.current) return;            // a card ambient owns the audio channel
+    if (cardAudio.current && !cardAudio.current.paused) return; // card still audible (during fade)
     if (!a.paused && a.dataset.aid === ambienceId) return; // already playing this track
     if (a.dataset.aid !== ambienceId) { a.src = ambienceUrl(ambienceId); a.dataset.aid = ambienceId; }
     a.volume = 0;
@@ -125,8 +126,7 @@ export function AppProvider({ children }) {
     const a = cardAudio.current; if (!a) return;
     // toggle off if this card is already playing
     if (playingId === id && isPlaying) {
-      cardActiveRef.current = false;
-      fadeTo(a, 0, 250, () => { a.pause(); startAppAmbience(); });
+      fadeTo(a, 0, 250, () => { a.pause(); a.currentTime = 0; cardActiveRef.current = false; startAppAmbience(); });
       setIsPlaying(false);
       return;
     }
@@ -143,10 +143,10 @@ export function AppProvider({ children }) {
 
   const stopAmbient = useCallback(() => {
     const a = cardAudio.current;
-    cardActiveRef.current = false;
     if (a && !a.paused) {
-      fadeTo(a, 0, 200, () => { a.pause(); a.currentTime = 0; startAppAmbience(); });
+      fadeTo(a, 0, 200, () => { a.pause(); a.currentTime = 0; cardActiveRef.current = false; startAppAmbience(); });
     } else {
+      cardActiveRef.current = false;
       if (a) { a.pause(); a.currentTime = 0; }
       startAppAmbience();
     }
