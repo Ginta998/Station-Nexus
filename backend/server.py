@@ -441,6 +441,15 @@ async def ensure_seed():
     if await db.creations.count_documents({}) == 0:
         await db.creations.insert_many([Creation(**c).model_dump() for c in DEFAULT_CREATIONS])
         logger.info("Seeded creations")
+    # idempotent migration: upgrade seeded books that gained chapters
+    for c in DEFAULT_CREATIONS:
+        if c.get("chapters"):
+            existing = await db.creations.find_one({"title": c["title"]}, {"_id": 0})
+            if existing and not existing.get("chapters"):
+                await db.creations.update_one({"title": c["title"]}, {"$set": {
+                    "chapters": c["chapters"], "launch_type": "chapters",
+                    "launch_label": c.get("launch_label", "Lire"), "updated_at": now_iso()}})
+                logger.info("Migrated %s to chapters", c["title"])
 
 
 @api_router.post("/seed")

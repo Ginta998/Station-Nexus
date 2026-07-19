@@ -33,3 +33,14 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 
 ## Next Tasks
 - Selon retours utilisateur : uploader ses vrais posters + musiques, remplir la catégorie Séries.
+
+## Implemented — Itération 2 (2026-07-19)
+- Onglet virtuel « Toutes mes créations » en première page + badges de catégorie sur cartes et fiches.
+- Catégories dynamiques (CRUD + réordonnancement) gérées dans Paramètres (admin).
+- Filtres/recherche + tri (Ordre / A→Z / Z→A / Récent) sur l'accueil.
+- Commentaires publics par fiche (nom + texte), suppression admin, cascade au delete.
+- Packs de sons UI synthétisés (Zen / Rétro / Neo) + pack personnalisé (upload) + Silence ; coupure globale du son (mute-all).
+- Ambiance sonore de l'app : admin upload (titre + émoji), visiteur la choisit comme un thème ; coupée automatiquement quand l'ambiance d'une fiche démarre.
+- Page Contact éditable (bio, avatar, réseaux : mail/Instagram/YouTube) + collecte d'emails newsletter (liste + export CSV admin).
+- Lecteur de chapitres immersif type webtoon (défilement vertical, révélations au scroll, sommaire, chapitre préc./suiv., musique d'immersion, images par chapitre) pour launch_type='chapters'.
+- Backend : endpoints categories/comments/ambiences/subscribers/settings + migration idempotente des chapitres. Tests 26/26 backend + frontend 100%.
