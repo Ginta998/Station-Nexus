@@ -1,0 +1,162 @@
+{
+  "results": {
+    "BOOT": {
+      "ticks": 28,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 0,
+      "max_concurrent": 0
+    },
+    "GESTURE": {
+      "ticks": 125,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 125,
+      "max_concurrent": 1
+    },
+    "E_IDLE": {
+      "ticks": 154,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 154,
+      "max_concurrent": 1
+    },
+    "SETUP_STOP": {
+      "ticks": 76,
+      "overlap": 12,
+      "overlap_ms": 240,
+      "playing": 76,
+      "max_concurrent": 2
+    },
+    "E_IDLE_DETAIL": {
+      "ticks": 75,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 75,
+      "max_concurrent": 1
+    },
+    "A_LAUNCH": {
+      "ticks": 61,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 61,
+      "max_concurrent": 1
+    },
+    "A_STEADY": {
+      "ticks": 50,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 50,
+      "max_concurrent": 1
+    },
+    "B_STOP": {
+      "ticks": 61,
+      "overlap": 12,
+      "overlap_ms": 240,
+      "playing": 61,
+      "max_concurrent": 2
+    },
+    "B_STEADY": {
+      "ticks": 50,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 50,
+      "max_concurrent": 1
+    },
+    "C_RELAUNCH": {
+      "ticks": 61,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 61,
+      "max_concurrent": 1
+    },
+    "C_STEADY": {
+      "ticks": 40,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 40,
+      "max_concurrent": 1
+    },
+    "D_UNMOUNT": {
+      "ticks": 76,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 76,
+      "max_concurrent": 1
+    },
+    "D_STEADY": {
+      "ticks": 50,
+      "overlap": 0,
+      "overlap_ms": 0,
+      "playing": 50,
+      "max_concurrent": 1
+    }
+  },
+  "fails": [
+    "B_STOP:overlap=240ms"
+  ],
+  "phase_log": [
+    {
+      "t": 1784466732729,
+      "phase": "GESTURE",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/"
+    },
+    {
+      "t": 1784466735237,
+      "phase": "E_IDLE",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/"
+    },
+    {
+      "t": 1784466738315,
+      "phase": "SETUP_STOP",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/oeuvre/9f50dc22-c019-4b67-b430-16a80c220e51"
+    },
+    {
+      "t": 1784466739832,
+      "phase": "E_IDLE_DETAIL",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/oeuvre/9f50dc22-c019-4b67-b430-16a80c220e51"
+    },
+    {
+      "t": 1784466741336,
+      "phase": "A_LAUNCH",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/oeuvre/9f50dc22-c019-4b67-b430-16a80c220e51"
+    },
+    {
+      "t": 1784466742551,
+      "phase": "A_STEADY",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/oeuvre/9f50dc22-c019-4b67-b430-16a80c220e51"
+    },
+    {
+      "t": 1784466743556,
+      "phase": "B_STOP",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/oeuvre/9f50dc22-c019-4b67-b430-16a80c220e51"
+    },
+    {
+      "t": 1784466744771,
+      "phase": "B_STEADY",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/oeuvre/9f50dc22-c019-4b67-b430-16a80c220e51"
+    },
+    {
+      "t": 1784466745776,
+      "phase": "C_RELAUNCH",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/oeuvre/9f50dc22-c019-4b67-b430-16a80c220e51"
+    },
+    {
+      "t": 1784466746990,
+      "phase": "C_STEADY",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/oeuvre/9f50dc22-c019-4b67-b430-16a80c220e51"
+    },
+    {
+      "t": 1784466747795,
+      "phase": "D_UNMOUNT",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/oeuvre/9f50dc22-c019-4b67-b430-16a80c220e51"
+    },
+    {
+      "t": 1784466749319,
+      "phase": "D_STEADY",
+      "url": "https://tengoku-launcher.preview.emergentagent.com/"
+    }
+  ],
+  "amb": "1e5559d9-ff4b-4169-a048-0674c15ba906",
+  "cre": "9f50dc22-c019-4b67-b430-16a80c220e51"
+}

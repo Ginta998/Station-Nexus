@@ -126,9 +126,8 @@ export function AppProvider({ children }) {
     // toggle off if this card is already playing
     if (playingId === id && isPlaying) {
       cardActiveRef.current = false;
-      fadeTo(a, 0, 250, () => a.pause());
+      fadeTo(a, 0, 250, () => { a.pause(); startAppAmbience(); });
       setIsPlaying(false);
-      startAppAmbience();
       return;
     }
     // starting (or switching) a card ambient — take exclusive ownership
@@ -145,11 +144,13 @@ export function AppProvider({ children }) {
   const stopAmbient = useCallback(() => {
     const a = cardAudio.current;
     cardActiveRef.current = false;
-    if (a) {
-      fadeTo(a, 0, 200, () => { a.pause(); a.currentTime = 0; });
+    if (a && !a.paused) {
+      fadeTo(a, 0, 200, () => { a.pause(); a.currentTime = 0; startAppAmbience(); });
+    } else {
+      if (a) { a.pause(); a.currentTime = 0; }
+      startAppAmbience();
     }
     setIsPlaying(false); setPlayingId(null);
-    startAppAmbience();
   }, [startAppAmbience]);
 
   const value = {
