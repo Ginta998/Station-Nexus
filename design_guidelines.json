@@ -1,0 +1,285 @@
+{
+  "typography": {
+    "font_pairings": [
+      {
+        "context": "sakura",
+        "heading": "Cormorant Garamond, serif (italic)",
+        "body": "Outfit, sans-serif"
+      },
+      {
+        "context": "kurogane",
+        "heading": "JetBrains Mono, monospace",
+        "body": "JetBrains Mono, monospace"
+      },
+      {
+        "context": "shibuya",
+        "heading": "Azeret Mono, monospace (uppercase)",
+        "body": "Inter, sans-serif"
+      },
+      {
+        "context": "kyoto",
+        "heading": "Playfair Display, serif (uppercase)",
+        "body": "Satoshi, sans-serif"
+      },
+      {
+        "context": "yugen",
+        "heading": "Cabinet Grotesk, sans-serif",
+        "body": "Outfit, sans-serif"
+      },
+      {
+        "context": "kaiju",
+        "heading": "Anton, sans-serif (bold 900)",
+        "body": "Manrope, sans-serif"
+      },
+      {
+        "context": "tengoku",
+        "heading": "Bodoni Moda, serif (uppercase)",
+        "body": "Satoshi, sans-serif"
+      },
+      {
+        "context": "akai",
+        "heading": "Playfair Display, serif (italic)",
+        "body": "Work Sans, sans-serif"
+      },
+      {
+        "context": "nara",
+        "heading": "Spectral, serif",
+        "body": "Outfit, sans-serif"
+      },
+      {
+        "context": "shiro",
+        "heading": "General Sans, sans-serif",
+        "body": "Satoshi, sans-serif"
+      },
+      {
+        "context": "kitsune",
+        "heading": "Bebas Neue, sans-serif (uppercase)",
+        "body": "Manrope, sans-serif"
+      },
+      {
+        "context": "washi",
+        "heading": "Cormorant Garamond, serif",
+        "body": "Outfit, sans-serif"
+      }
+    ],
+    "hierarchy": {
+      "h1": "text-5xl sm:text-6xl tracking-tight leading-none",
+      "h2": "text-3xl sm:text-4xl tracking-tight",
+      "h3": "text-xl sm:text-2xl",
+      "body": "text-base leading-relaxed"
+    }
+  },
+  "colors": {
+    "description": "12 interchangeable themes as CSS variables. Apply via data-theme attribute on body. Default is tengoku.",
+    "themes": {
+      "sakura": {
+        "--bg-primary": "#1a1219",
+        "--bg-secondary": "#2c1f2a",
+        "--brand": "#ffb7c5",
+        "--border": "rgba(255, 183, 197, 0.2)",
+        "--text-primary": "#ffffff",
+        "--text-secondary": "rgba(255, 255, 255, 0.6)",
+        "--radius-base": "1.5rem",
+        "--border-width": "1px",
+        "--shadow-intensity": "0 8px 32px rgba(255, 183, 197, 0.1)",
+        "--bg-pattern": "none"
+      },
+      "kurogane": {
+        "--bg-primary": "#000000",
+        "--bg-secondary": "#111111",
+        "--brand": "#e8e8e8",
+        "--border": "rgba(232, 232, 232, 0.3)",
+        "--text-primary": "#e8e8e8",
+        "--text-secondary": "rgba(232, 232, 232, 0.5)",
+        "--radius-base": "0",
+        "--border-width": "2px",
+        "--shadow-intensity": "none",
+        "--bg-pattern": "linear-gradient(rgba(232, 232, 232, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(232, 232, 232, 0.05) 1px, transparent 1px)"
+      },
+      "shibuya": {
+        "--bg-primary": "#05010f",
+        "--bg-secondary": "#120a2b",
+        "--brand": "#00fff5",
+        "--brand-secondary": "#ff00c8",
+        "--border": "rgba(0, 255, 245, 0.3)",
+        "--text-primary": "#ffffff",
+        "--text-secondary": "rgba(255, 255, 255, 0.7)",
+        "--radius-base": "0.25rem",
+        "--border-width": "1px",
+        "--shadow-intensity": "0 0 15px rgba(0, 255, 245, 0.4)",
+        "--bg-pattern": "none"
+      },
+      "kyoto": {
+        "--bg-primary": "#1a0808",
+        "--bg-secondary": "#2b1010",
+        "--brand": "#e8c547",
+        "--border": "rgba(232, 197, 71, 0.3)",
+        "--text-primary": "#ffffff",
+        "--text-secondary": "rgba(255, 255, 255, 0.6)",
+        "--radius-base": "0",
+        "--border-width": "1px",
+        "--shadow-intensity": "0 4px 20px rgba(0,0,0,0.5)",
+        "--bg-pattern": "none"
+      },
+      "yugen": {
+        "--bg-primary": "#0d0a1f",
+        "--bg-secondary": "#171236",
+        "--brand": "#c4b5fd",
+        "--border": "rgba(196, 181, 253, 0.2)",
+        "--text-primary": "#ffffff",
+        "--text-secondary": "rgba(196, 181, 253, 0.7)",
+        "--radius-base": "2rem",
+        "--border-width": "1px",
+        "--shadow-intensity": "0 10px 40px rgba(196, 181, 253, 0.15)",
+        "--bg-pattern": "none"
+      },
+      "kaiju": {
+        "--bg-primary": "#111111",
+        "--bg-secondary": "#222222",
+        "--brand": "#ffd400",
+        "--brand-secondary": "#ff5722",
+        "--border": "#ff5722",
+        "--text-primary": "#ffffff",
+        "--text-secondary": "#cccccc",
+        "--radius-base": "0",
+        "--border-width": "3px",
+        "--shadow-intensity": "4px 4px 0px #ff5722",
+        "--bg-pattern": "none"
+      },
+      "tengoku": {
+        "--bg-primary": "#0a0a0a",
+        "--bg-secondary": "#171717",
+        "--brand": "#e60012",
+        "--border": "rgba(230, 0, 18, 0.3)",
+        "--text-primary": "#ffffff",
+        "--text-secondary": "rgba(255, 255, 255, 0.6)",
+        "--radius-base": "0",
+        "--border-width": "1px",
+        "--shadow-intensity": "0 8px 30px rgba(230, 0, 18, 0.2)",
+        "--bg-pattern": "radial-gradient(circle, rgba(230,0,18,0.05) 0%, rgba(10,10,10,1) 100%)"
+      },
+      "akai": {
+        "--bg-primary": "#170303",
+        "--bg-secondary": "#2e0606",
+        "--brand": "#ff2d2d",
+        "--border": "rgba(255, 45, 45, 0.2)",
+        "--text-primary": "#ffffff",
+        "--text-secondary": "rgba(255, 255, 255, 0.7)",
+        "--radius-base": "0.5rem",
+        "--border-width": "1px",
+        "--shadow-intensity": "0 0 20px rgba(255, 45, 45, 0.3)",
+        "--bg-pattern": "none"
+      },
+      "nara": {
+        "--bg-primary": "#0e1a10",
+        "--bg-secondary": "#182c1b",
+        "--brand": "#a8c07d",
+        "--border": "rgba(168, 192, 125, 0.2)",
+        "--text-primary": "#e6e3d3",
+        "--text-secondary": "rgba(230, 227, 211, 0.6)",
+        "--radius-base": "0.75rem",
+        "--border-width": "1px",
+        "--shadow-intensity": "0 4px 15px rgba(0,0,0,0.3)",
+        "--bg-pattern": "none"
+      },
+      "shiro": {
+        "--bg-primary": "#fafaf7",
+        "--bg-secondary": "#ffffff",
+        "--brand": "#000000",
+        "--border": "rgba(0, 0, 0, 0.1)",
+        "--text-primary": "#000000",
+        "--text-secondary": "rgba(0, 0, 0, 0.5)",
+        "--radius-base": "0.25rem",
+        "--border-width": "1px",
+        "--shadow-intensity": "0 4px 20px rgba(0,0,0,0.05)",
+        "--bg-pattern": "none"
+      },
+      "kitsune": {
+        "--bg-primary": "#0a0705",
+        "--bg-secondary": "#1a120d",
+        "--brand": "#ff7a00",
+        "--border": "rgba(255, 122, 0, 0.3)",
+        "--text-primary": "#ffffff",
+        "--text-secondary": "rgba(255, 255, 255, 0.6)",
+        "--radius-base": "0",
+        "--border-width": "2px",
+        "--shadow-intensity": "0 8px 25px rgba(255, 122, 0, 0.15)",
+        "--bg-pattern": "none"
+      },
+      "washi": {
+        "--bg-primary": "#f5efe4",
+        "--bg-secondary": "#e8e0ce",
+        "--brand": "#5a3418",
+        "--border": "rgba(90, 52, 24, 0.2)",
+        "--text-primary": "#2c1e16",
+        "--text-secondary": "rgba(44, 30, 22, 0.6)",
+        "--radius-base": "0.125rem",
+        "--border-width": "1px",
+        "--shadow-intensity": "0 2px 10px rgba(90, 52, 24, 0.1)",
+        "--bg-pattern": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")"
+      }
+    }
+  },
+  "visual_enhancers": {
+    "background_blur": "backdrop-blur-3xl",
+    "scrim_overlay": "bg-black/60",
+    "texture": "Subtle noise overlay globally to feel cinematic."
+  },
+  "component_name": {
+    "launcher_grid": "Horizontal scrolling poster carousel with 'Focus Follows Background'",
+    "poster_card": "Vertical poster component with hover/focus scaling (ES-DE style)",
+    "action_button": "Prominent 'LANCER' button triggering audio + interaction",
+    "theme_switcher": "Visual selector for 12 themes",
+    "pin_dialog": "4-6 digit PIN entry for admin access"
+  },
+  "grids": {
+    "launcher_layout": "grid-cols-1 overflow-x-auto snap-x snap-mandatory hide-scrollbar flex gap-6 md:gap-10 px-8 md:px-20 py-10 items-center h-full",
+    "poster_aspect_ratio": "aspect-[2/3] w-64 md:w-80 lg:w-96 flex-shrink-0 snap-center"
+  },
+  "layouts": {
+    "app_container": "h-screen w-screen overflow-hidden relative selection:bg-brand selection:text-bg-primary",
+    "dynamic_bg": "absolute inset-0 z-0 bg-cover bg-center transition-all duration-1000 blur-2xl scale-110",
+    "main_content": "relative z-10 h-full flex flex-col justify-between"
+  },
+  "motion": {
+    "poster_focus": "transition-transform duration-300 ease-out scale-100 focus:scale-110 focus:ring-4 focus:ring-brand focus:z-20",
+    "bg_transition": "transition-all duration-1000 ease-in-out",
+    "theme_transition": "transition-colors duration-500 ease-in-out"
+  },
+  "accessibility": {
+    "keyboard_nav": "Full arrow key support (left/right for posters, up/down for categories, enter to select)",
+    "focus_states": "Prominent focus rings using --brand color for all interactive elements",
+    "aria": "Use aria-current for active category, aria-hidden for decorative background images"
+  },
+  "media": {
+    "audio": "HTML5 Audio element triggered on 'LANCER' click. Must handle unmount/stop when leaving detail page."
+  },
+  "image_urls": {
+    "placeholders": {
+      "description": "Cinematic aesthetic placeholders for posters until admin uploads original assets.",
+      "poster_1": "https://images.unsplash.com/photo-1782020934325-cfe4cea4fd9c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwyfHxjaW5lbWF0aWMlMjBtb3ZpZSUyMHBvc3RlciUyMGRhcmt8ZW58MHx8fHwxNzg0NDU2NjMxfDA&ixlib=rb-4.1.0&q=85",
+      "poster_2": "https://images.unsplash.com/photo-1778585040075-0991abfd4ed9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxjaW5lbWF0aWMlMjBtb3ZpZSUyMHBvc3RlciUyMGRhcmt8ZW58MHx8fHwxNzg0NDU2NjMxfDA&ixlib=rb-4.1.0&q=85",
+      "poster_3": "https://images.pexels.com/photos/12838778/pexels-photo-12838778.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Build a pure PWA (manifest.json + service worker) using React CRA and Tailwind.",
+    "Do NOT implement authentication or users. Implement a simple Admin mode protected by a PIN (default 1234) stored in localStorage.",
+    "Implement the ES-DE style launcher: Horizontal scrolling list of posters (aspect-[2/3]). The background of the entire app MUST dynamically change to a blurred and darkened version of the currently focused/hovered poster.",
+    "Implement 12 complete themes using CSS variables in index.css. Map Tailwind config colors to these variables (e.g. `bg-primary: 'var(--bg-primary)'`, `brand: 'var(--brand)'`). Apply the variables dynamically to a wrapper or the body.",
+    "Create a ThemeContext to switch between the 12 themes and persist choice in localStorage. Default theme is 'tengoku'. Apply specific fonts conditionally based on the active theme.",
+    "When a user clicks a poster, navigate to a Detail page. The detail page has a large 'LANCER' button.",
+    "When 'LANCER' is clicked, play a background ambient track (audio element) and perform the action (e.g. open a modal to read chapter 1).",
+    "Ensure keyboard navigation (arrow keys) works seamlessly between posters, as it's a launcher app."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Never apply universal transitions (transition: all). Use specific properties.",
+    "Do not center align the app container in App.css.",
+    "Layer elements to create depth: Background image (z-0, blur-2xl) -> Scrim overlay (z-1, bg-black/60) -> Content (z-10).",
+    "Use generous spacing (gap-10, p-12).",
+    "All interactive and key informational elements MUST include a data-testid attribute.",
+    "Use modern pill-shaped or sharp buttons depending on the theme's --radius-base.",
+    "Use 'lucide-react' for icons.",
+    "Ensure high contrast and readability over the dynamic blurred background."
+  ]
+}
