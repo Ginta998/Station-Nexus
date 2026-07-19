@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
-import { audioUrl, ambienceUrl } from "@/lib/api";
+import { audioUrl, ambienceUrl, getSettings } from "@/lib/api";
 import { configureSound, playUiSound } from "@/lib/sound";
 
 const AppContext = createContext(null);
 export const useApp = () => useContext(AppContext);
 
 const LS = {
-  theme: "sx_theme", pin: "sx_pin", admin: "sx_admin", vol: "sx_volume",
+  theme: "sx_theme", pin: "sx_pin", admin: "sx_admin", music: "sx_musicvolume", ui: "sx_uivolume",
   mute: "sx_mute", pack: "sx_soundpack", custom: "sx_customsounds", ambience: "sx_ambience",
 };
 const DEFAULT_PIN = "1234";
@@ -14,15 +14,19 @@ const DEFAULT_PIN = "1234";
 export function AppProvider({ children }) {
   const [theme, setThemeState] = useState(() => localStorage.getItem(LS.theme) || "tengoku");
   const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem(LS.admin) === "1");
-  const [volume, setVolume] = useState(() => {
-    const v = parseFloat(localStorage.getItem(LS.vol)); return Number.isFinite(v) ? v : 0.6;
+  const [musicVolume, setMusicVolumeState] = useState(() => {
+    const v = parseFloat(localStorage.getItem(LS.music) ?? localStorage.getItem("sx_volume")); return Number.isFinite(v) ? v : 0.6;
+  });
+  const [uiVolume, setUiVolumeState] = useState(() => {
+    const v = parseFloat(localStorage.getItem(LS.ui)); return Number.isFinite(v) ? v : 0.7;
   });
   const [muted, setMuted] = useState(() => localStorage.getItem(LS.mute) === "1");
   const [soundPack, setSoundPack] = useState(() => localStorage.getItem(LS.pack) || "zen");
   const [customSounds, setCustomSounds] = useState(() => {
     try { return JSON.parse(localStorage.getItem(LS.custom) || "null"); } catch { return null; }
   });
-  const [ambienceId, setAmbienceId] = useState(() => localStorage.getItem(LS.ambience) || "");
+  const storedAmbience = localStorage.getItem(LS.ambience);
+  const [ambienceId, setAmbienceId] = useState(storedAmbience || "");
 
   // creation ambient
   const [playingId, setPlayingId] = useState(null);
@@ -37,13 +41,21 @@ export function AppProvider({ children }) {
 
   useEffect(() => { if (!localStorage.getItem(LS.pin)) localStorage.setItem(LS.pin, DEFAULT_PIN); }, []);
   useEffect(() => { document.documentElement.setAttribute("data-theme", theme); }, [theme]);
-  useEffect(() => { configureSound({ pack: soundPack, muted, custom: customSounds }); }, [soundPack, muted, customSounds]);
+  useEffect(() => { configureSound({ pack: soundPack, muted, custom: customSounds, volume: uiVolume }); }, [soundPack, muted, customSounds, uiVolume]);
   useEffect(() => {
-    const v = muted ? 0 : volume;
+    const v = muted ? 0 : musicVolume;
     if (cardAudio.current) cardAudio.current.volume = v;
-    if (appAudio.current) appAudio.current.volume = v * 0.7;
-    localStorage.setItem(LS.vol, String(volume));
-  }, [volume, muted]);
+    if (appAudio.current) appAudio.current.volume = v * 0.85;
+    localStorage.setItem(LS.music, String(musicVolume));
+  }, [musicVolume, muted]);
+  useEffect(() => { localStorage.setItem(LS.ui, String(uiVolume)); }, [uiVolume]);
+
+  // default ambience from server settings when the visitor has never chosen
+  useEffect(() => {
+    if (storedAmbience === null) {
+      getSettings().then((s) => { if (s?.default_ambience_id) setAmbienceId(s.default_ambience_id); }).catch(() => {});
+    }
+  }, []); // eslint-disable-line
 
   // app ambience control
   const startAppAmbience = useCallback(() => {
@@ -51,9 +63,9 @@ export function AppProvider({ children }) {
     if (!a || !ambienceId || muted) return;
     if (isPlaying) return; // a card ambient is active
     if (a.dataset.aid !== ambienceId) { a.src = ambienceUrl(ambienceId); a.dataset.aid = ambienceId; }
-    a.volume = volume * 0.7;
+    a.volume = musicVolume * 0.85;
     a.play().then(() => setAppPlaying(true)).catch(() => setAppPlaying(false));
-  }, [ambienceId, muted, isPlaying, volume]);
+  }, [ambienceId, muted, isPlaying, musicVolume]);
 
   const stopAppAmbience = useCallback(() => {
     const a = appAudio.current; if (a) a.pause(); setAppPlaying(false);
@@ -66,7 +78,6 @@ export function AppProvider({ children }) {
 
   const startRef = useRef(startAppAmbience);
   startRef.current = startAppAmbience;
-  // resume audio on any user gesture (autoplay policies) until it actually plays
   useEffect(() => {
     const kick = () => { startRef.current(); };
     const events = ["pointerdown", "click", "keydown", "touchstart"];
@@ -75,6 +86,8 @@ export function AppProvider({ children }) {
   }, []);
 
   const setTheme = (t) => { setThemeState(t); localStorage.setItem(LS.theme, t); };
+  const setMusicVolume = (v) => setMusicVolumeState(v);
+  const setUiVolume = (v) => setUiVolumeState(v);
   const setPack = (p) => { setSoundPack(p); localStorage.setItem(LS.pack, p); };
   const setCustom = (obj) => { setCustomSounds(obj); localStorage.setItem(LS.custom, JSON.stringify(obj)); };
   const toggleMute = () => setMuted((m) => { const nv = !m; localStorage.setItem(LS.mute, nv ? "1" : "0"); return nv; });
@@ -94,9 +107,9 @@ export function AppProvider({ children }) {
     const a = cardAudio.current; if (!a) return;
     if (playingId === id && isPlaying) { a.pause(); setIsPlaying(false); startAppAmbience(); return; }
     stopAppAmbience();
-    a.src = audioUrl(id); a.volume = muted ? 0 : volume;
+    a.src = audioUrl(id); a.volume = muted ? 0 : musicVolume;
     a.play().then(() => { setPlayingId(id); setIsPlaying(true); }).catch(() => { setPlayingId(id); setIsPlaying(false); });
-  }, [playingId, isPlaying, volume, muted, startAppAmbience, stopAppAmbience]);
+  }, [playingId, isPlaying, musicVolume, muted, startAppAmbience, stopAppAmbience]);
 
   const stopAmbient = useCallback(() => {
     const a = cardAudio.current; if (a) { a.pause(); a.currentTime = 0; }
@@ -105,7 +118,7 @@ export function AppProvider({ children }) {
 
   const value = {
     theme, setTheme, isAdmin, unlock, lock, changePin,
-    volume, setVolume, muted, toggleMute,
+    musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,
     playingId, isPlaying, playAmbient, stopAmbient,

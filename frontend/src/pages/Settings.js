@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh } from "react-icons/io5";
+import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { THEMES } from "@/lib/themes";
 import { SOUND_PACKS } from "@/lib/sound";
@@ -9,7 +9,7 @@ import { useApp } from "@/context/AppContext";
 import {
   listAmbiences, createAmbience, updateAmbience, uploadAmbienceAudio, deleteAmbience, ambienceUrl,
   listCategories, createCategory, updateCategory, deleteCategory,
-  listSubscribers, deleteSubscriber,
+  listSubscribers, deleteSubscriber, getSettings, updateSettings,
 } from "@/lib/api";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
@@ -25,7 +25,15 @@ const AMBIENCE_ICONS = ["🎵","🌙","🌧️","🔥","🌊","🍃","🎐","�
 function AmbienceManager() {
   const { isAdmin, ambienceId, selectAmbience, sfx } = useApp();
   const { data: list = [], refetch } = useQuery({ queryKey: ["ambiences"], queryFn: listAmbiences });
+  const { data: settings, refetch: refetchSettings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const [title, setTitle] = useState(""); const [emoji, setEmoji] = useState("🎵");
+  const defaultId = settings?.default_ambience_id || "";
+
+  const setDefault = async (id) => {
+    await updateSettings({ ...settings, default_ambience_id: id });
+    toast.success(id ? "Ambiance par défaut définie" : "Aucune ambiance par défaut");
+    refetchSettings();
+  };
 
   const add = async () => {
     if (!title.trim()) return toast.error("Titre requis");
@@ -44,15 +52,21 @@ function AmbienceManager() {
           <div className="text-2xl mb-1">🔇</div><p className="text-sm" style={{ color: "var(--text-primary)" }}>Aucune</p>
         </button>
         {list.map((a) => (
-          <div key={a.id} data-testid={`ambience-${a.id}`} className="p-4 border" style={{ ...fs, background: "var(--bg-secondary)", outline: ambienceId === a.id ? "2px solid var(--brand)" : "none" }}>
+          <div key={a.id} data-testid={`ambience-${a.id}`} className="p-4 border relative" style={{ ...fs, background: "var(--bg-secondary)", outline: ambienceId === a.id ? "2px solid var(--brand)" : "none" }}>
+            {defaultId === a.id && (
+              <span className="absolute top-2 right-2 flex items-center gap-1 text-[9px] uppercase tracking-widest px-1.5 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid={`ambience-default-badge-${a.id}`}><IoStar size={10} /> Défaut</span>
+            )}
             <button onClick={() => { sfx("select"); selectAmbience(a.id); }} className="text-left w-full">
               <div className="text-2xl mb-1">{a.emoji}</div>
               <p className="text-sm truncate" style={{ color: "var(--text-primary)" }}>{a.title}</p>
             </button>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-3 mt-2">
               <a href={ambienceUrl(a.id)} target="_blank" rel="noreferrer" className="text-xs" style={{ color: "var(--text-secondary)" }}><IoPlay /></a>
               {isAdmin && (
                 <>
+                  <button onClick={() => setDefault(defaultId === a.id ? "" : a.id)} className="text-xs" style={{ color: defaultId === a.id ? "var(--brand)" : "var(--text-secondary)" }} title="Définir par défaut" data-testid={`ambience-default-${a.id}`}>
+                    {defaultId === a.id ? <IoStar /> : <IoStarOutline />}
+                  </button>
                   <label className="text-xs cursor-pointer" style={{ color: "var(--brand)" }} title="Uploader l'audio">
                     <IoCloudUploadOutline /><input type="file" accept="audio/*" hidden onChange={(e) => upload(a.id, e.target.files?.[0])} />
                   </label>
@@ -144,7 +158,7 @@ function SubscribersManager() {
 
 export default function Settings() {
   const nav = useNavigate();
-  const { theme, setTheme, isAdmin, unlock, lock, changePin, volume, setVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx } = useApp();
+  const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx } = useApp();
   const [pin, setPin] = useState(""); const [newPin, setNewPin] = useState("");
 
   const tryUnlock = () => { if (unlock(pin)) { toast.success("Mode création déverrouillé"); setPin(""); } else toast.error("PIN incorrect"); };
@@ -193,8 +207,11 @@ export default function Settings() {
           <button data-testid="mute-all" onClick={() => { toggleMute(); }} className="flex items-center gap-2 px-4 py-2.5 border mb-5" style={{ ...fs, color: muted ? "var(--brand)" : "var(--text-primary)" }}>
             {muted ? <IoVolumeMute /> : <IoVolumeHigh />} {muted ? "Son coupé — réactiver" : "Couper tous les sons"}
           </button>
-          <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Volume ({Math.round(volume * 100)}%)</label>
-          <input data-testid="volume-slider" type="range" min="0" max="1" step="0.05" value={volume} onChange={(e) => setVolume(parseFloat(e.target.value))} className="w-full mt-2 mb-6" style={{ accentColor: "var(--brand)" }} />
+          <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Volume de l'ambiance ({Math.round(musicVolume * 100)}%)</label>
+          <input data-testid="music-volume-slider" type="range" min="0" max="1" step="0.05" value={musicVolume} onChange={(e) => setMusicVolume(parseFloat(e.target.value))} className="w-full mt-2 mb-5" style={{ accentColor: "var(--brand)" }} />
+
+          <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Volume de l'interface ({Math.round(uiVolume * 100)}%)</label>
+          <input data-testid="ui-volume-slider" type="range" min="0" max="1" step="0.05" value={uiVolume} onChange={(e) => { setUiVolume(parseFloat(e.target.value)); }} onMouseUp={() => sfx("select")} onTouchEnd={() => sfx("select")} className="w-full mt-2 mb-6" style={{ accentColor: "var(--brand)" }} />
 
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Pack de sons d'interface</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="soundpack-grid">

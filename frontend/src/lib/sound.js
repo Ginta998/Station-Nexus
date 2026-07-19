@@ -79,7 +79,7 @@ const PACKS = {
 
 export const SOUND_PACKS = Object.entries(PACKS).map(([key, v]) => ({ key, label: v.label, emoji: v.emoji }));
 
-let settings = { pack: "zen", muted: false, custom: null };
+let settings = { pack: "zen", muted: false, custom: null, volume: 0.7 };
 
 export const configureSound = (s) => { settings = { ...settings, ...s }; };
 
@@ -90,9 +90,10 @@ function beep(spec) {
   const gain = c.createGain();
   osc.type = spec.type;
   const t = c.currentTime;
+  const vol = spec.gain * (settings.volume ?? 0.7) * 2;
   osc.frequency.setValueAtTime(spec.freq, t);
   if (spec.glide) osc.frequency.exponentialRampToValueAtTime(spec.glide, t + spec.dur);
-  gain.gain.setValueAtTime(spec.gain, t);
+  gain.gain.setValueAtTime(Math.max(0.0001, vol), t);
   gain.gain.exponentialRampToValueAtTime(0.0001, t + spec.dur);
   osc.connect(gain);
   gain.connect(c.destination);
@@ -101,12 +102,12 @@ function beep(spec) {
 }
 
 export function playUiSound(event) {
-  if (settings.muted || settings.pack === "silence") return;
+  if (settings.muted || settings.pack === "silence" || (settings.volume ?? 0.7) <= 0) return;
   // custom uploaded pack
   if (settings.pack === "custom" && settings.custom && settings.custom[event]) {
     try {
       const a = new Audio(settings.custom[event]);
-      a.volume = 0.5;
+      a.volume = settings.volume ?? 0.7;
       a.play().catch(() => {});
     } catch (_) {}
     return;

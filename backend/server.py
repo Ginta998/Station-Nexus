@@ -165,6 +165,7 @@ class SiteSettings(BaseModel):
     mail: str = "Louzalabrichel@gmail.com"
     instagram: str = "Brichel_louzala"
     youtube: str = "Brichel Louzala"
+    default_ambience_id: Optional[str] = ""
 
 
 def slugify(s: str) -> str:
