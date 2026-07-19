@@ -11,7 +11,7 @@ const DEFAULT_PIN = "1234";
 
 export function AppProvider({ children }) {
   const [theme, setThemeState] = useState(() => localStorage.getItem(LS_THEME) || "tengoku");
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem("sx_admin") === "1");
   const [playingId, setPlayingId] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(() => {
@@ -46,11 +46,15 @@ export function AppProvider({ children }) {
     const stored = localStorage.getItem(LS_PIN) || DEFAULT_PIN;
     if (pin === stored) {
       setIsAdmin(true);
+      localStorage.setItem("sx_admin", "1");
       return true;
     }
     return false;
   };
-  const lock = () => setIsAdmin(false);
+  const lock = () => {
+    setIsAdmin(false);
+    localStorage.removeItem("sx_admin");
+  };
   const changePin = (newPin) => {
     localStorage.setItem(LS_PIN, newPin);
     return true;

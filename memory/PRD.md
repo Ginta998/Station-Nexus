@@ -1,0 +1,35 @@
+# Stationexus — PRD
+
+## Problem Statement
+Application web pure (PWA installable) inspirée de ES-DE : un launcher cinématique et mono-utilisateur pour lancer les créations personnelles (livres, films, séries, Tengoku Dojo, à venir). Chaque fiche possède un bouton « Lancer ». Pas de comptes ; un mode Admin (Création) protégé par un PIN 4-6 chiffres stocké dans localStorage. Musique d'ambiance au lancement. 12 thèmes interchangeables (défaut : Tengoku). Esthétique japonaise sombre, poster roi, fond dynamique suivant la carte focalisée.
+
+## Stack / Architecture
+- Frontend: React (CRA) + React Router v6 + Tailwind (CSS variables par thème via `data-theme`) + react-icons/io5 + html2canvas + Web Share.
+- Backend: FastAPI + MongoDB (Motor). Routes préfixées `/api`. Images poster en base64 (data URI), audio uploadé en base64 (max 12 Mo) et streamé via endpoint dédié. Aucune auth serveur.
+- PWA: manifest.json + service-worker.js + icônes 192/512.
+
+## User Persona
+Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / téléphone.
+
+## Core Requirements (static)
+- Launcher ES-DE : catégories, rail de posters horizontal, navigation clavier/tactile, fond dynamique flouté.
+- Fiche détail avec bouton LANCER (reader / lien / épisodes / info), musique d'ambiance, partage de carte.
+- Mode visiteur lecture seule ; mode Création (PIN 1234 par défaut) pour ajouter/modifier/supprimer + upload poster & audio.
+- 12 thèmes complets via variables CSS + polices dédiées ; persistance localStorage.
+
+## Implemented (2026-07-19)
+- Backend CRUD créations + filtre catégorie + audio upload/stream/delete (limite 12 Mo) + auto-seed 13 créations.
+- Home launcher (tabs, rail, hero, fond dynamique, kanji watermark, nav clavier), TopBar, PosterCard fallback kanji.
+- Detail (poster shareable, LANCER + reader modal, épisodes, ambiance, achat, partage html2canvas/Web Share).
+- Settings (déverrouillage PIN + changement PIN, volume, grille 12 thèmes).
+- PWA (manifest, service worker, icônes) ; admin persistant entre rechargements (localStorage `sx_admin`).
+- Testé end-to-end : backend 100%, frontend 100% (iteration_1.json).
+
+## Backlog
+- P1: Upload/gestion multi-images (galeries), réordonnancement drag-and-drop des posters.
+- P1: Contenu de lecture riche (chapitres multiples paginés) et lecteur vidéo intégré pour films.
+- P2: Migrer FastAPI on_event → lifespan ; status_code 201 sur création.
+- P2: Recherche/filtre texte, favoris, mode plein écran immersif.
+
+## Next Tasks
+- Selon retours utilisateur : uploader ses vrais posters + musiques, remplir la catégorie Séries.
