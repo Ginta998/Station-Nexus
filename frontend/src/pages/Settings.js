@@ -20,6 +20,8 @@ const Section = ({ title, extra, children }) => (
   </section>
 );
 
+const AMBIENCE_ICONS = ["🎵","🌙","🌧️","🔥","🌊","🍃","🎐","🏯","⛩️","🌸","❄️","☕","📖","🕯️","🌌","🎹","🐉","🦊","💮","🎏","🌿","⚡","🫧","🪷"];
+
 function AmbienceManager() {
   const { isAdmin, ambienceId, selectAmbience, sfx } = useApp();
   const { data: list = [], refetch } = useQuery({ queryKey: ["ambiences"], queryFn: listAmbiences });
@@ -62,10 +64,21 @@ function AmbienceManager() {
         ))}
       </div>
       {isAdmin && (
-        <div className="flex gap-2" data-testid="ambience-add">
-          <input value={emoji} onChange={(e) => setEmoji(e.target.value)} className="w-14 px-2 py-2 border outline-none text-center" style={fs} />
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre de l'ambiance" className="flex-1 px-3 py-2 border outline-none" style={fs} data-testid="ambience-title-input" />
-          <button onClick={add} className="px-4 py-2 font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }} data-testid="ambience-add-btn"><IoAddOutline /> Ajouter</button>
+        <div className="border p-3" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="ambience-add">
+          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Choisis une icône</p>
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {AMBIENCE_ICONS.map((ic) => (
+              <button key={ic} data-testid={`ambience-icon-${ic}`} onClick={() => setEmoji(ic)}
+                className="w-9 h-9 flex items-center justify-center text-lg border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", outline: emoji === ic ? "2px solid var(--brand)" : "none", background: "var(--bg-primary)" }}>
+                {ic}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <div className="w-11 flex items-center justify-center text-xl border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>{emoji}</div>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre de l'ambiance" className="flex-1 px-3 py-2 border outline-none" style={fs} data-testid="ambience-title-input" />
+            <button onClick={add} className="px-4 py-2 font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }} data-testid="ambience-add-btn"><IoAddOutline /> Ajouter</button>
+          </div>
         </div>
       )}
     </div>

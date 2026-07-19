@@ -33,6 +33,48 @@ const PACKS = {
     select: { type: "sawtooth", freq: 400, dur: 0.2, gain: 0.07, glide: 1600 },
     back: { type: "sawtooth", freq: 600, dur: 0.16, gain: 0.06, glide: 200 },
   },
+  koto: {
+    label: "Koto", emoji: "🎐",
+    hover: { type: "triangle", freq: 988, dur: 0.05, gain: 0.04 },
+    nav: { type: "triangle", freq: 740, dur: 0.1, gain: 0.06, glide: 660 },
+    select: { type: "triangle", freq: 587, dur: 0.25, gain: 0.08, glide: 880 },
+    back: { type: "triangle", freq: 494, dur: 0.2, gain: 0.06, glide: 330 },
+  },
+  arcade: {
+    label: "Arcade", emoji: "🕹️",
+    hover: { type: "square", freq: 1046, dur: 0.02, gain: 0.03 },
+    nav: { type: "square", freq: 523, dur: 0.04, gain: 0.05, glide: 784 },
+    select: { type: "square", freq: 392, dur: 0.16, gain: 0.06, glide: 1568 },
+    back: { type: "square", freq: 784, dur: 0.12, gain: 0.05, glide: 262 },
+  },
+  glass: {
+    label: "Verre", emoji: "🔷",
+    hover: { type: "sine", freq: 1568, dur: 0.05, gain: 0.03 },
+    nav: { type: "sine", freq: 1318, dur: 0.08, gain: 0.05, glide: 1760 },
+    select: { type: "sine", freq: 1046, dur: 0.22, gain: 0.06, glide: 2093 },
+    back: { type: "sine", freq: 880, dur: 0.16, gain: 0.05, glide: 587 },
+  },
+  vapor: {
+    label: "Vaporwave", emoji: "🌴",
+    hover: { type: "sine", freq: 440, dur: 0.08, gain: 0.04 },
+    nav: { type: "triangle", freq: 349, dur: 0.14, gain: 0.06, glide: 440 },
+    select: { type: "sine", freq: 261, dur: 0.3, gain: 0.07, glide: 523 },
+    back: { type: "triangle", freq: 349, dur: 0.22, gain: 0.06, glide: 220 },
+  },
+  taiko: {
+    label: "Taiko", emoji: "🥁",
+    hover: { type: "sine", freq: 160, dur: 0.05, gain: 0.06 },
+    nav: { type: "sine", freq: 120, dur: 0.1, gain: 0.1, glide: 80 },
+    select: { type: "sine", freq: 100, dur: 0.18, gain: 0.14, glide: 60 },
+    back: { type: "sine", freq: 90, dur: 0.16, gain: 0.1, glide: 55 },
+  },
+  crystal: {
+    label: "Cristal", emoji: "💎",
+    hover: { type: "triangle", freq: 2093, dur: 0.04, gain: 0.03 },
+    nav: { type: "triangle", freq: 1760, dur: 0.07, gain: 0.05, glide: 2637 },
+    select: { type: "triangle", freq: 1568, dur: 0.2, gain: 0.06, glide: 3136 },
+    back: { type: "triangle", freq: 1318, dur: 0.15, gain: 0.05, glide: 880 },
+  },
 };
 
 export const SOUND_PACKS = Object.entries(PACKS).map(([key, v]) => ({ key, label: v.label, emoji: v.emoji }));

@@ -46,6 +46,13 @@ class Chapter(BaseModel):
     image: Optional[str] = ""  # data uri / url
 
 
+class Embed(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    platform: str = "youtube"  # youtube | wattpad | other
+    url: str = ""
+    label: Optional[str] = ""
+
+
 class Creation(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
@@ -55,6 +62,11 @@ class Creation(BaseModel):
     synopsis: Optional[str] = ""
     poster: Optional[str] = ""
     accent: Optional[str] = ""
+    bg_image: Optional[str] = ""
+    bg_blur: int = 32
+    bg_dim: float = 0.55
+    gallery: List[str] = Field(default_factory=list)
+    embeds: List[Embed] = Field(default_factory=list)
     launch_type: str = "info"  # reader | link | episodes | chapters | info
     launch_label: Optional[str] = "Lancer"
     launch_content: Optional[str] = ""
@@ -77,6 +89,11 @@ class CreationInput(BaseModel):
     synopsis: Optional[str] = ""
     poster: Optional[str] = ""
     accent: Optional[str] = ""
+    bg_image: Optional[str] = ""
+    bg_blur: int = 32
+    bg_dim: float = 0.55
+    gallery: List[str] = Field(default_factory=list)
+    embeds: List[Embed] = Field(default_factory=list)
     launch_type: str = "info"
     launch_label: Optional[str] = "Lancer"
     launch_content: Optional[str] = ""

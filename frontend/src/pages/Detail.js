@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import html2canvas from "html2canvas";
-import { IoArrowBack, IoPlay, IoPause, IoClose, IoShareSocial, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline } from "react-icons/io5";
+import { IoArrowBack, IoPlay, IoPause, IoClose, IoShareSocial, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube } from "react-icons/io5";
 import { toast } from "sonner";
 import { getCreation, deleteCreation, listCategories } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
@@ -21,6 +21,7 @@ export default function Detail() {
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [showEpisodes, setShowEpisodes] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
+  const [lightbox, setLightbox] = useState(null);
   const cardRef = useRef(null);
 
   // auto-play the creation ambient on open (cuts app ambience)
@@ -35,8 +36,14 @@ export default function Detail() {
   }
 
   const hasImg = item.poster && item.poster.length > 4;
+  const bgSrc = item.bg_image && item.bg_image.length > 4 ? item.bg_image : (hasImg ? item.poster : null);
   const thisPlaying = isPlaying && playingId === item.id;
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
+
+  const ytEmbed = (url) => {
+    const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
+    return m ? `https://www.youtube.com/embed/${m[1]}` : null;
+  };
 
   const launch = () => {
     sfx("select");
@@ -74,12 +81,13 @@ export default function Detail() {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden" style={{ background: "var(--bg-primary)" }}>
       <div className="fixed inset-0 z-0" aria-hidden="true">
-        {hasImg ? (
-          <div className="absolute inset-0 bg-cover bg-center scale-110" style={{ backgroundImage: `url(${item.poster})`, filter: "blur(32px) brightness(0.45)" }} />
+        {bgSrc ? (
+          <div className="absolute inset-0 bg-cover bg-center scale-110" style={{ backgroundImage: `url(${bgSrc})`, filter: `blur(${item.bg_blur ?? 32}px)` }} />
         ) : (
           <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 50% 30%, var(--bg-secondary), var(--bg-primary) 70%)" }} />
         )}
-        <div className="absolute inset-0" style={{ background: "var(--scrim)" }} />
+        <div className="absolute inset-0" style={{ background: `rgba(0,0,0,${item.bg_dim ?? 0.55})` }} />
+        <div className="absolute inset-0" style={{ background: "var(--scrim)", opacity: 0.5 }} />
       </div>
 
       <div className="relative z-10">
@@ -163,6 +171,45 @@ export default function Detail() {
               </div>
             )}
 
+            {/* Gallery */}
+            {item.gallery?.length > 0 && (
+              <div className="mt-10" data-testid="detail-gallery">
+                <h3 className="font-display text-xl mb-3" style={{ color: "var(--text-primary)" }}>Galerie</h3>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {item.gallery.map((g, i) => (
+                    <button key={i} onClick={() => { sfx("nav"); setLightbox(g); }} data-testid={`gallery-img-${i}`}
+                      className="aspect-square overflow-hidden border transition-transform hover:scale-[1.03]" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+                      <img src={g} alt="" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Embeds / réseaux */}
+            {item.embeds?.length > 0 && (
+              <div className="mt-10" data-testid="detail-embeds">
+                <h3 className="font-display text-xl mb-3" style={{ color: "var(--text-primary)" }}>Sur les réseaux</h3>
+                <div className="space-y-4">
+                  {item.embeds.map((em, i) => {
+                    const yt = em.platform === "youtube" ? ytEmbed(em.url) : null;
+                    if (yt) return (
+                      <div key={i} className="aspect-video w-full overflow-hidden border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} data-testid={`embed-${i}`}>
+                        <iframe src={yt} title={em.label || "YouTube"} className="w-full h-full" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                      </div>
+                    );
+                    return (
+                      <a key={i} href={em.url} target="_blank" rel="noopener noreferrer" onClick={() => sfx("nav")} data-testid={`embed-${i}`}
+                        className="flex items-center gap-2 px-4 py-3 border font-medium" style={{ ...btn, background: "var(--bg-secondary)" }}>
+                        {em.platform === "youtube" ? <IoLogoYoutube size={18} style={{ color: "var(--brand)" }} /> : <IoOpenOutline size={18} style={{ color: "var(--brand)" }} />}
+                        {em.label || (em.platform === "wattpad" ? "Lire sur Wattpad" : em.platform === "youtube" ? "Voir sur YouTube" : "Ouvrir le lien")}
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             <CommentsSection creationId={item.id} />
           </div>
         </div>
@@ -181,6 +228,13 @@ export default function Detail() {
       )}
 
       {chaptersOpen && <ChapterReader item={item} onClose={() => setChaptersOpen(false)} />}
+
+      {lightbox && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.92)" }} onClick={() => setLightbox(null)} data-testid="lightbox">
+          <button className="absolute top-4 right-4" style={{ color: "#fff" }} onClick={() => setLightbox(null)}><IoClose size={28} /></button>
+          <img src={lightbox} alt="" className="max-w-full max-h-[90vh] object-contain" />
+        </div>
+      )}
 
       <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={item} categories={cats} onSaved={refetch} />
     </div>

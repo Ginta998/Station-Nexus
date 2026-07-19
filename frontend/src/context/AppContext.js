@@ -64,12 +64,15 @@ export function AppProvider({ children }) {
     startAppAmbience();
   }, [ambienceId, muted, startAppAmbience, stopAppAmbience]);
 
-  // try to resume audio on first user gesture (autoplay policies)
+  const startRef = useRef(startAppAmbience);
+  startRef.current = startAppAmbience;
+  // resume audio on any user gesture (autoplay policies) until it actually plays
   useEffect(() => {
-    const kick = () => { startAppAmbience(); window.removeEventListener("pointerdown", kick); };
-    window.addEventListener("pointerdown", kick);
-    return () => window.removeEventListener("pointerdown", kick);
-  }, [startAppAmbience]);
+    const kick = () => { startRef.current(); };
+    const events = ["pointerdown", "click", "keydown", "touchstart"];
+    events.forEach((e) => window.addEventListener(e, kick, { passive: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, kick));
+  }, []);
 
   const setTheme = (t) => { setThemeState(t); localStorage.setItem(LS.theme, t); };
   const setPack = (p) => { setSoundPack(p); localStorage.setItem(LS.pack, p); };

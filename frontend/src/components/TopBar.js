@@ -24,8 +24,9 @@ export default function TopBar({ onAdd }) {
           {muted ? <IoVolumeMute size={18} /> : <IoVolumeHigh size={18} />}
         </button>
 
-        <button data-testid="contact-btn" onClick={() => go("/contact")} className="p-2.5 border transition-colors" style={btn}>
-          <IoMailOutline size={18} />
+        <button data-testid="contact-btn" onClick={() => go("/contact")}
+          className="flex items-center gap-1.5 px-3 md:px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+          <IoMailOutline size={18} /> <span className="hidden sm:inline">Contact</span>
         </button>
 
         {isAdmin && onAdd && (

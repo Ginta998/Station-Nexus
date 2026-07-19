@@ -63,7 +63,7 @@ export default function Home() {
 
   useEffect(() => { window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [onKey]);
 
-  const bgImg = focused && focused.poster && focused.poster.length > 4 ? focused.poster : null;
+  const bgImg = focused ? (focused.bg_image && focused.bg_image.length > 4 ? focused.bg_image : (focused.poster && focused.poster.length > 4 ? focused.poster : null)) : null;
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
   const openEdit = () => { if (focused) { setEditing(focused); setEditorOpen(true); } };
   const doDelete = async () => {
@@ -77,11 +77,12 @@ export default function Home() {
       <div className="absolute inset-0 z-0" aria-hidden="true">
         {bgImg ? (
           <div key={focused.id} className="absolute inset-0 bg-cover bg-center scale-110"
-            style={{ backgroundImage: `url(${bgImg})`, filter: "blur(28px) brightness(0.5)", animation: "bgFade 1s ease" }} />
+            style={{ backgroundImage: `url(${bgImg})`, filter: `blur(${focused.bg_blur ?? 28}px)`, animation: "bgFade 1s ease" }} />
         ) : (
           <div className="absolute inset-0" style={{ background: focused?.kanji ? "radial-gradient(circle at 50% 30%, var(--bg-secondary), var(--bg-primary) 70%)" : "var(--bg-primary)" }} />
         )}
-        <div className="absolute inset-0" style={{ background: "var(--scrim)" }} />
+        <div className="absolute inset-0" style={{ background: `rgba(0,0,0,${focused?.bg_dim ?? 0.5})` }} />
+        <div className="absolute inset-0" style={{ background: "var(--scrim)", opacity: 0.5 }} />
       </div>
 
       {focused && (

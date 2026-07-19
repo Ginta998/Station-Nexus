@@ -5,7 +5,8 @@ import { createCreation, updateCreation, uploadAudio, deleteAudio } from "@/lib/
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
-  poster: "", accent: "", launch_type: "reader", launch_label: "Lancer",
+  poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
+  launch_type: "reader", launch_label: "Lancer",
   launch_content: "", launch_url: "", buy_url: "", episodes: [], chapters: [], coming_soon: false, order: 0,
 };
 
@@ -41,6 +42,15 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const addCh = () => set("chapters", [...(form.chapters || []), { title: "", content: "", image: "" }]);
   const updCh = (i, k, v) => set("chapters", form.chapters.map((c, x) => (x === i ? { ...c, [k]: v } : c)));
   const delCh = (i) => set("chapters", form.chapters.filter((_, x) => x !== i));
+
+  const addGallery = (files) => {
+    [...files].slice(0, 12).forEach((f) => readFile(f, (d) => setForm((p) => ({ ...p, gallery: [...(p.gallery || []), d] })), 4));
+  };
+  const delGallery = (i) => set("gallery", form.gallery.filter((_, x) => x !== i));
+
+  const addEmbed = () => set("embeds", [...(form.embeds || []), { platform: "youtube", url: "", label: "" }]);
+  const updEmbed = (i, k, v) => set("embeds", form.embeds.map((e, x) => (x === i ? { ...e, [k]: v } : e)));
+  const delEmbed = (i) => set("embeds", form.embeds.filter((_, x) => x !== i));
 
   const save = async () => {
     if (!form.title.trim()) return toast.error("Le titre est requis");
@@ -85,6 +95,68 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
 
           <div><Label>Accroche</Label><input data-testid="editor-tagline" value={form.tagline} onChange={(e) => set("tagline", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} /></div>
           <div><Label>Synopsis</Label><textarea data-testid="editor-synopsis" rows={3} value={form.synopsis} onChange={(e) => set("synopsis", e.target.value)} className="w-full px-3 py-2 border outline-none resize-none" style={fs} /></div>
+
+          {/* Immersive background */}
+          <div className="border p-3 space-y-3" style={fs} data-testid="editor-bg-section">
+            <Label>Image de fond immersive (floutée & assombrie)</Label>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-bg-upload">
+                <IoImageOutline style={{ color: form.bg_image ? "var(--brand)" : "var(--text-secondary)" }} />
+                {form.bg_image ? "Fond présent — remplacer" : "Choisir une image (sinon le poster est utilisé)"}
+                <input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0], (d) => set("bg_image", d), 4)} />
+              </label>
+              {form.bg_image && <button onClick={() => set("bg_image", "")} style={{ color: "var(--brand)" }}><IoTrashOutline /></button>}
+            </div>
+            <div className="flex gap-4">
+              <div className="flex-1"><Label>Flou ({form.bg_blur}px)</Label>
+                <input type="range" min="0" max="60" value={form.bg_blur} onChange={(e) => set("bg_blur", Number(e.target.value))} className="w-full" style={{ accentColor: "var(--brand)" }} data-testid="editor-bg-blur" /></div>
+              <div className="flex-1"><Label>Assombrissement ({Math.round(form.bg_dim * 100)}%)</Label>
+                <input type="range" min="0" max="0.95" step="0.05" value={form.bg_dim} onChange={(e) => set("bg_dim", Number(e.target.value))} className="w-full" style={{ accentColor: "var(--brand)" }} data-testid="editor-bg-dim" /></div>
+            </div>
+          </div>
+
+          {/* Gallery */}
+          <div className="border p-3" style={fs} data-testid="editor-gallery-section">
+            <div className="flex items-center justify-between mb-2">
+              <Label>Galerie d'images</Label>
+              <label className="flex items-center gap-1 text-xs cursor-pointer" style={{ color: "var(--brand)" }} data-testid="editor-gallery-add">
+                <IoAddOutline /> Ajouter
+                <input type="file" accept="image/*" multiple hidden onChange={(e) => e.target.files && addGallery(e.target.files)} />
+              </label>
+            </div>
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+              {(form.gallery || []).map((g, i) => (
+                <div key={i} className="relative aspect-square overflow-hidden border" style={{ borderColor: "var(--border-c)" }}>
+                  <img src={g} alt="" className="w-full h-full object-cover" />
+                  <button onClick={() => delGallery(i)} className="absolute top-0.5 right-0.5 p-0.5" style={{ background: "rgba(0,0,0,0.6)", color: "#fff" }}><IoTrashOutline size={12} /></button>
+                </div>
+              ))}
+              {(form.gallery || []).length === 0 && <p className="col-span-full text-xs" style={{ color: "var(--text-secondary)" }}>Aucune image.</p>}
+            </div>
+          </div>
+
+          {/* Embeds / réseaux */}
+          <div className="border p-3" style={fs} data-testid="editor-embeds-section">
+            <div className="flex items-center justify-between mb-2">
+              <Label>Intégrations réseaux (YouTube, Wattpad…)</Label>
+              <button onClick={addEmbed} className="flex items-center gap-1 text-xs" style={{ color: "var(--brand)" }} data-testid="editor-embed-add"><IoAddOutline /> Ajouter</button>
+            </div>
+            <div className="space-y-2">
+              {(form.embeds || []).map((em, i) => (
+                <div key={i} className="flex gap-2 items-center" data-testid={`editor-embed-${i}`}>
+                  <select value={em.platform} onChange={(e) => updEmbed(i, "platform", e.target.value)} className="px-2 py-1.5 border outline-none text-sm" style={fs}>
+                    <option value="youtube">YouTube</option>
+                    <option value="wattpad">Wattpad</option>
+                    <option value="other">Autre</option>
+                  </select>
+                  <input value={em.url} onChange={(e) => updEmbed(i, "url", e.target.value)} placeholder="URL" className="flex-1 px-2 py-1.5 border outline-none text-sm" style={fs} />
+                  <input value={em.label} onChange={(e) => updEmbed(i, "label", e.target.value)} placeholder="Libellé" className="w-28 px-2 py-1.5 border outline-none text-sm" style={fs} />
+                  <button onClick={() => delEmbed(i)} style={{ color: "var(--brand)" }}><IoTrashOutline /></button>
+                </div>
+              ))}
+              {(form.embeds || []).length === 0 && <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Colle un lien YouTube (vidéo) ou Wattpad pour l'afficher sur la fiche.</p>}
+            </div>
+          </div>
 
           <div className="flex gap-3">
             <div className="flex-1"><Label>Type de lancement</Label>
