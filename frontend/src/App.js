@@ -5,6 +5,7 @@ import { AppProvider } from "@/context/AppContext";
 import Home from "@/pages/Home";
 import Detail from "@/pages/Detail";
 import Settings from "@/pages/Settings";
+import Contact from "@/pages/Contact";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/oeuvre/:id" element={<Detail />} />
             <Route path="/parametres" element={<Settings />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-center" theme="dark" richColors />

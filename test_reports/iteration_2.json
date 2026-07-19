@@ -1,0 +1,33 @@
+{
+  "summary": "Iteration 2 backend + frontend fully validated. 26/26 pytest cases pass for categories, comments, ambiences, subscribers, settings, chapters persistence, cascade delete, audio upload/stream/12MB limit. Frontend: virtual 'Toutes mes créations' tab, category tabs from backend, filters (search + sort A→Z reorders posters), category badges on Home and Detail, ChapterReader (TOC toggle, next/prev navigation, close), CommentsSection (create + appears in list), Contact page (name/bio/socials, newsletter subscribe success), Contact edit + save persistence, Settings PIN unlock (1234), CategoryManager (add category appears as new Home tab), SubscribersManager, AmbienceManager (add + shown in list), SoundPack selection, mute toggle. Only observation: Born X Burn seeded creation exists in DB with launch_type='reader' (0 chapters) instead of launch_type='chapters' with 1 chapter — this is stale seed from iteration 1 (ensure_seed skips reseeding when count > 0). Not a code bug; the code specifies chapters correctly. ChapterReader validated to work end-to-end with a freshly created chapters-type creation.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Born X Burn detail-launch", "issue": "Opens legacy reader modal instead of ChapterReader because seeded creation still has launch_type='reader' from iteration-1 seed data (ensure_seed does not update existing rows). All new/updated chapters creations work correctly.", "affected_selectors": ["detail-launch", "chapter-reader"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/test_iteration2.py",
+    "/app/test_reports/pytest/iteration2_results.xml"
+  ],
+  "action_items": [
+    "Main agent: force-reseed or migrate Born X Burn to launch_type='chapters' with its seeded Chapter (e.g. call POST /api/seed?force=true once, or write an idempotent migration in ensure_seed that upgrades existing docs when launch_type differs). Warning: force reseed wipes user creations."
+  ],
+  "critical_code_review_comments": [
+    "server.py ensure_seed() is only idempotent by 'is collection empty?' — it never upgrades existing docs. When schema/seed data evolves (as with chapters in iter-2), existing DBs remain stale. Consider a per-creation upsert-by-title migration, or version the seed and re-run on version bump.",
+    "server.py DEFAULT_CREATIONS: Born X Burn is defined with launch_type='chapters' and a chapter, but production DB shows launch_type='reader' — confirms the staleness above.",
+    "Backend still uses deprecated @app.on_event startup/shutdown (flagged in iter-1, still present). Migrate to lifespan handlers.",
+    "No auth on write endpoints (documented single-user + client-side PIN limitation; safe if deployment is truly single-tenant).",
+    "MAX_AUDIO_BYTES enforced only after reading full body into memory — for a 12 MB cap it's fine, but a streaming length check would be safer."
+  ],
+  "updated_files": ["/app/backend/tests/test_iteration2.py"],
+  "success_rate": {"backend": "100% (26/26)", "frontend": "100% of iteration-2 flows (chapter reader validated with fresh chapters creation)"},
+  "test_credentials": "Admin PIN: 1234 (localStorage sx_pin)",
+  "seed_data_creation": "Playwright test created and deleted: 1 category (UITestCat), 1 ambience (UIAmb), 1 newsletter subscriber (pwtest_*), 1 chapters creation (TEST_ChapReader), several comments. All cleaned up. Pytest test data all cleaned up.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Both backend_test.py (iter-1) and test_iteration2.py (iter-2) can be re-used as regression suite. When testing Born X Burn's chapter reader specifically, either force-reseed first or create a temp chapters creation via API. Home.js sort-select option values are order/az/za/recent (NOT 'alpha')."
+}
