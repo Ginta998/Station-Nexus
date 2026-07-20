@@ -43,6 +43,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 9 (2026-07-20)
+- **FIX P0 crash page Detail** : `useMemo` (recommandations) était appelé APRÈS le `return` anticipé dans `Detail.js` → violation des règles des hooks React → toute la page Detail plantait (timeout Playwright sur `detail-share`). `useMemo` remonté avant le early return. Bouton Partager + section Recommandations désormais fonctionnels.
+- **FIX P0 autoplay audio (solution A choisie par l'utilisateur)** : le BootIntro devient un écran d'entrée cinématique. Après l'animation, un bouton « Entrer » (`data-testid=boot-enter`) apparaît ; le clic amorce l'AudioContext + démarre l'ambiance (`primeAudio()` dans `AppContext`, `primeAudioCtx()` dans `sound.js`). Respecte la contrainte navigateur (geste utilisateur requis).
+- **FIX P1 lisibilité thèmes** : ajout de variables CSS globales `--on-media` (#fff) et `--on-media-2` (rgba blanc 72%) dans `:root`. `TopBar` + navigation/onglets/aide de `Home` utilisent ces couleurs claires (avec text-shadow) car ce contenu est toujours posé sur le fond image sombre. Corrige Shiro & Washi (texte sombre auparavant invisible) ; Yugen & Kurogane étaient déjà OK.
+- Tests : backend 9/9, frontend 100% (Detail/Partage/Reco/écran d'entrée/thèmes), 0 erreur console (iteration_9.json).
+- Note mineure restante (optionnel) : logo « EXUS » en thème Washi utilise `--brand` (brun foncé) → contraste plus faible sur fond sombre, mais lisible.
+
 ## Implemented — Itération 2 (2026-07-19)
 - Onglet virtuel « Toutes mes créations » en première page + badges de catégorie sur cartes et fiches.
 - Catégories dynamiques (CRUD + réordonnancement) gérées dans Paramètres (admin).
