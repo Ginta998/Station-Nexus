@@ -17,7 +17,7 @@
   --border-width: 1px;
   --shadow-1: 0 8px 30px rgba(230, 0, 18, 0.2);
   --scrim: rgba(0, 0, 0, 0.62);
-  --font-display: "Bodoni Moda", serif;
+  --font-display: "Anton", sans-serif;
   --font-body: "Manrope", sans-serif;
   --display-transform: uppercase;
   --display-style: normal;
@@ -28,7 +28,7 @@
   --bg-primary:#0a0a0a; --bg-secondary:#171717; --brand:#e60012; --brand-2:#e60012;
   --border-c:rgba(230,0,18,0.3); --text-primary:#fff; --text-secondary:rgba(255,255,255,0.72);
   --radius-base:0px; --border-width:1px; --shadow-1:0 8px 30px rgba(230,0,18,0.2); --scrim:rgba(0,0,0,0.62);
-  --font-display:"Bodoni Moda",serif; --font-body:"Manrope",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:0.03em;
+  --font-display:"Anton",sans-serif; --font-body:"Manrope",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:0.03em;
 }
 [data-theme="sakura"] {
   --bg-primary:#1a1219; --bg-secondary:#2c1f2a; --brand:#ffb7c5; --brand-2:#ffb7c5;
@@ -95,6 +95,12 @@
   --border-c:rgba(90,52,24,0.28); --text-primary:#2c1e16; --text-secondary:rgba(44,30,22,0.72);
   --radius-base:0.125rem; --border-width:1px; --shadow-1:0 2px 10px rgba(90,52,24,0.1); --scrim:rgba(245,239,228,0.5);
   --font-display:"Cormorant Garamond",serif; --font-body:"Outfit",sans-serif; --display-transform:none; --display-style:normal; --display-spacing:0;
+}
+[data-theme="horizon"] {
+  --bg-primary:#f1efe7; --bg-secondary:#ffffff; --brand:#1f8a8c; --brand-2:#e08d8d;
+  --border-c:rgba(31,138,140,0.24); --text-primary:#143b40; --text-secondary:rgba(20,59,64,0.6);
+  --radius-base:1rem; --border-width:1px; --shadow-1:0 10px 34px rgba(31,138,140,0.14); --scrim:rgba(241,239,231,0.5);
+  --font-display:"Cormorant Garamond",serif; --font-body:"Outfit",sans-serif; --display-transform:none; --display-style:italic; --display-spacing:0;
 }
 
 * { border-color: var(--border-c); }

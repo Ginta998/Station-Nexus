@@ -27,7 +27,7 @@ const FONTS = {
 const FONT_LABELS = [["serif", "Serif"], ["sans", "Sans"], ["display", "Display"], ["mono", "Mono"]];
 const WIDTHS = { narrow: "max-w-xl", normal: "max-w-2xl", wide: "max-w-4xl" };
 
-export default function ChapterReader({ item, onClose }) {
+export default function ChapterReader({ item, onClose, startChapter = null }) {
   const {
     playReadingUrl, toggleReadingUrl, endReading, isPlaying, playingId, sfx,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine,
@@ -36,12 +36,17 @@ export default function ChapterReader({ item, onClose }) {
   const chapters = item.chapters || [];
   const progressKey = "sx_progress_" + item.id;
   const saved = (() => { try { return JSON.parse(localStorage.getItem(progressKey) || "null"); } catch (_) { return null; } })();
-  const [idx, setIdx] = useState(() => saved && Number.isInteger(saved.chapter) ? Math.min(Math.max(saved.chapter, 0), Math.max(chapters.length - 1, 0)) : 0);
+  const useStart = Number.isInteger(startChapter);
+  const [idx, setIdx] = useState(() => {
+    const clamp = (n) => Math.min(Math.max(n, 0), Math.max(chapters.length - 1, 0));
+    if (useStart) return clamp(startChapter);
+    return saved && Number.isInteger(saved.chapter) ? clamp(saved.chapter) : 0;
+  });
   const [toc, setToc] = useState(false);
   const [prefs, setPrefs] = useState(false);
   const [progress, setProgress] = useState(0);
   const scrollRef = useRef(null);
-  const resumeRatio = useRef(saved && typeof saved.ratio === "number" && saved.ratio > 0.02 ? saved.ratio : null);
+  const resumeRatio = useRef(!useStart && saved && typeof saved.ratio === "number" && saved.ratio > 0.02 ? saved.ratio : null);
   const lastSave = useRef(0);
   const chap = chapters[idx];
   const contentRef = useReveal([idx]);
@@ -65,7 +70,7 @@ export default function ChapterReader({ item, onClose }) {
   }, [idx]);
   useEffect(() => () => endReading(item.id, item.has_audio), []); // eslint-disable-line
   useEffect(() => {
-    if (saved && ((saved.chapter || 0) > 0 || (saved.ratio || 0) > 0.02)) {
+    if (!useStart && saved && ((saved.chapter || 0) > 0 || (saved.ratio || 0) > 0.02)) {
       toast.success(`Reprise au chapitre ${(saved.chapter || 0) + 1}`, { duration: 2500 });
     }
   }, []); // eslint-disable-line

@@ -43,6 +43,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 14 (2026-07-20)
+- **Police Tengoku → Anton** (sans-serif condensé impactant) : `--font-display` du thème Tengoku (et `:root`) passé de « Bodoni Moda » à « Anton » (déjà chargée dans index.html). Logo STATIONEXUS + titres en Anton.
+- **Nouveau thème « Horizon »** (13e) : « la mer & la douceur » — bleu-vert `#1f8a8c`, blanc cassé `#f1efe7`, rouge pâle `#e08d8d`, coins arrondis (1rem), ombres douces, titre Cormorant Garamond italique. Ajouté dans index.css + swatch dans themes.js. Lisible (texte sur média blanc global).
+- **Chapitres affichés « en série » sur la fiche** (plus besoin de passer par le sommaire) : pour `launch_type==="chapters"`, la liste des chapitres s'affiche sous le bouton principal (qui reste « Reprendre/Lire », inchangé). Deux modes d'affichage au choix via nouveau champ `chapter_display` ("button" | "image") réglable dans l'éditeur : boutons (liste numérotée) ou images (vignettes 16:9). Icône musique si le chapitre a sa piste, surbrillance du chapitre en cours. Clic → ouvre le lecteur directement à ce chapitre (`ChapterReader` reçoit `startChapter`), sans écraser la reprise.
+- Vérifié : Anton + Horizon (screenshots), persistance `chapter_display` + préservation images (curl round-trip), modes boutons & images, ouverture au bon chapitre.
+
 ## Implemented — Itération 13 (2026-07-20)
 - **Reprise de lecture** : progression (chapitre + ratio de défilement) mémorisée par œuvre dans `localStorage` (`sx_progress_{id}`), sauvegarde throttlée au scroll + au changement de chapitre. À la réouverture, le lecteur reprend au bon chapitre et à la bonne position (restauration par ratio, robuste aux images) + toast « Reprise au chapitre N ». Le bouton de la fiche affiche « Reprendre · ch. N » quand une progression existe.
 - **Lettrine (dropcap) rétablie sur le contenu enrichi** : le CSS ciblait `p:first-of-type` alors que le contenu WYSIWYG produit des `<div>` → lettrine invisible. Corrigé pour cibler le premier `<p>` ou `<div>`, en couleur du thème (`var(--brand)`) + ombre.

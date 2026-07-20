@@ -8,7 +8,7 @@ const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
   poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", buy_url: "", episodes: [], chapters: [], coming_soon: false, order: 0,
+  launch_content: "", launch_url: "", buy_url: "", chapter_display: "button", episodes: [], chapters: [], coming_soon: false, order: 0,
 };
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
@@ -203,6 +203,13 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             <div>
               <div className="flex items-center justify-between mb-2"><Label>Chapitres</Label>
                 <button onClick={addCh} data-testid="editor-add-chapter" className="flex items-center gap-1 text-xs px-2 py-1" style={{ color: "var(--brand)" }}><IoAddOutline /> Ajouter</button></div>
+              <div className="mb-3">
+                <Label>Affichage des chapitres sur la fiche</Label>
+                <select data-testid="editor-chapter-display" value={form.chapter_display || "button"} onChange={(e) => set("chapter_display", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
+                  <option value="button">Boutons (liste)</option>
+                  <option value="image">Images (vignettes)</option>
+                </select>
+              </div>
               <div className="space-y-3">
                 {(form.chapters || []).map((ch, i) => (
                   <div key={i} className="p-3 border space-y-2" style={fs} data-testid={`editor-chapter-${i}`}>

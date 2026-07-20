@@ -74,6 +74,7 @@ class Creation(BaseModel):
     launch_content: Optional[str] = ""
     launch_url: Optional[str] = ""
     buy_url: Optional[str] = ""
+    chapter_display: str = "button"  # button | image — how chapters show on the detail page
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     has_audio: bool = False
@@ -104,6 +105,7 @@ class CreationInput(BaseModel):
     launch_content: Optional[str] = ""
     launch_url: Optional[str] = ""
     buy_url: Optional[str] = ""
+    chapter_display: str = "button"
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     coming_soon: bool = False

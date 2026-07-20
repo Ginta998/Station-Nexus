@@ -11,6 +11,7 @@ export const THEMES = [
   { key: "shiro", name: "Shiro", kanji: "白", tagline: "Blanc pur · Épuré & lumineux", swatch: ["#fafaf7", "#000000", "#e5e5e5"] },
   { key: "kitsune", name: "Kitsune", kanji: "狐", tagline: "Renard nocturne · Noir & feu", swatch: ["#0a0705", "#ff7a00", "#ffffff"] },
   { key: "washi", name: "Washi", kanji: "和紙", tagline: "Papier japonais · Blanc cassé & marron", swatch: ["#f5efe4", "#5a3418", "#e8e0ce"] },
+  { key: "horizon", name: "Horizon", kanji: "海", tagline: "La mer & la douceur · Bleu-vert, blanc cassé & rouge pâle", swatch: ["#f1efe7", "#1f8a8c", "#e08d8d"] },
 ];
 
 export const CATEGORIES = [

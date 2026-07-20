@@ -20,6 +20,7 @@ export default function Detail() {
 
   const [readerOpen, setReaderOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
+  const [readerStart, setReaderStart] = useState(null);
   const [showEpisodes, setShowEpisodes] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
@@ -57,7 +58,7 @@ export default function Detail() {
 
   const launch = () => {
     sfx("select");
-    if (item.launch_type === "chapters") setChaptersOpen(true);
+    if (item.launch_type === "chapters") { setReaderStart(null); setChaptersOpen(true); }
     else if (item.launch_type === "reader") setReaderOpen(true);
     else if (item.launch_type === "episodes") setShowEpisodes(true);
     else if (item.launch_type === "link") {
@@ -65,6 +66,8 @@ export default function Detail() {
       else toast.info("Le lien du film sera bientôt disponible.");
     } else toast.success(`« ${item.title} » lancé.`);
   };
+
+  const openChapter = (i) => { sfx("select"); setReaderStart(i); setChaptersOpen(true); };
 
   const doDelete = async () => {
     if (!window.confirm(`Supprimer « ${item.title} » ?`)) return;
@@ -154,6 +157,59 @@ export default function Detail() {
                 </button>
               )}
             </div>
+
+            {item.launch_type === "chapters" && (item.chapters?.length > 0) && (
+              <div className="mt-10" data-testid="detail-chapters">
+                <div className="flex items-center gap-3 mb-4">
+                  <h3 className="font-display text-xl" style={{ color: "#fff" }}>Chapitres</h3>
+                  <span className="text-xs px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{item.chapters.length}</span>
+                </div>
+
+                {item.chapter_display === "image" ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {item.chapters.map((c, i) => {
+                      const active = savedProgress && (savedProgress.chapter || 0) === i;
+                      return (
+                        <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
+                          className="group relative aspect-video overflow-hidden text-left transition-transform hover:scale-[1.03]"
+                          style={{ borderRadius: "var(--radius-base)", border: active ? "2px solid var(--brand)" : "1px solid rgba(255,255,255,0.15)" }}>
+                          {c.image ? <img src={c.image} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                            : <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.7))" }} />}
+                          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.1))" }} />
+                          <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                            <p className="text-[10px] uppercase tracking-widest" style={{ color: "var(--brand)" }}>Ch. {i + 1}{active ? " · en cours" : ""}</p>
+                            <p className="text-sm font-medium line-clamp-2" style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
+                          </div>
+                          {c.has_music && <IoMusicalNotes size={14} className="absolute top-2 right-2" style={{ color: "#fff" }} />}
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.3)" }}>
+                            <IoPlay size={30} style={{ color: "#fff" }} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {item.chapters.map((c, i) => {
+                      const active = savedProgress && (savedProgress.chapter || 0) === i;
+                      return (
+                        <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
+                          className="flex items-center gap-3 w-full text-left p-3 border transition-colors hover:brightness-110"
+                          style={{ borderColor: active ? "var(--brand)" : "rgba(255,255,255,0.15)", borderRadius: "var(--radius-base)", background: "rgba(0,0,0,0.35)" }}>
+                          <span className="font-display text-lg w-8 flex-shrink-0 text-center" style={{ color: "var(--brand)" }}>{i + 1}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="truncate" style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
+                            {active && <p className="text-[11px]" style={{ color: "var(--brand)" }}>En cours de lecture</p>}
+                          </div>
+                          {c.has_music && <IoMusicalNotes size={15} style={{ color: "rgba(255,255,255,0.6)" }} />}
+                          <IoPlay size={16} style={{ color: "rgba(255,255,255,0.8)" }} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
             {(showEpisodes || item.launch_type === "episodes") && item.episodes?.length > 0 && (
               <div className="mt-10" data-testid="detail-episodes">
@@ -253,7 +309,7 @@ export default function Detail() {
         </div>
       )}
 
-      {chaptersOpen && <ChapterReader item={item} onClose={() => setChaptersOpen(false)} />}
+      {chaptersOpen && <ChapterReader item={item} startChapter={readerStart} onClose={() => setChaptersOpen(false)} />}
 
       {lightbox && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.92)" }} onClick={() => setLightbox(null)} data-testid="lightbox">
