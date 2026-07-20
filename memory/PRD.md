@@ -43,7 +43,11 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
-## Implemented — Itération 10 (2026-07-20)
+## Implemented — Itération 11 (2026-07-20)
+- **FIX bug texte coupé sur mobile (page Detail)** — cause racine réelle : la colonne de contenu (`flex-1` dans un `flex-col items-center`) n'avait pas de largeur contrainte, donc le titre `<h1>` (police display, une ligne) s'étendait à sa largeur naturelle (~732px) et débordait de l'écran (390px), coupant titre/synopsis/boutons des deux côtés. Corrigé : colonne passée en `w-full md:flex-1 min-w-0` + `break-words` sur le titre. Vérifié : plus aucun débordement horizontal sur mobile, texte entièrement lisible ; desktop inchangé.
+- **Personnalisation de l'interface réservée au mode création** : la section est désormais enveloppée dans `{isAdmin && ...}` (visiteurs ne la voient plus).
+- **Bouton Paramètres sur chaque fiche** (`detail-settings`) à côté de Retour / Accueil / Partage.
+- **Service worker durci** : stratégie network-first pour le document HTML (app shell) + cache renommé `stationexus-v3` (purge des anciens caches) → évite de servir une version périmée de l'app sur mobile (ancien index.html cache-first). Assets statiques en stale-while-revalidate ; `/api` jamais intercepté.
 - **FIX P0 affichage mobile des fiches** : `GET /api/creations` renvoyait **38 Mo** (posters/fonds/galeries base64 intégrés) → sur mobile la page restait bloquée sur « Chargement… », d'où l'obligation d'actualiser. Refactor : la liste est allégée (**~14 Ko**, champs `has_poster`/`has_bg`, images vidées) et les images sont servies via endpoints dédiés `GET /api/creations/{id}/poster` et `/bg` (avec `Cache-Control`). Le détail garde galerie+chapitres ; `?media=1` renvoie l'item complet (base64) pour l'éditeur.
   - Frontend : `posterUrl`/`bgUrl`/`getCreationFull` (api.js) ; PosterCard/Home/Detail/recommandations utilisent les endpoints ; **EditorDialog récupère l'item complet à l'édition** pour ne pas écraser les images au save (testé bout-en-bout).
 - **Préchargement écran de démarrage** : liste désormais quasi instantanée → plus de « Chargement » après l'intro.

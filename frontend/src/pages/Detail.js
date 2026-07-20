@@ -121,13 +121,13 @@ export default function Detail() {
             </div>
           </div>
 
-          <div className="flex-1 fade-up">
+          <div className="w-full md:flex-1 min-w-0 fade-up">
             <div className="flex items-center gap-3 mb-3 flex-wrap">
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="detail-category">{catLabel}</span>
               <span className="font-display text-2xl" style={{ color: "var(--brand)" }}>{item.kanji}</span>
               {item.coming_soon && <span className="px-2 py-0.5 text-[10px] uppercase tracking-widest border" style={{ borderColor: "rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.75)" }}>À venir</span>}
             </div>
-            <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="detail-title">{item.title}</h1>
+            <h1 className="font-display text-4xl md:text-6xl leading-none break-words" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="detail-title">{item.title}</h1>
             <p className="mt-3 text-base md:text-lg" style={{ color: "rgba(255,255,255,0.9)" }}>{item.tagline}</p>
             <p className="mt-5 leading-relaxed max-w-xl" style={{ color: "rgba(255,255,255,0.72)" }}>{item.synopsis}</p>
 
