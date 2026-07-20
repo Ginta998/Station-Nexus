@@ -10,7 +10,7 @@ function useReveal(deps) {
     if (!nodes) return;
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("is-visible"); });
-    }, { threshold: 0.12 });
+    }, { threshold: 0, rootMargin: "0px 0px -8% 0px" });
     nodes.forEach((n) => io.observe(n));
     return () => io.disconnect();
   }, deps); // eslint-disable-line

@@ -43,6 +43,9 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Fix — Itération 12b (2026-07-20)
+- **Texte de chapitre enrichi invisible** : le conteneur `.reader-rich` (un seul grand bloc, ex. 11096px) portait l'animation reveal avec un `IntersectionObserver` à `threshold: 0.12` → 12% de la hauteur > hauteur écran, donc jamais déclenché → texte bloqué à `opacity:0`. Corrigé : `threshold: 0` + `rootMargin: 0px 0px -8% 0px` (s'affiche dès l'entrée à l'écran). Le texte brut fonctionnait déjà car découpé en petits paragraphes. Vérifié sur Born X Burn (chapitre riche).
+
 ## Implemented — Itération 12 (2026-07-20)
 - **Musique par chapitre** : chaque chapitre peut avoir sa propre musique de lecture (endpoints `POST/GET/DELETE /api/creations/{cid}/chapters/{chid}/audio`, flag `has_music` par chapitre). Repli automatique sur la musique de lecture générale de l'œuvre si le chapitre n'en a pas ; transition en fondu au changement de chapitre + dédup (ne redémarre pas la même piste partagée). Nettoyage `chapter_media` à la suppression d'une création.
 - **Éditeur visuel WYSIWYG** (`RichTextEditor.js`) pour le contenu des chapitres : gras, italique, souligné, titres/sous-titres (H2/H3), citations, séparateurs, alignement gauche/centre, couleurs de texte (palette). Contenu stocké en HTML (`chapter.rich=true`), assaini légèrement. Rétro-compat : les chapitres en texte brut existants restent lisibles et sont convertis en paragraphes éditables à l'ouverture.
