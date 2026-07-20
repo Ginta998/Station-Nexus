@@ -43,6 +43,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 19 (2026-07-20) — Mini-jeu arcade
+- **Nouvelle catégorie « Jeux » (遊)** créée (categories, order 6) + nouveau `launch_type: "game"` (string libre, aucun changement de modèle backend requis ; option « Jeu arcade » ajoutée dans `EditorDialog`).
+- **Jeu « Cosmic Bunny · Astro Delivery »** (`CosmicBunnyGame.js`) : runner latéral en Canvas 2D. Un lapin coursier (casque/tenue) conduit une moto et **livre des colis 📦 sur une Terre V2 hostile** (ciel rouge toxique, skyline en ruines parallax, sol fissuré, poussière, éclairs). Mécaniques : saut (Espace/↑/tap), gravité, obstacles au sol (🪨🚧🛢️⚙️) à esquiver, colis flottants à collecter (+15), score = distance + livraisons, 3 vies avec invincibilité temporaire, vitesse croissante, record en localStorage (`sx_game_cosmic_bunny_hi`). Écrans Démarrer / Game Over.
+- Intégration `Detail.js` : `launch_type==="game"` ouvre `<CosmicBunnyGame>` en modale plein-écran. Fiche créée avec affiche IA (lapin motard sur Terre V2 hostile). Le lapin motard en jeu est composé en emoji (🐰+🏍️+📦) pour un rendu net (sprite IA en JPEG non transparent, non utilisé en jeu).
+- Auto-testé (screenshots) : onglet Jeux + carte OK, lancement, gameplay (score 99, collision→2 vies, colis/obstacles rendus), écran titre thématique.
+
+
 ## Implemented — Itération 18 (2026-07-20)
 - **Reprise directe depuis la carte** : le libellé de progression sur `PosterCard` est désormais cliquable (`poster-resume-{id}`, `stopPropagation`) → `Home.resume(id)` navigue vers `/oeuvre/{id}` avec `state:{resume:true}`. `Detail` détecte ce state (via `useLocation`) et ouvre directement le `ChapterReader` au chapitre sauvegardé (puis nettoie le state avec `nav(replace)`), sans passer par la fiche. Toast « Reprise au chapitre N » comme d'habitude.
 - **Badge « ✓ Terminé »** : quand la progression atteint 100 % (`done = pct>=100`), affichage d'un badge `poster-done-{id}` en haut à droite de l'affiche et le libellé devient « ✓ Terminé · Relire » (clic = relire depuis le chapitre courant/début).

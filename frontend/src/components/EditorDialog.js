@@ -187,6 +187,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
                 <option value="chapters">Lecteur de chapitres</option>
                 <option value="link">Lien externe (film/vidéo)</option>
                 <option value="episodes">Épisodes</option>
+                <option value="game">Jeu arcade</option>
                 <option value="info">Info seulement</option>
               </select></div>
             <div className="flex-1"><Label>Libellé du bouton</Label><input data-testid="editor-launch-label" value={form.launch_label} onChange={(e) => set("launch_label", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} /></div>

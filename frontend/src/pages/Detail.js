@@ -8,6 +8,7 @@ import { useApp } from "@/context/AppContext";
 import EditorDialog from "@/components/EditorDialog";
 import CommentsSection from "@/components/CommentsSection";
 import ChapterReader from "@/components/ChapterReader";
+import CosmicBunnyGame from "@/components/CosmicBunnyGame";
 import ShareMenu from "@/components/ShareMenu";
 import { TextSizeButton } from "@/components/TextSizeButton";
 
@@ -22,6 +23,7 @@ export default function Detail() {
 
   const [readerOpen, setReaderOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
+  const [gameOpen, setGameOpen] = useState(false);
   const [readerStart, setReaderStart] = useState(null);
   const [showEpisodes, setShowEpisodes] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -81,6 +83,7 @@ export default function Detail() {
   const launch = () => {
     sfx("select");
     if (item.launch_type === "chapters") { setReaderStart(null); setChaptersOpen(true); }
+    else if (item.launch_type === "game") setGameOpen(true);
     else if (item.launch_type === "reader") setReaderOpen(true);
     else if (item.launch_type === "episodes") setShowEpisodes(true);
     else if (item.launch_type === "link") {
@@ -343,6 +346,8 @@ export default function Detail() {
       )}
 
       {chaptersOpen && <ChapterReader item={item} startChapter={readerStart} onClose={() => setChaptersOpen(false)} onComment={goToComments} />}
+
+      {gameOpen && <CosmicBunnyGame item={item} onClose={() => setGameOpen(false)} />}
 
       {lightbox && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.92)" }} onClick={() => setLightbox(null)} data-testid="lightbox">
