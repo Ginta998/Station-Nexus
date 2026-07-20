@@ -44,13 +44,11 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
 ## Implemented — Itération 15 (2026-07-20)
-- **Accessibilité — Taille du texte globale** (demande utilisateur myope : « normaliser » le zoom du lecteur à toute l'app car descriptions/commentaires/chapitres trop petits). Nouveau réglage `textScale` (localStorage `sx_textscale`) avec 4 niveaux : Normal / Grand (112,5 %) / Très grand (125 %) / Maximum (140 %). Appliqué via `font-size` racine sur `<html>` (attribut `data-textscale`) → tout le texte en rem grandit (descriptions, synopsis, commentaires, chapitres/épisodes, chrome UI). Le lecteur de chapitres garde son propre réglage px (orthogonal).
-- **Affiches neutralisées** : largeurs `.sx-poster` exprimées en `calc(rem / var(--text-scale))` pour que l'échelle de texte n'agrandisse PAS le rail d'affiches (elles gardent leur propre réglage « Taille des affiches »).
-- **Section « Accessibilité » visible par tous** (hors gate admin) dans Paramètres, avant la personnalisation admin. Contrôle `text-scale-{normal|grand|xl|max}`.
-- Vérifié via screenshots : persistance (sx_textscale=xl, root 16→20px), visible en mode visiteur, texte agrandi sur Home/Detail, aucun débordement horizontal mobile (390=390), affiches stables.
-
-## À TESTER (hérité, non validé par testing_agent)
-- `chapter_size` + `button_size` (tailles cartes/boutons chapitres sur la fiche) et bloc d'engagement (Commenter/Partager) en fin de chapitre : code en place, vérifié visuellement en session précédente mais PAS encore validé par le testing_agent (interruption crédit).
+- **Accessibilité — Taille du texte globale** (demande utilisateur myope : « normaliser » le zoom du lecteur à toute l'app car descriptions/commentaires/chapitres trop petits). Réglage `textScale` (localStorage `sx_textscale`), 4 niveaux : Normal / Grand (112,5 %) / Très grand (125 %) / Maximum (140 %). **Défaut = Grand.** Appliqué via `font-size` racine sur `<html>` (attribut `data-textscale`) → tout le texte en rem grandit (descriptions, synopsis, commentaires, chapitres/épisodes, chrome UI). Le lecteur de chapitres garde son propre réglage px (orthogonal).
+- **Bouton d'accès rapide** (`TextSizeButton.js`, testids `text-size-btn` + menu `text-size-menu` + `text-size-{normal|grand|xl|max}`) ajouté dans la TopBar de l'Accueil et dans la barre d'actions des fiches (Detail) → menu déroulant pour changer la taille à la volée.
+- **Affiches neutralisées** : largeurs `.sx-poster` en `calc(rem / var(--text-scale))` pour que l'échelle de texte n'agrandisse PAS le rail (elles gardent leur propre réglage « Taille des affiches »).
+- **Section « Accessibilité »** dans Paramètres visible par tous (hors gate admin), `text-scale-grid`.
+- Testé par testing_agent (iteration_12.json) : 16/16 checks frontend PASS, 0 erreur console. Défaut 'grand' confirmé, persistance, pas de débordement mobile (390=390), bouton présent Accueil + fiche. **Régressions héritées revalidées** : `chapter_size`/`button_size` (round-trip PUT OK), bloc engagement `reader-engagement` (Commenter/Partager) présent avant préc./suiv. dans le lecteur. (Valeurs de test 'xl' sur Born X Burn remises à 'md'.)
 
 
 ## Implemented — Itération 14 (2026-07-20)
