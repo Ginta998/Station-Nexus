@@ -8,7 +8,7 @@ const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
   poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", buy_url: "", chapter_display: "button", episodes: [], chapters: [], coming_soon: false, order: 0,
+  launch_content: "", launch_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, order: 0,
 };
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
@@ -190,6 +190,24 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
                 <option value="info">Info seulement</option>
               </select></div>
             <div className="flex-1"><Label>Libellé du bouton</Label><input data-testid="editor-launch-label" value={form.launch_label} onChange={(e) => set("launch_label", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} /></div>
+          </div>
+
+          <div className="flex gap-3">
+            <div className="flex-1"><Label>Taille des boutons d'action</Label>
+              <select data-testid="editor-button-size" value={form.button_size || "md"} onChange={(e) => set("button_size", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
+                <option value="md">Normale</option>
+                <option value="lg">Grande</option>
+                <option value="xl">Très grande</option>
+              </select></div>
+            {(form.launch_type === "chapters" || form.launch_type === "episodes") && (
+              <div className="flex-1"><Label>Taille des chapitres / épisodes</Label>
+                <select data-testid="editor-chapter-size" value={form.chapter_size || "md"} onChange={(e) => set("chapter_size", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
+                  <option value="sm">Petite</option>
+                  <option value="md">Moyenne</option>
+                  <option value="lg">Grande</option>
+                  <option value="xl">Très grande</option>
+                </select></div>
+            )}
           </div>
 
           {form.launch_type === "reader" && (

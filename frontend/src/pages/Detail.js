@@ -51,6 +51,16 @@ export default function Detail() {
   const savedProgress = item.launch_type === "chapters" ? (() => { try { return JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) { return null; } })() : null;
   const canResume = savedProgress && ((savedProgress.chapter || 0) > 0 || (savedProgress.ratio || 0) > 0.02);
 
+  const chSize = item.chapter_size || "md";
+  const btnSizeCls = { md: "px-7 py-3.5 text-lg", lg: "px-9 py-4 text-xl", xl: "px-12 py-5 text-2xl" }[item.button_size || "md"];
+  const secondaryBtnCls = { md: "px-5 py-3.5", lg: "px-6 py-4 text-lg", xl: "px-8 py-5 text-xl" }[item.button_size || "md"];
+  const imgGridCls = { sm: "grid-cols-3 sm:grid-cols-4", md: "grid-cols-2 sm:grid-cols-3", lg: "grid-cols-1 sm:grid-cols-2", xl: "grid-cols-1 sm:grid-cols-2" }[chSize];
+  const imgAspectCls = { sm: "aspect-video", md: "aspect-video", lg: "aspect-video", xl: "aspect-[16/7]" }[chSize];
+  const imgTitleCls = { sm: "text-xs", md: "text-sm", lg: "text-base", xl: "text-xl" }[chSize];
+  const rowPadCls = { sm: "p-2", md: "p-3", lg: "p-4", xl: "p-6" }[chSize];
+  const rowNumCls = { sm: "text-base w-6", md: "text-lg w-8", lg: "text-2xl w-10", xl: "text-4xl w-14" }[chSize];
+  const rowTitleCls = { sm: "text-sm", md: "text-base", lg: "text-lg", xl: "text-2xl" }[chSize];
+
   const ytEmbed = (url) => {
     const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
     return m ? `https://www.youtube.com/embed/${m[1]}` : null;
@@ -68,6 +78,16 @@ export default function Detail() {
   };
 
   const openChapter = (i) => { sfx("select"); setReaderStart(i); setChaptersOpen(true); };
+
+  const goToComments = () => {
+    setChaptersOpen(false);
+    setTimeout(() => {
+      const el = document.querySelector('[data-testid="comments-section"]');
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      const input = document.querySelector('[data-testid="comment-text"]');
+      if (input) input.focus();
+    }, 450);
+  };
 
   const doDelete = async () => {
     if (!window.confirm(`Supprimer « ${item.title} » ?`)) return;
@@ -139,20 +159,20 @@ export default function Detail() {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {!item.coming_soon && (
                 <button data-testid="detail-launch" onClick={launch}
-                  className="flex items-center gap-2 px-7 py-3.5 font-semibold text-lg transition-transform hover:scale-105"
+                  className={`flex items-center gap-2 ${btnSizeCls} font-semibold transition-transform hover:scale-105`}
                   style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", boxShadow: "var(--shadow-1)" }}>
                   {item.launch_type === "chapters" ? <IoBookOutline size={20} /> : <IoPlay size={20} />} {item.launch_type === "chapters" && canResume ? `Reprendre · ch. ${(savedProgress.chapter || 0) + 1}` : (item.launch_label || "Lancer")}
                 </button>
               )}
               {item.buy_url && (
                 <a data-testid="detail-buy" href={item.buy_url} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-5 py-3.5 border font-medium" style={btn}>
+                  className={`flex items-center gap-2 ${secondaryBtnCls} border font-medium`} style={btn}>
                   <IoCart size={18} /> Acheter
                 </a>
               )}
               {item.has_audio && (
                 <button data-testid="detail-ambient" onClick={() => { sfx("nav"); playAmbient(item.id); }}
-                  className="flex items-center gap-2 px-5 py-3.5 border font-medium" style={{ ...btn, color: thisPlaying ? "var(--brand)" : "var(--text-primary)" }}>
+                  className={`flex items-center gap-2 ${secondaryBtnCls} border font-medium`} style={{ ...btn, color: thisPlaying ? "var(--brand)" : "var(--text-primary)" }}>
                   {thisPlaying ? <IoPause size={18} /> : <IoMusicalNotes size={18} />} Ambiance
                 </button>
               )}
@@ -166,23 +186,23 @@ export default function Detail() {
                 </div>
 
                 {item.chapter_display === "image" ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className={`grid ${imgGridCls} gap-3`}>
                     {item.chapters.map((c, i) => {
                       const active = savedProgress && (savedProgress.chapter || 0) === i;
                       return (
                         <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
-                          className="group relative aspect-video overflow-hidden text-left transition-transform hover:scale-[1.03]"
+                          className={`group relative ${imgAspectCls} overflow-hidden text-left transition-transform hover:scale-[1.03]`}
                           style={{ borderRadius: "var(--radius-base)", border: active ? "2px solid var(--brand)" : "1px solid rgba(255,255,255,0.15)" }}>
                           {c.image ? <img src={c.image} alt="" className="absolute inset-0 w-full h-full object-cover" />
                             : <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.7))" }} />}
                           <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.1))" }} />
                           <div className="absolute bottom-0 left-0 right-0 p-2.5">
                             <p className="text-[10px] uppercase tracking-widest" style={{ color: "var(--brand)" }}>Ch. {i + 1}{active ? " · en cours" : ""}</p>
-                            <p className="text-sm font-medium line-clamp-2" style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
+                            <p className={`${imgTitleCls} font-medium line-clamp-2`} style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
                           </div>
                           {c.has_music && <IoMusicalNotes size={14} className="absolute top-2 right-2" style={{ color: "#fff" }} />}
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.3)" }}>
-                            <IoPlay size={30} style={{ color: "#fff" }} />
+                            <IoPlay size={34} style={{ color: "#fff" }} />
                           </div>
                         </button>
                       );
@@ -194,11 +214,11 @@ export default function Detail() {
                       const active = savedProgress && (savedProgress.chapter || 0) === i;
                       return (
                         <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
-                          className="flex items-center gap-3 w-full text-left p-3 border transition-colors hover:brightness-110"
+                          className={`flex items-center gap-3 w-full text-left ${rowPadCls} border transition-colors hover:brightness-110`}
                           style={{ borderColor: active ? "var(--brand)" : "rgba(255,255,255,0.15)", borderRadius: "var(--radius-base)", background: "rgba(0,0,0,0.35)" }}>
-                          <span className="font-display text-lg w-8 flex-shrink-0 text-center" style={{ color: "var(--brand)" }}>{i + 1}</span>
+                          <span className={`font-display ${rowNumCls} flex-shrink-0 text-center`} style={{ color: "var(--brand)" }}>{i + 1}</span>
                           <div className="flex-1 min-w-0">
-                            <p className="truncate" style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
+                            <p className={`${rowTitleCls} truncate`} style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
                             {active && <p className="text-[11px]" style={{ color: "var(--brand)" }}>En cours de lecture</p>}
                           </div>
                           {c.has_music && <IoMusicalNotes size={15} style={{ color: "rgba(255,255,255,0.6)" }} />}
@@ -216,9 +236,9 @@ export default function Detail() {
                 <h3 className="font-display text-xl mb-3" style={{ color: "#fff" }}>Épisodes</h3>
                 <div className="space-y-2">
                   {item.episodes.map((ep, i) => (
-                    <div key={ep.id || i} className="flex items-center justify-between p-3 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "var(--bg-secondary)" }}>
+                    <div key={ep.id || i} data-testid={`episode-item-${i}`} className={`flex items-center justify-between ${rowPadCls} border`} style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "var(--bg-secondary)" }}>
                       <div>
-                        <p style={{ color: "var(--text-primary)" }}>{ep.title}</p>
+                        <p className={rowTitleCls} style={{ color: "var(--text-primary)" }}>{ep.title}</p>
                         {ep.description && <p className="text-xs" style={{ color: "var(--text-secondary)" }}>{ep.description}</p>}
                       </div>
                       {ep.url && <a href={ep.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)" }}><IoOpenOutline size={18} /></a>}
@@ -309,7 +329,7 @@ export default function Detail() {
         </div>
       )}
 
-      {chaptersOpen && <ChapterReader item={item} startChapter={readerStart} onClose={() => setChaptersOpen(false)} />}
+      {chaptersOpen && <ChapterReader item={item} startChapter={readerStart} onClose={() => setChaptersOpen(false)} onComment={goToComments} />}
 
       {lightbox && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.92)" }} onClick={() => setLightbox(null)} data-testid="lightbox">

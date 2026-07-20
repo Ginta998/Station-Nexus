@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoMusicalNotes, IoPause, IoText } from "react-icons/io5";
+import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoMusicalNotes, IoPause, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { chapterAudioUrl, readingAudioUrl } from "@/lib/api";
 import { toast } from "sonner";
@@ -27,7 +27,7 @@ const FONTS = {
 const FONT_LABELS = [["serif", "Serif"], ["sans", "Sans"], ["display", "Display"], ["mono", "Mono"]];
 const WIDTHS = { narrow: "max-w-xl", normal: "max-w-2xl", wide: "max-w-4xl" };
 
-export default function ChapterReader({ item, onClose, startChapter = null }) {
+export default function ChapterReader({ item, onClose, startChapter = null, onComment }) {
   const {
     playReadingUrl, toggleReadingUrl, endReading, isPlaying, playingId, sfx,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine,
@@ -98,6 +98,14 @@ export default function ChapterReader({ item, onClose, startChapter = null }) {
 
   const close = () => { endReading(item.id, item.has_audio); onClose(); };
   const go = (d) => { sfx("nav"); setIdx((i) => Math.min(Math.max(i + d, 0), chapters.length - 1)); setToc(false); };
+
+  const wantComment = () => { sfx("select"); onComment ? (endReading(item.id, item.has_audio), onComment()) : toast.info("Commentaires disponibles sur la fiche."); };
+  const shareCreation = async () => {
+    sfx("nav");
+    const url = window.location.href;
+    try { if (navigator.share) { await navigator.share({ title: item.title, text: item.tagline || "", url }); return; } } catch (_) {}
+    try { await navigator.clipboard.writeText(url); toast.success("Lien copié — partage-le !"); } catch (_) { toast.info(url); }
+  };
   const hasMusic = !!trackFor(chap);
   const paras = (chap?.content || "").split(/\n{2,}/).filter(Boolean);
 
@@ -192,6 +200,29 @@ export default function ChapterReader({ item, onClose, startChapter = null }) {
 
             <div className="flex items-center justify-center my-10">
               <span className="font-display text-2xl" style={{ color: "var(--brand)", opacity: 0.5 }}>❧</span>
+            </div>
+
+            {/* end-of-chapter engagement */}
+            <div data-reveal className="reveal text-center px-4 py-8 mb-4" data-testid="reader-engagement"
+              style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-c)", borderRadius: "var(--radius-base)" }}>
+              <p className="font-display mb-1" style={{ fontSize: "1.35em", color: "var(--text-primary)" }}>
+                {idx >= chapters.length - 1 ? "Fin du chapitre — et fin pour l'instant !" : "Fin de ce chapitre"}
+              </p>
+              <p className="text-sm mb-5 max-w-md mx-auto" style={{ color: "var(--text-secondary)" }}>
+                Ce chapitre t'a plu ? Laisse un petit commentaire ou partage « {item.title} » — ça aide énormément la création à vivre. ✨
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button data-testid="reader-comment" onClick={wantComment}
+                  className="flex items-center gap-2 px-5 py-2.5 font-semibold transition-transform hover:scale-105"
+                  style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+                  <IoChatbubbleEllipsesOutline size={18} /> Commenter
+                </button>
+                <button data-testid="reader-share" onClick={shareCreation}
+                  className="flex items-center gap-2 px-5 py-2.5 border font-medium transition-transform hover:scale-105"
+                  style={{ borderColor: "var(--border-c)", color: "var(--text-primary)", borderRadius: "var(--radius-base)" }}>
+                  <IoShareSocialOutline size={18} /> Partager
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center justify-between mt-4 pt-8 border-t" style={{ borderColor: "var(--border-c)" }}>

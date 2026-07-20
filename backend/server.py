@@ -75,6 +75,8 @@ class Creation(BaseModel):
     launch_url: Optional[str] = ""
     buy_url: Optional[str] = ""
     chapter_display: str = "button"  # button | image — how chapters show on the detail page
+    chapter_size: str = "md"         # sm | md | lg | xl — size of chapter/episode cards on the fiche
+    button_size: str = "md"          # md | lg — size of the main action buttons
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     has_audio: bool = False
@@ -106,6 +108,8 @@ class CreationInput(BaseModel):
     launch_url: Optional[str] = ""
     buy_url: Optional[str] = ""
     chapter_display: str = "button"
+    chapter_size: str = "md"
+    button_size: str = "md"
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     coming_soon: bool = False
