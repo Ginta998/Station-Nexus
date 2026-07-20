@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoHome, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube } from "react-icons/io5";
+import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube } from "react-icons/io5";
 import { toast } from "sonner";
 import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
@@ -95,6 +95,7 @@ export default function Detail() {
           </div>
           <div className="flex items-center gap-2">
             <ShareMenu item={item} cardRef={cardRef} />
+            <button data-testid="detail-settings" onClick={() => { sfx("nav"); nav("/parametres"); }} className="p-2.5 border" style={btn}><IoSettingsOutline size={18} /></button>
             {isAdmin && (
               <>
                 <button data-testid="detail-edit" onClick={() => setEditorOpen(true)} className="p-2.5 border" style={btn}><IoCreateOutline size={18} /></button>
