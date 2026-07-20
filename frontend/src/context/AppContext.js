@@ -8,7 +8,7 @@ export const useApp = () => useContext(AppContext);
 const LS = {
   theme: "sx_theme", pin: "sx_pin", admin: "sx_admin", music: "sx_musicvolume", ui: "sx_uivolume",
   mute: "sx_mute", pack: "sx_soundpack", custom: "sx_customsounds", ambience: "sx_ambience",
-  accent: "sx_accent", radius: "sx_radius", posterSize: "sx_postersize", motion: "sx_motion", cardTagline: "sx_cardtagline",
+  accent: "sx_accent", radius: "sx_radius", posterSize: "sx_postersize", motion: "sx_motion", cardTagline: "sx_cardtagline", textScale: "sx_textscale",
   rFont: "sx_reader_font", rSize: "sx_reader_size", rLine: "sx_reader_line", rWidth: "sx_reader_width", rDrop: "sx_reader_dropcap",
 };
 const DEFAULT_PIN = "1234";
@@ -50,6 +50,7 @@ export function AppProvider({ children }) {
   const [posterSize, setPosterSizeState] = useState(() => localStorage.getItem(LS.posterSize) || "normal");
   const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
   const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
+  const [textScale, setTextScaleState] = useState(() => localStorage.getItem(LS.textScale) || "normal");
 
   // ---- reader (chapter) preferences ----
   const [readerFont, setReaderFontState] = useState(() => localStorage.getItem(LS.rFont) || "serif");
@@ -87,6 +88,7 @@ export function AppProvider({ children }) {
   useEffect(() => { document.documentElement.setAttribute("data-poster", posterSize); }, [posterSize]);
   useEffect(() => { document.documentElement.setAttribute("data-motion", reduceMotion ? "reduced" : "full"); }, [reduceMotion]);
   useEffect(() => { document.documentElement.setAttribute("data-card-tagline", cardTagline ? "on" : "off"); }, [cardTagline]);
+  useEffect(() => { document.documentElement.setAttribute("data-textscale", textScale); }, [textScale]);
 
   useEffect(() => { configureSound({ pack: soundPack, muted, custom: customSounds, volume: uiVolume }); }, [soundPack, muted, customSounds, uiVolume]);
   useEffect(() => {
@@ -152,6 +154,7 @@ export function AppProvider({ children }) {
   const setPosterSize = (v) => { setPosterSizeState(v); localStorage.setItem(LS.posterSize, v); };
   const setReduceMotion = (v) => { setReduceMotionState(v); localStorage.setItem(LS.motion, v ? "1" : "0"); };
   const setCardTagline = (v) => { setCardTaglineState(v); localStorage.setItem(LS.cardTagline, v ? "1" : "0"); };
+  const setTextScale = (v) => { setTextScaleState(v); localStorage.setItem(LS.textScale, v); };
 
   const setReaderFont = (v) => { setReaderFontState(v); localStorage.setItem(LS.rFont, v); };
   const setReaderSize = (v) => { setReaderSizeState(v); localStorage.setItem(LS.rSize, String(v)); };
@@ -273,7 +276,7 @@ export function AppProvider({ children }) {
     ambienceId, selectAmbience, appPlaying,
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
     playReadingUrl, toggleReadingUrl,
-    accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline,
+    accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine, readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

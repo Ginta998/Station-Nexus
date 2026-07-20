@@ -247,7 +247,7 @@ function IntroManager() {
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
-    accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline } = useApp();
+    accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale } = useApp();
   const [pin, setPin] = useState(""); const [newPin, setNewPin] = useState("");
   const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const defTheme = siteSettings?.default_theme || "tengoku";
@@ -273,6 +273,13 @@ export default function Settings() {
   ];
   const RADII = [{ v: "", label: "Thème" }, { v: "0px", label: "Net" }, { v: "10px", label: "Arrondi" }, { v: "18px", label: "Doux" }, { v: "999px", label: "Pilule" }];
   const POSTERS = [{ v: "compact", label: "Compact" }, { v: "normal", label: "Normal" }, { v: "grand", label: "Grand" }];
+  const TEXT_SCALES = [
+    { v: "normal", label: "Normal", pct: "A" },
+    { v: "grand", label: "Grand", pct: "A" },
+    { v: "xl", label: "Très grand", pct: "A" },
+    { v: "max", label: "Maximum", pct: "A" },
+  ];
+  const TEXT_SCALE_SIZE = { normal: 15, grand: 18, xl: 22, max: 26 };
 
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
@@ -357,6 +364,24 @@ export default function Settings() {
 
         <Section title="Écran de démarrage" extra="— intro type PS2 / Steam">
           <IntroManager />
+        </Section>
+
+        <Section title="Accessibilité" extra="— confort de lecture">
+          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Taille du texte</p>
+          <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Agrandit tout le texte de l'application (descriptions, commentaires, chapitres, épisodes…).</p>
+          <div className="flex flex-wrap items-stretch gap-2 mb-2" data-testid="text-scale-grid">
+            {TEXT_SCALES.map((t) => {
+              const active = (textScale || "normal") === t.v;
+              return (
+                <button key={t.v} data-testid={`text-scale-${t.v}`} onClick={() => { setTextScale(t.v); sfx("nav"); }}
+                  className="flex-1 min-w-[70px] border flex flex-col items-center justify-center gap-1 py-3 px-2 transition-transform hover:scale-[1.02]"
+                  style={{ background: "var(--bg-secondary)", borderRadius: "var(--radius-base)", outline: active ? "2px solid var(--brand)" : "none", color: "var(--text-primary)" }}>
+                  <span className="font-display leading-none" style={{ fontSize: TEXT_SCALE_SIZE[t.v] }}>{t.pct}</span>
+                  <span className="text-xs" style={{ color: active ? "var(--brand)" : "var(--text-secondary)" }}>{t.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </Section>
 
         {isAdmin && (

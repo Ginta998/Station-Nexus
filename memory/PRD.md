@@ -43,6 +43,16 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 15 (2026-07-20)
+- **Accessibilité — Taille du texte globale** (demande utilisateur myope : « normaliser » le zoom du lecteur à toute l'app car descriptions/commentaires/chapitres trop petits). Nouveau réglage `textScale` (localStorage `sx_textscale`) avec 4 niveaux : Normal / Grand (112,5 %) / Très grand (125 %) / Maximum (140 %). Appliqué via `font-size` racine sur `<html>` (attribut `data-textscale`) → tout le texte en rem grandit (descriptions, synopsis, commentaires, chapitres/épisodes, chrome UI). Le lecteur de chapitres garde son propre réglage px (orthogonal).
+- **Affiches neutralisées** : largeurs `.sx-poster` exprimées en `calc(rem / var(--text-scale))` pour que l'échelle de texte n'agrandisse PAS le rail d'affiches (elles gardent leur propre réglage « Taille des affiches »).
+- **Section « Accessibilité » visible par tous** (hors gate admin) dans Paramètres, avant la personnalisation admin. Contrôle `text-scale-{normal|grand|xl|max}`.
+- Vérifié via screenshots : persistance (sx_textscale=xl, root 16→20px), visible en mode visiteur, texte agrandi sur Home/Detail, aucun débordement horizontal mobile (390=390), affiches stables.
+
+## À TESTER (hérité, non validé par testing_agent)
+- `chapter_size` + `button_size` (tailles cartes/boutons chapitres sur la fiche) et bloc d'engagement (Commenter/Partager) en fin de chapitre : code en place, vérifié visuellement en session précédente mais PAS encore validé par le testing_agent (interruption crédit).
+
+
 ## Implemented — Itération 14 (2026-07-20)
 - **Police Tengoku → Anton** (sans-serif condensé impactant) : `--font-display` du thème Tengoku (et `:root`) passé de « Bodoni Moda » à « Anton » (déjà chargée dans index.html). Logo STATIONEXUS + titres en Anton.
 - **Nouveau thème « Horizon »** (13e) : « la mer & la douceur » — bleu-vert `#1f8a8c`, blanc cassé `#f1efe7`, rouge pâle `#e08d8d`, coins arrondis (1rem), ombres douces, titre Cormorant Garamond italique. Ajouté dans index.css + swatch dans themes.js. Lisible (texte sur média blanc global).
