@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull } from "@/lib/api";
+import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio } from "@/lib/api";
+import RichTextEditor from "@/components/RichTextEditor";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
@@ -23,12 +24,13 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const [saving, setSaving] = useState(false);
   const [audioFile, setAudioFile] = useState(null);
   const [readingFile, setReadingFile] = useState(null);
+  const [chapterFiles, setChapterFiles] = useState({});
   const posterInput = useRef(null);
 
   useEffect(() => {
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
-      setForm(base); setAudioFile(null); setReadingFile(null);
+      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({});
       // fetch full item (with base64 images) so editing preserves poster/bg/gallery/chapters
       if (initial && initial.id) {
         getCreationFull(initial.id).then((full) => setForm((f) => ({ ...empty, ...full }))).catch(() => {});
@@ -44,9 +46,16 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const updEp = (i, k, v) => set("episodes", form.episodes.map((e, x) => (x === i ? { ...e, [k]: v } : e)));
   const delEp = (i) => set("episodes", form.episodes.filter((_, x) => x !== i));
 
-  const addCh = () => set("chapters", [...(form.chapters || []), { title: "", content: "", image: "" }]);
+  const addCh = () => set("chapters", [...(form.chapters || []), { title: "", content: "", image: "", rich: true, has_music: false }]);
   const updCh = (i, k, v) => set("chapters", form.chapters.map((c, x) => (x === i ? { ...c, [k]: v } : c)));
-  const delCh = (i) => set("chapters", form.chapters.filter((_, x) => x !== i));
+  const delCh = (i) => { set("chapters", form.chapters.filter((_, x) => x !== i)); setChapterFiles((f) => { const n = { ...f }; delete n[i]; return n; }); };
+  const removeChapterMusic = async (i) => {
+    const ch = form.chapters[i];
+    if (isEdit && ch?.id) { try { await deleteChapterAudio(initial.id, ch.id); } catch (_) {} }
+    updCh(i, "has_music", false);
+    setChapterFiles((f) => { const n = { ...f }; delete n[i]; return n; });
+    toast.success("Musique du chapitre retirée");
+  };
 
   const addGallery = (files) => {
     [...files].slice(0, 12).forEach((f) => readFile(f, (d) => setForm((p) => ({ ...p, gallery: [...(p.gallery || []), d] })), 4));
@@ -65,6 +74,12 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
       const saved = isEdit ? await updateCreation(initial.id, payload) : await createCreation(payload);
       if (audioFile) await uploadAudio(saved.id, audioFile);
       if (readingFile) await uploadReadingAudio(saved.id, readingFile);
+      // per-chapter music (chapters keep order → match by index to saved.chapters)
+      const chFiles = Object.entries(chapterFiles);
+      for (const [i, file] of chFiles) {
+        const ch = saved.chapters?.[Number(i)];
+        if (ch && file) { try { await uploadChapterAudio(saved.id, ch.id, file); } catch (_) { toast.error(`Musique du chapitre ${Number(i) + 1} trop lourde (max 12 Mo) ?`); } }
+      }
       toast.success(isEdit ? "Création mise à jour" : "Création ajoutée");
       onSaved?.(); onClose();
     } catch { toast.error("Erreur lors de l'enregistrement"); } finally { setSaving(false); }
@@ -197,9 +212,20 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
                         <IoImageOutline style={{ color: ch.image ? "var(--brand)" : "var(--text-secondary)" }} />
                         <input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0], (d) => updCh(i, "image", d), 4)} />
                       </label>
-                      <button onClick={() => delCh(i)} style={{ color: "var(--brand)" }}><IoTrashOutline /></button>
+                      <button onClick={() => delCh(i)} style={{ color: "var(--brand)" }} data-testid={`editor-chapter-delete-${i}`}><IoTrashOutline /></button>
                     </div>
-                    <textarea value={ch.content} onChange={(e) => updCh(i, "content", e.target.value)} rows={3} placeholder="Contenu (sépare les paragraphes par une ligne vide)" className="w-full px-2 py-1.5 border outline-none text-sm resize-none" style={fs} />
+                    <RichTextEditor value={ch.rich ? (ch.content || "") : (ch.content ? ch.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : "")}
+                      onChange={(html) => setForm((f) => ({ ...f, chapters: f.chapters.map((c, x) => (x === i ? { ...c, content: html, rich: true } : c)) }))} />
+                    {/* per-chapter music */}
+                    <div className="flex items-center gap-2 flex-wrap pt-1">
+                      <label className="flex items-center gap-2 px-3 py-1.5 border cursor-pointer text-xs" style={fs} data-testid={`editor-chapter-music-${i}`}>
+                        <IoMusicalNotes style={{ color: (chapterFiles[i] || ch.has_music) ? "var(--brand)" : "var(--text-secondary)" }} />
+                        {chapterFiles[i]?.name || (ch.has_music ? "Musique du chapitre — remplacer" : "Musique de ce chapitre (max 12 Mo)")}
+                        <input type="file" accept="audio/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) setChapterFiles((cf) => ({ ...cf, [i]: f })); }} />
+                      </label>
+                      {(ch.has_music || chapterFiles[i]) && <button onClick={() => removeChapterMusic(i)} className="text-xs" style={{ color: "var(--brand)" }} data-testid={`editor-chapter-music-remove-${i}`}><IoTrashOutline /></button>}
+                    </div>
+                    <p className="text-[10px]" style={{ color: "var(--text-secondary)" }}>Astuce : sans musique propre, ce chapitre reprend la musique de lecture générale de l'œuvre.</p>
                   </div>
                 ))}
               </div>

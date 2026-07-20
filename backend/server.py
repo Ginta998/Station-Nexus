@@ -44,6 +44,8 @@ class Chapter(BaseModel):
     title: str
     content: Optional[str] = ""
     image: Optional[str] = ""  # data uri / url
+    rich: bool = False          # content is sanitized HTML (WYSIWYG) vs plain text
+    has_music: bool = False     # dedicated per-chapter reading music
 
 
 class Embed(BaseModel):
@@ -270,6 +272,7 @@ async def delete_creation(cid: str):
         raise HTTPException(404, "Création introuvable")
     await db.media.delete_many({"creation_id": cid})
     await db.reading_media.delete_many({"creation_id": cid})
+    await db.chapter_media.delete_many({"creation_id": cid})
     await db.comments.delete_many({"creation_id": cid})
     return {"ok": True}
 
@@ -329,6 +332,47 @@ async def stream_reading_audio(cid: str):
 async def delete_reading_audio(cid: str):
     await db.reading_media.delete_many({"creation_id": cid})
     await db.creations.update_one({"id": cid}, {"$set": {"has_reading_audio": False}})
+    return {"ok": True}
+
+
+# ---------------- Per-chapter reading music ----------------
+async def _set_chapter_music(cid: str, chid: str, value: bool):
+    cr = await db.creations.find_one({"id": cid})
+    if not cr:
+        raise HTTPException(404, "Création introuvable")
+    chapters = cr.get("chapters", [])
+    if not any((c.get("id") == chid) for c in chapters):
+        raise HTTPException(404, "Chapitre introuvable")
+    for c in chapters:
+        if c.get("id") == chid:
+            c["has_music"] = value
+    await db.creations.update_one({"id": cid}, {"$set": {"chapters": chapters}})
+
+
+@api_router.post("/creations/{cid}/chapters/{chid}/audio")
+async def upload_chapter_audio(cid: str, chid: str, file: UploadFile = File(...)):
+    data = await file.read()
+    if len(data) > MAX_AUDIO_BYTES:
+        raise HTTPException(413, "Fichier audio trop volumineux (max 12 Mo)")
+    await _set_chapter_music(cid, chid, True)
+    b64 = base64.b64encode(data).decode("utf-8")
+    await db.chapter_media.update_one({"creation_id": cid, "chapter_id": chid},
+        {"$set": {"creation_id": cid, "chapter_id": chid, "data": b64, "content_type": file.content_type or "audio/mpeg"}}, upsert=True)
+    return {"ok": True}
+
+
+@api_router.get("/creations/{cid}/chapters/{chid}/audio")
+async def stream_chapter_audio(cid: str, chid: str):
+    media = await db.chapter_media.find_one({"creation_id": cid, "chapter_id": chid}, {"_id": 0})
+    if not media:
+        raise HTTPException(404, "Aucune musique de chapitre")
+    return Response(content=base64.b64decode(media["data"]), media_type=media.get("content_type", "audio/mpeg"))
+
+
+@api_router.delete("/creations/{cid}/chapters/{chid}/audio")
+async def delete_chapter_audio(cid: str, chid: str):
+    await db.chapter_media.delete_many({"creation_id": cid, "chapter_id": chid})
+    await _set_chapter_music(cid, chid, False)
     return {"ok": True}
 
 

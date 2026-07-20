@@ -205,3 +205,33 @@ body {
 
 /* Hide taglines on poster cards */
 [data-card-tagline="off"] .sx-card-tagline { display: none; }
+
+
+/* ===== Rich text editor (WYSIWYG) ===== */
+.rte-area:empty:before { content: attr(data-placeholder); color: var(--text-secondary); pointer-events: none; }
+.rte-area h2 { font-family: var(--font-display); font-size: 1.5em; margin: 0.6em 0 0.3em; }
+.rte-area h3 { font-family: var(--font-display); font-size: 1.2em; margin: 0.6em 0 0.3em; opacity: 0.9; }
+.rte-area blockquote { border-left: 3px solid var(--brand); padding-left: 0.8em; margin: 0.6em 0; font-style: italic; opacity: 0.9; }
+.rte-area hr { border: none; border-top: 1px solid var(--border-c); margin: 1em 0; }
+.rte-area p { margin: 0.5em 0; }
+
+/* ===== Reader rich content ===== */
+.reader-rich > *:first-child { margin-top: 0; }
+.reader-rich p { margin: 0 0 1.1em; }
+.reader-rich h2 { font-family: var(--font-display); font-size: 1.7em; line-height: 1.2; margin: 1.4em 0 0.5em; color: var(--text-primary); }
+.reader-rich h3 { font-family: var(--font-display); font-size: 1.3em; line-height: 1.25; margin: 1.2em 0 0.4em; color: var(--brand); }
+.reader-rich blockquote {
+  border-left: 3px solid var(--brand); padding: 0.2em 0 0.2em 1.1em; margin: 1.4em 0;
+  font-style: italic; font-size: 1.05em; opacity: 0.92;
+}
+.reader-rich hr {
+  border: none; height: 1px; margin: 2em auto; width: 40%;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+}
+.reader-rich strong { font-weight: 700; }
+.reader-rich em { font-style: italic; }
+.reader-rich a { color: var(--brand); text-decoration: underline; }
+.reader-rich[data-dropcap="on"] > p:first-of-type::first-letter {
+  font-family: var(--font-display); float: left; font-size: 3.4em; line-height: 0.8;
+  padding: 6px 12px 0 0; color: var(--brand);
+}

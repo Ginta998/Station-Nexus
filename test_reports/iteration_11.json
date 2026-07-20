@@ -1,0 +1,54 @@
+{
+  "summary": "Iteration 11 testing complete. Full backend + frontend validation of per-chapter music, WYSIWYG rich chapters, and reader preferences panel. 7/7 backend pytest cases pass. Frontend flows all green: chapter reader opens, prefs persist to localStorage across reload, dropcap renders on legacy plain-text chapters, WYSIWYG editor applies bold+H2 and preserves images on save (backend round-trip test proves poster/bg not wiped). Mobile detail no horizontal overflow. All required data-testids present.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration11.py",
+    "/app/test_reports/pytest/iter11.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py is 659 lines — approaching the 700-line guideline; consider splitting routers by resource (creations, chapters, ambiences, settings) into modules.",
+    "RichTextEditor uses deprecated document.execCommand — functional today but flagged obsolete by browsers; consider migrating to a modern rich-text lib (Tiptap/ProseMirror/Lexical) before it degrades further.",
+    "sanitize() in RichTextEditor is very light (regex-based, only strips <script>/<style>/on-attrs). Since content is rendered via dangerouslySetInnerHTML in ChapterReader, an XSS-hardened sanitizer like DOMPurify would be safer, even for a single-user app.",
+    "In ChapterReader.trackFor useEffect, the dependency array is [idx] only (with eslint-disable); if item.has_reading_audio flips or chapter has_music updates without idx changing, the track won't re-resolve. Minor edge case.",
+    "Chapter model default has_music=false is fine, but the backend does not currently expose an endpoint to bulk-migrate legacy chapters — not required, just noting."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration11.py"
+  ],
+  "success_rate": {"backend": "100% (7/7)", "frontend": "100% of tested flows"},
+  "test_credentials": "Admin PIN 1234; unlock via localStorage sx_admin=1 + sx_pin=1234",
+  "seed_data_creation": "test_iteration11.py creates temp creations (TEST_iter11_book, TEST_iter11_cleanup) with poster+bg data URIs and 2 chapters; cleaned up in fixture teardown / test.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend URL is https://tengoku-launcher.preview.emergentagent.com. Bypass intro with localStorage sx_intro_off=1 + sessionStorage sx_intro_shown=1. Admin via localStorage sx_admin=1 + sx_pin=1234. Home card requires click-then-Enter (or Enter) to navigate to /oeuvre/{id}; single click only focuses the card. Backend chapter audio endpoints: POST/GET/DELETE /api/creations/{cid}/chapters/{chid}/audio — verified with 200/404/413. rich round-trip: PUT /api/creations/{cid} with chapter.rich=true and HTML content persists as-is; poster/bg preserved when caller sends them back (which frontend does via getCreationFull's media=1). All reader-prefs keys write to localStorage: sx_reader_font/size/line/width/dropcap; line only persists if changed by user.",
+  "detailed_verifications": {
+    "backend": {
+      "list_light_payload_bytes_check": "PASS (< 200KB)",
+      "poster_bg_endpoints_serve_image": "PASS (image/* content-type)",
+      "chapter_audio_upload_stream_delete_cycle": "PASS (has_music toggles true→false, other chapter unaffected)",
+      "chapter_audio_404_bad_chapter_id": "PASS",
+      "chapter_audio_413_over_12MB": "PASS",
+      "rich_chapter_roundtrip_and_image_preservation": "PASS (poster+bg still data:image/* after PUT with rich HTML)",
+      "chapter_media_cleanup_on_creation_delete": "PASS (GET returns 404 after DELETE creation)"
+    },
+    "frontend": {
+      "detail_testids_present": "detail-back, detail-home, detail-share, detail-settings, detail-launch all count=1",
+      "chapter_reader_opens": "data-testid=chapter-reader present after detail-launch click",
+      "legacy_plain_text_renders_as_paragraphs": "reader-rich count=0, 3 <p> in reader-pane; dropcap visible on first paragraph",
+      "reader_prefs_persist_localStorage": "sx_reader_font=sans, sx_reader_size=24, sx_reader_width=wide, sx_reader_dropcap=0 all survive reload",
+      "wysiwyg_editor_bold_h2": "'<h2><span style=\"font-weight: bold;\">Hello world</span></h2>' produced correctly",
+      "editor_chapter_music_ui": "editor-chapter-music-0 testid present for existing chapter",
+      "mobile_home_cards_first_render": "13 poster testids on 390x844 viewport",
+      "mobile_detail_no_horizontal_overflow": "documentElement.scrollWidth == window.innerWidth == 390"
+    }
+  }
+}

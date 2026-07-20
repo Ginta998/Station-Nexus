@@ -9,6 +9,7 @@ const LS = {
   theme: "sx_theme", pin: "sx_pin", admin: "sx_admin", music: "sx_musicvolume", ui: "sx_uivolume",
   mute: "sx_mute", pack: "sx_soundpack", custom: "sx_customsounds", ambience: "sx_ambience",
   accent: "sx_accent", radius: "sx_radius", posterSize: "sx_postersize", motion: "sx_motion", cardTagline: "sx_cardtagline",
+  rFont: "sx_reader_font", rSize: "sx_reader_size", rLine: "sx_reader_line", rWidth: "sx_reader_width", rDrop: "sx_reader_dropcap",
 };
 const DEFAULT_PIN = "1234";
 
@@ -49,6 +50,13 @@ export function AppProvider({ children }) {
   const [posterSize, setPosterSizeState] = useState(() => localStorage.getItem(LS.posterSize) || "normal");
   const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
   const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
+
+  // ---- reader (chapter) preferences ----
+  const [readerFont, setReaderFontState] = useState(() => localStorage.getItem(LS.rFont) || "serif");
+  const [readerSize, setReaderSizeState] = useState(() => { const v = parseInt(localStorage.getItem(LS.rSize)); return Number.isFinite(v) ? v : 20; });
+  const [readerLine, setReaderLineState] = useState(() => { const v = parseFloat(localStorage.getItem(LS.rLine)); return Number.isFinite(v) ? v : 1.9; });
+  const [readerWidth, setReaderWidthState] = useState(() => localStorage.getItem(LS.rWidth) || "normal");
+  const [readerDropcap, setReaderDropcapState] = useState(() => localStorage.getItem(LS.rDrop) !== "0");
 
   // creation ambient
   const [playingId, setPlayingId] = useState(null);
@@ -145,6 +153,12 @@ export function AppProvider({ children }) {
   const setReduceMotion = (v) => { setReduceMotionState(v); localStorage.setItem(LS.motion, v ? "1" : "0"); };
   const setCardTagline = (v) => { setCardTaglineState(v); localStorage.setItem(LS.cardTagline, v ? "1" : "0"); };
 
+  const setReaderFont = (v) => { setReaderFontState(v); localStorage.setItem(LS.rFont, v); };
+  const setReaderSize = (v) => { setReaderSizeState(v); localStorage.setItem(LS.rSize, String(v)); };
+  const setReaderLine = (v) => { setReaderLineState(v); localStorage.setItem(LS.rLine, String(v)); };
+  const setReaderWidth = (v) => { setReaderWidthState(v); localStorage.setItem(LS.rWidth, v); };
+  const setReaderDropcap = (v) => { setReaderDropcapState(v); localStorage.setItem(LS.rDrop, v ? "1" : "0"); };
+
   const unlock = (pin) => {
     if (pin === (localStorage.getItem(LS.pin) || DEFAULT_PIN)) {
       setIsAdmin(true); localStorage.setItem(LS.admin, "1"); return true;
@@ -213,6 +227,32 @@ export function AppProvider({ children }) {
       .catch(() => { setPlayingId(key); setIsPlaying(false); });
   }, [playingId, isPlaying, muted, musicVolume, stopAppAmbience]);
 
+  // Play a specific reading track (per-chapter music). Fades between sources and
+  // dedupes so switching chapters that share the same fallback track won't restart it.
+  const playReadingUrl = useCallback((url, key) => {
+    const a = cardAudio.current; if (!a) return;
+    cardActiveRef.current = true;      // own the channel; blocks app ambience
+    stopAppAmbience(true);
+    if (!url) {                        // no track -> immersive silence
+      if (!a.paused) fadeTo(a, 0, 200, () => a.pause());
+      a.dataset.rsrc = ""; setIsPlaying(false); setPlayingId(key); return;
+    }
+    // already playing this exact source: just keep going
+    if (!a.paused && a.dataset.rsrc === url) { setPlayingId(key); setIsPlaying(true); return; }
+    const swap = () => {
+      a.src = url; a.dataset.rsrc = url; a.volume = 0;
+      a.play().then(() => { setPlayingId(key); setIsPlaying(true); if (!muted) fadeTo(a, musicVolume, 400); })
+        .catch(() => { setPlayingId(key); setIsPlaying(false); });
+    };
+    if (!a.paused) fadeTo(a, 0, 200, swap); else swap();
+  }, [muted, musicVolume, stopAppAmbience]);
+
+  const toggleReadingUrl = useCallback((url, key) => {
+    const a = cardAudio.current; if (!a) return;
+    if (playingId === key && isPlaying) { fadeTo(a, 0, 200, () => a.pause()); setIsPlaying(false); return; }
+    playReadingUrl(url, key);
+  }, [playingId, isPlaying, playReadingUrl]);
+
   // Called when leaving the chapter reader: restore the card ambient (or app ambience).
   const endReading = useCallback((creationId, hasCardAudio) => {
     const a = cardAudio.current;
@@ -232,7 +272,9 @@ export function AppProvider({ children }) {
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
+    playReadingUrl, toggleReadingUrl,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline,
+    readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine, readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

@@ -28,6 +28,13 @@ export const uploadReadingAudio = (id, file) => {
 export const deleteReadingAudio = (id) => api.delete(`/creations/${id}/reading-audio`).then((r) => r.data);
 export const readingAudioUrl = (id) => `${API}/creations/${id}/reading-audio`;
 
+export const uploadChapterAudio = (cid, chid, file) => {
+  const fd = new FormData(); fd.append("file", file);
+  return api.post(`/creations/${cid}/chapters/${chid}/audio`, fd).then((r) => r.data);
+};
+export const deleteChapterAudio = (cid, chid) => api.delete(`/creations/${cid}/chapters/${chid}/audio`).then((r) => r.data);
+export const chapterAudioUrl = (cid, chid) => `${API}/creations/${cid}/chapters/${chid}/audio`;
+
 // categories
 export const listCategories = () => api.get("/categories").then((r) => r.data);
 export const createCategory = (p) => api.post("/categories", p).then((r) => r.data);
