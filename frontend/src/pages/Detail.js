@@ -9,6 +9,7 @@ import EditorDialog from "@/components/EditorDialog";
 import CommentsSection from "@/components/CommentsSection";
 import ChapterReader from "@/components/ChapterReader";
 import ShareMenu from "@/components/ShareMenu";
+import { TextSizeButton } from "@/components/TextSizeButton";
 
 export default function Detail() {
   const { id } = useParams();
@@ -119,6 +120,7 @@ export default function Detail() {
             </button>
           </div>
           <div className="flex items-center gap-2">
+            <TextSizeButton btnStyle={btn} />
             <ShareMenu item={item} cardRef={cardRef} />
             <button data-testid="detail-settings" onClick={() => { sfx("nav"); nav("/parametres"); }} className="p-2.5 border" style={btn}><IoSettingsOutline size={18} /></button>
             {isAdmin && (

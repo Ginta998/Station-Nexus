@@ -1,0 +1,44 @@
+{
+  "summary": "Iteration 12 — frontend only. Validated the new global accessibility 'Taille du texte' feature (TopBar + Detail + Settings) end-to-end, plus revalidated two legacy features not previously covered: chapter_size/button_size editor round-trip persistence, and the end-of-chapter engagement block in ChapterReader (reader-comment / reader-share). All 16 UI/integration assertions passed with no console errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "TextSizeButton menu close on click-outside uses mousedown; touch users on iOS may need a touch handler too (works today via synthesized mouse events but worth noting).",
+    "Detail.js renders TextSizeButton with borderRadius from --radius-base but omits the shared border in the same way as siblings — visually consistent; no action needed.",
+    "Settings.js is now ~475 lines and still growing (Accessibility, Intro, Ambience, Categories all in one file) — recommended to split into separate manager files for maintainability."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped per request)", "frontend": "100% (16/16 checks)"},
+  "test_credentials": "Admin PIN 1234 via localStorage sx_admin=1 + sx_pin=1234. Intro bypass: sx_intro_off=1 + sessionStorage sx_intro_shown=1.",
+  "seed_data_creation": "None. Reused existing 'Born X Burn' (chapters, not coming_soon) for regression tests; button_size/chapter_size were toggled to 'xl' as part of the persistence test (main agent may want to reset to previous value).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "TextSizeButton mounted in TopBar (Accueil) and Detail action bar. Default textscale='grand' when localStorage.sx_textscale is missing. Root font-size at scales: normal=16, grand=18, xl=20, max=22.4. LocalStorage key 'sx_textscale' persists selection across reload. Settings section 'Accessibilité' (data-testid=text-scale-grid) is available to visitors even without admin. Posters use .sx-poster with width divided by --text-scale, so no mobile horizontal overflow at max scale (verified sw==iw==390). Editor selects editor-button-size/editor-chapter-size round-trip through PUT /api/creations/{id}. Reader engagement block (reader-engagement with reader-comment + reader-share) renders before reader-prev/reader-next in the article, verified via DOM position. reader-comment closes reader and scrolls to comments-section.",
+  "detailed_verifications": {
+    "text_size_feature": {
+      "default_grand_no_ls": "PASS (data-textscale='grand')",
+      "topbar_button_present": "PASS",
+      "menu_opens_with_4_options": "PASS (normal/grand/xl/max)",
+      "grand_highlighted_by_default": "PASS (brand background)",
+      "select_max_applies_root_fontsize_22.4": "PASS",
+      "localStorage_sx_textscale_persisted": "PASS",
+      "survives_reload": "PASS",
+      "no_horizontal_overflow_mobile_390_at_max": "PASS (scrollWidth==innerWidth==390)",
+      "text_size_button_on_detail_page": "PASS",
+      "menu_opens_on_detail": "PASS",
+      "change_from_detail_updates_root_and_attr": "PASS (normal → 16px)",
+      "settings_text_scale_grid_visible_to_visitor": "PASS",
+      "settings_xl_applies_and_persists": "PASS"
+    },
+    "regression_legacy": {
+      "editor_button_size_and_chapter_size_selects_present": "PASS",
+      "PUT_creation_persists_button_size_and_chapter_size": "PASS (both 'xl' persisted after save)",
+      "chapter_reader_opens_via_detail_launch": "PASS",
+      "reader_engagement_block_with_comment_share_present": "PASS",
+      "engagement_before_prev_next_in_DOM": "PASS",
+      "reader_comment_navigates_to_comments_section": "PASS"
+    }
+  }
+}

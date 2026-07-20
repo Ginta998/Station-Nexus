@@ -50,7 +50,7 @@ export function AppProvider({ children }) {
   const [posterSize, setPosterSizeState] = useState(() => localStorage.getItem(LS.posterSize) || "normal");
   const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
   const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
-  const [textScale, setTextScaleState] = useState(() => localStorage.getItem(LS.textScale) || "normal");
+  const [textScale, setTextScaleState] = useState(() => localStorage.getItem(LS.textScale) || "grand");
 
   // ---- reader (chapter) preferences ----
   const [readerFont, setReaderFontState] = useState(() => localStorage.getItem(LS.rFont) || "serif");

@@ -371,7 +371,7 @@ export default function Settings() {
           <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Agrandit tout le texte de l'application (descriptions, commentaires, chapitres, épisodes…).</p>
           <div className="flex flex-wrap items-stretch gap-2 mb-2" data-testid="text-scale-grid">
             {TEXT_SCALES.map((t) => {
-              const active = (textScale || "normal") === t.v;
+              const active = (textScale || "grand") === t.v;
               return (
                 <button key={t.v} data-testid={`text-scale-${t.v}`} onClick={() => { setTextScale(t.v); sfx("nav"); }}
                   className="flex-1 min-w-[70px] border flex flex-col items-center justify-center gap-1 py-3 px-2 transition-transform hover:scale-[1.02]"
