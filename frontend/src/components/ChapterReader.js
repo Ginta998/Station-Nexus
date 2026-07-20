@@ -120,20 +120,20 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
 
       {/* header */}
       <div className="relative z-10 flex items-center justify-between px-4 md:px-8 py-3 border-b" style={{ borderColor: "var(--border-c)", background: "rgba(0,0,0,0.25)", backdropFilter: "blur(8px)" }}>
-        <button data-testid="reader-toc-toggle" onClick={() => { sfx("nav"); setToc((v) => !v); }} className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-primary)" }}>
-          <IoListOutline size={20} /> <span className="hidden sm:inline">Sommaire</span>
+        <button data-testid="reader-toc-toggle" onClick={() => { sfx("nav"); setToc((v) => !v); }} className="flex items-center gap-2 px-3.5 py-2.5 border text-base" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }}>
+          <IoListOutline size={24} /> <span className="hidden sm:inline">Sommaire</span>
         </button>
-        <p className="font-display text-sm md:text-base truncate px-2" style={{ color: "var(--text-primary)" }}>{item.title}</p>
+        <p className="font-display text-base md:text-lg truncate px-2" style={{ color: "var(--text-primary)" }}>{item.title}</p>
         <div className="flex items-center gap-2">
-          <button data-testid="reader-prefs-toggle" onClick={() => { sfx("nav"); setPrefs((v) => !v); }} className="p-2 flex items-center" style={{ color: prefs ? "var(--brand)" : "var(--text-primary)" }} title="Réglages de lecture">
-            <IoText size={18} />
+          <button data-testid="reader-prefs-toggle" onClick={() => { sfx("nav"); setPrefs((v) => !v); }} className="p-2.5 border flex items-center" style={{ color: prefs ? "var(--brand)" : "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title="Réglages de lecture">
+            <IoText size={22} />
           </button>
           {hasMusic && (
-            <button data-testid="reader-music" onClick={() => { sfx("nav"); toggleReadingUrl(trackFor(chap), readingKey); }} className="p-2" style={{ color: musicOn ? "var(--brand)" : "var(--text-secondary)" }} title="Musique de lecture">
-              {musicOn ? <IoPause size={18} /> : <IoMusicalNotes size={18} />}
+            <button data-testid="reader-music" onClick={() => { sfx("nav"); toggleReadingUrl(trackFor(chap), readingKey); }} className="p-2.5 border" style={{ color: musicOn ? "var(--brand)" : "var(--text-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title="Musique de lecture">
+              {musicOn ? <IoPause size={22} /> : <IoMusicalNotes size={22} />}
             </button>
           )}
-          <button data-testid="reader-close" onClick={close} className="p-2" style={{ color: "var(--text-primary)" }}><IoClose size={22} /></button>
+          <button data-testid="reader-close" onClick={close} className="p-2.5 border" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }}><IoClose size={26} /></button>
         </div>
       </div>
 

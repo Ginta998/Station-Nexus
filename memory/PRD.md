@@ -43,6 +43,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 16 (2026-07-20)
+- **Boutons du haut du lecteur agrandis** (`ChapterReader.js`) : Sommaire / Aa (réglages) / Musique / Fermer passent en boutons bordés plus grands (icônes 22-26px, padding p-2.5, fond léger) → plus lisibles et tactiles.
+- **Pack son personnalisé réservé à l'admin** (`Settings.js`) : le bouton « Pack personnalisé » et ses uploads (`soundpack-custom` / `custom-sounds`) sont désormais enveloppés dans `{isAdmin && ...}`. Un visiteur ne peut plus uploader ses propres sons (les packs synthétisés + Silence restent dispos).
+- **Écran de démarrage aléatoire** : nouvelle option `intro_type === "random"`. Carte « Aléatoire » 🎲 dans IntroManager (`intro-random`, bouton `intro-choose-random` admin uniquement). Dans `App.js` (IntroGate), si `intro_type==="random"`, on tire au hasard un écran parmi les INTROS non masqués (+ vidéo si présente) → un écran différent à chaque session. `intro_type` accepte déjà une string libre côté backend (aucun changement serveur).
+- Auto-testé (screenshots) : boutons lecteur agrandis, pack perso masqué pour visiteur, carte Aléatoire présente pour tous mais « Définir » admin-only, `intro_type` persiste à "random", intro tirée aléatoirement au boot.
+
+
 ## Implemented — Itération 15 (2026-07-20)
 - **Accessibilité — Taille du texte globale** (demande utilisateur myope : « normaliser » le zoom du lecteur à toute l'app car descriptions/commentaires/chapitres trop petits). Réglage `textScale` (localStorage `sx_textscale`), 4 niveaux : Normal / Grand (112,5 %) / Très grand (125 %) / Maximum (140 %). **Défaut = Grand.** Appliqué via `font-size` racine sur `<html>` (attribut `data-textscale`) → tout le texte en rem grandit (descriptions, synopsis, commentaires, chapitres/épisodes, chrome UI). Le lecteur de chapitres garde son propre réglage px (orthogonal).
 - **Bouton d'accès rapide** (`TextSizeButton.js`, testids `text-size-btn` + menu `text-size-menu` + `text-size-{normal|grand|xl|max}`) ajouté dans la TopBar de l'Accueil et dans la barre d'actions des fiches (Detail) → menu déroulant pour changer la taille à la volée.

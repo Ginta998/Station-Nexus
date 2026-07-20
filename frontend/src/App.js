@@ -9,6 +9,7 @@ import Settings from "@/pages/Settings";
 import Contact from "@/pages/Contact";
 import BootIntro from "@/components/BootIntro";
 import { getSettings } from "@/lib/api";
+import { INTROS } from "@/lib/intro";
 
 function IntroGate() {
   const [show, setShow] = useState(false);
@@ -18,7 +19,18 @@ function IntroGate() {
     if (sessionStorage.getItem("sx_intro_shown") === "1") return;
     if (localStorage.getItem("sx_intro_off") === "1") return;
     getSettings()
-      .then((s) => { setConfig({ type: s.intro_type || "tengoku", hasVideo: !!s.intro_has_video }); setShow(true); })
+      .then((s) => {
+        let type = s.intro_type || "tengoku";
+        const hasVideo = !!s.intro_has_video;
+        if (type === "random") {
+          const hidden = s.intro_hidden || [];
+          const pool = INTROS.filter((i) => !hidden.includes(i.key)).map((i) => i.key);
+          if (hasVideo) pool.push("video");
+          type = pool.length ? pool[Math.floor(Math.random() * pool.length)] : "tengoku";
+        }
+        setConfig({ type, hasVideo });
+        setShow(true);
+      })
       .catch(() => {});
   }, []);
 

@@ -195,6 +195,22 @@ function IntroManager() {
         <input type="checkbox" data-testid="intro-enabled" checked={!off} onChange={toggleOff} /> Afficher l'écran de démarrage (une fois par session)
       </label>
 
+      {/* Random mode */}
+      <div data-testid="intro-random" className="p-4 border mb-3 flex items-center justify-between gap-3 flex-wrap"
+        style={{ ...fs, background: "var(--bg-secondary)", outline: curType === "random" ? "2px solid var(--brand)" : "none" }}>
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">🎲</span>
+          <div>
+            <span className="font-display text-lg block" style={{ color: "var(--text-primary)" }}>Aléatoire</span>
+            <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>Un écran de démarrage différent à chaque session</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          {isAdmin && curType !== "random" && <button data-testid="intro-choose-random" onClick={() => chooseType("random")} className="text-xs px-3 py-1.5 border" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>Définir par défaut</button>}
+          {curType === "random" && <span className="text-xs flex items-center gap-1" style={{ color: "var(--brand)" }}><IoStar size={11} /> Par défaut</span>}
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {visibleIntros.map((it) => (
           <div key={it.key} data-testid={`intro-${it.key}`} className="p-4 border" style={{ ...fs, background: "var(--bg-secondary)", outline: curType === it.key ? "2px solid var(--brand)" : "none" }}>
@@ -332,7 +348,8 @@ export default function Settings() {
             ))}
           </div>
 
-          {/* Prominent custom pack button (like the contact button) */}
+          {/* Prominent custom pack button (like the contact button) — admin only */}
+          {isAdmin && (<>
           <button data-testid="soundpack-custom" onClick={() => { setPack("custom"); setTimeout(() => sfx("select"), 30); }}
             className="mt-3 w-full flex items-center justify-between gap-3 px-5 py-4 border-2 transition-transform hover:scale-[1.01]"
             style={{ borderColor: "var(--brand)", borderRadius: "var(--radius-base)", background: soundPack === "custom" ? "var(--brand)" : "var(--bg-secondary)", color: soundPack === "custom" ? "var(--bg-primary)" : "var(--text-primary)" }}>
@@ -356,6 +373,7 @@ export default function Settings() {
               ))}
             </div>
           )}
+          </>)}
         </Section>
 
         <Section title="Ambiance sonore de l'app" extra="— choisis ou uploade">
