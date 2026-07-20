@@ -43,6 +43,17 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 12 (2026-07-20)
+- **Musique par chapitre** : chaque chapitre peut avoir sa propre musique de lecture (endpoints `POST/GET/DELETE /api/creations/{cid}/chapters/{chid}/audio`, flag `has_music` par chapitre). Repli automatique sur la musique de lecture générale de l'œuvre si le chapitre n'en a pas ; transition en fondu au changement de chapitre + dédup (ne redémarre pas la même piste partagée). Nettoyage `chapter_media` à la suppression d'une création.
+- **Éditeur visuel WYSIWYG** (`RichTextEditor.js`) pour le contenu des chapitres : gras, italique, souligné, titres/sous-titres (H2/H3), citations, séparateurs, alignement gauche/centre, couleurs de texte (palette). Contenu stocké en HTML (`chapter.rich=true`), assaini légèrement. Rétro-compat : les chapitres en texte brut existants restent lisibles et sont convertis en paragraphes éditables à l'ouverture.
+- **Rendu riche dans le lecteur** (`.reader-rich`) + **réglages de lecture globaux** (panneau « Aa ») : police (Serif/Sans/Display/Mono), taille, interligne, largeur de colonne (Étroit/Normal/Large), lettrine on/off. Persistés en localStorage (`sx_reader_*`).
+- Tests : backend 7/7, frontend 100%, 0 régression (iteration_11.json). Image-preservation à l'édition toujours OK.
+
+## Backlog technique (non bloquant, noté par la revue)
+- Durcir la sanitisation du HTML riche (DOMPurify) car rendu via `dangerouslySetInnerHTML` (contenu admin uniquement → risque faible).
+- `RichTextEditor` utilise `document.execCommand` (déprécié mais fonctionnel) — migrer vers Tiptap/Lexical à terme.
+- `server.py` ~660 lignes — envisager de découper les routers par ressource.
+
 ## Implemented — Itération 11 (2026-07-20)
 - **FIX bug texte coupé sur mobile (page Detail)** — cause racine réelle : la colonne de contenu (`flex-1` dans un `flex-col items-center`) n'avait pas de largeur contrainte, donc le titre `<h1>` (police display, une ligne) s'étendait à sa largeur naturelle (~732px) et débordait de l'écran (390px), coupant titre/synopsis/boutons des deux côtés. Corrigé : colonne passée en `w-full md:flex-1 min-w-0` + `break-words` sur le titre. Vérifié : plus aucun débordement horizontal sur mobile, texte entièrement lisible ; desktop inchangé.
 - **Personnalisation de l'interface réservée au mode création** : la section est désormais enveloppée dans `{isAdmin && ...}` (visiteurs ne la voient plus).
