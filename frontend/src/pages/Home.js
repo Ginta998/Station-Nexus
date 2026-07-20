@@ -82,7 +82,7 @@ export default function Home() {
           <div className="absolute inset-0" style={{ background: focused?.kanji ? "radial-gradient(circle at 50% 30%, var(--bg-secondary), var(--bg-primary) 70%)" : "var(--bg-primary)" }} />
         )}
         <div className="absolute inset-0" style={{ background: `rgba(0,0,0,${focused?.bg_dim ?? 0.5})` }} />
-        <div className="absolute inset-0" style={{ background: "var(--scrim)", opacity: 0.5 }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.55), rgba(0,0,0,0.25))" }} />
       </div>
 
       {focused && (
@@ -139,8 +139,8 @@ export default function Home() {
                   {catLabelByKey[focused.category] || focused.category}
                 </span>
               </div>
-              <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "var(--text-primary)" }} data-testid="focused-title">{focused.title}</h1>
-              <p className="mt-2 text-sm md:text-base" style={{ color: "var(--text-secondary)" }}>{focused.tagline}</p>
+              <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
+              <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
             </div>
           ) : (
             <p style={{ color: "var(--text-secondary)" }}>{isLoading ? "Chargement…" : "Aucune création."}</p>

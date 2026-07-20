@@ -166,9 +166,18 @@ function IntroManager() {
   const [preview, setPreview] = useState(null);
   const curType = settings?.intro_type || "tengoku";
   const hasVideo = !!settings?.intro_has_video;
+  const hidden = settings?.intro_hidden || [];
+  const visibleIntros = INTROS.filter((it) => !hidden.includes(it.key));
 
   const toggleOff = () => { const nv = !off; setOff(nv); localStorage.setItem("sx_intro_off", nv ? "1" : "0"); };
   const chooseType = async (t) => { await updateSettings({ ...settings, intro_type: t }); toast.success("Intro par défaut mise à jour"); refetch(); };
+  const hideIntro = async (key) => {
+    const nh = [...new Set([...hidden, key])];
+    const patch = { ...settings, intro_hidden: nh };
+    if (curType === key) patch.intro_type = INTROS.find((i) => !nh.includes(i.key))?.key || "tengoku";
+    await updateSettings(patch); toast.success("Écran de démarrage supprimé"); refetch();
+  };
+  const restoreAll = async () => { await updateSettings({ ...settings, intro_hidden: [] }); toast.success("Écrans réaffichés"); refetch(); };
   const upload = async (file) => {
     if (!file) return;
     try { await uploadIntroVideo(file); toast.success("Vidéo d'intro importée"); refetch(); }
@@ -187,17 +196,18 @@ function IntroManager() {
       </label>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {INTROS.map((it) => (
+        {visibleIntros.map((it) => (
           <div key={it.key} data-testid={`intro-${it.key}`} className="p-4 border" style={{ ...fs, background: "var(--bg-secondary)", outline: curType === it.key ? "2px solid var(--brand)" : "none" }}>
             <div className="flex items-baseline justify-between">
               <span className="font-display text-lg" style={{ color: "var(--text-primary)" }}>{it.label}</span>
               <span className="font-display" style={{ color: "var(--brand)" }}>{it.kanji}</span>
             </div>
             <p className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>{it.tagline}</p>
-            <div className="flex items-center gap-3 mt-3">
+            <div className="flex items-center gap-3 mt-3 flex-wrap">
               <button data-testid={`intro-preview-${it.key}`} onClick={() => setPreview({ type: it.key, hasVideo: false })} className="text-xs" style={{ color: "var(--brand)" }}><IoPlay /> Aperçu</button>
               {isAdmin && curType !== it.key && <button data-testid={`intro-choose-${it.key}`} onClick={() => chooseType(it.key)} className="text-xs" style={{ color: "var(--text-secondary)" }}>Définir</button>}
               {curType === it.key && <span className="text-xs flex items-center gap-1" style={{ color: "var(--brand)" }}><IoStar size={11} /> Par défaut</span>}
+              {isAdmin && <button data-testid={`intro-delete-${it.key}`} onClick={() => hideIntro(it.key)} className="text-xs ml-auto" style={{ color: "var(--brand)" }} title="Supprimer cet écran"><IoTrashOutline /></button>}
             </div>
           </div>
         ))}
@@ -225,6 +235,10 @@ function IntroManager() {
         </div>
       </div>
 
+      {isAdmin && hidden.length > 0 && (
+        <button data-testid="intro-restore-all" onClick={restoreAll} className="mt-3 text-xs underline" style={{ color: "var(--text-secondary)" }}>Réafficher les écrans supprimés ({hidden.length})</button>
+      )}
+
       {preview && <BootIntro type={preview.type} hasVideo={preview.hasVideo} onDone={() => setPreview(null)} />}
     </div>
   );
@@ -234,6 +248,9 @@ export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx } = useApp();
   const [pin, setPin] = useState(""); const [newPin, setNewPin] = useState("");
+  const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
+  const defTheme = siteSettings?.default_theme || "tengoku";
+  const setDefaultTheme = async (k) => { await updateSettings({ ...siteSettings, default_theme: k }); toast.success("Thème par défaut défini"); refetchSite(); };
 
   const tryUnlock = () => { if (unlock(pin)) { toast.success("Mode création déverrouillé"); setPin(""); } else toast.error("PIN incorrect"); };
   const savePin = () => { if (!/^\d{4,6}$/.test(newPin)) return toast.error("PIN : 4 à 6 chiffres"); changePin(newPin); toast.success("PIN mis à jour"); setNewPin(""); };
@@ -244,7 +261,7 @@ export default function Settings() {
     const r = new FileReader(); r.onload = () => { setCustom({ ...(customSounds || {}), [event]: r.result }); toast.success("Son enregistré"); }; r.readAsDataURL(file);
   };
 
-  const packs = [...SOUND_PACKS, { key: "custom", label: "Personnalisé", emoji: "🎚️" }, { key: "silence", label: "Silence", emoji: "🔕" }];
+  const packs = [...SOUND_PACKS, { key: "silence", label: "Silence", emoji: "🔕" }];
 
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
@@ -296,8 +313,22 @@ export default function Settings() {
               </button>
             ))}
           </div>
+
+          {/* Prominent custom pack button (like the contact button) */}
+          <button data-testid="soundpack-custom" onClick={() => { setPack("custom"); setTimeout(() => sfx("select"), 30); }}
+            className="mt-3 w-full flex items-center justify-between gap-3 px-5 py-4 border-2 transition-transform hover:scale-[1.01]"
+            style={{ borderColor: "var(--brand)", borderRadius: "var(--radius-base)", background: soundPack === "custom" ? "var(--brand)" : "var(--bg-secondary)", color: soundPack === "custom" ? "var(--bg-primary)" : "var(--text-primary)" }}>
+            <span className="flex items-center gap-3">
+              <span className="text-2xl">🎚️</span>
+              <span className="text-left">
+                <span className="font-display text-lg block">Pack personnalisé</span>
+                <span className="text-xs opacity-80">Uploade tes propres sons (survol · flèches · sélection)</span>
+              </span>
+            </span>
+            {soundPack === "custom" && <IoCheckmarkCircle size={22} />}
+          </button>
           {soundPack === "custom" && (
-            <div className="mt-4 grid grid-cols-3 gap-2" data-testid="custom-sounds">
+            <div className="mt-3 grid grid-cols-3 gap-2" data-testid="custom-sounds">
               {["hover", "nav", "select"].map((ev) => (
                 <label key={ev} className="p-3 border cursor-pointer text-center text-xs" style={fs}>
                   <IoCloudUploadOutline style={{ color: customSounds?.[ev] ? "var(--brand)" : "var(--text-secondary)" }} />
@@ -323,11 +354,21 @@ export default function Settings() {
               const active = theme === t.key;
               return (
                 <button key={t.key} data-testid={`theme-${t.key}`} onClick={() => { setTheme(t.key); sfx("select"); toast.success(`Thème ${t.name}`); }}
-                  className="text-left p-4 border transition-transform hover:scale-[1.02]" style={{ ...fs, background: "var(--bg-secondary)", outline: active ? "2px solid var(--brand)" : "none" }}>
+                  className="relative text-left p-4 border transition-transform hover:scale-[1.02]" style={{ ...fs, background: "var(--bg-secondary)", outline: active ? "2px solid var(--brand)" : "none" }}>
+                  {isAdmin && (
+                    <span role="button" data-testid={`theme-default-${t.key}`} title="Définir par défaut"
+                      onClick={(e) => { e.stopPropagation(); setDefaultTheme(t.key); }}
+                      className="absolute top-2 right-2 cursor-pointer" style={{ color: defTheme === t.key ? "var(--brand)" : "var(--text-secondary)" }}>
+                      {defTheme === t.key ? <IoStar size={16} /> : <IoStarOutline size={16} />}
+                    </span>
+                  )}
                   <div className="flex items-center gap-1.5 mb-3">{t.swatch.map((c, i) => <span key={i} className="w-5 h-5 rounded-full border" style={{ background: c, borderColor: "rgba(255,255,255,0.15)" }} />)}</div>
                   <div className="flex items-baseline justify-between"><span className="font-display text-lg" style={{ color: "var(--text-primary)" }}>{t.name}</span><span className="text-sm" style={{ color: "var(--text-secondary)" }}>{t.kanji}</span></div>
                   <p className="text-[11px] mt-1 line-clamp-1" style={{ color: "var(--text-secondary)" }}>{t.tagline}</p>
-                  {active && <div className="flex items-center gap-1 mt-2 text-xs" style={{ color: "var(--brand)" }}><IoCheckmarkCircle /> Actif</div>}
+                  <div className="flex items-center gap-2 mt-2">
+                    {active && <span className="flex items-center gap-1 text-xs" style={{ color: "var(--brand)" }}><IoCheckmarkCircle /> Actif</span>}
+                    {defTheme === t.key && <span className="text-[10px] uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>défaut</span>}
+                  </div>
                 </button>
               );
             })}

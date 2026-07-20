@@ -47,30 +47,38 @@ function KanjiAnim() {
   );
 }
 
-function NeonAnim() {
+function PulseAnim() {
   return (
     <div className="relative flex items-center justify-center" style={{ width: "100%", height: "100%" }}>
-      <div className="absolute inset-0" style={{ background: "repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 4px)", animation: "introScan 2.5s linear infinite" }} />
-      <div className="relative text-center" style={{ animation: "introGlitch 0.25s steps(2) 0.4s 6" }}>
-        <div className="font-display text-4xl md:text-6xl" style={{ color: "var(--brand)", textShadow: "0 0 18px var(--brand)", letterSpacing: "0.2em" }}>STATIONEXUS</div>
-        <div className="font-display text-lg mt-2" style={{ color: "#fff", opacity: 0.7, letterSpacing: "0.5em" }}>電 起動</div>
+      {[0, 1, 2].map((i) => (
+        <span key={i} className="absolute rounded-full" style={{ width: "18vmin", height: "18vmin", border: "2px solid var(--brand)", opacity: 0, animation: `introPulseRing 2.2s ease-out ${i * 0.5}s infinite` }} />
+      ))}
+      <div className="relative flex items-center justify-center rounded-full" style={{ width: "22vmin", height: "22vmin", background: "var(--brand)", animation: "introPulseCore 2.2s ease-in-out infinite" }}>
+        <span className="font-display" style={{ color: "#fff", fontSize: "9vmin" }}>天</span>
       </div>
+      <div className="absolute" style={{ bottom: "22%" }}><Logo delay={0.9} /></div>
     </div>
   );
 }
 
-function InkAnim() {
+function TowersAnim() {
+  const bars = Array.from({ length: 12 });
   return (
-    <div className="relative flex flex-col items-center justify-center gap-6">
-      <div className="relative flex items-center justify-center rounded-full" style={{ width: "40vmin", height: "40vmin", background: "radial-gradient(circle, var(--brand) 0%, rgba(0,0,0,0.9) 70%)", filter: "blur(2px)", animation: "introInk 1.6s ease forwards" }}>
-        <span className="font-display" style={{ color: "#fff", fontSize: "18vmin", opacity: 0, animation: "introKanjiPop 1.2s ease 0.9s forwards" }}>墨</span>
+    <div className="relative flex flex-col items-center justify-center gap-8" style={{ width: "100%", height: "100%" }}>
+      <div className="absolute bottom-0 left-0 right-0 flex items-end justify-center gap-2" style={{ height: "60%" }}>
+        {bars.map((_, i) => (
+          <span key={i} style={{ width: "2.2vmin", background: "linear-gradient(to top, var(--brand), transparent)", height: 0, animation: `introTower 1.4s cubic-bezier(.2,.8,.2,1) ${i * 0.08}s forwards`, opacity: 0.85 }} />
+        ))}
       </div>
-      <Logo delay={1.8} />
+      <div className="relative z-10 text-center">
+        <div className="font-display" style={{ color: "#fff", fontSize: "12vmin", opacity: 0, animation: "introKanjiPop 1.1s ease 0.9s forwards" }}>光</div>
+        <div style={{ opacity: 0, animation: "introWord 0.8s ease 1.5s forwards" }}><Logo delay={0} /></div>
+      </div>
     </div>
   );
 }
 
-const ANIMS = { tengoku: TengokuAnim, kanji: KanjiAnim, neon: NeonAnim, ink: InkAnim };
+const ANIMS = { tengoku: TengokuAnim, kanji: KanjiAnim, pulse: PulseAnim, towers: TowersAnim };
 
 export default function BootIntro({ type, hasVideo, onDone }) {
   const { muted, uiVolume } = useApp();

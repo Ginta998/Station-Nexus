@@ -2,8 +2,8 @@
 export const INTROS = [
   { key: "tengoku", label: "Tengoku", kanji: "天", tagline: "Soleil levant", duration: 3200 },
   { key: "kanji", label: "Kanji Storm", kanji: "嵐", tagline: "Tempête d'idéogrammes", duration: 3200 },
-  { key: "neon", label: "Neo Boot", kanji: "電", tagline: "Démarrage cyber", duration: 3000 },
-  { key: "ink", label: "Sumi-e", kanji: "墨", tagline: "Encre & silence", duration: 3400 },
+  { key: "pulse", label: "Pulse", kanji: "波", tagline: "Onde lumineuse (façon Steam)", duration: 3200 },
+  { key: "towers", label: "Colonnes", kanji: "光", tagline: "Colonnes de lumière (façon PS2)", duration: 3600 },
 ];
 
 let ctx = null;
@@ -48,15 +48,17 @@ export function playBoot(type, { muted = false, volume = 0.8 } = {}) {
     [523, 659, 784, 988, 1319].forEach((f, i) =>
       note(c, { type: "triangle", freq: f, dur: 0.5, gain: 0.09, delay: i * 0.18, vol: v }));
     note(c, { type: "sine", freq: 1568, dur: 1.4, gain: 0.07, delay: 1.0, vol: v });
-  } else if (type === "neon") {
-    // cyber sweep + zap
-    note(c, { type: "sawtooth", freq: 120, glide: 900, dur: 0.7, gain: 0.1, vol: v });
-    note(c, { type: "square", freq: 1200, glide: 300, dur: 0.18, gain: 0.06, delay: 0.7, vol: v });
-    note(c, { type: "sawtooth", freq: 300, glide: 1400, dur: 0.9, gain: 0.08, delay: 0.95, vol: v });
-  } else if (type === "ink") {
-    // soft koto pluck + slow swell
-    note(c, { type: "triangle", freq: 392, dur: 1.2, gain: 0.12, delay: 0.1, vol: v });
-    note(c, { type: "triangle", freq: 587, dur: 1.4, gain: 0.1, delay: 0.5, vol: v });
-    note(c, { type: "sine", freq: 294, glide: 392, dur: 2.0, gain: 0.08, delay: 0.2, vol: v });
+  } else if (type === "pulse") {
+    // Steam-like: warm swell + soft low pulses + bright arrival
+    note(c, { type: "sine", freq: 174, glide: 349, dur: 1.6, gain: 0.14, vol: v });
+    note(c, { type: "sine", freq: 110, dur: 0.3, gain: 0.16, delay: 0.15, vol: v });
+    note(c, { type: "sine", freq: 110, dur: 0.3, gain: 0.14, delay: 0.75, vol: v });
+    note(c, { type: "triangle", freq: 659, dur: 1.6, gain: 0.09, delay: 1.2, vol: v });
+    note(c, { type: "sine", freq: 988, dur: 1.6, gain: 0.07, delay: 1.5, vol: v });
+  } else if (type === "towers") {
+    // PS2-like: rising shimmering pads building up
+    [130, 196, 261, 329, 392, 523].forEach((f, i) =>
+      note(c, { type: "triangle", freq: f, glide: f * 1.5, dur: 1.6, gain: 0.07, delay: i * 0.25, vol: v }));
+    note(c, { type: "sine", freq: 784, dur: 1.8, gain: 0.08, delay: 1.6, vol: v });
   }
 }

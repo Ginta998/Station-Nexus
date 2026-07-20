@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
-import { audioUrl, ambienceUrl, getSettings } from "@/lib/api";
+import { audioUrl, ambienceUrl, readingAudioUrl, getSettings } from "@/lib/api";
 import { configureSound, playUiSound } from "@/lib/sound";
 
 const AppContext = createContext(null);
@@ -25,13 +25,14 @@ function fadeTo(audio, target, ms, onDone) {
 }
 
 export function AppProvider({ children }) {
-  const [theme, setThemeState] = useState(() => localStorage.getItem(LS.theme) || "tengoku");
+  const storedTheme = localStorage.getItem(LS.theme);
+  const [theme, setThemeState] = useState(() => storedTheme || "tengoku");
   const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem(LS.admin) === "1");
   const [musicVolume, setMusicVolumeState] = useState(() => {
-    const v = parseFloat(localStorage.getItem(LS.music) ?? localStorage.getItem("sx_volume")); return Number.isFinite(v) ? v : 0.6;
+    const v = parseFloat(localStorage.getItem(LS.music) ?? localStorage.getItem("sx_volume")); return Number.isFinite(v) ? v : 0.2;
   });
   const [uiVolume, setUiVolumeState] = useState(() => {
-    const v = parseFloat(localStorage.getItem(LS.ui)); return Number.isFinite(v) ? v : 0.7;
+    const v = parseFloat(localStorage.getItem(LS.ui)); return Number.isFinite(v) ? v : 0.8;
   });
   const [muted, setMuted] = useState(() => localStorage.getItem(LS.mute) === "1");
   const [soundPack, setSoundPack] = useState(() => localStorage.getItem(LS.pack) || "zen");
@@ -64,11 +65,13 @@ export function AppProvider({ children }) {
   }, [musicVolume, muted]);
   useEffect(() => { localStorage.setItem(LS.ui, String(uiVolume)); }, [uiVolume]);
 
-  // default ambience from server settings when the visitor has never chosen
+  // default ambience & theme from server settings when the visitor has never chosen
   useEffect(() => {
-    if (storedAmbience === null) {
-      getSettings().then((s) => { if (s?.default_ambience_id) setAmbienceId(s.default_ambience_id); }).catch(() => {});
-    }
+    if (storedAmbience !== null && storedTheme !== null) return;
+    getSettings().then((s) => {
+      if (storedAmbience === null && s?.default_ambience_id) setAmbienceId(s.default_ambience_id);
+      if (storedTheme === null && s?.default_theme) setThemeState(s.default_theme);
+    }).catch(() => {});
   }, []); // eslint-disable-line
 
   // app ambience control (never overlaps with a card ambient)
@@ -153,12 +156,46 @@ export function AppProvider({ children }) {
     setIsPlaying(false); setPlayingId(null);
   }, [startAppAmbience]);
 
+  // Reading / immersion track (chapter reader) — distinct from the card ambient.
+  const readingKey = (id) => "reading:" + id;
+  const playReading = useCallback((id, hasReading) => {
+    const a = cardAudio.current; if (!a) return;
+    const key = readingKey(id);
+    // toggle pause while staying in reading mode (no app ambience resume)
+    if (playingId === key && isPlaying) {
+      fadeTo(a, 0, 200, () => a.pause());
+      setIsPlaying(false);
+      return;
+    }
+    cardActiveRef.current = true;      // own the channel; blocks app ambience
+    stopAppAmbience(true);
+    if (!hasReading) {                 // no reading track -> immersive silence
+      a.pause(); a.currentTime = 0; setIsPlaying(false); setPlayingId(key); return;
+    }
+    a.src = readingAudioUrl(id); a.volume = 0;
+    a.play().then(() => { setPlayingId(key); setIsPlaying(true); if (!muted) fadeTo(a, musicVolume, 400); })
+      .catch(() => { setPlayingId(key); setIsPlaying(false); });
+  }, [playingId, isPlaying, muted, musicVolume, stopAppAmbience]);
+
+  // Called when leaving the chapter reader: restore the card ambient (or app ambience).
+  const endReading = useCallback((creationId, hasCardAudio) => {
+    const a = cardAudio.current;
+    const resume = () => {
+      cardActiveRef.current = false;
+      if (hasCardAudio && creationId) playAmbient(creationId);
+      else startAppAmbience();
+    };
+    if (a && !a.paused) fadeTo(a, 0, 200, () => { a.pause(); a.currentTime = 0; resume(); });
+    else { if (a) { a.pause(); a.currentTime = 0; } resume(); }
+    setIsPlaying(false); setPlayingId(null);
+  }, [playAmbient, startAppAmbience]);
+
   const value = {
     theme, setTheme, isAdmin, unlock, lock, changePin,
     musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,
-    playingId, isPlaying, playAmbient, stopAmbient,
+    playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

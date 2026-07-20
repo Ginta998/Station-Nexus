@@ -43,8 +43,9 @@ export default function TopBar({ onAdd }) {
           {isAdmin ? "Création" : "Visiteur"}
         </div>
 
-        <button data-testid="settings-btn" onClick={() => go("/parametres")} className="p-2.5 border transition-colors hover:scale-105" style={btn}>
-          <IoSettingsOutline size={18} />
+        <button data-testid="settings-btn" onClick={() => go("/parametres")}
+          className="flex items-center gap-1.5 px-3 md:px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+          <IoSettingsOutline size={18} /> <span className="hidden sm:inline">Paramètres</span>
         </button>
       </div>
     </header>

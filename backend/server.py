@@ -75,6 +75,7 @@ class Creation(BaseModel):
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     has_audio: bool = False
+    has_reading_audio: bool = False
     coming_soon: bool = False
     order: int = 0
     created_at: str = Field(default_factory=now_iso)
@@ -166,8 +167,10 @@ class SiteSettings(BaseModel):
     instagram: str = "Brichel_louzala"
     youtube: str = "Brichel Louzala"
     default_ambience_id: Optional[str] = ""
+    default_theme: str = "tengoku"
     intro_type: str = "tengoku"   # animation key or "video"
     intro_has_video: bool = False
+    intro_hidden: List[str] = Field(default_factory=list)
 
 
 def slugify(s: str) -> str:
@@ -215,6 +218,7 @@ async def delete_creation(cid: str):
     if res.deleted_count == 0:
         raise HTTPException(404, "Création introuvable")
     await db.media.delete_many({"creation_id": cid})
+    await db.reading_media.delete_many({"creation_id": cid})
     await db.comments.delete_many({"creation_id": cid})
     return {"ok": True}
 
@@ -245,6 +249,35 @@ async def stream_audio(cid: str):
 async def delete_audio(cid: str):
     await db.media.delete_many({"creation_id": cid})
     await db.creations.update_one({"id": cid}, {"$set": {"has_audio": False}})
+    return {"ok": True}
+
+
+@api_router.post("/creations/{cid}/reading-audio")
+async def upload_reading_audio(cid: str, file: UploadFile = File(...)):
+    if not await db.creations.find_one({"id": cid}):
+        raise HTTPException(404, "Création introuvable")
+    data = await file.read()
+    if len(data) > MAX_AUDIO_BYTES:
+        raise HTTPException(413, "Fichier audio trop volumineux (max 12 Mo)")
+    b64 = base64.b64encode(data).decode("utf-8")
+    await db.reading_media.update_one({"creation_id": cid},
+        {"$set": {"creation_id": cid, "data": b64, "content_type": file.content_type or "audio/mpeg"}}, upsert=True)
+    await db.creations.update_one({"id": cid}, {"$set": {"has_reading_audio": True}})
+    return {"ok": True}
+
+
+@api_router.get("/creations/{cid}/reading-audio")
+async def stream_reading_audio(cid: str):
+    media = await db.reading_media.find_one({"creation_id": cid}, {"_id": 0})
+    if not media:
+        raise HTTPException(404, "Aucune musique de lecture")
+    return Response(content=base64.b64decode(media["data"]), media_type=media.get("content_type", "audio/mpeg"))
+
+
+@api_router.delete("/creations/{cid}/reading-audio")
+async def delete_reading_audio(cid: str):
+    await db.reading_media.delete_many({"creation_id": cid})
+    await db.creations.update_one({"id": cid}, {"$set": {"has_reading_audio": False}})
     return {"ok": True}
 
 

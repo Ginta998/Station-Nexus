@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import html2canvas from "html2canvas";
-import { IoArrowBack, IoPlay, IoPause, IoClose, IoShareSocial, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube } from "react-icons/io5";
+import { IoArrowBack, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube } from "react-icons/io5";
 import { toast } from "sonner";
-import { getCreation, deleteCreation, listCategories } from "@/lib/api";
+import { getCreation, deleteCreation, listCategories, listCreations } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import EditorDialog from "@/components/EditorDialog";
 import CommentsSection from "@/components/CommentsSection";
 import ChapterReader from "@/components/ChapterReader";
+import ShareMenu from "@/components/ShareMenu";
 
 export default function Detail() {
   const { id } = useParams();
@@ -16,6 +16,7 @@ export default function Detail() {
   const { isAdmin, playAmbient, stopAmbient, isPlaying, playingId, sfx } = useApp();
   const { data: item, refetch, isLoading } = useQuery({ queryKey: ["creation", id], queryFn: () => getCreation(id) });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
+  const { data: allCreations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
 
   const [readerOpen, setReaderOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
@@ -40,6 +41,12 @@ export default function Detail() {
   const thisPlaying = isPlaying && playingId === item.id;
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
 
+  const recommendations = useMemo(() => {
+    const others = allCreations.filter((c) => c.id !== id);
+    for (let i = others.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [others[i], others[j]] = [others[j], others[i]]; }
+    return others.slice(0, 6);
+  }, [allCreations, id]);
+
   const ytEmbed = (url) => {
     const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
     return m ? `https://www.youtube.com/embed/${m[1]}` : null;
@@ -61,22 +68,7 @@ export default function Detail() {
     await deleteCreation(item.id); stopAmbient(); toast.success("Supprimé"); nav("/");
   };
 
-  const share = async () => {
-    try {
-      const canvas = await html2canvas(cardRef.current, { backgroundColor: null, scale: 2, useCORS: true });
-      const blob = await new Promise((res) => canvas.toBlob(res, "image/png"));
-      const file = new File([blob], `${item.title}.png`, { type: "image/png" });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: item.title, text: `${item.title} — Stationexus` });
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a"); a.href = url; a.download = `${item.title}.png`; a.click();
-        URL.revokeObjectURL(url); toast.success("Carte téléchargée");
-      }
-    } catch { toast.error("Partage impossible"); }
-  };
-
-  const btn = { borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)" };
+  const btn = { borderColor: "rgba(255,255,255,0.3)", borderRadius: "var(--radius-base)", color: "#fff", background: "rgba(0,0,0,0.25)" };
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden" style={{ background: "var(--bg-primary)" }}>
@@ -87,7 +79,7 @@ export default function Detail() {
           <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 50% 30%, var(--bg-secondary), var(--bg-primary) 70%)" }} />
         )}
         <div className="absolute inset-0" style={{ background: `rgba(0,0,0,${item.bg_dim ?? 0.55})` }} />
-        <div className="absolute inset-0" style={{ background: "var(--scrim)", opacity: 0.5 }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.25))" }} />
       </div>
 
       <div className="relative z-10">
@@ -96,7 +88,7 @@ export default function Detail() {
             <IoArrowBack /> <span className="text-sm">Retour</span>
           </button>
           <div className="flex items-center gap-2">
-            <button data-testid="detail-share" onClick={share} className="p-2.5 border" style={btn}><IoShareSocial size={18} /></button>
+            <ShareMenu item={item} cardRef={cardRef} />
             {isAdmin && (
               <>
                 <button data-testid="detail-edit" onClick={() => setEditorOpen(true)} className="p-2.5 border" style={btn}><IoCreateOutline size={18} /></button>
@@ -126,11 +118,11 @@ export default function Detail() {
             <div className="flex items-center gap-3 mb-3 flex-wrap">
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="detail-category">{catLabel}</span>
               <span className="font-display text-2xl" style={{ color: "var(--brand)" }}>{item.kanji}</span>
-              {item.coming_soon && <span className="px-2 py-0.5 text-[10px] uppercase tracking-widest border" style={{ borderColor: "var(--border-c)", color: "var(--text-secondary)" }}>À venir</span>}
+              {item.coming_soon && <span className="px-2 py-0.5 text-[10px] uppercase tracking-widest border" style={{ borderColor: "rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.75)" }}>À venir</span>}
             </div>
-            <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "var(--text-primary)" }} data-testid="detail-title">{item.title}</h1>
-            <p className="mt-3 text-base md:text-lg" style={{ color: "var(--brand)" }}>{item.tagline}</p>
-            <p className="mt-5 leading-relaxed max-w-xl" style={{ color: "var(--text-secondary)" }}>{item.synopsis}</p>
+            <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="detail-title">{item.title}</h1>
+            <p className="mt-3 text-base md:text-lg" style={{ color: "rgba(255,255,255,0.9)" }}>{item.tagline}</p>
+            <p className="mt-5 leading-relaxed max-w-xl" style={{ color: "rgba(255,255,255,0.72)" }}>{item.synopsis}</p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {!item.coming_soon && (
@@ -156,7 +148,7 @@ export default function Detail() {
 
             {(showEpisodes || item.launch_type === "episodes") && item.episodes?.length > 0 && (
               <div className="mt-10" data-testid="detail-episodes">
-                <h3 className="font-display text-xl mb-3" style={{ color: "var(--text-primary)" }}>Épisodes</h3>
+                <h3 className="font-display text-xl mb-3" style={{ color: "#fff" }}>Épisodes</h3>
                 <div className="space-y-2">
                   {item.episodes.map((ep, i) => (
                     <div key={ep.id || i} className="flex items-center justify-between p-3 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "var(--bg-secondary)" }}>
@@ -174,7 +166,7 @@ export default function Detail() {
             {/* Gallery */}
             {item.gallery?.length > 0 && (
               <div className="mt-10" data-testid="detail-gallery">
-                <h3 className="font-display text-xl mb-3" style={{ color: "var(--text-primary)" }}>Galerie</h3>
+                <h3 className="font-display text-xl mb-3" style={{ color: "#fff" }}>Galerie</h3>
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                   {item.gallery.map((g, i) => (
                     <button key={i} onClick={() => { sfx("nav"); setLightbox(g); }} data-testid={`gallery-img-${i}`}
@@ -189,7 +181,7 @@ export default function Detail() {
             {/* Embeds / réseaux */}
             {item.embeds?.length > 0 && (
               <div className="mt-10" data-testid="detail-embeds">
-                <h3 className="font-display text-xl mb-3" style={{ color: "var(--text-primary)" }}>Sur les réseaux</h3>
+                <h3 className="font-display text-xl mb-3" style={{ color: "#fff" }}>Sur les réseaux</h3>
                 <div className="space-y-4">
                   {item.embeds.map((em, i) => {
                     const yt = em.platform === "youtube" ? ytEmbed(em.url) : null;
@@ -211,6 +203,31 @@ export default function Detail() {
             )}
 
             <CommentsSection creationId={item.id} />
+
+            {recommendations.length > 0 && (
+              <div className="mt-14" data-testid="recommendations">
+                <h3 className="font-display text-xl mb-1" style={{ color: "#fff" }}>Recommandations</h3>
+                <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.65)" }}>D'autres créations qui pourraient te plaire ✨</p>
+                <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+                  {recommendations.map((r) => {
+                    const rimg = r.poster && r.poster.length > 4;
+                    return (
+                      <button key={r.id} data-testid={`reco-${r.id}`} onClick={() => { sfx("select"); nav(`/oeuvre/${r.id}`); }}
+                        className="flex-shrink-0 w-28 sm:w-32 text-left transition-transform hover:scale-105">
+                        <div className="w-full aspect-[2/3] overflow-hidden border relative" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+                          {rimg ? <img src={r.poster} alt={r.title} className="w-full h-full object-cover" /> : (
+                            <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))" }}>
+                              <span className="font-display text-4xl" style={{ color: "var(--brand)" }}>{r.kanji || r.title[0]}</span>
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-xs mt-1.5 line-clamp-2" style={{ color: "rgba(255,255,255,0.85)" }}>{r.title}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline } from "react-icons/io5";
+import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { createCreation, updateCreation, uploadAudio, deleteAudio } from "@/lib/api";
+import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio } from "@/lib/api";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
@@ -22,12 +22,13 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
   const [audioFile, setAudioFile] = useState(null);
+  const [readingFile, setReadingFile] = useState(null);
   const posterInput = useRef(null);
 
   useEffect(() => {
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
-      setForm(base); setAudioFile(null);
+      setForm(base); setAudioFile(null); setReadingFile(null);
     }
   }, [open, initial]); // eslint-disable-line
 
@@ -59,12 +60,14 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
       const payload = { ...form, order: Number(form.order) || 0 };
       const saved = isEdit ? await updateCreation(initial.id, payload) : await createCreation(payload);
       if (audioFile) await uploadAudio(saved.id, audioFile);
+      if (readingFile) await uploadReadingAudio(saved.id, readingFile);
       toast.success(isEdit ? "Création mise à jour" : "Création ajoutée");
       onSaved?.(); onClose();
     } catch { toast.error("Erreur lors de l'enregistrement"); } finally { setSaving(false); }
   };
 
   const removeAudio = async () => { if (!isEdit) return; await deleteAudio(initial.id); set("has_audio", false); toast.success("Ambiance supprimée"); };
+  const removeReading = async () => { if (!isEdit) return; await deleteReadingAudio(initial.id); set("has_reading_audio", false); toast.success("Musique de lecture supprimée"); };
 
   return (
     <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-0 sm:p-6 overflow-y-auto"
@@ -216,7 +219,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
 
           <div><Label>Lien d'achat (optionnel)</Label><input data-testid="editor-buy-url" value={form.buy_url} onChange={(e) => set("buy_url", e.target.value)} placeholder="https://..." className="w-full px-3 py-2 border outline-none" style={fs} /></div>
 
-          <div><Label>Musique d'ambiance (max 12 Mo)</Label>
+          <div><Label>Musique d'ambiance de la fiche (max 12 Mo)</Label>
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-audio-upload">
                 <IoMusicalNotes style={{ color: "var(--brand)" }} />
@@ -224,6 +227,17 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
                 <input type="file" accept="audio/*" hidden onChange={(e) => setAudioFile(e.target.files?.[0] || null)} />
               </label>
               {isEdit && form.has_audio && <button onClick={removeAudio} className="text-sm" style={{ color: "var(--brand)" }} data-testid="editor-audio-remove"><IoTrashOutline /></button>}
+            </div>
+          </div>
+
+          <div><Label>Musique de lecture (chapitres) — coupe l'ambiance pendant la lecture</Label>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-reading-upload">
+                <IoBookOutline style={{ color: "var(--brand)" }} />
+                {readingFile ? readingFile.name : (form.has_reading_audio ? "Musique de lecture présente — remplacer" : "Choisir un fichier")}
+                <input type="file" accept="audio/*" hidden onChange={(e) => setReadingFile(e.target.files?.[0] || null)} />
+              </label>
+              {isEdit && form.has_reading_audio && <button onClick={removeReading} className="text-sm" style={{ color: "var(--brand)" }} data-testid="editor-reading-remove"><IoTrashOutline /></button>}
             </div>
           </div>
 

@@ -27,10 +27,10 @@ export default function CommentsSection({ creationId }) {
 
   return (
     <div className="mt-12" data-testid="comments-section">
-      <h3 className="font-display text-xl mb-2 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-        <IoChatbubbleEllipsesOutline style={{ color: "var(--brand)" }} /> Commentaires <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{comments.length}</span>
+      <h3 className="font-display text-xl mb-2 flex items-center gap-2" style={{ color: "#fff" }}>
+        <IoChatbubbleEllipsesOutline style={{ color: "var(--brand)" }} /> Commentaires <span className="text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>{comments.length}</span>
       </h3>
-      <p className="text-sm mb-5 max-w-xl leading-relaxed" style={{ color: "var(--text-secondary)" }} data-testid="comment-prompt">
+      <p className="text-sm mb-5 max-w-xl leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }} data-testid="comment-prompt">
         Ton avis compte énormément ✨ Qu'as-tu ressenti en découvrant cette création ? Partage ton émotion, ton passage préféré ou un petit mot d'encouragement — avec bienveillance et respect. Chaque message fait vivre l'univers un peu plus fort. 🌸
       </p>
 

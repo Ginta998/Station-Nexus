@@ -24,7 +24,7 @@
 
 [data-theme="tengoku"] {
   --bg-primary:#0a0a0a; --bg-secondary:#171717; --brand:#e60012; --brand-2:#e60012;
-  --border-c:rgba(230,0,18,0.3); --text-primary:#fff; --text-secondary:rgba(255,255,255,0.6);
+  --border-c:rgba(230,0,18,0.3); --text-primary:#fff; --text-secondary:rgba(255,255,255,0.72);
   --radius-base:0px; --border-width:1px; --shadow-1:0 8px 30px rgba(230,0,18,0.2); --scrim:rgba(0,0,0,0.62);
   --font-display:"Bodoni Moda",serif; --font-body:"Manrope",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:0.03em;
 }
@@ -35,8 +35,8 @@
   --font-display:"Cormorant Garamond",serif; --font-body:"Outfit",sans-serif; --display-transform:none; --display-style:italic; --display-spacing:0;
 }
 [data-theme="kurogane"] {
-  --bg-primary:#000000; --bg-secondary:#111111; --brand:#e8e8e8; --brand-2:#e8e8e8;
-  --border-c:rgba(232,232,232,0.3); --text-primary:#e8e8e8; --text-secondary:rgba(232,232,232,0.5);
+  --bg-primary:#000000; --bg-secondary:#141414; --brand:#f2f2f2; --brand-2:#f2f2f2;
+  --border-c:rgba(242,242,242,0.35); --text-primary:#f2f2f2; --text-secondary:rgba(242,242,242,0.72);
   --radius-base:0px; --border-width:2px; --shadow-1:none; --scrim:rgba(0,0,0,0.7);
   --font-display:"JetBrains Mono",monospace; --font-body:"JetBrains Mono",monospace; --display-transform:uppercase; --display-style:normal; --display-spacing:0.05em;
 }
@@ -54,7 +54,7 @@
 }
 [data-theme="yugen"] {
   --bg-primary:#0d0a1f; --bg-secondary:#171236; --brand:#c4b5fd; --brand-2:#c4b5fd;
-  --border-c:rgba(196,181,253,0.22); --text-primary:#ffffff; --text-secondary:rgba(196,181,253,0.7);
+  --border-c:rgba(196,181,253,0.28); --text-primary:#ffffff; --text-secondary:rgba(255,255,255,0.75);
   --radius-base:2rem; --border-width:1px; --shadow-1:0 10px 40px rgba(196,181,253,0.15); --scrim:rgba(10,8,25,0.6);
   --font-display:"Outfit",sans-serif; --font-body:"Outfit",sans-serif; --display-transform:none; --display-style:normal; --display-spacing:0;
 }
@@ -78,7 +78,7 @@
 }
 [data-theme="shiro"] {
   --bg-primary:#fafaf7; --bg-secondary:#ffffff; --brand:#000000; --brand-2:#000000;
-  --border-c:rgba(0,0,0,0.12); --text-primary:#000000; --text-secondary:rgba(0,0,0,0.5);
+  --border-c:rgba(0,0,0,0.14); --text-primary:#111111; --text-secondary:rgba(0,0,0,0.62);
   --radius-base:0.25rem; --border-width:1px; --shadow-1:0 4px 20px rgba(0,0,0,0.06); --scrim:rgba(250,250,247,0.55);
   --font-display:"Manrope",sans-serif; --font-body:"Manrope",sans-serif; --display-transform:none; --display-style:normal; --display-spacing:0;
 }
@@ -90,7 +90,7 @@
 }
 [data-theme="washi"] {
   --bg-primary:#f5efe4; --bg-secondary:#e8e0ce; --brand:#5a3418; --brand-2:#5a3418;
-  --border-c:rgba(90,52,24,0.22); --text-primary:#2c1e16; --text-secondary:rgba(44,30,22,0.6);
+  --border-c:rgba(90,52,24,0.28); --text-primary:#2c1e16; --text-secondary:rgba(44,30,22,0.72);
   --radius-base:0.125rem; --border-width:1px; --shadow-1:0 2px 10px rgba(90,52,24,0.1); --scrim:rgba(245,239,228,0.5);
   --font-display:"Cormorant Garamond",serif; --font-body:"Outfit",sans-serif; --display-transform:none; --display-style:normal; --display-spacing:0;
 }
@@ -141,6 +141,38 @@ body {
 @keyframes introGlitch { 0%,100% { transform: translate(0,0); } 20% { transform: translate(-3px,2px); } 40% { transform: translate(3px,-2px); } 60% { transform: translate(-2px,-1px); } 80% { transform: translate(2px,1px); } }
 @keyframes introScan { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
 @keyframes introInk { 0% { transform: scale(0); opacity: 0; } 30% { opacity: .9; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes introPulseRing { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(4.5); opacity: 0; } }
+@keyframes introPulseCore { 0%,100% { box-shadow: 0 0 40px 6px var(--brand); transform: scale(1); } 50% { box-shadow: 0 0 90px 24px var(--brand); transform: scale(1.08); } }
+@keyframes introTower { 0% { height: 0; opacity: 0.2; } 70% { height: 100%; opacity: 0.95; } 100% { height: 72%; opacity: 0.8; } }
 @keyframes introBarWipe { 0% { width: 0; } 100% { width: 100%; } }
 .intro-skip { position: absolute; bottom: 28px; right: 28px; z-index: 2; }
 .intro-hint { position: absolute; bottom: 30px; left: 0; right: 0; text-align: center; font-size: 12px; letter-spacing: .2em; }
+
+/* ===== Immersive chapter reader ===== */
+.reader-root { position: fixed; }
+.reader-aurora {
+  position: absolute; inset: -20%; z-index: 0; pointer-events: none; opacity: 0.35;
+  background:
+    radial-gradient(40% 40% at 20% 20%, var(--brand) 0%, transparent 60%),
+    radial-gradient(45% 45% at 80% 30%, var(--brand) 0%, transparent 60%),
+    radial-gradient(50% 50% at 50% 90%, var(--brand) 0%, transparent 60%);
+  filter: blur(70px) saturate(1.1);
+  animation: readerAurora 18s ease-in-out infinite alternate;
+}
+@keyframes readerAurora {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(3%, -3%, 0) scale(1.15); }
+  100% { transform: translate3d(-3%, 2%, 0) scale(1.05); }
+}
+.reader-vignette {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 40%, transparent 45%, rgba(0,0,0,0.55) 100%);
+}
+.chapter-in { animation: chapterIn 0.7s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes chapterIn { from { opacity: 0; transform: translateY(28px) scale(0.99); filter: blur(4px); } to { opacity: 1; transform: none; filter: blur(0); } }
+.reader-kenburns img { animation: kenburns 16s ease-out both; transform-origin: center; }
+@keyframes kenburns { from { transform: scale(1.08); } to { transform: scale(1); } }
+.reader-dropcap::first-letter {
+  font-family: var(--font-display); float: left; font-size: 3.6em; line-height: 0.8;
+  padding: 6px 12px 0 0; color: var(--brand);
+}
