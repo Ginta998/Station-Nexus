@@ -231,7 +231,8 @@ body {
 .reader-rich strong { font-weight: 700; }
 .reader-rich em { font-style: italic; }
 .reader-rich a { color: var(--brand); text-decoration: underline; }
-.reader-rich[data-dropcap="on"] > p:first-of-type::first-letter {
-  font-family: var(--font-display); float: left; font-size: 3.4em; line-height: 0.8;
-  padding: 6px 12px 0 0; color: var(--brand);
+.reader-rich[data-dropcap="on"] > p:first-child::first-letter,
+.reader-rich[data-dropcap="on"] > div:first-child::first-letter {
+  font-family: var(--font-display); float: left; font-size: 3.8em; line-height: 0.72;
+  padding: 8px 14px 0 0; color: var(--brand); text-shadow: 0 2px 16px rgba(0,0,0,0.4);
 }

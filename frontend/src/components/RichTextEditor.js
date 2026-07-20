@@ -14,6 +14,40 @@ function sanitize(html) {
     .replace(/ on\w+='[^']*'/gi, "");
 }
 
+const escapeHtml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+// Keep meaningful formatting on paste (bold, italic, underline, alignment, headings,
+// lists, quotes, links, colors) while stripping Word/Docs junk (fonts, sizes, classes…).
+const PASTE_TAGS = new Set(["B", "STRONG", "I", "EM", "U", "P", "BR", "DIV", "H1", "H2", "H3", "H4", "BLOCKQUOTE", "UL", "OL", "LI", "SPAN", "A"]);
+const STYLE_KEEP = ["text-align", "font-weight", "font-style", "text-decoration", "color"];
+const TAG_MAP = { FONT: "span", H1: "h2", H4: "h3" };
+
+function cleanPasted(html) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const walk = (node) => {
+    let out = "";
+    node.childNodes.forEach((ch) => {
+      if (ch.nodeType === 3) { out += escapeHtml(ch.nodeValue); return; }
+      if (ch.nodeType !== 1) return;
+      let tag = ch.tagName.toUpperCase();
+      tag = TAG_MAP[tag] ? TAG_MAP[tag].toUpperCase() : tag;
+      if (tag === "BR") { out += "<br/>"; return; }
+      if (!PASTE_TAGS.has(tag)) { out += walk(ch); return; } // unwrap unknown tags, keep text
+      let style = "";
+      try {
+        STYLE_KEEP.forEach((k) => { const v = ch.style.getPropertyValue(k); if (v && !/inherit|initial|normal|400|none/.test(v)) style += `${k}:${v};`; });
+      } catch (_) {}
+      const t = tag.toLowerCase();
+      const href = t === "a" ? ` href="${(ch.getAttribute("href") || "").replace(/["<>]/g, "")}"` : "";
+      const inner = walk(ch);
+      if (!inner && t !== "br") { out += ""; return; }
+      out += `<${t}${href}${style ? ` style="${style}"` : ""}>${inner}</${t}>`;
+    });
+    return out;
+  };
+  return sanitize(walk(doc.body));
+}
+
 const btnCls = "px-2.5 py-1.5 text-sm border transition-colors";
 
 export default function RichTextEditor({ value, onChange, placeholder = "Écris ton chapitre…" }) {
@@ -29,6 +63,22 @@ export default function RichTextEditor({ value, onChange, placeholder = "Écris 
   }, []);
 
   const emit = () => { if (ref.current) onChange(sanitize(ref.current.innerHTML)); };
+
+  const onPaste = (e) => {
+    e.preventDefault();
+    const cb = e.clipboardData;
+    const html = cb.getData("text/html");
+    const text = cb.getData("text/plain");
+    let toInsert;
+    if (html && html.trim()) {
+      toInsert = cleanPasted(html);
+    } else {
+      toInsert = (text || "").split(/\n{2,}/).filter(Boolean).map((p) => `<p>${escapeHtml(p).replace(/\n/g, "<br/>")}</p>`).join("");
+    }
+    ref.current?.focus();
+    document.execCommand("insertHTML", false, toInsert || escapeHtml(text || ""));
+    emit();
+  };
 
   const exec = (cmd, arg) => {
     ref.current?.focus();
@@ -84,6 +134,7 @@ export default function RichTextEditor({ value, onChange, placeholder = "Écris 
         suppressContentEditableWarning
         onInput={emit}
         onBlur={emit}
+        onPaste={onPaste}
         data-placeholder={placeholder}
         className="rte-area px-3 py-3 outline-none text-sm min-h-[140px] max-h-[340px] overflow-y-auto"
         style={{ color: "var(--text-primary)" }}

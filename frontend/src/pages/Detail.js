@@ -47,6 +47,8 @@ export default function Detail() {
   const bgSrc = item.has_bg ? bgUrl(item.id, item.updated_at) : (hasImg ? posterSrc : null);
   const thisPlaying = isPlaying && playingId === item.id;
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
+  const savedProgress = item.launch_type === "chapters" ? (() => { try { return JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) { return null; } })() : null;
+  const canResume = savedProgress && ((savedProgress.chapter || 0) > 0 || (savedProgress.ratio || 0) > 0.02);
 
   const ytEmbed = (url) => {
     const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
@@ -136,7 +138,7 @@ export default function Detail() {
                 <button data-testid="detail-launch" onClick={launch}
                   className="flex items-center gap-2 px-7 py-3.5 font-semibold text-lg transition-transform hover:scale-105"
                   style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", boxShadow: "var(--shadow-1)" }}>
-                  {item.launch_type === "chapters" ? <IoBookOutline size={20} /> : <IoPlay size={20} />} {item.launch_label || "Lancer"}
+                  {item.launch_type === "chapters" ? <IoBookOutline size={20} /> : <IoPlay size={20} />} {item.launch_type === "chapters" && canResume ? `Reprendre · ch. ${(savedProgress.chapter || 0) + 1}` : (item.launch_label || "Lancer")}
                 </button>
               )}
               {item.buy_url && (

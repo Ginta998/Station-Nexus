@@ -43,6 +43,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 13 (2026-07-20)
+- **Reprise de lecture** : progression (chapitre + ratio de défilement) mémorisée par œuvre dans `localStorage` (`sx_progress_{id}`), sauvegarde throttlée au scroll + au changement de chapitre. À la réouverture, le lecteur reprend au bon chapitre et à la bonne position (restauration par ratio, robuste aux images) + toast « Reprise au chapitre N ». Le bouton de la fiche affiche « Reprendre · ch. N » quand une progression existe.
+- **Lettrine (dropcap) rétablie sur le contenu enrichi** : le CSS ciblait `p:first-of-type` alors que le contenu WYSIWYG produit des `<div>` → lettrine invisible. Corrigé pour cibler le premier `<p>` ou `<div>`, en couleur du thème (`var(--brand)`) + ombre.
+- **Collage intelligent dans l'éditeur** (`onPaste`) : conserve gras/italique/souligné, titres/sous-titres, citations, listes, alignement (dialogues centrés) et couleurs, tout en nettoyant le HTML parasite de Word/Google Docs (polices, tailles, classes, styles mso). Repli en paragraphes si collage de texte brut.
+- Vérifié via screenshots (reprise exacte au ratio 0.45, lettrine 76px couleur thème). Collage : logique additive, dégradation gracieuse.
+
 ## Fix — Itération 12b (2026-07-20)
 - **Texte de chapitre enrichi invisible** : le conteneur `.reader-rich` (un seul grand bloc, ex. 11096px) portait l'animation reveal avec un `IntersectionObserver` à `threshold: 0.12` → 12% de la hauteur > hauteur écran, donc jamais déclenché → texte bloqué à `opacity:0`. Corrigé : `threshold: 0` + `rootMargin: 0px 0px -8% 0px` (s'affiche dès l'entrée à l'écran). Le texte brut fonctionnait déjà car découpé en petits paragraphes. Vérifié sur Born X Burn (chapitre riche).
 

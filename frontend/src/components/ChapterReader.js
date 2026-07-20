@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoMusicalNotes, IoPause, IoText } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { chapterAudioUrl, readingAudioUrl } from "@/lib/api";
+import { toast } from "sonner";
 
 function useReveal(deps) {
   const ref = useRef(null);
@@ -33,11 +34,15 @@ export default function ChapterReader({ item, onClose }) {
     readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   } = useApp();
   const chapters = item.chapters || [];
-  const [idx, setIdx] = useState(0);
+  const progressKey = "sx_progress_" + item.id;
+  const saved = (() => { try { return JSON.parse(localStorage.getItem(progressKey) || "null"); } catch (_) { return null; } })();
+  const [idx, setIdx] = useState(() => saved && Number.isInteger(saved.chapter) ? Math.min(Math.max(saved.chapter, 0), Math.max(chapters.length - 1, 0)) : 0);
   const [toc, setToc] = useState(false);
   const [prefs, setPrefs] = useState(false);
   const [progress, setProgress] = useState(0);
   const scrollRef = useRef(null);
+  const resumeRatio = useRef(saved && typeof saved.ratio === "number" && saved.ratio > 0.02 ? saved.ratio : null);
+  const lastSave = useRef(0);
   const chap = chapters[idx];
   const contentRef = useReveal([idx]);
   const readingKey = "reading:" + item.id;
@@ -49,20 +54,42 @@ export default function ChapterReader({ item, onClose }) {
     return null;
   }, [item]);
 
+  const saveProgress = useCallback((ratio) => {
+    try { localStorage.setItem(progressKey, JSON.stringify({ chapter: idx, ratio, t: Date.now() })); } catch (_) {}
+  }, [progressKey, idx]);
+
   // start reading music on open, switch track when chapter changes (fade + dedupe)
   useEffect(() => {
     playReadingUrl(trackFor(chapters[idx]), readingKey);
     // eslint-disable-next-line
   }, [idx]);
   useEffect(() => () => endReading(item.id, item.has_audio), []); // eslint-disable-line
+  useEffect(() => {
+    if (saved && ((saved.chapter || 0) > 0 || (saved.ratio || 0) > 0.02)) {
+      toast.success(`Reprise au chapitre ${(saved.chapter || 0) + 1}`, { duration: 2500 });
+    }
+  }, []); // eslint-disable-line
 
-  useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTo({ top: 0 }); }, [idx]);
+  // resume scroll position on the first chapter shown, otherwise reset to top
+  useEffect(() => {
+    const el = scrollRef.current; if (!el) return;
+    if (resumeRatio.current != null) {
+      const r = resumeRatio.current; resumeRatio.current = null;
+      const t = setTimeout(() => { const max = el.scrollHeight - el.clientHeight; if (max > 0) el.scrollTo({ top: max * r }); }, 400);
+      return () => clearTimeout(t);
+    }
+    el.scrollTo({ top: 0 });
+    saveProgress(0);
+  }, [idx]); // eslint-disable-line
 
   const onScroll = useCallback(() => {
     const el = scrollRef.current; if (!el) return;
     const max = el.scrollHeight - el.clientHeight;
-    setProgress(max > 0 ? Math.min(100, (el.scrollTop / max) * 100) : 0);
-  }, []);
+    const ratio = max > 0 ? el.scrollTop / max : 0;
+    setProgress(Math.min(100, ratio * 100));
+    const now = Date.now();
+    if (now - lastSave.current > 800) { lastSave.current = now; saveProgress(ratio); }
+  }, [saveProgress]);
 
   const close = () => { endReading(item.id, item.has_audio); onClose(); };
   const go = (d) => { sfx("nav"); setIdx((i) => Math.min(Math.max(i + d, 0), chapters.length - 1)); setToc(false); };
