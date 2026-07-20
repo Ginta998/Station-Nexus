@@ -72,6 +72,7 @@ export default function Home() {
     await deleteCreation(focused.id); toast.success("Supprimé"); refetch();
   };
   const open = (id) => { sfx("select"); nav(`/oeuvre/${id}`); };
+  const resume = (id) => { sfx("select"); nav(`/oeuvre/${id}`, { state: { resume: true } }); };
 
   return (
     <div className="relative h-screen w-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
@@ -153,7 +154,7 @@ export default function Home() {
             <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
               catLabel={catLabelByKey[it.category] || it.category}
               onFocus={() => { if (i !== focusIndex) sfx("hover"); setFocusIndex(i); }}
-              onClick={() => open(it.id)} />
+              onClick={() => open(it.id)} onResume={() => resume(it.id)} />
           ))}
         </div>
 

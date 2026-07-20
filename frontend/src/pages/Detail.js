@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube } from "react-icons/io5";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ import { TextSizeButton } from "@/components/TextSizeButton";
 export default function Detail() {
   const { id } = useParams();
   const nav = useNavigate();
+  const location = useLocation();
   const { isAdmin, playAmbient, stopAmbient, isPlaying, playingId, sfx } = useApp();
   const { data: item, refetch, isLoading } = useQuery({ queryKey: ["creation", id], queryFn: () => getCreation(id) });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
@@ -33,6 +34,16 @@ export default function Detail() {
     return () => stopAmbient();
     // eslint-disable-next-line
   }, [item?.id, item?.has_audio]);
+
+  // resume reading directly when navigated from a card's progress bar
+  useEffect(() => {
+    if (location.state?.resume && item && item.launch_type === "chapters") {
+      setReaderStart(null);
+      setChaptersOpen(true);
+      nav(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line
+  }, [location.state?.resume, item?.id]);
 
   const recommendations = useMemo(() => {
     const others = allCreations.filter((c) => c.id !== id);

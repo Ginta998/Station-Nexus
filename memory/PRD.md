@@ -43,6 +43,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 18 (2026-07-20)
+- **Reprise directe depuis la carte** : le libellé de progression sur `PosterCard` est désormais cliquable (`poster-resume-{id}`, `stopPropagation`) → `Home.resume(id)` navigue vers `/oeuvre/{id}` avec `state:{resume:true}`. `Detail` détecte ce state (via `useLocation`) et ouvre directement le `ChapterReader` au chapitre sauvegardé (puis nettoie le state avec `nav(replace)`), sans passer par la fiche. Toast « Reprise au chapitre N » comme d'habitude.
+- **Badge « ✓ Terminé »** : quand la progression atteint 100 % (`done = pct>=100`), affichage d'un badge `poster-done-{id}` en haut à droite de l'affiche et le libellé devient « ✓ Terminé · Relire » (clic = relire depuis le chapitre courant/début).
+- Auto-testé (screenshots) : clic reprise ouvre le lecteur au bon chapitre, badge Terminé + libellé Relire OK à 100 %.
+
+
 ## Implemented — Itération 17 (2026-07-20)
 - **Barre de progression de lecture par carte** (`PosterCard.js`) : pour les œuvres `launch_type==="chapters"`, la carte lit `localStorage sx_progress_{id}` et affiche un libellé « ▸ Ch. N/total · X% » (remplace l'accroche) + une fine barre de progression rouge en bas de l'affiche. Progression globale = (chapitre + ratio) / total. Backend : nouveau champ léger `chapters_count` (Creation) exposé dans la liste allégée et le détail (calculé dans `_lighten` + branche media) sans réintroduire les gros base64.
 - **2 nouveaux écrans de démarrage anime dynamiques** (`BootIntro.js` + `intro.js` + `index.css`) :

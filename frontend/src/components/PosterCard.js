@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { posterUrl } from "@/lib/api";
 
 const PosterCard = forwardRef(function PosterCard(
-  { item, focused, onFocus, onClick, catLabel },
+  { item, focused, onFocus, onClick, onResume, catLabel },
   ref
 ) {
   const hasImg = item.has_poster || (item.poster && item.poster.length > 4);
@@ -21,6 +21,7 @@ const PosterCard = forwardRef(function PosterCard(
       }
     } catch (_) {}
   }
+  const done = !!prog && prog.pct >= 100;
   return (
     <button
       ref={ref}
@@ -62,13 +63,26 @@ const PosterCard = forwardRef(function PosterCard(
           À venir
         </div>
       )}
+      {done && !item.coming_soon && (
+        <div data-testid={`poster-done-${item.id}`} className="absolute top-3 right-3 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest flex items-center gap-1"
+          style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+          ✓ Terminé
+        </div>
+      )}
 
       <div className="absolute inset-x-0 bottom-0 p-3 text-left">
         <p className="font-display text-base md:text-lg leading-tight" style={{ color: "#fff" }}>{item.title}</p>
         {prog ? (
-          <p data-testid={`poster-progress-${item.id}`} className="text-[10px] mt-0.5 font-semibold tracking-wide flex items-center gap-1" style={{ color: "var(--brand)" }}>
-            <span>▸ Ch. {prog.ch}/{prog.total} · {prog.pct}%</span>
-          </p>
+          <span
+            role="button"
+            data-testid={`poster-resume-${item.id}`}
+            onClick={(e) => { e.stopPropagation(); onResume && onResume(); }}
+            className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-semibold tracking-wide cursor-pointer transition-transform hover:scale-105"
+            style={{ color: "var(--brand)" }}
+            title={done ? "Relire depuis le début" : "Reprendre la lecture"}
+          >
+            {done ? "✓ Terminé · Relire" : `▸ Reprendre · Ch. ${prog.ch}/${prog.total} · ${prog.pct}%`}
+          </span>
         ) : item.tagline ? (
           <p className="sx-card-tagline text-[11px] mt-0.5 line-clamp-1" style={{ color: "rgba(255,255,255,0.65)" }}>{item.tagline}</p>
         ) : null}
