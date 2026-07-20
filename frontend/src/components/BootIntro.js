@@ -78,7 +78,59 @@ function TowersAnim() {
   );
 }
 
-const ANIMS = { tengoku: TengokuAnim, kanji: KanjiAnim, pulse: PulseAnim, towers: TowersAnim };
+function SlashAnim() {
+  const lines = Array.from({ length: 9 });
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+      {/* speed lines */}
+      <div className="absolute inset-0">
+        {lines.map((_, i) => (
+          <span key={i} className="absolute" style={{ top: `${6 + i * 10.5}%`, left: 0, width: "62%", height: "2px", background: "linear-gradient(90deg, transparent, var(--brand), #fff, transparent)", opacity: 0, animation: `introSpeed 0.85s ease ${i * 0.05}s forwards` }} />
+        ))}
+      </div>
+      {/* crossing katana streaks */}
+      <span className="absolute" style={{ width: "150%", height: "7px", background: "linear-gradient(90deg, transparent, #fff, transparent)", opacity: 0, animation: "introSlashStreak 0.65s cubic-bezier(.4,0,.2,1) 0.7s forwards" }} />
+      <span className="absolute" style={{ width: "150%", height: "4px", background: "linear-gradient(90deg, transparent, var(--brand), transparent)", opacity: 0, animation: "introSlashStreak2 0.65s cubic-bezier(.4,0,.2,1) 0.95s forwards" }} />
+      {/* impact flash */}
+      <div className="absolute inset-0" style={{ background: "#fff", opacity: 0, animation: "introFlash 1.4s ease 0.9s" }} />
+      {/* kanji */}
+      <div className="relative z-10 text-center">
+        <div className="font-display" style={{ color: "#fff", fontSize: "22vmin", opacity: 0, textShadow: "0 0 45px var(--brand)", animation: "introKanjiPop 0.8s ease 1.0s forwards, introGlitch 0.28s steps(2) 1.05s 2" }}>閃</div>
+        <div style={{ opacity: 0, animation: "introWord 0.7s ease 1.6s forwards" }}><Logo delay={0} /></div>
+      </div>
+    </div>
+  );
+}
+
+function HanabiAnim() {
+  const parts = Array.from({ length: 30 });
+  const colors = ["var(--brand)", "#ffd400", "#00fff5", "#ff4dcb", "#ffffff"];
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: "92vmin", height: "92vmin" }}>
+      {[0, 1, 2].map((i) => (
+        <span key={"r" + i} className="absolute rounded-full" style={{ width: "20vmin", height: "20vmin", border: "2px solid var(--brand)", opacity: 0, animation: `introPulseRing 1.8s ease-out ${0.35 + i * 0.22}s forwards` }} />
+      ))}
+      {parts.map((_, i) => {
+        const a = (i / parts.length) * 6.2832;
+        const d = 30 + (i % 5) * 3;
+        return (
+          <span key={i} className="absolute rounded-full" style={{
+            width: "1.5vmin", height: "1.5vmin", background: colors[i % colors.length],
+            "--bx": `${(Math.cos(a) * d).toFixed(0)}vmin`, "--by": `${(Math.sin(a) * d).toFixed(0)}vmin`,
+            opacity: 0, boxShadow: `0 0 10px ${colors[i % colors.length]}`,
+            animation: `introBurst 1.7s cubic-bezier(.15,.7,.3,1) ${0.4 + (i % 6) * 0.03}s forwards`,
+          }} />
+        );
+      })}
+      <div className="absolute z-10 text-center">
+        <div className="font-display" style={{ color: "#fff", fontSize: "18vmin", opacity: 0, textShadow: "0 0 55px var(--brand)", animation: "introKanjiPop 0.9s ease 0.5s forwards, introSunGlow 2.2s ease 1.2s infinite" }}>華</div>
+        <div style={{ opacity: 0, animation: "introWord 0.7s ease 1.3s forwards" }}><Logo delay={0} /></div>
+      </div>
+    </div>
+  );
+}
+
+const ANIMS = { tengoku: TengokuAnim, kanji: KanjiAnim, pulse: PulseAnim, towers: TowersAnim, slash: SlashAnim, hanabi: HanabiAnim };
 
 export default function BootIntro({ type, hasVideo, onDone }) {
   const { muted, uiVolume, primeAudio } = useApp();

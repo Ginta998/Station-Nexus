@@ -160,6 +160,11 @@ body {
 @keyframes introPulseCore { 0%,100% { box-shadow: 0 0 40px 6px var(--brand); transform: scale(1); } 50% { box-shadow: 0 0 90px 24px var(--brand); transform: scale(1.08); } }
 @keyframes introTower { 0% { height: 0; opacity: 0.2; } 70% { height: 100%; opacity: 0.95; } 100% { height: 72%; opacity: 0.8; } }
 @keyframes introBarWipe { 0% { width: 0; } 100% { width: 100%; } }
+@keyframes introSpeed { 0% { transform: translateX(-130%) skewX(-18deg); opacity: 0; } 30% { opacity: 0.95; } 100% { transform: translateX(130%) skewX(-18deg); opacity: 0; } }
+@keyframes introFlash { 0% { opacity: 0; } 6% { opacity: 0.92; } 22% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes introSlashStreak { 0% { transform: translate(-150%, 150%) rotate(-42deg); opacity: 0; } 30% { opacity: 1; } 65% { opacity: 1; } 100% { transform: translate(150%, -150%) rotate(-42deg); opacity: 0; } }
+@keyframes introSlashStreak2 { 0% { transform: translate(150%, 150%) rotate(42deg); opacity: 0; } 30% { opacity: 1; } 65% { opacity: 1; } 100% { transform: translate(-150%, -150%) rotate(42deg); opacity: 0; } }
+@keyframes introBurst { 0% { opacity: 0; transform: translate(0,0) scale(0.2); } 18% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--bx), var(--by)) scale(1); } }
 .intro-skip { position: absolute; bottom: 28px; right: 28px; z-index: 2; }
 .intro-hint { position: absolute; bottom: 30px; left: 0; right: 0; text-align: center; font-size: 12px; letter-spacing: .2em; }
 

@@ -43,6 +43,15 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 17 (2026-07-20)
+- **Barre de progression de lecture par carte** (`PosterCard.js`) : pour les œuvres `launch_type==="chapters"`, la carte lit `localStorage sx_progress_{id}` et affiche un libellé « ▸ Ch. N/total · X% » (remplace l'accroche) + une fine barre de progression rouge en bas de l'affiche. Progression globale = (chapitre + ratio) / total. Backend : nouveau champ léger `chapters_count` (Creation) exposé dans la liste allégée et le détail (calculé dans `_lighten` + branche media) sans réintroduire les gros base64.
+- **2 nouveaux écrans de démarrage anime dynamiques** (`BootIntro.js` + `intro.js` + `index.css`) :
+  - **Anime Slash** (`slash`, 閃) : lignes de vitesse balayantes + deux tranches de sabre croisées + flash d'impact + kanji glitché. Son : swipes métalliques → impact grave → traîne.
+  - **Hanabi** (`hanabi`, 華) : anneaux concentriques + ~30 particules multicolores qui explosent en radial + kanji lumineux. Son : sifflement de lancement → boom → étincelles.
+  - Ajoutés aux INTROS → automatiquement inclus dans le tirage « Aléatoire ». Nouveaux keyframes : introSpeed, introFlash, introSlashStreak(2), introBurst.
+- Auto-testé (curl + screenshots) : `chapters_count=2` renvoyé, libellé carte « ▸ Ch. 1/2 · 25% » + barre, aperçu des deux écrans OK.
+
+
 ## Implemented — Itération 16 (2026-07-20)
 - **Boutons du haut du lecteur agrandis** (`ChapterReader.js`) : Sommaire / Aa (réglages) / Musique / Fermer passent en boutons bordés plus grands (icônes 22-26px, padding p-2.5, fond léger) → plus lisibles et tactiles.
 - **Pack son personnalisé réservé à l'admin** (`Settings.js`) : le bouton « Pack personnalisé » et ses uploads (`soundpack-custom` / `custom-sounds`) sont désormais enveloppés dans `{isAdmin && ...}`. Un visiteur ne peut plus uploader ses propres sons (les packs synthétisés + Silence restent dispos).

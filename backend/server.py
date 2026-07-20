@@ -79,6 +79,7 @@ class Creation(BaseModel):
     button_size: str = "md"          # md | lg — size of the main action buttons
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
+    chapters_count: int = 0
     has_audio: bool = False
     has_reading_audio: bool = False
     has_poster: bool = False
@@ -209,6 +210,7 @@ def _lighten(doc: dict, keep_gallery_chapters: bool = False) -> dict:
     """Strip heavy base64 fields, expose has_* flags. Used for list/detail responses."""
     doc["has_poster"] = bool(doc.get("poster"))
     doc["has_bg"] = bool(doc.get("bg_image"))
+    doc["chapters_count"] = len(doc.get("chapters") or [])
     doc["poster"] = ""
     doc["bg_image"] = ""
     if not keep_gallery_chapters:
@@ -233,6 +235,7 @@ async def get_creation(cid: str, media: bool = False):
     if media:
         doc["has_poster"] = bool(doc.get("poster"))
         doc["has_bg"] = bool(doc.get("bg_image"))
+        doc["chapters_count"] = len(doc.get("chapters") or [])
         return Creation(**doc)
     return Creation(**_lighten(doc, keep_gallery_chapters=True))
 

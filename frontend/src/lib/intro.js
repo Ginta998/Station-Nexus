@@ -4,6 +4,8 @@ export const INTROS = [
   { key: "kanji", label: "Kanji Storm", kanji: "嵐", tagline: "Tempête d'idéogrammes", duration: 3200 },
   { key: "pulse", label: "Pulse", kanji: "波", tagline: "Onde lumineuse (façon Steam)", duration: 3200 },
   { key: "towers", label: "Colonnes", kanji: "光", tagline: "Colonnes de lumière (façon PS2)", duration: 3600 },
+  { key: "slash", label: "Anime Slash", kanji: "閃", tagline: "Sabre & lignes de vitesse", duration: 3400 },
+  { key: "hanabi", label: "Hanabi", kanji: "華", tagline: "Explosion de particules", duration: 3400 },
 ];
 
 let ctx = null;
@@ -60,5 +62,19 @@ export function playBoot(type, { muted = false, volume = 0.8 } = {}) {
     [130, 196, 261, 329, 392, 523].forEach((f, i) =>
       note(c, { type: "triangle", freq: f, glide: f * 1.5, dur: 1.6, gain: 0.07, delay: i * 0.25, vol: v }));
     note(c, { type: "sine", freq: 784, dur: 1.8, gain: 0.08, delay: 1.6, vol: v });
+  } else if (type === "slash") {
+    // anime slash: metallic swipe(s) → deep impact → hopeful tail
+    note(c, { type: "sawtooth", freq: 2200, glide: 500, dur: 0.16, gain: 0.09, delay: 0.7, vol: v });
+    note(c, { type: "sawtooth", freq: 2600, glide: 600, dur: 0.16, gain: 0.09, delay: 0.95, vol: v });
+    note(c, { type: "sine", freq: 80, glide: 48, dur: 0.5, gain: 0.3, delay: 1.05, vol: v });
+    note(c, { type: "triangle", freq: 660, glide: 990, dur: 1.3, gain: 0.09, delay: 1.2, vol: v });
+    note(c, { type: "sine", freq: 988, dur: 1.4, gain: 0.07, delay: 1.5, vol: v });
+  } else if (type === "hanabi") {
+    // firework: launch whistle → boom → sparkling descent
+    note(c, { type: "sine", freq: 400, glide: 1200, dur: 0.5, gain: 0.06, delay: 0.05, vol: v });
+    note(c, { type: "sine", freq: 70, dur: 0.35, gain: 0.3, delay: 0.45, vol: v });
+    [1046, 1318, 1568, 2093, 2637].forEach((f, i) =>
+      note(c, { type: "triangle", freq: f, dur: 0.55, gain: 0.06, delay: 0.55 + i * 0.06, vol: v }));
+    note(c, { type: "sine", freq: 784, dur: 1.5, gain: 0.07, delay: 1.3, vol: v });
   }
 }

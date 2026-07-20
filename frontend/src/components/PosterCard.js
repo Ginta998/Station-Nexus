@@ -7,6 +7,20 @@ const PosterCard = forwardRef(function PosterCard(
 ) {
   const hasImg = item.has_poster || (item.poster && item.poster.length > 4);
   const src = item.poster && item.poster.length > 4 ? item.poster : posterUrl(item.id, item.updated_at);
+
+  let prog = null;
+  const total = item.chapters_count || 0;
+  if (item.launch_type === "chapters" && total > 0) {
+    try {
+      const s = JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null");
+      if (s && Number.isInteger(s.chapter)) {
+        const ch = Math.min(Math.max(s.chapter, 0), total - 1);
+        const ratio = typeof s.ratio === "number" ? Math.max(0, Math.min(1, s.ratio)) : 0;
+        const pct = Math.min(100, Math.round(((ch + ratio) / total) * 100));
+        prog = { ch: ch + 1, total, pct };
+      }
+    } catch (_) {}
+  }
   return (
     <button
       ref={ref}
@@ -51,10 +65,20 @@ const PosterCard = forwardRef(function PosterCard(
 
       <div className="absolute inset-x-0 bottom-0 p-3 text-left">
         <p className="font-display text-base md:text-lg leading-tight" style={{ color: "#fff" }}>{item.title}</p>
-        {item.tagline ? (
+        {prog ? (
+          <p data-testid={`poster-progress-${item.id}`} className="text-[10px] mt-0.5 font-semibold tracking-wide flex items-center gap-1" style={{ color: "var(--brand)" }}>
+            <span>▸ Ch. {prog.ch}/{prog.total} · {prog.pct}%</span>
+          </p>
+        ) : item.tagline ? (
           <p className="sx-card-tagline text-[11px] mt-0.5 line-clamp-1" style={{ color: "rgba(255,255,255,0.65)" }}>{item.tagline}</p>
         ) : null}
       </div>
+
+      {prog && (
+        <div className="absolute inset-x-0 bottom-0 h-1" style={{ background: "rgba(255,255,255,0.18)" }}>
+          <div style={{ height: "100%", width: `${prog.pct}%`, background: "var(--brand)", boxShadow: "0 0 8px var(--brand)", transition: "width 0.4s ease" }} />
+        </div>
+      )}
 
       {focused && <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: "inset 0 0 0 2px var(--brand)" }} />}
     </button>
