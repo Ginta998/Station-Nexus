@@ -43,6 +43,16 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 10 (2026-07-20)
+- **FIX P0 affichage mobile des fiches** : `GET /api/creations` renvoyait **38 Mo** (posters/fonds/galeries base64 intégrés) → sur mobile la page restait bloquée sur « Chargement… », d'où l'obligation d'actualiser. Refactor : la liste est allégée (**~14 Ko**, champs `has_poster`/`has_bg`, images vidées) et les images sont servies via endpoints dédiés `GET /api/creations/{id}/poster` et `/bg` (avec `Cache-Control`). Le détail garde galerie+chapitres ; `?media=1` renvoie l'item complet (base64) pour l'éditeur.
+  - Frontend : `posterUrl`/`bgUrl`/`getCreationFull` (api.js) ; PosterCard/Home/Detail/recommandations utilisent les endpoints ; **EditorDialog récupère l'item complet à l'édition** pour ne pas écraser les images au save (testé bout-en-bout).
+- **Préchargement écran de démarrage** : liste désormais quasi instantanée → plus de « Chargement » après l'intro.
+- **Écran d'entrée** : bloc centré (`boot-ready`) avec le mot-symbole STATIONEXUS et le bouton **Entrer** plus gros directement en dessous, centré à l'écran.
+- **Bouton Accueil** ajouté sur chaque fiche (`detail-home`) à côté de Retour.
+- **Personnalisation de l'interface** (nouvelle section Paramètres, persistée en localStorage, appliquée sur `<html>`) : couleur d'accent (10 presets + picker), style des coins (Net/Arrondi/Doux/Pilule), taille des affiches (Compact/Normal/Grand), réduire les animations, afficher/masquer les accroches sur les cartes.
+- Nettoyage : suppression d'items de test résiduels (`TEST_*`).
+- Tests : backend 6/6, frontend 100%, 0 erreur console (iteration_10.json).
+
 ## Implemented — Itération 9 (2026-07-20)
 - **FIX P0 crash page Detail** : `useMemo` (recommandations) était appelé APRÈS le `return` anticipé dans `Detail.js` → violation des règles des hooks React → toute la page Detail plantait (timeout Playwright sur `detail-share`). `useMemo` remonté avant le early return. Bouton Partager + section Recommandations désormais fonctionnels.
 - **FIX P0 autoplay audio (solution A choisie par l'utilisateur)** : le BootIntro devient un écran d'entrée cinématique. Après l'animation, un bouton « Entrer » (`data-testid=boot-enter`) apparaît ; le clic amorce l'AudioContext + démarre l'ambiance (`primeAudio()` dans `AppContext`, `primeAudioCtx()` dans `sound.js`). Respecte la contrainte navigateur (geste utilisateur requis).
