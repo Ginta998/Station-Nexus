@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio } from "@/lib/api";
+import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull } from "@/lib/api";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
@@ -29,6 +29,10 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
       setForm(base); setAudioFile(null); setReadingFile(null);
+      // fetch full item (with base64 images) so editing preserves poster/bg/gallery/chapters
+      if (initial && initial.id) {
+        getCreationFull(initial.id).then((full) => setForm((f) => ({ ...empty, ...full }))).catch(() => {});
+      }
     }
   }, [open, initial]); // eslint-disable-line
 

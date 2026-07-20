@@ -8,6 +8,7 @@ export const useApp = () => useContext(AppContext);
 const LS = {
   theme: "sx_theme", pin: "sx_pin", admin: "sx_admin", music: "sx_musicvolume", ui: "sx_uivolume",
   mute: "sx_mute", pack: "sx_soundpack", custom: "sx_customsounds", ambience: "sx_ambience",
+  accent: "sx_accent", radius: "sx_radius", posterSize: "sx_postersize", motion: "sx_motion", cardTagline: "sx_cardtagline",
 };
 const DEFAULT_PIN = "1234";
 
@@ -42,6 +43,13 @@ export function AppProvider({ children }) {
   const storedAmbience = localStorage.getItem(LS.ambience);
   const [ambienceId, setAmbienceId] = useState(storedAmbience || "");
 
+  // ---- interface customization ----
+  const [accent, setAccentState] = useState(() => localStorage.getItem(LS.accent) || "");
+  const [radius, setRadiusState] = useState(() => localStorage.getItem(LS.radius) || "");
+  const [posterSize, setPosterSizeState] = useState(() => localStorage.getItem(LS.posterSize) || "normal");
+  const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
+  const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
+
   // creation ambient
   const [playingId, setPlayingId] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -56,6 +64,22 @@ export function AppProvider({ children }) {
 
   useEffect(() => { if (!localStorage.getItem(LS.pin)) localStorage.setItem(LS.pin, DEFAULT_PIN); }, []);
   useEffect(() => { document.documentElement.setAttribute("data-theme", theme); }, [theme]);
+
+  // apply interface customization to <html>
+  useEffect(() => {
+    const el = document.documentElement;
+    if (accent) { el.style.setProperty("--brand", accent); el.style.setProperty("--brand-2", accent); }
+    else { el.style.removeProperty("--brand"); el.style.removeProperty("--brand-2"); }
+  }, [accent, theme]);
+  useEffect(() => {
+    const el = document.documentElement;
+    if (radius) el.style.setProperty("--radius-base", radius);
+    else el.style.removeProperty("--radius-base");
+  }, [radius, theme]);
+  useEffect(() => { document.documentElement.setAttribute("data-poster", posterSize); }, [posterSize]);
+  useEffect(() => { document.documentElement.setAttribute("data-motion", reduceMotion ? "reduced" : "full"); }, [reduceMotion]);
+  useEffect(() => { document.documentElement.setAttribute("data-card-tagline", cardTagline ? "on" : "off"); }, [cardTagline]);
+
   useEffect(() => { configureSound({ pack: soundPack, muted, custom: customSounds, volume: uiVolume }); }, [soundPack, muted, customSounds, uiVolume]);
   useEffect(() => {
     const v = muted ? 0 : musicVolume;
@@ -114,6 +138,12 @@ export function AppProvider({ children }) {
   const setCustom = (obj) => { setCustomSounds(obj); localStorage.setItem(LS.custom, JSON.stringify(obj)); };
   const toggleMute = () => setMuted((m) => { const nv = !m; localStorage.setItem(LS.mute, nv ? "1" : "0"); return nv; });
   const selectAmbience = (id) => { setAmbienceId(id); localStorage.setItem(LS.ambience, id || ""); };
+
+  const setAccent = (v) => { setAccentState(v); v ? localStorage.setItem(LS.accent, v) : localStorage.removeItem(LS.accent); };
+  const setRadius = (v) => { setRadiusState(v); v ? localStorage.setItem(LS.radius, v) : localStorage.removeItem(LS.radius); };
+  const setPosterSize = (v) => { setPosterSizeState(v); localStorage.setItem(LS.posterSize, v); };
+  const setReduceMotion = (v) => { setReduceMotionState(v); localStorage.setItem(LS.motion, v ? "1" : "0"); };
+  const setCardTagline = (v) => { setCardTaglineState(v); localStorage.setItem(LS.cardTagline, v ? "1" : "0"); };
 
   const unlock = (pin) => {
     if (pin === (localStorage.getItem(LS.pin) || DEFAULT_PIN)) {
@@ -202,6 +232,7 @@ export function AppProvider({ children }) {
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
+    accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

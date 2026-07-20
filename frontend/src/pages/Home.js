@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { IoChevronForward, IoCreateOutline, IoTrashOutline, IoPlay, IoFilter, IoSearch } from "react-icons/io5";
 import { toast } from "sonner";
 import { listCreations, listCategories, deleteCreation } from "@/lib/api";
+import { posterUrl, bgUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import TopBar from "@/components/TopBar";
 import PosterCard from "@/components/PosterCard";
@@ -63,7 +64,7 @@ export default function Home() {
 
   useEffect(() => { window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [onKey]);
 
-  const bgImg = focused ? (focused.bg_image && focused.bg_image.length > 4 ? focused.bg_image : (focused.poster && focused.poster.length > 4 ? focused.poster : null)) : null;
+  const bgImg = focused ? (focused.has_bg ? bgUrl(focused.id, focused.updated_at) : (focused.has_poster ? posterUrl(focused.id, focused.updated_at) : null)) : null;
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
   const openEdit = () => { if (focused) { setEditing(focused); setEditorOpen(true); } };
   const doDelete = async () => {

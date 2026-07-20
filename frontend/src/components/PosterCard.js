@@ -1,10 +1,12 @@
 import { forwardRef } from "react";
+import { posterUrl } from "@/lib/api";
 
 const PosterCard = forwardRef(function PosterCard(
   { item, focused, onFocus, onClick, catLabel },
   ref
 ) {
-  const hasImg = item.poster && item.poster.length > 4;
+  const hasImg = item.has_poster || (item.poster && item.poster.length > 4);
+  const src = item.poster && item.poster.length > 4 ? item.poster : posterUrl(item.id, item.updated_at);
   return (
     <button
       ref={ref}
@@ -19,10 +21,10 @@ const PosterCard = forwardRef(function PosterCard(
         borderWidth: focused ? "var(--border-width)" : "0px",
         transitionProperty: "transform, box-shadow, border-color, opacity",
       }}
-      className="relative flex-shrink-0 snap-center w-44 sm:w-52 md:w-60 aspect-[2/3] overflow-hidden border-brand duration-300 ease-out outline-none group"
+      className="sx-poster relative flex-shrink-0 snap-center aspect-[2/3] overflow-hidden border-brand duration-300 ease-out outline-none group"
     >
       {hasImg ? (
-        <img src={item.poster} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
+        <img src={src} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center"
           style={{ background: "linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))" }}>
@@ -50,7 +52,7 @@ const PosterCard = forwardRef(function PosterCard(
       <div className="absolute inset-x-0 bottom-0 p-3 text-left">
         <p className="font-display text-base md:text-lg leading-tight" style={{ color: "#fff" }}>{item.title}</p>
         {item.tagline ? (
-          <p className="text-[11px] mt-0.5 line-clamp-1" style={{ color: "rgba(255,255,255,0.65)" }}>{item.tagline}</p>
+          <p className="sx-card-tagline text-[11px] mt-0.5 line-clamp-1" style={{ color: "rgba(255,255,255,0.65)" }}>{item.tagline}</p>
         ) : null}
       </div>
 

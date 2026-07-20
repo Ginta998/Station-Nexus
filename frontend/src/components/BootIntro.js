@@ -113,17 +113,23 @@ export default function BootIntro({ type, hasVideo, onDone }) {
           className="w-full h-full object-cover" data-testid="boot-video" />
       ) : (
         <>
-          <Anim />
+          {!ready && <Anim />}
           {!ready && <ProgressBar duration={duration} />}
         </>
       )}
 
       {ready && (
-        <button onClick={(e) => { e.stopPropagation(); finish(); }} data-testid="boot-enter"
-          className="absolute left-1/2 -translate-x-1/2 px-10 py-3.5 font-display text-lg tracking-widest uppercase"
-          style={{ bottom: 64, color: "var(--bg-primary)", background: "var(--brand)", borderRadius: "var(--radius-base)", boxShadow: "0 0 40px var(--brand)", animation: "introWord 0.6s ease forwards, introSunGlow 2.4s ease infinite" }}>
-          Entrer
-        </button>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 px-6 text-center" data-testid="boot-ready">
+          <div className="font-display text-4xl sm:text-5xl md:text-6xl" style={{ color: "#fff", letterSpacing: "0.15em", textShadow: "0 2px 40px rgba(0,0,0,0.7)", animation: "introWord 0.7s ease forwards" }}>
+            STATION<span style={{ color: "var(--brand)" }}>EXUS</span>
+            <span className="font-display text-2xl ml-2" style={{ color: "var(--brand)", opacity: 0.8 }}>天</span>
+          </div>
+          <button onClick={(e) => { e.stopPropagation(); finish(); }} data-testid="boot-enter"
+            className="px-16 py-4 font-display text-xl md:text-2xl tracking-[0.25em] uppercase transition-transform hover:scale-105"
+            style={{ color: "var(--bg-primary)", background: "var(--brand)", borderRadius: "var(--radius-base)", boxShadow: "0 0 50px var(--brand)", animation: "introWord 0.6s ease 0.15s both, introSunGlow 2.6s ease 0.8s infinite" }}>
+            Entrer
+          </button>
+        </div>
       )}
 
       <button className="intro-skip flex items-center gap-1.5 px-4 py-2 border text-sm"
@@ -131,7 +137,7 @@ export default function BootIntro({ type, hasVideo, onDone }) {
         onClick={(e) => { e.stopPropagation(); finish(); }} data-testid="boot-skip">
         Passer ›
       </button>
-      {!ready && <p className="intro-hint" style={{ color: "rgba(255,255,255,0.4)" }}>Clique pour entrer</p>}
+      {!ready && <p className="intro-hint" style={{ color: "rgba(255,255,255,0.4)" }}>Chargement…</p>}
     </div>
   );
 }

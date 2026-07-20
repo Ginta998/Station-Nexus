@@ -1,0 +1,21 @@
+{
+  "summary": "Iteration 10 full regression PASSED. Backend: 6/6 pytest (light list ~14KB with has_poster/has_bg, /poster + /bg endpoints serve image bytes, ?media=1 returns full base64, editor round-trip preserves poster+bg, categories/ambiences/subscribers/settings 200, comment CRUD). Frontend Playwright: boot-intro shows on fresh session; boot-ready block appears after animation with STATIONEXUS wordmark and larger centered boot-enter button (228x64px, center_offset=0px directly under wordmark); clicking boot-enter dismisses intro. Mobile 390x844: 13 poster-cards render on FIRST load without refresh; 8 posters loaded successfully via /api/creations/{id}/poster endpoint (naturalWidth>0). Detail page: detail-title, detail-back (Retour) AND detail-home (Accueil) both present; detail-home navigates to /; detail-share present. CRITICAL editor test: unlocked admin, opened detail-edit on Born X Burn — poster preview populated via ?media=1, changed tagline to TEST value, saved, verified has_poster=true, has_bg=true, /poster returned 200 with 786KB image (NO regression). Settings customization all 5 controls (accent-grid=10 colors, radius-grid, poster-size-grid=3, toggle-motion, toggle-card-tagline) present and functional: accent click sets --brand=#e60012 + sx_accent localStorage; toggle-motion sets data-motion=reduced on <html>; toggle-card-tagline sets data-card-tagline=off; poster-size grand persists; ALL settings persist across reload. Zero console errors (only benign AudioContext autoplay warnings).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/backend/tests/test_iter10.py", "/app/test_reports/pytest/iter10.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server._lighten() correctly strips poster/bg_image and gallery/chapters (for list) while adding has_poster/has_bg — clean separation.",
+    "GET /creations/{cid} keeps gallery+chapters even when lightened (needed by Detail page) — good choice.",
+    "EditorDialog fetches full item via ?media=1 before opening, guaranteeing PUT round-trip preserves images — verified end-to-end.",
+    "posterUrl carries updated_at as ?v= query param → browser cache busts correctly after edit."
+  ],
+  "updated_files": ["/app/backend/tests/test_iter10.py"],
+  "success_rate": {"backend": "100% (6/6)", "frontend": "100% (boot + mobile-first-load + detail + editor-preserves-images + settings customization all pass)"},
+  "test_credentials": "Admin PIN 1234 — used via localStorage sx_pin_ok/sx_admin flags to open editor",
+  "seed_data_creation": "Ephemeral: TEST_iter10_media, TEST_iter10_noimg, TEST_iter10_preserve creations created and deleted in pytest. Tagline of Born X Burn temporarily changed then restored to 'Naître dans les flammes'.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "To bypass intro: sessionStorage sx_intro_shown=1 + localStorage sx_intro_off=1. To simulate admin unlock without PIN UI: localStorage sx_pin_ok=1 & sx_admin=1. Editor uses ?media=1 to preload base64 images; do NOT remove this or PUT will wipe posters.",
+  "rca of the issue": "N/A — main-agent's fix (light list + dedicated /poster & /bg endpoints + editor preloads full via ?media=1) verified across backend, mobile first-load, and admin editor save round-trip. 38MB payload → ~14KB confirmed."
+}

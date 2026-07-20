@@ -178,3 +178,30 @@ body {
   font-family: var(--font-display); float: left; font-size: 3.6em; line-height: 0.8;
   padding: 6px 12px 0 0; color: var(--brand);
 }
+
+
+/* ===== Interface customization ===== */
+.sx-poster { width: 11rem; }
+@media (min-width: 640px) { .sx-poster { width: 13rem; } }
+@media (min-width: 768px) { .sx-poster { width: 15rem; } }
+
+[data-poster="compact"] .sx-poster { width: 8.5rem; }
+@media (min-width: 640px) { [data-poster="compact"] .sx-poster { width: 10rem; } }
+@media (min-width: 768px) { [data-poster="compact"] .sx-poster { width: 11rem; } }
+
+[data-poster="grand"] .sx-poster { width: 13rem; }
+@media (min-width: 640px) { [data-poster="grand"] .sx-poster { width: 16rem; } }
+@media (min-width: 768px) { [data-poster="grand"] .sx-poster { width: 19rem; } }
+
+/* Reduce motion (opt-in) */
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+[data-motion="reduced"] .sx-poster { transform: none !important; }
+
+/* Hide taglines on poster cards */
+[data-card-tagline="off"] .sx-card-tagline { display: none; }

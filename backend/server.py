@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File
-from fastapi.responses import Response
+from fastapi.responses import Response, RedirectResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -76,6 +76,8 @@ class Creation(BaseModel):
     chapters: List[Chapter] = Field(default_factory=list)
     has_audio: bool = False
     has_reading_audio: bool = False
+    has_poster: bool = False
+    has_bg: bool = False
     coming_soon: bool = False
     order: int = 0
     created_at: str = Field(default_factory=now_iso)
@@ -178,20 +180,69 @@ def slugify(s: str) -> str:
     return s or str(uuid.uuid4())[:8]
 
 
+def _serve_image(data: Optional[str]):
+    """Serve a stored image (data URI or plain URL) as raw bytes / redirect."""
+    if not data:
+        raise HTTPException(404, "Image introuvable")
+    if data.startswith("data:"):
+        try:
+            header, b64 = data.split(",", 1)
+            ct = header[5:].split(";")[0] or "image/png"
+            return Response(content=base64.b64decode(b64), media_type=ct,
+                            headers={"Cache-Control": "public, max-age=86400"})
+        except Exception:
+            raise HTTPException(404, "Image invalide")
+    if data.startswith("http"):
+        return RedirectResponse(data)
+    raise HTTPException(404, "Image introuvable")
+
+
+def _lighten(doc: dict, keep_gallery_chapters: bool = False) -> dict:
+    """Strip heavy base64 fields, expose has_* flags. Used for list/detail responses."""
+    doc["has_poster"] = bool(doc.get("poster"))
+    doc["has_bg"] = bool(doc.get("bg_image"))
+    doc["poster"] = ""
+    doc["bg_image"] = ""
+    if not keep_gallery_chapters:
+        doc["gallery"] = []
+        doc["chapters"] = []
+    return doc
+
+
 # ---------------- Creations ----------------
 @api_router.get("/creations", response_model=List[Creation])
 async def list_creations(category: Optional[str] = None):
     q = {"category": category} if category else {}
     docs = await db.creations.find(q, {"_id": 0}).sort("order", 1).to_list(1000)
-    return [Creation(**d) for d in docs]
+    return [Creation(**_lighten(d)) for d in docs]
 
 
 @api_router.get("/creations/{cid}", response_model=Creation)
-async def get_creation(cid: str):
+async def get_creation(cid: str, media: bool = False):
     doc = await db.creations.find_one({"id": cid}, {"_id": 0})
     if not doc:
         raise HTTPException(404, "Création introuvable")
-    return Creation(**doc)
+    if media:
+        doc["has_poster"] = bool(doc.get("poster"))
+        doc["has_bg"] = bool(doc.get("bg_image"))
+        return Creation(**doc)
+    return Creation(**_lighten(doc, keep_gallery_chapters=True))
+
+
+@api_router.get("/creations/{cid}/poster")
+async def get_creation_poster(cid: str):
+    doc = await db.creations.find_one({"id": cid}, {"_id": 0, "poster": 1})
+    if not doc:
+        raise HTTPException(404, "Création introuvable")
+    return _serve_image(doc.get("poster"))
+
+
+@api_router.get("/creations/{cid}/bg")
+async def get_creation_bg(cid: str):
+    doc = await db.creations.find_one({"id": cid}, {"_id": 0, "bg_image": 1})
+    if not doc:
+        raise HTTPException(404, "Création introuvable")
+    return _serve_image(doc.get("bg_image"))
 
 
 @api_router.post("/creations", response_model=Creation, status_code=201)

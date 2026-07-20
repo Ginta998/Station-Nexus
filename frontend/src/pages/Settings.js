@@ -246,7 +246,8 @@ function IntroManager() {
 
 export default function Settings() {
   const nav = useNavigate();
-  const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx } = useApp();
+  const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
+    accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline } = useApp();
   const [pin, setPin] = useState(""); const [newPin, setNewPin] = useState("");
   const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const defTheme = siteSettings?.default_theme || "tengoku";
@@ -262,6 +263,16 @@ export default function Settings() {
   };
 
   const packs = [...SOUND_PACKS, { key: "silence", label: "Silence", emoji: "🔕" }];
+
+  const ACCENTS = [
+    { v: "", label: "Thème", c: "var(--brand)" }, { v: "#e60012", label: "Rouge", c: "#e60012" },
+    { v: "#ff7a00", label: "Orange", c: "#ff7a00" }, { v: "#ffd400", label: "Or", c: "#ffd400" },
+    { v: "#00e5a0", label: "Jade", c: "#00e5a0" }, { v: "#00fff5", label: "Cyan", c: "#00fff5" },
+    { v: "#4d8dff", label: "Bleu", c: "#4d8dff" }, { v: "#c4b5fd", label: "Lilas", c: "#c4b5fd" },
+    { v: "#ff4dcb", label: "Rose", c: "#ff4dcb" }, { v: "#ffffff", label: "Blanc", c: "#ffffff" },
+  ];
+  const RADII = [{ v: "", label: "Thème" }, { v: "0px", label: "Net" }, { v: "10px", label: "Arrondi" }, { v: "18px", label: "Doux" }, { v: "999px", label: "Pilule" }];
+  const POSTERS = [{ v: "compact", label: "Compact" }, { v: "normal", label: "Normal" }, { v: "grand", label: "Grand" }];
 
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
@@ -346,6 +357,53 @@ export default function Settings() {
 
         <Section title="Écran de démarrage" extra="— intro type PS2 / Steam">
           <IntroManager />
+        </Section>
+
+        <Section title="Personnalisation de l'interface" extra="— rends la station unique">
+          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Couleur d'accent</p>
+          <div className="flex flex-wrap gap-2 mb-3" data-testid="accent-grid">
+            {ACCENTS.map((a) => (
+              <button key={a.label} data-testid={`accent-${a.v || "theme"}`} onClick={() => { setAccent(a.v); sfx("select"); }}
+                title={a.label} className="w-10 h-10 border flex items-center justify-center"
+                style={{ background: a.c, borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", outline: accent === a.v ? "2px solid var(--text-primary)" : "none", outlineOffset: 2 }}>
+                {accent === a.v && <IoCheckmarkCircle style={{ color: "#000", mixBlendMode: "difference" }} />}
+              </button>
+            ))}
+            <label className="w-10 h-10 border flex items-center justify-center cursor-pointer text-xs" style={{ ...fs, background: "var(--bg-secondary)" }} title="Couleur personnalisée" data-testid="accent-custom">
+              🎨<input type="color" hidden value={accent || "#e60012"} onChange={(e) => setAccent(e.target.value)} />
+            </label>
+          </div>
+
+          <p className="text-xs uppercase tracking-widest mb-2 mt-5" style={{ color: "var(--text-secondary)" }}>Style des coins</p>
+          <div className="flex flex-wrap gap-2 mb-3" data-testid="radius-grid">
+            {RADII.map((r) => (
+              <button key={r.label} data-testid={`radius-${r.v || "theme"}`} onClick={() => { setRadius(r.v); sfx("nav"); }}
+                className="px-4 py-2 border text-sm" style={{ ...fs, background: "var(--bg-secondary)", borderRadius: r.v || "var(--radius-base)", outline: radius === r.v ? "2px solid var(--brand)" : "none" }}>
+                {r.label}
+              </button>
+            ))}
+          </div>
+
+          <p className="text-xs uppercase tracking-widest mb-2 mt-5" style={{ color: "var(--text-secondary)" }}>Taille des affiches</p>
+          <div className="flex flex-wrap gap-2 mb-3" data-testid="poster-size-grid">
+            {POSTERS.map((p) => (
+              <button key={p.v} data-testid={`poster-size-${p.v}`} onClick={() => { setPosterSize(p.v); sfx("nav"); }}
+                className="px-4 py-2 border text-sm" style={{ ...fs, background: "var(--bg-secondary)", outline: posterSize === p.v ? "2px solid var(--brand)" : "none" }}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-5 space-y-3">
+            <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="toggle-motion">
+              <span className="text-sm" style={{ color: "var(--text-primary)" }}>Réduire les animations <span className="block text-xs" style={{ color: "var(--text-secondary)" }}>Confort / économie de batterie</span></span>
+              <input type="checkbox" checked={reduceMotion} onChange={(e) => setReduceMotion(e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
+            </label>
+            <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="toggle-card-tagline">
+              <span className="text-sm" style={{ color: "var(--text-primary)" }}>Afficher les accroches sur les cartes</span>
+              <input type="checkbox" checked={cardTagline} onChange={(e) => setCardTagline(e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
+            </label>
+          </div>
         </Section>
 
         <Section title="Thèmes" extra="— 12 ambiances">

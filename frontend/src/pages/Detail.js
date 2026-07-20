@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube } from "react-icons/io5";
+import { IoArrowBack, IoHome, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube } from "react-icons/io5";
 import { toast } from "sonner";
-import { getCreation, deleteCreation, listCategories, listCreations } from "@/lib/api";
+import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import EditorDialog from "@/components/EditorDialog";
 import CommentsSection from "@/components/CommentsSection";
@@ -42,8 +42,9 @@ export default function Detail() {
     return <div className="h-screen flex items-center justify-center" style={{ color: "var(--text-secondary)" }}>Chargement…</div>;
   }
 
-  const hasImg = item.poster && item.poster.length > 4;
-  const bgSrc = item.bg_image && item.bg_image.length > 4 ? item.bg_image : (hasImg ? item.poster : null);
+  const hasImg = item.has_poster || (item.poster && item.poster.length > 4);
+  const posterSrc = item.poster && item.poster.length > 4 ? item.poster : posterUrl(item.id, item.updated_at);
+  const bgSrc = item.has_bg ? bgUrl(item.id, item.updated_at) : (hasImg ? posterSrc : null);
   const thisPlaying = isPlaying && playingId === item.id;
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
 
@@ -84,9 +85,14 @@ export default function Detail() {
 
       <div className="relative z-10">
         <div className="flex items-center justify-between px-5 md:px-12 pt-6">
-          <button data-testid="detail-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={btn}>
-            <IoArrowBack /> <span className="text-sm">Retour</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button data-testid="detail-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={btn}>
+              <IoArrowBack /> <span className="text-sm">Retour</span>
+            </button>
+            <button data-testid="detail-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={btn}>
+              <IoHome size={16} /> <span className="text-sm">Accueil</span>
+            </button>
+          </div>
           <div className="flex items-center gap-2">
             <ShareMenu item={item} cardRef={cardRef} />
             {isAdmin && (
@@ -102,7 +108,7 @@ export default function Detail() {
           <div ref={cardRef} className="flex-shrink-0 w-56 sm:w-64 md:w-80 aspect-[2/3] overflow-hidden border relative fade-up"
             style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", boxShadow: "var(--shadow-1)" }} data-testid="detail-poster">
             {hasImg ? (
-              <img src={item.poster} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
+              <img src={posterSrc} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))" }}>
                 <span className="font-display text-8xl" style={{ color: "var(--brand)" }}>{item.kanji || item.title[0]}</span>
@@ -210,12 +216,12 @@ export default function Detail() {
                 <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.65)" }}>D'autres créations qui pourraient te plaire ✨</p>
                 <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
                   {recommendations.map((r) => {
-                    const rimg = r.poster && r.poster.length > 4;
+                    const rimg = r.has_poster || (r.poster && r.poster.length > 4);
                     return (
                       <button key={r.id} data-testid={`reco-${r.id}`} onClick={() => { sfx("select"); nav(`/oeuvre/${r.id}`); }}
                         className="flex-shrink-0 w-28 sm:w-32 text-left transition-transform hover:scale-105">
                         <div className="w-full aspect-[2/3] overflow-hidden border relative" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-                          {rimg ? <img src={r.poster} alt={r.title} className="w-full h-full object-cover" /> : (
+                          {rimg ? <img src={r.poster && r.poster.length > 4 ? r.poster : posterUrl(r.id, r.updated_at)} alt={r.title} loading="lazy" className="w-full h-full object-cover" /> : (
                             <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))" }}>
                               <span className="font-display text-4xl" style={{ color: "var(--brand)" }}>{r.kanji || r.title[0]}</span>
                             </div>
