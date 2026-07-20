@@ -1,0 +1,36 @@
+{
+  "summary": "Full regression of Detail page (share + recommendations), BootIntro entry screen (solution A), theme readability (shiro/washi/tengoku), Home core flow, and backend endpoints. Backend pytest 9/9 pass (creations list=13, filters, get-by-id, 404, CRUD create/update/delete, audio upload/stream/delete, 12MB reject 413). Frontend Playwright: boot-intro shows on fresh session, boot-skip visible, boot-enter appears after animation and dismisses intro on click; Home shows category-nav/poster-rail/launch-cta and launch-cta navigates to /oeuvre/{id}; Detail renders detail-title (no crash after useMemo-above-early-return fix); detail-share opens share-menu with all 5 options (share-x/whatsapp/facebook/copy/card); recommendations section renders 6 reco cards and clicking one navigates to a different /oeuvre/{id}; theme switching to shiro, washi and back to tengoku keeps logo-home, contact-btn, settings-btn and category-nav visible. Zero console errors during the run.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/config", "issue": "Endpoint mentioned in review request does not exist (returns 404). Site settings are actually served at /api/settings which works. Review request likely conflated the two."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Detail recommendations", "issue": "When landing directly on /oeuvre/{id} via a cold navigation, recommendations render only after allCreations context finishes loading (~1-2s). Not a bug, but a Playwright test needs an explicit wait; not visible to users because the rest of the page loads simultaneously.", "affected_selectors": ["[data-testid=recommendations]"]}
+    ],
+    "design_issues": [
+      {"screen": "TopBar under washi theme", "issues": ["Logo computed color is rgb(158,153,150) — visible but contrast against the dark backdrop image is noticeably lower than shiro/tengoku; could be improved with a stronger --on-media override for washi."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/iter9_backend.xml"],
+  "action_items": [
+    "Optional: bump text contrast for washi theme (currently uses default --on-media-2 grey; a pure white override would match shiro/tengoku).",
+    "Optional: clarify /api/config vs /api/settings in the request checklist for future iterations."
+  ],
+  "critical_code_review_comments": [
+    "Detail.js useMemo now correctly placed above the early return — hooks order fixed; recommendations shuffle mutates a copy safely.",
+    "BootIntro primeAudio() is called on click, correctly satisfying the browser user-gesture requirement — good pattern.",
+    "backend_test.py had a hardcoded assert status==200 on POST /api/creations but server returns 201 (correct REST). Test relaxed to accept (200,201); actual API behaviour is fine."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100% (9/9)", "frontend": "100% (all boot/detail/share/reco/theme/home flows pass, 0 console errors)"},
+  "test_credentials": "Admin PIN 1234 (not exercised in this run)",
+  "seed_data_creation": "Ephemeral: TEST_Item created/updated/deleted; TEST_Audio created + tiny mp3 uploaded + deleted. No residue.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Run pytest with `-o addopts=''` to disable xdist parallelization (backend_test.py TestCrud is order-dependent create->update->delete). To bypass boot intro in Playwright, set both sessionStorage 'sx_intro_shown'='1' and localStorage 'sx_intro_off'='1' before navigation. For deep-linked /oeuvre/{id}, wait ~2s after detail-title appears for the recommendations section to hydrate from AppContext.",
+  "rca of the issue": "N/A — Detail page hooks-order crash was already fixed by main agent (useMemo hoisted above `if (isLoading || !item) return ...`). Verified: detail-title renders, no console errors, share menu + recommendations both functional."
+}

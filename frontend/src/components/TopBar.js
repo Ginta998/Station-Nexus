@@ -7,12 +7,12 @@ export default function TopBar({ onAdd }) {
   const { isAdmin, muted, toggleMute, sfx } = useApp();
   const go = (p) => { sfx("select"); nav(p); };
 
-  const btn = { borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)" };
+  const btn = { borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" };
 
   return (
     <header className="relative z-20 flex items-center justify-between px-5 md:px-12 pt-6 md:pt-8">
       <button data-testid="logo-home" onClick={() => go("/")} className="flex items-baseline gap-2 outline-none">
-        <span className="font-display text-2xl md:text-3xl" style={{ color: "var(--text-primary)" }}>
+        <span className="font-display text-2xl md:text-3xl" style={{ color: "var(--on-media)", textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
           STATION<span style={{ color: "var(--brand)" }}>EXUS</span>
         </span>
         <span className="font-display text-lg" style={{ color: "var(--brand)", opacity: 0.7 }}>天</span>
@@ -20,7 +20,7 @@ export default function TopBar({ onAdd }) {
 
       <div className="flex items-center gap-2 md:gap-3">
         <button data-testid="mute-toggle" onClick={() => { toggleMute(); sfx("nav"); }} title="Couper le son"
-          className="p-2.5 border transition-colors" style={{ ...btn, color: muted ? "var(--text-secondary)" : "var(--brand)" }}>
+          className="p-2.5 border transition-colors" style={{ ...btn, color: muted ? "var(--on-media-2)" : "var(--brand)" }}>
           {muted ? <IoVolumeMute size={18} /> : <IoVolumeHigh size={18} />}
         </button>
 
@@ -38,7 +38,7 @@ export default function TopBar({ onAdd }) {
         )}
 
         <div data-testid="admin-badge" className="hidden sm:flex items-center gap-1.5 px-3 py-2.5 border text-xs"
-          style={{ ...btn, color: "var(--text-secondary)" }}>
+          style={{ ...btn, color: "var(--on-media-2)" }}>
           {isAdmin ? <IoLockOpen size={14} style={{ color: "var(--brand)" }} /> : <IoLockClosed size={14} />}
           {isAdmin ? "Création" : "Visiteur"}
         </div>

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { audioUrl, ambienceUrl, readingAudioUrl, getSettings } from "@/lib/api";
-import { configureSound, playUiSound } from "@/lib/sound";
+import { configureSound, playUiSound, primeAudioCtx } from "@/lib/sound";
 
 const AppContext = createContext(null);
 export const useApp = () => useContext(AppContext);
@@ -125,6 +125,12 @@ export function AppProvider({ children }) {
 
   const sfx = useCallback((event) => { if (!muted) playUiSound(event); }, [muted]);
 
+  // Called on the first explicit user gesture (entry screen) to unlock audio playback.
+  const primeAudio = useCallback(() => {
+    primeAudioCtx();
+    if (!cardActiveRef.current) startAppAmbience();
+  }, [startAppAmbience]);
+
   const playAmbient = useCallback((id) => {
     const a = cardAudio.current; if (!a) return;
     // toggle off if this card is already playing
@@ -195,7 +201,7 @@ export function AppProvider({ children }) {
     musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,
-    playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading,
+    playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

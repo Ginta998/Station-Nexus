@@ -81,16 +81,18 @@ function TowersAnim() {
 const ANIMS = { tengoku: TengokuAnim, kanji: KanjiAnim, pulse: PulseAnim, towers: TowersAnim };
 
 export default function BootIntro({ type, hasVideo, onDone }) {
-  const { muted, uiVolume } = useApp();
+  const { muted, uiVolume, primeAudio } = useApp();
   const [leaving, setLeaving] = useState(false);
+  const [ready, setReady] = useState(false);
   const doneRef = useRef(false);
 
   const finish = useCallback(() => {
     if (doneRef.current) return;
     doneRef.current = true;
+    try { primeAudio(); } catch (_) {}
     setLeaving(true);
     setTimeout(onDone, 600);
-  }, [onDone]);
+  }, [onDone, primeAudio]);
 
   const isVideo = type === "video" && hasVideo;
   const Anim = ANIMS[type] || TengokuAnim;
@@ -98,21 +100,30 @@ export default function BootIntro({ type, hasVideo, onDone }) {
 
   useEffect(() => {
     if (!isVideo) playBoot(type, { muted, volume: uiVolume });
-    const t = setTimeout(finish, isVideo ? 15000 : duration);
+    // reveal the "Enter" prompt after the animation; user gesture unlocks audio
+    const t = setTimeout(() => setReady(true), isVideo ? 12000 : duration);
     return () => clearTimeout(t);
     // eslint-disable-next-line
   }, []);
 
   return (
-    <div className={`intro-root ${leaving ? "intro-out" : ""}`} onClick={finish} data-testid="boot-intro">
+    <div className={`intro-root ${leaving ? "intro-out" : ""}`} onClick={ready ? finish : undefined} data-testid="boot-intro">
       {isVideo ? (
-        <video src={introVideoUrl()} autoPlay playsInline muted={muted} onEnded={finish} onError={finish}
+        <video src={introVideoUrl()} autoPlay playsInline muted={muted} onEnded={() => setReady(true)} onError={() => setReady(true)}
           className="w-full h-full object-cover" data-testid="boot-video" />
       ) : (
         <>
           <Anim />
-          <ProgressBar duration={duration} />
+          {!ready && <ProgressBar duration={duration} />}
         </>
+      )}
+
+      {ready && (
+        <button onClick={(e) => { e.stopPropagation(); finish(); }} data-testid="boot-enter"
+          className="absolute left-1/2 -translate-x-1/2 px-10 py-3.5 font-display text-lg tracking-widest uppercase"
+          style={{ bottom: 64, color: "var(--bg-primary)", background: "var(--brand)", borderRadius: "var(--radius-base)", boxShadow: "0 0 40px var(--brand)", animation: "introWord 0.6s ease forwards, introSunGlow 2.4s ease infinite" }}>
+          Entrer
+        </button>
       )}
 
       <button className="intro-skip flex items-center gap-1.5 px-4 py-2 border text-sm"
@@ -120,7 +131,7 @@ export default function BootIntro({ type, hasVideo, onDone }) {
         onClick={(e) => { e.stopPropagation(); finish(); }} data-testid="boot-skip">
         Passer ›
       </button>
-      <p className="intro-hint" style={{ color: "rgba(255,255,255,0.4)" }}>Clique pour passer</p>
+      {!ready && <p className="intro-hint" style={{ color: "rgba(255,255,255,0.4)" }}>Clique pour entrer</p>}
     </div>
   );
 }

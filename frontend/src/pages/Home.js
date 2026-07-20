@@ -99,7 +99,7 @@ export default function Home() {
             return (
               <button key={c.key} data-testid={`cat-${c.key}`} onClick={() => { sfx("nav"); setCatIndex(i); }} aria-current={active}
                 className="flex items-center gap-2 px-3 md:px-4 py-2 whitespace-nowrap transition-all duration-300"
-                style={{ borderBottom: active ? "2px solid var(--brand)" : "2px solid transparent", color: active ? "var(--text-primary)" : "var(--text-secondary)" }}>
+                style={{ borderBottom: active ? "2px solid var(--brand)" : "2px solid transparent", color: active ? "var(--on-media)" : "var(--on-media-2)", textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>
                 <span className="font-display text-sm opacity-70">{c.kanji}</span>
                 <span className="text-sm md:text-base font-medium">{c.label}</span>
               </button>
@@ -110,7 +110,7 @@ export default function Home() {
         {/* filter bar */}
         <div className="flex items-center gap-2 px-5 md:px-12 mt-4">
           <button data-testid="filter-toggle" onClick={() => { sfx("nav"); setShowFilters((v) => !v); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 border text-xs" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-secondary)" }}>
+            className="flex items-center gap-1.5 px-3 py-1.5 border text-xs" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media-2)", background: "rgba(0,0,0,0.25)" }}>
             <IoFilter size={14} /> Filtres
           </button>
           {showFilters && (
@@ -167,12 +167,12 @@ export default function Home() {
             )}
             {isAdmin && focused && (
               <>
-                <button data-testid="home-edit" onClick={openEdit} className="p-3 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)" }}><IoCreateOutline size={18} /></button>
-                <button data-testid="home-delete" onClick={doDelete} className="p-3 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--brand)" }}><IoTrashOutline size={18} /></button>
+                <button data-testid="home-edit" onClick={openEdit} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" }}><IoCreateOutline size={18} /></button>
+                <button data-testid="home-delete" onClick={doDelete} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--brand)", background: "rgba(0,0,0,0.25)" }}><IoTrashOutline size={18} /></button>
               </>
             )}
           </div>
-          <p className="hidden md:block text-xs" style={{ color: "var(--text-secondary)" }}>← → naviguer · ↑ ↓ catégories · Entrée : ouvrir</p>
+          <p className="hidden md:block text-xs" style={{ color: "var(--on-media-2)", textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>← → naviguer · ↑ ↓ catégories · Entrée : ouvrir</p>
         </div>
       </div>
 

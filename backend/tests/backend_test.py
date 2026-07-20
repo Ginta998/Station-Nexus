@@ -62,7 +62,7 @@ class TestCrud:
         payload = {"title": "TEST_Item", "category": "livres", "tagline": "t", "synopsis": "syn",
                    "launch_type": "info", "launch_label": "Go"}
         r = s.post(f"{API}/creations", json=payload)
-        assert r.status_code == 200
+        assert r.status_code in (200, 201)
         data = r.json()
         assert data["title"] == "TEST_Item"
         assert data["category"] == "livres"

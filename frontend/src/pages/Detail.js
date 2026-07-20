@@ -32,6 +32,12 @@ export default function Detail() {
     // eslint-disable-next-line
   }, [item?.id, item?.has_audio]);
 
+  const recommendations = useMemo(() => {
+    const others = allCreations.filter((c) => c.id !== id);
+    for (let i = others.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [others[i], others[j]] = [others[j], others[i]]; }
+    return others.slice(0, 6);
+  }, [allCreations, id]);
+
   if (isLoading || !item) {
     return <div className="h-screen flex items-center justify-center" style={{ color: "var(--text-secondary)" }}>Chargement…</div>;
   }
@@ -40,12 +46,6 @@ export default function Detail() {
   const bgSrc = item.bg_image && item.bg_image.length > 4 ? item.bg_image : (hasImg ? item.poster : null);
   const thisPlaying = isPlaying && playingId === item.id;
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
-
-  const recommendations = useMemo(() => {
-    const others = allCreations.filter((c) => c.id !== id);
-    for (let i = others.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [others[i], others[j]] = [others[j], others[i]]; }
-    return others.slice(0, 6);
-  }, [allCreations, id]);
 
   const ytEmbed = (url) => {
     const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);

@@ -83,6 +83,9 @@ let settings = { pack: "zen", muted: false, custom: null, volume: 0.7 };
 
 export const configureSound = (s) => { settings = { ...settings, ...s }; };
 
+// Prime the AudioContext during a user gesture so UI sounds can play afterwards.
+export const primeAudioCtx = () => { getCtx(); };
+
 function beep(spec) {
   const c = getCtx();
   if (!c) return;

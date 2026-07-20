@@ -11,6 +11,8 @@
   --border-c: rgba(230, 0, 18, 0.3);
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.6);
+  --on-media: #ffffff;
+  --on-media-2: rgba(255, 255, 255, 0.72);
   --radius-base: 0px;
   --border-width: 1px;
   --shadow-1: 0 8px 30px rgba(230, 0, 18, 0.2);
