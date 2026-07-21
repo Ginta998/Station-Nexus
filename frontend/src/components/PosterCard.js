@@ -58,9 +58,9 @@ const PosterCard = forwardRef(function PosterCard(
         </div>
       )}
       {item.coming_soon && (
-        <div className="absolute top-3 right-3 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest"
+        <div data-testid={`poster-release-${item.id}`} className="absolute top-3 right-3 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest"
           style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-          À venir
+          {[item.release_month, item.release_year].filter(Boolean).join(" ") || "À venir"}
         </div>
       )}
       {done && !item.coming_soon && (

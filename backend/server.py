@@ -85,6 +85,8 @@ class Creation(BaseModel):
     has_poster: bool = False
     has_bg: bool = False
     coming_soon: bool = False
+    release_month: Optional[str] = ""   # French month name or ""
+    release_year: Optional[str] = ""    # e.g. "2026" or ""
     order: int = 0
     created_at: str = Field(default_factory=now_iso)
     updated_at: str = Field(default_factory=now_iso)
@@ -114,6 +116,8 @@ class CreationInput(BaseModel):
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     coming_soon: bool = False
+    release_month: Optional[str] = ""
+    release_year: Optional[str] = ""
     order: int = 0
 
 

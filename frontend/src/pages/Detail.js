@@ -167,6 +167,11 @@ export default function Detail() {
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="detail-category">{catLabel}</span>
               <span className="font-display text-2xl" style={{ color: "var(--brand)" }}>{item.kanji}</span>
               {item.coming_soon && <span className="px-2 py-0.5 text-[10px] uppercase tracking-widest border" style={{ borderColor: "rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.75)" }}>À venir</span>}
+              {item.coming_soon && [item.release_month, item.release_year].filter(Boolean).length > 0 && (
+                <span data-testid="detail-release" className="px-2 py-0.5 text-[10px] uppercase tracking-widest font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>
+                  Sortie · {[item.release_month, item.release_year].filter(Boolean).join(" ")}
+                </span>
+              )}
             </div>
             <h1 className="font-display text-4xl md:text-6xl leading-none break-words" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="detail-title">{item.title}</h1>
             <p className="mt-3 text-base md:text-lg" style={{ color: "rgba(255,255,255,0.9)" }}>{item.tagline}</p>

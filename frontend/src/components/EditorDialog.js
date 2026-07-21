@@ -8,8 +8,10 @@ const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
   poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, order: 0,
+  launch_content: "", launch_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0,
 };
+
+const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const Label = ({ children }) => <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--text-secondary)" }}>{children}</label>;
@@ -304,6 +306,18 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             <div className="flex items-center gap-2"><Label>Ordre</Label>
               <input data-testid="editor-order" type="number" value={form.order} onChange={(e) => set("order", e.target.value)} className="w-20 px-2 py-1 border outline-none" style={fs} /></div>
           </div>
+
+          {form.coming_soon && (
+            <div className="border p-3 flex gap-3" style={fs} data-testid="editor-release-section">
+              <div className="flex-1"><Label>Mois de sortie (optionnel)</Label>
+                <select data-testid="editor-release-month" value={form.release_month || ""} onChange={(e) => set("release_month", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
+                  <option value="">—</option>
+                  {MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}
+                </select></div>
+              <div className="w-32"><Label>Année (optionnel)</Label>
+                <input data-testid="editor-release-year" type="number" min="2024" max="2100" placeholder="2026" value={form.release_year || ""} onChange={(e) => set("release_year", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} /></div>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end gap-3 p-5 border-t" style={{ borderColor: "var(--border-c)" }}>

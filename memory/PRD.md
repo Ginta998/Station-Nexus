@@ -199,3 +199,11 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Page Contact éditable (bio, avatar, réseaux : mail/Instagram/YouTube) + collecte d'emails newsletter (liste + export CSV admin).
 - Lecteur de chapitres immersif type webtoon (défilement vertical, révélations au scroll, sommaire, chapitre préc./suiv., musique d'immersion, images par chapitre) pour launch_type='chapters'.
 - Backend : endpoints categories/comments/ambiences/subscribers/settings + migration idempotente des chapitres. Tests 26/26 backend + frontend 100%.
+
+## Changelog — 21/07/2026
+- Ajout d'une date de sortie (mois et/ou année) pour les créations "À venir".
+  - Backend (`server.py`): champs `release_month` (nom du mois FR) et `release_year` (string) sur `Creation` + `CreationInput`.
+  - Éditeur (`EditorDialog.js`): bloc mois (select Janvier→Décembre) + année (input) affiché quand "À venir" est coché. testids: `editor-release-month`, `editor-release-year`, `editor-release-section`.
+  - Carte (`PosterCard.js`): le badge "À venir" affiche la date ("Mois Année") si renseignée, sinon "À venir". testid: `poster-release-{id}`.
+  - Fiche (`Detail.js`): tag "Sortie · Mois Année" à côté de "À venir". testid: `detail-release`.
+  - Testé backend via curl (create/list/delete d'une création jetable). Frontend affiché OK.
