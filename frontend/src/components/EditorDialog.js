@@ -240,7 +240,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
                       </label>
                       <button onClick={() => delCh(i)} style={{ color: "var(--brand)" }} data-testid={`editor-chapter-delete-${i}`}><IoTrashOutline /></button>
                     </div>
-                    <RichTextEditor value={ch.rich ? (ch.content || "") : (ch.content ? ch.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : "")}
+                    <RichTextEditor creationId={isEdit ? initial.id : form.id} value={ch.rich ? (ch.content || "") : (ch.content ? ch.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : "")}
                       onChange={(html) => setForm((f) => ({ ...f, chapters: f.chapters.map((c, x) => (x === i ? { ...c, content: html, rich: true } : c)) }))} />
                     {/* per-chapter music */}
                     <div className="flex items-center gap-2 flex-wrap pt-1">

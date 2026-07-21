@@ -255,3 +255,27 @@ body {
   font-family: var(--font-display); float: left; font-size: 3.8em; line-height: 0.72;
   padding: 8px 14px 0 0; color: var(--brand); text-shadow: 0 2px 16px rgba(0,0,0,0.4);
 }
+
+
+/* ===== Inline media placed inside chapters (images + music cues) ===== */
+.sx-rich-img {
+  display: block; max-width: 100%; height: auto; margin: 1.6em auto;
+  border: 1px solid var(--border-c); border-radius: var(--radius-base);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+}
+.sx-music-cue {
+  display: inline-flex; align-items: center; gap: 0.3em;
+  vertical-align: baseline; cursor: pointer; user-select: none;
+  font-family: var(--font-body); font-size: 0.82em; font-style: normal; font-weight: 600;
+  line-height: 1; letter-spacing: 0.02em;
+  padding: 0.32em 0.7em; margin: 0 0.15em;
+  color: var(--brand); background: color-mix(in srgb, var(--brand) 12%, transparent);
+  border: 1px solid var(--brand); border-radius: 999px;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.sx-music-cue::before { content: "\25B6"; font-size: 0.72em; }
+.sx-music-cue:hover { transform: translateY(-1px); }
+.sx-music-cue[data-active="1"] { color: var(--bg-primary); background: var(--brand); box-shadow: 0 0 16px color-mix(in srgb, var(--brand) 60%, transparent); }
+.sx-music-cue[data-active="1"]::before { content: "\23F8"; }
+.rte-area .sx-music-cue { cursor: default; }
+.rte-area .sx-rich-img { max-height: 220px; width: auto; }

@@ -35,6 +35,15 @@ export const uploadChapterAudio = (cid, chid, file) => {
 export const deleteChapterAudio = (cid, chid) => api.delete(`/creations/${cid}/chapters/${chid}/audio`).then((r) => r.data);
 export const chapterAudioUrl = (cid, chid) => `${API}/creations/${cid}/chapters/${chid}/audio`;
 
+// inline media assets (images + music cues placed inside chapters)
+export const uploadAsset = (cid, file, kind = "image", name = "") => {
+  const fd = new FormData(); fd.append("file", file); fd.append("kind", kind); fd.append("name", name || file.name || "media");
+  return api.post(`/creations/${cid}/assets`, fd).then((r) => r.data);
+};
+export const listAssets = (cid) => api.get(`/creations/${cid}/assets`).then((r) => r.data);
+export const deleteAsset = (aid) => api.delete(`/assets/${aid}`).then((r) => r.data);
+export const assetUrl = (aid) => `${API}/assets/${aid}`;
+
 // categories
 export const listCategories = () => api.get("/categories").then((r) => r.data);
 export const createCategory = (p) => api.post("/categories", p).then((r) => r.data);

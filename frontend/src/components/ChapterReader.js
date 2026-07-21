@@ -99,6 +99,25 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   const close = () => { endReading(item.id, item.has_audio); onClose(); };
   const go = (d) => { sfx("nav"); setIdx((i) => Math.min(Math.max(i + d, 0), chapters.length - 1)); setToc(false); };
 
+  // music cues placed inline in the chapter — reader taps to play (no loop, fades over previous)
+  const onCueClick = (e) => {
+    const cue = e.target.closest && e.target.closest(".sx-music-cue");
+    if (!cue) return;
+    e.preventDefault();
+    const url = cue.getAttribute("data-track");
+    if (!url) return;
+    sfx("select");
+    toggleReadingUrl(url, "cue:" + url, { loop: false });
+  };
+  // reflect play/pause state on the cue chips
+  useEffect(() => {
+    const root = contentRef.current; if (!root) return;
+    root.querySelectorAll(".sx-music-cue").forEach((el) => {
+      const url = el.getAttribute("data-track");
+      el.setAttribute("data-active", (playingId === "cue:" + url && isPlaying) ? "1" : "0");
+    });
+  }, [playingId, isPlaying, idx]); // eslint-disable-line
+
   const wantComment = () => { sfx("select"); onComment ? (endReading(item.id, item.has_audio), onComment()) : toast.info("Commentaires disponibles sur la fiche."); };
   const shareCreation = async () => {
     sfx("nav");
@@ -188,7 +207,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
             ) : null}
 
             {chap?.rich ? (
-              <div data-reveal className="reveal reader-rich" data-dropcap={readerDropcap ? "on" : "off"} dangerouslySetInnerHTML={{ __html: chap.content || "" }} />
+              <div data-reveal className="reveal reader-rich" data-dropcap={readerDropcap ? "on" : "off"} onClick={onCueClick} dangerouslySetInnerHTML={{ __html: chap.content || "" }} />
             ) : (
               <>
                 {paras.map((p, i) => (

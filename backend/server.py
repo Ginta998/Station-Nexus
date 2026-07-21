@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form
 from fastapi.responses import Response, RedirectResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -282,6 +282,7 @@ async def delete_creation(cid: str):
     await db.media.delete_many({"creation_id": cid})
     await db.reading_media.delete_many({"creation_id": cid})
     await db.chapter_media.delete_many({"creation_id": cid})
+    await db.media_assets.delete_many({"creation_id": cid})
     await db.comments.delete_many({"creation_id": cid})
     return {"ok": True}
 
@@ -382,6 +383,42 @@ async def stream_chapter_audio(cid: str, chid: str):
 async def delete_chapter_audio(cid: str, chid: str):
     await db.chapter_media.delete_many({"creation_id": cid, "chapter_id": chid})
     await _set_chapter_music(cid, chid, False)
+    return {"ok": True}
+
+
+# ---------------- Inline media assets (images + music cues placed in chapters) ----------------
+@api_router.post("/creations/{cid}/assets")
+async def upload_asset(cid: str, file: UploadFile = File(...), kind: str = Form("image"), name: str = Form("")):
+    data = await file.read()
+    if len(data) > MAX_AUDIO_BYTES:
+        raise HTTPException(413, "Fichier trop volumineux (max 12 Mo)")
+    aid = str(uuid.uuid4())
+    b64 = base64.b64encode(data).decode("utf-8")
+    default_ct = "image/jpeg" if kind == "image" else "audio/mpeg"
+    doc = {"id": aid, "creation_id": cid, "kind": kind, "name": name or file.filename or "media",
+           "content_type": file.content_type or default_ct, "data": b64, "created_at": now_iso()}
+    await db.media_assets.insert_one(doc)
+    return {"id": aid, "kind": kind, "name": doc["name"], "content_type": doc["content_type"]}
+
+
+@api_router.get("/creations/{cid}/assets")
+async def list_assets(cid: str):
+    cur = db.media_assets.find({"creation_id": cid}, {"_id": 0, "data": 0}).sort("created_at", 1)
+    return [a async for a in cur]
+
+
+@api_router.get("/assets/{aid}")
+async def get_asset(aid: str):
+    a = await db.media_assets.find_one({"id": aid}, {"_id": 0})
+    if not a:
+        raise HTTPException(404, "Média introuvable")
+    return Response(content=base64.b64decode(a["data"]), media_type=a.get("content_type", "application/octet-stream"),
+                    headers={"Cache-Control": "public, max-age=31536000, immutable"})
+
+
+@api_router.delete("/assets/{aid}")
+async def delete_asset(aid: str):
+    await db.media_assets.delete_one({"id": aid})
     return {"ok": True}
 
 

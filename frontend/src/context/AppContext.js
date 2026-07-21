@@ -73,6 +73,13 @@ export function AppProvider({ children }) {
 
   useEffect(() => { if (!localStorage.getItem(LS.pin)) localStorage.setItem(LS.pin, DEFAULT_PIN); }, []);
   useEffect(() => { document.documentElement.setAttribute("data-theme", theme); }, [theme]);
+  // non-looping reading tracks (music cues) reset the UI when they finish
+  useEffect(() => {
+    const a = cardAudio.current; if (!a) return;
+    const onEnded = () => { setIsPlaying(false); };
+    a.addEventListener("ended", onEnded);
+    return () => a.removeEventListener("ended", onEnded);
+  }, []);
 
   // apply interface customization to <html>
   useEffect(() => {
@@ -232,8 +239,9 @@ export function AppProvider({ children }) {
 
   // Play a specific reading track (per-chapter music). Fades between sources and
   // dedupes so switching chapters that share the same fallback track won't restart it.
-  const playReadingUrl = useCallback((url, key) => {
+  const playReadingUrl = useCallback((url, key, opts = {}) => {
     const a = cardAudio.current; if (!a) return;
+    const loop = opts.loop !== false;
     cardActiveRef.current = true;      // own the channel; blocks app ambience
     stopAppAmbience(true);
     if (!url) {                        // no track -> immersive silence
@@ -243,6 +251,7 @@ export function AppProvider({ children }) {
     // already playing this exact source: just keep going
     if (!a.paused && a.dataset.rsrc === url) { setPlayingId(key); setIsPlaying(true); return; }
     const swap = () => {
+      a.loop = loop;
       a.src = url; a.dataset.rsrc = url; a.volume = 0;
       a.play().then(() => { setPlayingId(key); setIsPlaying(true); if (!muted) fadeTo(a, musicVolume, 400); })
         .catch(() => { setPlayingId(key); setIsPlaying(false); });
@@ -250,10 +259,10 @@ export function AppProvider({ children }) {
     if (!a.paused) fadeTo(a, 0, 200, swap); else swap();
   }, [muted, musicVolume, stopAppAmbience]);
 
-  const toggleReadingUrl = useCallback((url, key) => {
+  const toggleReadingUrl = useCallback((url, key, opts = {}) => {
     const a = cardAudio.current; if (!a) return;
     if (playingId === key && isPlaying) { fadeTo(a, 0, 200, () => a.pause()); setIsPlaying(false); return; }
-    playReadingUrl(url, key);
+    playReadingUrl(url, key, opts);
   }, [playingId, isPlaying, playReadingUrl]);
 
   // Called when leaving the chapter reader: restore the card ambient (or app ambience).

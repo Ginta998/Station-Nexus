@@ -1,0 +1,48 @@
+{
+  "summary": "Iteration 13 — Full-stack validation of the new inline media assets feature (images + music cues placed inside chapters). Backend endpoints tested via pytest (3/3 pass). Frontend flow validated end-to-end with Playwright: RTE image insertion, RTE music cue insertion (with title + audio upload), persistence after save, reader inline rendering, manual cue playback (data-active toggling), fade replacement (only one cue active at a time), and non-looping playback confirmed via captured audio.loop=false. Coexistence with existing reader-music header + chapter cover + navigation verified.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_iteration13_assets.py",
+    "/app/test_reports/pytest/iter13_assets.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py grew to ~700 lines and mixes 8 resource domains (creations, categories, comments, ambiences, subscribers, settings, intro, assets). Consider splitting into routers/*.py modules for maintainability.",
+    "Backend /api/creations/{cid}/assets uploads do NOT verify the creation exists (unlike upload_audio which 404s). A user could upload assets to a non-existent creation id and orphan them. Low priority but worth an explicit 404 check + cascade on delete (already handled).",
+    "Frontend RichTextEditor.js currently accepts any file size up to backend limit (12 Mo) without client-side validation feedback; the 413 error message isn't surfaced to the user (uploadAsset promise rejection is only logged).",
+    "insertHTML uses document.execCommand which is deprecated. Works today in Chromium/Safari/Firefox but marked legacy — no immediate action needed."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration13_assets.py (new)"
+  ],
+  "success_rate": {"backend": "100% (3/3 pytest)", "frontend": "100% (all UI + integration assertions)"},
+  "test_credentials": "Admin PIN 1234 via localStorage sx_admin=1 + sx_pin=1234. Intro bypass: sx_intro_off=1 + sessionStorage sx_intro_shown=1.",
+  "seed_data_creation": "Test-only WAV cues (LongA/LongB) and PNG image were inserted into 'Born X Burn' chapter 1 during Playwright test, THEN CLEANED UP: all TEST_/LongA/LongB/CueA/CueB/img.png/Thème Test/Second Test assets deleted via DELETE /api/assets/{id}, and chapter 1 content restored to the original seed text via PUT /api/creations/{cid}. Verified /api/creations/{cid}/assets returns 0 test assets afterwards.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Inline assets flow works: POST /api/creations/{cid}/assets accepts multipart (file + kind=image|audio + name), returns {id,kind,name,content_type}. GET /assets/{aid} serves bytes with Cache-Control immutable. RichTextEditor emits <img class='sx-rich-img'> and <span class='sx-music-cue' contenteditable='false' data-track='URL' data-title='TITLE'>. ChapterReader onCueClick calls toggleReadingUrl(url, 'cue:'+url, {loop:false}); effect keyed on [playingId,isPlaying,idx] toggles data-active on cues. IMPORTANT for future tests: use audio files of at least 5s (short clips like 0.5s WAV end quickly and 'ended' listener flips isPlaying back to false BEFORE assertion runs — this looks like a bug but is expected behavior). To confirm loop=false, monkey-patch HTMLMediaElement.prototype.play and inspect this.loop before delegating.",
+  "detailed_verifications": {
+    "backend_pytest": {
+      "image_upload_list_get_delete": "PASS",
+      "audio_upload_get_delete": "PASS",
+      "missing_asset_404": "PASS"
+    },
+    "frontend_flow": {
+      "rte-image_and_rte-music_buttons_present_in_editor": "PASS",
+      "rte-image_inserts_img.sx-rich-img_into_rte-area": "PASS",
+      "rte-music_opens_rte-music-menu": "PASS",
+      "rte-cue-title_+_rte-cue-upload_inserts_span.sx-music-cue": "PASS",
+      "multiple_cues_inserted_(2)": "PASS",
+      "editor-save_persists_via_PUT_/api/creations/{id}": "PASS",
+      "reopen_editor_shows_persisted_img_and_2_cues": "PASS",
+      "detail-launch_opens_chapter-reader": "PASS",
+      "reader_renders_inline_img.sx-rich-img_+_2_sx-music-cue": "PASS",
+      "click_first_cue_sets_data-active=1_and_loop=false": "PASS (loop=false captured)",
+      "click_second_cue_swaps_active_state_(replace_fade)": "PASS (A=0, B=1)",
+      "click_active_cue_again_toggles_data-active_to_0": "PASS",
+      "reader-music_header_button_still_present_(regression)": "PASS",
+      "reader-close_still_works_(regression)": "PASS"
+    }
+  }
+}
