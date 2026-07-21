@@ -280,5 +280,10 @@ body {
 .sx-music-cue[data-active="1"] { box-shadow: 0 0 22px color-mix(in srgb, var(--brand) 75%, transparent); }
 .sx-music-cue[data-active="1"]::before { content: "\23F8"; }
 .reader-rich .sx-music-cue { font-size: 1em; padding: 0.55em 1.05em; }
+
+/* ===== Mobile D-pad press feedback ===== */
+.dpad-btn { transition: transform 0.08s ease, box-shadow 0.18s ease, background-color 0.18s ease; }
+.dpad-btn:active { transform: scale(0.86); box-shadow: 0 0 0 7px color-mix(in srgb, var(--brand) 35%, transparent); }
+
 .rte-area .sx-music-cue { cursor: default; }
 .rte-area .sx-rich-img { max-height: 220px; width: auto; }

@@ -43,6 +43,14 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 28 (2026-07-21) — D-pad OK/halo/swipe + affiches compact mobile + personnalisation rouverte
+- **D-pad mobile amélioré** : bouton **OK central** (`dpad-ok`, pastille brand ronde) qui ouvre la création focalisée (comme un tap sur la fiche), flèches gauche/droite espacées autour (gap-3) → ne touche plus le bouton Lancer. Classe `.dpad-btn` avec **halo au clic** (`:active` scale + box-shadow brand) et **vibration** (`navigator.vibrate(15)`).
+- **Balayage vertical** (Home) : `onTouchStart/onTouchEnd` sur le conteneur — swipe vertical (>60px, dominante verticale, <700ms) change de catégorie (haut→suivante, bas→précédente) avec vibration.
+- **Affiches Compact par défaut sur mobile** : `posterSize` désormais par appareil (`sx_postersize_mobile`/`_desktop`, fallback legacy) — défaut phone=compact, PC=normal ; bascule via listener matchMedia.
+- **Personnalisation de l'interface rouverte aux spectateurs** : section dé-gatée du `isAdmin` (couleur d'accent, coins, taille affiches, animations, accroches, thèmes). La section **« Écran de démarrage » reste admin-only**.
+- Auto-testé (screenshots mobile) : data-poster=compact, dpad-ok ouvre la création, section personnalisation visible en visiteur, intro-manager caché.
+
+
 ## Implemented — Itération 27 (2026-07-21) — Défaut mobile petit + mémoire par appareil + D-pad tactile
 - **Défaut mobile = « petit »** (au lieu de normal), PC reste « grand » (AppContext `resolveScale`).
 - **Mémoire de taille distincte par appareil** : clés `sx_textscale_mobile` / `sx_textscale_desktop` (fallback legacy `sx_textscale`). `setTextScale` écrit dans la clé du device courant ; un listener `matchMedia("(max-width:767px)")` recharge la taille du device au changement de breakpoint.

@@ -405,7 +405,6 @@ export default function Settings() {
           </div>
         </Section>
 
-        {isAdmin && (
         <Section title="Personnalisation de l'interface" extra="— rends la station unique">
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Couleur d'accent</p>
           <div className="flex flex-wrap gap-2 mb-3" data-testid="accent-grid">
@@ -452,7 +451,6 @@ export default function Settings() {
             </label>
           </div>
         </Section>
-        )}
 
         <Section title="Thèmes" extra="— 12 ambiances">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="theme-grid">

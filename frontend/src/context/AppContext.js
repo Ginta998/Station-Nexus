@@ -47,11 +47,13 @@ export function AppProvider({ children }) {
   // ---- interface customization ----
   const [accent, setAccentState] = useState(() => localStorage.getItem(LS.accent) || "");
   const [radius, setRadiusState] = useState(() => localStorage.getItem(LS.radius) || "");
-  const [posterSize, setPosterSizeState] = useState(() => localStorage.getItem(LS.posterSize) || "normal");
-  const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
-  const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
   const phoneMQ = "(max-width: 767px)";
   const isPhoneNow = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia(phoneMQ).matches;
+  const posterKey = (phone) => (phone ? "sx_postersize_mobile" : "sx_postersize_desktop");
+  const resolvePoster = (phone) => localStorage.getItem(posterKey(phone)) || localStorage.getItem(LS.posterSize) || (phone ? "compact" : "normal");
+  const [posterSize, setPosterSizeState] = useState(() => resolvePoster(isPhoneNow()));
+  const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
+  const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
   const scaleKey = (phone) => (phone ? "sx_textscale_mobile" : "sx_textscale_desktop");
   // resolve per-device text scale: device key -> legacy key -> default (petit on phone, grand on PC)
   const resolveScale = (phone) => localStorage.getItem(scaleKey(phone)) || localStorage.getItem(LS.textScale) || (phone ? "petit" : "grand");
@@ -105,7 +107,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (!window.matchMedia) return;
     const mq = window.matchMedia(phoneMQ);
-    const onChange = () => setTextScaleState(resolveScale(mq.matches));
+    const onChange = () => { setTextScaleState(resolveScale(mq.matches)); setPosterSizeState(resolvePoster(mq.matches)); };
     mq.addEventListener ? mq.addEventListener("change", onChange) : mq.addListener(onChange);
     return () => { mq.removeEventListener ? mq.removeEventListener("change", onChange) : mq.removeListener(onChange); };
     // eslint-disable-next-line
@@ -172,7 +174,7 @@ export function AppProvider({ children }) {
 
   const setAccent = (v) => { setAccentState(v); v ? localStorage.setItem(LS.accent, v) : localStorage.removeItem(LS.accent); };
   const setRadius = (v) => { setRadiusState(v); v ? localStorage.setItem(LS.radius, v) : localStorage.removeItem(LS.radius); };
-  const setPosterSize = (v) => { setPosterSizeState(v); localStorage.setItem(LS.posterSize, v); };
+  const setPosterSize = (v) => { setPosterSizeState(v); localStorage.setItem(posterKey(isPhoneNow()), v); };
   const setReduceMotion = (v) => { setReduceMotionState(v); localStorage.setItem(LS.motion, v ? "1" : "0"); };
   const setCardTagline = (v) => { setCardTaglineState(v); localStorage.setItem(LS.cardTagline, v ? "1" : "0"); };
   const setTextScale = (v) => { setTextScaleState(v); localStorage.setItem(scaleKey(isPhoneNow()), v); };

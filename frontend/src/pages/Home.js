@@ -79,9 +79,23 @@ export default function Home() {
   const open = (id) => { sfx("select"); nav(`/oeuvre/${id}`); };
   const resume = (id) => { sfx("select"); nav(`/oeuvre/${id}`, { state: { resume: true } }); };
   const dpadStyle = { width: "2.4em", height: "2.4em", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)" };
+  const dpadOkStyle = { width: "2.7em", height: "2.7em", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--brand)", borderRadius: "999px", color: "var(--bg-primary)", background: "var(--brand)", fontWeight: 700, fontSize: "0.72em", letterSpacing: "0.05em", boxShadow: "0 0 16px color-mix(in srgb, var(--brand) 55%, transparent)" };
+
+  const buzz = () => { try { if (navigator.vibrate) navigator.vibrate(15); } catch (_) {} };
+  const openFocused = () => { if (focused) { buzz(); sfx("select"); nav(`/oeuvre/${focused.id}`); } };
+
+  const touchRef = useRef(null);
+  const onTouchStart = (e) => { const t = e.touches[0]; touchRef.current = { x: t.clientX, y: t.clientY, t: Date.now() }; };
+  const onTouchEnd = (e) => {
+    const s = touchRef.current; if (!s || editorOpen) return;
+    const t = e.changedTouches[0]; const dx = t.clientX - s.x, dy = t.clientY - s.y;
+    if (Math.abs(dy) > 60 && Math.abs(dy) > Math.abs(dx) * 1.4 && Date.now() - s.t < 700) {
+      buzz(); if (dy < 0) catDown(); else catUp();
+    }
+  };
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
+    <div className="relative h-screen w-screen overflow-hidden" style={{ background: "var(--bg-primary)" }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <div className="absolute inset-0 z-0" aria-hidden="true">
         {bgImg ? (
           <div key={focused.id} className="absolute inset-0 bg-cover bg-center scale-110"
@@ -183,13 +197,14 @@ export default function Home() {
           <p className="hidden md:block text-xs" style={{ color: "var(--on-media-2)", textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>← → naviguer · ↑ ↓ catégories · Entrée : ouvrir</p>
 
           {/* Mobile D-pad: navigate the launcher by tapping (in addition to swipe) */}
-          <div className="md:hidden flex flex-col items-center gap-1" data-testid="mobile-dpad">
-            <button data-testid="dpad-up" onClick={catUp} aria-label="Catégorie précédente" style={dpadStyle}><IoChevronUp size="1.3em" /></button>
-            <div className="flex items-center gap-1">
-              <button data-testid="dpad-left" onClick={navLeft} aria-label="Création précédente" style={dpadStyle}><IoChevronBack size="1.3em" /></button>
-              <button data-testid="dpad-right" onClick={navRight} aria-label="Création suivante" style={dpadStyle}><IoChevronForward size="1.3em" /></button>
+          <div className="md:hidden flex flex-col items-center gap-1.5" data-testid="mobile-dpad">
+            <button data-testid="dpad-up" onClick={() => { buzz(); catUp(); }} aria-label="Catégorie précédente" className="dpad-btn" style={dpadStyle}><IoChevronUp size="1.3em" /></button>
+            <div className="flex items-center gap-3">
+              <button data-testid="dpad-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="dpad-btn" style={dpadStyle}><IoChevronBack size="1.3em" /></button>
+              <button data-testid="dpad-ok" onClick={openFocused} aria-label="Ouvrir la création" className="dpad-btn" style={dpadOkStyle}>OK</button>
+              <button data-testid="dpad-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="dpad-btn" style={dpadStyle}><IoChevronForward size="1.3em" /></button>
             </div>
-            <button data-testid="dpad-down" onClick={catDown} aria-label="Catégorie suivante" style={dpadStyle}><IoChevronDown size="1.3em" /></button>
+            <button data-testid="dpad-down" onClick={() => { buzz(); catDown(); }} aria-label="Catégorie suivante" className="dpad-btn" style={dpadStyle}><IoChevronDown size="1.3em" /></button>
           </div>
         </div>
       </div>
