@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline } from "react-icons/io5";
+import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { chapterAudioUrl, readingAudioUrl } from "@/lib/api";
 import { toast } from "sonner";
@@ -33,6 +33,7 @@ const fmtTime = (s) => { s = Math.max(0, Math.floor(s || 0)); return `${Math.flo
 function ReadingPlayer({ getAudio, title, isPlaying, onToggle }) {
   const [cur, setCur] = useState(0);
   const [dur, setDur] = useState(0);
+  const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
     const a = getAudio(); if (!a) return;
     const onTime = () => setCur(a.currentTime || 0);
@@ -46,7 +47,21 @@ function ReadingPlayer({ getAudio, title, isPlaying, onToggle }) {
   const seek = (v) => { const a = getAudio(); if (a && isFinite(a.duration) && a.duration > 0) { a.currentTime = v; setCur(v); } };
   const nudge = (d) => { const a = getAudio(); if (a) seek(Math.max(0, Math.min(a.duration || 0, (a.currentTime || 0) + d))); };
   const canSeek = dur > 0;
+  const pct = canSeek ? Math.min(100, (cur / dur) * 100) : 0;
   const ib = { color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "999px", background: "rgba(255,255,255,0.06)" };
+
+  if (collapsed) {
+    return (
+      <div className="absolute bottom-4 right-4 z-30" data-testid="reading-player">
+        <button data-testid="reading-player-expand" onClick={() => setCollapsed(false)} title={`${title} — rouvrir`}
+          className="relative transition-transform hover:scale-105" style={{ borderRadius: "50%", padding: 3, background: `conic-gradient(var(--brand) ${pct}%, rgba(255,255,255,0.18) ${pct}%)`, boxShadow: "0 6px 24px rgba(0,0,0,0.45)" }}>
+          <span className="flex items-center justify-center" style={{ width: 46, height: 46, borderRadius: "50%", background: "rgba(0,0,0,0.82)", color: "var(--brand)", backdropFilter: "blur(8px)" }}>
+            {isPlaying ? <IoMusicalNotes size={20} /> : <IoPlay size={20} />}
+          </span>
+        </button>
+      </div>
+    );
+  }
   return (
     <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 w-[94%] max-w-2xl" data-testid="reading-player">
       <div className="flex items-center gap-2 sm:gap-3 px-3 py-2 border" style={{ borderColor: "var(--border-c)", borderRadius: "999px", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(12px)", boxShadow: "0 8px 30px rgba(0,0,0,0.4)" }}>
@@ -63,6 +78,7 @@ function ReadingPlayer({ getAudio, title, isPlaying, onToggle }) {
             onChange={(e) => seek(parseFloat(e.target.value))} className="w-full" style={{ accentColor: "var(--brand)", cursor: canSeek ? "pointer" : "default" }} />
         </div>
         <button data-testid="reading-player-fwd" onClick={() => nudge(10)} className="p-2 border flex-shrink-0 hidden sm:block" style={ib} title="Avancer de 10 s"><IoPlayForward size={16} /></button>
+        <button data-testid="reading-player-collapse" onClick={() => setCollapsed(true)} className="p-2 border flex-shrink-0" style={ib} title="Réduire le lecteur"><IoChevronDown size={16} /></button>
       </div>
     </div>
   );
