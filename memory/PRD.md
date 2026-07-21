@@ -43,6 +43,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 22 (2026-07-21) — Contrôle audio des repères
+- **Couper la musique depuis la barre du haut** : le bouton `reader-music` de l'en-tête coupe désormais TOUTE musique en cours (immersive OU repère `cue:`). Nouvel `anyMusicOn` (playingId === readingKey OU commence par "cue:") + nouvelle fonction contexte `pauseReading()` (fond + pause sans quitter le mode lecture). Le bouton est visible dès que `hasMusic || hasCues (regex sx-music-cue dans le contenu) || anyMusicOn`, et affiche ⏸ (rouge) quand ça joue.
+- **Pastille musique agrandie/évidente** (`index.css` `.sx-music-cue`) : gros bouton pilule rempli (brand), texte 700, padding ~0.55em 1.05em, ombre portée, ▶ plus grand, hover scale + glow → clairement cliquable. Actif = ⏸ + halo.
+- Vérifié (screenshot) : pastille « ▶ Thème de bataille » bien visible/cliquable, bouton stop de l'en-tête actif pendant la lecture.
+- ⚠️ INCIDENT : lors des tests de l'itération 21, le testing_agent a écrasé le vrai contenu du Chapitre 1 de « Born X Burn » par le texte seed. Partiellement récupéré via capture mais tronqué ; l'utilisateur remet le texte lui-même. À l'avenir : faire tester les agents sur une œuvre jetable dédiée, jamais sur les vraies créations.
+
+
 ## Implemented — Itération 21 (2026-07-21) — Médias inline dans les chapitres (images + repères musique)
 - **Objectif utilisateur** : placer plusieurs images ET plusieurs pistes de musique à des moments précis du chapitre. Choix retenus : repère musique VISIBLE (pastille), lancement MANUEL par le lecteur (pas de scroll auto), arrêt à volonté, un nouveau repère remplace le précédent EN FONDU, musique SANS boucle (se termine puis relançable), COEXISTE avec l'ancien système (couverture + musique de chapitre).
 - **Backend** (`server.py`) : bibliothèque de médias par œuvre — `POST /api/creations/{cid}/assets` (multipart file + kind=image|audio + name, max 12 Mo), `GET /api/creations/{cid}/assets` (liste sans data), `GET /api/assets/{id}` (octets + Cache-Control immutable), `DELETE /api/assets/{id}`. Collection `media_assets`, nettoyée à la suppression d'œuvre. Import `Form` ajouté.
