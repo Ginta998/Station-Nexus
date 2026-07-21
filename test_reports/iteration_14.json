@@ -1,0 +1,22 @@
+{
+  "summary": "Frontend-only regression to verify TDZ fix for isPhoneNow in AppContext. Tested desktop (1440x900) and mobile (390x844) with 3 reloads, navigation to /parametres and /oeuvre/{id}. NO TDZ errors, NO console errors, NO black screen. HTML data-textscale/data-poster correctly resolved per device.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "AppContext.js: phoneMQ/isPhoneNow correctly declared before useState(posterSize)/useState(textScale) - TDZ fix is in place at lines 50-60."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "100%"},
+  "test_credentials": "sx_intro_off=1, sx_intro_shown=1 (session)",
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "TDZ bug 'isPhoneNow before initialization' fully resolved. Verified: desktop attrs {textscale:'grand',poster:'normal'}, mobile attrs {textscale:'petit',poster:'compact'} after clearing per-device keys. D-pad testids all present (dpad-up/down/left/right/ok); dpad-ok navigates to /oeuvre/{id} (focused view). Settings page loads without intro-manager for visitor. 3 successive reloads on desktop produced zero pageerror/console.error events.",
+  "rca of the issue": "TDZ (Temporal Dead Zone): useState initializers called isPhoneNow() before phoneMQ/isPhoneNow were declared. Fix: hoist phoneMQ and isPhoneNow declarations above useState hooks that reference them. Verified in AppContext.js:50-60."
+}
