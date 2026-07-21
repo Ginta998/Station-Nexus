@@ -43,6 +43,17 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 21 (2026-07-21) — Médias inline dans les chapitres (images + repères musique)
+- **Objectif utilisateur** : placer plusieurs images ET plusieurs pistes de musique à des moments précis du chapitre. Choix retenus : repère musique VISIBLE (pastille), lancement MANUEL par le lecteur (pas de scroll auto), arrêt à volonté, un nouveau repère remplace le précédent EN FONDU, musique SANS boucle (se termine puis relançable), COEXISTE avec l'ancien système (couverture + musique de chapitre).
+- **Backend** (`server.py`) : bibliothèque de médias par œuvre — `POST /api/creations/{cid}/assets` (multipart file + kind=image|audio + name, max 12 Mo), `GET /api/creations/{cid}/assets` (liste sans data), `GET /api/assets/{id}` (octets + Cache-Control immutable), `DELETE /api/assets/{id}`. Collection `media_assets`, nettoyée à la suppression d'œuvre. Import `Form` ajouté.
+- **api.js** : `uploadAsset`, `listAssets`, `deleteAsset`, `assetUrl`.
+- **RichTextEditor** : prop `creationId` ; boutons `rte-image` (upload + insertion `<img class="sx-rich-img">` à la position du curseur) et `rte-music` (panneau `rte-music-menu` : titre + upload d'une piste OU réutilisation d'une piste existante → insertion pastille `<span class="sx-music-cue" data-track data-title>`). Sélection du curseur mémorisée (`savedRange`) pour insérer au bon endroit.
+- **ChapterReader** : clic sur une pastille → `toggleReadingUrl(url, "cue:"+url, {loop:false})` (fondu + remplacement) ; effet qui met `data-active` (▶/⏸) selon `playingId/isPlaying`.
+- **AppContext** : `playReadingUrl`/`toggleReadingUrl` acceptent `opts.loop` (défaut true = immersif) ; listener `ended` sur cardAudio remet `isPlaying=false` (pas de boucle pour les repères).
+- **CSS** : `.sx-rich-img` (image responsive encadrée) et `.sx-music-cue` (pastille pilule, ▶ / ⏸ actif).
+- Testé par testing_agent (iteration_13.json) : backend 3/3 pytest, frontend 100% (insertion image+cue, persistance, rendu lecteur, lecture manuelle data-active, remplacement en fondu, loop=false confirmé, coexistence/régressions OK). Assets de test nettoyés.
+
+
 ## Implemented — Itération 20 (2026-07-21) — Préchargement pendant l'intro (demande Msg 70)
 - **Zéro chargement après l'écran de démarrage** : `IntroGate` (App.js) précharge en tâche de fond, PENDANT l'animation d'intro, les données de l'Accueil via React Query (`qc.prefetchQuery(["creations"])` + `["categories"]`) et met en cache `["settings"]` (`fetchQuery`, réutilisé pour choisir le type d'intro/aléatoire). Après réception des créations, les **images d'affiches** des 16 premières fiches sont préchauffées (`new Image().src = posterUrl(...)`) pour un rendu visuel quasi instantané.
 - Résultat : quand l'utilisateur appuie sur « Entrer », `Home` monte avec les données déjà en cache (staleTime 60s) → plus de spinner « Chargement… ».
