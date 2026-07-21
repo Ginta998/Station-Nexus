@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoChevronForward, IoCreateOutline, IoTrashOutline, IoPlay, IoFilter, IoSearch } from "react-icons/io5";
+import { IoChevronForward, IoChevronBack, IoChevronUp, IoChevronDown, IoCreateOutline, IoTrashOutline, IoPlay, IoFilter, IoSearch } from "react-icons/io5";
 import { toast } from "sonner";
 import { listCreations, listCategories, deleteCreation } from "@/lib/api";
 import { posterUrl, bgUrl } from "@/lib/api";
@@ -52,15 +52,20 @@ export default function Home() {
     if (el) el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   }, [focusIndex, catIndex, items.length]);
 
+  const navRight = useCallback(() => { sfx("nav"); setFocusIndex((i) => Math.min(i + 1, items.length - 1)); }, [items.length, sfx]);
+  const navLeft = useCallback(() => { sfx("nav"); setFocusIndex((i) => Math.max(i - 1, 0)); }, [sfx]);
+  const catDown = useCallback(() => { sfx("nav"); setCatIndex((c) => Math.min(c + 1, tabs.length - 1)); }, [tabs.length, sfx]);
+  const catUp = useCallback(() => { sfx("nav"); setCatIndex((c) => Math.max(c - 1, 0)); }, [sfx]);
+
   const onKey = useCallback((e) => {
     if (editorOpen) return;
-    if (["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(e.key)) { e.preventDefault(); sfx("nav"); }
-    if (e.key === "ArrowRight") setFocusIndex((i) => Math.min(i + 1, items.length - 1));
-    else if (e.key === "ArrowLeft") setFocusIndex((i) => Math.max(i - 1, 0));
-    else if (e.key === "ArrowDown") setCatIndex((c) => Math.min(c + 1, tabs.length - 1));
-    else if (e.key === "ArrowUp") setCatIndex((c) => Math.max(c - 1, 0));
+    if (["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(e.key)) { e.preventDefault(); }
+    if (e.key === "ArrowRight") navRight();
+    else if (e.key === "ArrowLeft") navLeft();
+    else if (e.key === "ArrowDown") catDown();
+    else if (e.key === "ArrowUp") catUp();
     else if (e.key === "Enter" && focused) { sfx("select"); nav(`/oeuvre/${focused.id}`); }
-  }, [items.length, focused, editorOpen, nav, tabs.length, sfx]);
+  }, [focused, editorOpen, nav, sfx, navRight, navLeft, catDown, catUp]);
 
   useEffect(() => { window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [onKey]);
 
@@ -73,6 +78,7 @@ export default function Home() {
   };
   const open = (id) => { sfx("select"); nav(`/oeuvre/${id}`); };
   const resume = (id) => { sfx("select"); nav(`/oeuvre/${id}`, { state: { resume: true } }); };
+  const dpadStyle = { width: "2.4em", height: "2.4em", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)" };
 
   return (
     <div className="relative h-screen w-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
@@ -175,6 +181,16 @@ export default function Home() {
             )}
           </div>
           <p className="hidden md:block text-xs" style={{ color: "var(--on-media-2)", textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>← → naviguer · ↑ ↓ catégories · Entrée : ouvrir</p>
+
+          {/* Mobile D-pad: navigate the launcher by tapping (in addition to swipe) */}
+          <div className="md:hidden flex flex-col items-center gap-1" data-testid="mobile-dpad">
+            <button data-testid="dpad-up" onClick={catUp} aria-label="Catégorie précédente" style={dpadStyle}><IoChevronUp size="1.3em" /></button>
+            <div className="flex items-center gap-1">
+              <button data-testid="dpad-left" onClick={navLeft} aria-label="Création précédente" style={dpadStyle}><IoChevronBack size="1.3em" /></button>
+              <button data-testid="dpad-right" onClick={navRight} aria-label="Création suivante" style={dpadStyle}><IoChevronForward size="1.3em" /></button>
+            </div>
+            <button data-testid="dpad-down" onClick={catDown} aria-label="Catégorie suivante" style={dpadStyle}><IoChevronDown size="1.3em" /></button>
+          </div>
         </div>
       </div>
 

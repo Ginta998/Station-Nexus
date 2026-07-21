@@ -43,6 +43,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 27 (2026-07-21) — Défaut mobile petit + mémoire par appareil + D-pad tactile
+- **Défaut mobile = « petit »** (au lieu de normal), PC reste « grand » (AppContext `resolveScale`).
+- **Mémoire de taille distincte par appareil** : clés `sx_textscale_mobile` / `sx_textscale_desktop` (fallback legacy `sx_textscale`). `setTextScale` écrit dans la clé du device courant ; un listener `matchMedia("(max-width:767px)")` recharge la taille du device au changement de breakpoint.
+- **D-pad tactile mobile** (Home.js, `mobile-dpad`, `md:hidden`) en bas à droite face au bouton « Lancer » : `dpad-up`/`dpad-down` changent de catégorie, `dpad-left`/`dpad-right` naviguent entre créations, avec son (`sfx('nav')`). Handlers `navLeft/navRight/catUp/catDown` réutilisés par le clavier ET le D-pad. Taille en `em` → suit le réglage d'accessibilité. Masqué sur PC.
+- Auto-testé (screenshot mobile) : défaut petit, D-pad présent + navigation OK, clé mobile='grand' après choix / desktop indépendant='grand', D-pad caché sur PC.
+
+
 ## Implemented — Itération 26 (2026-07-21) — Taille de texte « Petit »
 - Nouveau niveau `petit` (87,5 % = 14px root, `--text-scale` 0.875) ajouté avant « Normal », utile surtout sur téléphone. Présent dans le menu du bouton « Aa » (`text-size-petit`) et dans les Paramètres (`text-scale-petit`).
 - Vérifié (screenshot) : sélection « Petit » → data-textscale="petit", root font-size 14px.

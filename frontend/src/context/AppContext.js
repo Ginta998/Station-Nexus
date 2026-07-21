@@ -50,13 +50,12 @@ export function AppProvider({ children }) {
   const [posterSize, setPosterSizeState] = useState(() => localStorage.getItem(LS.posterSize) || "normal");
   const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
   const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
-  const [textScale, setTextScaleState] = useState(() => {
-    const saved = localStorage.getItem(LS.textScale);
-    if (saved) return saved;
-    // default depends on device: normal on phones, grand on larger screens (PC/tablet)
-    const isPhone = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
-    return isPhone ? "normal" : "grand";
-  });
+  const phoneMQ = "(max-width: 767px)";
+  const isPhoneNow = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia(phoneMQ).matches;
+  const scaleKey = (phone) => (phone ? "sx_textscale_mobile" : "sx_textscale_desktop");
+  // resolve per-device text scale: device key -> legacy key -> default (petit on phone, grand on PC)
+  const resolveScale = (phone) => localStorage.getItem(scaleKey(phone)) || localStorage.getItem(LS.textScale) || (phone ? "petit" : "grand");
+  const [textScale, setTextScaleState] = useState(() => resolveScale(isPhoneNow()));
 
   // ---- reader (chapter) preferences ----
   const [readerFont, setReaderFontState] = useState(() => localStorage.getItem(LS.rFont) || "serif");
@@ -102,6 +101,15 @@ export function AppProvider({ children }) {
   useEffect(() => { document.documentElement.setAttribute("data-motion", reduceMotion ? "reduced" : "full"); }, [reduceMotion]);
   useEffect(() => { document.documentElement.setAttribute("data-card-tagline", cardTagline ? "on" : "off"); }, [cardTagline]);
   useEffect(() => { document.documentElement.setAttribute("data-textscale", textScale); }, [textScale]);
+  // switch to the device's own remembered size when crossing the phone/desktop breakpoint
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const mq = window.matchMedia(phoneMQ);
+    const onChange = () => setTextScaleState(resolveScale(mq.matches));
+    mq.addEventListener ? mq.addEventListener("change", onChange) : mq.addListener(onChange);
+    return () => { mq.removeEventListener ? mq.removeEventListener("change", onChange) : mq.removeListener(onChange); };
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => { configureSound({ pack: soundPack, muted, custom: customSounds, volume: uiVolume }); }, [soundPack, muted, customSounds, uiVolume]);
   useEffect(() => {
@@ -167,7 +175,7 @@ export function AppProvider({ children }) {
   const setPosterSize = (v) => { setPosterSizeState(v); localStorage.setItem(LS.posterSize, v); };
   const setReduceMotion = (v) => { setReduceMotionState(v); localStorage.setItem(LS.motion, v ? "1" : "0"); };
   const setCardTagline = (v) => { setCardTaglineState(v); localStorage.setItem(LS.cardTagline, v ? "1" : "0"); };
-  const setTextScale = (v) => { setTextScaleState(v); localStorage.setItem(LS.textScale, v); };
+  const setTextScale = (v) => { setTextScaleState(v); localStorage.setItem(scaleKey(isPhoneNow()), v); };
 
   const setReaderFont = (v) => { setReaderFontState(v); localStorage.setItem(LS.rFont, v); };
   const setReaderSize = (v) => { setReaderSizeState(v); localStorage.setItem(LS.rSize, String(v)); };
