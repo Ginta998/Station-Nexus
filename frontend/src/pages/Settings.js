@@ -380,9 +380,11 @@ export default function Settings() {
           <AmbienceManager />
         </Section>
 
+        {isAdmin && (
         <Section title="Écran de démarrage" extra="— intro type PS2 / Steam">
           <IntroManager />
         </Section>
+        )}
 
         <Section title="Accessibilité" extra="— confort de lecture">
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Taille du texte</p>
