@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
 
 const SCALES = [
+  { v: "petit", label: "Petit", size: 11 },
   { v: "normal", label: "Normal", size: 13 },
   { v: "grand", label: "Grand", size: 16 },
   { v: "xl", label: "Très grand", size: 20 },

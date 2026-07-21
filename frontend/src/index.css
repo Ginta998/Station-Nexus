@@ -26,6 +26,7 @@
 }
 
 /* ===== Global text scale (accessibility) — bumps root font-size so all rem text grows ===== */
+html[data-textscale="petit"]  { font-size: 87.5%; --text-scale: 0.875; }
 html[data-textscale="normal"] { font-size: 100%; --text-scale: 1; }
 html[data-textscale="grand"]  { font-size: 112.5%; --text-scale: 1.125; }
 html[data-textscale="xl"]     { font-size: 125%; --text-scale: 1.25; }

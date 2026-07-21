@@ -290,12 +290,13 @@ export default function Settings() {
   const RADII = [{ v: "", label: "Thème" }, { v: "0px", label: "Net" }, { v: "10px", label: "Arrondi" }, { v: "18px", label: "Doux" }, { v: "999px", label: "Pilule" }];
   const POSTERS = [{ v: "compact", label: "Compact" }, { v: "normal", label: "Normal" }, { v: "grand", label: "Grand" }];
   const TEXT_SCALES = [
+    { v: "petit", label: "Petit", pct: "A" },
     { v: "normal", label: "Normal", pct: "A" },
     { v: "grand", label: "Grand", pct: "A" },
     { v: "xl", label: "Très grand", pct: "A" },
     { v: "max", label: "Maximum", pct: "A" },
   ];
-  const TEXT_SCALE_SIZE = { normal: 15, grand: 18, xl: 22, max: 26 };
+  const TEXT_SCALE_SIZE = { petit: 12, normal: 15, grand: 18, xl: 22, max: 26 };
 
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
