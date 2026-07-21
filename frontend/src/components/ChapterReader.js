@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoMusicalNotes, IoPause, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline } from "react-icons/io5";
+import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { chapterAudioUrl, readingAudioUrl } from "@/lib/api";
 import { toast } from "sonner";
@@ -27,9 +27,50 @@ const FONTS = {
 const FONT_LABELS = [["serif", "Serif"], ["sans", "Sans"], ["display", "Display"], ["mono", "Mono"]];
 const WIDTHS = { narrow: "max-w-xl", normal: "max-w-2xl", wide: "max-w-4xl" };
 
+const fmtTime = (s) => { s = Math.max(0, Math.floor(s || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+
+// Floating, seekable mini-player for the reading audio (immersive track or a music cue).
+function ReadingPlayer({ getAudio, title, isPlaying, onToggle }) {
+  const [cur, setCur] = useState(0);
+  const [dur, setDur] = useState(0);
+  useEffect(() => {
+    const a = getAudio(); if (!a) return;
+    const onTime = () => setCur(a.currentTime || 0);
+    const onMeta = () => setDur(isFinite(a.duration) ? a.duration : 0);
+    a.addEventListener("timeupdate", onTime);
+    a.addEventListener("loadedmetadata", onMeta);
+    a.addEventListener("durationchange", onMeta);
+    onMeta(); onTime();
+    return () => { a.removeEventListener("timeupdate", onTime); a.removeEventListener("loadedmetadata", onMeta); a.removeEventListener("durationchange", onMeta); };
+  }, [getAudio]);
+  const seek = (v) => { const a = getAudio(); if (a && isFinite(a.duration) && a.duration > 0) { a.currentTime = v; setCur(v); } };
+  const nudge = (d) => { const a = getAudio(); if (a) seek(Math.max(0, Math.min(a.duration || 0, (a.currentTime || 0) + d))); };
+  const canSeek = dur > 0;
+  const ib = { color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "999px", background: "rgba(255,255,255,0.06)" };
+  return (
+    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 w-[94%] max-w-2xl" data-testid="reading-player">
+      <div className="flex items-center gap-2 sm:gap-3 px-3 py-2 border" style={{ borderColor: "var(--border-c)", borderRadius: "999px", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(12px)", boxShadow: "0 8px 30px rgba(0,0,0,0.4)" }}>
+        <button data-testid="reading-player-toggle" onClick={onToggle} className="p-2 border flex-shrink-0" style={{ ...ib, color: "var(--brand)", borderColor: "var(--brand)", background: "color-mix(in srgb, var(--brand) 14%, transparent)" }} title={isPlaying ? "Pause" : "Lecture"}>
+          {isPlaying ? <IoPause size={18} /> : <IoPlay size={18} />}
+        </button>
+        <button data-testid="reading-player-back" onClick={() => nudge(-10)} className="p-2 border flex-shrink-0 hidden sm:block" style={ib} title="Reculer de 10 s"><IoPlayBack size={16} /></button>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <span className="text-[11px] truncate" style={{ color: "var(--text-primary)" }}>♪ {title}</span>
+            <span className="text-[10px] tabular-nums flex-shrink-0" style={{ color: "var(--text-secondary)" }}>{fmtTime(cur)} / {fmtTime(dur)}</span>
+          </div>
+          <input data-testid="reading-player-seek" type="range" min="0" max={canSeek ? dur : 1} step="0.1" value={cur} disabled={!canSeek}
+            onChange={(e) => seek(parseFloat(e.target.value))} className="w-full" style={{ accentColor: "var(--brand)", cursor: canSeek ? "pointer" : "default" }} />
+        </div>
+        <button data-testid="reading-player-fwd" onClick={() => nudge(10)} className="p-2 border flex-shrink-0 hidden sm:block" style={ib} title="Avancer de 10 s"><IoPlayForward size={16} /></button>
+      </div>
+    </div>
+  );
+}
+
 export default function ChapterReader({ item, onClose, startChapter = null, onComment }) {
   const {
-    playReadingUrl, toggleReadingUrl, pauseReading, endReading, isPlaying, playingId, sfx,
+    playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio, endReading, isPlaying, playingId, sfx,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine,
     readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   } = useApp();
@@ -45,6 +86,8 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   const [toc, setToc] = useState(false);
   const [prefs, setPrefs] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [showPlayer, setShowPlayer] = useState(false);
+  const [trackTitle, setTrackTitle] = useState("Musique de lecture");
   const scrollRef = useRef(null);
   const resumeRatio = useRef(!useStart && saved && typeof saved.ratio === "number" && saved.ratio > 0.02 ? saved.ratio : null);
   const lastSave = useRef(0);
@@ -54,6 +97,9 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   // any reading audio playing (immersive track OR an inline music cue)
   const anyMusicOn = isPlaying && (playingId === readingKey || (typeof playingId === "string" && playingId.startsWith("cue:")));
   const hasCues = /sx-music-cue/.test(chapters[idx]?.content || "");
+
+  useEffect(() => { setShowPlayer(false); setTrackTitle("Musique de lecture"); }, [idx]);
+  useEffect(() => { if (anyMusicOn) setShowPlayer(true); }, [anyMusicOn]);
 
   const trackFor = useCallback((c) => {
     if (c?.has_music && c?.id) return chapterAudioUrl(item.id, c.id);
@@ -109,6 +155,8 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
     const url = cue.getAttribute("data-track");
     if (!url) return;
     sfx("select");
+    setTrackTitle(cue.getAttribute("data-title") || "Musique");
+    setShowPlayer(true);
     toggleReadingUrl(url, "cue:" + url, { loop: false });
   };
   // reflect play/pause state on the cue chips
@@ -150,7 +198,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
             <IoText size={22} />
           </button>
           {(hasMusic || hasCues || anyMusicOn) && (
-            <button data-testid="reader-music" onClick={() => { sfx("nav"); if (anyMusicOn) pauseReading(); else toggleReadingUrl(trackFor(chap), readingKey); }} className="p-2.5 border" style={{ color: anyMusicOn ? "var(--brand)" : "var(--text-secondary)", borderColor: anyMusicOn ? "var(--brand)" : "var(--border-c)", borderRadius: "var(--radius-base)", background: anyMusicOn ? "color-mix(in srgb, var(--brand) 16%, transparent)" : "rgba(255,255,255,0.06)" }} title={anyMusicOn ? "Couper la musique" : "Musique de lecture"}>
+            <button data-testid="reader-music" onClick={() => { sfx("nav"); if (anyMusicOn) pauseReading(); else { setTrackTitle("Musique de lecture"); setShowPlayer(true); toggleReadingUrl(trackFor(chap), readingKey); } }} className="p-2.5 border" style={{ color: anyMusicOn ? "var(--brand)" : "var(--text-secondary)", borderColor: anyMusicOn ? "var(--brand)" : "var(--border-c)", borderRadius: "var(--radius-base)", background: anyMusicOn ? "color-mix(in srgb, var(--brand) 16%, transparent)" : "rgba(255,255,255,0.06)" }} title={anyMusicOn ? "Couper la musique" : "Musique de lecture"}>
               {anyMusicOn ? <IoPause size={24} /> : <IoMusicalNotes size={24} />}
             </button>
           )}
@@ -199,7 +247,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
         )}
 
         <div ref={scrollRef} onScroll={onScroll} className="flex-1 overflow-y-auto" data-testid="reader-pane">
-          <article key={idx} ref={contentRef} className={`chapter-in ${WIDTHS[readerWidth] || WIDTHS.normal} mx-auto px-5 md:px-8 py-10 md:py-16`} style={articleStyle}>
+          <article key={idx} ref={contentRef} className={`chapter-in ${WIDTHS[readerWidth] || WIDTHS.normal} mx-auto px-5 md:px-8 py-10 md:py-16`} style={{ ...articleStyle, paddingBottom: showPlayer ? 104 : undefined }}>
             <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "var(--brand)" }}>Chapitre {idx + 1} · {chapters.length}</p>
             <h1 data-reveal className="reveal font-display leading-tight mb-8" style={{ fontSize: "1.9em", color: "var(--text-primary)" }}>{chap?.title}</h1>
             {chap?.image ? (
@@ -257,6 +305,11 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
           </article>
         </div>
       </div>
+
+      {showPlayer && (
+        <ReadingPlayer getAudio={getReadingAudio} title={trackTitle} isPlaying={anyMusicOn}
+          onToggle={() => { sfx("nav"); if (anyMusicOn) pauseReading(); else resumeReading(); }} />
+      )}
     </div>
   );
 }

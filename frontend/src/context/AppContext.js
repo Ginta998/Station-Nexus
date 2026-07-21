@@ -273,6 +273,16 @@ export function AppProvider({ children }) {
     setIsPlaying(false);
   }, []);
 
+  // Resume the currently loaded reading track (used by the mini player).
+  const resumeReading = useCallback(() => {
+    const a = cardAudio.current; if (!a || !a.src) return;
+    cardActiveRef.current = true; stopAppAmbience(true);
+    if (a.ended || (a.duration && a.currentTime >= a.duration - 0.05)) a.currentTime = 0;
+    a.play().then(() => { setIsPlaying(true); if (!muted) fadeTo(a, musicVolume, 300); }).catch(() => {});
+  }, [muted, musicVolume, stopAppAmbience]);
+
+  const getReadingAudio = useCallback(() => cardAudio.current, []);
+
   // Called when leaving the chapter reader: restore the card ambient (or app ambience).
   const endReading = useCallback((creationId, hasCardAudio) => {
     const a = cardAudio.current;
@@ -292,7 +302,7 @@ export function AppProvider({ children }) {
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
-    playReadingUrl, toggleReadingUrl, pauseReading,
+    playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine, readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   };

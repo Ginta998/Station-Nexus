@@ -43,6 +43,14 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 23 (2026-07-21) — Mini-lecteur audio seekable
+- **Barre de lecture flottante** dans le reader (`ReadingPlayer` dans `ChapterReader.js`) : apparaît dès qu'une musique joue (immersive ou repère). Affiche titre (♪), temps écoulé/durée (`0:02 / 3:44`), play/pause, et boutons ‑10s / +10s (masqués sur mobile étroit).
+- **Barre de progression cliquable (seek)** : `<input type=range>` de 0 à durée, `onChange` positionne `audio.currentTime` → navigation avant/arrière dans le morceau. Boutons ‑10s/+10s via `nudge`.
+- **Contexte** : nouvelles fonctions `resumeReading()` (reprend la piste chargée, remet à 0 si terminée) et `getReadingAudio()` (expose l'élément audio pour lecture des `timeupdate`/`loadedmetadata` par le composant, sans re-render global). Play/pause du mini-lecteur passent par `pauseReading`/`resumeReading` → état synchro avec le bouton du header et les pastilles.
+- Visibilité : `showPlayer` (state) activé quand `anyMusicOn`, ou au clic d'un repère / lecture header ; réinitialisé au changement de chapitre. Titre = data-title du repère, sinon « Musique de lecture ». Padding bas ajouté à l'article pour ne pas masquer les boutons Préc./Suiv.
+- Auto-testé (screenshot) : lecteur affiché, durée/temps corrects (max 224s = 3:44), seek actif (non disabled), toggle OK, header synchro.
+
+
 ## Implemented — Itération 22 (2026-07-21) — Contrôle audio des repères
 - **Couper la musique depuis la barre du haut** : le bouton `reader-music` de l'en-tête coupe désormais TOUTE musique en cours (immersive OU repère `cue:`). Nouvel `anyMusicOn` (playingId === readingKey OU commence par "cue:") + nouvelle fonction contexte `pauseReading()` (fond + pause sans quitter le mode lecture). Le bouton est visible dès que `hasMusic || hasCues (regex sx-music-cue dans le contenu) || anyMusicOn`, et affiche ⏸ (rouge) quand ça joue.
 - **Pastille musique agrandie/évidente** (`index.css` `.sx-music-cue`) : gros bouton pilule rempli (brand), texte 700, padding ~0.55em 1.05em, ombre portée, ▶ plus grand, hover scale + glow → clairement cliquable. Actif = ⏸ + halo.
