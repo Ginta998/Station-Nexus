@@ -265,6 +265,14 @@ export function AppProvider({ children }) {
     playReadingUrl(url, key, opts);
   }, [playingId, isPlaying, playReadingUrl]);
 
+  // Stop whatever reading track is playing (immersive OR an inline music cue),
+  // without leaving reading mode — used by the reader top-bar stop button.
+  const pauseReading = useCallback(() => {
+    const a = cardAudio.current; if (!a) return;
+    if (!a.paused) fadeTo(a, 0, 200, () => a.pause());
+    setIsPlaying(false);
+  }, []);
+
   // Called when leaving the chapter reader: restore the card ambient (or app ambience).
   const endReading = useCallback((creationId, hasCardAudio) => {
     const a = cardAudio.current;
@@ -284,7 +292,7 @@ export function AppProvider({ children }) {
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
-    playReadingUrl, toggleReadingUrl,
+    playReadingUrl, toggleReadingUrl, pauseReading,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine, readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   };

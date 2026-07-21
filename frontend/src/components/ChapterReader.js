@@ -29,7 +29,7 @@ const WIDTHS = { narrow: "max-w-xl", normal: "max-w-2xl", wide: "max-w-4xl" };
 
 export default function ChapterReader({ item, onClose, startChapter = null, onComment }) {
   const {
-    playReadingUrl, toggleReadingUrl, endReading, isPlaying, playingId, sfx,
+    playReadingUrl, toggleReadingUrl, pauseReading, endReading, isPlaying, playingId, sfx,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine,
     readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   } = useApp();
@@ -51,7 +51,9 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   const chap = chapters[idx];
   const contentRef = useReveal([idx]);
   const readingKey = "reading:" + item.id;
-  const musicOn = isPlaying && playingId === readingKey;
+  // any reading audio playing (immersive track OR an inline music cue)
+  const anyMusicOn = isPlaying && (playingId === readingKey || (typeof playingId === "string" && playingId.startsWith("cue:")));
+  const hasCues = /sx-music-cue/.test(chapters[idx]?.content || "");
 
   const trackFor = useCallback((c) => {
     if (c?.has_music && c?.id) return chapterAudioUrl(item.id, c.id);
@@ -147,9 +149,9 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
           <button data-testid="reader-prefs-toggle" onClick={() => { sfx("nav"); setPrefs((v) => !v); }} className="p-2.5 border flex items-center" style={{ color: prefs ? "var(--brand)" : "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title="Réglages de lecture">
             <IoText size={22} />
           </button>
-          {hasMusic && (
-            <button data-testid="reader-music" onClick={() => { sfx("nav"); toggleReadingUrl(trackFor(chap), readingKey); }} className="p-2.5 border" style={{ color: musicOn ? "var(--brand)" : "var(--text-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title="Musique de lecture">
-              {musicOn ? <IoPause size={22} /> : <IoMusicalNotes size={22} />}
+          {(hasMusic || hasCues || anyMusicOn) && (
+            <button data-testid="reader-music" onClick={() => { sfx("nav"); if (anyMusicOn) pauseReading(); else toggleReadingUrl(trackFor(chap), readingKey); }} className="p-2.5 border" style={{ color: anyMusicOn ? "var(--brand)" : "var(--text-secondary)", borderColor: anyMusicOn ? "var(--brand)" : "var(--border-c)", borderRadius: "var(--radius-base)", background: anyMusicOn ? "color-mix(in srgb, var(--brand) 16%, transparent)" : "rgba(255,255,255,0.06)" }} title={anyMusicOn ? "Couper la musique" : "Musique de lecture"}>
+              {anyMusicOn ? <IoPause size={24} /> : <IoMusicalNotes size={24} />}
             </button>
           )}
           <button data-testid="reader-close" onClick={close} className="p-2.5 border" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }}><IoClose size={26} /></button>
