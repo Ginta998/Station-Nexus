@@ -43,6 +43,11 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 25 (2026-07-21) — Taille de texte par défaut selon l'appareil
+- La taille de texte par défaut (quand aucune préférence n'est enregistrée) dépend maintenant de l'appareil : **« normal » sur téléphone** (`matchMedia("(max-width: 767px)")`), **« grand » sur PC/tablette**. Un choix manuel dans les Paramètres/bouton reste prioritaire (localStorage `sx_textscale`).
+- Vérifié (screenshot) : phone 390px → data-textscale="normal" (non stocké), desktop 1440px → "grand".
+
+
 ## Implemented — Itération 24 (2026-07-21) — Réduction du mini-lecteur
 - Le `ReadingPlayer` peut désormais être **réduit en pastille** (bouton `reading-player-collapse`, IoChevronDown). Réduit → petite pastille ronde en bas à droite (`reading-player-expand`) avec l'icône ♪ et un **anneau de progression** (conic-gradient selon cur/dur). Tap → rouvre la barre complète. State `collapsed` local au composant.
 - Auto-testé (screenshot) : collapse → pastille + anneau, barre complète masquée ; expand → barre complète de retour.

@@ -50,7 +50,13 @@ export function AppProvider({ children }) {
   const [posterSize, setPosterSizeState] = useState(() => localStorage.getItem(LS.posterSize) || "normal");
   const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
   const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
-  const [textScale, setTextScaleState] = useState(() => localStorage.getItem(LS.textScale) || "grand");
+  const [textScale, setTextScaleState] = useState(() => {
+    const saved = localStorage.getItem(LS.textScale);
+    if (saved) return saved;
+    // default depends on device: normal on phones, grand on larger screens (PC/tablet)
+    const isPhone = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
+    return isPhone ? "normal" : "grand";
+  });
 
   // ---- reader (chapter) preferences ----
   const [readerFont, setReaderFontState] = useState(() => localStorage.getItem(LS.rFont) || "serif");
