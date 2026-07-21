@@ -43,6 +43,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Next Tasks
 - Uploader vrais posters/fonds/musiques, écrire les chapitres, remplir la catégorie Séries.
 
+## Implemented — Itération 20 (2026-07-21) — Préchargement pendant l'intro (demande Msg 70)
+- **Zéro chargement après l'écran de démarrage** : `IntroGate` (App.js) précharge en tâche de fond, PENDANT l'animation d'intro, les données de l'Accueil via React Query (`qc.prefetchQuery(["creations"])` + `["categories"]`) et met en cache `["settings"]` (`fetchQuery`, réutilisé pour choisir le type d'intro/aléatoire). Après réception des créations, les **images d'affiches** des 16 premières fiches sont préchauffées (`new Image().src = posterUrl(...)`) pour un rendu visuel quasi instantané.
+- Résultat : quand l'utilisateur appuie sur « Entrer », `Home` monte avec les données déjà en cache (staleTime 60s) → plus de spinner « Chargement… ».
+- Auto-testé (screenshot) : 250 ms après « Entrer », 0 « Chargement » visible et 15 cartes déjà rendues avec affiches. N'affecte pas le cas « intro désactivée » (Home charge comme avant).
+
+
 ## Implemented — Itération 19 (2026-07-20) — Mini-jeu arcade
 - **Nouvelle catégorie « Jeux » (遊)** créée (categories, order 6) + nouveau `launch_type: "game"` (string libre, aucun changement de modèle backend requis ; option « Jeu arcade » ajoutée dans `EditorDialog`).
 - **Jeu « Cosmic Bunny · Astro Delivery »** (`CosmicBunnyGame.js`) : runner latéral en Canvas 2D. Un lapin coursier (casque/tenue) conduit une moto et **livre des colis 📦 sur une Terre V2 hostile** (ciel rouge toxique, skyline en ruines parallax, sol fissuré, poussière, éclairs). Mécaniques : saut (Espace/↑/tap), gravité, obstacles au sol (🪨🚧🛢️⚙️) à esquiver, colis flottants à collecter (+15), score = distance + livraisons, 3 vies avec invincibilité temporaire, vitesse croissante, record en localStorage (`sx_game_cosmic_bunny_hi`). Écrans Démarrer / Game Over.
