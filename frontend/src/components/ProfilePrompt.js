@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { IoClose, IoPersonCircle, IoSparkles } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { IoClose, IoPersonCircle, IoSparkles, IoHelpCircleOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 
 export default function ProfilePrompt({ onCreate }) {
+  const nav = useNavigate();
   const { profile } = useApp();
   const [dismissed, setDismissed] = useState(() => localStorage.getItem("sx_profile_prompted") === "1");
   if (profile || dismissed) return null;
 
   const later = () => { localStorage.setItem("sx_profile_prompted", "1"); setDismissed(true); };
   const create = () => { localStorage.setItem("sx_profile_prompted", "1"); setDismissed(true); onCreate(); };
+  const openTuto = () => { localStorage.setItem("sx_profile_prompted", "1"); setDismissed(true); nav("/tutoriel"); };
 
   return (
     <div className="fixed inset-0 z-[55] flex items-end sm:items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} data-testid="profile-prompt">
@@ -25,7 +28,11 @@ export default function ProfilePrompt({ onCreate }) {
             style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
             <IoSparkles /> Créer mon profil
           </button>
-          <button data-testid="profile-prompt-later" onClick={later} className="w-full py-2.5 border text-sm" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-secondary)" }}>
+          <button data-testid="profile-prompt-tutorial" onClick={openTuto} className="flex items-center justify-center gap-2 w-full py-2.5 border font-medium text-sm transition-transform hover:scale-[1.02]"
+            style={{ borderColor: "var(--brand)", color: "var(--brand)", borderRadius: "var(--radius-base)", background: "color-mix(in srgb, var(--brand) 12%, transparent)" }}>
+            <IoHelpCircleOutline size={18} /> Découvrir comment ça marche
+          </button>
+          <button data-testid="profile-prompt-later" onClick={later} className="w-full py-2.5 text-sm" style={{ color: "var(--text-secondary)" }}>
             Plus tard
           </button>
         </div>
