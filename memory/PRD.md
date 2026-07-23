@@ -207,3 +207,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
   - Carte (`PosterCard.js`): le badge "À venir" affiche la date ("Mois Année") si renseignée, sinon "À venir". testid: `poster-release-{id}`.
   - Fiche (`Detail.js`): tag "Sortie · Mois Année" à côté de "À venir". testid: `detail-release`.
   - Testé backend via curl (create/list/delete d'une création jetable). Frontend affiché OK.
+
+## Migration Preview → Production — 23/07/2026
+- Contexte : le déploiement ne transfère que le code, pas la base MongoDB (bases séparées preview/prod). L'utilisateur avait édité tout son contenu en Preview uniquement.
+- Solution : script `/app/scripts/migrate_to_prod.py` qui copie tout via l'API publique de production (backend sans auth serveur — PIN admin uniquement côté client).
+- Migré : 5 catégories (key préservée), 15 ambiances + audio, 14 créations (posters/bg/galeries base64 + chapitres + episodes), musiques d'ambiance/lecture/chapitre, 28 assets intégrés (images/audio), réglages site.
+- Points clés : les IDs de créations changent → audios réuploadés avec les nouveaux cid ; les IDs de chapitres sont préservés (passés dans le payload) ; les assets intégrés sont réuploadés (nouveaux aid) et les URLs dans le HTML des chapitres réécrites (domaine preview→prod + old_aid→new_aid).
+- Sauvegarde préalable : `mongodump` de la base preview dans `/app/memory/backups/preview_YYYYMMDD_HHMMSS`.
+- Vérifié : prod affiche 14 créations, assets/posters/audios répondent en 200. Prod home screenshot OK.
+- IMPORTANT pour l'avenir : l'utilisateur doit faire ses ajouts/modifs directement en PRODUCTION (le public voit la prod). La Preview = brouillon de test. Re-lancer le script écraserait le contenu prod.
