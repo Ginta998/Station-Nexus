@@ -315,7 +315,7 @@ function AnnouncementsManager() {
         {list.length === 0 && <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Aucune annonce active.</p>}
       </div>
       <div className="border p-3 space-y-2" style={{ ...fs, background: "var(--bg-secondary)" }}>
-        <input data-testid="announcement-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre (ex: Nouvelle création !)" className="w-full px-3 py-2 border outline-none" style={fs} />
+        <input data-testid="announcement-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre de la nouveauté (ex: Épisode 3 : C'est lui le commandant)" className="w-full px-3 py-2 border outline-none" style={fs} />
         <textarea data-testid="announcement-text" value={text} onChange={(e) => setText(e.target.value)} rows={2} placeholder="Message…" className="w-full px-3 py-2 border outline-none resize-none" style={fs} />
         <select data-testid="announcement-creation" value={cid} onChange={(e) => setCid(e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
           <option value="">Lier à une création (optionnel)</option>

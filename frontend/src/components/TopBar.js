@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoSettingsOutline, IoAddOutline, IoLockClosed, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { listAnnouncements } from "@/lib/api";
@@ -84,10 +84,11 @@ export default function TopBar({ onAdd, onProfile }) {
               <IoAddOutline size={18} /> Créer
             </button>
           )}
-          <div data-testid="admin-badge" className="flex items-center gap-1.5 px-3 py-2.5 border text-xs" style={{ ...btn, color: "var(--on-media-2)" }}>
-            {isAdmin ? <IoLockOpen size={14} style={{ color: "var(--brand)" }} /> : <IoLockClosed size={14} />}
-            {isAdmin ? "Création" : "Visiteur"}
-          </div>
+          {isAdmin && (
+            <div data-testid="admin-badge" className="flex items-center gap-1.5 px-3 py-2.5 border text-xs" style={{ ...btn, color: "var(--brand)" }}>
+              <IoLockOpen size={14} style={{ color: "var(--brand)" }} /> Création
+            </div>
+          )}
           <button data-testid="settings-btn" onClick={() => go("/parametres")}
             className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
             <IoSettingsOutline size={18} /> Paramètres
@@ -137,11 +138,11 @@ export default function TopBar({ onAdd, onProfile }) {
               {isAdmin && onAdd && (
                 <MenuRow testid="menu-create" icon={<IoAddOutline size={20} style={{ color: "var(--brand)" }} />} label="Créer une création" onClick={() => { setMenuOpen(false); onAdd(); }} />
               )}
-              <div className="flex items-center gap-2 px-3 py-2 text-xs" style={{ color: "var(--text-secondary)" }}>
-                {isAdmin ? <IoLockOpen size={13} style={{ color: "var(--brand)" }} /> : <IoLockClosed size={13} />}
-                {isAdmin ? "Mode création" : "Mode visiteur"}
-              </div>
-            </div>
+              {isAdmin && (
+                <div className="flex items-center gap-2 px-3 py-2 text-xs" style={{ color: "var(--brand)" }}>
+                  <IoLockOpen size={13} style={{ color: "var(--brand)" }} /> Mode création
+                </div>
+              )}            </div>
 
             {/* Quick controls also inside the menu */}
             <div className="flex items-center gap-3 p-4 border-t" style={{ borderColor: "var(--border-c)" }}>

@@ -250,3 +250,8 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Page Nouveautés /nouveautes (Novelties.js): liste les annonces (date FR), marque tout comme vu à la visite (efface le badge). Accessible via TopBar desktop + menu mobile.
 - AnnouncementBanner refactorisé pour utiliser le contexte (seenAnnouncements/markAnnouncementsSeen) → badge synchronisé.
 - Vérifié: badge, page Nouveautés, filtre Favoris + toggle cœur (clic DOM natif), bannière. Compile OK.
+
+## Social v3.1 — 23/07/2026
+- Nouveautés (page + bannière) : affichent désormais l'affiche (poster) + le nom de l'œuvre liée + le titre de la nouveauté (ex: "Épisode 3 : C'est lui le commandant"). Le "titre" de l'annonce = titre de la nouveauté ; creation_id fournit poster+nom.
+- Placeholder admin du titre d'annonce mis à jour en conséquence.
+- TopBar : badge "Visiteur" retiré ; le badge n'apparaît qu'en mode déverrouillé ("Création"). Idem menu mobile (Mode création uniquement si admin). IoLockClosed retiré des imports TopBar.
