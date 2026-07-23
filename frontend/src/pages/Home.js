@@ -14,10 +14,11 @@ import ProfilePrompt from "@/components/ProfilePrompt";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 
 const ALL = "__all__";
+const FAV = "__fav__";
 
 export default function Home() {
   const nav = useNavigate();
-  const { isAdmin, sfx } = useApp();
+  const { isAdmin, sfx, favorites, isFavorite, toggleFavorite } = useApp();
   const { data: all = [], refetch, isLoading } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
 
@@ -31,12 +32,14 @@ export default function Home() {
   const [profileOpen, setProfileOpen] = useState(false);
   const cardRefs = useRef([]);
 
-  const tabs = useMemo(() => [{ key: ALL, label: "Toutes mes créations", kanji: "全" }, ...cats], [cats]);
+  const tabs = useMemo(() => [{ key: ALL, label: "Toutes mes créations", kanji: "全" }, { key: FAV, label: "Favoris", kanji: "愛" }, ...cats], [cats]);
   const catLabelByKey = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c.label])), [cats]);
   const activeTab = tabs[catIndex] || tabs[0];
 
   const items = useMemo(() => {
-    let list = activeTab.key === ALL ? [...all] : all.filter((x) => x.category === activeTab.key);
+    let list = activeTab.key === ALL ? [...all]
+      : activeTab.key === FAV ? all.filter((x) => favorites.includes(x.id))
+      : all.filter((x) => x.category === activeTab.key);
     if (query.trim()) {
       const q = query.toLowerCase();
       list = list.filter((x) => (x.title + " " + (x.tagline || "") + " " + (x.synopsis || "")).toLowerCase().includes(q));
@@ -46,7 +49,7 @@ export default function Home() {
     else if (sort === "recent") list.sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""));
     else list.sort((a, b) => (a.order || 0) - (b.order || 0));
     return list;
-  }, [all, activeTab, query, sort]);
+  }, [all, activeTab, query, sort, favorites]);
 
   const focused = items[focusIndex];
 
@@ -179,6 +182,7 @@ export default function Home() {
           {items.map((it, i) => (
             <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
               catLabel={catLabelByKey[it.category] || it.category}
+              isFav={isFavorite(it.id)} onToggleFav={() => { toggleFavorite(it.id); sfx("select"); }}
               onFocus={() => { if (i !== focusIndex) sfx("hover"); setFocusIndex(i); }}
               onClick={() => open(it.id)} onResume={() => resume(it.id)} />
           ))}

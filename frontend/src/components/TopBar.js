@@ -1,16 +1,25 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoSettingsOutline, IoAddOutline, IoLockClosed, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline } from "react-icons/io5";
+import { useQuery } from "@tanstack/react-query";
+import { IoSettingsOutline, IoAddOutline, IoLockClosed, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
+import { listAnnouncements } from "@/lib/api";
 
 export default function TopBar({ onAdd, onProfile }) {
   const nav = useNavigate();
-  const { isAdmin, muted, toggleMute, sfx, profile } = useApp();
+  const { isAdmin, muted, toggleMute, sfx, profile, seenAnnouncements } = useApp();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: announcements = [] } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
+  const unread = announcements.filter((a) => !seenAnnouncements.includes(a.id)).length;
   const go = (p) => { sfx("select"); setMenuOpen(false); nav(p); };
 
   const btn = { borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" };
+
+  const Dot = ({ n }) => (n > 0 ? (
+    <span data-testid="notif-badge" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full"
+      style={{ background: "var(--brand)", color: "var(--bg-primary)", boxShadow: "0 0 8px var(--brand)" }}>{n > 9 ? "9+" : n}</span>
+  ) : null);
 
   const MuteBtn = ({ style }) => (
     <button data-testid="mute-toggle" onClick={() => { toggleMute(); sfx("nav"); }} title="Couper le son"
@@ -21,10 +30,11 @@ export default function TopBar({ onAdd, onProfile }) {
 
   const openProfile = () => { setMenuOpen(false); onProfile && onProfile(); };
 
-  const MenuRow = ({ testid, icon, label, onClick }) => (
+  const MenuRow = ({ testid, icon, label, onClick, badge }) => (
     <button data-testid={testid} onClick={onClick} className="flex items-center gap-3 w-full px-4 py-3 text-left border-b transition-colors"
       style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }}>
-      {icon} <span className="text-base">{label}</span>
+      {icon} <span className="text-base flex-1">{label}</span>
+      {badge > 0 && <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-[11px] font-bold rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>{badge > 9 ? "9+" : badge}</span>}
     </button>
   );
 
@@ -46,13 +56,19 @@ export default function TopBar({ onAdd, onProfile }) {
         <div className="hidden md:flex items-center gap-3">
           {onProfile && (
             <button data-testid="profile-btn" onClick={() => { sfx("nav"); onProfile(); }}
-              className="flex items-center gap-1.5 pl-1.5 pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+              className="relative flex items-center gap-1.5 pl-1.5 pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
               {profile?.avatar
                 ? <img src={profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover" style={{ border: "1px solid var(--brand)" }} />
                 : <IoPersonCircle size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }} />}
               <span className="max-w-[90px] truncate">{profile?.name || "Profil"}</span>
+              <Dot n={unread} />
             </button>
           )}
+          <button data-testid="novelties-btn" onClick={() => go("/nouveautes")}
+            className="relative flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            <IoMegaphone size={18} /> Nouveautés
+            <Dot n={unread} />
+          </button>
           <button data-testid="members-btn" onClick={() => go("/membres")}
             className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
             <IoPeople size={18} /> Membres
@@ -80,9 +96,10 @@ export default function TopBar({ onAdd, onProfile }) {
 
         {/* Mobile: menu button (label + theme color) */}
         <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }}
-          className="md:hidden flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
+          className="relative md:hidden flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
           style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
           <IoMenu size={18} /> Menu
+          {unread > 0 && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{unread > 9 ? "9+" : unread}</span>}
         </button>
       </div>
 
@@ -113,6 +130,7 @@ export default function TopBar({ onAdd, onProfile }) {
                   Personnalise ta station (thème, sons, affichage) dans les <span style={{ color: "var(--brand)" }}>Paramètres</span>.
                 </p>
               </div>
+              <MenuRow testid="menu-novelties" icon={<IoMegaphone size={20} style={{ color: "var(--brand)" }} />} label="Nouveautés" onClick={() => go("/nouveautes")} badge={unread} />
               <MenuRow testid="menu-members" icon={<IoPeople size={20} style={{ color: "var(--brand)" }} />} label="Membres" onClick={() => go("/membres")} />
               <MenuRow testid="menu-contact" icon={<IoMailOutline size={20} style={{ color: "var(--brand)" }} />} label="Contact" onClick={() => go("/contact")} />
               <MenuRow testid="menu-settings" icon={<IoSettingsOutline size={20} style={{ color: "var(--brand)" }} />} label="Paramètres" onClick={() => go("/parametres")} />

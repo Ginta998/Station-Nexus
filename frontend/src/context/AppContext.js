@@ -62,6 +62,32 @@ export function AppProvider({ children }) {
   }, [profile]);
   const clearProfile = useCallback(() => { localStorage.removeItem("sx_profile"); setProfileState(null); }, []);
 
+  // ---- favorites ----
+  const [favorites, setFavorites] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("sx_favorites") || "[]"); } catch { return []; }
+  });
+  const toggleFavorite = useCallback((id) => {
+    setFavorites((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      localStorage.setItem("sx_favorites", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+  const isFavorite = useCallback((id) => favorites.includes(id), [favorites]);
+
+  // ---- announcements read-state (notification badge) ----
+  const [seenAnnouncements, setSeenAnn] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("sx_seen_ann") || "[]"); } catch { return []; }
+  });
+  const markAnnouncementsSeen = useCallback((ids) => {
+    if (!ids || !ids.length) return;
+    setSeenAnn((prev) => {
+      const next = Array.from(new Set([...prev, ...ids]));
+      localStorage.setItem("sx_seen_ann", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   // ---- interface customization ----
   const [accent, setAccentState] = useState(() => localStorage.getItem(LS.accent) || "");
   const [radius, setRadiusState] = useState(() => localStorage.getItem(LS.radius) || "");
@@ -336,6 +362,8 @@ export function AppProvider({ children }) {
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,
     profile, saveProfile, clearProfile,
+    favorites, toggleFavorite, isFavorite,
+    seenAnnouncements, markAnnouncementsSeen,
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
     playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,

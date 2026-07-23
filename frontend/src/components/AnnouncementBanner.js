@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { IoClose, IoMegaphone, IoChevronForward } from "react-icons/io5";
@@ -7,16 +6,15 @@ import { useApp } from "@/context/AppContext";
 
 export default function AnnouncementBanner() {
   const nav = useNavigate();
-  const { sfx } = useApp();
+  const { sfx, seenAnnouncements, markAnnouncementsSeen } = useApp();
   const { data: list = [] } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
-  const [seen, setSeen] = useState(() => { try { return JSON.parse(localStorage.getItem("sx_seen_ann") || "[]"); } catch { return []; } });
 
-  const unseen = list.filter((a) => !seen.includes(a.id));
+  const unseen = list.filter((a) => !seenAnnouncements.includes(a.id));
   if (!unseen.length) return null;
   const a = unseen[0];
 
-  const dismiss = () => { const ns = [...seen, a.id]; localStorage.setItem("sx_seen_ann", JSON.stringify(ns)); setSeen(ns); };
-  const go = () => { dismiss(); if (a.creation_id) { sfx && sfx("select"); nav(`/oeuvre/${a.creation_id}`); } };
+  const dismiss = () => markAnnouncementsSeen([a.id]);
+  const go = () => { markAnnouncementsSeen([a.id]); if (a.creation_id) { sfx("select"); nav(`/oeuvre/${a.creation_id}`); } };
 
   return (
     <div className="mx-5 md:mx-12 mt-3 flex items-center gap-3 px-4 py-3 border fade-up" data-testid="announcement-banner"

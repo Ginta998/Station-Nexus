@@ -8,6 +8,7 @@ import Detail from "@/pages/Detail";
 import Settings from "@/pages/Settings";
 import Contact from "@/pages/Contact";
 import Members from "@/pages/Members";
+import Novelties from "@/pages/Novelties";
 import BootIntro from "@/components/BootIntro";
 import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
 import { INTROS } from "@/lib/intro";
@@ -69,6 +70,7 @@ function App() {
             <Route path="/parametres" element={<Settings />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/membres" element={<Members />} />
+            <Route path="/nouveautes" element={<Novelties />} />
           </Routes>
         </BrowserRouter>
         <IntroGate />

@@ -242,3 +242,11 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Page Membres : bouton "Créer mon profil" / "Modifier mon profil" (members-create-profile) ouvrant ProfileDialog. Fix crash import useState manquant.
 - TextSizeButton : prop dropUp (ouvre le menu vers le haut) utilisé dans le drawer mobile.
 - TopBar mobile : bouton "Menu" avec libellé + fond var(--brand) (change selon thème). Texte d'invitation "Personnalise ta station... dans les Paramètres" en haut du drawer.
+
+## Social v3 — 23/07/2026 (favoris + notifications + nouveautés)
+- Contexte (AppContext): favorites (localStorage sx_favorites) + toggleFavorite/isFavorite ; seenAnnouncements (sx_seen_ann) + markAnnouncementsSeen. Exposés dans value.
+- Favoris: cœur cliquable sur PosterCard (poster-fav-{id}, span role=button pour éviter bouton imbriqué) + bouton favori sur la fiche Detail (detail-favorite). Nouvelle catégorie "Favoris" (愛, key __fav__) sur Home qui filtre par favoris.
+- Notifications: badge rouge (unread = annonces non vues) sur boutons Profil + Nouveautés (desktop) et Menu (mobile) + pastille sur ligne menu-novelties.
+- Page Nouveautés /nouveautes (Novelties.js): liste les annonces (date FR), marque tout comme vu à la visite (efface le badge). Accessible via TopBar desktop + menu mobile.
+- AnnouncementBanner refactorisé pour utiliser le contexte (seenAnnouncements/markAnnouncementsSeen) → badge synchronisé.
+- Vérifié: badge, page Nouveautés, filtre Favoris + toggle cœur (clic DOM natif), bannière. Compile OK.

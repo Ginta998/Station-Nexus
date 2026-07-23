@@ -1,8 +1,9 @@
 import { forwardRef } from "react";
+import { IoHeart, IoHeartOutline } from "react-icons/io5";
 import { posterUrl } from "@/lib/api";
 
 const PosterCard = forwardRef(function PosterCard(
-  { item, focused, onFocus, onClick, onResume, catLabel },
+  { item, focused, onFocus, onClick, onResume, catLabel, isFav, onToggleFav },
   ref
 ) {
   const hasImg = item.has_poster || (item.poster && item.poster.length > 4);
@@ -51,24 +52,39 @@ const PosterCard = forwardRef(function PosterCard(
 
       <div className="absolute inset-x-0 bottom-0 h-2/5" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), transparent)" }} />
 
-      {catLabel && (
-        <div className="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest backdrop-blur-sm"
-          style={{ background: "rgba(0,0,0,0.45)", color: "#fff", borderRadius: "var(--radius-base)" }}>
-          {catLabel}
-        </div>
-      )}
-      {item.coming_soon && (
-        <div data-testid={`poster-release-${item.id}`} className="absolute top-3 right-3 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest"
-          style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-          {[item.release_month, item.release_year].filter(Boolean).join(" ") || "À venir"}
-        </div>
-      )}
-      {done && !item.coming_soon && (
-        <div data-testid={`poster-done-${item.id}`} className="absolute top-3 right-3 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest flex items-center gap-1"
-          style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-          ✓ Terminé
-        </div>
-      )}
+      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1 items-start">
+        {catLabel && (
+          <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest backdrop-blur-sm"
+            style={{ background: "rgba(0,0,0,0.45)", color: "#fff", borderRadius: "var(--radius-base)" }}>
+            {catLabel}
+          </span>
+        )}
+        {item.coming_soon && (
+          <span data-testid={`poster-release-${item.id}`} className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest"
+            style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+            {[item.release_month, item.release_year].filter(Boolean).join(" ") || "À venir"}
+          </span>
+        )}
+        {done && !item.coming_soon && (
+          <span data-testid={`poster-done-${item.id}`} className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest flex items-center gap-1"
+            style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+            ✓ Terminé
+          </span>
+        )}
+      </div>
+
+      <span
+        role="button"
+        tabIndex={-1}
+        data-testid={`poster-fav-${item.id}`}
+        onClick={(e) => { e.stopPropagation(); onToggleFav && onToggleFav(); }}
+        className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-sm cursor-pointer transition-transform hover:scale-110"
+        style={{ background: "rgba(0,0,0,0.45)", color: isFav ? "var(--brand)" : "#fff" }}
+        title={isFav ? "Retirer des favoris" : "Ajouter aux favoris"}
+        aria-label="Favori"
+      >
+        {isFav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}
+      </span>
 
       <div className="absolute inset-x-0 bottom-0 p-3 text-left">
         <p className="font-display text-base md:text-lg leading-tight" style={{ color: "#fff" }}>{item.title}</p>

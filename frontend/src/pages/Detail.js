@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube } from "react-icons/io5";
+import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
@@ -16,7 +16,7 @@ export default function Detail() {
   const { id } = useParams();
   const nav = useNavigate();
   const location = useLocation();
-  const { isAdmin, playAmbient, stopAmbient, isPlaying, playingId, sfx } = useApp();
+  const { isAdmin, playAmbient, stopAmbient, isPlaying, playingId, sfx, isFavorite, toggleFavorite } = useApp();
   const { data: item, refetch, isLoading } = useQuery({ queryKey: ["creation", id], queryFn: () => getCreation(id) });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
   const { data: allCreations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
@@ -199,6 +199,11 @@ export default function Detail() {
               )}
               <ShareMenu item={item} cardRef={cardRef} prominent testid="detail-share-prominent"
                 className={`flex items-center gap-2 ${secondaryBtnCls} border font-medium transition-transform hover:scale-105`} style={btn} />
+              <button data-testid="detail-favorite" onClick={() => { sfx("nav"); toggleFavorite(item.id); }}
+                className={`flex items-center gap-2 ${secondaryBtnCls} border font-medium transition-transform hover:scale-105`}
+                style={{ ...btn, color: isFavorite(item.id) ? "var(--brand)" : "var(--text-primary)" }}>
+                {isFavorite(item.id) ? <IoHeart size={18} /> : <IoHeartOutline size={18} />} {isFavorite(item.id) ? "Favori" : "Favoris"}
+              </button>
             </div>
 
             {item.launch_type === "chapters" && (item.chapters?.length > 0) && (
