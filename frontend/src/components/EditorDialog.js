@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline } from "react-icons/io5";
+import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio } from "@/lib/api";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -24,6 +24,7 @@ const readFile = (file, cb, max = 3) => {
 export default function EditorDialog({ open, onClose, initial, categories = [], onSaved }) {
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
   const [audioFile, setAudioFile] = useState(null);
   const [readingFile, setReadingFile] = useState(null);
   const [chapterFiles, setChapterFiles] = useState({});
@@ -32,7 +33,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   useEffect(() => {
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
-      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({});
+      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFullscreen(false);
       // fetch full item (with base64 images) so editing preserves poster/bg/gallery/chapters
       if (initial && initial.id) {
         getCreationFull(initial.id).then((full) => setForm((f) => ({ ...empty, ...full }))).catch(() => {});
@@ -91,15 +92,20 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const removeReading = async () => { if (!isEdit) return; await deleteReadingAudio(initial.id); set("has_reading_audio", false); toast.success("Musique de lecture supprimée"); };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-0 sm:p-6 overflow-y-auto"
+    <div className={`fixed inset-0 z-50 flex justify-center overflow-y-auto ${fullscreen ? "items-stretch p-0" : "items-start sm:items-center p-0 sm:p-6"}`}
       style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} data-testid="editor-dialog">
-      <div className="w-full max-w-2xl my-auto border" style={{ ...fs, background: "var(--bg-secondary)" }}>
+      <div className={`w-full border ${fullscreen ? "max-w-none min-h-full flex flex-col" : "max-w-2xl my-auto"}`} style={{ ...fs, background: "var(--bg-secondary)" }}>
         <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: "var(--border-c)" }}>
           <h2 className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{isEdit ? "Modifier la création" : "Nouvelle création"}</h2>
-          <button data-testid="editor-close" onClick={onClose} className="p-1" style={{ color: "var(--text-secondary)" }}><IoClose size={22} /></button>
+          <div className="flex items-center gap-1">
+            <button data-testid="editor-fullscreen" onClick={() => setFullscreen((v) => !v)} className="p-1" style={{ color: "var(--text-secondary)" }} title={fullscreen ? "Taille normale" : "Plein écran"}>
+              {fullscreen ? <IoContractOutline size={20} /> : <IoExpandOutline size={20} />}
+            </button>
+            <button data-testid="editor-close" onClick={onClose} className="p-1" style={{ color: "var(--text-secondary)" }}><IoClose size={22} /></button>
+          </div>
         </div>
 
-        <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div className={`p-5 space-y-4 overflow-y-auto ${fullscreen ? "flex-1" : "max-h-[70vh]"}`}>
           <div className="flex gap-4">
             <button onClick={() => posterInput.current?.click()} className="flex-shrink-0 w-28 aspect-[2/3] border flex flex-col items-center justify-center overflow-hidden" style={fs} data-testid="editor-poster-upload">
               {form.poster ? <img src={form.poster} alt="poster" className="w-full h-full object-cover" /> : (<><IoCloudUploadOutline size={22} style={{ color: "var(--brand)" }} /><span className="text-[10px] mt-1" style={{ color: "var(--text-secondary)" }}>Poster</span></>)}
