@@ -90,7 +90,8 @@ export default function TopBar({ onAdd, onProfile }) {
             </div>
           )}
           <button data-testid="settings-btn" onClick={() => go("/parametres")}
-            className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            className="flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
+            style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
             <IoSettingsOutline size={18} /> Paramètres
           </button>
         </div>
