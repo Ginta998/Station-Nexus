@@ -237,3 +237,8 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Endpoints ajoutés: DELETE /api/profiles/{id}, GET /api/email/status, notify_email sur POST /api/announcements.
 - Vérifié: curl (profils/instagram/delete/announce-notify), envoi email réel, screenshots (menu mobile, page Membres e2e avec profil Sora+Instagram, desktop).
 - À FAIRE pour diffusion email complète: vérifier un domaine dans Resend (sinon envoi limité au compte owner).
+
+## Social v2.1 — 23/07/2026 (ajustements UX)
+- Page Membres : bouton "Créer mon profil" / "Modifier mon profil" (members-create-profile) ouvrant ProfileDialog. Fix crash import useState manquant.
+- TextSizeButton : prop dropUp (ouvre le menu vers le haut) utilisé dans le drawer mobile.
+- TopBar mobile : bouton "Menu" avec libellé + fond var(--brand) (change selon thème). Texte d'invitation "Personnalise ta station... dans les Paramètres" en haut du drawer.

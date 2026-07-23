@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoSettingsOutline, IoAddOutline, IoLockClosed, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockClosed, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 
@@ -78,9 +78,11 @@ export default function TopBar({ onAdd, onProfile }) {
           </button>
         </div>
 
-        {/* Mobile: hamburger menu */}
-        <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }} className="md:hidden p-2.5 border" style={btn}>
-          <IoMenu size={20} />
+        {/* Mobile: menu button (label + theme color) */}
+        <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }}
+          className="md:hidden flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
+          style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+          <IoMenu size={18} /> Menu
         </button>
       </div>
 
@@ -105,6 +107,12 @@ export default function TopBar({ onAdd, onProfile }) {
             </button>
 
             <div className="flex-1 overflow-y-auto">
+              <div className="flex items-start gap-2 px-4 py-3 border-b" style={{ borderColor: "var(--border-c)", background: "rgba(0,0,0,0.15)" }}>
+                <IoColorPaletteOutline size={18} style={{ color: "var(--brand)", flexShrink: 0, marginTop: 2 }} />
+                <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                  Personnalise ta station (thème, sons, affichage) dans les <span style={{ color: "var(--brand)" }}>Paramètres</span>.
+                </p>
+              </div>
               <MenuRow testid="menu-members" icon={<IoPeople size={20} style={{ color: "var(--brand)" }} />} label="Membres" onClick={() => go("/membres")} />
               <MenuRow testid="menu-contact" icon={<IoMailOutline size={20} style={{ color: "var(--brand)" }} />} label="Contact" onClick={() => go("/contact")} />
               <MenuRow testid="menu-settings" icon={<IoSettingsOutline size={20} style={{ color: "var(--brand)" }} />} label="Paramètres" onClick={() => go("/parametres")} />
@@ -120,7 +128,7 @@ export default function TopBar({ onAdd, onProfile }) {
             {/* Quick controls also inside the menu */}
             <div className="flex items-center gap-3 p-4 border-t" style={{ borderColor: "var(--border-c)" }}>
               <MuteBtn />
-              <TextSizeButton btnStyle={btn} />
+              <TextSizeButton btnStyle={btn} dropUp />
               <span className="text-xs" style={{ color: "var(--text-secondary)" }}>Son &amp; taille du texte</span>
             </div>
           </div>

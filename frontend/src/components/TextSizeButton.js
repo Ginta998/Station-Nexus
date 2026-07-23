@@ -9,7 +9,7 @@ const SCALES = [
   { v: "max", label: "Maximum", size: 24 },
 ];
 
-export function TextSizeButton({ btnStyle }) {
+export function TextSizeButton({ btnStyle, dropUp }) {
   const { textScale, setTextScale, sfx } = useApp();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -32,7 +32,7 @@ export function TextSizeButton({ btnStyle }) {
 
       {open && (
         <div data-testid="text-size-menu"
-          className="absolute right-0 mt-2 z-50 p-2 border min-w-[180px]"
+          className={`absolute right-0 z-50 p-2 border min-w-[180px] ${dropUp ? "bottom-full mb-2" : "mt-2"}`}
           style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", boxShadow: "0 10px 40px rgba(0,0,0,0.5)" }}>
           <p className="text-[10px] uppercase tracking-widest px-2 pb-1.5" style={{ color: "var(--text-secondary)" }}>Taille du texte</p>
           {SCALES.map((s) => {

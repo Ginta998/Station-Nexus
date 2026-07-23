@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoPersonCircle, IoLogoInstagram, IoTrashOutline, IoHome } from "react-icons/io5";
+import { IoArrowBack, IoPersonCircle, IoLogoInstagram, IoTrashOutline, IoHome, IoPersonAdd, IoCreateOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { listProfiles, deleteProfile } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
+import ProfileDialog from "@/components/ProfileDialog";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 
@@ -16,13 +18,15 @@ function instaUrl(handle) {
 
 export default function Members() {
   const nav = useNavigate();
-  const { isAdmin, sfx } = useApp();
+  const { isAdmin, profile, sfx } = useApp();
+  const [profileOpen, setProfileOpen] = useState(false);
   const { data: list = [], isLoading, refetch } = useQuery({ queryKey: ["profiles"], queryFn: listProfiles });
 
   const del = async (p) => {
     if (!window.confirm(`Retirer le membre « ${p.name} » ?`)) return;
     await deleteProfile(p.id); toast.success("Membre retiré"); refetch();
   };
+  const closeProfile = () => { setProfileOpen(false); setTimeout(() => refetch(), 400); };
 
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
@@ -33,9 +37,16 @@ export default function Members() {
         </div>
 
         <h1 className="font-display text-4xl md:text-5xl mb-2" style={{ color: "var(--text-primary)" }}>Membres</h1>
-        <p className="mb-8" style={{ color: "var(--text-secondary)" }} data-testid="members-count">
-          {isLoading ? "Chargement…" : `${list.length} membre${list.length > 1 ? "s" : ""} dans la communauté`}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
+          <p style={{ color: "var(--text-secondary)" }} data-testid="members-count">
+            {isLoading ? "Chargement…" : `${list.length} membre${list.length > 1 ? "s" : ""} dans la communauté`}
+          </p>
+          <button data-testid="members-create-profile" onClick={() => { sfx("select"); setProfileOpen(true); }}
+            className="flex items-center gap-2 px-5 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
+            style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+            {profile ? <><IoCreateOutline size={18} /> Modifier mon profil</> : <><IoPersonAdd size={18} /> Créer mon profil</>}
+          </button>
+        </div>
 
         {(!isLoading && list.length === 0) && (
           <p style={{ color: "var(--text-secondary)" }}>Aucun membre pour l'instant. Sois le premier à créer ton profil !</p>
@@ -66,6 +77,7 @@ export default function Members() {
           })}
         </div>
       </div>
+      <ProfileDialog open={profileOpen} onClose={closeProfile} />
     </div>
   );
 }
