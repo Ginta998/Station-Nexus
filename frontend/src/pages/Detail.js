@@ -135,7 +135,7 @@ export default function Detail() {
           </div>
           <div className="flex items-center gap-2">
             <TextSizeButton btnStyle={btn} />
-            <ShareMenu item={item} cardRef={cardRef} />
+            <ShareMenu item={item} cardRef={cardRef} testid="detail-share-icon" />
             <button data-testid="detail-settings" onClick={() => { sfx("nav"); nav("/parametres"); }} className="p-2.5 border" style={btn}><IoSettingsOutline size={18} /></button>
             {isAdmin && (
               <>
@@ -197,7 +197,7 @@ export default function Detail() {
                   {thisPlaying ? <IoPause size={18} /> : <IoMusicalNotes size={18} />} Ambiance
                 </button>
               )}
-              <ShareMenu item={item} cardRef={cardRef} prominent
+              <ShareMenu item={item} cardRef={cardRef} prominent testid="detail-share-prominent"
                 className={`flex items-center gap-2 ${secondaryBtnCls} border font-medium transition-transform hover:scale-105`} style={btn} />
             </div>
 

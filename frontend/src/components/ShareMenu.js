@@ -4,7 +4,7 @@ import { IoShareSocial, IoLogoWhatsapp, IoLogoFacebook, IoLink, IoDownloadOutlin
 import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
 
-export default function ShareMenu({ item, cardRef, prominent, className, style }) {
+export default function ShareMenu({ item, cardRef, prominent, className, style, testid = "detail-share" }) {
   const { sfx } = useApp();
   const [open, setOpen] = useState(false);
   const url = typeof window !== "undefined" ? window.location.href : "";
@@ -50,12 +50,12 @@ export default function ShareMenu({ item, cardRef, prominent, className, style }
   return (
     <>
       {prominent ? (
-        <button data-testid="detail-share" onClick={() => { sfx("nav"); setOpen(true); }}
+        <button data-testid={testid} onClick={() => { sfx("nav"); setOpen(true); }}
           className={className} style={style}>
           <IoShareSocial size={18} /> Partager
         </button>
       ) : (
-        <button data-testid="detail-share" onClick={() => { sfx("nav"); setOpen(true); }} className="p-2.5 border" style={btn}><IoShareSocial size={18} /></button>
+        <button data-testid={testid} onClick={() => { sfx("nav"); setOpen(true); }} className="p-2.5 border" style={btn}><IoShareSocial size={18} /></button>
       )}
       {open && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setOpen(false)} data-testid="share-menu">

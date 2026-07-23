@@ -216,3 +216,15 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Sauvegarde préalable : `mongodump` de la base preview dans `/app/memory/backups/preview_YYYYMMDD_HHMMSS`.
 - Vérifié : prod affiche 14 créations, assets/posters/audios répondent en 200. Prod home screenshot OK.
 - IMPORTANT pour l'avenir : l'utilisateur doit faire ses ajouts/modifs directement en PRODUCTION (le public voit la prod). La Preview = brouillon de test. Re-lancer le script écraserait le contenu prod.
+
+## Espace social — 23/07/2026
+- Profils visiteurs : nom + photo uploadée (base64, max 2 Mo) + email optionnel. Stocké en localStorage (sx_profile, sx_visitor_id) + collection backend `profiles` (upsert par id). Email valide → auto-ajouté aux `subscribers`.
+- Prompt de création de profil à la 1ère visite (ProfilePrompt, "Plus tard" possible) + bouton "Profil" dans TopBar (avatar+nom). Édition/suppression via ProfileDialog.
+- Écran d'entrée (BootIntro) personnalisé : si profil → avatar + message de retour aléatoire (avec {name}) ; sinon logo STATIONEXUS. Messages dans SiteSettings.welcome_messages (5 défauts, éditables en admin via WelcomeMessagesManager). Helper lib/social.js pickWelcome().
+- Annonces admin → visiteurs : collection `announcements` (title, text, creation_id optionnel). Bannière AnnouncementBanner sur Home, vue une fois (localStorage sx_seen_ann). Géré dans Settings > AnnouncementsManager (admin).
+- Bouton "Partager" proéminent sur la fiche (Detail) via ShareMenu prominent (testid detail-share-prominent; icône header = detail-share-icon).
+- Endpoints: POST/GET /api/profiles, GET /api/profiles/{id}, GET/POST/DELETE /api/announcements, welcome_messages dans /api/settings.
+- Testé: testing_agent iteration_15 → 11/11 backend, 9/9 frontend. OK.
+- NOTE avatars IA générés: ABANDONNÉS sur demande user (upload perso uniquement).
+- NON FAIT (à faire) : envoi RÉEL d'emails de notification (nécessite intégration email type Resend + clé API/domaine du user). Actuellement on ne fait que COLLECTER les emails.
+- Ces features sont en PREVIEW : nécessitent un redéploiement pour apparaître en production.
