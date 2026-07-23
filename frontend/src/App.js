@@ -7,6 +7,7 @@ import Home from "@/pages/Home";
 import Detail from "@/pages/Detail";
 import Settings from "@/pages/Settings";
 import Contact from "@/pages/Contact";
+import Members from "@/pages/Members";
 import BootIntro from "@/components/BootIntro";
 import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
 import { INTROS } from "@/lib/intro";
@@ -67,6 +68,7 @@ function App() {
             <Route path="/oeuvre/:id" element={<Detail />} />
             <Route path="/parametres" element={<Settings />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/membres" element={<Members />} />
           </Routes>
         </BrowserRouter>
         <IntroGate />

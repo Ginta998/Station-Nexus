@@ -228,3 +228,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - NOTE avatars IA générés: ABANDONNÉS sur demande user (upload perso uniquement).
 - NON FAIT (à faire) : envoi RÉEL d'emails de notification (nécessite intégration email type Resend + clé API/domaine du user). Actuellement on ne fait que COLLECTER les emails.
 - Ces features sont en PREVIEW : nécessitent un redéploiement pour apparaître en production.
+
+## Social v2 — 23/07/2026
+- Resend email : envoi d'emails aux abonnés lors d'une annonce (case "Envoyer aussi par email aux abonnés" dans AnnouncementsManager). Backend: resend lib, /api/email/status, _broadcast_email via BackgroundTasks. Env: RESEND_API_KEY, SENDER_EMAIL (onboarding@resend.dev), REPLY_TO_EMAIL (gmail user), PUBLIC_APP_URL. LIMITE: mode test Resend n'envoie qu'à l'email du compte tant qu'un domaine n'est pas vérifié. Envoi réel testé OK vers louzalabrichel@gmail.com.
+- Menu mobile (TopBar réécrit, responsive): en mobile, bouton hamburger (mobile-menu-btn) ouvre un drawer avec header profil + Membres/Contact/Paramètres/Créer(admin) + son & Aa dupliqués en bas. Son (mute) et Aa (TextSizeButton) restent AUSSI visibles hors menu. Desktop = boutons complets + bouton Membres.
+- Page Membres /membres (Members.js, publique): grille des profils (avatar/initiale, nom, lien Instagram). Admin peut retirer un membre (deleteProfile).
+- Champ Instagram ajouté au profil (ProfileDialog + Profile model + saveProfile).
+- Endpoints ajoutés: DELETE /api/profiles/{id}, GET /api/email/status, notify_email sur POST /api/announcements.
+- Vérifié: curl (profils/instagram/delete/announce-notify), envoi email réel, screenshots (menu mobile, page Membres e2e avec profil Sora+Instagram, desktop).
+- À FAIRE pour diffusion email complète: vérifier un domaine dans Resend (sinon envoi limité au compte owner).

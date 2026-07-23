@@ -1,14 +1,32 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoSettingsOutline, IoAddOutline, IoLockClosed, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockClosed, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 
 export default function TopBar({ onAdd, onProfile }) {
   const nav = useNavigate();
   const { isAdmin, muted, toggleMute, sfx, profile } = useApp();
-  const go = (p) => { sfx("select"); nav(p); };
+  const [menuOpen, setMenuOpen] = useState(false);
+  const go = (p) => { sfx("select"); setMenuOpen(false); nav(p); };
 
   const btn = { borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" };
+
+  const MuteBtn = ({ style }) => (
+    <button data-testid="mute-toggle" onClick={() => { toggleMute(); sfx("nav"); }} title="Couper le son"
+      className="p-2.5 border transition-colors" style={{ ...btn, ...style, color: muted ? "var(--on-media-2)" : "var(--brand)" }}>
+      {muted ? <IoVolumeMute size={18} /> : <IoVolumeHigh size={18} />}
+    </button>
+  );
+
+  const openProfile = () => { setMenuOpen(false); onProfile && onProfile(); };
+
+  const MenuRow = ({ testid, icon, label, onClick }) => (
+    <button data-testid={testid} onClick={onClick} className="flex items-center gap-3 w-full px-4 py-3 text-left border-b transition-colors"
+      style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }}>
+      {icon} <span className="text-base">{label}</span>
+    </button>
+  );
 
   return (
     <header className="relative z-20 flex items-center justify-between px-5 md:px-12 pt-6 md:pt-8">
@@ -20,47 +38,94 @@ export default function TopBar({ onAdd, onProfile }) {
       </button>
 
       <div className="flex items-center gap-2 md:gap-3">
-        <button data-testid="mute-toggle" onClick={() => { toggleMute(); sfx("nav"); }} title="Couper le son"
-          className="p-2.5 border transition-colors" style={{ ...btn, color: muted ? "var(--on-media-2)" : "var(--brand)" }}>
-          {muted ? <IoVolumeMute size={18} /> : <IoVolumeHigh size={18} />}
-        </button>
-
+        {/* Always visible: mute + text size */}
+        <MuteBtn />
         <TextSizeButton btnStyle={btn} />
 
-        {onProfile && (
-          <button data-testid="profile-btn" onClick={() => { sfx("nav"); onProfile(); }}
-            className="flex items-center gap-1.5 pl-1.5 pr-3 md:pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-            {profile?.avatar
-              ? <img src={profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover" style={{ border: "1px solid var(--brand)" }} />
-              : <IoPersonCircle size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }} />}
-            <span className="hidden sm:inline max-w-[90px] truncate">{profile?.name || "Profil"}</span>
+        {/* Desktop: full button set */}
+        <div className="hidden md:flex items-center gap-3">
+          {onProfile && (
+            <button data-testid="profile-btn" onClick={() => { sfx("nav"); onProfile(); }}
+              className="flex items-center gap-1.5 pl-1.5 pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+              {profile?.avatar
+                ? <img src={profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover" style={{ border: "1px solid var(--brand)" }} />
+                : <IoPersonCircle size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }} />}
+              <span className="max-w-[90px] truncate">{profile?.name || "Profil"}</span>
+            </button>
+          )}
+          <button data-testid="members-btn" onClick={() => go("/membres")}
+            className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            <IoPeople size={18} /> Membres
           </button>
-        )}
-
-        <button data-testid="contact-btn" onClick={() => go("/contact")}
-          className="flex items-center gap-1.5 px-3 md:px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-          <IoMailOutline size={18} /> <span className="hidden sm:inline">Contact</span>
-        </button>
-
-        {isAdmin && onAdd && (
-          <button data-testid="add-creation-btn" onClick={() => { sfx("select"); onAdd(); }}
-            className="flex items-center gap-1.5 px-3 md:px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
-            style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-            <IoAddOutline size={18} /> <span className="hidden sm:inline">Créer</span>
+          <button data-testid="contact-btn" onClick={() => go("/contact")}
+            className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            <IoMailOutline size={18} /> Contact
           </button>
-        )}
-
-        <div data-testid="admin-badge" className="hidden sm:flex items-center gap-1.5 px-3 py-2.5 border text-xs"
-          style={{ ...btn, color: "var(--on-media-2)" }}>
-          {isAdmin ? <IoLockOpen size={14} style={{ color: "var(--brand)" }} /> : <IoLockClosed size={14} />}
-          {isAdmin ? "Création" : "Visiteur"}
+          {isAdmin && onAdd && (
+            <button data-testid="add-creation-btn" onClick={() => { sfx("select"); onAdd(); }}
+              className="flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
+              style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+              <IoAddOutline size={18} /> Créer
+            </button>
+          )}
+          <div data-testid="admin-badge" className="flex items-center gap-1.5 px-3 py-2.5 border text-xs" style={{ ...btn, color: "var(--on-media-2)" }}>
+            {isAdmin ? <IoLockOpen size={14} style={{ color: "var(--brand)" }} /> : <IoLockClosed size={14} />}
+            {isAdmin ? "Création" : "Visiteur"}
+          </div>
+          <button data-testid="settings-btn" onClick={() => go("/parametres")}
+            className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            <IoSettingsOutline size={18} /> Paramètres
+          </button>
         </div>
 
-        <button data-testid="settings-btn" onClick={() => go("/parametres")}
-          className="flex items-center gap-1.5 px-3 md:px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-          <IoSettingsOutline size={18} /> <span className="hidden sm:inline">Paramètres</span>
+        {/* Mobile: hamburger menu */}
+        <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }} className="md:hidden p-2.5 border" style={btn}>
+          <IoMenu size={20} />
         </button>
       </div>
+
+      {/* Mobile drawer */}
+      {menuOpen && (
+        <div className="md:hidden fixed inset-0 z-[70] flex justify-end" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} onClick={() => setMenuOpen(false)} data-testid="mobile-menu">
+          <div className="w-72 max-w-[85%] h-full flex flex-col" style={{ background: "var(--bg-secondary)", borderLeft: "1px solid var(--border-c)" }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: "var(--border-c)" }}>
+              <span className="font-display text-lg" style={{ color: "var(--text-primary)" }}>Menu</span>
+              <button data-testid="mobile-menu-close" onClick={() => setMenuOpen(false)} style={{ color: "var(--text-secondary)" }}><IoClose size={22} /></button>
+            </div>
+
+            {/* Profile header */}
+            <button data-testid="menu-profile" onClick={openProfile} className="flex items-center gap-3 p-4 border-b text-left" style={{ borderColor: "var(--border-c)" }}>
+              {profile?.avatar
+                ? <img src={profile.avatar} alt="" className="w-12 h-12 rounded-full object-cover" style={{ border: "2px solid var(--brand)" }} />
+                : <IoPersonCircle size={44} style={{ color: profile ? "var(--brand)" : "var(--text-secondary)" }} />}
+              <div className="min-w-0">
+                <p className="font-display text-lg truncate" style={{ color: "var(--text-primary)" }}>{profile?.name || "Créer mon profil"}</p>
+                <p className="text-xs" style={{ color: "var(--brand)" }}>{profile ? "Voir / modifier" : "Personnalise ton expérience"}</p>
+              </div>
+            </button>
+
+            <div className="flex-1 overflow-y-auto">
+              <MenuRow testid="menu-members" icon={<IoPeople size={20} style={{ color: "var(--brand)" }} />} label="Membres" onClick={() => go("/membres")} />
+              <MenuRow testid="menu-contact" icon={<IoMailOutline size={20} style={{ color: "var(--brand)" }} />} label="Contact" onClick={() => go("/contact")} />
+              <MenuRow testid="menu-settings" icon={<IoSettingsOutline size={20} style={{ color: "var(--brand)" }} />} label="Paramètres" onClick={() => go("/parametres")} />
+              {isAdmin && onAdd && (
+                <MenuRow testid="menu-create" icon={<IoAddOutline size={20} style={{ color: "var(--brand)" }} />} label="Créer une création" onClick={() => { setMenuOpen(false); onAdd(); }} />
+              )}
+              <div className="flex items-center gap-2 px-3 py-2 text-xs" style={{ color: "var(--text-secondary)" }}>
+                {isAdmin ? <IoLockOpen size={13} style={{ color: "var(--brand)" }} /> : <IoLockClosed size={13} />}
+                {isAdmin ? "Mode création" : "Mode visiteur"}
+              </div>
+            </div>
+
+            {/* Quick controls also inside the menu */}
+            <div className="flex items-center gap-3 p-4 border-t" style={{ borderColor: "var(--border-c)" }}>
+              <MuteBtn />
+              <TextSizeButton btnStyle={btn} />
+              <span className="text-xs" style={{ color: "var(--text-secondary)" }}>Son &amp; taille du texte</span>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

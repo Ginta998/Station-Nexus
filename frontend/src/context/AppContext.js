@@ -54,7 +54,7 @@ export function AppProvider({ children }) {
       id = (typeof crypto !== "undefined" && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
       localStorage.setItem("sx_visitor_id", id);
     }
-    const next = { id, name: data.name || "", avatar: data.avatar || "", email: data.email || "" };
+    const next = { id, name: data.name || "", avatar: data.avatar || "", email: data.email || "", instagram: data.instagram || "" };
     localStorage.setItem("sx_profile", JSON.stringify(next));
     setProfileState(next);
     upsertProfile(next).catch(() => {});

@@ -87,6 +87,8 @@ export const introVideoUrl = () => `${API}/intro/video`;
 export const upsertProfile = (p) => api.post("/profiles", p).then((r) => r.data);
 export const getProfile = (id) => api.get(`/profiles/${id}`).then((r) => r.data);
 export const listProfiles = () => api.get("/profiles").then((r) => r.data);
+export const deleteProfile = (id) => api.delete(`/profiles/${id}`).then((r) => r.data);
+export const emailStatus = () => api.get("/email/status").then((r) => r.data);
 
 // announcements (creator → visitors)
 export const listAnnouncements = () => api.get("/announcements").then((r) => r.data);

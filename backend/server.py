@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import Response, RedirectResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -7,6 +7,8 @@ import os
 import base64
 import logging
 import re
+import asyncio
+import resend
 from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List, Optional
@@ -25,6 +27,12 @@ app = FastAPI(title="Stationexus API")
 api_router = APIRouter(prefix="/api")
 
 MAX_AUDIO_BYTES = 12 * 1024 * 1024
+
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
+REPLY_TO_EMAIL = os.environ.get('REPLY_TO_EMAIL')
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
 
 
 def now_iso():
@@ -179,6 +187,7 @@ class Profile(BaseModel):
     name: str
     avatar: Optional[str] = ""   # preset avatar url or base64 data uri
     email: Optional[str] = ""
+    instagram: Optional[str] = ""
     created_at: str = Field(default_factory=now_iso)
     updated_at: str = Field(default_factory=now_iso)
 
@@ -188,6 +197,7 @@ class ProfileInput(BaseModel):
     name: str
     avatar: Optional[str] = ""
     email: Optional[str] = ""
+    instagram: Optional[str] = ""
 
 
 class Announcement(BaseModel):
@@ -203,6 +213,7 @@ class AnnouncementInput(BaseModel):
     title: str
     text: str
     creation_id: Optional[str] = ""
+    notify_email: bool = False
 
 
 class SiteSettings(BaseModel):
@@ -603,6 +614,50 @@ async def delete_subscriber(sid: str):
     return {"ok": True}
 
 
+# ---------------- Email (Resend) ----------------
+def _announcement_email_html(title: str, text: str, link: Optional[str]) -> str:
+    btn = ""
+    if link:
+        btn = (f'<tr><td style="padding-top:20px"><a href="{link}" '
+               'style="background:#e60012;color:#fff;text-decoration:none;padding:12px 24px;'
+               'border-radius:6px;font-weight:bold;display:inline-block">Découvrir</a></td></tr>')
+    return (
+        '<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:32px 0">'
+        '<tr><td align="center">'
+        '<table width="480" cellpadding="0" cellspacing="0" style="background:#141414;border-radius:10px;padding:32px;font-family:Arial,Helvetica,sans-serif">'
+        '<tr><td style="color:#e60012;font-size:22px;font-weight:bold;letter-spacing:2px">STATIONEXUS 天</td></tr>'
+        f'<tr><td style="color:#ffffff;font-size:20px;font-weight:bold;padding-top:18px">{title}</td></tr>'
+        f'<tr><td style="color:#c8c8c8;font-size:15px;line-height:1.6;padding-top:10px">{text}</td></tr>'
+        f'{btn}'
+        '<tr><td style="color:#666;font-size:12px;padding-top:28px;border-top:1px solid #2a2a2a;margin-top:20px">'
+        'Tu reçois cet email car tu es abonné·e à Stationexus.</td></tr>'
+        '</table></td></tr></table>'
+    )
+
+
+async def _broadcast_email(subject: str, html: str):
+    if not RESEND_API_KEY:
+        logger.warning("RESEND_API_KEY manquant — email non envoyé")
+        return
+    subs = await db.subscribers.find({}, {"_id": 0, "email": 1}).to_list(10000)
+    sent = 0
+    for s in subs:
+        params = {"from": SENDER_EMAIL, "to": [s["email"]], "subject": subject, "html": html}
+        if REPLY_TO_EMAIL:
+            params["reply_to"] = REPLY_TO_EMAIL
+        try:
+            await asyncio.to_thread(resend.Emails.send, params)
+            sent += 1
+        except Exception as e:
+            logger.error("Echec envoi email à %s: %s", s.get("email"), e)
+    logger.info("Broadcast email '%s' envoyé à %d/%d abonnés", subject, sent, len(subs))
+
+
+@api_router.get("/email/status")
+async def email_status():
+    return {"configured": bool(RESEND_API_KEY), "sender": SENDER_EMAIL if RESEND_API_KEY else ""}
+
+
 # ---------------- Profiles (visitor social profiles) ----------------
 @api_router.post("/profiles", response_model=Profile)
 async def upsert_profile(payload: ProfileInput):
@@ -637,6 +692,14 @@ async def get_profile(pid: str):
     return Profile(**doc)
 
 
+@api_router.delete("/profiles/{pid}")
+async def delete_profile(pid: str):
+    res = await db.profiles.delete_one({"id": pid})
+    if res.deleted_count == 0:
+        raise HTTPException(404, "Profil introuvable")
+    return {"ok": True}
+
+
 # ---------------- Announcements (creator → visitors) ----------------
 @api_router.get("/announcements", response_model=List[Announcement])
 async def list_announcements():
@@ -645,11 +708,19 @@ async def list_announcements():
 
 
 @api_router.post("/announcements", response_model=Announcement, status_code=201)
-async def create_announcement(payload: AnnouncementInput):
+async def create_announcement(payload: AnnouncementInput, background_tasks: BackgroundTasks):
     if not payload.title.strip() or not payload.text.strip():
         raise HTTPException(400, "Titre et message requis")
-    obj = Announcement(**payload.model_dump())
+    obj = Announcement(**payload.model_dump(exclude={"notify_email"}))
     await db.announcements.insert_one(obj.model_dump())
+    if payload.notify_email:
+        link = ""
+        if obj.creation_id:
+            base = os.environ.get('PUBLIC_APP_URL', '').rstrip('/')
+            if base:
+                link = f"{base}/oeuvre/{obj.creation_id}"
+        html = _announcement_email_html(obj.title, obj.text, link or None)
+        background_tasks.add_task(_broadcast_email, f"Stationexus — {obj.title}", html)
     return obj
 
 

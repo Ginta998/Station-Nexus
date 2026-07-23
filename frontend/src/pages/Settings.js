@@ -13,7 +13,7 @@ import {
   listCategories, createCategory, updateCategory, deleteCategory,
   listSubscribers, deleteSubscriber, getSettings, updateSettings,
   uploadIntroVideo, deleteIntroVideo,
-  listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations,
+  listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations, emailStatus,
 } from "@/lib/api";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
@@ -290,11 +290,13 @@ function WelcomeMessagesManager() {
 function AnnouncementsManager() {
   const { data: list = [], refetch } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
   const { data: creations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
-  const [title, setTitle] = useState(""); const [text, setText] = useState(""); const [cid, setCid] = useState("");
+  const { data: mail } = useQuery({ queryKey: ["emailStatus"], queryFn: emailStatus });
+  const [title, setTitle] = useState(""); const [text, setText] = useState(""); const [cid, setCid] = useState(""); const [notify, setNotify] = useState(false);
   const add = async () => {
     if (!title.trim() || !text.trim()) return toast.error("Titre et message requis");
-    await createAnnouncement({ title: title.trim(), text: text.trim(), creation_id: cid });
-    toast.success("Annonce publiée — visible par tous les visiteurs"); setTitle(""); setText(""); setCid(""); refetch();
+    await createAnnouncement({ title: title.trim(), text: text.trim(), creation_id: cid, notify_email: notify });
+    toast.success(notify ? "Annonce publiée + emails envoyés aux abonnés" : "Annonce publiée — visible par tous les visiteurs");
+    setTitle(""); setText(""); setCid(""); setNotify(false); refetch();
   };
   const del = async (id) => { await deleteAnnouncement(id); refetch(); };
   return (
@@ -315,13 +317,18 @@ function AnnouncementsManager() {
       <div className="border p-3 space-y-2" style={{ ...fs, background: "var(--bg-secondary)" }}>
         <input data-testid="announcement-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre (ex: Nouvelle création !)" className="w-full px-3 py-2 border outline-none" style={fs} />
         <textarea data-testid="announcement-text" value={text} onChange={(e) => setText(e.target.value)} rows={2} placeholder="Message…" className="w-full px-3 py-2 border outline-none resize-none" style={fs} />
-        <div className="flex gap-2">
-          <select data-testid="announcement-creation" value={cid} onChange={(e) => setCid(e.target.value)} className="flex-1 px-3 py-2 border outline-none" style={fs}>
-            <option value="">Lier à une création (optionnel)</option>
-            {creations.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
-          </select>
-          <button onClick={add} data-testid="announcement-add" className="px-4 py-2 font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoAddOutline /> Publier</button>
-        </div>
+        <select data-testid="announcement-creation" value={cid} onChange={(e) => setCid(e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
+          <option value="">Lier à une création (optionnel)</option>
+          {creations.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+        </select>
+        <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: "var(--text-primary)" }} data-testid="announcement-notify-label">
+          <input type="checkbox" data-testid="announcement-notify" checked={notify} onChange={(e) => setNotify(e.target.checked)} style={{ accentColor: "var(--brand)" }} />
+          Envoyer aussi par email aux abonnés
+        </label>
+        {mail && !mail.configured && (
+          <p className="text-[11px]" style={{ color: "var(--brand)" }}>⚠ Email non configuré côté serveur — l'envoi sera ignoré.</p>
+        )}
+        <button onClick={add} data-testid="announcement-add" className="px-4 py-2 font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoAddOutline /> Publier</button>
       </div>
     </div>
   );
