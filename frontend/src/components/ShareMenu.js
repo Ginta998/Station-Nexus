@@ -4,7 +4,7 @@ import { IoShareSocial, IoLogoWhatsapp, IoLogoFacebook, IoLink, IoDownloadOutlin
 import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
 
-export default function ShareMenu({ item, cardRef }) {
+export default function ShareMenu({ item, cardRef, prominent, className, style }) {
   const { sfx } = useApp();
   const [open, setOpen] = useState(false);
   const url = typeof window !== "undefined" ? window.location.href : "";
@@ -49,7 +49,14 @@ export default function ShareMenu({ item, cardRef }) {
 
   return (
     <>
-      <button data-testid="detail-share" onClick={() => { sfx("nav"); setOpen(true); }} className="p-2.5 border" style={btn}><IoShareSocial size={18} /></button>
+      {prominent ? (
+        <button data-testid="detail-share" onClick={() => { sfx("nav"); setOpen(true); }}
+          className={className} style={style}>
+          <IoShareSocial size={18} /> Partager
+        </button>
+      ) : (
+        <button data-testid="detail-share" onClick={() => { sfx("nav"); setOpen(true); }} className="p-2.5 border" style={btn}><IoShareSocial size={18} /></button>
+      )}
       {open && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setOpen(false)} data-testid="share-menu">
           <div className="w-full sm:max-w-sm border" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} onClick={(e) => e.stopPropagation()}>

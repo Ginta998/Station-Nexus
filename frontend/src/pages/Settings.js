@@ -13,6 +13,7 @@ import {
   listCategories, createCategory, updateCategory, deleteCategory,
   listSubscribers, deleteSubscriber, getSettings, updateSettings,
   uploadIntroVideo, deleteIntroVideo,
+  listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations,
 } from "@/lib/api";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
@@ -260,6 +261,72 @@ function IntroManager() {
   );
 }
 
+function WelcomeMessagesManager() {
+  const { data: settings, refetch } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
+  const [draft, setDraft] = useState(null);
+  const base = (draft ?? settings?.welcome_messages ?? []).slice(0, 5);
+  while (base.length < 5) base.push("");
+  const update = (i, v) => setDraft(base.map((m, x) => (x === i ? v : m)));
+  const save = async () => {
+    const clean = base.map((m) => m.trim()).filter(Boolean);
+    if (!clean.length) return toast.error("Ajoute au moins un message");
+    await updateSettings({ ...settings, welcome_messages: clean });
+    toast.success("Messages de bienvenue enregistrés"); refetch(); setDraft(null);
+  };
+  return (
+    <div data-testid="welcome-messages-manager">
+      <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Ces messages s'affichent au hasard sur l'écran d'entrée quand un visiteur revient. Utilise <span style={{ color: "var(--brand)" }}>{"{name}"}</span> pour insérer son nom.</p>
+      <div className="space-y-2 mb-3">
+        {base.map((m, i) => (
+          <input key={i} data-testid={`welcome-msg-${i}`} value={m} onChange={(e) => update(i, e.target.value)} placeholder={`Message ${i + 1} (ex: Bon retour, {name} !)`}
+            className="w-full px-3 py-2 border outline-none" style={fs} />
+        ))}
+      </div>
+      <button onClick={save} data-testid="welcome-save" className="px-5 py-2 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Enregistrer</button>
+    </div>
+  );
+}
+
+function AnnouncementsManager() {
+  const { data: list = [], refetch } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
+  const { data: creations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
+  const [title, setTitle] = useState(""); const [text, setText] = useState(""); const [cid, setCid] = useState("");
+  const add = async () => {
+    if (!title.trim() || !text.trim()) return toast.error("Titre et message requis");
+    await createAnnouncement({ title: title.trim(), text: text.trim(), creation_id: cid });
+    toast.success("Annonce publiée — visible par tous les visiteurs"); setTitle(""); setText(""); setCid(""); refetch();
+  };
+  const del = async (id) => { await deleteAnnouncement(id); refetch(); };
+  return (
+    <div data-testid="announcements-manager">
+      <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Publie une annonce (ex: nouvelle création). Chaque visiteur la verra une fois à sa prochaine visite.</p>
+      <div className="space-y-2 mb-3">
+        {list.map((a) => (
+          <div key={a.id} data-testid={`announcement-row-${a.id}`} className="flex items-start justify-between gap-2 p-3 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>{a.title}</p>
+              <p className="text-xs truncate" style={{ color: "var(--text-secondary)" }}>{a.text}</p>
+            </div>
+            <button onClick={() => del(a.id)} style={{ color: "var(--brand)" }} data-testid={`announcement-del-${a.id}`}><IoTrashOutline size={16} /></button>
+          </div>
+        ))}
+        {list.length === 0 && <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Aucune annonce active.</p>}
+      </div>
+      <div className="border p-3 space-y-2" style={{ ...fs, background: "var(--bg-secondary)" }}>
+        <input data-testid="announcement-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre (ex: Nouvelle création !)" className="w-full px-3 py-2 border outline-none" style={fs} />
+        <textarea data-testid="announcement-text" value={text} onChange={(e) => setText(e.target.value)} rows={2} placeholder="Message…" className="w-full px-3 py-2 border outline-none resize-none" style={fs} />
+        <div className="flex gap-2">
+          <select data-testid="announcement-creation" value={cid} onChange={(e) => setCid(e.target.value)} className="flex-1 px-3 py-2 border outline-none" style={fs}>
+            <option value="">Lier à une création (optionnel)</option>
+            {creations.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+          </select>
+          <button onClick={add} data-testid="announcement-add" className="px-4 py-2 font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoAddOutline /> Publier</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
@@ -481,6 +548,8 @@ export default function Settings() {
 
         {isAdmin && (
           <>
+            <Section title="Annonces aux visiteurs" extra="— préviens d'une nouveauté"><AnnouncementsManager /></Section>
+            <Section title="Messages de bienvenue" extra="— écran d'entrée"><WelcomeMessagesManager /></Section>
             <Section title="Catégories"><CategoryManager /></Section>
             <Section title="Abonnés newsletter"><SubscribersManager /></Section>
           </>

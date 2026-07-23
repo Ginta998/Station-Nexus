@@ -39,7 +39,7 @@ function IntroGate() {
           if (hasVideo) pool.push("video");
           type = pool.length ? pool[Math.floor(Math.random() * pool.length)] : "tengoku";
         }
-        setConfig({ type, hasVideo });
+        setConfig({ type, hasVideo, welcomeMessages: s.welcome_messages || [] });
         setShow(true);
       })
       .catch(() => {});
@@ -51,6 +51,7 @@ function IntroGate() {
     <BootIntro
       type={config.type}
       hasVideo={config.hasVideo}
+      welcomeMessages={config.welcomeMessages}
       onDone={() => { sessionStorage.setItem("sx_intro_shown", "1"); setShow(false); }}
     />
   );

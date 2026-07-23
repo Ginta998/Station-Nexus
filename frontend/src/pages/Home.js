@@ -9,6 +9,9 @@ import { useApp } from "@/context/AppContext";
 import TopBar from "@/components/TopBar";
 import PosterCard from "@/components/PosterCard";
 import EditorDialog from "@/components/EditorDialog";
+import ProfileDialog from "@/components/ProfileDialog";
+import ProfilePrompt from "@/components/ProfilePrompt";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 
 const ALL = "__all__";
 
@@ -25,6 +28,7 @@ export default function Home() {
   const [showFilters, setShowFilters] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
   const cardRefs = useRef([]);
 
   const tabs = useMemo(() => [{ key: ALL, label: "Toutes mes créations", kanji: "全" }, ...cats], [cats]);
@@ -113,7 +117,7 @@ export default function Home() {
       )}
 
       <div className="relative z-10 flex flex-col h-full">
-        <TopBar onAdd={openCreate} />
+        <TopBar onAdd={openCreate} onProfile={() => setProfileOpen(true)} />
 
         <nav className="flex items-center gap-2 md:gap-3 px-5 md:px-12 mt-6 md:mt-8 overflow-x-auto hide-scrollbar" data-testid="category-nav">
           {tabs.map((c, i) => {
@@ -128,6 +132,8 @@ export default function Home() {
             );
           })}
         </nav>
+
+        <AnnouncementBanner />
 
         {/* filter bar */}
         <div className="flex items-center gap-2 px-5 md:px-12 mt-4">
@@ -210,6 +216,8 @@ export default function Home() {
       </div>
 
       <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} />
+      <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
+      <ProfilePrompt onCreate={() => setProfileOpen(true)} />
     </div>
   );
 }

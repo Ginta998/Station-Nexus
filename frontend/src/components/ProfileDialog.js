@@ -1,0 +1,91 @@
+import { useEffect, useRef, useState } from "react";
+import { IoClose, IoCloudUploadOutline, IoPersonCircle, IoTrashOutline, IoLogOutOutline } from "react-icons/io5";
+import { toast } from "sonner";
+import { useApp } from "@/context/AppContext";
+
+const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
+const Label = ({ children }) => <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--text-secondary)" }}>{children}</label>;
+
+export default function ProfileDialog({ open, onClose }) {
+  const { profile, saveProfile, clearProfile, sfx } = useApp();
+  const [name, setName] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [email, setEmail] = useState("");
+  const fileRef = useRef(null);
+
+  useEffect(() => {
+    if (open) { setName(profile?.name || ""); setAvatar(profile?.avatar || ""); setEmail(profile?.email || ""); }
+  }, [open]); // eslint-disable-line
+
+  if (!open) return null;
+  const isEdit = !!profile;
+
+  const onFile = (f) => {
+    if (!f) return;
+    if (f.size > 2 * 1024 * 1024) return toast.error("Image trop lourde (max 2 Mo)");
+    const r = new FileReader(); r.onload = () => setAvatar(r.result); r.readAsDataURL(f);
+  };
+
+  const save = () => {
+    if (!name.trim()) return toast.error("Choisis un nom de profil");
+    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) return toast.error("Adresse email invalide");
+    saveProfile({ name: name.trim(), avatar, email: email.trim() });
+    sfx && sfx("select");
+    toast.success("Profil enregistré");
+    onClose();
+  };
+
+  const remove = () => {
+    clearProfile();
+    toast.success("Profil supprimé");
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} data-testid="profile-dialog" onClick={onClose}>
+      <div className="w-full max-w-md border" style={{ ...fs, background: "var(--bg-secondary)" }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: "var(--border-c)" }}>
+          <h2 className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{isEdit ? "Mon profil" : "Créer mon profil"}</h2>
+          <button data-testid="profile-close" onClick={onClose} className="p-1" style={{ color: "var(--text-secondary)" }}><IoClose size={22} /></button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <div className="flex flex-col items-center gap-3">
+            <button onClick={() => fileRef.current?.click()} data-testid="profile-avatar-upload"
+              className="w-28 h-28 rounded-full overflow-hidden border-2 flex items-center justify-center"
+              style={{ borderColor: "var(--brand)", background: "var(--bg-primary)" }}>
+              {avatar ? <img src={avatar} alt="avatar" className="w-full h-full object-cover" />
+                : <IoPersonCircle size={72} style={{ color: "var(--text-secondary)" }} />}
+            </button>
+            <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => onFile(e.target.files?.[0])} />
+            <div className="flex items-center gap-3">
+              <button onClick={() => fileRef.current?.click()} className="flex items-center gap-1.5 text-xs px-3 py-1.5 border" style={fs} data-testid="profile-photo-btn">
+                <IoCloudUploadOutline /> {avatar ? "Changer la photo" : "Ajouter une photo"}
+              </button>
+              {avatar && <button onClick={() => setAvatar("")} className="text-xs" style={{ color: "var(--brand)" }} data-testid="profile-photo-remove"><IoTrashOutline /></button>}
+            </div>
+          </div>
+
+          <div><Label>Nom du profil</Label>
+            <input data-testid="profile-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={30} placeholder="Ton pseudo" className="w-full px-3 py-2 border outline-none" style={fs} /></div>
+
+          <div><Label>Email (optionnel — pour être prévenu des nouveautés)</Label>
+            <input data-testid="profile-email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="toi@exemple.com" className="w-full px-3 py-2 border outline-none" style={fs} />
+            <p className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>Reçois un message quand une nouvelle création sort. Jamais de spam.</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-3 p-5 border-t" style={{ borderColor: "var(--border-c)" }}>
+          {isEdit ? (
+            <button onClick={remove} className="flex items-center gap-1.5 text-sm" style={{ color: "var(--brand)" }} data-testid="profile-delete"><IoLogOutOutline /> Supprimer</button>
+          ) : <span />}
+          <div className="flex gap-3">
+            <button onClick={onClose} className="px-4 py-2 border text-sm" style={{ ...fs, color: "var(--text-secondary)" }}>Annuler</button>
+            <button data-testid="profile-save" onClick={save} className="px-5 py-2 font-semibold text-sm transition-transform hover:scale-105"
+              style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

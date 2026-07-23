@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
-import { audioUrl, ambienceUrl, readingAudioUrl, getSettings } from "@/lib/api";
+import { audioUrl, ambienceUrl, readingAudioUrl, getSettings, upsertProfile } from "@/lib/api";
 import { configureSound, playUiSound, primeAudioCtx } from "@/lib/sound";
 
 const AppContext = createContext(null);
@@ -43,6 +43,24 @@ export function AppProvider({ children }) {
   });
   const storedAmbience = localStorage.getItem(LS.ambience);
   const [ambienceId, setAmbienceId] = useState(storedAmbience || "");
+
+  // ---- visitor social profile ----
+  const [profile, setProfileState] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("sx_profile") || "null"); } catch { return null; }
+  });
+  const saveProfile = useCallback((data) => {
+    let id = (profile && profile.id) || localStorage.getItem("sx_visitor_id");
+    if (!id) {
+      id = (typeof crypto !== "undefined" && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+      localStorage.setItem("sx_visitor_id", id);
+    }
+    const next = { id, name: data.name || "", avatar: data.avatar || "", email: data.email || "" };
+    localStorage.setItem("sx_profile", JSON.stringify(next));
+    setProfileState(next);
+    upsertProfile(next).catch(() => {});
+    return next;
+  }, [profile]);
+  const clearProfile = useCallback(() => { localStorage.removeItem("sx_profile"); setProfileState(null); }, []);
 
   // ---- interface customization ----
   const [accent, setAccentState] = useState(() => localStorage.getItem(LS.accent) || "");
@@ -317,6 +335,7 @@ export function AppProvider({ children }) {
     musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,
+    profile, saveProfile, clearProfile,
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
     playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,

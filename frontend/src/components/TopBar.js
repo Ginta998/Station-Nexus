@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { IoSettingsOutline, IoAddOutline, IoLockClosed, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockClosed, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 
-export default function TopBar({ onAdd }) {
+export default function TopBar({ onAdd, onProfile }) {
   const nav = useNavigate();
-  const { isAdmin, muted, toggleMute, sfx } = useApp();
+  const { isAdmin, muted, toggleMute, sfx, profile } = useApp();
   const go = (p) => { sfx("select"); nav(p); };
 
   const btn = { borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" };
@@ -26,6 +26,16 @@ export default function TopBar({ onAdd }) {
         </button>
 
         <TextSizeButton btnStyle={btn} />
+
+        {onProfile && (
+          <button data-testid="profile-btn" onClick={() => { sfx("nav"); onProfile(); }}
+            className="flex items-center gap-1.5 pl-1.5 pr-3 md:pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            {profile?.avatar
+              ? <img src={profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover" style={{ border: "1px solid var(--brand)" }} />
+              : <IoPersonCircle size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }} />}
+            <span className="hidden sm:inline max-w-[90px] truncate">{profile?.name || "Profil"}</span>
+          </button>
+        )}
 
         <button data-testid="contact-btn" onClick={() => go("/contact")}
           className="flex items-center gap-1.5 px-3 md:px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>

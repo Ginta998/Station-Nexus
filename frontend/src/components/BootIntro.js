@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { INTROS, playBoot } from "@/lib/intro";
 import { introVideoUrl } from "@/lib/api";
+import { pickWelcome } from "@/lib/social";
 
 function Logo({ delay = 1.4 }) {
   return (
@@ -132,11 +133,12 @@ function HanabiAnim() {
 
 const ANIMS = { tengoku: TengokuAnim, kanji: KanjiAnim, pulse: PulseAnim, towers: TowersAnim, slash: SlashAnim, hanabi: HanabiAnim };
 
-export default function BootIntro({ type, hasVideo, onDone }) {
-  const { muted, uiVolume, primeAudio } = useApp();
+export default function BootIntro({ type, hasVideo, onDone, welcomeMessages }) {
+  const { muted, uiVolume, primeAudio, profile } = useApp();
   const [leaving, setLeaving] = useState(false);
   const [ready, setReady] = useState(false);
   const doneRef = useRef(false);
+  const welcome = useMemo(() => (profile ? pickWelcome(welcomeMessages, profile.name) : null), []); // eslint-disable-line
 
   const finish = useCallback(() => {
     if (doneRef.current) return;
@@ -172,10 +174,24 @@ export default function BootIntro({ type, hasVideo, onDone }) {
 
       {ready && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 px-6 text-center" data-testid="boot-ready">
-          <div className="font-display text-4xl sm:text-5xl md:text-6xl" style={{ color: "#fff", letterSpacing: "0.15em", textShadow: "0 2px 40px rgba(0,0,0,0.7)", animation: "introWord 0.7s ease forwards" }}>
-            STATION<span style={{ color: "var(--brand)" }}>EXUS</span>
-            <span className="font-display text-2xl ml-2" style={{ color: "var(--brand)", opacity: 0.8 }}>天</span>
-          </div>
+          {profile ? (
+            <div className="flex flex-col items-center gap-5" style={{ animation: "introWord 0.7s ease forwards" }} data-testid="boot-profile">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden flex items-center justify-center"
+                style={{ border: "3px solid var(--brand)", boxShadow: "0 0 55px var(--brand)", background: "rgba(0,0,0,0.4)" }}>
+                {profile.avatar
+                  ? <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+                  : <span className="font-display text-6xl" style={{ color: "var(--brand)" }}>{(profile.name || "?")[0].toUpperCase()}</span>}
+              </div>
+              <div className="font-display text-3xl sm:text-4xl md:text-5xl" style={{ color: "#fff", textShadow: "0 2px 40px rgba(0,0,0,0.7)" }} data-testid="boot-welcome">
+                {welcome}
+              </div>
+            </div>
+          ) : (
+            <div className="font-display text-4xl sm:text-5xl md:text-6xl" style={{ color: "#fff", letterSpacing: "0.15em", textShadow: "0 2px 40px rgba(0,0,0,0.7)", animation: "introWord 0.7s ease forwards" }}>
+              STATION<span style={{ color: "var(--brand)" }}>EXUS</span>
+              <span className="font-display text-2xl ml-2" style={{ color: "var(--brand)", opacity: 0.8 }}>天</span>
+            </div>
+          )}
           <button onClick={(e) => { e.stopPropagation(); finish(); }} data-testid="boot-enter"
             className="px-16 py-4 font-display text-xl md:text-2xl tracking-[0.25em] uppercase transition-transform hover:scale-105"
             style={{ color: "var(--bg-primary)", background: "var(--brand)", borderRadius: "var(--radius-base)", boxShadow: "0 0 50px var(--brand)", animation: "introWord 0.6s ease 0.15s both, introSunGlow 2.6s ease 0.8s infinite" }}>

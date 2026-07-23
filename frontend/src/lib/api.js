@@ -82,3 +82,13 @@ export const uploadIntroVideo = (file) => {
 };
 export const deleteIntroVideo = () => api.delete("/intro/video").then((r) => r.data);
 export const introVideoUrl = () => `${API}/intro/video`;
+
+// profiles (visitor social profiles)
+export const upsertProfile = (p) => api.post("/profiles", p).then((r) => r.data);
+export const getProfile = (id) => api.get(`/profiles/${id}`).then((r) => r.data);
+export const listProfiles = () => api.get("/profiles").then((r) => r.data);
+
+// announcements (creator → visitors)
+export const listAnnouncements = () => api.get("/announcements").then((r) => r.data);
+export const createAnnouncement = (p) => api.post("/announcements", p).then((r) => r.data);
+export const deleteAnnouncement = (id) => api.delete(`/announcements/${id}`).then((r) => r.data);

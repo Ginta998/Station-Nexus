@@ -174,6 +174,37 @@ class SubscriberInput(BaseModel):
     email: str
 
 
+class Profile(BaseModel):
+    id: str
+    name: str
+    avatar: Optional[str] = ""   # preset avatar url or base64 data uri
+    email: Optional[str] = ""
+    created_at: str = Field(default_factory=now_iso)
+    updated_at: str = Field(default_factory=now_iso)
+
+
+class ProfileInput(BaseModel):
+    id: str
+    name: str
+    avatar: Optional[str] = ""
+    email: Optional[str] = ""
+
+
+class Announcement(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    text: str
+    creation_id: Optional[str] = ""
+    active: bool = True
+    created_at: str = Field(default_factory=now_iso)
+
+
+class AnnouncementInput(BaseModel):
+    title: str
+    text: str
+    creation_id: Optional[str] = ""
+
+
 class SiteSettings(BaseModel):
     name: str = "Brichel Louzala"
     bio: str = "Créateur d'histoires, d'univers et d'émotions. Bienvenue dans ma station."
@@ -186,6 +217,13 @@ class SiteSettings(BaseModel):
     intro_type: str = "tengoku"   # animation key or "video"
     intro_has_video: bool = False
     intro_hidden: List[str] = Field(default_factory=list)
+    welcome_messages: List[str] = Field(default_factory=lambda: [
+        "Bon retour, {name} !",
+        "Content de te revoir, {name}",
+        "Amuse-toi bien, {name} !",
+        "Ravi de te retrouver, {name}",
+        "Prêt·e pour une nouvelle aventure, {name} ?",
+    ])
 
 
 def slugify(s: str) -> str:
@@ -562,6 +600,64 @@ async def add_subscriber(payload: SubscriberInput):
 @api_router.delete("/subscribers/{sid}")
 async def delete_subscriber(sid: str):
     await db.subscribers.delete_one({"id": sid})
+    return {"ok": True}
+
+
+# ---------------- Profiles (visitor social profiles) ----------------
+@api_router.post("/profiles", response_model=Profile)
+async def upsert_profile(payload: ProfileInput):
+    existing = await db.profiles.find_one({"id": payload.id}, {"_id": 0})
+    data = payload.model_dump()
+    data["updated_at"] = now_iso()
+    if existing:
+        await db.profiles.update_one({"id": payload.id}, {"$set": data})
+    else:
+        data["created_at"] = now_iso()
+        await db.profiles.insert_one(dict(data))
+    if payload.email:
+        email = payload.email.strip().lower()
+        if re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+            if not await db.subscribers.find_one({"email": email}):
+                await db.subscribers.insert_one(Subscriber(email=email).model_dump())
+    doc = await db.profiles.find_one({"id": payload.id}, {"_id": 0})
+    return Profile(**doc)
+
+
+@api_router.get("/profiles", response_model=List[Profile])
+async def list_profiles():
+    docs = await db.profiles.find({}, {"_id": 0}).sort("updated_at", -1).to_list(5000)
+    return [Profile(**d) for d in docs]
+
+
+@api_router.get("/profiles/{pid}", response_model=Profile)
+async def get_profile(pid: str):
+    doc = await db.profiles.find_one({"id": pid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(404, "Profil introuvable")
+    return Profile(**doc)
+
+
+# ---------------- Announcements (creator → visitors) ----------------
+@api_router.get("/announcements", response_model=List[Announcement])
+async def list_announcements():
+    docs = await db.announcements.find({"active": True}, {"_id": 0}).sort("created_at", -1).to_list(200)
+    return [Announcement(**d) for d in docs]
+
+
+@api_router.post("/announcements", response_model=Announcement, status_code=201)
+async def create_announcement(payload: AnnouncementInput):
+    if not payload.title.strip() or not payload.text.strip():
+        raise HTTPException(400, "Titre et message requis")
+    obj = Announcement(**payload.model_dump())
+    await db.announcements.insert_one(obj.model_dump())
+    return obj
+
+
+@api_router.delete("/announcements/{aid}")
+async def delete_announcement(aid: str):
+    res = await db.announcements.delete_one({"id": aid})
+    if res.deleted_count == 0:
+        raise HTTPException(404, "Annonce introuvable")
     return {"ok": True}
 
 

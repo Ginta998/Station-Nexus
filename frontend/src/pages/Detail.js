@@ -197,6 +197,8 @@ export default function Detail() {
                   {thisPlaying ? <IoPause size={18} /> : <IoMusicalNotes size={18} />} Ambiance
                 </button>
               )}
+              <ShareMenu item={item} cardRef={cardRef} prominent
+                className={`flex items-center gap-2 ${secondaryBtnCls} border font-medium transition-transform hover:scale-105`} style={btn} />
             </div>
 
             {item.launch_type === "chapters" && (item.chapters?.length > 0) && (
