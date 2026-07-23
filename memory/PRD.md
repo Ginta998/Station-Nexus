@@ -255,3 +255,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Nouveautés (page + bannière) : affichent désormais l'affiche (poster) + le nom de l'œuvre liée + le titre de la nouveauté (ex: "Épisode 3 : C'est lui le commandant"). Le "titre" de l'annonce = titre de la nouveauté ; creation_id fournit poster+nom.
 - Placeholder admin du titre d'annonce mis à jour en conséquence.
 - TopBar : badge "Visiteur" retiré ; le badge n'apparaît qu'en mode déverrouillé ("Création"). Idem menu mobile (Mode création uniquement si admin). IoLockClosed retiré des imports TopBar.
+
+## Home UX + Tutoriel — 23/07/2026
+- Barre de recherche toujours visible (search-input) + bouton "Trier" (filter-toggle révèle le tri).
+- Taille des affiches par défaut: "grand" sur PC, "compact" sur mobile (inchangé). resolvePoster AppContext.
+- Fix titres coupés / décalage dernière fiche: .sx-poster max-height:100% + rail min-h-0 (les cartes ne dépassent jamais la hauteur du rail) + spacer de fin (w-[42vw] md:38vw) pour centrer la dernière carte.
+- Bouton "Lancer" remonté sur PC (md:-mt-4, pb réduit).
+- Nouvelle page Tutoriel /tutoriel (Tutorial.js): explique navigation, taille texte, personnalisation, lecture confort, ambiances, favoris, profil/membres, nouveautés, galeries. Liens: bouton "?" desktop (tutorial-btn) + ligne menu mobile (menu-tutorial).
+- Bouton Paramètres PC en couleur d'accent (var --brand).
+- Vérifié par screenshots (grand posters + titres OK, dernière fiche OK, tutoriel, recherche).

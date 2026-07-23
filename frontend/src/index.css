@@ -201,7 +201,8 @@ body {
 
 /* ===== Interface customization ===== */
 /* Poster widths are divided by --text-scale so the accessibility text-scale doesn't balloon the poster rail (posters keep their own size control). */
-.sx-poster { width: calc(11rem / var(--text-scale)); }
+/* max-height:100% caps the card to the rail height so titles are never clipped, whatever the poster size or screen height. */
+.sx-poster { width: calc(11rem / var(--text-scale)); max-height: 100%; }
 @media (min-width: 640px) { .sx-poster { width: calc(13rem / var(--text-scale)); } }
 @media (min-width: 768px) { .sx-poster { width: calc(15rem / var(--text-scale)); } }
 

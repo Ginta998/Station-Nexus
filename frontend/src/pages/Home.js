@@ -138,27 +138,25 @@ export default function Home() {
 
         <AnnouncementBanner />
 
-        {/* filter bar */}
+        {/* filter + search bar */}
         <div className="flex items-center gap-2 px-5 md:px-12 mt-4">
+          <div className="flex items-center gap-1 px-2 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", background: "rgba(0,0,0,0.25)" }}>
+            <IoSearch size={14} style={{ color: "var(--on-media-2)" }} />
+            <input data-testid="search-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher une création…"
+              className="bg-transparent outline-none text-xs py-1.5 w-40 md:w-64" style={{ color: "var(--on-media)" }} />
+          </div>
           <button data-testid="filter-toggle" onClick={() => { sfx("nav"); setShowFilters((v) => !v); }}
             className="flex items-center gap-1.5 px-3 py-1.5 border text-xs" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media-2)", background: "rgba(0,0,0,0.25)" }}>
-            <IoFilter size={14} /> Filtres
+            <IoFilter size={14} /> Trier
           </button>
           {showFilters && (
-            <div className="flex items-center gap-2 fade-up">
-              <div className="flex items-center gap-1 px-2 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-                <IoSearch size={14} style={{ color: "var(--text-secondary)" }} />
-                <input data-testid="search-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher…"
-                  className="bg-transparent outline-none text-xs py-1.5 w-32" style={{ color: "var(--text-primary)" }} />
-              </div>
-              <select data-testid="sort-select" value={sort} onChange={(e) => setSort(e.target.value)}
-                className="px-2 py-1.5 border text-xs outline-none" style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-                <option value="order">Ordre</option>
-                <option value="az">A → Z</option>
-                <option value="za">Z → A</option>
-                <option value="recent">Récent</option>
-              </select>
-            </div>
+            <select data-testid="sort-select" value={sort} onChange={(e) => setSort(e.target.value)}
+              className="px-2 py-1.5 border text-xs outline-none fade-up" style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+              <option value="order">Ordre</option>
+              <option value="az">A → Z</option>
+              <option value="za">Z → A</option>
+              <option value="recent">Récent</option>
+            </select>
           )}
         </div>
 
@@ -178,7 +176,7 @@ export default function Home() {
           )}
         </div>
 
-        <div className="flex-1 flex items-center overflow-x-auto hide-scrollbar snap-x snap-mandatory px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
+        <div className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-mandatory px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
           {items.map((it, i) => (
             <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
               catLabel={catLabelByKey[it.category] || it.category}
@@ -186,9 +184,10 @@ export default function Home() {
               onFocus={() => { if (i !== focusIndex) sfx("hover"); setFocusIndex(i); }}
               onClick={() => open(it.id)} onResume={() => resume(it.id)} />
           ))}
+          {items.length > 0 && <div className="flex-shrink-0 w-[42vw] md:w-[38vw]" aria-hidden="true" />}
         </div>
 
-        <div className="flex items-center justify-between px-5 md:px-12 pb-6 md:pb-8 pt-2">
+        <div className="flex items-center justify-between px-5 md:px-12 pb-6 md:pb-6 pt-2 md:-mt-4">
           <div className="flex items-center gap-3">
             {focused && (
               <button data-testid="launch-cta" onClick={() => open(focused.id)}

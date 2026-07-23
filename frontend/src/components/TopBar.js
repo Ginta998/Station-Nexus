@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { listAnnouncements } from "@/lib/api";
@@ -89,6 +89,10 @@ export default function TopBar({ onAdd, onProfile }) {
               <IoLockOpen size={14} style={{ color: "var(--brand)" }} /> Création
             </div>
           )}
+          <button data-testid="tutorial-btn" onClick={() => go("/tutoriel")} title="Comment ça marche"
+            className="flex items-center gap-1.5 px-3 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            <IoHelpCircleOutline size={18} />
+          </button>
           <button data-testid="settings-btn" onClick={() => go("/parametres")}
             className="flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
             style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
@@ -136,6 +140,7 @@ export default function TopBar({ onAdd, onProfile }) {
               <MenuRow testid="menu-members" icon={<IoPeople size={20} style={{ color: "var(--brand)" }} />} label="Membres" onClick={() => go("/membres")} />
               <MenuRow testid="menu-contact" icon={<IoMailOutline size={20} style={{ color: "var(--brand)" }} />} label="Contact" onClick={() => go("/contact")} />
               <MenuRow testid="menu-settings" icon={<IoSettingsOutline size={20} style={{ color: "var(--brand)" }} />} label="Paramètres" onClick={() => go("/parametres")} />
+              <MenuRow testid="menu-tutorial" icon={<IoHelpCircleOutline size={20} style={{ color: "var(--brand)" }} />} label="Comment ça marche" onClick={() => go("/tutoriel")} />
               {isAdmin && onAdd && (
                 <MenuRow testid="menu-create" icon={<IoAddOutline size={20} style={{ color: "var(--brand)" }} />} label="Créer une création" onClick={() => { setMenuOpen(false); onAdd(); }} />
               )}
