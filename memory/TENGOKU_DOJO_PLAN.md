@@ -35,6 +35,30 @@ Landing page (publique, vend le rêve)
 
 ---
 
+## 1bis. Le Hub central — style « jeu-service » (type Overwatch)
+
+Le Hub est **simple et lisible**, à la manière du menu principal d'un jeu-service (Overwatch) :
+- Grandes tuiles pour les **« modes de jeu »** = les 3 espaces : **École 🏫 / Bibliothèque 🏛️ / Communauté 💬 (Discord)**.
+- Un bloc **Nouveautés / actualités** (dernières ressources, nouvelles portes, annonces) mis en avant.
+- Un accès **« Réserver une séance de coaching individuel »** disponible **directement dans le Hub et à tout moment** (bouton toujours accessible). Mène à la prise de rendez-vous / paiement du coaching.
+- Affichage rapide de la **progression** de l'élève (badges obtenus, prochaine étape).
+- Esthétique épurée, immersive, très gaming (arrière-plan animé, tuiles avec hover/halo, sons).
+
+---
+
+## 1ter. Mode Création / Admin — TOUT est modifiable (repris & étendu de Stationexus)
+
+> ⚠️ Point crucial pour l'utilisateur (le créateur) : en **mode Admin/Création**, il peut **TOUT modifier lui-même**, sans repasser par le code.
+
+- **Fiches vidéo** : créer / éditer / supprimer les vidéos, changer l'ID YouTube, l'ordre, le module de rattachement.
+- **Descriptions & textes** : éditer toutes les descriptions (formations, portes, modules, vidéos, fiches biblio) via l'éditeur riche WYSIWYG repris de Stationexus.
+- **Boutons** : ajouter, retirer ou renommer des boutons/actions sur les écrans (ex : bouton « Ressource liée », « Télécharger », lien externe…).
+- **Structure** : créer/supprimer des formations, des portes, des modules ; réordonner ; associer une fiche biblio à une porte.
+- **Exercices & badges** : définir l'énoncé d'exercice de chaque vidéo, le badge de chaque porte.
+- Bref : l'écosystème est **entièrement pilotable depuis l'interface admin** — comme le mode « déverrouillé » de Stationexus, mais étendu à l'École et lié au rôle `admin` du compte.
+
+---
+
 ## 2. Les 3 espaces du Hub
 
 ### 🏫 Espace 1 — L'École (layout parcours / progression, esprit jeu vidéo)
@@ -42,7 +66,7 @@ Landing page (publique, vend le rêve)
 - Hiérarchie : **Formation → Portes (門) → Modules → Vidéos**.
 - Chaque **Porte** rapporte un **badge** quand elle est réussie.
 - **Déblocage type jeu vidéo** : au départ seule la **Porte du Feu** est accessible ; **dès que l'élève réussit la Porte du Feu, TOUTES les autres portes se débloquent** (accès libre ensuite).
-- Page vidéo = **regarder** (YouTube unlisted, ID protégé) + **exercice** + **poser une question** (fil de commentaires sous la vidéo) + **bouton « Suivant »** avec **progression sauvegardée par utilisateur** (côté serveur).
+- **Écran Vidéo** = lecteur YouTube (unlisted, ID protégé) + une **description** + un fil **« Poser une question / Q&R »** + un **bouton unique « Valider l'étape & poster mon exercice »** (marque la leçon complétée ET envoie l'exercice de l'élève d'un même geste) + passage à la suivante avec **progression sauvegardée par utilisateur** (côté serveur).
 - Barre de progression, sceaux/badges, ambiance temple/dōjō, feedback gaming (halo, son, vibration à la complétion).
 
 ### 🏛️ Espace 2 — La Bibliothèque (layout ES-DE, réutilisé de Stationexus)
@@ -172,6 +196,10 @@ Progress        { id, user_id, lesson_id, completed (bool), completed_at,
                   scroll_ratio }                        # progression PAR user, côté serveur
 Badge           { id, user_id, gate_id, awarded_at }    # 1 badge par porte réussie
 Question        { id, lesson_id, user_id, name, text, created_at }  # Q/R sous la vidéo
+Submission      { id, lesson_id, user_id, content(html/text), created_at }
+                # exercice posté par l'élève au clic de « Valider l'étape & poster mon exercice »
+Coaching        { id, user_id, type: individuel, requested_slot, status,
+                  stripe_session_id }                   # réservé depuis le Hub, à tout moment
 
 # Règle de déblocage École : au départ seule la Porte gatekeeper (Feu) est
 # accessible. Quand l'utilisateur complète TOUS les modules de la Porte du Feu,
@@ -228,17 +256,17 @@ Category, Comment, Ambience, Announcement, Subscriber(newsletter), SiteSettings
 - **Tester** : non-abonné bloqué, abonné débloqué.
 
 ### Phase 3.5 — Hub central + navigation (avant l'École)
-- Écran Hub post-login avec 3 portails (École / Bibliothèque / Communauté), animation gaming.
+- Écran Hub post-login style **jeu-service (Overwatch)** : tuiles École/Bibliothèque/Communauté + bloc Nouveautés + **bouton « Réserver un coaching individuel » toujours accessible** + aperçu progression/badges.
 - Système de navigation global : bouton « Hub » 1 clic + breadcrumb + menu responsive.
-- **Tester** : on peut plonger et remonter à chaque niveau sans se perdre.
+- **Tester** : on peut plonger et remonter à chaque niveau sans se perdre ; le bouton coaching est présent partout.
 
 ### Phase 4 — L'École : Le Chemin des 7 Portes (NOUVEAU layout)
-- Modèles Formation/Gate/Module/Lesson/Progress/Badge/Question. CRUD admin.
+- Modèles Formation/Gate/Module/Lesson/Progress/Badge/Question/Submission. **CRUD admin complet (tout modifiable : fiches vidéo, descriptions, boutons, structure).**
 - Hiérarchie drill-down : Formation → Portes → Modules → Vidéos.
 - **Déblocage jeu vidéo** : seule la **Porte du Feu** (gatekeeper) est ouverte au départ ; sa complétion **débloque toutes les autres portes**.
-- **1 badge par porte réussie.** Page vidéo = lecture + exercice + Q/R (commentaires) + « Suivant » + progression serveur.
+- **1 badge par porte réussie.** Écran vidéo = lecteur + description + Q/R + **bouton unique « Valider l'étape & poster mon exercice »** + « Suivant » + progression serveur.
 - Embed YouTube **protégé** (ID renvoyé seulement si abonné).
-- **Tester** : déblocage après la Porte du Feu, attribution de badge, vidéo cachée pour non-abonné, progression persistante, Q/R.
+- **Tester** : déblocage après la Porte du Feu, badge, vidéo cachée pour non-abonné, validation d'étape + envoi exercice, progression, Q/R, édition admin.
 
 ### Phase 5 — Bibliothèque triée par Porte + Importeur en masse
 - Bibliothèque ES-DE reprise + tri des ressources **par Porte** (1 porte par fiche).
