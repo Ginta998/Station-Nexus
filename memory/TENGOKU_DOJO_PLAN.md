@@ -1,6 +1,12 @@
 # 天国道場 — TENGOKU DŌJŌ · Plan de construction (à coller dans un NOUVEAU chat Emergent)
 
-> **Comment utiliser ce document :** ouvre un **nouveau chat Emergent** et colle l'intégralité de ce fichier comme premier message. Il contient tout : la vision, le modèle économique, l'architecture technique, le schéma de données, et un plan de construction par phases. Le codebase **Stationexus** sert de base de départ (≈70 % réutilisable). Ce nouveau projet est une **évolution multi-utilisateurs payante** de Stationexus.
+> **Comment utiliser ce document :**
+> 1. **D'ABORD, apporte le code existant** (~95 % de Stationexus) dans le nouveau projet :
+>    - Dans le chat Stationexus actuel : bouton **« Save to GitHub »** (dans la barre de saisie) → pousse le code sur un repo GitHub.
+>    - Ouvre un **nouveau chat Emergent**, puis demande à l'agent de **récupérer le code depuis ton repo GitHub** (« Pull from GitHub » / importe le repo `<ton-repo>`). Tu repars ainsi d'une copie complète de Stationexus.
+> 2. **ENSUITE, colle l'intégralité de ce document comme premier message** du nouveau chat. Il contient tout : la vision, le modèle économique, l'architecture, le schéma de données et un plan par phases.
+>
+> ⚠️ Le code (des milliers de lignes) ne se colle PAS dans un message : il arrive via GitHub. Ce document est le **cahier des charges** qui guide la transformation de Stationexus → Tengoku Dōjō. Ce nouveau projet est une **évolution multi-utilisateurs payante** de Stationexus.
 
 ---
 
@@ -148,7 +154,7 @@ Le Hub est **simple et lisible**, à la manière du menu principal d'un jeu-serv
 
 ---
 
-## 6. Ce qu'on RÉUTILISE de Stationexus (≈70 %)
+## 6. Ce qu'on RÉUTILISE de Stationexus (≈95 %)
 
 | Réutilisé tel quel | Adapté | Nouveau |
 |---|---|---|
