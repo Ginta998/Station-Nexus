@@ -83,3 +83,9 @@ android-sdk/frontend/node_modules/.cache/default-development/0.pack
 memory/backups/preview_20260723_152219/test_database/media_assets.bson
 memory/backups/preview_20260723_152219/test_database/ambience_media.bson
 frontend/node_modules/.cache/default-development/0.pack
+.env
+.env.*
+*.env
+credentials.json
+*.key
+.credentials
