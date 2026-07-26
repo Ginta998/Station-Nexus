@@ -200,6 +200,7 @@ Submission      { id, lesson_id, user_id, content(html/text), created_at }
                 # exercice posté par l'élève au clic de « Valider l'étape & poster mon exercice »
 Coaching        { id, user_id, type: individuel, requested_slot, status,
                   stripe_session_id }                   # réservé depuis le Hub, à tout moment
+LoadingTip      { id, text, order }                     # conseils défilants des écrans de chargement (éditable admin)
 
 # Règle de déblocage École : au départ seule la Porte gatekeeper (Feu) est
 # accessible. Quand l'utilisateur complète TOUS les modules de la Porte du Feu,
@@ -227,6 +228,14 @@ Category, Comment, Ambience, Announcement, Subscriber(newsletter), SiteSettings
 - **Menu latéral/inférieur intuitif** (responsive) toujours accessible.
 - Transitions fluides entre niveaux + **feedback gaming** (son, halo, vibration mobile) — cohérent avec le moteur de sons/intros repris de Stationexus.
 - Sur mobile : navigation tactile (swipe entre modules/vidéos), barre de progression persistante.
+
+### Écrans de chargement entre les zones (style jeu vidéo)
+- Entre chaque zone (Hub → École/Bibliothèque/Communauté, entrée dans une Porte, etc.), afficher un **court écran de chargement** thématique dōjō.
+- Pendant ce temps, faire **défiler des conseils / astuces** (« tips ») comme dans les jeux vidéo (citations, conseils d'apprentissage, rappels de fonctionnalités). Liste de tips **éditable par l'admin**.
+- Précharger les données de la zone cible pendant l'animation (technique déjà utilisée dans Stationexus : prefetch React Query + préchauffage des images pendant l'intro) → la zone s'ouvre sans latence perçue.
+
+### Écran de démarrage (boot) — CONSERVÉ
+- On **garde l'écran de démarrage** cinématique de Stationexus (BootIntro : intros animées + son + bouton « Entrer », message de bienvenue personnalisé avec le nom/avatar du profil). Il amorce aussi l'audio (geste utilisateur requis).
 
 ---
 
