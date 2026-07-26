@@ -337,7 +337,8 @@ function AnnouncementsManager() {
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
-    accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale } = useApp();
+    accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
+    posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor } = useApp();
   const [pin, setPin] = useState(""); const [newPin, setNewPin] = useState("");
   const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const defTheme = siteSettings?.default_theme || "tengoku";
@@ -463,20 +464,25 @@ export default function Settings() {
 
         <Section title="Accessibilité" extra="— confort de lecture">
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Taille du texte</p>
-          <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Agrandit tout le texte de l'application (descriptions, commentaires, chapitres, épisodes…).</p>
-          <div className="flex flex-wrap items-stretch gap-2 mb-2" data-testid="text-scale-grid">
-            {TEXT_SCALES.map((t) => {
-              const active = (textScale || "grand") === t.v;
-              return (
-                <button key={t.v} data-testid={`text-scale-${t.v}`} onClick={() => { setTextScale(t.v); sfx("nav"); }}
-                  className="flex-1 min-w-[70px] border flex flex-col items-center justify-center gap-1 py-3 px-2 transition-transform hover:scale-[1.02]"
-                  style={{ background: "var(--bg-secondary)", borderRadius: "var(--radius-base)", outline: active ? "2px solid var(--brand)" : "none", color: "var(--text-primary)" }}>
-                  <span className="font-display leading-none" style={{ fontSize: TEXT_SCALE_SIZE[t.v] }}>{t.pct}</span>
-                  <span className="text-xs" style={{ color: active ? "var(--brand)" : "var(--text-secondary)" }}>{t.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Agrandit tout le texte de l'application (descriptions, commentaires, chapitres…). Réglable séparément pour l'ordinateur et le mobile.</p>
+          {[{ phone: false, label: "Ordinateur", cur: textDesktop }, { phone: true, label: "Mobile", cur: textMobile }].map((dev) => (
+            <div key={dev.label} className="mb-3">
+              <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: "var(--brand)" }}>{dev.label}</p>
+              <div className="flex flex-wrap items-stretch gap-2" data-testid={`text-scale-${dev.phone ? "mobile" : "desktop"}-grid`}>
+                {TEXT_SCALES.map((t) => {
+                  const active = (dev.cur || "grand") === t.v;
+                  return (
+                    <button key={t.v} data-testid={`text-${dev.phone ? "mobile" : "desktop"}-${t.v}`} onClick={() => { setTextScaleFor(dev.phone, t.v); sfx("nav"); }}
+                      className="flex-1 min-w-[64px] border flex flex-col items-center justify-center gap-1 py-2.5 px-2 transition-transform hover:scale-[1.02]"
+                      style={{ background: "var(--bg-secondary)", borderRadius: "var(--radius-base)", outline: active ? "2px solid var(--brand)" : "none", color: "var(--text-primary)" }}>
+                      <span className="font-display leading-none" style={{ fontSize: TEXT_SCALE_SIZE[t.v] }}>{t.pct}</span>
+                      <span className="text-xs" style={{ color: active ? "var(--brand)" : "var(--text-secondary)" }}>{t.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </Section>
 
         <Section title="Personnalisation de l'interface" extra="— rends la station unique">
@@ -505,14 +511,20 @@ export default function Settings() {
           </div>
 
           <p className="text-xs uppercase tracking-widest mb-2 mt-5" style={{ color: "var(--text-secondary)" }}>Taille des affiches</p>
-          <div className="flex flex-wrap gap-2 mb-3" data-testid="poster-size-grid">
-            {POSTERS.map((p) => (
-              <button key={p.v} data-testid={`poster-size-${p.v}`} onClick={() => { setPosterSize(p.v); sfx("nav"); }}
-                className="px-4 py-2 border text-sm" style={{ ...fs, background: "var(--bg-secondary)", outline: posterSize === p.v ? "2px solid var(--brand)" : "none" }}>
-                {p.label}
-              </button>
-            ))}
-          </div>
+          <p className="text-sm mb-2" style={{ color: "var(--text-secondary)" }}>Choisis la taille des affiches séparément pour l'ordinateur et le mobile.</p>
+          {[{ phone: false, label: "Ordinateur", cur: posterDesktop }, { phone: true, label: "Mobile", cur: posterMobile }].map((dev) => (
+            <div key={dev.label} className="mb-3">
+              <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: "var(--brand)" }}>{dev.label}</p>
+              <div className="flex flex-wrap gap-2" data-testid={`poster-size-${dev.phone ? "mobile" : "desktop"}-grid`}>
+                {POSTERS.map((p) => (
+                  <button key={p.v} data-testid={`poster-${dev.phone ? "mobile" : "desktop"}-${p.v}`} onClick={() => { setPosterSizeFor(dev.phone, p.v); sfx("nav"); }}
+                    className="px-4 py-2 border text-sm" style={{ ...fs, background: "var(--bg-secondary)", outline: (dev.cur || (dev.phone ? "compact" : "normal")) === p.v ? "2px solid var(--brand)" : "none" }}>
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
 
           <div className="mt-5 space-y-3">
             <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="toggle-motion">

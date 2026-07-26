@@ -94,7 +94,7 @@ export function AppProvider({ children }) {
   const phoneMQ = "(max-width: 767px)";
   const isPhoneNow = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia(phoneMQ).matches;
   const posterKey = (phone) => (phone ? "sx_postersize_mobile" : "sx_postersize_desktop");
-  const resolvePoster = (phone) => localStorage.getItem(posterKey(phone)) || localStorage.getItem(LS.posterSize) || (phone ? "compact" : "grand");
+  const resolvePoster = (phone) => localStorage.getItem(posterKey(phone)) || localStorage.getItem(LS.posterSize) || (phone ? "compact" : "normal");
   const [posterSize, setPosterSizeState] = useState(() => resolvePoster(isPhoneNow()));
   const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
   const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
@@ -102,6 +102,22 @@ export function AppProvider({ children }) {
   // resolve per-device text scale: device key -> legacy key -> default (petit on phone, grand on PC)
   const resolveScale = (phone) => localStorage.getItem(scaleKey(phone)) || localStorage.getItem(LS.textScale) || (phone ? "petit" : "grand");
   const [textScale, setTextScaleState] = useState(() => resolveScale(isPhoneNow()));
+
+  // per-device values (for choosing PC & mobile independently from settings)
+  const [posterDesktop, setPosterDesktopState] = useState(() => resolvePoster(false));
+  const [posterMobile, setPosterMobileState] = useState(() => resolvePoster(true));
+  const [textDesktop, setTextDesktopState] = useState(() => resolveScale(false));
+  const [textMobile, setTextMobileState] = useState(() => resolveScale(true));
+  const setPosterSizeFor = (phone, v) => {
+    localStorage.setItem(posterKey(phone), v);
+    if (phone) setPosterMobileState(v); else setPosterDesktopState(v);
+    if (isPhoneNow() === phone) setPosterSizeState(v);
+  };
+  const setTextScaleFor = (phone, v) => {
+    localStorage.setItem(scaleKey(phone), v);
+    if (phone) setTextMobileState(v); else setTextDesktopState(v);
+    if (isPhoneNow() === phone) setTextScaleState(v);
+  };
 
   // ---- reader (chapter) preferences ----
   const [readerFont, setReaderFontState] = useState(() => localStorage.getItem(LS.rFont) || "serif");
@@ -218,10 +234,10 @@ export function AppProvider({ children }) {
 
   const setAccent = (v) => { setAccentState(v); v ? localStorage.setItem(LS.accent, v) : localStorage.removeItem(LS.accent); };
   const setRadius = (v) => { setRadiusState(v); v ? localStorage.setItem(LS.radius, v) : localStorage.removeItem(LS.radius); };
-  const setPosterSize = (v) => { setPosterSizeState(v); localStorage.setItem(posterKey(isPhoneNow()), v); };
+  const setPosterSize = (v) => { const ph = isPhoneNow(); setPosterSizeState(v); localStorage.setItem(posterKey(ph), v); if (ph) setPosterMobileState(v); else setPosterDesktopState(v); };
   const setReduceMotion = (v) => { setReduceMotionState(v); localStorage.setItem(LS.motion, v ? "1" : "0"); };
   const setCardTagline = (v) => { setCardTaglineState(v); localStorage.setItem(LS.cardTagline, v ? "1" : "0"); };
-  const setTextScale = (v) => { setTextScaleState(v); localStorage.setItem(scaleKey(isPhoneNow()), v); };
+  const setTextScale = (v) => { const ph = isPhoneNow(); setTextScaleState(v); localStorage.setItem(scaleKey(ph), v); if (ph) setTextMobileState(v); else setTextDesktopState(v); };
 
   const setReaderFont = (v) => { setReaderFontState(v); localStorage.setItem(LS.rFont, v); };
   const setReaderSize = (v) => { setReaderSizeState(v); localStorage.setItem(LS.rSize, String(v)); };
@@ -367,6 +383,7 @@ export function AppProvider({ children }) {
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
     playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
+    posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine, readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

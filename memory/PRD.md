@@ -264,3 +264,9 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Nouvelle page Tutoriel /tutoriel (Tutorial.js): explique navigation, taille texte, personnalisation, lecture confort, ambiances, favoris, profil/membres, nouveautés, galeries. Liens: bouton "?" desktop (tutorial-btn) + ligne menu mobile (menu-tutorial).
 - Bouton Paramètres PC en couleur d'accent (var --brand).
 - Vérifié par screenshots (grand posters + titres OK, dernière fiche OK, tutoriel, recherche).
+
+## Taille affiches/texte par appareil — 26/07/2026
+- AppContext: états posterDesktop/posterMobile/textDesktop/textMobile + setPosterSizeFor(phone,v)/setTextScaleFor(phone,v) (écrit la clé sx_postersize_{desktop|mobile} / sx_textscale_{...} et applique en direct si c'est l'appareil courant). setPosterSize/setTextScale (appareil courant) synchronisent aussi ces états.
+- Settings > Accessibilité: "Taille du texte" en 2 rangées Ordinateur/Mobile (testids text-desktop-*/text-mobile-*). Personnalisation: "Taille des affiches" en 2 rangées Ordinateur/Mobile (poster-desktop-*/poster-mobile-*).
+- Défauts inchangés: PC affiches "normal", mobile "compact"; texte PC "grand", mobile "petit".
+- Vérifié: sélection indépendante PC/mobile (sx_postersize_mobile=grand sans changer PC). Compile OK.
