@@ -245,9 +245,10 @@ Category, Comment, Ambience, Announcement, Subscriber(newsletter), SiteSettings
   - Liste de tips **éditable par l'admin**, avec choix de la catégorie.
 - Précharger les données de la zone cible pendant l'animation (technique déjà utilisée dans Stationexus : prefetch React Query + préchauffage des images pendant l'intro) → la zone s'ouvre sans latence perçue.
 
-### Écran de démarrage (boot) — CONSERVÉ + ENRICHI
-- On **garde l'écran de démarrage** cinématique de Stationexus (BootIntro : intros animées + son + bouton « Entrer », message de bienvenue personnalisé avec le nom/avatar du profil). Il amorce aussi l'audio (geste utilisateur requis).
-- **Ajouter de NOUVEAUX écrans de démarrage** spécifiques à Tengoku Dōjō (nouvelles animations/kanji/sons thématiques dōjō), en plus de ceux hérités, tous inclus dans le tirage « Aléatoire ».
+### Écran de démarrage (boot) — MÉCANISME CONSERVÉ, contenu 100 % Tengoku Dōjō
+- On **garde le mécanisme** d'écran de démarrage de Stationexus (BootIntro : animation + son + bouton « Entrer », message de bienvenue personnalisé avec le nom/avatar du profil, amorçage audio via geste utilisateur), le tirage « Aléatoire », etc.
+- ⚠️ **RETIRER tous les écrans de démarrage hérités de Stationexus.** On ne garde **AUCUN** boot Stationexus.
+- **Créer uniquement de NOUVEAUX écrans de démarrage spécifiques à Tengoku Dōjō** (animations / kanji / sons thématiques dōjō). Ce sont les **seuls** boots disponibles, tous inclus dans le tirage « Aléatoire ».
 
 ### Audio
 - On garde tout le moteur audio de Stationexus : ambiances, musiques de lecture, **musique de fin**, sons UI, packs synthétisés, etc. L'admin peut toujours ajouter de la musique de fin, etc.
