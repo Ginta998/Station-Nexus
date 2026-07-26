@@ -5,33 +5,62 @@
 ---
 
 ## 0. Résumé en une phrase
-Tengoku Dōjō est une **plateforme web (PWA) d'apprentissage premium** au design cinématique japonais, où des membres **abonnés (Stripe)** progressent dans un parcours de formation « **Le Chemin des 7 Portes** » et accèdent à une **Bibliothèque** de contenus (livres, films, séries), la vie communautaire se déroulant sur **Discord**.
+Tengoku Dōjō est une **plateforme web (PWA) d'apprentissage premium** au design cinématique japonais et à l'esprit **très « gaming »**, où des membres **abonnés (Stripe, 19,99 €/mois)** entrent dans un **Hub central** donnant accès à 3 espaces — **l'École**, **la Bibliothèque** et **la Communauté (Discord)** — et progressent dans des **formations** (la première : « **Le Chemin des 7 Portes** »).
 
 ---
 
-## 1. Les 2 piliers de l'app (+ 1 externe)
+## 1. Le principe « poupées russes » — le parcours de l'utilisateur
 
-### 🏛️ Pilier 1 — La Bibliothèque (layout ES-DE, réutilisé de Stationexus)
-- Reprend **exactement** l'expérience Stationexus actuelle : catégories, rail horizontal de posters, fond dynamique flouté, fiche détail avec bouton « Lancer », lecteur de chapitres immersif (webtoon), galeries, musique d'ambiance, thèmes japonais.
-- **Différence clé** : le contenu est désormais **verrouillé derrière l'abonnement**. Un visiteur non-abonné voit les posters/aperçus mais ne peut pas « Lancer » (paywall).
+Tout est imbriqué, on plonge de plus en plus profond, et on peut **toujours remonter au Hub central sans jamais se perdre** :
 
-### ⛩️ Pilier 2 — Le Chemin des 7 Portes (layout parcours vertical / progression)
-- **Nouveau layout** : un parcours d'apprentissage **vertical**, séquentiel, où l'élève franchit les 7 « portes » (門) une à une.
-- Chaque **Porte** = un module contenant des **leçons** (vidéos YouTube non répertoriées + texte riche + ressources téléchargeables).
-- **Progression déblocable** : une porte se débloque quand la précédente est complétée (ou déblocage libre — à décider). Barre de progression globale, badges/récompenses (thème « dōjō » : ceintures, sceaux).
-- Suivi de progression **par utilisateur** (côté serveur, plus seulement localStorage).
+```
+Landing page (publique, vend le rêve)
+   └─ Abonnement Stripe (19,99 €/mois)
+        └─ Entrée dans l'écosystème → création du compte / profil
+             └─ Tutoriel (onboarding gaming)
+                  └─ HUB CENTRAL  →  3 espaces devant soi :
+                       ├─ 🏫 ÉCOLE
+                       │     └─ Formations disponibles (Le Chemin des 7 Portes, + d'autres à venir)
+                       │          └─ Portes (門)  ← chaque porte = un chapitre du jeu
+                       │               └─ Modules
+                       │                    └─ Vidéos (YouTube non répertoriée)
+                       │                         └─ Regarder la vidéo → Exercice → Poser une question (commentaires)
+                       │                              → Passer à la suivante (progression sauvegardée)
+                       ├─ 🏛️ BIBLIOTHÈQUE (layout ES-DE)
+                       │     └─ Ressources triées PAR PORTE (par thématique) : livres, films, séries…
+                       └─ 💬 COMMUNAUTÉ → Discord (serveur déjà existant)
+```
 
-### 💬 Pilier 3 — Communauté → **Discord** (externe)
-- Pas de feed/forum développé dans l'app. À la place : **intégration Discord** (bouton « Rejoindre le dōjō sur Discord », widget Discord optionnel, lien d'invitation réservé aux abonnés).
-- Possibilité future : synchroniser le rôle Discord « Abonné » via l'API Discord (backlog P2).
+**Règle d'or de navigation :** menu intuitif omniprésent + **retour au Hub central en 1 clic** + fil d'ariane (breadcrumb) à chaque niveau (Hub › École › Formation › Porte › Module › Vidéo). L'utilisateur ne doit **JAMAIS se sentir perdu**. Transitions et feedback visuel/sonore **très gaming** à chaque étape.
+
+---
+
+## 2. Les 3 espaces du Hub
+
+### 🏫 Espace 1 — L'École (layout parcours / progression, esprit jeu vidéo)
+- Contient **plusieurs formations** (extensible). La première : **Le Chemin des 7 Portes**.
+- Hiérarchie : **Formation → Portes (門) → Modules → Vidéos**.
+- Chaque **Porte** rapporte un **badge** quand elle est réussie.
+- **Déblocage type jeu vidéo** : au départ seule la **Porte du Feu** est accessible ; **dès que l'élève réussit la Porte du Feu, TOUTES les autres portes se débloquent** (accès libre ensuite).
+- Page vidéo = **regarder** (YouTube unlisted, ID protégé) + **exercice** + **poser une question** (fil de commentaires sous la vidéo) + **bouton « Suivant »** avec **progression sauvegardée par utilisateur** (côté serveur).
+- Barre de progression, sceaux/badges, ambiance temple/dōjō, feedback gaming (halo, son, vibration à la complétion).
+
+### 🏛️ Espace 2 — La Bibliothèque (layout ES-DE, réutilisé de Stationexus)
+- Reprend **exactement** l'expérience Stationexus : rail horizontal de posters, fond dynamique flouté, fiche détail, lecteur immersif (webtoon), galeries, musique, thèmes japonais.
+- **Nouveauté** : chaque ressource est **triée par Porte** (thématique) → l'élève retrouve les lectures/films liés à la porte qu'il étudie.
+- Contenu **verrouillé derrière l'abonnement** (aperçu visible, « Lancer » réservé aux abonnés).
+
+### 💬 Espace 3 — La Communauté → **Discord** (serveur déjà existant)
+- Pas de forum développé dans l'app : **carte « Communauté »** dans le Hub qui mène au **serveur Discord** (lien d'invitation réservé aux abonnés).
+- Widget Discord optionnel. (P2) Synchroniser automatiquement le rôle Discord « Abonné » via l'API Discord.
 
 ---
 
 ## 2. Modèle économique (Stripe)
 
 ### Abonnement principal
-- **Un seul abonnement mensuel** qui débloque **TOUT** (Bibliothèque + les 7 Portes + accès Discord abonnés).
-- Récurrent (Stripe **Subscription**, prix mensuel unique).
+- **Un seul abonnement mensuel à 19,99 €/mois** qui débloque **TOUT** (École + Bibliothèque + accès Discord abonnés).
+- Récurrent (Stripe **Subscription**, prix mensuel unique = 19,99 €).
 
 ### Accompagnement personnalisé (offres premium à part)
 - Packs d'**accompagnement 1:1** : **3 mois / 6 mois / 12 mois** (⚠️ *à confirmer par l'utilisateur — durées et prix à finaliser*).
@@ -122,23 +151,46 @@ Coaching        { id, user_id, duration_months: 3|6|12, status, stripe_session_i
 PaymentTx       { id, user_id, session_id, amount, currency, plan/pack,
                   payment_status: initiated|paid|failed|expired, created_at }
 
-# --- Bibliothèque (repris de Stationexus) ---
-Creation        { id, title, category, launch_type, poster(b64), bg(b64),
+# --- École : Formations → Portes → Modules → Vidéos (NOUVEAU) ---
+Formation       { id, slug, title, kanji, description, cover, order,
+                  is_published }                       # ex : "Le Chemin des 7 Portes"
+Gate (Porte)    { id, formation_id, index (1..7), title, kanji, element,
+                  description, cover, badge, order,
+                  is_gatekeeper (bool) }                # Porte du Feu = gatekeeper=true
+Module          { id, gate_id, order, title, description }
+Lesson (Vidéo)  { id, module_id, order, title,
+                  youtube_id (SECRET, jamais exposé aux non-abonnés),
+                  rich_content(html), exercise(html),
+                  resources[], duration }
+Progress        { id, user_id, lesson_id, completed (bool), completed_at,
+                  scroll_ratio }                        # progression PAR user, côté serveur
+Badge           { id, user_id, gate_id, awarded_at }    # 1 badge par porte réussie
+Question        { id, lesson_id, user_id, name, text, created_at }  # Q/R sous la vidéo
+
+# Règle de déblocage École : au départ seule la Porte gatekeeper (Feu) est
+# accessible. Quand l'utilisateur complète TOUS les modules de la Porte du Feu,
+# le backend débloque TOUTES les portes de la formation (flag calculé par user).
+
+# --- Bibliothèque (repris de Stationexus + tri par Porte) ---
+Creation        { id, title, category, gate_id (thématique/porte liée),
+                  launch_type, poster(b64), bg(b64),
                   chapters[], episodes[], gallery[], release_month/year,
                   is_premium (bool) ... }
 
-# --- Chemin des 7 Portes (NOUVEAU) ---
-Gate (Porte)    { id, index (1..7), title, kanji, description, cover,
-                  unlock_rule: sequential|free, order }
-Lesson          { id, gate_id, order, title, youtube_id (SECRET, jamais
-                  exposé aux non-abonnés), rich_content(html),
-                  resources[], duration }
-Progress        { id, user_id, lesson_id, completed (bool), completed_at,
-                  scroll_ratio }  # progression PAR utilisateur, côté serveur
-
-# --- Existant repris ---
+# --- Existant repris de Stationexus ---
 Category, Comment, Ambience, Announcement, Subscriber(newsletter), SiteSettings
 ```
+
+---
+
+## 8bis. Navigation & Hub (CRITIQUE — « ne jamais se perdre »)
+
+- **Hub central** = écran d'accueil post-login : 3 grandes cartes/portails immersifs (École 🏫 / Bibliothèque 🏛️ / Communauté 💬) avec animation d'entrée gaming.
+- **Retour au Hub en 1 clic** depuis n'importe quel niveau (logo/bouton « Hub » toujours visible).
+- **Fil d'ariane (breadcrumb)** à chaque profondeur : `Hub › École › Le Chemin des 7 Portes › Porte du Feu › Module 2 › Vidéo 3`.
+- **Menu latéral/inférieur intuitif** (responsive) toujours accessible.
+- Transitions fluides entre niveaux + **feedback gaming** (son, halo, vibration mobile) — cohérent avec le moteur de sons/intros repris de Stationexus.
+- Sur mobile : navigation tactile (swipe entre modules/vidéos), barre de progression persistante.
 
 ---
 
@@ -167,16 +219,23 @@ Category, Comment, Ambience, Announcement, Subscriber(newsletter), SiteSettings
 - Endpoints protégés côté serveur (ne pas se fier au frontend).
 - **Tester** : non-abonné bloqué, abonné débloqué.
 
-### Phase 4 — Le Chemin des 7 Portes (NOUVEAU layout)
-- Modèles Gate/Lesson/Progress. CRUD admin des portes/leçons.
-- Layout parcours vertical (portes 門, déblocage séquentiel, barre de progression, badges dōjō).
-- Embed YouTube **protégé** (ID renvoyé seulement si abonné).
-- Progression par user côté serveur.
-- **Tester** : progression, déblocage, vidéo cachée pour non-abonné.
+### Phase 3.5 — Hub central + navigation (avant l'École)
+- Écran Hub post-login avec 3 portails (École / Bibliothèque / Communauté), animation gaming.
+- Système de navigation global : bouton « Hub » 1 clic + breadcrumb + menu responsive.
+- **Tester** : on peut plonger et remonter à chaque niveau sans se perdre.
 
-### Phase 5 — Importeur en masse
+### Phase 4 — L'École : Le Chemin des 7 Portes (NOUVEAU layout)
+- Modèles Formation/Gate/Module/Lesson/Progress/Badge/Question. CRUD admin.
+- Hiérarchie drill-down : Formation → Portes → Modules → Vidéos.
+- **Déblocage jeu vidéo** : seule la **Porte du Feu** (gatekeeper) est ouverte au départ ; sa complétion **débloque toutes les autres portes**.
+- **1 badge par porte réussie.** Page vidéo = lecture + exercice + Q/R (commentaires) + « Suivant » + progression serveur.
+- Embed YouTube **protégé** (ID renvoyé seulement si abonné).
+- **Tester** : déblocage après la Porte du Feu, attribution de badge, vidéo cachée pour non-abonné, progression persistante, Q/R.
+
+### Phase 5 — Bibliothèque triée par Porte + Importeur en masse
+- Bibliothèque ES-DE reprise + tri/filtre des ressources **par Porte** (thématique).
 - Écran Admin Import : CSV/XLSX + images + docs. Parsing `pandas`/`openpyxl`, tâche de fond, rapport.
-- **Tester** : import d'un CSV de démo + images → créations générées.
+- **Tester** : ressource associée à une porte, import d'un CSV de démo + images → créations générées.
 
 ### Phase 6 — Discord + finitions
 - Bouton/section « Rejoindre sur Discord » (visible abonnés). Widget optionnel.
@@ -196,9 +255,16 @@ Category, Comment, Ambience, Announcement, Subscriber(newsletter), SiteSettings
 
 ---
 
-## 11. Points À CONFIRMER avec l'utilisateur au démarrage du nouveau chat
-1. **Prix** de l'abonnement mensuel + prix/durées des packs d'accompagnement (3/6/12 mois).
-2. Déblocage des 7 Portes : **séquentiel** (une par une) ou **libre** dès l'abonnement ?
-3. Récompenses/badges du parcours (ceintures, sceaux) : souhaités dès le MVP ou plus tard ?
-4. Object storage vs base64 pour les gros médias (si le volume est important).
-5. Lien d'invitation Discord + faut-il synchroniser automatiquement le rôle « Abonné » ?
+## 11. Décisions confirmées par l'utilisateur ✅
+1. **Prix abonnement : 19,99 €/mois** (débloque tout).
+2. **Déblocage École type jeu vidéo** : au départ seule la **Porte du Feu** est ouverte ; la réussir **débloque toutes les autres portes**.
+3. **1 badge par porte réussie.**
+4. **Serveur Discord déjà existant** (espace Communauté = lien vers Discord).
+5. **Parcours « poupées russes »** : Landing → abonnement → compte/profil → tutoriel → Hub (3 espaces) → École › Formation › Porte › Module › Vidéo (regarder + exercice + Q/R + suivant).
+6. **Navigation essentielle** : menu intuitif, retour au Hub facile, ne jamais se perdre, esprit très gaming partout.
+
+## 11bis. Points restant à préciser (au démarrage du nouveau chat)
+- **Packs d'accompagnement 1:1 (3/6/12 mois)** : prix + paiement unique ou abonnement ? (à confirmer plus tard, hors MVP).
+- **Object storage vs base64** pour les gros médias (si volume important).
+- **Sync automatique du rôle Discord « Abonné »** via l'API Discord : dès le MVP ou plus tard ?
+- **Lien d'invitation Discord** exact à intégrer.
