@@ -270,3 +270,6 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Settings > Accessibilité: "Taille du texte" en 2 rangées Ordinateur/Mobile (testids text-desktop-*/text-mobile-*). Personnalisation: "Taille des affiches" en 2 rangées Ordinateur/Mobile (poster-desktop-*/poster-mobile-*).
 - Défauts inchangés: PC affiches "normal", mobile "compact"; texte PC "grand", mobile "petit".
 - Vérifié: sélection indépendante PC/mobile (sx_postersize_mobile=grand sans changer PC). Compile OK.
+
+## Aperçu taille affiches — 26/07/2026
+- Settings: composant MiniPoster (data-testid poster-preview) affiché à droite de chaque rangée (Ordinateur/Mobile) de la taille des affiches. Taille en px selon compact(40)/normal(58)/grand(78), transition animée, dégradé brand + fausses lignes de titre. Vérifié par screenshot.

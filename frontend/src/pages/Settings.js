@@ -334,6 +334,20 @@ function AnnouncementsManager() {
   );
 }
 
+const POSTER_PREVIEW_PX = { compact: 40, normal: 58, grand: 78 };
+function MiniPoster({ size }) {
+  const w = POSTER_PREVIEW_PX[size] || POSTER_PREVIEW_PX.normal;
+  return (
+    <div className="flex flex-col items-center gap-1 flex-shrink-0" data-testid="poster-preview">
+      <div style={{ width: w, height: w * 1.5, borderRadius: "var(--radius-base)", background: "linear-gradient(155deg, var(--brand) 0%, var(--bg-secondary) 70%)", border: "1px solid var(--border-c)", position: "relative", overflow: "hidden", transition: "width .22s ease, height .22s ease", boxShadow: "0 4px 14px rgba(0,0,0,0.4)" }}>
+        <div style={{ position: "absolute", left: 5, right: 14, bottom: 10, height: 3, background: "rgba(255,255,255,0.85)", borderRadius: 2 }} />
+        <div style={{ position: "absolute", left: 5, right: 22, bottom: 5, height: 2, background: "rgba(255,255,255,0.5)", borderRadius: 2 }} />
+      </div>
+      <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>Aperçu</span>
+    </div>
+  );
+}
+
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
@@ -515,13 +529,16 @@ export default function Settings() {
           {[{ phone: false, label: "Ordinateur", cur: posterDesktop }, { phone: true, label: "Mobile", cur: posterMobile }].map((dev) => (
             <div key={dev.label} className="mb-3">
               <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: "var(--brand)" }}>{dev.label}</p>
-              <div className="flex flex-wrap gap-2" data-testid={`poster-size-${dev.phone ? "mobile" : "desktop"}-grid`}>
-                {POSTERS.map((p) => (
-                  <button key={p.v} data-testid={`poster-${dev.phone ? "mobile" : "desktop"}-${p.v}`} onClick={() => { setPosterSizeFor(dev.phone, p.v); sfx("nav"); }}
-                    className="px-4 py-2 border text-sm" style={{ ...fs, background: "var(--bg-secondary)", outline: (dev.cur || (dev.phone ? "compact" : "normal")) === p.v ? "2px solid var(--brand)" : "none" }}>
-                    {p.label}
-                  </button>
-                ))}
+              <div className="flex items-center gap-4">
+                <div className="flex flex-wrap gap-2" data-testid={`poster-size-${dev.phone ? "mobile" : "desktop"}-grid`}>
+                  {POSTERS.map((p) => (
+                    <button key={p.v} data-testid={`poster-${dev.phone ? "mobile" : "desktop"}-${p.v}`} onClick={() => { setPosterSizeFor(dev.phone, p.v); sfx("nav"); }}
+                      className="px-4 py-2 border text-sm" style={{ ...fs, background: "var(--bg-secondary)", outline: (dev.cur || (dev.phone ? "compact" : "normal")) === p.v ? "2px solid var(--brand)" : "none" }}>
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+                <MiniPoster size={dev.cur || (dev.phone ? "compact" : "normal")} />
               </div>
             </div>
           ))}
