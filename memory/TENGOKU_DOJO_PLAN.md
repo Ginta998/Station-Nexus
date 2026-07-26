@@ -47,7 +47,13 @@ Landing page (publique, vend le rêve)
 
 ### 🏛️ Espace 2 — La Bibliothèque (layout ES-DE, réutilisé de Stationexus)
 - Reprend **exactement** l'expérience Stationexus : rail horizontal de posters, fond dynamique flouté, fiche détail, lecteur immersif (webtoon), galeries, musique, thèmes japonais.
-- **Nouveauté** : chaque ressource est **triée par Porte** (thématique) → l'élève retrouve les lectures/films liés à la porte qu'il étudie.
+- **Tri principal par Porte** : chaque fiche appartient à **UNE seule porte** (thématique) → l'élève retrouve les lectures/films liés à la porte qu'il étudie.
+- **Sections transversales** (en plus du tri par porte) :
+  - **Favoris** ❤️ : l'utilisateur marque ses ressources préférées (repris de Stationexus, mais désormais **par utilisateur, côté serveur**).
+  - **Nouveautés** ✨ : dernières ressources ajoutées, avec badge de notification (repris de Stationexus).
+- **Choix du layout d'affichage** (bascule par l'utilisateur) :
+  - **Horizontal** (rail ES-DE, défaut) · **Grille** (grid de posters, façon Netflix) · **Liste verticale** (liste compacte).
+  - Préférence mémorisée par utilisateur.
 - Contenu **verrouillé derrière l'abonnement** (aperçu visible, « Lancer » réservé aux abonnés).
 
 ### 💬 Espace 3 — La Communauté → **Discord** (serveur déjà existant)
@@ -172,10 +178,12 @@ Question        { id, lesson_id, user_id, name, text, created_at }  # Q/R sous l
 # le backend débloque TOUTES les portes de la formation (flag calculé par user).
 
 # --- Bibliothèque (repris de Stationexus + tri par Porte) ---
-Creation        { id, title, category, gate_id (thématique/porte liée),
+Creation        { id, title, category, gate_id (UNE porte / thématique),
                   launch_type, poster(b64), bg(b64),
                   chapters[], episodes[], gallery[], release_month/year,
-                  is_premium (bool) ... }
+                  is_new (bool, pour Nouveautés), is_premium (bool) ... }
+Favorite        { id, user_id, creation_id, created_at }   # favoris PAR user, serveur
+# Layout Bibliothèque (horizontal|grid|list) = préférence stockée par user.
 
 # --- Existant repris de Stationexus ---
 Category, Comment, Ambience, Announcement, Subscriber(newsletter), SiteSettings
@@ -233,9 +241,11 @@ Category, Comment, Ambience, Announcement, Subscriber(newsletter), SiteSettings
 - **Tester** : déblocage après la Porte du Feu, attribution de badge, vidéo cachée pour non-abonné, progression persistante, Q/R.
 
 ### Phase 5 — Bibliothèque triée par Porte + Importeur en masse
-- Bibliothèque ES-DE reprise + tri/filtre des ressources **par Porte** (thématique).
+- Bibliothèque ES-DE reprise + tri des ressources **par Porte** (1 porte par fiche).
+- **Sections transversales** : **Favoris** (par user, serveur) + **Nouveautés** (badge de notif).
+- **Bascule de layout** : Horizontal (rail) / Grille / Liste verticale — préférence mémorisée par user.
 - Écran Admin Import : CSV/XLSX + images + docs. Parsing `pandas`/`openpyxl`, tâche de fond, rapport.
-- **Tester** : ressource associée à une porte, import d'un CSV de démo + images → créations générées.
+- **Tester** : tri par porte, favoris, nouveautés, bascule des 3 layouts, import CSV + images.
 
 ### Phase 6 — Discord + finitions
 - Bouton/section « Rejoindre sur Discord » (visible abonnés). Widget optionnel.
