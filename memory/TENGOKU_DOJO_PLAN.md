@@ -7,6 +7,8 @@
 ## 0. Résumé en une phrase
 Tengoku Dōjō est une **plateforme web (PWA) d'apprentissage premium** au design cinématique japonais et à l'esprit **très « gaming »**, où des membres **abonnés (Stripe, 19,99 €/mois)** entrent dans un **Hub central** donnant accès à 3 espaces — **l'École**, **la Bibliothèque** et **la Communauté (Discord)** — et progressent dans des **formations** (la première : « **Le Chemin des 7 Portes** »).
 
+> 🔁 **Base de départ : ~95 % du codebase Stationexus est réutilisé** (design, thèmes, lecteur immersif, moteur audio, intros/boot, galeries, éditeur WYSIWYG, PWA, Favoris, Nouveautés, sons). On **ajoute** par-dessus : auth multi-utilisateurs, Stripe, l'École (Formations/Portes/Modules/Vidéos), le Hub, la banque d'images libres de droit, l'importeur et l'intégration Discord.
+
 ---
 
 ## 1. Le principe « poupées russes » — le parcours de l'utilisateur
@@ -56,6 +58,12 @@ Le Hub est **simple et lisible**, à la manière du menu principal d'un jeu-serv
 - **Structure** : créer/supprimer des formations, des portes, des modules ; réordonner ; associer une fiche biblio à une porte.
 - **Exercices & badges** : définir l'énoncé d'exercice de chaque vidéo, le badge de chaque porte.
 - Bref : l'écosystème est **entièrement pilotable depuis l'interface admin** — comme le mode « déverrouillé » de Stationexus, mais étendu à l'École et lié au rôle `admin` du compte.
+
+### Banque d'images libres de droit (choix d'images depuis l'admin — comme le faisait Glide)
+- Depuis l'éditeur admin, pouvoir **changer l'image d'une fiche** (poster/fond/couverture) en **recherchant dans des banques d'images GRATUITES et libres de droit** (Unsplash / Pexels).
+- L'utilisateur tape un mot-clé → grille de résultats → clic pour appliquer l'image à la fiche. **Toutes les images doivent rester libres de droit** (aucune image sous copyright).
+- Conserver aussi l'**upload manuel** existant (base64) comme aujourd'hui.
+- ⚠️ À implémenter proprement (clés API Unsplash/Pexels) — l'agent du nouveau chat pourra utiliser l'outil de recherche d'images intégré / `integration_expert` selon le besoin.
 
 ---
 
@@ -200,7 +208,7 @@ Submission      { id, lesson_id, user_id, content(html/text), created_at }
                 # exercice posté par l'élève au clic de « Valider l'étape & poster mon exercice »
 Coaching        { id, user_id, type: individuel, requested_slot, status,
                   stripe_session_id }                   # réservé depuis le Hub, à tout moment
-LoadingTip      { id, text, order }                     # conseils défilants des écrans de chargement (éditable admin)
+LoadingTip      { id, text, category: histoire|dojo, order }  # tips défilants (éditable admin)
 
 # Règle de déblocage École : au départ seule la Porte gatekeeper (Feu) est
 # accessible. Quand l'utilisateur complète TOUS les modules de la Porte du Feu,
@@ -231,11 +239,18 @@ Category, Comment, Ambience, Announcement, Subscriber(newsletter), SiteSettings
 
 ### Écrans de chargement entre les zones (style jeu vidéo)
 - Entre chaque zone (Hub → École/Bibliothèque/Communauté, entrée dans une Porte, etc.), afficher un **court écran de chargement** thématique dōjō.
-- Pendant ce temps, faire **défiler des conseils / astuces** (« tips ») comme dans les jeux vidéo (citations, conseils d'apprentissage, rappels de fonctionnalités). Liste de tips **éditable par l'admin**.
+- Pendant ce temps, faire **défiler des conseils / astuces** (« tips ») comme dans les jeux vidéo. Les tips sont de **2 catégories** :
+  1. **Création d'histoires** (conseils d'écriture, narration, personnages…).
+  2. **Écosystème du dōjō** (rappels de fonctionnalités, philosophie, progression, portes…).
+  - Liste de tips **éditable par l'admin**, avec choix de la catégorie.
 - Précharger les données de la zone cible pendant l'animation (technique déjà utilisée dans Stationexus : prefetch React Query + préchauffage des images pendant l'intro) → la zone s'ouvre sans latence perçue.
 
-### Écran de démarrage (boot) — CONSERVÉ
+### Écran de démarrage (boot) — CONSERVÉ + ENRICHI
 - On **garde l'écran de démarrage** cinématique de Stationexus (BootIntro : intros animées + son + bouton « Entrer », message de bienvenue personnalisé avec le nom/avatar du profil). Il amorce aussi l'audio (geste utilisateur requis).
+- **Ajouter de NOUVEAUX écrans de démarrage** spécifiques à Tengoku Dōjō (nouvelles animations/kanji/sons thématiques dōjō), en plus de ceux hérités, tous inclus dans le tirage « Aléatoire ».
+
+### Audio
+- On garde tout le moteur audio de Stationexus : ambiances, musiques de lecture, **musique de fin**, sons UI, packs synthétisés, etc. L'admin peut toujours ajouter de la musique de fin, etc.
 
 ---
 
