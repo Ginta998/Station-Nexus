@@ -76,6 +76,13 @@ export default function Home() {
 
   useEffect(() => { window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [onKey]);
 
+  // Ouvre la fenêtre profil après création de compte (parcours compte -> profil)
+  useEffect(() => {
+    const open = () => setProfileOpen(true);
+    window.addEventListener("sx-open-profile", open);
+    return () => window.removeEventListener("sx-open-profile", open);
+  }, []);
+
   const bgImg = focused ? (focused.has_bg ? bgUrl(focused.id, focused.updated_at) : (focused.has_poster ? posterUrl(focused.id, focused.updated_at) : null)) : null;
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
   const openEdit = () => { if (focused) { setEditing(focused); setEditorOpen(true); } };

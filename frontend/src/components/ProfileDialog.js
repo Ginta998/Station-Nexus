@@ -12,12 +12,11 @@ export default function ProfileDialog({ open, onClose }) {
   const { user, openAuth } = useAuth();
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState("");
-  const [email, setEmail] = useState("");
   const [instagram, setInstagram] = useState("");
   const fileRef = useRef(null);
 
   useEffect(() => {
-    if (open) { setName(profile?.name || ""); setAvatar(profile?.avatar || ""); setEmail(profile?.email || ""); setInstagram(profile?.instagram || ""); }
+    if (open) { setName(profile?.name || user?.name || ""); setAvatar(profile?.avatar || user?.avatar || ""); setInstagram(profile?.instagram || ""); }
   }, [open]); // eslint-disable-line
 
   if (!open) return null;
@@ -31,8 +30,7 @@ export default function ProfileDialog({ open, onClose }) {
 
   const save = () => {
     if (!name.trim()) return toast.error("Choisis un nom de profil");
-    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) return toast.error("Adresse email invalide");
-    saveProfile({ name: name.trim(), avatar, email: email.trim(), instagram: instagram.trim() });
+    saveProfile({ name: name.trim(), avatar, email: profile?.email || "", instagram: instagram.trim() });
     sfx && sfx("select");
     toast.success("Profil enregistré");
     onClose();
@@ -57,7 +55,7 @@ export default function ProfileDialog({ open, onClose }) {
             <div data-testid="profile-sync-ok" className="flex items-start gap-2.5 px-3 py-2.5 border" style={{ borderColor: "var(--brand)", borderRadius: "var(--radius-base)", background: "color-mix(in srgb, var(--brand) 12%, transparent)" }}>
               <IoCloudDoneOutline size={20} style={{ color: "var(--brand)", flexShrink: 0, marginTop: 1 }} />
               <p className="text-xs" style={{ color: "var(--text-primary)" }}>
-                Profil synchronisé sur ton compte <span style={{ color: "var(--brand)", fontWeight: 600 }}>{user.name || user.email}</span>. Il te suit sur tous tes appareils. 🐰
+                Profil synchronisé sur ton compte <span style={{ color: "var(--brand)", fontWeight: 600 }}>{user.name || user.email}</span>. Il te suit sur tous tes appareils et tu seras prévenu·e des nouveautés par email. 🐰
               </p>
             </div>
           ) : (
@@ -93,11 +91,6 @@ export default function ProfileDialog({ open, onClose }) {
 
           <div><Label>Nom du profil</Label>
             <input data-testid="profile-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={30} placeholder="Ton pseudo" className="w-full px-3 py-2 border outline-none" style={fs} /></div>
-
-          <div><Label>Email (optionnel — pour être prévenu des nouveautés)</Label>
-            <input data-testid="profile-email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="toi@exemple.com" className="w-full px-3 py-2 border outline-none" style={fs} />
-            <p className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>Reçois un message quand une nouvelle création sort. Jamais de spam.</p>
-          </div>
 
           <div><Label>Instagram (optionnel)</Label>
             <input data-testid="profile-instagram" value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="@ton_pseudo" className="w-full px-3 py-2 border outline-none" style={fs} />

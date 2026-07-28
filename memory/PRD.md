@@ -323,3 +323,11 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - **Mécanisme sous-jacent (déjà existant, AuthContext.finishAuth)** : à la 1ère connexion sur un compte vide, `authSync` pousse `buildPrefs()` (qui inclut `sx_profile`) + favoris vers le serveur. Sur un autre appareil, `applyAccountAndReload` réapplique profil + favoris. Donc le profil local est bien transféré sans rien recréer.
 - Vérifié par screenshot : bannière rendue correctement (data-testid `profile-sync-cta` présent), dialog s'ouvre bien.
 - Note : l'ancien message d'accueil "créer un profil" que voyait l'utilisateur sur PC = cache PWA / service-worker (le code contient bien le bouton "Se connecter"). Un hard refresh charge la nouvelle version.
+
+## Parcours unifié compte -> profil + retrait email du profil — 28/07/2026
+- **Décision utilisateur** : privilégier "créer un compte puis un profil dans la foulée" pour éviter les profils locaux non synchronisés. Retirer le champ email du profil (le compte fournit déjà l'email, l'admin y a accès).
+- **AuthContext.finishAuth** : après auth sur compte vide (register / 1re connexion), si aucun profil local (`sx_profile`) n'existe → `window.dispatchEvent(new CustomEvent("sx-open-profile"))` (setTimeout 350ms). Si l'utilisateur avait déjà un profil local (upgrade), pas de prompt (le profil est synchronisé tel quel).
+- **Home.js** : écoute `sx-open-profile` → `setProfileOpen(true)`.
+- **ProfileDialog.js** : champ email supprimé (state + input + validation). Nom/avatar pré-remplis depuis le compte (`user.name`/`user.avatar`) si pas de profil. `save()` conserve l'email existant éventuel (`profile?.email`) sans l'exposer. Bannière "synchronisé" mentionne les notifications par email.
+- **Newsletter safe** : `auth_register` ET `auth_google_session` appellent déjà `_subscribe_email(email)` → l'email du compte est abonné automatiquement. Retirer le champ email du profil ne casse donc pas les notifications de nouveautés.
+- Vérifié E2E par screenshot : register → toast "Compte créé" → AuthDialog fermé → ProfileDialog ouvert auto, `profile-email` absent (0), nom pré-rempli, `profile-sync-ok` affiché.

@@ -60,6 +60,10 @@ export function AuthProvider({ children }) {
       if (u.is_admin) localStorage.setItem("sx_admin", "1");
       setAuthOpen(false);
       if (greet) toast.success(greet);
+      // parcours compte -> profil : si aucun profil local, on invite à en créer un dans la foulée
+      let hasProfile = false;
+      try { hasProfile = !!JSON.parse(localStorage.getItem("sx_profile") || "null"); } catch { hasProfile = false; }
+      if (!hasProfile) setTimeout(() => window.dispatchEvent(new CustomEvent("sx-open-profile")), 350);
     } else {
       if (u.is_admin) localStorage.setItem("sx_admin", "1");
       setUser(u);
