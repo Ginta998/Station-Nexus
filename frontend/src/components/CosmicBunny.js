@@ -6,10 +6,11 @@ import { toast } from "sonner";
 import { getSettings } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 
-export const CB_PAGES = ["home", "detail", "reader", "settings", "members", "novelties", "contact", "tutorial"];
+export const CB_PAGES = ["home", "detail", "reader", "settings", "members", "novelties", "contact", "tutorial", "bunny_story"];
 export const CB_PAGE_LABELS = {
   home: "Accueil", detail: "Fiche d'une création", reader: "Mode lecture", settings: "Paramètres",
   members: "Membres", novelties: "Nouveautés", contact: "Contact", tutorial: "Tutoriel",
+  bunny_story: "Fiche Cosmic Bunny (son aventure)",
 };
 
 export const CB_DEFAULT_TIPS = {
@@ -38,6 +39,11 @@ export const CB_DEFAULT_TIPS = {
   novelties: [{ text: "Toutes les dernières sorties sont ici. Fraîches du jour ! 🍡" }],
   contact: [{ text: "Envie de papoter avec le créateur ? C'est par ici. Sois adorable. 😇" }],
   tutorial: [{ text: "Le grand guide complet est là si tu veux tout savoir. Moi je résume, lui il raconte sa vie !" }],
+  bunny_story: [
+    { text: "Héhé, ça c'est MON histoire à moi ! *vrooom* je débarque en moto 🏍️" },
+    { text: "Bienvenue dans mon aventure à travers les mondes hostiles. Accroche-toi, ça secoue !" },
+    { text: "Lance la fiche pour me suivre. Et si tu vois des ennuis… c'est normal, moi je prends la fuite ! 😅" },
+  ],
 };
 
 // Common navigation targets offered in the admin editor (label -> path)
@@ -113,7 +119,7 @@ export default function CosmicBunny() {
   useEffect(() => {
     if (!entered || hidden || tipsOff || !enabledGlobal) return;
     if (!key || !tips.length || readSeen().includes(key)) return;
-    const t = setTimeout(() => { setIdx(0); setOpen(true); setPose("wave"); try { sfx("select"); } catch (_) {} }, ctxKey ? 500 : 900);
+    const t = setTimeout(() => { setIdx(0); setOpen(true); setPose(key === "bunny_story" ? "moto" : "wave"); try { sfx("select"); } catch (_) {} }, ctxKey ? 500 : 900);
     return () => clearTimeout(t);
     // eslint-disable-next-line
   }, [entered, hidden, tipsOff, enabledGlobal, key, tips.length]);
@@ -133,7 +139,7 @@ export default function CosmicBunny() {
     if (idx < tips.length - 1) { setIdx(idx + 1); setPose("thumbs"); try { sfx("nav"); } catch (_) {} }
     else { if (key) markSeen(key); setOpen(false); setPose("excited", 2600); try { sfx("select"); } catch (_) {} }
   };
-  const openManually = () => { setIdx(0); setOpen(true); setPose("wave"); try { sfx("nav"); } catch (_) {} };
+  const openManually = () => { setIdx(0); setOpen(true); setPose(key === "bunny_story" ? "moto" : "wave"); try { sfx("nav"); } catch (_) {} };
   const talkLess = () => {
     localStorage.setItem("sx_cb_tips_off", "1"); setTipsOff(true);
     if (key) markSeen(key); setOpen(false); setPose("sad", 2600);
@@ -167,6 +173,8 @@ export default function CosmicBunny() {
       <button className={`cb-mascot ${bounce ? "cb-bounce" : ""} ${customImg ? "cb-custom" : ""}`} onClick={() => (open ? closeTips() : openManually())} data-testid="cb-mascot" aria-label="Cosmic Bunny — conseils">
         {!customImg && <span className="cb-stage" aria-hidden="true" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/cosmic-bunny/alley.jpg)` }} />}
         <img className="cb-sprite" src={spriteSrc} alt="Cosmic Bunny" draggable="false" data-pose={pose} />
+        {!customImg && <span className="cb-tint" aria-hidden="true" />}
+        {!open && <span className="cb-help" aria-hidden="true">?</span>}
       </button>
     </div>
   );

@@ -263,6 +263,11 @@ class SiteSettings(BaseModel):
         "novelties": [{"text": "Toutes les dernières sorties sont ici. Fraîches du jour ! 🍡"}],
         "contact": [{"text": "Envie de papoter avec le créateur ? C'est par ici. Sois adorable. 😇"}],
         "tutorial": [{"text": "Le grand guide complet est là si tu veux tout savoir. Moi je résume, lui il raconte sa vie !"}],
+        "bunny_story": [
+            {"text": "Héhé, ça c'est MON histoire à moi ! *vrooom* je débarque en moto 🏍️"},
+            {"text": "Bienvenue dans mon aventure à travers les mondes hostiles. Accroche-toi, ça secoue !"},
+            {"text": "Lance la fiche pour me suivre. Et si tu vois des ennuis… c'est normal, moi je prends la fuite ! 😅"},
+        ],
     })
 
 

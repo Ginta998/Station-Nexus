@@ -297,4 +297,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - Si une **image custom** est uploadée (`cosmic_bunny_image`), elle remplace le set de poses (rendu circulaire `.cb-custom`). Aperçu Settings = `cosmic_bunny_image || /cosmic-bunny/wave.png`.
 - Vérifié par screenshots : stand 104×138 + sprite 62×168 qui dépasse, recolorisation thème rouge, transitions de poses wave/thumbs/excited/sad OK, CTA fonctionnel. NB : un ancien `cosmic_bunny_image` (2,4 Mo, hérité de la migration prod) a été réinitialisé via le bouton admin « Réinitialiser ».
 
+## Cosmic Bunny v3.1 (ajustements taille/immersion/placement) — 28/07/2026
+- **Format réduit en cercle buste** : la mascotte n'est plus un grand stand plein-pied (débordait, trop gros mobile). Désormais un **cercle** (64 px mobile / 74 px desktop) montrant le **buste** du sprite (`object-fit:cover; object-position:50% 6%`). Poses réutilisées telles quelles, croppées.
+- **Meilleure immersion** (elle semblait « posée dessus ») : suppression du drop-shadow ; ajout d'un voile d'unification `.cb-tint` (couleur du thème en `mix-blend-mode:soft-light`) au-dessus du perso + décor, teinte du décor (`.cb-stage::after` `mix-blend:color`), et **vignette** (`.cb-mascot::after` radial + inset shadow) pour l'ancrer dans la scène.
+- **Badge d'aide « ? »** : `.cb-help` (pastille pulsante) affichée à côté de la mascotte quand la bulle est fermée, pour signaler qu'elle peut aider. Masquée quand la bulle est ouverte.
+- **Placement** : **desktop → bas-DROITE** (`@media min-width:768px` : `right`, `align-items:flex-end`, tail de bulle à droite, badge à gauche). **Mobile → bas-gauche** (base mobile-first, raise `cb-home` pour éviter le bouton Lancer).
+- **Fiche « Cosmic Bunny » (son aventure)** : nouveau contexte `bunny_story` déclenché par `Detail.js` (dispatch `sx-cb-context:"bunny_story"` si `title.trim().toLowerCase()==="cosmic bunny"`). Nouvelle **pose `moto`** (`/cosmic-bunny/moto.png`, buste sur sa moto) + phrases spéciales in-character (« *vrooom* je débarque en moto 🏍️ »). Éditable dans Settings (page « Fiche Cosmic Bunny (son aventure) »). Défauts ajoutés backend + frontend.
+- Vérifié par screenshots : desktop bas-droite cercle buste immergé + bulle à droite ; fiche Cosmic Bunny → pose `moto` + texte spécial ; badge « ? » présent à la fermeture ; retour pose neutral après sad.
+
+
 

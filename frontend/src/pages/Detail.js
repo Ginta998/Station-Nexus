@@ -37,6 +37,16 @@ export default function Detail() {
     // eslint-disable-next-line
   }, [item?.id, item?.has_audio]);
 
+  // Cosmic Bunny special context on her own creation page ("Cosmic Bunny")
+  useEffect(() => {
+    const isBunny = item && typeof item.title === "string" && item.title.trim().toLowerCase() === "cosmic bunny";
+    if (isBunny) {
+      window.dispatchEvent(new CustomEvent("sx-cb-context", { detail: "bunny_story" }));
+      return () => window.dispatchEvent(new CustomEvent("sx-cb-context", { detail: null }));
+    }
+    // eslint-disable-next-line
+  }, [item?.id, item?.title]);
+
   // resume reading directly when navigated from a card's progress bar
   useEffect(() => {
     if (location.state?.resume && item && item.launch_type === "chapters") {
