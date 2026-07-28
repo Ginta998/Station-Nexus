@@ -236,40 +236,33 @@ class SiteSettings(BaseModel):
         "Prêt·e pour une nouvelle aventure, {name} ?",
     ])
     cosmic_bunny_enabled: bool = True
-    cosmic_bunny_tips: Dict[str, List[str]] = Field(default_factory=lambda: {
+    cosmic_bunny_image: Optional[str] = ""
+    cosmic_bunny_tips: Dict[str, List[Dict[str, str]]] = Field(default_factory=lambda: {
         "home": [
-            "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?",
-            "Le bouton Aa en haut agrandit le texte. Fini de loucher comme un ninja myope !",
-            "L'icône son 🔊 coupe ou remet la musique. Pratique quand mamie t'appelle. 😅",
-            "Clique sur une affiche pour ouvrir une création. Promis, ça mord pas (moi non plus).",
+            {"text": "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", "button_label": "Personnaliser la station ⚙️", "button_target": "/parametres"},
+            {"text": "Le bouton Aa en haut agrandit le texte. Fini de loucher comme un ninja myope !"},
+            {"text": "L'icône son 🔊 coupe ou remet la musique. Pratique quand mamie t'appelle. 😅"},
+            {"text": "Clique sur une affiche pour ouvrir une création. Promis, ça mord pas (moi non plus)."},
         ],
         "detail": [
-            "Le gros bouton LANCER démarre l'aventure. Accroche ta ceinture ! 🚀",
-            "Le petit cœur ❤️ ajoute la fiche à tes Favoris. Collectionne-les comme des cartes rares.",
-            "Tu peux Partager la fiche à tes potes. Un peu de pub pour moi, hein ? 😏",
+            {"text": "Le gros bouton LANCER démarre l'aventure. Accroche ta ceinture ! 🚀"},
+            {"text": "Le petit cœur ❤️ ajoute la fiche à tes Favoris. Collectionne-les comme des cartes rares."},
+            {"text": "Tu peux Partager la fiche à tes potes. Un peu de pub pour moi, hein ? 😏"},
         ],
         "reader": [
-            "Mode lecture activé ! Le bouton Aa règle la taille et le confort du texte. 👓",
-            "L'icône musique lance une ambiance. Immersion garantie, mouchoirs non fournis. 🥲",
-            "Ta progression se sauvegarde toute seule. Reviens quand tu veux, je garde ta page au chaud !",
+            {"text": "Mode lecture activé ! Le bouton Aa règle la taille et le confort du texte. 👓"},
+            {"text": "L'icône musique lance une ambiance. Immersion garantie, mouchoirs non fournis. 🥲"},
+            {"text": "Ta progression se sauvegarde toute seule. Reviens quand tu veux, je garde ta page au chaud !"},
         ],
         "settings": [
-            "Ici tu personnalises TOUT : thèmes, couleurs, sons… Éclate-toi ! 🎨",
-            "Plus de 13 thèmes t'attendent. Trouve celui qui te ressemble (le rose te va à ravir).",
-            "Tu me trouves bavarde ? Tu peux régler mes conseils ou m'éteindre juste ici. Sans rancune ! 🙈",
+            {"text": "Ici tu personnalises TOUT : thèmes, couleurs, sons… Éclate-toi ! 🎨"},
+            {"text": "Plus de 13 thèmes t'attendent. Trouve celui qui te ressemble (le rose te va à ravir)."},
+            {"text": "Tu me trouves bavarde ? Tu peux régler mes conseils ou m'éteindre juste ici. Sans rancune ! 🙈"},
         ],
-        "members": [
-            "Voici la communauté ! Crée ton profil pour rejoindre la bande. 🎉",
-        ],
-        "novelties": [
-            "Toutes les dernières sorties sont ici. Fraîches du jour ! 🍡",
-        ],
-        "contact": [
-            "Envie de papoter avec le créateur ? C'est par ici. Sois adorable. 😇",
-        ],
-        "tutorial": [
-            "Le grand guide complet est là si tu veux tout savoir. Moi je résume, lui il raconte sa vie !",
-        ],
+        "members": [{"text": "Voici la communauté ! Crée ton profil pour rejoindre la bande. 🎉", "button_label": "Voir les membres 👥", "button_target": "/membres"}],
+        "novelties": [{"text": "Toutes les dernières sorties sont ici. Fraîches du jour ! 🍡"}],
+        "contact": [{"text": "Envie de papoter avec le créateur ? C'est par ici. Sois adorable. 😇"}],
+        "tutorial": [{"text": "Le grand guide complet est là si tu veux tout savoir. Moi je résume, lui il raconte sa vie !"}],
     })
 
 

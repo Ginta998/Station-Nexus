@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline } from "react-icons/io5";
+import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { THEMES } from "@/lib/themes";
 import { SOUND_PACKS } from "@/lib/sound";
 import { INTROS } from "@/lib/intro";
 import BootIntro from "@/components/BootIntro";
 import { useApp } from "@/context/AppContext";
-import { CB_PAGES, CB_PAGE_LABELS, CB_DEFAULT_TIPS } from "@/components/CosmicBunny";
+import { CB_PAGES, CB_PAGE_LABELS, CB_DEFAULT_TIPS, CB_TARGETS, normalizeTip } from "@/components/CosmicBunny";
 import {
   listAmbiences, createAmbience, updateAmbience, uploadAmbienceAudio, deleteAmbience, ambienceUrl,
   listCategories, createCategory, updateCategory, deleteCategory,
@@ -303,13 +303,31 @@ function CosmicBunnyManager() {
   const enabledGlobal = settings ? settings.cosmic_bunny_enabled !== false : true;
   const toggleGlobal = async (v) => { await updateSettings({ ...settings, cosmic_bunny_enabled: v }); refetch(); toast.success(v ? "Cosmic Bunny activée" : "Cosmic Bunny désactivée pour tous"); };
 
-  const tipsMap = draft ?? ((settings?.cosmic_bunny_tips && Object.keys(settings.cosmic_bunny_tips).length) ? settings.cosmic_bunny_tips : CB_DEFAULT_TIPS);
-  const setTip = (page, i, v) => setDraft({ ...tipsMap, [page]: (tipsMap[page] || []).map((t, x) => (x === i ? v : t)) });
-  const addTip = (page) => setDraft({ ...tipsMap, [page]: [...(tipsMap[page] || []), ""] });
-  const removeTip = (page, i) => setDraft({ ...tipsMap, [page]: (tipsMap[page] || []).filter((_, x) => x !== i) });
+  const mascotSrc = (settings && settings.cosmic_bunny_image) || "/cosmic-bunny/wave.png";
+  const setImage = (file) => {
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) return toast.error("Image trop lourde (max 2 Mo)");
+    const r = new FileReader();
+    r.onload = async () => { await updateSettings({ ...settings, cosmic_bunny_image: r.result }); toast.success("Image de Cosmic Bunny mise à jour"); refetch(); };
+    r.readAsDataURL(file);
+  };
+  const resetImage = async () => { await updateSettings({ ...settings, cosmic_bunny_image: "" }); toast.success("Image par défaut restaurée"); refetch(); };
+
+  const baseMap = () => {
+    const src = (settings?.cosmic_bunny_tips && Object.keys(settings.cosmic_bunny_tips).length) ? settings.cosmic_bunny_tips : CB_DEFAULT_TIPS;
+    const m = {}; CB_PAGES.forEach((p) => { m[p] = (src[p] || []).map(normalizeTip); }); return m;
+  };
+  const tipsMap = draft ?? baseMap();
+  const update = (page, list) => setDraft({ ...tipsMap, [page]: list });
+  const setField = (page, i, field, val) => update(page, tipsMap[page].map((t, x) => (x === i ? { ...t, [field]: val } : t)));
+  const addTip = (page) => update(page, [...(tipsMap[page] || []), { text: "", button_label: "", button_target: "" }]);
+  const removeTip = (page, i) => update(page, tipsMap[page].filter((_, x) => x !== i));
+  const move = (page, i, dir) => { const list = [...tipsMap[page]]; const j = i + dir; if (j < 0 || j >= list.length) return; [list[i], list[j]] = [list[j], list[i]]; update(page, list); };
   const savePhrases = async () => {
     const clean = {};
-    CB_PAGES.forEach((p) => { clean[p] = (tipsMap[p] || []).map((t) => t.trim()).filter(Boolean); });
+    CB_PAGES.forEach((p) => {
+      clean[p] = (tipsMap[p] || []).map((t) => ({ text: (t.text || "").trim(), button_label: (t.button_label || "").trim(), button_target: (t.button_target || "").trim() })).filter((t) => t.text);
+    });
     await updateSettings({ ...settings, cosmic_bunny_tips: clean });
     toast.success("Phrases de Cosmic Bunny enregistrées"); refetch(); setDraft(null);
   };
@@ -317,7 +335,7 @@ function CosmicBunnyManager() {
   return (
     <div data-testid="cosmic-bunny-manager">
       <div className="flex items-center gap-3 mb-4">
-        <img src="/cosmic-bunny.png" alt="" className="w-14 h-14 rounded-full object-contain" style={{ background: "var(--bg-secondary)", border: "2px solid var(--brand)" }} />
+        <img src={mascotSrc} alt="" className="w-14 h-14 rounded-full object-contain" style={{ background: "var(--bg-secondary)", border: "2px solid var(--brand)" }} />
         <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Cosmic Bunny t'accueille et te glisse des petits conseils sur chaque page. Sans IA, juste plein d'entrain ! 🐰</p>
       </div>
       <div className="space-y-3">
@@ -334,20 +352,44 @@ function CosmicBunnyManager() {
 
       {isAdmin && (
         <div className="mt-6 pt-5 border-t" style={{ borderColor: "var(--border-c)" }}>
-          <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer mb-4" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="cb-toggle-global">
+          <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer mb-5" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="cb-toggle-global">
             <span className="text-sm" style={{ color: "var(--text-primary)" }}>Activer Cosmic Bunny pour tous les visiteurs</span>
             <input type="checkbox" checked={enabledGlobal} onChange={(e) => toggleGlobal(e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
           </label>
-          <p className="text-xs uppercase tracking-widest mb-3" style={{ color: "var(--text-secondary)" }}>Modifier ses phrases (par page)</p>
-          <div className="space-y-5">
+
+          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Image de Cosmic Bunny</p>
+          <div className="flex items-center gap-3 mb-2">
+            <img src={mascotSrc} alt="" className="w-16 h-16 rounded-full object-contain" style={{ background: "var(--bg-secondary)", border: "2px solid var(--brand)" }} />
+            <label data-testid="cb-image-upload" className="flex items-center gap-2 px-4 py-2.5 border cursor-pointer text-sm" style={fs}><IoImageOutline /> Changer l'image
+              <input type="file" accept="image/*" hidden onChange={(e) => setImage(e.target.files?.[0])} />
+            </label>
+            {settings?.cosmic_bunny_image ? <button data-testid="cb-image-reset" onClick={resetImage} className="px-4 py-2.5 border text-sm" style={fs}>Réinitialiser</button> : null}
+          </div>
+          <p className="text-xs mb-5" style={{ color: "var(--text-secondary)" }}>PNG transparent conseillé, max 2 Mo.</p>
+
+          <p className="text-xs uppercase tracking-widest mb-3" style={{ color: "var(--text-secondary)" }}>Modifier ses phrases (texte, bouton, ordre) — par page</p>
+          <div className="space-y-6">
             {CB_PAGES.map((page) => (
               <div key={page} data-testid={`cb-page-${page}`}>
                 <p className="text-sm font-display mb-2" style={{ color: "var(--brand)" }}>{CB_PAGE_LABELS[page]}</p>
-                <div className="space-y-2">
-                  {(tipsMap[page] || []).map((t, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <textarea data-testid={`cb-tip-${page}-${i}`} value={t} onChange={(e) => setTip(page, i, e.target.value)} rows={2} className="flex-1 px-3 py-2 border outline-none text-sm resize-y" style={fs} />
-                      <button data-testid={`cb-tip-remove-${page}-${i}`} onClick={() => removeTip(page, i)} className="p-2 border" style={fs} title="Supprimer"><IoTrashOutline /></button>
+                <div className="space-y-3">
+                  {(tipsMap[page] || []).map((t, i, arr) => (
+                    <div key={i} className="p-3 border" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid={`cb-tip-${page}-${i}`}>
+                      <div className="flex items-start gap-2">
+                        <textarea data-testid={`cb-tiptext-${page}-${i}`} value={t.text} onChange={(e) => setField(page, i, "text", e.target.value)} rows={2} className="flex-1 px-3 py-2 border outline-none text-sm resize-y" style={fs} placeholder="Phrase de Cosmic Bunny" />
+                        <div className="flex flex-col gap-1">
+                          <button data-testid={`cb-tip-up-${page}-${i}`} onClick={() => move(page, i, -1)} disabled={i === 0} className="p-1.5 border" style={{ ...fs, opacity: i === 0 ? 0.4 : 1 }} title="Monter"><IoArrowUp size={14} /></button>
+                          <button data-testid={`cb-tip-down-${page}-${i}`} onClick={() => move(page, i, 1)} disabled={i === arr.length - 1} className="p-1.5 border" style={{ ...fs, opacity: i === arr.length - 1 ? 0.4 : 1 }} title="Descendre"><IoArrowDown size={14} /></button>
+                          <button data-testid={`cb-tip-remove-${page}-${i}`} onClick={() => removeTip(page, i)} className="p-1.5 border" style={fs} title="Supprimer"><IoTrashOutline size={14} /></button>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <span className="text-[11px] uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Bouton</span>
+                        <input data-testid={`cb-tipbtn-${page}-${i}`} value={t.button_label} onChange={(e) => setField(page, i, "button_label", e.target.value)} placeholder="Libellé (ex: Personnaliser ⚙️)" className="flex-1 min-w-[150px] px-3 py-1.5 border outline-none text-xs" style={fs} />
+                        <select data-testid={`cb-tiptarget-${page}-${i}`} value={t.button_target} onChange={(e) => setField(page, i, "button_target", e.target.value)} className="px-2 py-1.5 border outline-none text-xs" style={fs}>
+                          {CB_TARGETS.map((o) => <option key={o.v} value={o.v}>{o.label}</option>)}
+                        </select>
+                      </div>
                     </div>
                   ))}
                   <button data-testid={`cb-tip-add-${page}`} onClick={() => addTip(page)} className="flex items-center gap-1.5 px-3 py-1.5 border text-xs" style={fs}><IoAddOutline /> Ajouter un conseil</button>

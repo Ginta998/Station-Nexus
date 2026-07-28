@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoClose, IoArrowForward } from "react-icons/io5";
 import { toast } from "sonner";
@@ -14,31 +14,45 @@ export const CB_PAGE_LABELS = {
 
 export const CB_DEFAULT_TIPS = {
   home: [
-    "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?",
-    "Le bouton Aa en haut agrandit le texte. Fini de loucher comme un ninja myope !",
-    "L'icône son 🔊 coupe ou remet la musique. Pratique quand mamie t'appelle. 😅",
-    "Clique sur une affiche pour ouvrir une création. Promis, ça mord pas (moi non plus).",
+    { text: "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", button_label: "Personnaliser la station ⚙️", button_target: "/parametres" },
+    { text: "Le bouton Aa en haut agrandit le texte. Fini de loucher comme un ninja myope !" },
+    { text: "L'icône son 🔊 coupe ou remet la musique. Pratique quand mamie t'appelle. 😅" },
+    { text: "Clique sur une affiche pour ouvrir une création. Promis, ça mord pas (moi non plus)." },
   ],
   detail: [
-    "Le gros bouton LANCER démarre l'aventure. Accroche ta ceinture ! 🚀",
-    "Le petit cœur ❤️ ajoute la fiche à tes Favoris. Collectionne-les comme des cartes rares.",
-    "Tu peux Partager la fiche à tes potes. Un peu de pub pour moi, hein ? 😏",
+    { text: "Le gros bouton LANCER démarre l'aventure. Accroche ta ceinture ! 🚀" },
+    { text: "Le petit cœur ❤️ ajoute la fiche à tes Favoris. Collectionne-les comme des cartes rares." },
+    { text: "Tu peux Partager la fiche à tes potes. Un peu de pub pour moi, hein ? 😏" },
   ],
   reader: [
-    "Mode lecture activé ! Le bouton Aa règle la taille et le confort du texte. 👓",
-    "L'icône musique lance une ambiance. Immersion garantie, mouchoirs non fournis. 🥲",
-    "Ta progression se sauvegarde toute seule. Reviens quand tu veux, je garde ta page au chaud !",
+    { text: "Mode lecture activé ! Le bouton Aa règle la taille et le confort du texte. 👓" },
+    { text: "L'icône musique lance une ambiance. Immersion garantie, mouchoirs non fournis. 🥲" },
+    { text: "Ta progression se sauvegarde toute seule. Reviens quand tu veux, je garde ta page au chaud !" },
   ],
   settings: [
-    "Ici tu personnalises TOUT : thèmes, couleurs, sons… Éclate-toi ! 🎨",
-    "Plus de 13 thèmes t'attendent. Trouve celui qui te ressemble (le rose te va à ravir).",
-    "Tu me trouves bavarde ? Tu peux régler mes conseils ou m'éteindre juste ici. Sans rancune ! 🙈",
+    { text: "Ici tu personnalises TOUT : thèmes, couleurs, sons… Éclate-toi ! 🎨" },
+    { text: "Plus de 13 thèmes t'attendent. Trouve celui qui te ressemble (le rose te va à ravir)." },
+    { text: "Tu me trouves bavarde ? Tu peux régler mes conseils ou m'éteindre juste ici. Sans rancune ! 🙈" },
   ],
-  members: ["Voici la communauté ! Crée ton profil pour rejoindre la bande. 🎉"],
-  novelties: ["Toutes les dernières sorties sont ici. Fraîches du jour ! 🍡"],
-  contact: ["Envie de papoter avec le créateur ? C'est par ici. Sois adorable. 😇"],
-  tutorial: ["Le grand guide complet est là si tu veux tout savoir. Moi je résume, lui il raconte sa vie !"],
+  members: [{ text: "Voici la communauté ! Crée ton profil pour rejoindre la bande. 🎉", button_label: "Voir les membres 👥", button_target: "/membres" }],
+  novelties: [{ text: "Toutes les dernières sorties sont ici. Fraîches du jour ! 🍡" }],
+  contact: [{ text: "Envie de papoter avec le créateur ? C'est par ici. Sois adorable. 😇" }],
+  tutorial: [{ text: "Le grand guide complet est là si tu veux tout savoir. Moi je résume, lui il raconte sa vie !" }],
 };
+
+// Common navigation targets offered in the admin editor (label -> path)
+export const CB_TARGETS = [
+  { v: "", label: "Aucun bouton" },
+  { v: "/parametres", label: "Paramètres" },
+  { v: "/", label: "Accueil" },
+  { v: "/membres", label: "Membres" },
+  { v: "/nouveautes", label: "Nouveautés" },
+  { v: "/contact", label: "Contact" },
+  { v: "/tutoriel", label: "Tutoriel" },
+];
+
+// Tips may be plain strings (legacy) or objects — normalize to { text, button_label, button_target }
+export const normalizeTip = (t) => (typeof t === "string" ? { text: t } : { text: (t && t.text) || "", button_label: (t && t.button_label) || "", button_target: (t && t.button_target) || "" });
 
 function pathToKey(pathname) {
   if (pathname === "/") return "home";
@@ -55,6 +69,7 @@ const readSeen = () => { try { return JSON.parse(localStorage.getItem("sx_cb_see
 
 export default function CosmicBunny() {
   const { pathname } = useLocation();
+  const nav = useNavigate();
   const { sfx } = useApp();
   const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
 
@@ -65,6 +80,13 @@ export default function CosmicBunny() {
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
   const [bounce, setBounce] = useState(false);
+  const [pose, setPoseState] = useState("neutral");
+  const poseTimer = useRef(null);
+  const setPose = (p, holdMs) => {
+    setPoseState(p);
+    if (poseTimer.current) clearTimeout(poseTimer.current);
+    if (holdMs) poseTimer.current = setTimeout(() => setPoseState("neutral"), holdMs);
+  };
 
   const enabledGlobal = settings ? settings.cosmic_bunny_enabled !== false : true;
   const tipsMap = (settings && settings.cosmic_bunny_tips) || CB_DEFAULT_TIPS;
@@ -91,7 +113,7 @@ export default function CosmicBunny() {
   useEffect(() => {
     if (!entered || hidden || tipsOff || !enabledGlobal) return;
     if (!key || !tips.length || readSeen().includes(key)) return;
-    const t = setTimeout(() => { setIdx(0); setOpen(true); try { sfx("select"); } catch (_) {} }, ctxKey ? 500 : 900);
+    const t = setTimeout(() => { setIdx(0); setOpen(true); setPose("wave"); try { sfx("select"); } catch (_) {} }, ctxKey ? 500 : 900);
     return () => clearTimeout(t);
     // eslint-disable-next-line
   }, [entered, hidden, tipsOff, enabledGlobal, key, tips.length]);
@@ -106,17 +128,22 @@ export default function CosmicBunny() {
 
   const onHome = !ctxKey && pathToKey(pathname) === "home";
 
-  const closeTips = () => { if (key) markSeen(key); setOpen(false); };
+  const closeTips = () => { if (key) markSeen(key); setOpen(false); setPose("sad", 2400); };
   const next = () => {
-    if (idx < tips.length - 1) { setIdx(idx + 1); try { sfx("nav"); } catch (_) {} }
-    else { closeTips(); try { sfx("select"); } catch (_) {} }
+    if (idx < tips.length - 1) { setIdx(idx + 1); setPose("thumbs"); try { sfx("nav"); } catch (_) {} }
+    else { if (key) markSeen(key); setOpen(false); setPose("excited", 2600); try { sfx("select"); } catch (_) {} }
   };
-  const openManually = () => { setIdx(0); setOpen(true); try { sfx("nav"); } catch (_) {} };
+  const openManually = () => { setIdx(0); setOpen(true); setPose("wave"); try { sfx("nav"); } catch (_) {} };
   const talkLess = () => {
     localStorage.setItem("sx_cb_tips_off", "1"); setTipsOff(true);
-    if (key) markSeen(key); setOpen(false);
-    toast.success("Promis, je me fais discrète ! Tape-moi quand tu veux un conseil. 🐰");
+    if (key) markSeen(key); setOpen(false); setPose("sad", 2600);
+    toast.success("Oh… d'accord, je me fais discrète ! Tape-moi quand tu veux un conseil. 🐰");
   };
+  const goTo = (target) => { if (key) markSeen(key); setOpen(false); setPose("excited", 2000); try { sfx("select"); } catch (_) {} nav(target); };
+
+  const cur = normalizeTip(tips[idx] || {});
+  const customImg = settings && settings.cosmic_bunny_image;
+  const spriteSrc = customImg || `/cosmic-bunny/${pose}.png`;
 
   return (
     <div className={`cb-root ${onHome ? "cb-home" : ""}`} data-testid="cosmic-bunny">
@@ -124,7 +151,10 @@ export default function CosmicBunny() {
         <div className="cb-bubble" data-testid="cb-bubble">
           <button className="cb-close" onClick={closeTips} data-testid="cb-close" aria-label="Fermer les conseils"><IoClose size={18} /></button>
           <p className="cb-name">Cosmic Bunny 🐰</p>
-          <p className="cb-text" data-testid="cb-text">{tips[idx]}</p>
+          <p className="cb-text" data-testid="cb-text">{cur.text}</p>
+          {cur.button_label && cur.button_target && (
+            <button className="cb-cta" data-testid="cb-cta" onClick={() => goTo(cur.button_target)}>{cur.button_label}</button>
+          )}
           <div className="cb-actions">
             <button className="cb-next" onClick={next} data-testid="cb-next">
               {idx < tips.length - 1 ? (<>Conseil suivant <IoArrowForward size={14} /></>) : "Compris ! 🎉"}
@@ -134,8 +164,9 @@ export default function CosmicBunny() {
           <button className="cb-mute" onClick={talkLess} data-testid="cb-talk-less">Je parle trop ? 🙉 Chut !</button>
         </div>
       )}
-      <button className={`cb-mascot ${bounce ? "cb-bounce" : ""}`} onClick={() => (open ? closeTips() : openManually())} data-testid="cb-mascot" aria-label="Cosmic Bunny — conseils">
-        <img src="/cosmic-bunny.png" alt="Cosmic Bunny" draggable="false" />
+      <button className={`cb-mascot ${bounce ? "cb-bounce" : ""} ${customImg ? "cb-custom" : ""}`} onClick={() => (open ? closeTips() : openManually())} data-testid="cb-mascot" aria-label="Cosmic Bunny — conseils">
+        {!customImg && <span className="cb-stage" aria-hidden="true" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/cosmic-bunny/alley.jpg)` }} />}
+        <img className="cb-sprite" src={spriteSrc} alt="Cosmic Bunny" draggable="false" data-pose={pose} />
       </button>
     </div>
   );
