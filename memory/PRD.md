@@ -314,3 +314,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 
 
 
+
+## Synchronisation profil local → compte (upgrade depuis la fiche profil) — 28/07/2026
+- **Besoin utilisateur** : un profil local créé sur un appareil (ex. téléphone) n'était pas récupérable sur un autre (ex. navigateur PC). L'utilisateur voulait pouvoir "créer un compte depuis son profil" pour synchroniser.
+- **Solution (ProfileDialog.js)** : ajout d'une bannière en haut de la fenêtre de profil.
+  - Si NON connecté : encart d'alerte "Ce profil est enregistré uniquement sur cet appareil…" + bouton `profile-create-account` → `onClose()` puis `openAuth()` (ouvre AuthDialog). Le texte du bouton s'adapte : "Synchroniser ce profil (créer un compte)" en mode édition, "Créer un compte pour synchroniser" sinon.
+  - Si connecté : encart de confirmation "Profil synchronisé sur ton compte {name}" (`profile-sync-ok`).
+- **Mécanisme sous-jacent (déjà existant, AuthContext.finishAuth)** : à la 1ère connexion sur un compte vide, `authSync` pousse `buildPrefs()` (qui inclut `sx_profile`) + favoris vers le serveur. Sur un autre appareil, `applyAccountAndReload` réapplique profil + favoris. Donc le profil local est bien transféré sans rien recréer.
+- Vérifié par screenshot : bannière rendue correctement (data-testid `profile-sync-cta` présent), dialog s'ouvre bien.
+- Note : l'ancien message d'accueil "créer un profil" que voyait l'utilisateur sur PC = cache PWA / service-worker (le code contient bien le bouton "Se connecter"). Un hard refresh charge la nouvelle version.
