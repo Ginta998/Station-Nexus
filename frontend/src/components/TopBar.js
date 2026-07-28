@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { listAnnouncements } from "@/lib/api";
 
 export default function TopBar({ onAdd, onProfile }) {
   const nav = useNavigate();
   const { isAdmin, muted, toggleMute, sfx, profile, seenAnnouncements } = useApp();
+  const { user, openAuth, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: announcements = [] } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
   const unread = announcements.filter((a) => !seenAnnouncements.includes(a.id)).length;
@@ -54,6 +56,17 @@ export default function TopBar({ onAdd, onProfile }) {
 
         {/* Desktop: full button set */}
         <div className="hidden md:flex items-center gap-3">
+          {user ? (
+            <button data-testid="account-btn" onClick={() => { sfx("nav"); logout(); }} title="Se déconnecter"
+              className="relative flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+              <IoLogOutOutline size={18} /> <span className="max-w-[90px] truncate">{user.name || "Compte"}</span>
+            </button>
+          ) : (
+            <button data-testid="login-btn" onClick={() => { sfx("select"); openAuth(); }} title="Se connecter pour sauvegarder tes favoris"
+              className="relative flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+              <IoLogInOutline size={18} /> Se connecter
+            </button>
+          )}
           {onProfile && (
             <button data-testid="profile-btn" onClick={() => { sfx("nav"); onProfile(); }}
               className="relative flex items-center gap-1.5 pl-1.5 pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
@@ -141,6 +154,11 @@ export default function TopBar({ onAdd, onProfile }) {
               <MenuRow testid="menu-contact" icon={<IoMailOutline size={20} style={{ color: "var(--brand)" }} />} label="Contact" onClick={() => go("/contact")} />
               <MenuRow testid="menu-settings" icon={<IoSettingsOutline size={20} style={{ color: "var(--brand)" }} />} label="Paramètres" onClick={() => go("/parametres")} />
               <MenuRow testid="menu-tutorial" icon={<IoHelpCircleOutline size={20} style={{ color: "var(--brand)" }} />} label="Comment ça marche" onClick={() => go("/tutoriel")} />
+              {user ? (
+                <MenuRow testid="menu-logout" icon={<IoLogOutOutline size={20} style={{ color: "var(--brand)" }} />} label={`Se déconnecter (${user.name || "compte"})`} onClick={() => { setMenuOpen(false); logout(); }} />
+              ) : (
+                <MenuRow testid="menu-login" icon={<IoLogInOutline size={20} style={{ color: "var(--brand)" }} />} label="Se connecter / créer un compte" onClick={() => { setMenuOpen(false); openAuth(); }} />
+              )}
               {isAdmin && onAdd && (
                 <MenuRow testid="menu-create" icon={<IoAddOutline size={20} style={{ color: "var(--brand)" }} />} label="Créer une création" onClick={() => { setMenuOpen(false); onAdd(); }} />
               )}

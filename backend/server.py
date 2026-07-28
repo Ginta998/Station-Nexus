@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks, Header, Depends
 from fastapi.responses import Response, RedirectResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -13,7 +13,10 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import jwt
+import httpx
+from pwdlib import PasswordHash
 
 
 ROOT_DIR = Path(__file__).parent
@@ -889,6 +892,163 @@ async def seed(force: bool = False):
         await db.media.delete_many({})
     await ensure_seed()
     return {"ok": True}
+
+
+# ==================== AUTH (comptes visiteurs) ====================
+JWT_SECRET = os.environ['JWT_SECRET']
+JWT_ALG = "HS256"
+TOKEN_DAYS = 60
+EMERGENT_SESSION_URL = "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data"
+pwd = PasswordHash.recommended()
+
+
+class RegisterInput(BaseModel):
+    email: str
+    password: str
+    name: Optional[str] = None
+
+
+class LoginInput(BaseModel):
+    email: str
+    password: str
+
+
+class GoogleSessionInput(BaseModel):
+    session_id: str
+
+
+class SyncInput(BaseModel):
+    name: Optional[str] = None
+    avatar: Optional[str] = None
+    favorites: Optional[List[str]] = None
+    preferences: Optional[Dict] = None
+
+
+class ClaimAdminInput(BaseModel):
+    pin: str
+
+
+def _mint_token(uid: str, email: str) -> str:
+    now = datetime.now(timezone.utc)
+    payload = {"sub": uid, "email": email, "iat": int(now.timestamp()),
+               "exp": int((now + timedelta(days=TOKEN_DAYS)).timestamp())}
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALG)
+
+
+def _public_user(u: dict) -> dict:
+    return {"id": u.get("id"), "email": u.get("email"), "name": u.get("name"),
+            "avatar": u.get("avatar"), "favorites": u.get("favorites", []),
+            "preferences": u.get("preferences", {}), "is_admin": bool(u.get("is_admin", False))}
+
+
+async def _subscribe_email(email: str):
+    if email and not await db.subscribers.find_one({"email": email}):
+        await db.subscribers.insert_one(Subscriber(email=email).model_dump())
+
+
+async def get_current_user(authorization: Optional[str] = Header(None)):
+    if not authorization or not authorization.lower().startswith("bearer "):
+        raise HTTPException(401, "Non authentifié")
+    token = authorization.split(" ", 1)[1]
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
+    except jwt.PyJWTError:
+        raise HTTPException(401, "Session invalide")
+    u = await db.users.find_one({"id": payload["sub"]}, {"_id": 0})
+    if not u:
+        raise HTTPException(401, "Utilisateur introuvable")
+    return u
+
+
+@api_router.post("/auth/register")
+async def auth_register(data: RegisterInput):
+    email = data.email.strip().lower()
+    if not email or not data.password:
+        raise HTTPException(400, "Email et mot de passe requis")
+    existing = await db.users.find_one({"email": email})
+    if existing and existing.get("password_hash"):
+        raise HTTPException(409, "Cet email a déjà un compte")
+    now = datetime.now(timezone.utc).isoformat()
+    if existing:
+        await db.users.update_one({"email": email}, {"$set": {
+            "name": data.name or existing.get("name"), "password_hash": pwd.hash(data.password), "updated_at": now}})
+        user = await db.users.find_one({"email": email}, {"_id": 0})
+    else:
+        user = {"id": str(uuid.uuid4()), "email": email, "name": data.name or email.split("@")[0],
+                "avatar": None, "password_hash": pwd.hash(data.password), "favorites": [],
+                "preferences": {}, "is_admin": False, "created_at": now, "updated_at": now}
+        await db.users.insert_one(user)
+        user = await db.users.find_one({"email": email}, {"_id": 0})
+    await _subscribe_email(email)
+    return {"token": _mint_token(user["id"], email), "user": _public_user(user)}
+
+
+@api_router.post("/auth/login")
+async def auth_login(data: LoginInput):
+    email = data.email.strip().lower()
+    user = await db.users.find_one({"email": email})
+    if not user or not user.get("password_hash") or not pwd.verify(data.password, user["password_hash"]):
+        raise HTTPException(401, "Email ou mot de passe incorrect")
+    return {"token": _mint_token(user["id"], email), "user": _public_user(user)}
+
+
+@api_router.post("/auth/google/session")
+async def auth_google_session(data: GoogleSessionInput):
+    async with httpx.AsyncClient(timeout=15) as hc:
+        r = await hc.get(EMERGENT_SESSION_URL, headers={"X-Session-ID": data.session_id})
+    if r.status_code != 200:
+        raise HTTPException(401, "Connexion Google échouée")
+    p = r.json()
+    email = (p.get("email") or "").strip().lower()
+    if not email:
+        raise HTTPException(401, "Email Google indisponible")
+    now = datetime.now(timezone.utc).isoformat()
+    user = await db.users.find_one({"email": email})
+    if user:
+        await db.users.update_one({"email": email}, {"$set": {
+            "name": user.get("name") or p.get("name"),
+            "avatar": user.get("avatar") or p.get("picture"),
+            "google_sub": p.get("id"), "updated_at": now}})
+    else:
+        user = {"id": str(uuid.uuid4()), "email": email, "name": p.get("name") or email.split("@")[0],
+                "avatar": p.get("picture"), "google_sub": p.get("id"), "favorites": [],
+                "preferences": {}, "is_admin": False, "created_at": now, "updated_at": now}
+        await db.users.insert_one(user)
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    await _subscribe_email(email)
+    return {"token": _mint_token(user["id"], email), "user": _public_user(user)}
+
+
+@api_router.get("/auth/me")
+async def auth_me(user=Depends(get_current_user)):
+    return {"user": _public_user(user)}
+
+
+@api_router.put("/auth/sync")
+async def auth_sync(data: SyncInput, user=Depends(get_current_user)):
+    patch = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    if data.name is not None:
+        patch["name"] = data.name
+    if data.avatar is not None:
+        patch["avatar"] = data.avatar
+    if data.favorites is not None:
+        patch["favorites"] = data.favorites
+    if data.preferences is not None:
+        patch["preferences"] = data.preferences
+    await db.users.update_one({"id": user["id"]}, {"$set": patch})
+    u = await db.users.find_one({"id": user["id"]}, {"_id": 0})
+    return {"user": _public_user(u)}
+
+
+@api_router.post("/auth/claim-admin")
+async def auth_claim_admin(data: ClaimAdminInput, user=Depends(get_current_user)):
+    s = await db.settings.find_one({"key": "site"}, {"_id": 0})
+    admin_pin = (s or {}).get("admin_pin") or "1234"
+    if data.pin != admin_pin:
+        raise HTTPException(403, "Code PIN incorrect")
+    await db.users.update_one({"id": user["id"]}, {"$set": {"is_admin": True}})
+    u = await db.users.find_one({"id": user["id"]}, {"_id": 0})
+    return {"user": _public_user(u)}
 
 
 app.include_router(api_router)

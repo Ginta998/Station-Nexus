@@ -4,6 +4,21 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
 export const api = axios.create({ baseURL: API });
 
+// attach auth token if present
+api.interceptors.request.use((config) => {
+  const t = localStorage.getItem("sx_token");
+  if (t) config.headers.Authorization = `Bearer ${t}`;
+  return config;
+});
+
+// auth
+export const authRegister = (p) => api.post("/auth/register", p).then((r) => r.data);
+export const authLogin = (p) => api.post("/auth/login", p).then((r) => r.data);
+export const authGoogleSession = (session_id) => api.post("/auth/google/session", { session_id }).then((r) => r.data);
+export const authMe = () => api.get("/auth/me").then((r) => r.data);
+export const authSync = (p) => api.put("/auth/sync", p).then((r) => r.data);
+export const authClaimAdmin = (pin) => api.post("/auth/claim-admin", { pin }).then((r) => r.data);
+
 // creations
 export const listCreations = (category) =>
   api.get("/creations", { params: category ? { category } : {} }).then((r) => r.data);

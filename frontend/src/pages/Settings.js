@@ -8,6 +8,7 @@ import { SOUND_PACKS } from "@/lib/sound";
 import { INTROS } from "@/lib/intro";
 import BootIntro from "@/components/BootIntro";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
 import { CB_PAGES, CB_PAGE_LABELS, CB_DEFAULT_TIPS, CB_TARGETS, normalizeTip } from "@/components/CosmicBunny";
 import {
   listAmbiences, createAmbience, updateAmbience, uploadAmbienceAudio, deleteAmbience, ambienceUrl,
@@ -288,6 +289,56 @@ function WelcomeMessagesManager() {
   );
 }
 
+function AccountManager() {
+  const { user, openAuth, logout, claimAdmin } = useAuth();
+  const [pin, setPin] = useState("");
+  const [busy, setBusy] = useState(false);
+  const bx = { borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)" };
+
+  if (!user) {
+    return (
+      <div data-testid="account-manager">
+        <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>
+          Connecte-toi pour <span style={{ color: "var(--brand)" }}>garder tes favoris et préférences sur tous tes appareils</span> et être prévenu·e des nouveautés. 🐰
+        </p>
+        <button data-testid="account-login" onClick={openAuth} className="px-5 py-2.5 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+          Se connecter / créer un compte
+        </button>
+      </div>
+    );
+  }
+
+  const claim = async () => {
+    if (!pin) return;
+    setBusy(true);
+    try { await claimAdmin(pin); toast.success("Ce compte est maintenant administrateur ✓"); setPin(""); }
+    catch (e) { toast.error(e?.response?.data?.detail || "Code PIN incorrect"); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div data-testid="account-manager">
+      <div className="flex items-center gap-3 mb-4">
+        {user.avatar ? <img src={user.avatar} alt="" className="w-12 h-12 rounded-full object-cover" style={{ border: "2px solid var(--brand)" }} />
+          : <div className="w-12 h-12 rounded-full grid place-items-center font-display text-lg" style={{ background: "var(--bg-secondary)", border: "2px solid var(--brand)", color: "var(--brand)" }}>{(user.name || user.email || "?")[0].toUpperCase()}</div>}
+        <div className="min-w-0">
+          <p className="font-display text-lg truncate" style={{ color: "var(--text-primary)" }}>{user.name || "Compte"}</p>
+          <p className="text-xs truncate" style={{ color: "var(--text-secondary)" }}>{user.email}{user.is_admin ? " · Administrateur ✓" : ""}</p>
+        </div>
+      </div>
+
+      {!user.is_admin && (
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <input data-testid="account-pin" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="Code PIN admin" className="px-3 py-2 border text-sm outline-none" style={bx} />
+          <button data-testid="account-claim-admin" onClick={claim} disabled={busy} className="px-4 py-2 border text-sm" style={bx}>Lier l'admin à ce compte</button>
+        </div>
+      )}
+
+      <button data-testid="account-logout" onClick={logout} className="px-5 py-2 border text-sm" style={bx}>Se déconnecter</button>
+    </div>
+  );
+}
+
 function CosmicBunnyManager() {
   const { isAdmin } = useApp();
   const { data: settings, refetch } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
@@ -510,6 +561,10 @@ export default function Settings() {
         <button data-testid="settings-back" onClick={() => { sfx("back"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border mb-8" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
         <h1 className="font-display text-4xl md:text-5xl mb-2" style={{ color: "var(--text-primary)" }}>Paramètres</h1>
         <p className="mb-10" style={{ color: "var(--text-secondary)" }}>Personnalise ta station.</p>
+
+        <Section title="Mon compte" extra="— sauvegarde partout">
+          <AccountManager />
+        </Section>
 
         <Section title="Mode création">
           {isAdmin ? (

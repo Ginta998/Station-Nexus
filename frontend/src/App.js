@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AppProvider } from "@/context/AppContext";
+import { AuthProvider } from "@/context/AuthContext";
+import AuthDialog from "@/components/AuthDialog";
 import Home from "@/pages/Home";
 import Detail from "@/pages/Detail";
 import Settings from "@/pages/Settings";
@@ -66,6 +68,7 @@ function IntroGate() {
 function App() {
   return (
     <div className="App">
+      <AuthProvider>
       <AppProvider>
         <BrowserRouter>
           <Routes>
@@ -80,8 +83,10 @@ function App() {
           <CosmicBunny />
         </BrowserRouter>
         <IntroGate />
+        <AuthDialog />
         <Toaster position="top-center" theme="dark" richColors />
       </AppProvider>
+      </AuthProvider>
     </div>
   );
 }
