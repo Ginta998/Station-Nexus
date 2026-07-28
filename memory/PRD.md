@@ -273,3 +273,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 
 ## Aperçu taille affiches — 26/07/2026
 - Settings: composant MiniPoster (data-testid poster-preview) affiché à droite de chaque rangée (Ordinateur/Mobile) de la taille des affiches. Taille en px selon compact(40)/normal(58)/grand(78), transition animée, dégradé brand + fausses lignes de titre. Vérifié par screenshot.
+
+## Guide Cosmic Bunny — 28/07/2026
+- Mascotte-guide **Cosmic Bunny** (sans IA, phrases préenregistrées) : lapin en combinaison + casque d'astronaute (image transparente `/public/cosmic-bunny.png`, fond retiré via flood-fill). Toujours présente en bas à gauche, ouvrable au clic ; auto-ouverture à la 1ʳᵉ visite de chaque page.
+- Composant `components/CosmicBunny.js` (rendu global dans `App.js`, dans le BrowserRouter). Bulle avec : texte humoristique, « Conseil suivant » (compteur i/n) sinon « Compris ! », fermeture (croix / tap mascotte), et « Je parle trop ? 🙉 Chut ! » (désactive les conseils auto, mascotte reste tappable). Ton humoristique et plein d'entrain.
+- Contextes/pages : home, detail, **reader** (mode lecture — déclenché via événement `sx-cb-context` depuis `ChapterReader` au mount/unmount), settings, members, novelties, contact, tutorial. Mémoire des pages vues dans `localStorage sx_cb_seen`.
+- Apparaît **seulement après l'entrée dans la station** : flag `sessionStorage sx_entered` posé par `App.js` (BootIntro onDone + early-returns quand intro off/déjà vue) + event `sx-entered`. Sur l'Accueil, la mascotte est surélevée (classe `cb-home`) pour ne pas chevaucher le bouton LANCER.
+- Réglages (`Settings.js` → section « Cosmic Bunny », visible par tous) : toggles `sx_cb_hidden` (afficher/masquer la mascotte) + `sx_cb_tips_off` (conseils auto) + bouton « Revoir tous les conseils » (efface `sx_cb_seen`). Live via event `sx-cb-pref`. **Admin** : toggle global `cosmic_bunny_enabled` + éditeur des phrases par page (ajout/suppression, Enregistrer).
+- Backend (`server.py`) : `SiteSettings.cosmic_bunny_enabled: bool` + `cosmic_bunny_tips: Dict[str,List[str]]` (défauts FR par page). GET/PUT `/api/settings` inchangés.
+- Vérifié par screenshots : auto-open Accueil (1/4) + « Conseil suivant » (2/4), pas de chevauchement LANCER (mascotte y=920 / bouton y=999), section Paramètres + éditeur admin, masquage/affichage live.

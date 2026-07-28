@@ -8,6 +8,7 @@ import { SOUND_PACKS } from "@/lib/sound";
 import { INTROS } from "@/lib/intro";
 import BootIntro from "@/components/BootIntro";
 import { useApp } from "@/context/AppContext";
+import { CB_PAGES, CB_PAGE_LABELS, CB_DEFAULT_TIPS } from "@/components/CosmicBunny";
 import {
   listAmbiences, createAmbience, updateAmbience, uploadAmbienceAudio, deleteAmbience, ambienceUrl,
   listCategories, createCategory, updateCategory, deleteCategory,
@@ -287,6 +288,80 @@ function WelcomeMessagesManager() {
   );
 }
 
+function CosmicBunnyManager() {
+  const { isAdmin } = useApp();
+  const { data: settings, refetch } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
+  const [hidden, setHidden] = useState(() => localStorage.getItem("sx_cb_hidden") === "1");
+  const [tipsOff, setTipsOff] = useState(() => localStorage.getItem("sx_cb_tips_off") === "1");
+  const [draft, setDraft] = useState(null);
+
+  const notify = () => window.dispatchEvent(new Event("sx-cb-pref"));
+  const setHiddenPref = (v) => { localStorage.setItem("sx_cb_hidden", v ? "1" : "0"); setHidden(v); notify(); };
+  const setTipsOffPref = (v) => { localStorage.setItem("sx_cb_tips_off", v ? "1" : "0"); setTipsOff(v); notify(); };
+  const replay = () => { localStorage.removeItem("sx_cb_seen"); notify(); toast.success("Conseils réinitialisés — Cosmic Bunny va revenir te guider ! 🐰"); };
+
+  const enabledGlobal = settings ? settings.cosmic_bunny_enabled !== false : true;
+  const toggleGlobal = async (v) => { await updateSettings({ ...settings, cosmic_bunny_enabled: v }); refetch(); toast.success(v ? "Cosmic Bunny activée" : "Cosmic Bunny désactivée pour tous"); };
+
+  const tipsMap = draft ?? ((settings?.cosmic_bunny_tips && Object.keys(settings.cosmic_bunny_tips).length) ? settings.cosmic_bunny_tips : CB_DEFAULT_TIPS);
+  const setTip = (page, i, v) => setDraft({ ...tipsMap, [page]: (tipsMap[page] || []).map((t, x) => (x === i ? v : t)) });
+  const addTip = (page) => setDraft({ ...tipsMap, [page]: [...(tipsMap[page] || []), ""] });
+  const removeTip = (page, i) => setDraft({ ...tipsMap, [page]: (tipsMap[page] || []).filter((_, x) => x !== i) });
+  const savePhrases = async () => {
+    const clean = {};
+    CB_PAGES.forEach((p) => { clean[p] = (tipsMap[p] || []).map((t) => t.trim()).filter(Boolean); });
+    await updateSettings({ ...settings, cosmic_bunny_tips: clean });
+    toast.success("Phrases de Cosmic Bunny enregistrées"); refetch(); setDraft(null);
+  };
+
+  return (
+    <div data-testid="cosmic-bunny-manager">
+      <div className="flex items-center gap-3 mb-4">
+        <img src="/cosmic-bunny.png" alt="" className="w-14 h-14 rounded-full object-contain" style={{ background: "var(--bg-secondary)", border: "2px solid var(--brand)" }} />
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Cosmic Bunny t'accueille et te glisse des petits conseils sur chaque page. Sans IA, juste plein d'entrain ! 🐰</p>
+      </div>
+      <div className="space-y-3">
+        <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="cb-toggle-show">
+          <span className="text-sm" style={{ color: "var(--text-primary)" }}>Afficher Cosmic Bunny <span className="block text-xs" style={{ color: "var(--text-secondary)" }}>Sa bulle reste en bas à gauche, prête à aider.</span></span>
+          <input type="checkbox" checked={!hidden} onChange={(e) => setHiddenPref(!e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
+        </label>
+        <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="cb-toggle-auto">
+          <span className="text-sm" style={{ color: "var(--text-primary)" }}>Conseils automatiques <span className="block text-xs" style={{ color: "var(--text-secondary)" }}>Elle parle d'elle-même à la 1ʳᵉ visite d'une page.</span></span>
+          <input type="checkbox" checked={!tipsOff} onChange={(e) => setTipsOffPref(!e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
+        </label>
+        <button data-testid="cb-replay" onClick={replay} className="px-5 py-2.5 border font-medium" style={fs}>Revoir tous les conseils</button>
+      </div>
+
+      {isAdmin && (
+        <div className="mt-6 pt-5 border-t" style={{ borderColor: "var(--border-c)" }}>
+          <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer mb-4" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="cb-toggle-global">
+            <span className="text-sm" style={{ color: "var(--text-primary)" }}>Activer Cosmic Bunny pour tous les visiteurs</span>
+            <input type="checkbox" checked={enabledGlobal} onChange={(e) => toggleGlobal(e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
+          </label>
+          <p className="text-xs uppercase tracking-widest mb-3" style={{ color: "var(--text-secondary)" }}>Modifier ses phrases (par page)</p>
+          <div className="space-y-5">
+            {CB_PAGES.map((page) => (
+              <div key={page} data-testid={`cb-page-${page}`}>
+                <p className="text-sm font-display mb-2" style={{ color: "var(--brand)" }}>{CB_PAGE_LABELS[page]}</p>
+                <div className="space-y-2">
+                  {(tipsMap[page] || []).map((t, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <textarea data-testid={`cb-tip-${page}-${i}`} value={t} onChange={(e) => setTip(page, i, e.target.value)} rows={2} className="flex-1 px-3 py-2 border outline-none text-sm resize-y" style={fs} />
+                      <button data-testid={`cb-tip-remove-${page}-${i}`} onClick={() => removeTip(page, i)} className="p-2 border" style={fs} title="Supprimer"><IoTrashOutline /></button>
+                    </div>
+                  ))}
+                  <button data-testid={`cb-tip-add-${page}`} onClick={() => addTip(page)} className="flex items-center gap-1.5 px-3 py-1.5 border text-xs" style={fs}><IoAddOutline /> Ajouter un conseil</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button onClick={savePhrases} data-testid="cb-save-phrases" className="mt-5 px-5 py-2.5 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Enregistrer les phrases</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AnnouncementsManager() {
   const { data: list = [], refetch } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
   const { data: creations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
@@ -497,6 +572,10 @@ export default function Settings() {
               </div>
             </div>
           ))}
+        </Section>
+
+        <Section title="Cosmic Bunny" extra="— ton guide 🐰">
+          <CosmicBunnyManager />
         </Section>
 
         <Section title="Personnalisation de l'interface" extra="— rends la station unique">

@@ -11,9 +11,12 @@ import Members from "@/pages/Members";
 import Novelties from "@/pages/Novelties";
 import Tutorial from "@/pages/Tutorial";
 import BootIntro from "@/components/BootIntro";
+import CosmicBunny from "@/components/CosmicBunny";
 import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
 import { INTROS } from "@/lib/intro";
 import { useQueryClient } from "@tanstack/react-query";
+
+const markEntered = () => { sessionStorage.setItem("sx_entered", "1"); window.dispatchEvent(new Event("sx-entered")); };
 
 function IntroGate() {
   const [show, setShow] = useState(false);
@@ -21,8 +24,8 @@ function IntroGate() {
   const qc = useQueryClient();
 
   useEffect(() => {
-    if (sessionStorage.getItem("sx_intro_shown") === "1") return;
-    if (localStorage.getItem("sx_intro_off") === "1") return;
+    if (sessionStorage.getItem("sx_intro_shown") === "1") { markEntered(); return; }
+    if (localStorage.getItem("sx_intro_off") === "1") { markEntered(); return; }
 
     // Prefetch the Home data + warm poster images while the intro animation plays,
     // so the launcher appears instantly (no loading spinner) once the intro ends.
@@ -55,7 +58,7 @@ function IntroGate() {
       type={config.type}
       hasVideo={config.hasVideo}
       welcomeMessages={config.welcomeMessages}
-      onDone={() => { sessionStorage.setItem("sx_intro_shown", "1"); setShow(false); }}
+      onDone={() => { sessionStorage.setItem("sx_intro_shown", "1"); markEntered(); setShow(false); }}
     />
   );
 }
@@ -74,6 +77,7 @@ function App() {
             <Route path="/nouveautes" element={<Novelties />} />
             <Route path="/tutoriel" element={<Tutorial />} />
           </Routes>
+          <CosmicBunny />
         </BrowserRouter>
         <IntroGate />
         <Toaster position="top-center" theme="dark" richColors />

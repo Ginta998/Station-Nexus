@@ -133,6 +133,11 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
     // eslint-disable-next-line
   }, [idx]);
   useEffect(() => () => endReading(item.id, item.has_audio), []); // eslint-disable-line
+  // Signal the "reader" context to Cosmic Bunny while the reader is open
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("sx-cb-context", { detail: "reader" }));
+    return () => window.dispatchEvent(new CustomEvent("sx-cb-context", { detail: null }));
+  }, []);
   useEffect(() => {
     if (!useStart && saved && ((saved.chapter || 0) > 0 || (saved.ratio || 0) > 0.02)) {
       toast.success(`Reprise au chapitre ${(saved.chapter || 0) + 1}`, { duration: 2500 });
