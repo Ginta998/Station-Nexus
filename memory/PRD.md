@@ -305,5 +305,12 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - **Fiche « Cosmic Bunny » (son aventure)** : nouveau contexte `bunny_story` déclenché par `Detail.js` (dispatch `sx-cb-context:"bunny_story"` si `title.trim().toLowerCase()==="cosmic bunny"`). Nouvelle **pose `moto`** (`/cosmic-bunny/moto.png`, buste sur sa moto) + phrases spéciales in-character (« *vrooom* je débarque en moto 🏍️ »). Éditable dans Settings (page « Fiche Cosmic Bunny (son aventure) »). Défauts ajoutés backend + frontend.
 - Vérifié par screenshots : desktop bas-droite cercle buste immergé + bulle à droite ; fiche Cosmic Bunny → pose `moto` + texte spécial ; badge « ? » présent à la fermeture ; retour pose neutral après sad.
 
+## Cosmic Bunny v3.2 (correctifs coupe/zoom/badge/bulle PC) — 28/07/2026
+- **Plus de coupe & plus de zoom incohérent** : sprites re-traités en « buste + mains » (crop haut ~64-70 %, jambes retirées) puis paddés sur un cadre uniforme ~3:4 ; affichage passé de `object-fit:cover` à **`contain`** (`object-position:50% 100%`) → mains visibles, aucune coupe, échelle identique entre poses.
+- **Badge « ? » sorti du cercle** : le cercle est `overflow:hidden` (clippait le badge). Ajout d'un wrapper `.cb-mascot-wrap` (overflow visible) ; `.cb-help` positionné À L'EXTÉRIEUR (coin) — visible. Desktop : coin haut-gauche ; mobile : coin haut-droite.
+- **Bulle PC remontée + agrandie** : `@media min-width:768px` → `.cb-root { right:24px; bottom:84px }` (au-dessus du texte « naviguer · catégories · Entrée »), bulle `min(92vw,360px)`, texte 1rem, mascotte 80 px.
+- Vérifié par screenshots (desktop) : badge « ? » visible hors cercle (box distincte au coin), mains non coupées, bulle plus grande au-dessus du hint de navigation. Mobile suit le CSS mobile-first (cercle 66 px, badge haut-droite).
+
+
 
 

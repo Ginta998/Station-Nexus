@@ -170,12 +170,14 @@ export default function CosmicBunny() {
           <button className="cb-mute" onClick={talkLess} data-testid="cb-talk-less">Je parle trop ? 🙉 Chut !</button>
         </div>
       )}
-      <button className={`cb-mascot ${bounce ? "cb-bounce" : ""} ${customImg ? "cb-custom" : ""}`} onClick={() => (open ? closeTips() : openManually())} data-testid="cb-mascot" aria-label="Cosmic Bunny — conseils">
-        {!customImg && <span className="cb-stage" aria-hidden="true" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/cosmic-bunny/alley.jpg)` }} />}
-        <img className="cb-sprite" src={spriteSrc} alt="Cosmic Bunny" draggable="false" data-pose={pose} />
-        {!customImg && <span className="cb-tint" aria-hidden="true" />}
+      <div className="cb-mascot-wrap">
+        <button className={`cb-mascot ${bounce ? "cb-bounce" : ""} ${customImg ? "cb-custom" : ""}`} onClick={() => (open ? closeTips() : openManually())} data-testid="cb-mascot" aria-label="Cosmic Bunny — conseils">
+          {!customImg && <span className="cb-stage" aria-hidden="true" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/cosmic-bunny/alley.jpg)` }} />}
+          <img className="cb-sprite" src={spriteSrc} alt="Cosmic Bunny" draggable="false" data-pose={pose} />
+          {!customImg && <span className="cb-tint" aria-hidden="true" />}
+        </button>
         {!open && <span className="cb-help" aria-hidden="true">?</span>}
-      </button>
+      </div>
     </div>
   );
 }

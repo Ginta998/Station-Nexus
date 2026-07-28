@@ -295,22 +295,24 @@ body {
 .cb-root.cb-home { bottom: 108px; }
 .cb-root > * { pointer-events: auto; }
 
+.cb-mascot-wrap { position: relative; }
 .cb-mascot {
-  position: relative; width: 64px; height: 64px; border-radius: 999px; overflow: hidden; padding: 0;
+  position: relative; width: 66px; height: 66px; border-radius: 999px; overflow: hidden; padding: 0; display: block;
   border: 2px solid var(--brand); background: #0b0b12;
   box-shadow: 0 6px 18px rgba(0,0,0,0.45), 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent);
   cursor: pointer; transition: transform 0.15s ease;
 }
 .cb-mascot:hover { transform: translateY(-2px) scale(1.05); }
 .cb-mascot:active { transform: scale(0.95); }
-.cb-stage { position: absolute; inset: 0; background-size: cover; background-position: 50% 28%; z-index: 0; }
+.cb-stage { position: absolute; inset: 0; background-size: cover; background-position: 50% 35%; z-index: 0; }
 .cb-stage::after { content: ""; position: absolute; inset: 0; background: var(--brand); mix-blend-mode: color; opacity: 0.5; }
-.cb-mascot .cb-sprite { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 6%; z-index: 1; pointer-events: none; transition: opacity 0.15s ease; filter: saturate(0.92) brightness(0.98); }
-.cb-mascot .cb-tint { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: var(--brand); mix-blend-mode: soft-light; opacity: 0.4; }
-.cb-mascot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 3; pointer-events: none; background: radial-gradient(125% 95% at 50% 20%, transparent 42%, rgba(0,0,0,0.55) 100%); box-shadow: inset 0 0 10px rgba(0,0,0,0.55); }
+.cb-mascot .cb-sprite { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; z-index: 1; pointer-events: none; transition: opacity 0.15s ease; filter: saturate(0.95); }
+.cb-mascot .cb-tint { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: var(--brand); mix-blend-mode: soft-light; opacity: 0.32; }
+.cb-mascot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 3; pointer-events: none; background: radial-gradient(130% 100% at 50% 18%, transparent 55%, rgba(0,0,0,0.45) 100%); box-shadow: inset 0 0 8px rgba(0,0,0,0.45); }
 .cb-custom .cb-tint, .cb-custom::after { display: none; }
+.cb-custom .cb-sprite { object-fit: cover; }
 
-.cb-help { position: absolute; top: -5px; right: -5px; z-index: 5; width: 22px; height: 22px; border-radius: 999px; background: var(--brand); color: var(--bg-primary); font-weight: 800; font-size: 13px; line-height: 1; display: grid; place-items: center; border: 2px solid var(--bg-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.5); animation: cbHelpPulse 2s ease-in-out infinite; pointer-events: none; }
+.cb-help { position: absolute; top: -6px; right: -6px; z-index: 6; width: 24px; height: 24px; border-radius: 999px; background: var(--brand); color: var(--bg-primary); font-weight: 800; font-size: 14px; line-height: 1; display: grid; place-items: center; border: 2px solid var(--bg-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.55); animation: cbHelpPulse 2s ease-in-out infinite; pointer-events: none; }
 @keyframes cbHelpPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
 
 @keyframes cbBounce { 0%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } 55% { transform: translateY(0); } 70% { transform: translateY(-3px); } }
@@ -339,9 +341,13 @@ body {
 .cb-mute:hover { color: var(--brand); }
 
 @media (min-width: 768px) {
-  .cb-root { left: auto; right: 22px; bottom: 22px; align-items: flex-end; }
-  .cb-root.cb-home { bottom: 22px; }
-  .cb-mascot { width: 74px; height: 74px; }
-  .cb-help { right: auto; left: -5px; }
-  .cb-bubble::after { left: auto; right: 22px; }
+  .cb-root { left: auto; right: 24px; bottom: 84px; align-items: flex-end; gap: 12px; }
+  .cb-root.cb-home { bottom: 84px; }
+  .cb-mascot { width: 80px; height: 80px; }
+  .cb-help { right: auto; left: -6px; width: 26px; height: 26px; font-size: 15px; }
+  .cb-bubble { width: min(92vw, 360px); padding: 18px 20px 16px; border-radius: 18px; }
+  .cb-bubble::after { left: auto; right: 26px; }
+  .cb-name { font-size: 0.84rem; }
+  .cb-text { font-size: 1rem; line-height: 1.55; }
+  .cb-cta, .cb-next { font-size: 0.9rem; }
 }
