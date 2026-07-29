@@ -31,6 +31,7 @@ export default function Home() {
   const [editing, setEditing] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const cardRefs = useRef([]);
+  const focusSrc = useRef("kbd");
 
   const tabs = useMemo(() => [{ key: ALL, label: "Toutes mes créations", kanji: "全" }, { key: FAV, label: "Favoris", kanji: "愛" }, ...cats], [cats]);
   const catLabelByKey = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c.label])), [cats]);
@@ -53,16 +54,18 @@ export default function Home() {
 
   const focused = items[focusIndex];
 
-  useEffect(() => { setFocusIndex(0); }, [catIndex, query, sort]);
+  useEffect(() => { focusSrc.current = "kbd"; setFocusIndex(0); }, [catIndex, query, sort]);
   useEffect(() => {
+    // Ne recentre le rail QUE sur navigation clavier / D-pad — pas au survol souris (évite le "glissement" sur PC)
+    if (focusSrc.current === "hover") { focusSrc.current = "kbd"; return; }
     const el = cardRefs.current[focusIndex];
     if (el) el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   }, [focusIndex, catIndex, items.length]);
 
-  const navRight = useCallback(() => { sfx("nav"); setFocusIndex((i) => Math.min(i + 1, items.length - 1)); }, [items.length, sfx]);
-  const navLeft = useCallback(() => { sfx("nav"); setFocusIndex((i) => Math.max(i - 1, 0)); }, [sfx]);
-  const catDown = useCallback(() => { sfx("nav"); setCatIndex((c) => Math.min(c + 1, tabs.length - 1)); }, [tabs.length, sfx]);
-  const catUp = useCallback(() => { sfx("nav"); setCatIndex((c) => Math.max(c - 1, 0)); }, [sfx]);
+  const navRight = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setFocusIndex((i) => Math.min(i + 1, items.length - 1)); }, [items.length, sfx]);
+  const navLeft = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setFocusIndex((i) => Math.max(i - 1, 0)); }, [sfx]);
+  const catDown = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.min(c + 1, tabs.length - 1)); }, [tabs.length, sfx]);
+  const catUp = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.max(c - 1, 0)); }, [sfx]);
 
   const onKey = useCallback((e) => {
     if (editorOpen) return;
@@ -188,7 +191,7 @@ export default function Home() {
             <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
               catLabel={catLabelByKey[it.category] || it.category}
               isFav={isFavorite(it.id)} onToggleFav={() => { toggleFavorite(it.id); sfx("select"); }}
-              onFocus={() => { if (i !== focusIndex) sfx("hover"); setFocusIndex(i); }}
+              onFocus={() => { if (i !== focusIndex) { sfx("hover"); focusSrc.current = "hover"; setFocusIndex(i); } }}
               onClick={() => open(it.id)} onResume={() => resume(it.id)} />
           ))}
           {items.length > 0 && <div className="flex-shrink-0 w-[42vw] md:w-[38vw]" aria-hidden="true" />}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline } from "react-icons/io5";
+import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { chapterAudioUrl, readingAudioUrl } from "@/lib/api";
 import { toast } from "sonner";
@@ -87,6 +87,7 @@ function ReadingPlayer({ getAudio, title, isPlaying, onToggle }) {
 export default function ChapterReader({ item, onClose, startChapter = null, onComment }) {
   const {
     playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio, endReading, isPlaying, playingId, sfx,
+    muted, toggleMute,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine,
     readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   } = useApp();
@@ -223,6 +224,9 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
               {anyMusicOn ? <IoPause size={24} /> : <IoMusicalNotes size={24} />}
             </button>
           )}
+          <button data-testid="reader-mute" onClick={() => { toggleMute(); sfx("nav"); }} className="p-2.5 border" style={{ color: muted ? "var(--text-secondary)" : "var(--brand)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title={muted ? "Réactiver le son" : "Couper le son"}>
+            {muted ? <IoVolumeMute size={24} /> : <IoVolumeHigh size={24} />}
+          </button>
           <button data-testid="reader-close" onClick={close} className="p-2.5 border" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }}><IoClose size={26} /></button>
         </div>
       </div>

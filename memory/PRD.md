@@ -331,3 +331,19 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - **ProfileDialog.js** : champ email supprimé (state + input + validation). Nom/avatar pré-remplis depuis le compte (`user.name`/`user.avatar`) si pas de profil. `save()` conserve l'email existant éventuel (`profile?.email`) sans l'exposer. Bannière "synchronisé" mentionne les notifications par email.
 - **Newsletter safe** : `auth_register` ET `auth_google_session` appellent déjà `_subscribe_email(email)` → l'email du compte est abonné automatiquement. Retirer le champ email du profil ne casse donc pas les notifications de nouveautés.
 - Vérifié E2E par screenshot : register → toast "Compte créé" → AuthDialog fermé → ProfileDialog ouvert auto, `profile-email` absent (0), nom pré-rempli, `profile-sync-ok` affiché.
+
+## Mode Cinéma (film) + bouton son lecture + fix sensibilité PC — 29/07/2026
+### 1. Mode Cinéma (nouveau launch_type "film")
+- **Backend (server.py)** : champs `film_url`, `trailer_url`, `has_film`, `has_trailer` sur Creation/CreationInput. Stockage OBJET (Emergent object storage via `EMERGENT_LLM_KEY`, ajouté à backend/.env) : helpers `_storage_init/_storage_put/_storage_get`, init au startup. Endpoints `POST/GET/DELETE /api/creations/{cid}/video?kind=film|trailer` (upload jusqu'à 200 Mo, streaming avec support Range 206, réf dans collection `film_media`). `delete_creation` nettoie `film_media`. Testé curl : upload/stream/range/delete OK.
+- **Frontend** :
+  - `lib/video.js` : `resolveVideoEmbed(url)` → YouTube/Vimeo/Dailymotion/embed/iframe/.mp4 direct.
+  - `components/CinemaPlayer.js` : lecteur immersif plein écran (z-55, sous cb-root z-60). Décor salle sombre (spotlight brand, rideaux latéraux, vignette), barre haut (titre+fermer), commandes bas : **baisser/allumer les lumières** (`cinema-lights`), **couper le son** global (`cinema-mute`, lié à toggleMute + `<video>.muted`), **plein écran** (`cinema-fullscreen`), auto-masquage des barres après 3,2 s, Échap pour fermer. Priorité : lien > upload.
+  - `lib/api.js` : `uploadVideo/deleteVideo/videoUrl`.
+  - `EditorDialog.js` : option "🎬 Film / Cinéma", champs `editor-film-url`/`editor-film-upload` + `editor-trailer-url`/`editor-trailer-upload` (progress + suppression), limite 200 Mo côté client.
+  - `Detail.js` : launch "film" → CinemaPlayer (stopAmbient) ; bouton `detail-trailer` si trailer présent.
+  - `CosmicBunny.js` : nouveau contexte `cinema` (phrases par défaut) dispatché par CinemaPlayer → Bunny explique le mode ciné.
+- **Limitation connue** : le streaming charge la vidéo entière en mémoire par requête (pas de cache). OK pour liens + petits uploads (trailers/extraits) ; déconseillé pour très gros films uploadés → privilégier les liens.
+### 2. Bouton couper/réactiver le son en mode lecture
+- `ChapterReader.js` : bouton `reader-mute` (global `muted`/`toggleMute`) ajouté dans l'en-tête, à côté de la croix.
+### 3. Fix sensibilité défilement PC
+- `Home.js` : ref `focusSrc`. Le rail ne se recentre (`scrollIntoView`) QUE sur navigation clavier/D-pad/catégorie ; le **survol souris ne recentre plus** (évite le "glissement" qui gênait le clic). `PosterCard` garde le highlight au survol sans déclencher le scroll.

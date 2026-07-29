@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks, Header, Depends
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks, Header, Depends, Request
 from fastapi.responses import Response, RedirectResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -30,6 +30,47 @@ app = FastAPI(title="Stationexus API")
 api_router = APIRouter(prefix="/api")
 
 MAX_AUDIO_BYTES = 12 * 1024 * 1024
+MAX_VIDEO_BYTES = 200 * 1024 * 1024
+
+# ---------------- Emergent Object Storage (video uploads) ----------------
+OBJ_STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
+OBJ_APP_NAME = "stationexus"
+_storage_key = None
+
+
+async def _storage_init(force=False):
+    global _storage_key
+    if _storage_key and not force:
+        return _storage_key
+    async with httpx.AsyncClient(timeout=30) as hc:
+        r = await hc.post(f"{OBJ_STORAGE_URL}/init", json={"emergent_key": EMERGENT_LLM_KEY})
+        r.raise_for_status()
+        _storage_key = r.json()["storage_key"]
+    return _storage_key
+
+
+async def _storage_put(path, data, content_type):
+    key = await _storage_init()
+    async with httpx.AsyncClient(timeout=600) as hc:
+        r = await hc.put(f"{OBJ_STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key, "Content-Type": content_type}, content=data)
+        if r.status_code == 403:
+            key = await _storage_init(force=True)
+            r = await hc.put(f"{OBJ_STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key, "Content-Type": content_type}, content=data)
+        r.raise_for_status()
+        return r.json()
+
+
+async def _storage_get(path):
+    key = await _storage_init()
+    async with httpx.AsyncClient(timeout=120) as hc:
+        r = await hc.get(f"{OBJ_STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key})
+        if r.status_code == 403:
+            key = await _storage_init(force=True)
+            r = await hc.get(f"{OBJ_STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key})
+        r.raise_for_status()
+        return r.content, r.headers.get("Content-Type", "application/octet-stream")
+
 
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
@@ -80,10 +121,14 @@ class Creation(BaseModel):
     bg_dim: float = 0.55
     gallery: List[str] = Field(default_factory=list)
     embeds: List[Embed] = Field(default_factory=list)
-    launch_type: str = "info"  # reader | link | episodes | chapters | info
+    launch_type: str = "info"  # reader | link | film | episodes | chapters | info
     launch_label: Optional[str] = "Lancer"
     launch_content: Optional[str] = ""
     launch_url: Optional[str] = ""
+    film_url: Optional[str] = ""          # main film link (YouTube/Vimeo/Dailymotion/embed/direct .mp4)
+    trailer_url: Optional[str] = ""       # trailer link
+    has_film: bool = False                # an uploaded main film exists in object storage
+    has_trailer: bool = False             # an uploaded trailer exists in object storage
     buy_url: Optional[str] = ""
     chapter_display: str = "button"  # button | image — how chapters show on the detail page
     chapter_size: str = "md"         # sm | md | lg | xl — size of chapter/episode cards on the fiche
@@ -120,6 +165,8 @@ class CreationInput(BaseModel):
     launch_label: Optional[str] = "Lancer"
     launch_content: Optional[str] = ""
     launch_url: Optional[str] = ""
+    film_url: Optional[str] = ""
+    trailer_url: Optional[str] = ""
     buy_url: Optional[str] = ""
     chapter_display: str = "button"
     chapter_size: str = "md"
@@ -373,6 +420,7 @@ async def delete_creation(cid: str):
     await db.reading_media.delete_many({"creation_id": cid})
     await db.chapter_media.delete_many({"creation_id": cid})
     await db.media_assets.delete_many({"creation_id": cid})
+    await db.film_media.delete_many({"creation_id": cid})
     await db.comments.delete_many({"creation_id": cid})
     return {"ok": True}
 
@@ -403,6 +451,55 @@ async def stream_audio(cid: str):
 async def delete_audio(cid: str):
     await db.media.delete_many({"creation_id": cid})
     await db.creations.update_one({"id": cid}, {"$set": {"has_audio": False}})
+    return {"ok": True}
+
+
+@api_router.post("/creations/{cid}/video")
+async def upload_video(cid: str, kind: str = Form("film"), file: UploadFile = File(...)):
+    if kind not in ("film", "trailer"):
+        raise HTTPException(400, "Type de vidéo invalide")
+    if not await db.creations.find_one({"id": cid}):
+        raise HTTPException(404, "Création introuvable")
+    data = await file.read()
+    if len(data) > MAX_VIDEO_BYTES:
+        raise HTTPException(413, "Vidéo trop volumineuse (max 200 Mo). Utilise plutôt un lien.")
+    ext = (file.filename.rsplit(".", 1)[-1] if file.filename and "." in file.filename else "mp4").lower()
+    path = f"{OBJ_APP_NAME}/videos/{cid}/{kind}-{uuid.uuid4()}.{ext}"
+    ct = file.content_type or "video/mp4"
+    result = await _storage_put(path, data, ct)
+    await db.film_media.update_one({"creation_id": cid, "kind": kind},
+        {"$set": {"creation_id": cid, "kind": kind, "storage_path": result["path"], "content_type": ct}}, upsert=True)
+    field = "has_film" if kind == "film" else "has_trailer"
+    await db.creations.update_one({"id": cid}, {"$set": {field: True, "updated_at": now_iso()}})
+    return {"ok": True}
+
+
+@api_router.get("/creations/{cid}/video")
+async def stream_video(cid: str, request: Request, kind: str = "film"):
+    rec = await db.film_media.find_one({"creation_id": cid, "kind": kind}, {"_id": 0})
+    if not rec:
+        raise HTTPException(404, "Aucune vidéo")
+    content, ct = await _storage_get(rec["storage_path"])
+    ct = rec.get("content_type", ct)
+    total = len(content)
+    range_header = request.headers.get("range")
+    if range_header:
+        m = re.match(r"bytes=(\d+)-(\d*)", range_header)
+        if m:
+            start = int(m.group(1))
+            end = int(m.group(2)) if m.group(2) else total - 1
+            end = min(end, total - 1)
+            chunk = content[start:end + 1]
+            headers = {"Content-Range": f"bytes {start}-{end}/{total}", "Accept-Ranges": "bytes", "Content-Length": str(len(chunk))}
+            return Response(content=chunk, status_code=206, media_type=ct, headers=headers)
+    return Response(content=content, media_type=ct, headers={"Accept-Ranges": "bytes"})
+
+
+@api_router.delete("/creations/{cid}/video")
+async def delete_video(cid: str, kind: str = "film"):
+    await db.film_media.delete_many({"creation_id": cid, "kind": kind})
+    field = "has_film" if kind == "film" else "has_trailer"
+    await db.creations.update_one({"id": cid}, {"$set": {field: False}})
     return {"ok": True}
 
 
@@ -1062,6 +1159,11 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup():
     await ensure_seed()
+    try:
+        await _storage_init()
+        logger.info("Object storage initialized")
+    except Exception as e:
+        logger.error("Object storage init failed: %s", e)
 
 
 @app.on_event("shutdown")

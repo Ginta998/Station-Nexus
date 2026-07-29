@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio } from "@/lib/api";
+import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo } from "@/lib/api";
 import RichTextEditor from "@/components/RichTextEditor";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
   poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0,
+  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0,
 };
 
 const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
@@ -28,12 +28,15 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const [audioFile, setAudioFile] = useState(null);
   const [readingFile, setReadingFile] = useState(null);
   const [chapterFiles, setChapterFiles] = useState({});
+  const [filmFile, setFilmFile] = useState(null);
+  const [trailerFile, setTrailerFile] = useState(null);
+  const [videoProg, setVideoProg] = useState({ film: 0, trailer: 0 });
   const posterInput = useRef(null);
 
   useEffect(() => {
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
-      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFullscreen(false);
+      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFilmFile(null); setTrailerFile(null); setVideoProg({ film: 0, trailer: 0 }); setFullscreen(false);
       // fetch full item (with base64 images) so editing preserves poster/bg/gallery/chapters
       if (initial && initial.id) {
         getCreationFull(initial.id).then((full) => setForm((f) => ({ ...empty, ...full }))).catch(() => {});
@@ -77,6 +80,8 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
       const saved = isEdit ? await updateCreation(initial.id, payload) : await createCreation(payload);
       if (audioFile) await uploadAudio(saved.id, audioFile);
       if (readingFile) await uploadReadingAudio(saved.id, readingFile);
+      if (filmFile) await uploadVideo(saved.id, "film", filmFile, (p) => setVideoProg((s) => ({ ...s, film: p })));
+      if (trailerFile) await uploadVideo(saved.id, "trailer", trailerFile, (p) => setVideoProg((s) => ({ ...s, trailer: p })));
       // per-chapter music (chapters keep order → match by index to saved.chapters)
       const chFiles = Object.entries(chapterFiles);
       for (const [i, file] of chFiles) {
@@ -90,6 +95,13 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
 
   const removeAudio = async () => { if (!isEdit) return; await deleteAudio(initial.id); set("has_audio", false); toast.success("Ambiance supprimée"); };
   const removeReading = async () => { if (!isEdit) return; await deleteReadingAudio(initial.id); set("has_reading_audio", false); toast.success("Musique de lecture supprimée"); };
+  const pickVideo = (kind, file) => {
+    if (!file) return;
+    if (file.size > 200 * 1024 * 1024) return toast.error("Vidéo trop lourde (max 200 Mo). Utilise plutôt un lien.");
+    if (kind === "film") setFilmFile(file); else setTrailerFile(file);
+  };
+  const removeFilm = async () => { if (!isEdit) return; await deleteVideo(initial.id, "film"); set("has_film", false); setFilmFile(null); toast.success("Film supprimé"); };
+  const removeTrailer = async () => { if (!isEdit) return; await deleteVideo(initial.id, "trailer"); set("has_trailer", false); setTrailerFile(null); toast.success("Bande-annonce supprimée"); };
 
   return (
     <div className={`fixed inset-0 z-50 flex justify-center overflow-y-auto ${fullscreen ? "items-stretch p-0" : "items-start sm:items-center p-0 sm:p-6"}`}
@@ -193,7 +205,8 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
               <select data-testid="editor-launch-type" value={form.launch_type} onChange={(e) => set("launch_type", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
                 <option value="reader">Lecture (extrait)</option>
                 <option value="chapters">Lecteur de chapitres</option>
-                <option value="link">Lien externe (film/vidéo)</option>
+                <option value="film">🎬 Film / Cinéma (dans la plateforme)</option>
+                <option value="link">Lien externe (nouvel onglet)</option>
                 <option value="episodes">Épisodes</option>
                 <option value="game">Jeu arcade</option>
                 <option value="info">Info seulement</option>
@@ -224,6 +237,36 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           )}
           {form.launch_type === "link" && (
             <div><Label>URL du film / vidéo</Label><input data-testid="editor-launch-url" value={form.launch_url} onChange={(e) => set("launch_url", e.target.value)} placeholder="https://..." className="w-full px-3 py-2 border outline-none" style={fs} /></div>
+          )}
+
+          {form.launch_type === "film" && (
+            <div className="space-y-4 p-3 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "var(--bg-primary)" }}>
+              <div>
+                <Label>🎬 Film — lien (YouTube, Vimeo, Dailymotion, .mp4, ou code iframe)</Label>
+                <input data-testid="editor-film-url" value={form.film_url || ""} onChange={(e) => set("film_url", e.target.value)} placeholder="https://youtube.com/watch?v=…" className="w-full px-3 py-2 border outline-none" style={fs} />
+                <div className="flex items-center gap-3 mt-2">
+                  <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-film-upload">
+                    <IoCloudUploadOutline /> {filmFile ? filmFile.name : (form.has_film ? "Fichier présent — remplacer" : "…ou uploader un fichier vidéo")}
+                    <input type="file" accept="video/*" hidden onChange={(e) => pickVideo("film", e.target.files?.[0])} />
+                  </label>
+                  {isEdit && form.has_film && <button onClick={removeFilm} className="text-sm" style={{ color: "var(--brand)" }} data-testid="editor-film-remove"><IoTrashOutline /></button>}
+                </div>
+                {videoProg.film > 0 && videoProg.film < 100 && <p className="text-xs mt-1" style={{ color: "var(--brand)" }}>Envoi… {videoProg.film}%</p>}
+                <p className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>Un lien est recommandé. L'upload est limité à 200 Mo (idéal pour extraits / bandes-annonces). Si un lien est renseigné, il a la priorité.</p>
+              </div>
+              <div>
+                <Label>Bande-annonce (optionnel) — lien</Label>
+                <input data-testid="editor-trailer-url" value={form.trailer_url || ""} onChange={(e) => set("trailer_url", e.target.value)} placeholder="https://…" className="w-full px-3 py-2 border outline-none" style={fs} />
+                <div className="flex items-center gap-3 mt-2">
+                  <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-trailer-upload">
+                    <IoCloudUploadOutline /> {trailerFile ? trailerFile.name : (form.has_trailer ? "Fichier présent — remplacer" : "…ou uploader la bande-annonce")}
+                    <input type="file" accept="video/*" hidden onChange={(e) => pickVideo("trailer", e.target.files?.[0])} />
+                  </label>
+                  {isEdit && form.has_trailer && <button onClick={removeTrailer} className="text-sm" style={{ color: "var(--brand)" }} data-testid="editor-trailer-remove"><IoTrashOutline /></button>}
+                </div>
+                {videoProg.trailer > 0 && videoProg.trailer < 100 && <p className="text-xs mt-1" style={{ color: "var(--brand)" }}>Envoi… {videoProg.trailer}%</p>}
+              </div>
+            </div>
           )}
 
           {form.launch_type === "chapters" && (

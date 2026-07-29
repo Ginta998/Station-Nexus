@@ -43,6 +43,16 @@ export const uploadReadingAudio = (id, file) => {
 export const deleteReadingAudio = (id) => api.delete(`/creations/${id}/reading-audio`).then((r) => r.data);
 export const readingAudioUrl = (id) => `${API}/creations/${id}/reading-audio`;
 
+// film / trailer video uploads (object storage). kind = "film" | "trailer"
+export const uploadVideo = (id, kind, file, onProgress) => {
+  const fd = new FormData(); fd.append("kind", kind); fd.append("file", file);
+  return api.post(`/creations/${id}/video`, fd, {
+    onUploadProgress: (e) => { if (onProgress && e.total) onProgress(Math.round((e.loaded / e.total) * 100)); },
+  }).then((r) => r.data);
+};
+export const deleteVideo = (id, kind) => api.delete(`/creations/${id}/video`, { params: { kind } }).then((r) => r.data);
+export const videoUrl = (id, kind, v) => `${API}/creations/${id}/video?kind=${kind}${v ? `&v=${encodeURIComponent(v)}` : ""}`;
+
 export const uploadChapterAudio = (cid, chid, file) => {
   const fd = new FormData(); fd.append("file", file);
   return api.post(`/creations/${cid}/chapters/${chid}/audio`, fd).then((r) => r.data);

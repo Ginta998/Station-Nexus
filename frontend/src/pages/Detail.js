@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline } from "react-icons/io5";
+import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
@@ -9,6 +9,7 @@ import EditorDialog from "@/components/EditorDialog";
 import CommentsSection from "@/components/CommentsSection";
 import ChapterReader from "@/components/ChapterReader";
 import CosmicBunnyGame from "@/components/CosmicBunnyGame";
+import CinemaPlayer from "@/components/CinemaPlayer";
 import ShareMenu from "@/components/ShareMenu";
 import { TextSizeButton } from "@/components/TextSizeButton";
 
@@ -24,6 +25,7 @@ export default function Detail() {
   const [readerOpen, setReaderOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [gameOpen, setGameOpen] = useState(false);
+  const [cinemaKind, setCinemaKind] = useState(null); // "film" | "trailer" | null
   const [readerStart, setReaderStart] = useState(null);
   const [showEpisodes, setShowEpisodes] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -96,11 +98,15 @@ export default function Detail() {
     else if (item.launch_type === "game") setGameOpen(true);
     else if (item.launch_type === "reader") setReaderOpen(true);
     else if (item.launch_type === "episodes") setShowEpisodes(true);
+    else if (item.launch_type === "film") { stopAmbient(); setCinemaKind("film"); }
     else if (item.launch_type === "link") {
       if (item.launch_url) window.open(item.launch_url, "_blank", "noopener");
       else toast.info("Le lien du film sera bientôt disponible.");
     } else toast.success(`« ${item.title} » lancé.`);
   };
+
+  const hasTrailer = !!((item.trailer_url && item.trailer_url.trim()) || item.has_trailer);
+  const openTrailer = () => { sfx("select"); stopAmbient(); setCinemaKind("trailer"); };
 
   const openChapter = (i) => { sfx("select"); setReaderStart(i); setChaptersOpen(true); };
 
@@ -192,7 +198,13 @@ export default function Detail() {
                 <button data-testid="detail-launch" onClick={launch}
                   className={`flex items-center gap-2 ${btnSizeCls} font-semibold transition-transform hover:scale-105`}
                   style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", boxShadow: "var(--shadow-1)" }}>
-                  {item.launch_type === "chapters" ? <IoBookOutline size={20} /> : <IoPlay size={20} />} {item.launch_type === "chapters" && canResume ? `Reprendre · ch. ${(savedProgress.chapter || 0) + 1}` : (item.launch_label || "Lancer")}
+                  {item.launch_type === "chapters" ? <IoBookOutline size={20} /> : item.launch_type === "film" ? <IoFilmOutline size={20} /> : <IoPlay size={20} />} {item.launch_type === "chapters" && canResume ? `Reprendre · ch. ${(savedProgress.chapter || 0) + 1}` : (item.launch_label || "Lancer")}
+                </button>
+              )}
+              {hasTrailer && (
+                <button data-testid="detail-trailer" onClick={openTrailer}
+                  className={`flex items-center gap-2 ${secondaryBtnCls} border font-medium transition-transform hover:scale-105`} style={btn}>
+                  <IoFilmOutline size={18} /> Bande-annonce
                 </button>
               )}
               {item.buy_url && (
@@ -368,6 +380,8 @@ export default function Detail() {
       )}
 
       {chaptersOpen && <ChapterReader item={item} startChapter={readerStart} onClose={() => setChaptersOpen(false)} onComment={goToComments} />}
+
+      {cinemaKind && <CinemaPlayer item={item} kind={cinemaKind} onClose={() => setCinemaKind(null)} />}
 
       {gameOpen && <CosmicBunnyGame item={item} onClose={() => setGameOpen(false)} />}
 

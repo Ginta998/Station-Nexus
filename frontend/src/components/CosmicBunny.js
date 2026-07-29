@@ -6,9 +6,9 @@ import { toast } from "sonner";
 import { getSettings } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 
-export const CB_PAGES = ["home", "detail", "reader", "settings", "members", "novelties", "contact", "tutorial", "bunny_story"];
+export const CB_PAGES = ["home", "detail", "reader", "cinema", "settings", "members", "novelties", "contact", "tutorial", "bunny_story"];
 export const CB_PAGE_LABELS = {
-  home: "Accueil", detail: "Fiche d'une création", reader: "Mode lecture", settings: "Paramètres",
+  home: "Accueil", detail: "Fiche d'une création", reader: "Mode lecture", cinema: "Mode cinéma (film)", settings: "Paramètres",
   members: "Membres", novelties: "Nouveautés", contact: "Contact", tutorial: "Tutoriel",
   bunny_story: "Fiche Cosmic Bunny (son aventure)",
 };
@@ -29,6 +29,11 @@ export const CB_DEFAULT_TIPS = {
     { text: "Mode lecture activé ! Le bouton Aa règle la taille et le confort du texte. 👓" },
     { text: "L'icône musique lance une ambiance. Immersion garantie, mouchoirs non fournis. 🥲" },
     { text: "Ta progression se sauvegarde toute seule. Reviens quand tu veux, je garde ta page au chaud !" },
+  ],
+  cinema: [
+    { text: "Bienvenue dans la salle de ciné ! 🎬 Installe-toi, j'ai gardé le meilleur fauteuil pour toi." },
+    { text: "Le bouton 💡 baisse les lumières pour une immersion totale, et l'icône ⛶ passe en plein écran. Popcorn conseillé ! 🍿" },
+    { text: "Le bouton 🔊 coupe ou remet le son, comme dans le menu. Et Échap (ou la croix) pour sortir de la salle." },
   ],
   settings: [
     { text: "Ici tu personnalises TOUT : thèmes, couleurs, sons… Éclate-toi ! 🎨" },
