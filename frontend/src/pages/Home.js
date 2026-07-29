@@ -149,6 +149,7 @@ export default function Home() {
 
   // Glissement fluide aux extrémités (PC) : la vitesse augmente à mesure qu'on approche du bord.
   const onEdgeMove = useCallback((e) => {
+    if (window.innerWidth < 768) { edgeDir.current = 0; return; } // PC uniquement — jamais sur mobile/tactile
     if (editorOpen || profileOpen) { edgeDir.current = 0; return; }
     const EDGE = 110, w = window.innerWidth;
     if (e.clientX <= EDGE) edgeDir.current = -(1 - e.clientX / EDGE);
@@ -159,7 +160,7 @@ export default function Home() {
     let raf;
     const step = () => {
       const rail = railRef.current;
-      if (rail && Math.abs(edgeDir.current) > 0.02) rail.scrollLeft += edgeDir.current * 16;
+      if (rail && window.innerWidth >= 768 && Math.abs(edgeDir.current) > 0.02) rail.scrollLeft += edgeDir.current * 16;
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
@@ -182,7 +183,7 @@ export default function Home() {
   const openFocused = () => { if (focused) { buzz(); sfx("select"); nav(`/oeuvre/${focused.id}`); } };
 
   const touchRef = useRef(null);
-  const onTouchStart = (e) => { const t = e.touches[0]; touchRef.current = { x: t.clientX, y: t.clientY, t: Date.now() }; };
+  const onTouchStart = (e) => { edgeDir.current = 0; const t = e.touches[0]; touchRef.current = { x: t.clientX, y: t.clientY, t: Date.now() }; };
   const onTouchEnd = (e) => {
     const s = touchRef.current; if (!s || editorOpen) return;
     const t = e.changedTouches[0]; const dx = t.clientX - s.x, dy = t.clientY - s.y;
