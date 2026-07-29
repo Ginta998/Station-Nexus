@@ -235,7 +235,8 @@ export default function Home() {
           )}
         </div>
 
-        <div ref={railRef} onScroll={onRailScroll} className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-proximity md:snap-none px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
+        <div ref={railRef} onScroll={onRailScroll} className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-proximity md:snap-none px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail"
+          style={{ maskImage: "linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%)" }}>
           {items.map((it, i) => (
             <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
               catLabel={catLabelByKey[it.category] || it.category}
