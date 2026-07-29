@@ -364,3 +364,7 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Navigation PC v2 (correction) — 29/07/2026
 - **Pad haut-droite retiré** (moche + disparaissait sur sections vides). Remplacé par deux flèches ← → (`nav-left`/`nav-right`, `home-nav-arrows`, `hidden md:flex`) placées juste à côté du bouton "Lancer" en bas.
 - **Edge-scroll refait "souple"** (Home.js) : abandon du scrollLeft brut (se battait avec snap-mandatory). Désormais `setInterval` 500ms qui appelle navRight/navLeft tant que la souris est à ≤60px du bord droit/gauche ; recentrage animé carte par carte ; s'arrête au centre. Vérifié (bord droit → avance, bord gauche → recule, centre → stop).
+
+## Navigation PC v3 (glissement fluide + pad) — 29/07/2026
+- **Glissement fluide (Home.js)** : abandon de l'avance carte-par-carte (jugée saccadée). Retour à un scroll continu de `railRef.scrollLeft` via rAF (16px * facteur), avec vitesse PROPORTIONNELLE à la proximité du bord (zone 110px, edgeDir ∈ [-1,1]). Snap désactivé sur PC via `md:snap-none` (gardé sur mobile pour le swipe). Vérifié : scrollLeft 0→976→1744, stop au centre, retour à gauche.
+- **Pad de flèches (Home.js)** : déplacé AU-DESSUS du bouton "Lancer" (colonne `flex-col`), taille FIXE (boutons carrés w-11 h-11) indépendante de la largeur du bouton. `hidden md:flex` (PC only).

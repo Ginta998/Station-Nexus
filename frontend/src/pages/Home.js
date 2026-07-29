@@ -88,20 +88,24 @@ export default function Home() {
     return () => window.removeEventListener("sx-open-profile", open);
   }, []);
 
-  // Défilement aux extrémités (PC) : quand la souris est tout au bord gauche/droit,
-  // on avance/recule d'une création à la fois, en douceur (recentrage animé).
+  // Glissement fluide aux extrémités (PC) : la vitesse augmente à mesure qu'on approche du bord.
   const onEdgeMove = useCallback((e) => {
     if (editorOpen || profileOpen) { edgeDir.current = 0; return; }
-    const EDGE = 60, w = window.innerWidth;
-    edgeDir.current = e.clientX <= EDGE ? -1 : e.clientX >= w - EDGE ? 1 : 0;
+    const EDGE = 110, w = window.innerWidth;
+    if (e.clientX <= EDGE) edgeDir.current = -(1 - e.clientX / EDGE);
+    else if (e.clientX >= w - EDGE) edgeDir.current = (e.clientX - (w - EDGE)) / EDGE;
+    else edgeDir.current = 0;
   }, [editorOpen, profileOpen]);
   useEffect(() => {
-    const id = setInterval(() => {
-      if (edgeDir.current === 1) navRight();
-      else if (edgeDir.current === -1) navLeft();
-    }, 500);
-    return () => clearInterval(id);
-  }, [navRight, navLeft]);
+    let raf;
+    const step = () => {
+      const rail = railRef.current;
+      if (rail && Math.abs(edgeDir.current) > 0.02) rail.scrollLeft += edgeDir.current * 16;
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const bgImg = focused ? (focused.has_bg ? bgUrl(focused.id, focused.updated_at) : (focused.has_poster ? posterUrl(focused.id, focused.updated_at) : null)) : null;
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
@@ -203,7 +207,7 @@ export default function Home() {
           )}
         </div>
 
-        <div ref={railRef} className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-mandatory px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
+        <div ref={railRef} className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-mandatory md:snap-none px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
           {items.map((it, i) => (
             <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
               catLabel={catLabelByKey[it.category] || it.category}
@@ -216,26 +220,28 @@ export default function Home() {
         </div>
 
         <div className="flex items-center justify-between px-5 md:px-12 pb-6 md:pb-6 pt-2 md:-mt-4">
-          <div className="flex items-center gap-3">
-            {focused && (
-              <button data-testid="launch-cta" onClick={() => open(focused.id)}
-                className="flex items-center gap-2 px-6 py-3 font-semibold transition-transform hover:scale-105"
-                style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", boxShadow: "var(--shadow-1)" }}>
-                <IoPlay size={18} /> {focused.launch_label || "Lancer"} <IoChevronForward size={16} />
-              </button>
-            )}
+          <div className="flex flex-col items-start gap-2.5">
             {focused && (
               <div className="hidden md:flex items-center gap-2" data-testid="home-nav-arrows">
-                <button data-testid="nav-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="p-3 border transition-transform hover:scale-105 active:scale-95" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" }}><IoChevronBack size={18} /></button>
-                <button data-testid="nav-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="p-3 border transition-transform hover:scale-105 active:scale-95" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" }}><IoChevronForward size={18} /></button>
+                <button data-testid="nav-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="w-11 h-11 flex items-center justify-center border transition-transform hover:scale-110 active:scale-95" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.3)" }}><IoChevronBack size={20} /></button>
+                <button data-testid="nav-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="w-11 h-11 flex items-center justify-center border transition-transform hover:scale-110 active:scale-95" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.3)" }}><IoChevronForward size={20} /></button>
               </div>
             )}
-            {isAdmin && focused && (
-              <>
-                <button data-testid="home-edit" onClick={openEdit} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" }}><IoCreateOutline size={18} /></button>
-                <button data-testid="home-delete" onClick={doDelete} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--brand)", background: "rgba(0,0,0,0.25)" }}><IoTrashOutline size={18} /></button>
-              </>
-            )}
+            <div className="flex items-center gap-3">
+              {focused && (
+                <button data-testid="launch-cta" onClick={() => open(focused.id)}
+                  className="flex items-center gap-2 px-6 py-3 font-semibold transition-transform hover:scale-105"
+                  style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", boxShadow: "var(--shadow-1)" }}>
+                  <IoPlay size={18} /> {focused.launch_label || "Lancer"} <IoChevronForward size={16} />
+                </button>
+              )}
+              {isAdmin && focused && (
+                <>
+                  <button data-testid="home-edit" onClick={openEdit} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" }}><IoCreateOutline size={18} /></button>
+                  <button data-testid="home-delete" onClick={doDelete} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--brand)", background: "rgba(0,0,0,0.25)" }}><IoTrashOutline size={18} /></button>
+                </>
+              )}
+            </div>
           </div>
           <p className="hidden md:block text-xs" style={{ color: "var(--on-media-2)", textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>← → naviguer · ↑ ↓ catégories · Entrée : ouvrir</p>
 
