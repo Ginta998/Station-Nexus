@@ -284,7 +284,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-5 md:px-12 pb-6 md:pb-6 pt-2 md:-mt-4">
+        <div className="sx-bottom-bar flex items-center justify-between px-5 md:px-12 pb-6 md:pb-6 pt-2 md:-mt-4">
           <div className="flex flex-col items-start gap-2.5">
             {focused && (
               <div className="hidden md:flex items-center gap-2" data-testid="home-nav-arrows">

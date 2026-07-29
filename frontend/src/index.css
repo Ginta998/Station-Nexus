@@ -392,3 +392,16 @@ body {
     mask-image: linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
   }
 }
+
+
+/* Prise en compte du notch / encoche (safe-area) sur mobile */
+@media (max-width: 767px) {
+  .sx-header { padding-top: calc(1.5rem + env(safe-area-inset-top, 0px)); }
+  .sx-bottom-bar { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* Plein écran : les barres du navigateur disparaissent -> on recentre le contenu (haut plus bas, bas plus haut) */
+:fullscreen .sx-header { padding-top: calc(2.75rem + env(safe-area-inset-top, 0px)); }
+:fullscreen .sx-bottom-bar { padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); }
+:-webkit-full-screen .sx-header { padding-top: calc(2.75rem + env(safe-area-inset-top, 0px)); }
+:-webkit-full-screen .sx-bottom-bar { padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); }

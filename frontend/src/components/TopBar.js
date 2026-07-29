@@ -61,12 +61,12 @@ export default function TopBar({ onAdd, onProfile }) {
   );
 
   return (
-    <header className="relative z-20 flex items-center justify-between px-5 md:px-12 pt-6 md:pt-8">
-      <button data-testid="logo-home" onClick={() => go("/")} className="flex items-baseline gap-2 outline-none">
-        <span className="font-display text-2xl md:text-3xl" style={{ color: "var(--on-media)", textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
+    <header className="sx-header relative z-20 flex items-center justify-between px-5 md:px-12 pt-6 md:pt-8">
+      <button data-testid="logo-home" onClick={() => go("/")} className="flex items-baseline gap-1.5 outline-none">
+        <span className="font-display text-lg md:text-3xl" style={{ color: "var(--on-media)", textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
           STATION<span style={{ color: "var(--brand)" }}>EXUS</span>
         </span>
-        <span className="font-display text-lg" style={{ color: "var(--brand)", opacity: 0.7 }}>天</span>
+        <span className="font-display text-sm md:text-lg" style={{ color: "var(--brand)", opacity: 0.7 }}>天</span>
       </button>
 
       <div className="flex items-center gap-2 md:gap-3">
@@ -134,12 +134,11 @@ export default function TopBar({ onAdd, onProfile }) {
           </button>
         </div>
 
-        {/* Mobile: menu button (label + theme color) */}
-        <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }}
-          className="relative md:hidden flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
-          style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-          <IoMenu size={18} /> Menu
-          {unread > 0 && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{unread > 9 ? "9+" : unread}</span>}
+        {/* Mobile: menu button — icône seule, couleur de la station */}
+        <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }} title="Menu" aria-label="Menu"
+          className="relative md:hidden p-2.5 border transition-colors" style={{ ...btn, color: "var(--brand)" }}>
+          <IoMenu size={20} />
+          {unread > 0 && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>{unread > 9 ? "9+" : unread}</span>}
         </button>
       </div>
 
