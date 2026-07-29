@@ -398,3 +398,11 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
   - `centeredIndex` : clamp aux extrêmes — `scrollLeft<=2 => 0` (1ʳᵉ fiche), `>=max-2 => dernière`. Rend la 1ʳᵉ/​dernière fiche atteignables et surlignées.
   - `behavior:'smooth'` de scrollIntoView était silencieusement annulé sur ce conteneur -> abandonné au profit de l'animation manuelle.
 - Vérifié (viewport 390) : start=UNITED SANCTUM FORCE(0) -> ►=BORN X BURN(41) -> ◄=UNITED SANCTUM FORCE(0). Défilement continu 0→191→341→491 et retour 491→...→0.
+
+## Fix repaints/saccades mobile + chevauchement (Plan A) — 29/07/2026
+- **Cause racine** : `mask-image` posé DIRECTEMENT sur le conteneur qui défile (`poster-rail`, `overflow-x-auto`) -> le navigateur recompose toute la zone masquée à chaque frame de scroll = saccades massives sur mobile.
+- **Corrections** :
+  - Home.js : le rail est désormais enveloppé dans un wrapper STATIQUE `.sx-rail-mask` (ne défile pas) qui porte le mask-image ; le rail interne défile sans mask (`willChange: scroll-position`, `-webkit-overflow-scrolling: touch`, `overflow-y-hidden`).
+  - index.css : `.sx-poster { contain: paint }` (isole les repaints par carte) ; sur mobile `<=767px` `.sx-poster.is-focused { transform: none }` (supprime tout transform -> plus de chevauchement horizontal des cartes).
+  - Fond flou : `bgFade` réduit 1s->0.6s, `transform: scale(1.1) translateZ(0)` (promotion couche GPU, moins de repaint).
+- Vérifié captures : mobile 390px scroll 0→641 fluide, cartes séparées, focus centré (Cosmic Bunny) ; desktop 1920 intact (masque + focus scale OK).

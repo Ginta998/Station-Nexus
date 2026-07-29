@@ -373,8 +373,15 @@ body {
 @keyframes cinemaFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* Poster focus emphasis — scale only on desktop to avoid overlap on mobile */
-.sx-poster { transform: scale(1); }
+.sx-poster { transform: scale(1); contain: paint; }
 .sx-poster.is-focused { transform: scale(1.06) translateY(-6px); }
 @media (max-width: 767px) {
-  .sx-poster.is-focused { transform: translateY(-4px); }
+  /* Aucun transform sur mobile : évite le chevauchement des cartes pendant le défilement */
+  .sx-poster.is-focused { transform: none; }
+}
+
+/* Masque de bord porté par le wrapper (statique) — pas de repaint pendant le scroll */
+.sx-rail-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
 }

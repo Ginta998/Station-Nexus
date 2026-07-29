@@ -195,8 +195,8 @@ export default function Home() {
     <div className="relative h-screen w-screen overflow-hidden" style={{ background: "var(--bg-primary)" }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onMouseMove={onEdgeMove} onMouseLeave={() => { edgeDir.current = 0; }}>
       <div className="absolute inset-0 z-0" aria-hidden="true">
         {bgImg ? (
-          <div key={focused.id} className="absolute inset-0 bg-cover bg-center scale-110"
-            style={{ backgroundImage: `url(${bgImg})`, filter: `blur(${focused.bg_blur ?? 28}px)`, animation: "bgFade 1s ease" }} />
+          <div key={focused.id} className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${bgImg})`, filter: `blur(${focused.bg_blur ?? 28}px)`, animation: "bgFade 0.6s ease", transform: "scale(1.1) translateZ(0)" }} />
         ) : (
           <div className="absolute inset-0" style={{ background: focused?.kanji ? "radial-gradient(circle at 50% 30%, var(--bg-secondary), var(--bg-primary) 70%)" : "var(--bg-primary)" }} />
         )}
@@ -268,17 +268,20 @@ export default function Home() {
           )}
         </div>
 
-        <div ref={railRef} onScroll={onRailScroll} className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-proximity md:snap-none px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail"
-          style={{ maskImage: "linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%)" }}>
-          {items.map((it, i) => (
-            <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
-              catLabel={catLabelByKey[it.category] || it.category}
-              isFav={isFavorite(it.id)} onToggleFav={() => { toggleFavorite(it.id); sfx("select"); }}
-              onFocus={() => { if (i !== focusIndex) { sfx("hover"); focusSrc.current = "hover"; setFocusIndex(i); } }}
-              onClick={() => open(it.id)} onResume={() => resume(it.id)}
-              onTrailer={() => { sfx("select"); nav(`/oeuvre/${it.id}`, { state: { trailer: true } }); }} />
-          ))}
-          {items.length > 0 && <div className="flex-shrink-0 w-[42vw] md:w-[38vw]" aria-hidden="true" />}
+        {/* Le masque de bord est porté par CE wrapper fixe (il ne défile pas) — évite les repaints continus sur mobile */}
+        <div className="flex-1 min-h-0 flex items-center sx-rail-mask">
+          <div ref={railRef} onScroll={onRailScroll} className="w-full h-full flex items-center overflow-x-auto overflow-y-hidden hide-scrollbar snap-x snap-proximity md:snap-none px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail"
+            style={{ willChange: "scroll-position", WebkitOverflowScrolling: "touch" }}>
+            {items.map((it, i) => (
+              <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
+                catLabel={catLabelByKey[it.category] || it.category}
+                isFav={isFavorite(it.id)} onToggleFav={() => { toggleFavorite(it.id); sfx("select"); }}
+                onFocus={() => { if (i !== focusIndex) { sfx("hover"); focusSrc.current = "hover"; setFocusIndex(i); } }}
+                onClick={() => open(it.id)} onResume={() => resume(it.id)}
+                onTrailer={() => { sfx("select"); nav(`/oeuvre/${it.id}`, { state: { trailer: true } }); }} />
+            ))}
+            {items.length > 0 && <div className="flex-shrink-0 w-[42vw] md:w-[38vw]" aria-hidden="true" />}
+          </div>
         </div>
 
         <div className="flex items-center justify-between px-5 md:px-12 pb-6 md:pb-6 pt-2 md:-mt-4">
