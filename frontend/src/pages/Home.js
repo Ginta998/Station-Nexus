@@ -70,37 +70,46 @@ export default function Home() {
   const catDown = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.min(c + 1, tabs.length - 1)); }, [tabs.length, sfx]);
   const catUp = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.max(c - 1, 0)); }, [sfx]);
 
-  // Mobile : synchronise la carte "focus" avec le défilement du doigt (surligne celle au centre)
-  const scrollRaf = useRef(0);
+  // Focus (surlignage + fond) mis à jour SEULEMENT quand le défilement s'arrête -> fluide
+  const scrollSettle = useRef(0);
   const autoScrolling = useRef(false);
+  const centeredIndex = () => {
+    const rail = railRef.current; if (!rail) return 0;
+    const n = Math.max(1, rail.children.length - 1);
+    const max = rail.scrollWidth - rail.clientWidth;
+    if (rail.scrollLeft <= 2) return 0;              // tout à gauche -> 1ʳᵉ fiche
+    if (rail.scrollLeft >= max - 2) return n - 1;    // tout à droite -> dernière fiche
+    const rc = rail.getBoundingClientRect();
+    const railCenter = rc.left + rc.width / 2;
+    let best = 0, bd = Infinity;
+    for (let i = 0; i < n; i++) {
+      const r = rail.children[i].getBoundingClientRect();
+      const c = r.left + r.width / 2;
+      const d = Math.abs(c - railCenter);
+      if (d < bd) { bd = d; best = i; }
+    }
+    return best;
+  };
   const onRailScroll = useCallback(() => {
     if (window.innerWidth >= 768) return;
-    if (autoScrolling.current) return;   // ne pas interférer pendant une animation programmée
-    if (scrollRaf.current) return;
-    scrollRaf.current = requestAnimationFrame(() => {
-      scrollRaf.current = 0;
-      const rail = railRef.current; if (!rail) return;
-      const center = rail.scrollLeft + rail.clientWidth / 2;
-      let best = -1, bestDist = Infinity;
-      for (let i = 0; i < cardRefs.current.length; i++) {
-        const el = cardRefs.current[i]; if (!el) continue;
-        const c = el.offsetLeft + el.offsetWidth / 2;
-        const d = Math.abs(c - center);
-        if (d < bestDist) { bestDist = d; best = i; }
-      }
-      setFocusIndex((prev) => { if (best >= 0 && best !== prev) { focusSrc.current = "scroll"; return best; } return prev; });
-    });
+    if (autoScrolling.current) return;
+    clearTimeout(scrollSettle.current);
+    scrollSettle.current = setTimeout(() => {
+      const best = centeredIndex();
+      setFocusIndex((prev) => { if (best !== prev) { focusSrc.current = "scroll"; return best; } return prev; });
+    }, 110);
   }, []);
-
-  // Mobile : le D-pad gauche/droite fait glisser le rail d'une carte (animation manuelle
-  // pour éviter que le "behavior:smooth" natif soit interrompu par les re-renders).
+  // D-pad : animation manuelle vers la carte voisine (fluide, aucun re-render pendant le mouvement)
   const scrollRailBy = useCallback((dir) => {
     const rail = railRef.current; if (!rail) return;
-    const card = cardRefs.current.find(Boolean);
-    const step = card ? card.offsetWidth + 16 : rail.clientWidth * 0.7;
+    const n = Math.max(1, rail.children.length - 1);
+    const next = Math.max(0, Math.min(n - 1, centeredIndex() + dir));
+    const child = rail.children[next]; if (!child) return;
+    const rr = rail.getBoundingClientRect(), cr = child.getBoundingClientRect();
+    const delta = (cr.left + cr.width / 2) - (rr.left + rr.width / 2);
     const max = rail.scrollWidth - rail.clientWidth;
     const from = rail.scrollLeft;
-    const to = Math.max(0, Math.min(max, from + dir * step));
+    const to = Math.max(0, Math.min(max, from + delta));
     if (Math.abs(to - from) < 1) return;
     autoScrolling.current = true;
     const dur = 300; let t0 = null;
@@ -110,10 +119,14 @@ export default function Home() {
       const e = 1 - Math.pow(1 - p, 3);
       rail.scrollLeft = from + (to - from) * e;
       if (p < 1) requestAnimationFrame(anim);
-      else { autoScrolling.current = false; onRailScroll(); }
+      else {
+        autoScrolling.current = false;
+        const best = centeredIndex();
+        setFocusIndex((prev) => { if (best !== prev) { focusSrc.current = "scroll"; return best; } return prev; });
+      }
     };
     requestAnimationFrame(anim);
-  }, [onRailScroll]);
+  }, []);
 
   const onKey = useCallback((e) => {
     if (editorOpen) return;

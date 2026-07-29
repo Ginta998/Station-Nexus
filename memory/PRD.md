@@ -388,3 +388,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
   - `Home.js` : `{layout === "card" ? (<>rail+pad+bottom</>) : <CreationsGridList/>}`. Sélecteur dans Settings (`layout-card/grid/list`, conteneur `layout-selector`).
   - Vérifié : grid 14 cartes, list 14 lignes, sélecteur Paramètres OK, persistance sx_layout.
 - Note : Blue Flower est configuré par l'utilisateur (launch_type=film + bande-annonce YouTube) — données réelles, conservées.
+
+## Fluidité navigation mobile (fix saccades + retour 1ʳᵉ fiche) — 29/07/2026
+- **Cause des saccades** : la synchro du focus à CHAQUE frame de scroll changeait `focused` -> rechargement du grand fond flou animé (`bgFade 1s`) en boucle pendant le glissement.
+- **Cause "retour 1ʳᵉ fiche impossible"** : la 1ʳᵉ carte, collée à gauche, ne pouvait jamais atteindre le centre du viewport -> jamais sélectionnée.
+- **Corrections (Home.js)** :
+  - `onRailScroll` DEBOUNCÉ (110ms) : le focus/fond n'est mis à jour QU'À l'arrêt du défilement -> zéro re-render pendant le glissement -> fluide (doigt + D-pad).
+  - `scrollRailBy` : animation manuelle rAF (easeOutCubic 300ms) vers la position exacte de la carte voisine (delta via `getBoundingClientRect`, robuste, indépendant de l'offsetParent), avec garde `autoScrolling` qui neutralise onRailScroll pendant l'anim.
+  - `centeredIndex` : clamp aux extrêmes — `scrollLeft<=2 => 0` (1ʳᵉ fiche), `>=max-2 => dernière`. Rend la 1ʳᵉ/​dernière fiche atteignables et surlignées.
+  - `behavior:'smooth'` de scrollIntoView était silencieusement annulé sur ce conteneur -> abandonné au profit de l'animation manuelle.
+- Vérifié (viewport 390) : start=UNITED SANCTUM FORCE(0) -> ►=BORN X BURN(41) -> ◄=UNITED SANCTUM FORCE(0). Défilement continu 0→191→341→491 et retour 491→...→0.
