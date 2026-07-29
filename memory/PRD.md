@@ -360,3 +360,7 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - `Home.js` : `onTrailer={() => nav('/oeuvre/'+id, { state:{ trailer:true } })}`.
 - `Detail.js` : effet qui scroll vers `detail-trailer-section` si `location.state.trailer`.
 - Vérifié par capture (badge rouge sur carte focalisée).
+
+## Navigation PC v2 (correction) — 29/07/2026
+- **Pad haut-droite retiré** (moche + disparaissait sur sections vides). Remplacé par deux flèches ← → (`nav-left`/`nav-right`, `home-nav-arrows`, `hidden md:flex`) placées juste à côté du bouton "Lancer" en bas.
+- **Edge-scroll refait "souple"** (Home.js) : abandon du scrollLeft brut (se battait avec snap-mandatory). Désormais `setInterval` 500ms qui appelle navRight/navLeft tant que la souris est à ≤60px du bord droit/gauche ; recentrage animé carte par carte ; s'arrête au centre. Vérifié (bord droit → avance, bord gauche → recule, centre → stop).

@@ -88,23 +88,20 @@ export default function Home() {
     return () => window.removeEventListener("sx-open-profile", open);
   }, []);
 
-  // Défilement aux extrémités (PC) : glisse le rail uniquement quand la souris est tout au bord gauche/droit
+  // Défilement aux extrémités (PC) : quand la souris est tout au bord gauche/droit,
+  // on avance/recule d'une création à la fois, en douceur (recentrage animé).
   const onEdgeMove = useCallback((e) => {
     if (editorOpen || profileOpen) { edgeDir.current = 0; return; }
-    const EDGE = 40, w = window.innerWidth;
-    if (e.clientX <= EDGE) edgeDir.current = -1;
-    else if (e.clientX >= w - EDGE) edgeDir.current = 1;
-    else edgeDir.current = 0;
+    const EDGE = 60, w = window.innerWidth;
+    edgeDir.current = e.clientX <= EDGE ? -1 : e.clientX >= w - EDGE ? 1 : 0;
   }, [editorOpen, profileOpen]);
   useEffect(() => {
-    let raf;
-    const step = () => {
-      if (edgeDir.current !== 0 && railRef.current) railRef.current.scrollLeft += edgeDir.current * 16;
-      raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+    const id = setInterval(() => {
+      if (edgeDir.current === 1) navRight();
+      else if (edgeDir.current === -1) navLeft();
+    }, 500);
+    return () => clearInterval(id);
+  }, [navRight, navLeft]);
 
   const bgImg = focused ? (focused.has_bg ? bgUrl(focused.id, focused.updated_at) : (focused.has_poster ? posterUrl(focused.id, focused.updated_at) : null)) : null;
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
@@ -190,33 +187,19 @@ export default function Home() {
           )}
         </div>
 
-        <div className="px-5 md:px-12 mt-4 md:mt-6 min-h-[100px] flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            {focused ? (
-              <div key={focused.id} className="fade-up max-w-2xl">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="focused-category">
-                    {catLabelByKey[focused.category] || focused.category}
-                  </span>
-                </div>
-                <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
-                <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
+        <div className="px-5 md:px-12 mt-4 md:mt-6 min-h-[100px]">
+          {focused ? (
+            <div key={focused.id} className="fade-up max-w-2xl">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="focused-category">
+                  {catLabelByKey[focused.category] || focused.category}
+                </span>
               </div>
-            ) : (
-              <p style={{ color: "var(--text-secondary)" }}>{isLoading ? "Chargement…" : "Aucune création."}</p>
-            )}
-          </div>
-
-          {/* PC : pad de flèches cliquable, en haut à droite juste au-dessus de l'affiche */}
-          {focused && (
-            <div className="hidden md:flex flex-col items-center gap-1.5 flex-shrink-0" data-testid="desktop-dpad">
-              <button data-testid="pad-up" onClick={() => { buzz(); catUp(); }} aria-label="Catégorie précédente" className="dpad-btn" style={dpadStyle}><IoChevronUp size="1.2em" /></button>
-              <div className="flex items-center gap-1.5">
-                <button data-testid="pad-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="dpad-btn" style={dpadStyle}><IoChevronBack size="1.2em" /></button>
-                <button data-testid="pad-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="dpad-btn" style={dpadStyle}><IoChevronForward size="1.2em" /></button>
-              </div>
-              <button data-testid="pad-down" onClick={() => { buzz(); catDown(); }} aria-label="Catégorie suivante" className="dpad-btn" style={dpadStyle}><IoChevronDown size="1.2em" /></button>
+              <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
+              <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
             </div>
+          ) : (
+            <p style={{ color: "var(--text-secondary)" }}>{isLoading ? "Chargement…" : "Aucune création."}</p>
           )}
         </div>
 
@@ -240,6 +223,12 @@ export default function Home() {
                 style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", boxShadow: "var(--shadow-1)" }}>
                 <IoPlay size={18} /> {focused.launch_label || "Lancer"} <IoChevronForward size={16} />
               </button>
+            )}
+            {focused && (
+              <div className="hidden md:flex items-center gap-2" data-testid="home-nav-arrows">
+                <button data-testid="nav-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="p-3 border transition-transform hover:scale-105 active:scale-95" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" }}><IoChevronBack size={18} /></button>
+                <button data-testid="nav-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="p-3 border transition-transform hover:scale-105 active:scale-95" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" }}><IoChevronForward size={18} /></button>
+              </div>
             )}
             {isAdmin && focused && (
               <>
