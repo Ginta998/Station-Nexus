@@ -58,8 +58,8 @@ export default function Home() {
 
   useEffect(() => { focusSrc.current = "kbd"; setFocusIndex(0); }, [catIndex, query, sort]);
   useEffect(() => {
-    // Ne recentre le rail QUE sur navigation clavier / D-pad — pas au survol souris (évite le "glissement" sur PC)
-    if (focusSrc.current === "hover") { focusSrc.current = "kbd"; return; }
+    // Ne recentre le rail QUE sur navigation clavier / D-pad — pas au survol souris ni au scroll natif
+    if (focusSrc.current === "hover" || focusSrc.current === "scroll") { focusSrc.current = "kbd"; return; }
     const el = cardRefs.current[focusIndex];
     if (el) el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   }, [focusIndex, catIndex, items.length]);
@@ -68,6 +68,34 @@ export default function Home() {
   const navLeft = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setFocusIndex((i) => Math.max(i - 1, 0)); }, [sfx]);
   const catDown = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.min(c + 1, tabs.length - 1)); }, [tabs.length, sfx]);
   const catUp = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.max(c - 1, 0)); }, [sfx]);
+
+  // Mobile : le D-pad gauche/droite fait glisser le rail d'une carte (scroll natif fiable)
+  const scrollRailBy = useCallback((dir) => {
+    const rail = railRef.current; if (!rail) return;
+    const card = cardRefs.current.find(Boolean);
+    const step = card ? card.offsetWidth + 16 : rail.clientWidth * 0.7;
+    rail.scrollBy({ left: dir * step, behavior: "smooth" });
+  }, []);
+
+  // Mobile : synchronise la carte "focus" avec le défilement du doigt (surligne celle au centre)
+  const scrollRaf = useRef(0);
+  const onRailScroll = useCallback(() => {
+    if (window.innerWidth >= 768) return;
+    if (scrollRaf.current) return;
+    scrollRaf.current = requestAnimationFrame(() => {
+      scrollRaf.current = 0;
+      const rail = railRef.current; if (!rail) return;
+      const center = rail.scrollLeft + rail.clientWidth / 2;
+      let best = -1, bestDist = Infinity;
+      for (let i = 0; i < cardRefs.current.length; i++) {
+        const el = cardRefs.current[i]; if (!el) continue;
+        const c = el.offsetLeft + el.offsetWidth / 2;
+        const d = Math.abs(c - center);
+        if (d < bestDist) { bestDist = d; best = i; }
+      }
+      setFocusIndex((prev) => { if (best >= 0 && best !== prev) { focusSrc.current = "scroll"; return best; } return prev; });
+    });
+  }, []);
 
   const onKey = useCallback((e) => {
     if (editorOpen) return;
@@ -207,7 +235,7 @@ export default function Home() {
           )}
         </div>
 
-        <div ref={railRef} className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-mandatory md:snap-none px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
+        <div ref={railRef} onScroll={onRailScroll} className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-proximity md:snap-none px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
           {items.map((it, i) => (
             <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
               catLabel={catLabelByKey[it.category] || it.category}
@@ -249,9 +277,9 @@ export default function Home() {
           <div className="md:hidden flex flex-col items-center gap-1.5" data-testid="mobile-dpad">
             <button data-testid="dpad-up" onClick={() => { buzz(); catUp(); }} aria-label="Catégorie précédente" className="dpad-btn" style={dpadStyle}><IoChevronUp size="1.3em" /></button>
             <div className="flex items-center gap-3">
-              <button data-testid="dpad-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="dpad-btn" style={dpadStyle}><IoChevronBack size="1.3em" /></button>
+              <button data-testid="dpad-left" onClick={() => { buzz(); scrollRailBy(-1); }} aria-label="Création précédente" className="dpad-btn" style={dpadStyle}><IoChevronBack size="1.3em" /></button>
               <button data-testid="dpad-ok" onClick={openFocused} aria-label="Ouvrir la création" className="dpad-btn" style={dpadOkStyle}>OK</button>
-              <button data-testid="dpad-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="dpad-btn" style={dpadStyle}><IoChevronForward size="1.3em" /></button>
+              <button data-testid="dpad-right" onClick={() => { buzz(); scrollRailBy(1); }} aria-label="Création suivante" className="dpad-btn" style={dpadStyle}><IoChevronForward size="1.3em" /></button>
             </div>
             <button data-testid="dpad-down" onClick={() => { buzz(); catDown(); }} aria-label="Catégorie suivante" className="dpad-btn" style={dpadStyle}><IoChevronDown size="1.3em" /></button>
           </div>

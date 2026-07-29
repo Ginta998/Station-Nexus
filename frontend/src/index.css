@@ -371,3 +371,10 @@ body {
 @keyframes cinemaCurtainR { from { transform: translateX(0); } to { transform: translateX(102%); } }
 @keyframes cinemaScreenIn { 0% { opacity: 0; transform: scale(0.9); } 55% { opacity: 0; } 100% { opacity: 1; transform: scale(1); } }
 @keyframes cinemaFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Poster focus emphasis — scale only on desktop to avoid overlap on mobile */
+.sx-poster { transform: scale(1); }
+.sx-poster.is-focused { transform: scale(1.06) translateY(-6px); }
+@media (max-width: 767px) {
+  .sx-poster.is-focused { transform: translateY(-4px); }
+}

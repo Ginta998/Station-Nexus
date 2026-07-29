@@ -368,3 +368,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 ## Navigation PC v3 (glissement fluide + pad) — 29/07/2026
 - **Glissement fluide (Home.js)** : abandon de l'avance carte-par-carte (jugée saccadée). Retour à un scroll continu de `railRef.scrollLeft` via rAF (16px * facteur), avec vitesse PROPORTIONNELLE à la proximité du bord (zone 110px, edgeDir ∈ [-1,1]). Snap désactivé sur PC via `md:snap-none` (gardé sur mobile pour le swipe). Vérifié : scrollLeft 0→976→1744, stop au centre, retour à gauche.
 - **Pad de flèches (Home.js)** : déplacé AU-DESSUS du bouton "Lancer" (colonne `flex-col`), taille FIXE (boutons carrés w-11 h-11) indépendante de la largeur du bouton. `hidden md:flex` (PC only).
+
+## Correction navigation MOBILE — 29/07/2026
+- **Bugs signalés** : D-pad ne faisait pas défiler les cartes ; swipe doigt buggé (cartes qui tremblent/se chevauchent).
+- **Cause** : `snap-mandatory` + transform `scale(1.06)` des cartes se battaient avec le scroll natif tactile.
+- **Corrections (Home.js + PosterCard.js + index.css)** :
+  - Rail : `snap-x snap-proximity md:snap-none` (proximity au lieu de mandatory sur mobile → plus de tremblement).
+  - D-pad mobile gauche/droite : `scrollRailBy(dir)` = `rail.scrollBy({left: ±(cardWidth+16), behavior:'smooth'})` (défilement natif fiable) au lieu de navLeft/navRight.
+  - `onRailScroll` (rAF-throttlé, actif seulement si `innerWidth<768`) : surligne la carte la plus centrée pendant le scroll du doigt (setFocusIndex, focusSrc="scroll"). Effet de recentrage ignore désormais focusSrc "hover" ET "scroll".
+  - PosterCard : `transform` retiré du style inline → géré en CSS via `.sx-poster.is-focused` : `scale(1.06) translateY(-6px)` sur desktop, `translateY(-4px)` seul sous 767px (plus de débordement horizontal).
+- Vérifié viewport 390px : dpad scroll+focus synchro (UNITED SANCTUM FORCE→TENGOKU DOJO), 1 seule carte surlignée. Desktop inchangé (synchro scroll désactivée ≥768px).
