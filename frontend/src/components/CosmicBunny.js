@@ -18,6 +18,7 @@ export const CB_DEFAULT_TIPS = {
     { text: "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", button_label: "Personnaliser la station ⚙️", button_target: "/parametres" },
     { text: "Le bouton Aa en haut agrandit le texte. Fini de loucher comme un ninja myope !" },
     { text: "L'icône son 🔊 coupe ou remet la musique. Pratique quand mamie t'appelle. 😅" },
+    { text: "L'icône plein écran ⛶ (à côté du son) agrandit l'appli sur tout l'écran pour une immersion totale, comme au cinéma ! Reclique dessus pour en sortir." },
     { text: "Clique sur une affiche pour ouvrir une création. Promis, ça mord pas (moi non plus)." },
   ],
   detail: [

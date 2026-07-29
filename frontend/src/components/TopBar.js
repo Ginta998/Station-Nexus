@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
@@ -12,6 +12,19 @@ export default function TopBar({ onAdd, onProfile }) {
   const { isAdmin, muted, toggleMute, sfx, profile, seenAnnouncements } = useApp();
   const { user, openAuth, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isFs, setIsFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
+  useEffect(() => {
+    const h = () => setIsFs(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", h);
+    return () => document.removeEventListener("fullscreenchange", h);
+  }, []);
+  const toggleFs = () => {
+    sfx("nav");
+    try {
+      if (document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+      else { const el = document.documentElement; (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el); }
+    } catch (_) {}
+  };
   const { data: announcements = [] } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
   const unread = announcements.filter((a) => !seenAnnouncements.includes(a.id)).length;
   const go = (p) => { sfx("select"); setMenuOpen(false); nav(p); };
@@ -27,6 +40,13 @@ export default function TopBar({ onAdd, onProfile }) {
     <button data-testid="mute-toggle" onClick={() => { toggleMute(); sfx("nav"); }} title="Couper le son"
       className="p-2.5 border transition-colors" style={{ ...btn, ...style, color: muted ? "var(--on-media-2)" : "var(--brand)" }}>
       {muted ? <IoVolumeMute size={18} /> : <IoVolumeHigh size={18} />}
+    </button>
+  );
+
+  const FsBtn = ({ style }) => (
+    <button data-testid="fullscreen-toggle" onClick={toggleFs} title={isFs ? "Quitter le plein écran" : "Plein écran"}
+      className="p-2.5 border transition-colors" style={{ ...btn, ...style, color: isFs ? "var(--brand)" : "var(--on-media)" }}>
+      {isFs ? <IoContract size={18} /> : <IoExpand size={18} />}
     </button>
   );
 
@@ -50,8 +70,9 @@ export default function TopBar({ onAdd, onProfile }) {
       </button>
 
       <div className="flex items-center gap-2 md:gap-3">
-        {/* Always visible: mute + text size */}
+        {/* Always visible: mute + fullscreen + text size */}
         <MuteBtn />
+        <FsBtn />
         <TextSizeButton btnStyle={btn} />
 
         {/* Desktop: full button set */}
@@ -171,8 +192,9 @@ export default function TopBar({ onAdd, onProfile }) {
             {/* Quick controls also inside the menu */}
             <div className="flex items-center gap-3 p-4 border-t" style={{ borderColor: "var(--border-c)" }}>
               <MuteBtn />
+              <FsBtn />
               <TextSizeButton btnStyle={btn} dropUp />
-              <span className="text-xs" style={{ color: "var(--text-secondary)" }}>Son &amp; taille du texte</span>
+              <span className="text-xs" style={{ color: "var(--text-secondary)" }}>Son · plein écran · taille</span>
             </div>
           </div>
         </div>
