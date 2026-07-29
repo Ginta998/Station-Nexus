@@ -8,6 +8,7 @@ import { posterUrl, bgUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import TopBar from "@/components/TopBar";
 import PosterCard from "@/components/PosterCard";
+import CreationsGridList from "@/components/CreationsGridList";
 import EditorDialog from "@/components/EditorDialog";
 import ProfileDialog from "@/components/ProfileDialog";
 import ProfilePrompt from "@/components/ProfilePrompt";
@@ -18,7 +19,7 @@ const FAV = "__fav__";
 
 export default function Home() {
   const nav = useNavigate();
-  const { isAdmin, sfx, favorites, isFavorite, toggleFavorite } = useApp();
+  const { isAdmin, sfx, favorites, isFavorite, toggleFavorite, layout } = useApp();
   const { data: all = [], refetch, isLoading } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
 
@@ -69,18 +70,12 @@ export default function Home() {
   const catDown = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.min(c + 1, tabs.length - 1)); }, [tabs.length, sfx]);
   const catUp = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.max(c - 1, 0)); }, [sfx]);
 
-  // Mobile : le D-pad gauche/droite fait glisser le rail d'une carte (scroll natif fiable)
-  const scrollRailBy = useCallback((dir) => {
-    const rail = railRef.current; if (!rail) return;
-    const card = cardRefs.current.find(Boolean);
-    const step = card ? card.offsetWidth + 16 : rail.clientWidth * 0.7;
-    rail.scrollBy({ left: dir * step, behavior: "smooth" });
-  }, []);
-
   // Mobile : synchronise la carte "focus" avec le défilement du doigt (surligne celle au centre)
   const scrollRaf = useRef(0);
+  const autoScrolling = useRef(false);
   const onRailScroll = useCallback(() => {
     if (window.innerWidth >= 768) return;
+    if (autoScrolling.current) return;   // ne pas interférer pendant une animation programmée
     if (scrollRaf.current) return;
     scrollRaf.current = requestAnimationFrame(() => {
       scrollRaf.current = 0;
@@ -96,6 +91,29 @@ export default function Home() {
       setFocusIndex((prev) => { if (best >= 0 && best !== prev) { focusSrc.current = "scroll"; return best; } return prev; });
     });
   }, []);
+
+  // Mobile : le D-pad gauche/droite fait glisser le rail d'une carte (animation manuelle
+  // pour éviter que le "behavior:smooth" natif soit interrompu par les re-renders).
+  const scrollRailBy = useCallback((dir) => {
+    const rail = railRef.current; if (!rail) return;
+    const card = cardRefs.current.find(Boolean);
+    const step = card ? card.offsetWidth + 16 : rail.clientWidth * 0.7;
+    const max = rail.scrollWidth - rail.clientWidth;
+    const from = rail.scrollLeft;
+    const to = Math.max(0, Math.min(max, from + dir * step));
+    if (Math.abs(to - from) < 1) return;
+    autoScrolling.current = true;
+    const dur = 300; let t0 = null;
+    const anim = (ts) => {
+      if (t0 === null) t0 = ts;
+      const p = Math.min(1, (ts - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      rail.scrollLeft = from + (to - from) * e;
+      if (p < 1) requestAnimationFrame(anim);
+      else { autoScrolling.current = false; onRailScroll(); }
+    };
+    requestAnimationFrame(anim);
+  }, [onRailScroll]);
 
   const onKey = useCallback((e) => {
     if (editorOpen) return;
@@ -219,6 +237,8 @@ export default function Home() {
           )}
         </div>
 
+        {layout === "card" ? (
+        <>
         <div className="px-5 md:px-12 mt-4 md:mt-6 min-h-[100px]">
           {focused ? (
             <div key={focused.id} className="fade-up max-w-2xl">
@@ -285,6 +305,14 @@ export default function Home() {
             <button data-testid="dpad-down" onClick={() => { buzz(); catDown(); }} aria-label="Catégorie suivante" className="dpad-btn" style={dpadStyle}><IoChevronDown size="1.3em" /></button>
           </div>
         </div>
+        </>
+        ) : (
+          <CreationsGridList items={items} layout={layout} isLoading={isLoading} catLabelByKey={catLabelByKey}
+            onOpen={open}
+            isFavorite={isFavorite}
+            toggleFavorite={(id) => { toggleFavorite(id); sfx("select"); }}
+            onTrailer={(id) => { sfx("select"); nav(`/oeuvre/${id}`, { state: { trailer: true } }); }} />
+        )}
       </div>
 
       <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} />

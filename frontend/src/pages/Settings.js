@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline } from "react-icons/io5";
+import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoAlbumsOutline, IoGridOutline, IoListOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { THEMES } from "@/lib/themes";
 import { SOUND_PACKS } from "@/lib/sound";
@@ -520,7 +520,7 @@ export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
-    posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor } = useApp();
+    posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor, layout, setLayout } = useApp();
   const [pin, setPin] = useState(""); const [newPin, setNewPin] = useState("");
   const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const defTheme = siteSettings?.default_theme || "tengoku";
@@ -676,6 +676,18 @@ export default function Settings() {
         </Section>
 
         <Section title="Personnalisation de l'interface" extra="— rends la station unique">
+          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Disposition de l'accueil</p>
+          <div className="grid grid-cols-3 gap-2 mb-5" data-testid="layout-selector">
+            {[{ v: "card", label: "Cartes", Icon: IoAlbumsOutline }, { v: "grid", label: "Grille", Icon: IoGridOutline }, { v: "list", label: "Liste", Icon: IoListOutline }].map((l) => (
+              <button key={l.v} data-testid={`layout-${l.v}`} onClick={() => { setLayout(l.v); sfx("select"); }}
+                className="flex flex-col items-center gap-1.5 px-3 py-3 border text-sm transition-transform hover:scale-[1.03]"
+                style={{ ...fs, background: "var(--bg-secondary)", outline: layout === l.v ? "2px solid var(--brand)" : "none", outlineOffset: 2 }}>
+                <l.Icon size={22} style={{ color: layout === l.v ? "var(--brand)" : "var(--text-secondary)" }} />
+                {l.label}
+              </button>
+            ))}
+          </div>
+
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Couleur d'accent</p>
           <div className="flex flex-wrap gap-2 mb-3" data-testid="accent-grid">
             {ACCENTS.map((a) => (

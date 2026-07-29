@@ -8,7 +8,7 @@ export const useApp = () => useContext(AppContext);
 const LS = {
   theme: "sx_theme", pin: "sx_pin", admin: "sx_admin", music: "sx_musicvolume", ui: "sx_uivolume",
   mute: "sx_mute", pack: "sx_soundpack", custom: "sx_customsounds", ambience: "sx_ambience",
-  accent: "sx_accent", radius: "sx_radius", posterSize: "sx_postersize", motion: "sx_motion", cardTagline: "sx_cardtagline", textScale: "sx_textscale",
+  accent: "sx_accent", radius: "sx_radius", posterSize: "sx_postersize", motion: "sx_motion", cardTagline: "sx_cardtagline", textScale: "sx_textscale", layout: "sx_layout",
   rFont: "sx_reader_font", rSize: "sx_reader_size", rLine: "sx_reader_line", rWidth: "sx_reader_width", rDrop: "sx_reader_dropcap",
 };
 const DEFAULT_PIN = "1234";
@@ -98,6 +98,7 @@ export function AppProvider({ children }) {
   const [posterSize, setPosterSizeState] = useState(() => resolvePoster(isPhoneNow()));
   const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
   const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
+  const [layout, setLayoutState] = useState(() => localStorage.getItem(LS.layout) || "card");
   const scaleKey = (phone) => (phone ? "sx_textscale_mobile" : "sx_textscale_desktop");
   // resolve per-device text scale: device key -> legacy key -> default (petit on phone, grand on PC)
   const resolveScale = (phone) => localStorage.getItem(scaleKey(phone)) || localStorage.getItem(LS.textScale) || (phone ? "petit" : "grand");
@@ -237,6 +238,7 @@ export function AppProvider({ children }) {
   const setPosterSize = (v) => { const ph = isPhoneNow(); setPosterSizeState(v); localStorage.setItem(posterKey(ph), v); if (ph) setPosterMobileState(v); else setPosterDesktopState(v); };
   const setReduceMotion = (v) => { setReduceMotionState(v); localStorage.setItem(LS.motion, v ? "1" : "0"); };
   const setCardTagline = (v) => { setCardTaglineState(v); localStorage.setItem(LS.cardTagline, v ? "1" : "0"); };
+  const setLayout = (v) => { setLayoutState(v); localStorage.setItem(LS.layout, v); };
   const setTextScale = (v) => { const ph = isPhoneNow(); setTextScaleState(v); localStorage.setItem(scaleKey(ph), v); if (ph) setTextMobileState(v); else setTextDesktopState(v); };
 
   const setReaderFont = (v) => { setReaderFontState(v); localStorage.setItem(LS.rFont, v); };
@@ -383,6 +385,7 @@ export function AppProvider({ children }) {
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
     playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
+    layout, setLayout,
     posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine, readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   };

@@ -9,7 +9,7 @@ export const useAuth = () => useContext(AuthContext);
 const PREF_KEYS = [
   "sx_theme", "sx_accent", "sx_radius", "sx_motion", "sx_cardtagline",
   "sx_musicvolume", "sx_uivolume", "sx_mute", "sx_soundpack", "sx_customsounds", "sx_ambience",
-  "sx_postersize", "sx_postersize_desktop", "sx_postersize_mobile",
+  "sx_postersize", "sx_postersize_desktop", "sx_postersize_mobile", "sx_layout",
   "sx_textscale", "sx_textscale_desktop", "sx_textscale_mobile",
   "sx_reader_font", "sx_reader_size", "sx_reader_line", "sx_reader_width", "sx_reader_dropcap",
   "sx_profile", "sx_visitor_id",

@@ -378,3 +378,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
   - `onRailScroll` (rAF-throttlé, actif seulement si `innerWidth<768`) : surligne la carte la plus centrée pendant le scroll du doigt (setFocusIndex, focusSrc="scroll"). Effet de recentrage ignore désormais focusSrc "hover" ET "scroll".
   - PosterCard : `transform` retiré du style inline → géré en CSS via `.sx-poster.is-focused` : `scale(1.06) translateY(-6px)` sur desktop, `translateY(-4px)` seul sous 767px (plus de débordement horizontal).
 - Vérifié viewport 390px : dpad scroll+focus synchro (UNITED SANCTUM FORCE→TENGOKU DOJO), 1 seule carte surlignée. Desktop inchangé (synchro scroll désactivée ≥768px).
+
+## Fondu bords + fix D-pad droit + choix de layout — 29/07/2026
+- **Fondu léger bords du rail (Home.js)** : `mask-image: linear-gradient(to right, transparent, #000 3.5%, #000 96.5%, transparent)` → indique qu'il reste des créations à faire défiler.
+- **Fix D-pad ► mobile** : le vrai clic ne défilait pas — cause : le `scrollBy behavior:smooth` natif était interrompu par le re-render déclenché par la synchro focus (`onRailScroll`). Remplacé par une **animation manuelle rAF** (easeOutCubic 300ms) avec garde `autoScrolling` qui désactive `onRailScroll` pendant l'animation. Vérifié en vrais clics : 191→341→491, focus qui suit, gauche/droite OK.
+- **Choix de layout (Paramètres → "Disposition de l'accueil")** : 3 options `card` (actuel) / `grid` / `list`.
+  - AppContext : state `layout` + `setLayout`, persistant `sx_layout`. AuthContext PREF_KEYS += `sx_layout` (synchro compte).
+  - `components/CreationsGridList.js` : rendu grille (mosaïque responsive 3→8 cols, badges catégorie/favori/▶trailer) et liste (lignes compactes : mini-affiche + titre + accroche + favori + chevron). Clic = ouvrir la fiche.
+  - `Home.js` : `{layout === "card" ? (<>rail+pad+bottom</>) : <CreationsGridList/>}`. Sélecteur dans Settings (`layout-card/grid/list`, conteneur `layout-selector`).
+  - Vérifié : grid 14 cartes, list 14 lignes, sélecteur Paramètres OK, persistance sx_layout.
+- Note : Blue Flower est configuré par l'utilisateur (launch_type=film + bande-annonce YouTube) — données réelles, conservées.
