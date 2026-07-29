@@ -13,6 +13,9 @@ export default function CinemaPlayer({ item, kind = "film", onClose }) {
   const [dim, setDim] = useState(true);        // "lights off" for immersion (default on)
   const [fs, setFs] = useState(false);
   const [showBars, setShowBars] = useState(true);
+  const [intro, setIntro] = useState(true);    // cinema entrance (curtains) animation
+
+  useEffect(() => { const t = setTimeout(() => setIntro(false), 1200); return () => clearTimeout(t); }, []);
 
   const hasUpload = kind === "film" ? item.has_film : item.has_trailer;
   const link = kind === "film" ? item.film_url : item.trailer_url;
@@ -63,11 +66,22 @@ export default function CinemaPlayer({ item, kind = "film", onClose }) {
       className="fixed inset-0 z-[55] flex flex-col items-center justify-center"
       style={{ background: "#000", cursor: showBars ? "default" : "none" }}>
 
-      {/* Theater ambience: spotlight + brand glow + side "curtains" + vignette */}
-      <div aria-hidden="true" className="absolute inset-0" style={{ background: "radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--brand) 10%, transparent), transparent 55%)" }} />
-      <div aria-hidden="true" className="absolute inset-y-0 left-0 w-[14vw]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9), transparent)" }} />
-      <div aria-hidden="true" className="absolute inset-y-0 right-0 w-[14vw]" style={{ background: "linear-gradient(270deg, rgba(0,0,0,0.9), transparent)" }} />
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ boxShadow: dim ? "inset 0 0 240px 80px rgba(0,0,0,0.95)" : "inset 0 0 120px 20px rgba(0,0,0,0.6)", transition: "box-shadow 0.6s ease" }} />
+      {/* Theater ambience — clear contrast between lights ON and OFF */}
+      <div aria-hidden="true" className="absolute inset-0" style={{ transition: "opacity 0.6s ease", opacity: dim ? 0 : 1,
+        background: "radial-gradient(95% 75% at 50% 42%, color-mix(in srgb, var(--brand) 26%, #201318) 0%, rgba(26,16,20,0.65) 42%, #0a0709 78%)" }} />
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ transition: "box-shadow 0.6s ease, background 0.6s ease",
+        boxShadow: dim ? "inset 0 0 320px 130px #000" : "inset 0 0 150px 30px rgba(0,0,0,0.7)",
+        background: dim ? "rgba(0,0,0,0.55)" : "transparent" }} />
+      <div aria-hidden="true" className="absolute inset-y-0 left-0 w-[12vw]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.85), transparent)" }} />
+      <div aria-hidden="true" className="absolute inset-y-0 right-0 w-[12vw]" style={{ background: "linear-gradient(270deg, rgba(0,0,0,0.85), transparent)" }} />
+
+      {/* Entrance: curtains opening */}
+      {intro && (
+        <div className="cinema-curtains" data-testid="cinema-curtains" aria-hidden="true">
+          <span className="cinema-curtain cinema-curtain-l" />
+          <span className="cinema-curtain cinema-curtain-r" />
+        </div>
+      )}
 
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 md:px-8 py-4" style={barStyle}>
@@ -82,7 +96,7 @@ export default function CinemaPlayer({ item, kind = "film", onClose }) {
       </div>
 
       {/* Screen */}
-      <div className="relative z-10 w-[86vw] max-w-6xl" style={{ aspectRatio: "16 / 9", boxShadow: "0 0 80px 8px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06)", borderRadius: "8px", overflow: "hidden", background: "#000" }} data-testid="cinema-screen">
+      <div className="relative z-10 w-[86vw] max-w-6xl" style={{ aspectRatio: "16 / 9", boxShadow: "0 0 80px 8px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06)", borderRadius: "8px", overflow: "hidden", background: "#000", animation: "cinemaScreenIn 1.1s cubic-bezier(.2,.7,.2,1) both" }} data-testid="cinema-screen">
         {!source ? (
           <div className="w-full h-full flex flex-col items-center justify-center text-center px-6" style={{ color: "rgba(255,255,255,0.7)" }}>
             <IoFilmOutline size={44} style={{ color: "var(--brand)", marginBottom: 12 }} />

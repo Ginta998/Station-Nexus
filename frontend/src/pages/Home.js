@@ -32,6 +32,8 @@ export default function Home() {
   const [profileOpen, setProfileOpen] = useState(false);
   const cardRefs = useRef([]);
   const focusSrc = useRef("kbd");
+  const railRef = useRef(null);
+  const edgeDir = useRef(0);
 
   const tabs = useMemo(() => [{ key: ALL, label: "Toutes mes créations", kanji: "全" }, { key: FAV, label: "Favoris", kanji: "愛" }, ...cats], [cats]);
   const catLabelByKey = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c.label])), [cats]);
@@ -86,6 +88,24 @@ export default function Home() {
     return () => window.removeEventListener("sx-open-profile", open);
   }, []);
 
+  // Défilement aux extrémités (PC) : glisse le rail uniquement quand la souris est tout au bord gauche/droit
+  const onEdgeMove = useCallback((e) => {
+    if (editorOpen || profileOpen) { edgeDir.current = 0; return; }
+    const EDGE = 40, w = window.innerWidth;
+    if (e.clientX <= EDGE) edgeDir.current = -1;
+    else if (e.clientX >= w - EDGE) edgeDir.current = 1;
+    else edgeDir.current = 0;
+  }, [editorOpen, profileOpen]);
+  useEffect(() => {
+    let raf;
+    const step = () => {
+      if (edgeDir.current !== 0 && railRef.current) railRef.current.scrollLeft += edgeDir.current * 16;
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   const bgImg = focused ? (focused.has_bg ? bgUrl(focused.id, focused.updated_at) : (focused.has_poster ? posterUrl(focused.id, focused.updated_at) : null)) : null;
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
   const openEdit = () => { if (focused) { setEditing(focused); setEditorOpen(true); } };
@@ -112,7 +132,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden" style={{ background: "var(--bg-primary)" }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+    <div className="relative h-screen w-screen overflow-hidden" style={{ background: "var(--bg-primary)" }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onMouseMove={onEdgeMove} onMouseLeave={() => { edgeDir.current = 0; }}>
       <div className="absolute inset-0 z-0" aria-hidden="true">
         {bgImg ? (
           <div key={focused.id} className="absolute inset-0 bg-cover bg-center scale-110"
@@ -170,23 +190,37 @@ export default function Home() {
           )}
         </div>
 
-        <div className="px-5 md:px-12 mt-4 md:mt-6 min-h-[100px]">
-          {focused ? (
-            <div key={focused.id} className="fade-up max-w-2xl">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="focused-category">
-                  {catLabelByKey[focused.category] || focused.category}
-                </span>
+        <div className="px-5 md:px-12 mt-4 md:mt-6 min-h-[100px] flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            {focused ? (
+              <div key={focused.id} className="fade-up max-w-2xl">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="focused-category">
+                    {catLabelByKey[focused.category] || focused.category}
+                  </span>
+                </div>
+                <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
+                <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
               </div>
-              <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
-              <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
+            ) : (
+              <p style={{ color: "var(--text-secondary)" }}>{isLoading ? "Chargement…" : "Aucune création."}</p>
+            )}
+          </div>
+
+          {/* PC : pad de flèches cliquable, en haut à droite juste au-dessus de l'affiche */}
+          {focused && (
+            <div className="hidden md:flex flex-col items-center gap-1.5 flex-shrink-0" data-testid="desktop-dpad">
+              <button data-testid="pad-up" onClick={() => { buzz(); catUp(); }} aria-label="Catégorie précédente" className="dpad-btn" style={dpadStyle}><IoChevronUp size="1.2em" /></button>
+              <div className="flex items-center gap-1.5">
+                <button data-testid="pad-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="dpad-btn" style={dpadStyle}><IoChevronBack size="1.2em" /></button>
+                <button data-testid="pad-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="dpad-btn" style={dpadStyle}><IoChevronForward size="1.2em" /></button>
+              </div>
+              <button data-testid="pad-down" onClick={() => { buzz(); catDown(); }} aria-label="Catégorie suivante" className="dpad-btn" style={dpadStyle}><IoChevronDown size="1.2em" /></button>
             </div>
-          ) : (
-            <p style={{ color: "var(--text-secondary)" }}>{isLoading ? "Chargement…" : "Aucune création."}</p>
           )}
         </div>
 
-        <div className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-mandatory px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
+        <div ref={railRef} className="flex-1 min-h-0 flex items-center overflow-x-auto hide-scrollbar snap-x snap-mandatory px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
           {items.map((it, i) => (
             <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
               catLabel={catLabelByKey[it.category] || it.category}

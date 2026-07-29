@@ -347,3 +347,10 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - `ChapterReader.js` : bouton `reader-mute` (global `muted`/`toggleMute`) ajouté dans l'en-tête, à côté de la croix.
 ### 3. Fix sensibilité défilement PC
 - `Home.js` : ref `focusSrc`. Le rail ne se recentre (`scrollIntoView`) QUE sur navigation clavier/D-pad/catégorie ; le **survol souris ne recentre plus** (évite le "glissement" qui gênait le clic). `PosterCard` garde le highlight au survol sans déclencher le scroll.
+
+## Cinéma v2 + navigation PC (raffinements) — 29/07/2026
+- **Pad de flèches PC (Home.js)** : `desktop-dpad` (haut/gauche-droite/bas) affiché en haut à DROITE, juste au-dessus du rail d'affiches (`hidden md:flex`). Réutilise navLeft/navRight/catUp/catDown.
+- **Glissement aux extrémités (Home.js)** : le survol ne recentre toujours pas le rail ; ajout d'un edge-scroll — quand la souris est à ≤40px du bord gauche/droit de l'écran, `railRef.scrollLeft` défile en continu (rAF), sinon rien. Désactivé si editorOpen/profileOpen.
+- **Bande-annonce inline (Detail.js)** : plus de bouton — section `detail-trailer-section` affichée sur la fiche comme la galerie (iframe sans autoplay via `resolveVideoEmbed(url,false)`, ou `<video>` si upload). `resolveVideoEmbed(url, autoplay=true)` accepte désormais un flag autoplay.
+- **Mode cinéma — contraste lumières + entrée (CinemaPlayer.js + index.css)** : lumières OFF (dim) = voile noir rgba(0,0,0,0.55) + forte vignette ; lumières ON = halo d'ambiance teinté thème + pas de voile (différence nette). Animation d'entrée : rideaux de velours teintés thème (`.cinema-curtain-l/-r`, keyframes `cinemaCurtainL/R`) qui s'ouvrent 1,15s + écran en fade/scale (`cinemaScreenIn`). État `intro` retiré après 1,2s.
+- Vérifié par captures : pad PC, bande-annonce inline, rideaux d'entrée, Bunny contexte cinéma.

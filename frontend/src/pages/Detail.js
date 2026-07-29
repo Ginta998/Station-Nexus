@@ -3,8 +3,9 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl } from "@/lib/api";
+import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
+import { resolveVideoEmbed } from "@/lib/video";
 import EditorDialog from "@/components/EditorDialog";
 import CommentsSection from "@/components/CommentsSection";
 import ChapterReader from "@/components/ChapterReader";
@@ -106,7 +107,11 @@ export default function Detail() {
   };
 
   const hasTrailer = !!((item.trailer_url && item.trailer_url.trim()) || item.has_trailer);
-  const openTrailer = () => { sfx("select"); stopAmbient(); setCinemaKind("trailer"); };
+  const trailerSource = hasTrailer
+    ? ((item.trailer_url && item.trailer_url.trim())
+        ? resolveVideoEmbed(item.trailer_url, false)
+        : { type: "video", src: videoUrl(item.id, "trailer", item.updated_at) })
+    : null;
 
   const openChapter = (i) => { sfx("select"); setReaderStart(i); setChaptersOpen(true); };
 
@@ -201,12 +206,6 @@ export default function Detail() {
                   {item.launch_type === "chapters" ? <IoBookOutline size={20} /> : item.launch_type === "film" ? <IoFilmOutline size={20} /> : <IoPlay size={20} />} {item.launch_type === "chapters" && canResume ? `Reprendre · ch. ${(savedProgress.chapter || 0) + 1}` : (item.launch_label || "Lancer")}
                 </button>
               )}
-              {hasTrailer && (
-                <button data-testid="detail-trailer" onClick={openTrailer}
-                  className={`flex items-center gap-2 ${secondaryBtnCls} border font-medium transition-transform hover:scale-105`} style={btn}>
-                  <IoFilmOutline size={18} /> Bande-annonce
-                </button>
-              )}
               {item.buy_url && (
                 <a data-testid="detail-buy" href={item.buy_url} target="_blank" rel="noopener noreferrer"
                   className={`flex items-center gap-2 ${secondaryBtnCls} border font-medium`} style={btn}>
@@ -294,6 +293,18 @@ export default function Detail() {
                       {ep.url && <a href={ep.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)" }}><IoOpenOutline size={18} /></a>}
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Bande-annonce (inline, comme la galerie) */}
+            {trailerSource && (
+              <div className="mt-10" data-testid="detail-trailer-section">
+                <h3 className="font-display text-xl mb-3 flex items-center gap-2" style={{ color: "#fff" }}><IoFilmOutline style={{ color: "var(--brand)" }} /> Bande-annonce</h3>
+                <div className="aspect-video w-full max-w-2xl overflow-hidden border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "#000", boxShadow: "var(--shadow-1)" }}>
+                  {trailerSource.type === "video"
+                    ? <video data-testid="trailer-video" src={trailerSource.src} controls playsInline className="w-full h-full" />
+                    : <iframe data-testid="trailer-iframe" src={trailerSource.src} title="Bande-annonce" className="w-full h-full" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen />}
                 </div>
               </div>
             )}
