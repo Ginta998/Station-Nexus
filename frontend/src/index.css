@@ -373,15 +373,22 @@ body {
 @keyframes cinemaFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* Poster focus emphasis — scale only on desktop to avoid overlap on mobile */
-.sx-poster { transform: scale(1); contain: paint; }
+.sx-poster { transform: scale(1); }
 .sx-poster.is-focused { transform: scale(1.06) translateY(-6px); }
 @media (max-width: 767px) {
-  /* Aucun transform sur mobile : évite le chevauchement des cartes pendant le défilement */
+  /* Aucun transform ni transition sur mobile : évite tout chevauchement/tearing pendant le défilement tactile */
+  .sx-poster { transition: none !important; }
   .sx-poster.is-focused { transform: none; }
 }
 
-/* Masque de bord porté par le wrapper (statique) — pas de repaint pendant le scroll */
+/* Masque de bord — DESKTOP uniquement (le mask casse le rendu du momentum-scroll iOS) */
 .sx-rail-mask {
-  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+@media (min-width: 768px) {
+  .sx-rail-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
+  }
 }

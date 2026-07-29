@@ -37,7 +37,7 @@ const PosterCard = forwardRef(function PosterCard(
         borderWidth: focused ? "var(--border-width)" : "0px",
         transitionProperty: "transform, box-shadow, border-color, opacity",
       }}
-      className={`sx-poster ${focused ? "is-focused" : ""} relative flex-shrink-0 snap-center aspect-[2/3] overflow-hidden border-brand duration-300 ease-out outline-none group`}
+      className={`sx-poster ${focused ? "is-focused" : ""} relative flex-shrink-0 aspect-[2/3] overflow-hidden border-brand duration-300 ease-out outline-none group`}
     >
       {hasImg ? (
         <img src={src} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />

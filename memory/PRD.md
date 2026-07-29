@@ -406,3 +406,13 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
   - index.css : `.sx-poster { contain: paint }` (isole les repaints par carte) ; sur mobile `<=767px` `.sx-poster.is-focused { transform: none }` (supprime tout transform -> plus de chevauchement horizontal des cartes).
   - Fond flou : `bgFade` réduit 1s->0.6s, `transform: scale(1.1) translateZ(0)` (promotion couche GPU, moins de repaint).
 - Vérifié captures : mobile 390px scroll 0→641 fluide, cartes séparées, focus centré (Cosmic Bunny) ; desktop 1920 intact (masque + focus scale OK).
+
+## Cause réelle "rien ne change" + refonte scroll mobile — 29/07/2026
+- **CAUSE PRINCIPALE** : le service worker (PWA) servait les JS/CSS en **stale-while-revalidate** (`return cached || network`) -> sur téléphone le bundle EN CACHE (ancien) était rendu, les corrections n'apparaissaient qu'au 2e rechargement. En preview (dev server, bundle non-hashé `bundle.js`) c'est systématique.
+  - Fix (public/service-worker.js) : stratégie **network-first** pour les assets statiques (fallback cache uniquement hors-ligne) + cache bumpé `stationexus-v3`->`v4` (l'ancien cache est purgé à l'activate). skipWaiting + clients.claim déjà présents.
+- **Refonte scroll mobile (symptômes réels téléphone : saccades + "colle puis passe" + chevauchement)** :
+  - Home.js : SUPPRESSION totale du scroll-snap (`snap-x/snap-proximity` retirés) -> plus de "colle puis passe". Retrait de `willChange` et `-webkit-overflow-scrolling:touch` (créaient une couche qui, avec le mask, provoquait le tearing/chevauchement iOS).
+  - PosterCard.js : retrait de `snap-center`.
+  - index.css : mask `.sx-rail-mask` **desktop-only** (>=768px) car le mask casse le rendu du momentum-scroll iOS ; sur mobile `.sx-poster { transition:none; transform:none }`.
+  - Vérifié (390px) : scroll-snap-type=none, wrapper mask=none, 5 cartes sans chevauchement (150px d'écart, 0 overlap).
+- Note pour l'utilisateur : sur son téléphone, recharger 2 fois (ou rouvrir la PWA) pour que le nouveau service worker prenne le contrôle.

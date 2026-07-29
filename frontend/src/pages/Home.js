@@ -270,8 +270,7 @@ export default function Home() {
 
         {/* Le masque de bord est porté par CE wrapper fixe (il ne défile pas) — évite les repaints continus sur mobile */}
         <div className="flex-1 min-h-0 flex items-center sx-rail-mask">
-          <div ref={railRef} onScroll={onRailScroll} className="w-full h-full flex items-center overflow-x-auto overflow-y-hidden hide-scrollbar snap-x snap-proximity md:snap-none px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail"
-            style={{ willChange: "scroll-position", WebkitOverflowScrolling: "touch" }}>
+          <div ref={railRef} onScroll={onRailScroll} className="w-full h-full flex items-center overflow-x-auto overflow-y-hidden hide-scrollbar px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
             {items.map((it, i) => (
               <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
                 catLabel={catLabelByKey[it.category] || it.category}

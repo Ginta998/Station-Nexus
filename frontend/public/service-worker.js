@@ -1,4 +1,4 @@
-const CACHE = "stationexus-v3";
+const CACHE = "stationexus-v4";
 const ASSETS = ["/manifest.json"];
 
 self.addEventListener("install", (e) => {
@@ -41,19 +41,17 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Static assets (hashed JS/CSS/images): stale-while-revalidate.
+  // Static assets (JS/CSS/images): network-first so the latest code is always served;
+  // fall back to cache only when offline.
   e.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req)
-        .then((res) => {
-          if (res && res.status === 200 && url.origin === self.location.origin) {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || network;
-    })
+    fetch(req)
+      .then((res) => {
+        if (res && res.status === 200 && url.origin === self.location.origin) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() => caches.match(req))
   );
 });
