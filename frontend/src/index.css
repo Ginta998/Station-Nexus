@@ -405,3 +405,11 @@ body {
 :fullscreen .sx-bottom-bar { padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); }
 :-webkit-full-screen .sx-header { padding-top: calc(2.75rem + env(safe-area-inset-top, 0px)); }
 :-webkit-full-screen .sx-bottom-bar { padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); }
+
+/* Menu (drawer) : évite que l'en-tête MENU passe sous l'encoche de la caméra */
+.sx-drawer-header { padding-top: calc(1rem + env(safe-area-inset-top, 0px)); }
+.sx-drawer-footer { padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); }
+:fullscreen .sx-drawer-header { padding-top: calc(2.75rem + env(safe-area-inset-top, 0px)); }
+:fullscreen .sx-drawer-footer { padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px)); }
+:-webkit-full-screen .sx-drawer-header { padding-top: calc(2.75rem + env(safe-area-inset-top, 0px)); }
+:-webkit-full-screen .sx-drawer-footer { padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px)); }

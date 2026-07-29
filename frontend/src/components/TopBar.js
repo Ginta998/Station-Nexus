@@ -134,11 +134,12 @@ export default function TopBar({ onAdd, onProfile }) {
           </button>
         </div>
 
-        {/* Mobile: menu button — icône seule, couleur de la station */}
-        <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }} title="Menu" aria-label="Menu"
-          className="relative md:hidden p-2.5 border transition-colors" style={{ ...btn, color: "var(--brand)" }}>
-          <IoMenu size={20} />
-          {unread > 0 && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>{unread > 9 ? "9+" : unread}</span>}
+        {/* Mobile: menu button (label + theme color) */}
+        <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }}
+          className="relative md:hidden flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
+          style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+          <IoMenu size={18} /> Menu
+          {unread > 0 && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{unread > 9 ? "9+" : unread}</span>}
         </button>
       </div>
 
@@ -146,7 +147,7 @@ export default function TopBar({ onAdd, onProfile }) {
       {menuOpen && (
         <div className="md:hidden fixed inset-0 z-[70] flex justify-end" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} onClick={() => setMenuOpen(false)} data-testid="mobile-menu">
           <div className="w-72 max-w-[85%] h-full flex flex-col" style={{ background: "var(--bg-secondary)", borderLeft: "1px solid var(--border-c)" }} onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: "var(--border-c)" }}>
+            <div className="sx-drawer-header flex items-center justify-between p-4 border-b" style={{ borderColor: "var(--border-c)" }}>
               <span className="font-display text-lg" style={{ color: "var(--text-primary)" }}>Menu</span>
               <button data-testid="mobile-menu-close" onClick={() => setMenuOpen(false)} style={{ color: "var(--text-secondary)" }}><IoClose size={22} /></button>
             </div>
@@ -189,7 +190,7 @@ export default function TopBar({ onAdd, onProfile }) {
               )}            </div>
 
             {/* Quick controls also inside the menu */}
-            <div className="flex items-center gap-3 p-4 border-t" style={{ borderColor: "var(--border-c)" }}>
+            <div className="sx-drawer-footer flex items-center gap-3 p-4 border-t" style={{ borderColor: "var(--border-c)" }}>
               <MuteBtn />
               <FsBtn />
               <TextSizeButton btnStyle={btn} dropUp />
