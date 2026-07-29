@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
+import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline, IoVolumeHigh, IoVolumeMute, IoExpand, IoContract } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { chapterAudioUrl, readingAudioUrl } from "@/lib/api";
 import { toast } from "sonner";
@@ -105,6 +105,11 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   const [progress, setProgress] = useState(0);
   const [showPlayer, setShowPlayer] = useState(false);
   const [trackTitle, setTrackTitle] = useState("Musique de lecture");
+  const [hideBars, setHideBars] = useState(false);
+  const [isFs, setIsFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
+  const lastY = useRef(0);
+  const headerRef = useRef(null);
+  const [headerH, setHeaderH] = useState(72);
   const scrollRef = useRef(null);
   const resumeRatio = useRef(!useStart && saved && typeof saved.ratio === "number" && saved.ratio > 0.02 ? saved.ratio : null);
   const lastSave = useRef(0);
@@ -162,9 +167,38 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
     const max = el.scrollHeight - el.clientHeight;
     const ratio = max > 0 ? el.scrollTop / max : 0;
     setProgress(Math.min(100, ratio * 100));
+    const y = el.scrollTop;
+    if (y > lastY.current + 6 && y > 90) setHideBars(true);
+    else if (y < lastY.current - 6) setHideBars(false);
+    lastY.current = y;
     const now = Date.now();
     if (now - lastSave.current > 800) { lastSave.current = now; saveProgress(ratio); }
   }, [saveProgress]);
+
+  // Plein écran (comme le mode film)
+  useEffect(() => {
+    const h = () => setIsFs(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", h);
+    return () => document.removeEventListener("fullscreenchange", h);
+  }, []);
+  const toggleFs = () => {
+    sfx("nav");
+    try {
+      if (document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+      else { const el = document.documentElement; (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el); }
+    } catch (_) {}
+  };
+  // Les barres réapparaissent dès qu'un panneau s'ouvre
+  useEffect(() => { if (toc || prefs) setHideBars(false); }, [toc, prefs]);
+  // Mesure la hauteur de l'en-tête (change avec l'encoche / le plein écran)
+  useEffect(() => {
+    const measure = () => { if (headerRef.current) setHeaderH(headerRef.current.offsetHeight || 72); };
+    measure();
+    const t = setTimeout(measure, 350);
+    window.addEventListener("resize", measure);
+    document.addEventListener("fullscreenchange", measure);
+    return () => { clearTimeout(t); window.removeEventListener("resize", measure); document.removeEventListener("fullscreenchange", measure); };
+  }, [isFs]);
 
   const close = () => { endReading(item.id, item.has_audio); onClose(); };
   const go = (d) => { sfx("nav"); setIdx((i) => Math.min(Math.max(i + d, 0), chapters.length - 1)); setToc(false); };
@@ -210,7 +244,8 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
       <div className="absolute top-0 left-0 h-1 z-20" style={{ width: `${progress}%`, background: "var(--brand)", transition: "width 0.15s linear" }} />
 
       {/* header */}
-      <div className="sx-safe-top relative z-10 flex items-center justify-between px-4 md:px-8 py-3 border-b" style={{ borderColor: "var(--border-c)", background: "rgba(0,0,0,0.25)", backdropFilter: "blur(8px)" }}>
+      <div ref={headerRef} className="sx-safe-top absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 md:px-8 py-3 border-b" data-testid="reader-header"
+        style={{ borderColor: "var(--border-c)", background: "rgba(0,0,0,0.35)", backdropFilter: "blur(10px)", transform: hideBars ? "translateY(-105%)" : "translateY(0)", transition: "transform 0.32s cubic-bezier(.2,.7,.2,1)" }}>
         <button data-testid="reader-toc-toggle" onClick={() => { sfx("nav"); setToc((v) => !v); }} className="flex items-center gap-2 px-3.5 py-2.5 border text-base" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }}>
           <IoListOutline size={24} /> <span className="hidden sm:inline">Sommaire</span>
         </button>
@@ -226,6 +261,9 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
           )}
           <button data-testid="reader-mute" onClick={() => { toggleMute(); sfx("nav"); }} className="p-2.5 border" style={{ color: muted ? "var(--text-secondary)" : "var(--brand)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title={muted ? "Réactiver le son" : "Couper le son"}>
             {muted ? <IoVolumeMute size={24} /> : <IoVolumeHigh size={24} />}
+          </button>
+          <button data-testid="reader-fullscreen" onClick={toggleFs} className="p-2.5 border" style={{ color: isFs ? "var(--brand)" : "var(--text-primary)", borderColor: isFs ? "var(--brand)" : "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title={isFs ? "Quitter le plein écran" : "Plein écran"}>
+            {isFs ? <IoContract size={24} /> : <IoExpand size={24} />}
           </button>
           <button data-testid="reader-close" onClick={close} className="p-2.5 border" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }}><IoClose size={26} /></button>
         </div>
@@ -272,7 +310,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
         )}
 
         <div ref={scrollRef} onScroll={onScroll} className="flex-1 overflow-y-auto" data-testid="reader-pane">
-          <article key={idx} ref={contentRef} className={`chapter-in ${WIDTHS[readerWidth] || WIDTHS.normal} mx-auto px-5 md:px-8 py-10 md:py-16`} style={{ ...articleStyle, paddingBottom: showPlayer ? 104 : undefined }}>
+          <article key={idx} ref={contentRef} className={`chapter-in ${WIDTHS[readerWidth] || WIDTHS.normal} mx-auto px-5 md:px-8 pb-10 md:pb-16`} style={{ ...articleStyle, paddingTop: headerH + 16, paddingBottom: showPlayer ? 104 : undefined }}>
             <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "var(--brand)" }}>Chapitre {idx + 1} · {chapters.length}</p>
             <h1 data-reveal className="reveal font-display leading-tight mb-8" style={{ fontSize: "1.9em", color: "var(--text-primary)" }}>{chap?.title}</h1>
             {chap?.image ? (

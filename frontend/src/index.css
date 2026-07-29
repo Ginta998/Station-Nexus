@@ -172,11 +172,13 @@ body {
 /* ===== Immersive chapter reader ===== */
 .reader-root { position: fixed; }
 .reader-aurora {
-  position: absolute; inset: -20%; z-index: 0; pointer-events: none; opacity: 0.35;
+  position: absolute; inset: -10%; z-index: 0; pointer-events: none; opacity: 0.30;
   background:
-    radial-gradient(40% 40% at 20% 20%, var(--brand) 0%, transparent 60%),
-    radial-gradient(45% 45% at 80% 30%, var(--brand) 0%, transparent 60%),
-    radial-gradient(50% 50% at 50% 90%, var(--brand) 0%, transparent 60%);
+    radial-gradient(48% 30% at 18% 8%, var(--brand) 0%, transparent 60%),
+    radial-gradient(46% 28% at 82% 26%, var(--brand) 0%, transparent 60%),
+    radial-gradient(54% 34% at 28% 52%, var(--brand) 0%, transparent 62%),
+    radial-gradient(50% 32% at 78% 74%, var(--brand) 0%, transparent 62%),
+    radial-gradient(60% 40% at 45% 100%, var(--brand) 0%, transparent 66%);
   filter: blur(70px) saturate(1.1);
   animation: readerAurora 18s ease-in-out infinite alternate;
 }
@@ -187,7 +189,7 @@ body {
 }
 .reader-vignette {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background: radial-gradient(120% 90% at 50% 40%, transparent 45%, rgba(0,0,0,0.55) 100%);
+  background: radial-gradient(130% 100% at 50% 42%, transparent 60%, rgba(0,0,0,0.4) 100%);
 }
 .chapter-in { animation: chapterIn 0.7s cubic-bezier(.2,.7,.2,1) both; }
 @keyframes chapterIn { from { opacity: 0; transform: translateY(28px) scale(0.99); filter: blur(4px); } to { opacity: 1; transform: none; filter: blur(0); } }
