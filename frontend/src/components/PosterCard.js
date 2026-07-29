@@ -1,13 +1,14 @@
 import { forwardRef } from "react";
-import { IoHeart, IoHeartOutline } from "react-icons/io5";
+import { IoHeart, IoHeartOutline, IoPlay } from "react-icons/io5";
 import { posterUrl } from "@/lib/api";
 
 const PosterCard = forwardRef(function PosterCard(
-  { item, focused, onFocus, onClick, onResume, catLabel, isFav, onToggleFav },
+  { item, focused, onFocus, onClick, onResume, onTrailer, catLabel, isFav, onToggleFav },
   ref
 ) {
   const hasImg = item.has_poster || (item.poster && item.poster.length > 4);
   const src = item.poster && item.poster.length > 4 ? item.poster : posterUrl(item.id, item.updated_at);
+  const hasTrailer = !!((item.trailer_url && item.trailer_url.trim()) || item.has_trailer);
 
   let prog = null;
   const total = item.chapters_count || 0;
@@ -111,6 +112,36 @@ const PosterCard = forwardRef(function PosterCard(
       )}
 
       {focused && <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: "inset 0 0 0 2px var(--brand)" }} />}
+
+      {hasTrailer && (
+        <>
+          {/* Desktop: pill fades in on hover/focus */}
+          <span
+            role="button"
+            tabIndex={-1}
+            data-testid={`poster-trailer-${item.id}`}
+            onClick={(e) => { e.stopPropagation(); onTrailer && onTrailer(); }}
+            className="hidden md:flex absolute bottom-3 right-3 z-10 items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-full backdrop-blur-sm cursor-pointer"
+            style={{ background: "rgba(0,0,0,0.6)", color: "var(--brand)", border: "1px solid color-mix(in srgb, var(--brand) 55%, transparent)", opacity: focused ? 1 : 0, transform: focused ? "translateY(0)" : "translateY(6px)", transition: "opacity 0.25s ease, transform 0.25s ease" }}
+            title="Voir la bande-annonce"
+          >
+            <IoPlay size={12} /> Bande-annonce
+          </span>
+          {/* Mobile: fixed compact badge */}
+          <span
+            role="button"
+            tabIndex={-1}
+            data-testid={`poster-trailer-badge-${item.id}`}
+            onClick={(e) => { e.stopPropagation(); onTrailer && onTrailer(); }}
+            className="md:hidden absolute bottom-3 right-3 z-10 w-7 h-7 flex items-center justify-center rounded-full backdrop-blur-sm cursor-pointer"
+            style={{ background: "rgba(0,0,0,0.55)", color: "var(--brand)", border: "1px solid color-mix(in srgb, var(--brand) 55%, transparent)" }}
+            title="Voir la bande-annonce"
+            aria-label="Bande-annonce"
+          >
+            <IoPlay size={13} />
+          </span>
+        </>
+      )}
     </button>
   );
 });

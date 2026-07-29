@@ -226,7 +226,8 @@ export default function Home() {
               catLabel={catLabelByKey[it.category] || it.category}
               isFav={isFavorite(it.id)} onToggleFav={() => { toggleFavorite(it.id); sfx("select"); }}
               onFocus={() => { if (i !== focusIndex) { sfx("hover"); focusSrc.current = "hover"; setFocusIndex(i); } }}
-              onClick={() => open(it.id)} onResume={() => resume(it.id)} />
+              onClick={() => open(it.id)} onResume={() => resume(it.id)}
+              onTrailer={() => { sfx("select"); nav(`/oeuvre/${it.id}`, { state: { trailer: true } }); }} />
           ))}
           {items.length > 0 && <div className="flex-shrink-0 w-[42vw] md:w-[38vw]" aria-hidden="true" />}
         </div>

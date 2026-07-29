@@ -354,3 +354,9 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
 - **Bande-annonce inline (Detail.js)** : plus de bouton — section `detail-trailer-section` affichée sur la fiche comme la galerie (iframe sans autoplay via `resolveVideoEmbed(url,false)`, ou `<video>` si upload). `resolveVideoEmbed(url, autoplay=true)` accepte désormais un flag autoplay.
 - **Mode cinéma — contraste lumières + entrée (CinemaPlayer.js + index.css)** : lumières OFF (dim) = voile noir rgba(0,0,0,0.55) + forte vignette ; lumières ON = halo d'ambiance teinté thème + pas de voile (différence nette). Animation d'entrée : rideaux de velours teintés thème (`.cinema-curtain-l/-r`, keyframes `cinemaCurtainL/R`) qui s'ouvrent 1,15s + écran en fade/scale (`cinemaScreenIn`). État `intro` retiré après 1,2s.
 - Vérifié par captures : pad PC, bande-annonce inline, rideaux d'entrée, Bunny contexte cinéma.
+
+## Badge bande-annonce sur affiches (accueil) — 29/07/2026
+- `PosterCard.js` : prop `onTrailer`, calcule `hasTrailer`. Si bande-annonce présente → badge "▶ Bande-annonce" : pill visible au survol/focus sur PC (`hidden md:flex`, opacity liée à `focused`), badge compact fixe en coin sur mobile (`md:hidden`). Clic → `onTrailer` (stopPropagation).
+- `Home.js` : `onTrailer={() => nav('/oeuvre/'+id, { state:{ trailer:true } })}`.
+- `Detail.js` : effet qui scroll vers `detail-trailer-section` si `location.state.trailer`.
+- Vérifié par capture (badge rouge sur carte focalisée).

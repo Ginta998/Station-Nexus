@@ -60,6 +60,18 @@ export default function Detail() {
     // eslint-disable-next-line
   }, [location.state?.resume, item?.id]);
 
+  useEffect(() => {
+    if (location.state?.trailer && item) {
+      const t = setTimeout(() => {
+        const el = document.querySelector('[data-testid="detail-trailer-section"]');
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 500);
+      nav(location.pathname, { replace: true, state: {} });
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line
+  }, [location.state?.trailer, item?.id]);
+
   const recommendations = useMemo(() => {
     const others = allCreations.filter((c) => c.id !== id);
     for (let i = others.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [others[i], others[j]] = [others[j], others[i]]; }
