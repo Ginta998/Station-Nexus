@@ -261,7 +261,7 @@ export default function Home() {
                   {catLabelByKey[focused.category] || focused.category}
                 </span>
               </div>
-              <h1 className="font-display text-4xl md:text-6xl leading-none" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
+              <h1 className="font-display text-2xl sm:text-4xl md:text-6xl leading-tight md:leading-none break-words" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
               <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
             </div>
           ) : (
