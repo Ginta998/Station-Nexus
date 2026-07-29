@@ -244,8 +244,8 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
       <div className="absolute top-0 left-0 h-1 z-20" style={{ width: `${progress}%`, background: "var(--brand)", transition: "width 0.15s linear" }} />
 
       {/* header */}
-      <div ref={headerRef} className="sx-safe-top absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 md:px-8 py-3 border-b" data-testid="reader-header"
-        style={{ borderColor: "var(--border-c)", background: "rgba(0,0,0,0.35)", backdropFilter: "blur(10px)", transform: hideBars ? "translateY(-105%)" : "translateY(0)", transition: "transform 0.32s cubic-bezier(.2,.7,.2,1)" }}>
+      <div ref={headerRef} className="sx-reader-header absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 md:px-8 py-3 border-b" data-testid="reader-header"
+        style={{ borderColor: "var(--border-c)", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(12px)", opacity: hideBars ? 0 : 1, pointerEvents: hideBars ? "none" : "auto", transition: "opacity 0.4s ease" }}>
         <button data-testid="reader-toc-toggle" onClick={() => { sfx("nav"); setToc((v) => !v); }} className="flex items-center gap-2 px-3.5 py-2.5 border text-base" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }}>
           <IoListOutline size={24} /> <span className="hidden sm:inline">Sommaire</span>
         </button>
@@ -297,7 +297,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
 
       <div className="relative z-10 flex-1 flex overflow-hidden">
         {toc && (
-          <div className="absolute md:relative z-10 w-72 max-w-[80%] h-full overflow-y-auto border-r p-4 fade-up" style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(10px)", borderColor: "var(--border-c)" }} data-testid="reader-toc">
+          <div className="absolute md:relative z-10 w-72 max-w-[80%] h-full overflow-y-auto border-r p-4 fade-up" style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(10px)", borderColor: "var(--border-c)", paddingTop: headerH + 12 }} data-testid="reader-toc">
             <p className="text-xs uppercase tracking-widest mb-3" style={{ color: "var(--text-secondary)" }}>Chapitres</p>
             {chapters.map((c, i) => (
               <button key={c.id || i} onClick={() => { sfx("select"); setIdx(i); setToc(false); }}

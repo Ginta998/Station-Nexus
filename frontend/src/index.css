@@ -398,7 +398,7 @@ body {
 
 /* Prise en compte du notch / encoche (safe-area) sur mobile */
 @media (max-width: 767px) {
-  .sx-header { padding-top: calc(1.5rem + env(safe-area-inset-top, 0px)); }
+  .sx-header { padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
   .sx-bottom-bar { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
 }
 
@@ -420,3 +420,8 @@ body {
 .sx-safe-top { margin-top: env(safe-area-inset-top, 0px); }
 :fullscreen .sx-safe-top { margin-top: calc(1.75rem + env(safe-area-inset-top, 0px)); }
 :-webkit-full-screen .sx-safe-top { margin-top: calc(1.75rem + env(safe-area-inset-top, 0px)); }
+
+/* En-tête du lecteur : le fond sombre monte jusqu'en haut (padding, pas de marge -> aucune coupure) */
+.sx-reader-header { padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important; }
+:fullscreen .sx-reader-header { padding-top: calc(2.25rem + env(safe-area-inset-top, 0px)) !important; }
+:-webkit-full-screen .sx-reader-header { padding-top: calc(2.25rem + env(safe-area-inset-top, 0px)) !important; }
