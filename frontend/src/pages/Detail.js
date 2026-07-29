@@ -157,7 +157,7 @@ export default function Detail() {
       </div>
 
       <div className="relative z-10">
-        <div className="flex items-center justify-between px-5 md:px-12 pt-6">
+        <div className="sx-safe-top flex items-center justify-between px-5 md:px-12 pt-6">
           <div className="flex items-center gap-2">
             <button data-testid="detail-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={btn}>
               <IoArrowBack /> <span className="text-sm">Retour</span>

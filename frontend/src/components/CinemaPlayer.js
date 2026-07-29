@@ -84,7 +84,7 @@ export default function CinemaPlayer({ item, kind = "film", onClose }) {
       )}
 
       {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 md:px-8 py-4" style={barStyle}>
+      <div className="sx-safe-top absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 md:px-8 py-4" style={barStyle}>
         <div className="flex items-center gap-2.5 min-w-0">
           <IoFilmOutline size={20} style={{ color: "var(--brand)", flexShrink: 0 }} />
           <div className="min-w-0">

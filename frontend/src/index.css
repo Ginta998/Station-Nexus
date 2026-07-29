@@ -413,3 +413,8 @@ body {
 :fullscreen .sx-drawer-footer { padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px)); }
 :-webkit-full-screen .sx-drawer-header { padding-top: calc(2.75rem + env(safe-area-inset-top, 0px)); }
 :-webkit-full-screen .sx-drawer-footer { padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px)); }
+
+/* Barres du haut (fiche, mode lecture, mode film) : décalage additif pour l'encoche caméra, renforcé en plein écran */
+.sx-safe-top { margin-top: env(safe-area-inset-top, 0px); }
+:fullscreen .sx-safe-top { margin-top: calc(1.75rem + env(safe-area-inset-top, 0px)); }
+:-webkit-full-screen .sx-safe-top { margin-top: calc(1.75rem + env(safe-area-inset-top, 0px)); }
