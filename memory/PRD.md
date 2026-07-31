@@ -445,3 +445,13 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 ### À faire plus tard (backlog monétisation)
 - Réclamer le compte Stripe (onboarding_url dans /tmp/sandbox.json) pour passer en LIVE et encaisser réellement.
 - Optionnel : prix par chapitre individuel, codes promo, page "revenus" créateur.
+
+## Paliers d'abonnement + page Soutien + statuts — 31/07/2026
+- **3 paliers** (Soutien 5€ / Mécène 10€ / Légende 15€) : même accès (tout le catalogue payant), diffèrent par nom/prix/avantages, modifiables par l'admin. Backend: SiteSettings.membership_tiers (liste), checkout accepte tier_id, membership_plan renvoie tiers + page_title/body. memberships stocke tier_id.
+- **Page dédiée /soutien** (SupportPage.js) : bulle Cosmic Bunny, titre + paragraphes éditables, 3 cartes paliers avec S'abonner. Éditable en mode création (isAdmin) : titre/corps/paliers, sauvegarde via updateSettings (merge complet requis). Entrées menu: support-btn (desktop) + menu-support (mobile). Library renvoie vers /soutien.
+- **CTA accueil** (home-support-cta) sous le tagline si abonnement activé -> /soutien.
+- **Compte OBLIGATOIRE pour profil** : Home.requireProfile ouvre l'auth si !user (TopBar onProfile + ProfilePrompt). Rappel: profil = nom/avatar local ; compte = cloud + achats. Achats/abonnements liés au COMPTE.
+- **Statuts fiches** : Creation.status ("en_cours"|"a_venir"|"termine"). Badges couleurs: En cours=orange #ff7a00, À venir=bleu #4d8dff, Terminé=jade #00e5a0. Sur PosterCard (poster-status-{id}) + Detail (detail-status-badge). Éditeur: select editor-status. coming_soon -> a_venir en fallback.
+- **Payant ne masque plus** le nombre de chapitres/épisodes (liste conservée, chapitres verrouillés = contenu vidé + locked=true). Acheteur ET abonné ont accès aux chapitres FUTURS (accès par création).
+- Tests: /app/backend/tests/test_monetization_tiers.py 7/7 + frontend E2E 100% (iteration_17.json). Aucun bug.
+- Note review (non bloquant): PUT /api/settings exige le body complet (le frontend l'envoie toujours entier via getSettings+merge).
