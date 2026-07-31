@@ -18,12 +18,7 @@ export default function Library() {
   const btn = { border: "1px solid var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)", background: "var(--bg-secondary)" };
   const primary = { background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" };
 
-  const subscribe = async () => {
-    if (!user) { openAuth(); return; }
-    setBusy(true);
-    try { const r = await startCheckout({ kind: "membership" }); window.location.href = r.checkout_url; }
-    catch (e) { toast.error(e?.response?.data?.detail || "Impossible de démarrer l'abonnement"); setBusy(false); }
-  };
+  const subscribe = async () => { nav("/soutien"); };
   const doCancel = async () => {
     if (!window.confirm("Résilier ton abonnement à la fin de la période en cours ?")) return;
     try { await cancelMembership(); toast.success("Abonnement résilié à la fin de la période."); refetch(); }
@@ -65,14 +60,14 @@ export default function Library() {
                 </ul>
               </div>
               <div className="text-right">
-                <p className="font-display text-3xl">{plan.price_eur}€<span className="text-sm" style={{ color: "var(--text-secondary)" }}>/mois</span></p>
+                <p className="font-display text-3xl">Dès {Math.min(...((plan.tiers && plan.tiers.length ? plan.tiers.map((t) => t.price_eur) : [plan.price_eur])))}€<span className="text-sm" style={{ color: "var(--text-secondary)" }}>/mois</span></p>
                 {membership.active ? (
                   <div className="mt-2">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold" style={{ ...primary }} data-testid="membership-active"><IoCheckmarkCircle size={16} /> Abonné actif</span>
                     <button data-testid="membership-cancel" onClick={doCancel} className="block mt-2 text-xs underline" style={{ color: "var(--text-secondary)" }}>Résilier</button>
                   </div>
                 ) : (
-                  <button data-testid="membership-subscribe" disabled={busy} onClick={subscribe} className="mt-2 px-5 py-2.5 font-semibold disabled:opacity-60" style={primary}>{busy ? "…" : "S'abonner"}</button>
+                  <button data-testid="membership-subscribe" onClick={subscribe} className="mt-2 px-5 py-2.5 font-semibold" style={primary}>Voir les formules</button>
                 )}
               </div>
             </div>

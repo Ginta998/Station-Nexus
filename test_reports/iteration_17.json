@@ -1,0 +1,25 @@
+{
+  "summary": "Iteration-17 verification of Station Nexus monetization increment: 3 subscription tiers (Soutien 5€ / Mécène 10€ / Légende 15€), /soutien page, mandatory account for profile, creation status badges, and paid-creation chapter preservation. Backend: 7/7 pytest tests pass (test_monetization_tiers.py). Frontend: Playwright E2E covers /soutien tiers rendering + Cosmic Bunny image, S'abonner logged-out → auth dialog, TopBar support-btn+library-btn, home-support-cta navigates to /soutien, detail status badge 'En cours' (orange) on paid creation, detail-subscribe navigates to /soutien, and ProfilePrompt 'Créer mon profil' correctly opens the auth dialog when logged out (account is mandatory). Membership settings were edited and restored to defaults (Soutien 5 / Mécène 10 / Légende 15).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_monetization_tiers.py",
+    "/app/backend/tests/test_monetization.py",
+    "/app/test_reports/pytest/iter17_tiers.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "PUT /api/settings requires a FULL SiteSettings body (Pydantic model). Any admin UI or tester must GET current settings first and merge; sending a partial dict silently loses fields. Consider switching to a partial-update variant (PATCH) or accepting Dict[str, Any] server-side to prevent accidental data loss.",
+    "SupportPage.subscribe() sets busy=true and never resets it on success (only on error). Fine because it triggers a full window.location.href redirect, but if Stripe redirect ever fails silently, the button stays disabled. Minor UX safety net could reset busy after a timeout."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_monetization_tiers.py"
+  ],
+  "success_rate": {"backend": "100% (7/7)", "frontend": "100% of tested flows"},
+  "seed_data_creation": "Ensured paytest@stationexus.com/password123 exists. Temporarily seeded 3 chapters on creation 876fcaf5-... to prove chapters array preservation when locked, then restored to original (0 chapters). Set creation status='en_cours' on 876fcaf5-... per task requirement (left in place for frontend badge testing).",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "paytest@stationexus.com / password123",
+  "context_for_next_testing_agent": "Backend: PUT /api/settings requires the full SiteSettings body; tests must GET first, merge, then PUT. Membership tiers/page defaults are restored automatically by test_settings_membership_edit_persists_and_restore. Creation 876fcaf5-6858-4202-a56a-4a2c428eb3a8 currently has status='en_cours' (orange badge) and 0 chapters in DB; if you need chapters, seed them via PUT /api/creations/{id}. Frontend: pre-set localStorage sx_entered='1', sx_intro_shown='1', sx_profile_prompted='1' to skip splash/prompt; the auth dialog appears with email/password inputs (data-testid not on every element — use input[type=email]).",
+  "rca_of_the_issue": "No functional defects found. The initial unit-test failure ('0 chapters returned') was a test-side assumption — the paid creation genuinely has 0 chapters seeded in DB; after temporarily seeding 3 chapters the gating logic correctly preserved the array (count=3) with locked=true and empty content for beyond-free entries, and free chapter (index 0) kept its content."
+}

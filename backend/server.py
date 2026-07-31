@@ -149,6 +149,7 @@ class Creation(BaseModel):
     is_paid: bool = False               # monetization: requires purchase or membership
     price_eur: float = 0.0              # unit price in euros
     free_chapters: int = 0              # number of first chapters readable for free (chapters launch_type)
+    status: str = ""                    # "en_cours" | "a_venir" | "termine" | ""
     locked: bool = False                # computed for the requesting user: no access to paid content
     owned: bool = False                 # computed: current user owns this creation (unit purchase)
     created_at: str = Field(default_factory=now_iso)
@@ -187,6 +188,7 @@ class CreationInput(BaseModel):
     is_paid: bool = False
     price_eur: float = 0.0
     free_chapters: int = 0
+    status: str = ""
 
 
 class Category(BaseModel):
@@ -305,6 +307,18 @@ class SiteSettings(BaseModel):
         "Nouveaux chapitres en avant-première",
         "Soutiens directement le créateur",
     ])
+    membership_tiers: List[dict] = Field(default_factory=lambda: [
+        {"id": "soutien", "name": "Soutien", "price_eur": 5.0, "perks": ["Accès à tout le catalogue payant", "Tu soutiens la station 🚀"]},
+        {"id": "mecene", "name": "Mécène", "price_eur": 10.0, "perks": ["Tous les avantages Soutien", "Avantages exclusifs (à venir)"]},
+        {"id": "legende", "name": "Légende", "price_eur": 15.0, "perks": ["Tous les avantages Mécène", "Ton nom au générique (à venir)"]},
+    ])
+    membership_page_title: str = "L'abonnement Nexus — soutiens la station"
+    membership_page_body: str = (
+        "Station Nexus, c'est mon univers de créations — livres, films et séries — que je façonne avec passion.\n\n"
+        "En t'abonnant, tu débloques l'accès à tout le catalogue payant ET tu soutiens directement le créateur : "
+        "chaque abonnement finance les prochaines œuvres, les nouveaux chapitres et l'amélioration de la station.\n\n"
+        "Choisis le palier qui te ressemble. Tu peux résilier à tout moment."
+    )
     cosmic_bunny_tips: Dict[str, List[Dict[str, str]]] = Field(default_factory=lambda: {
         "home": [
             {"text": "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", "button_label": "Personnaliser la station ⚙️", "button_target": "/parametres"},
@@ -1310,6 +1324,7 @@ def _create_session(price_id: str, mode: str, origin: str, metadata: dict):
 class CheckoutInput(BaseModel):
     kind: str  # "creation" | "membership"
     creation_id: Optional[str] = None
+    tier_id: Optional[str] = None
     origin_url: str
 
 
@@ -1336,7 +1351,7 @@ async def _grant(session_id: str):
                 pass
         await db.memberships.update_one(
             {"user_id": uid},
-            {"$set": {"user_id": uid, "status": "active", "stripe_subscription_id": sub_id,
+            {"$set": {"user_id": uid, "status": "active", "tier_id": rec.get("tier_id"), "stripe_subscription_id": sub_id,
                       "current_period_end": cpe, "updated_at": now}},
             upsert=True,
         )
@@ -1360,15 +1375,25 @@ async def create_checkout(data: CheckoutInput, user=Depends(get_current_user)):
         s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
         if not s.get("membership_enabled"):
             raise HTTPException(400, "L'abonnement n'est pas activé")
-        amount = round(float(s.get("membership_price_eur") or 5.0) * 100)
-        price_id = _ensure_price("sx_membership_monthly", s.get("membership_title") or "Soutien Nexus", amount, interval="month")
-        meta = {"user_id": user["id"], "kind": "membership"}
+        tiers = s.get("membership_tiers") or []
+        tier = next((t for t in tiers if t.get("id") == data.tier_id), None) or (tiers[0] if tiers else None)
+        if tier:
+            amount = round(float(tier.get("price_eur") or 5.0) * 100)
+            tier_id = tier.get("id") or "soutien"
+            tname = tier.get("name") or "Soutien"
+        else:
+            amount = round(float(s.get("membership_price_eur") or 5.0) * 100)
+            tier_id = "soutien"
+            tname = s.get("membership_title") or "Soutien Nexus"
+        price_id = _ensure_price(f"sx_membership_{tier_id}", f"Abonnement Nexus · {tname}", amount, interval="month")
+        meta = {"user_id": user["id"], "kind": "membership", "tier_id": tier_id}
         session = _create_session(price_id, "subscription", origin, meta)
     else:
         raise HTTPException(400, "Type d'achat inconnu")
     await db.payment_transactions.insert_one({
         "session_id": session.id, "user_id": user["id"], "kind": data.kind,
         "creation_id": data.creation_id if data.kind == "creation" else None,
+        "tier_id": data.tier_id if data.kind == "membership" else None,
         "amount": amount, "currency": "eur", "status": "initiated", "payment_status": "pending",
         "granted": False, "created_at": datetime.now(timezone.utc).isoformat(),
     })
@@ -1425,7 +1450,17 @@ async def stripe_webhook(request: Request):
 @api_router.get("/membership/plan")
 async def membership_plan():
     s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
-    return {"enabled": bool(s.get("membership_enabled")), "price_eur": s.get("membership_price_eur") or 5.0,
+    tiers = s.get("membership_tiers")
+    if not tiers:
+        tiers = SiteSettings().membership_tiers
+    body = s.get("membership_page_body")
+    if body is None:
+        body = SiteSettings().membership_page_body
+    return {"enabled": bool(s.get("membership_enabled")), "tiers": tiers,
+            "page_title": s.get("membership_page_title") or "L'abonnement Nexus",
+            "page_body": body or "",
+            # backward compat
+            "price_eur": s.get("membership_price_eur") or (tiers[0]["price_eur"] if tiers else 5.0),
             "title": s.get("membership_title") or "Soutien Nexus",
             "perks": s.get("membership_perks") or []}
 
@@ -1446,7 +1481,7 @@ async def my_library(user=Depends(get_current_user)):
         items = [Creation(**_lighten(d)) for d in docs]
     m = await db.memberships.find_one({"user_id": user["id"]}, {"_id": 0})
     active = await _membership_active(user["id"])
-    return {"creations": items, "membership": {"active": active, "current_period_end": (m or {}).get("current_period_end")}}
+    return {"creations": items, "membership": {"active": active, "tier_id": (m or {}).get("tier_id"), "current_period_end": (m or {}).get("current_period_end")}}
 
 
 @api_router.post("/membership/cancel")

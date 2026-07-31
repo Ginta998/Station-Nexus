@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoChevronForward, IoChevronBack, IoChevronUp, IoChevronDown, IoCreateOutline, IoTrashOutline, IoPlay, IoFilter, IoSearch } from "react-icons/io5";
 import { toast } from "sonner";
-import { listCreations, listCategories, deleteCreation } from "@/lib/api";
+import { listCreations, listCategories, deleteCreation, getMembershipPlan } from "@/lib/api";
 import { posterUrl, bgUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
 import TopBar from "@/components/TopBar";
 import PosterCard from "@/components/PosterCard";
 import CreationsGridList from "@/components/CreationsGridList";
@@ -20,8 +21,11 @@ const FAV = "__fav__";
 export default function Home() {
   const nav = useNavigate();
   const { isAdmin, sfx, favorites, isFavorite, toggleFavorite, layout } = useApp();
+  const { user, openAuth } = useAuth();
+  const requireProfile = () => { if (!user) { toast.info("Crée un compte pour avoir ton profil (nom + avatar) sauvegardé partout."); openAuth(); } else setProfileOpen(true); };
   const { data: all = [], refetch, isLoading } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
+  const { data: memberPlan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
 
   const [catIndex, setCatIndex] = useState(0);
   const [focusIndex, setFocusIndex] = useState(0);
@@ -211,7 +215,7 @@ export default function Home() {
       )}
 
       <div className="relative z-10 flex flex-col h-full">
-        <TopBar onAdd={openCreate} onProfile={() => setProfileOpen(true)} />
+        <TopBar onAdd={openCreate} onProfile={requireProfile} />
 
         <nav className="flex items-center gap-2 md:gap-3 px-5 md:px-12 mt-6 md:mt-8 overflow-x-auto hide-scrollbar" data-testid="category-nav">
           {tabs.map((c, i) => {
@@ -263,6 +267,13 @@ export default function Home() {
               </div>
               <h1 className="font-display text-2xl sm:text-4xl md:text-6xl leading-tight md:leading-none break-words" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
               <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
+              {memberPlan?.enabled && (
+                <button data-testid="home-support-cta" onClick={() => { sfx("select"); nav("/soutien"); }}
+                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-transform hover:scale-105"
+                  style={{ background: "rgba(0,0,0,0.4)", border: "1px solid var(--brand)", color: "var(--brand)", borderRadius: "var(--radius-base)", backdropFilter: "blur(4px)" }}>
+                  ✨ Soutiens la station & débloque tout le catalogue
+                </button>
+              )}
             </div>
           ) : (
             <p style={{ color: "var(--text-secondary)" }}>{isLoading ? "Chargement…" : "Aucune création."}</p>
@@ -333,7 +344,7 @@ export default function Home() {
 
       <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} />
       <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
-      <ProfilePrompt onCreate={() => setProfileOpen(true)} />
+      <ProfilePrompt onCreate={requireProfile} />
     </div>
   );
 }

@@ -8,7 +8,7 @@ const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
   poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0,
+  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
 };
 
 const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
@@ -374,9 +374,16 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2"><Label>Statut</Label>
+              <select data-testid="editor-status" value={form.status || ""} onChange={(e) => set("status", e.target.value)} className="px-3 py-2 border outline-none" style={fs}>
+                <option value="">Aucun</option>
+                <option value="en_cours">🟠 En cours</option>
+                <option value="a_venir">🔵 À venir</option>
+                <option value="termine">🟢 Terminé</option>
+              </select></div>
             <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: "var(--text-primary)" }}>
-              <input type="checkbox" data-testid="editor-coming-soon" checked={form.coming_soon} onChange={(e) => set("coming_soon", e.target.checked)} /> À venir
+              <input type="checkbox" data-testid="editor-coming-soon" checked={form.coming_soon} onChange={(e) => set("coming_soon", e.target.checked)} /> À venir (date de sortie)
             </label>
             <div className="flex items-center gap-2"><Label>Ordre</Label>
               <input data-testid="editor-order" type="number" value={form.order} onChange={(e) => set("order", e.target.value)} className="w-20 px-2 py-1 border outline-none" style={fs} /></div>

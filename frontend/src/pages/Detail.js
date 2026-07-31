@@ -120,12 +120,7 @@ export default function Detail() {
     try { const r = await startCheckout({ kind: "creation", creation_id: item.id }); window.location.href = r.checkout_url; }
     catch (e) { toast.error(e?.response?.data?.detail || "Impossible de démarrer l'achat"); setBuying(false); }
   };
-  const subscribe = async () => {
-    if (!user) { toast.info("Connecte-toi pour t'abonner."); openAuth(); return; }
-    setBuying(true);
-    try { const r = await startCheckout({ kind: "membership" }); window.location.href = r.checkout_url; }
-    catch (e) { toast.error(e?.response?.data?.detail || "Impossible de démarrer l'abonnement"); setBuying(false); }
-  };
+  const subscribe = async () => { sfx("select"); nav("/soutien"); };
 
   const launch = () => {
     sfx("select");
@@ -235,6 +230,11 @@ export default function Detail() {
             <div className="flex items-center gap-3 mb-3 flex-wrap">
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="detail-category">{catLabel}</span>
               <span className="font-display text-2xl" style={{ color: "var(--brand)" }}>{item.kanji}</span>
+              {(() => {
+                const st = item.status || (item.coming_soon ? "a_venir" : "");
+                const META = { en_cours: { label: "En cours", bg: "#ff7a00", fg: "#1a0f00" }, a_venir: { label: "À venir", bg: "#4d8dff", fg: "#00122e" }, termine: { label: "✓ Terminé", bg: "#00e5a0", fg: "#04241a" } }[st];
+                return META ? <span data-testid="detail-status-badge" className="px-2 py-0.5 text-[10px] uppercase tracking-widest font-semibold" style={{ background: META.bg, color: META.fg }}>{META.label}</span> : null;
+              })()}
               {item.is_paid && (access ? (
                 <span data-testid="detail-owned-badge" className="px-2 py-0.5 text-[10px] uppercase tracking-widest font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>✓ Débloqué</span>
               ) : (
@@ -299,7 +299,7 @@ export default function Detail() {
                     <button data-testid="detail-subscribe" disabled={buying} onClick={subscribe}
                       className="flex items-center gap-2 px-6 py-3 font-medium border transition-transform hover:scale-105 disabled:opacity-60"
                       style={{ ...btn }}>
-                      ✨ S'abonner · {plan.price_eur}€/mois
+                      ✨ S'abonner · dès {Math.min(...((plan.tiers && plan.tiers.length ? plan.tiers.map((t) => t.price_eur) : [plan.price_eur || 5])))}€/mois
                     </button>
                   )}
                 </div>
