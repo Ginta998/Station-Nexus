@@ -16,6 +16,7 @@ import uuid
 from datetime import datetime, timezone, timedelta
 import jwt
 import httpx
+import stripe
 from pwdlib import PasswordHash
 
 
@@ -98,6 +99,7 @@ class Chapter(BaseModel):
     image: Optional[str] = ""  # data uri / url
     rich: bool = False          # content is sanitized HTML (WYSIWYG) vs plain text
     has_music: bool = False     # dedicated per-chapter reading music
+    locked: bool = False        # computed: chapter requires purchase/subscription (content stripped)
 
 
 class Embed(BaseModel):
@@ -144,6 +146,11 @@ class Creation(BaseModel):
     release_month: Optional[str] = ""   # French month name or ""
     release_year: Optional[str] = ""    # e.g. "2026" or ""
     order: int = 0
+    is_paid: bool = False               # monetization: requires purchase or membership
+    price_eur: float = 0.0              # unit price in euros
+    free_chapters: int = 0              # number of first chapters readable for free (chapters launch_type)
+    locked: bool = False                # computed for the requesting user: no access to paid content
+    owned: bool = False                 # computed: current user owns this creation (unit purchase)
     created_at: str = Field(default_factory=now_iso)
     updated_at: str = Field(default_factory=now_iso)
 
@@ -177,6 +184,9 @@ class CreationInput(BaseModel):
     release_month: Optional[str] = ""
     release_year: Optional[str] = ""
     order: int = 0
+    is_paid: bool = False
+    price_eur: float = 0.0
+    free_chapters: int = 0
 
 
 class Category(BaseModel):
@@ -287,6 +297,14 @@ class SiteSettings(BaseModel):
     ])
     cosmic_bunny_enabled: bool = True
     cosmic_bunny_image: Optional[str] = ""
+    membership_enabled: bool = False
+    membership_price_eur: float = 5.0
+    membership_title: str = "Soutien Nexus"
+    membership_perks: List[str] = Field(default_factory=lambda: [
+        "Accès à tout le catalogue payant",
+        "Nouveaux chapitres en avant-première",
+        "Soutiens directement le créateur",
+    ])
     cosmic_bunny_tips: Dict[str, List[Dict[str, str]]] = Field(default_factory=lambda: {
         "home": [
             {"text": "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", "button_label": "Personnaliser la station ⚙️", "button_target": "/parametres"},
@@ -356,6 +374,75 @@ def _lighten(doc: dict, keep_gallery_chapters: bool = False) -> dict:
     return doc
 
 
+# ---------------- Monetization helpers ----------------
+async def _optional_uid(authorization: Optional[str]):
+    if not authorization or not authorization.lower().startswith("bearer "):
+        return None
+    try:
+        payload = jwt.decode(authorization.split(" ", 1)[1], os.environ['JWT_SECRET'], algorithms=["HS256"])
+        return payload.get("sub")
+    except Exception:
+        return None
+
+
+async def _membership_active(uid: Optional[str]) -> bool:
+    if not uid:
+        return False
+    m = await db.memberships.find_one({"user_id": uid, "status": "active"}, {"_id": 0})
+    if not m:
+        return False
+    cpe = m.get("current_period_end")
+    if cpe:
+        try:
+            if datetime.fromisoformat(cpe) < datetime.now(timezone.utc):
+                return False
+        except Exception:
+            pass
+    return True
+
+
+async def _user_owns(uid: Optional[str], cid: str) -> bool:
+    if not uid:
+        return False
+    return bool(await db.purchases.find_one({"user_id": uid, "creation_id": cid}))
+
+
+async def _user_has_access(uid: Optional[str], doc: dict) -> bool:
+    """Full access to a creation's paid content."""
+    if not doc.get("is_paid"):
+        return True
+    if not uid:
+        return False
+    if await _user_owns(uid, doc["id"]):
+        return True
+    return await _membership_active(uid)
+
+
+def _gate_creation(doc: dict, has_access: bool, owned: bool) -> dict:
+    """Strip locked chapter content and flag the creation for the frontend paywall."""
+    doc["owned"] = owned
+    is_paid = bool(doc.get("is_paid"))
+    if not is_paid or has_access:
+        doc["locked"] = False
+        for ch in (doc.get("chapters") or []):
+            ch["locked"] = False
+        return doc
+    free_n = int(doc.get("free_chapters") or 0)
+    chapters = doc.get("chapters") or []
+    for i, ch in enumerate(chapters):
+        if i < free_n:
+            ch["locked"] = False
+        else:
+            ch["locked"] = True
+            ch["content"] = ""
+            ch["image"] = ""
+    # Film/reader creations without free chapters are fully locked
+    doc["locked"] = True
+    if doc.get("launch_type") == "chapters" and free_n > 0:
+        doc["locked"] = False  # some chapters are readable; per-chapter lock applies
+    return doc
+
+
 # ---------------- Creations ----------------
 @api_router.get("/creations", response_model=List[Creation])
 async def list_creations(category: Optional[str] = None):
@@ -365,16 +452,22 @@ async def list_creations(category: Optional[str] = None):
 
 
 @api_router.get("/creations/{cid}", response_model=Creation)
-async def get_creation(cid: str, media: bool = False):
+async def get_creation(cid: str, media: bool = False, authorization: Optional[str] = Header(None)):
     doc = await db.creations.find_one({"id": cid}, {"_id": 0})
     if not doc:
         raise HTTPException(404, "Création introuvable")
+    # Resolve viewer entitlement (optional auth) for paywall gating
+    uid = await _optional_uid(authorization)
+    has_access = await _user_has_access(uid, doc)
+    owned = await _user_owns(uid, cid)
     if media:
         doc["has_poster"] = bool(doc.get("poster"))
         doc["has_bg"] = bool(doc.get("bg_image"))
         doc["chapters_count"] = len(doc.get("chapters") or [])
+        doc = _gate_creation(doc, has_access, owned)
         return Creation(**doc)
-    return Creation(**_lighten(doc, keep_gallery_chapters=True))
+    doc = _gate_creation(_lighten(doc, keep_gallery_chapters=True), has_access, owned)
+    return Creation(**doc)
 
 
 @api_router.get("/creations/{cid}/poster")
@@ -1146,6 +1239,226 @@ async def auth_claim_admin(data: ClaimAdminInput, user=Depends(get_current_user)
     await db.users.update_one({"id": user["id"]}, {"$set": {"is_admin": True}})
     u = await db.users.find_one({"id": user["id"]}, {"_id": 0})
     return {"user": _public_user(u)}
+
+
+# ---------------- Stripe monetization ----------------
+stripe.api_key = os.environ.get("STRIPE_SECRET_KEY") or os.environ.get("STRIPE_API_KEY") or "sk_test_emergent"
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+_tax_ready = False
+
+
+def _ensure_tax():
+    global _tax_ready
+    if _tax_ready:
+        return
+    try:
+        s = stripe.tax.Settings.retrieve()
+        if not (s.get("head_office") and s["head_office"].get("address")):
+            stripe.tax.Settings.modify(
+                head_office={"address": {"country": "FR", "line1": "1 Rue de la Station", "city": "Paris", "postal_code": "75001"}},
+                defaults={"tax_behavior": "exclusive"},
+            )
+    except Exception as e:
+        logging.getLogger(__name__).warning("tax settings: %s", e)
+    _tax_ready = True
+
+
+def _ensure_price(lookup_key: str, name: str, amount_cents: int, interval: Optional[str] = None):
+    """Idempotent Stripe Product+Price by lookup_key. Recreates price if amount changed."""
+    existing = stripe.Price.list(lookup_keys=[lookup_key], active=True, limit=1, expand=["data.product"]).data
+    if existing:
+        p = existing[0]
+        if p.unit_amount == amount_cents and p.currency == "eur":
+            return p.id
+        stripe.Price.modify(p.id, active=False)
+    # find/create product
+    product = None
+    for pr in stripe.Product.list(active=True, limit=100).auto_paging_iter():
+        if pr.get("metadata", {}).get("sx_lookup") == lookup_key:
+            product = pr
+            break
+    if product is None:
+        product = stripe.Product.create(name=name, tax_code="txcd_10302000",
+                                        metadata={"managed_by": "stationexus", "sx_lookup": lookup_key})
+    kwargs = dict(product=product.id, unit_amount=amount_cents, currency="eur",
+                  lookup_key=lookup_key, transfer_lookup_key=True)
+    if interval:
+        kwargs["recurring"] = {"interval": interval}
+    return stripe.Price.create(**kwargs).id
+
+
+def _create_session(price_id: str, mode: str, origin: str, metadata: dict):
+    kwargs = dict(
+        line_items=[{"price": price_id, "quantity": 1}],
+        mode=mode,
+        success_url=f"{origin}/payment/success?session_id={{CHECKOUT_SESSION_ID}}",
+        cancel_url=f"{origin}/payment/cancel",
+        metadata=metadata,
+    )
+    if mode == "subscription":
+        kwargs["subscription_data"] = {"metadata": metadata}
+    try:
+        _ensure_tax()
+        return stripe.checkout.Session.create(**kwargs, managed_payments={"enabled": True})
+    except Exception:
+        try:
+            return stripe.checkout.Session.create(**kwargs)  # plain fallback (no tax help)
+        except stripe.error.StripeError as e:
+            raise HTTPException(500, f"Stripe: {getattr(e, 'user_message', None) or str(e)}")
+
+
+class CheckoutInput(BaseModel):
+    kind: str  # "creation" | "membership"
+    creation_id: Optional[str] = None
+    origin_url: str
+
+
+async def _grant(session_id: str):
+    """Idempotently grant entitlement for a paid session."""
+    rec = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+    if not rec or rec.get("granted"):
+        return
+    uid = rec.get("user_id")
+    now = datetime.now(timezone.utc).isoformat()
+    if rec.get("kind") == "creation" and rec.get("creation_id") and uid:
+        await db.purchases.update_one(
+            {"user_id": uid, "creation_id": rec["creation_id"]},
+            {"$set": {"user_id": uid, "creation_id": rec["creation_id"], "session_id": session_id, "created_at": now}},
+            upsert=True,
+        )
+    elif rec.get("kind") == "membership" and uid:
+        sub_id, cpe = rec.get("stripe_subscription_id"), None
+        if sub_id:
+            try:
+                sub = stripe.Subscription.retrieve(sub_id)
+                cpe = datetime.fromtimestamp(sub["current_period_end"], tz=timezone.utc).isoformat()
+            except Exception:
+                pass
+        await db.memberships.update_one(
+            {"user_id": uid},
+            {"$set": {"user_id": uid, "status": "active", "stripe_subscription_id": sub_id,
+                      "current_period_end": cpe, "updated_at": now}},
+            upsert=True,
+        )
+    await db.payment_transactions.update_one({"session_id": session_id}, {"$set": {"granted": True}})
+
+
+@api_router.post("/payments/checkout")
+async def create_checkout(data: CheckoutInput, user=Depends(get_current_user)):
+    origin = data.origin_url.rstrip("/")
+    if data.kind == "creation":
+        cr = await db.creations.find_one({"id": data.creation_id}, {"_id": 0})
+        if not cr:
+            raise HTTPException(404, "Création introuvable")
+        if not cr.get("is_paid") or (cr.get("price_eur") or 0) <= 0:
+            raise HTTPException(400, "Cette création n'est pas payante")
+        amount = round(float(cr["price_eur"]) * 100)
+        price_id = _ensure_price(f"sx_creation_{cr['id']}", cr["title"][:60], amount)
+        meta = {"user_id": user["id"], "kind": "creation", "creation_id": cr["id"]}
+        session = _create_session(price_id, "payment", origin, meta)
+    elif data.kind == "membership":
+        s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
+        if not s.get("membership_enabled"):
+            raise HTTPException(400, "L'abonnement n'est pas activé")
+        amount = round(float(s.get("membership_price_eur") or 5.0) * 100)
+        price_id = _ensure_price("sx_membership_monthly", s.get("membership_title") or "Soutien Nexus", amount, interval="month")
+        meta = {"user_id": user["id"], "kind": "membership"}
+        session = _create_session(price_id, "subscription", origin, meta)
+    else:
+        raise HTTPException(400, "Type d'achat inconnu")
+    await db.payment_transactions.insert_one({
+        "session_id": session.id, "user_id": user["id"], "kind": data.kind,
+        "creation_id": data.creation_id if data.kind == "creation" else None,
+        "amount": amount, "currency": "eur", "status": "initiated", "payment_status": "pending",
+        "granted": False, "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    return {"checkout_url": session.url, "session_id": session.id}
+
+
+@api_router.get("/payments/status/{session_id}")
+async def payment_status(session_id: str):
+    rec = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+    if not rec:
+        raise HTTPException(404, "Transaction introuvable")
+    if rec.get("payment_status") != "paid":
+        try:
+            s = stripe.checkout.Session.retrieve(session_id)
+            if s.payment_status == "paid" or s.status == "complete":
+                await db.payment_transactions.update_one(
+                    {"session_id": session_id, "payment_status": {"$ne": "paid"}},
+                    {"$set": {"status": "completed", "payment_status": "paid",
+                              "stripe_subscription_id": s.get("subscription"),
+                              "stripe_payment_intent_id": s.get("payment_intent"),
+                              "updated_at": datetime.now(timezone.utc).isoformat()}},
+                )
+                await _grant(session_id)
+                rec = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+        except stripe.error.StripeError:
+            pass
+    return {"session_id": rec["session_id"], "status": rec["status"], "payment_status": rec["payment_status"], "kind": rec.get("kind")}
+
+
+@api_router.post("/stripe/webhook")
+async def stripe_webhook(request: Request):
+    payload = await request.body()
+    sig = request.headers.get("stripe-signature", "")
+    try:
+        event = stripe.Webhook.construct_event(payload, sig, STRIPE_WEBHOOK_SECRET)
+    except Exception:
+        raise HTTPException(400, "Signature invalide")
+    obj, t = event["data"]["object"], event["type"]
+    if t == "checkout.session.completed":
+        await db.payment_transactions.update_one(
+            {"session_id": obj["id"], "payment_status": {"$ne": "paid"}},
+            {"$set": {"status": "completed", "payment_status": obj.get("payment_status", "paid"),
+                      "stripe_subscription_id": obj.get("subscription"),
+                      "stripe_payment_intent_id": obj.get("payment_intent"),
+                      "updated_at": datetime.now(timezone.utc).isoformat()}},
+        )
+        await _grant(obj["id"])
+    elif t in ("customer.subscription.deleted",):
+        await db.memberships.update_one({"stripe_subscription_id": obj.get("id")},
+                                        {"$set": {"status": "canceled", "updated_at": datetime.now(timezone.utc).isoformat()}})
+    return {"status": "ok"}
+
+
+@api_router.get("/membership/plan")
+async def membership_plan():
+    s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
+    return {"enabled": bool(s.get("membership_enabled")), "price_eur": s.get("membership_price_eur") or 5.0,
+            "title": s.get("membership_title") or "Soutien Nexus",
+            "perks": s.get("membership_perks") or []}
+
+
+@api_router.get("/me/entitlements")
+async def my_entitlements(user=Depends(get_current_user)):
+    owned = await db.purchases.find({"user_id": user["id"]}, {"_id": 0, "creation_id": 1}).to_list(1000)
+    return {"owned": [p["creation_id"] for p in owned], "membership_active": await _membership_active(user["id"])}
+
+
+@api_router.get("/me/library")
+async def my_library(user=Depends(get_current_user)):
+    owned = await db.purchases.find({"user_id": user["id"]}, {"_id": 0}).to_list(1000)
+    ids = [p["creation_id"] for p in owned]
+    items = []
+    if ids:
+        docs = await db.creations.find({"id": {"$in": ids}}, {"_id": 0}).to_list(1000)
+        items = [Creation(**_lighten(d)) for d in docs]
+    m = await db.memberships.find_one({"user_id": user["id"]}, {"_id": 0})
+    active = await _membership_active(user["id"])
+    return {"creations": items, "membership": {"active": active, "current_period_end": (m or {}).get("current_period_end")}}
+
+
+@api_router.post("/membership/cancel")
+async def membership_cancel(user=Depends(get_current_user)):
+    m = await db.memberships.find_one({"user_id": user["id"]}, {"_id": 0})
+    if not m or not m.get("stripe_subscription_id"):
+        raise HTTPException(404, "Aucun abonnement actif")
+    try:
+        stripe.Subscription.modify(m["stripe_subscription_id"], cancel_at_period_end=True)
+    except Exception as e:
+        raise HTTPException(500, f"Stripe: {e}")
+    return {"status": "cancel_scheduled", "current_period_end": m.get("current_period_end")}
 
 
 app.include_router(api_router)

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoAlbumsOutline, IoGridOutline, IoListOutline } from "react-icons/io5";
@@ -516,6 +516,40 @@ function MiniPoster({ size }) {
   );
 }
 
+function MembershipSettings({ settings, refetch }) {
+  const s = settings || {};
+  const [enabled, setEnabled] = useState(!!s.membership_enabled);
+  const [price, setPrice] = useState(s.membership_price_eur ?? 5);
+  const [title, setTitle] = useState(s.membership_title || "Soutien Nexus");
+  const [perks, setPerks] = useState((s.membership_perks || []).join("\n"));
+  useEffect(() => {
+    setEnabled(!!s.membership_enabled); setPrice(s.membership_price_eur ?? 5);
+    setTitle(s.membership_title || "Soutien Nexus"); setPerks((s.membership_perks || []).join("\n"));
+  }, [settings]);
+  const save = async () => {
+    const perksArr = perks.split("\n").map((p) => p.trim()).filter(Boolean).slice(0, 8);
+    await updateSettings({ ...settings, membership_enabled: enabled, membership_price_eur: Number(price) || 0, membership_title: title.trim() || "Soutien Nexus", membership_perks: perksArr });
+    toast.success("Abonnement mis à jour"); refetch();
+  };
+  return (
+    <div className="space-y-4">
+      <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: "var(--text-primary)" }}>
+        <input type="checkbox" data-testid="membership-enable" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} /> Activer l'abonnement mensuel (type Patreon)
+      </label>
+      <div className="flex flex-wrap gap-4">
+        <div><label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Prix / mois (€)</label>
+          <input data-testid="membership-price" type="number" min="0" step="0.5" value={price} onChange={(e) => setPrice(e.target.value)} className="block mt-1 w-32 px-3 py-2 border outline-none" style={fs} /></div>
+        <div className="flex-1 min-w-[180px]"><label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Titre de l'abonnement</label>
+          <input data-testid="membership-title" value={title} onChange={(e) => setTitle(e.target.value)} className="block mt-1 w-full px-3 py-2 border outline-none" style={fs} /></div>
+      </div>
+      <div><label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Avantages (un par ligne)</label>
+        <textarea data-testid="membership-perks" rows={4} value={perks} onChange={(e) => setPerks(e.target.value)} className="block mt-1 w-full px-3 py-2 border outline-none resize-none" style={fs} /></div>
+      <button data-testid="membership-save" onClick={save} className="px-5 py-2.5 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Enregistrer l'abonnement</button>
+      <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Pour rendre une création payante, ouvre-la en mode création → « 💰 Création payante ».</p>
+    </div>
+  );
+}
+
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
@@ -589,6 +623,12 @@ export default function Settings() {
             </div>
           )}
         </Section>
+
+        {isAdmin && (
+          <Section title="Monétisation" extra="— gagne de l'argent avec ton art">
+            <MembershipSettings settings={siteSettings} refetch={refetchSite} />
+          </Section>
+        )}
 
         <Section title="Son">
           <button data-testid="mute-all" onClick={() => { toggleMute(); }} className="flex items-center gap-2 px-4 py-2.5 border mb-5" style={{ ...fs, color: muted ? "var(--brand)" : "var(--text-primary)" }}>

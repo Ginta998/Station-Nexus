@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoLibraryOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
@@ -127,6 +127,10 @@ export default function TopBar({ onAdd, onProfile }) {
             className="flex items-center gap-1.5 px-3 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
             <IoHelpCircleOutline size={18} />
           </button>
+          <button data-testid="library-btn" onClick={() => go("/bibliotheque")}
+            className="hidden md:flex items-center gap-1.5 px-3 py-2.5 border transition-colors" style={{ ...btn, color: "var(--text-primary)" }} title="Ma bibliothèque">
+            <IoLibraryOutline size={18} /> Bibliothèque
+          </button>
           <button data-testid="settings-btn" onClick={() => go("/parametres")}
             className="flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
             style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
@@ -173,6 +177,7 @@ export default function TopBar({ onAdd, onProfile }) {
               <MenuRow testid="menu-novelties" icon={<IoMegaphone size={20} style={{ color: "var(--brand)" }} />} label="Nouveautés" onClick={() => go("/nouveautes")} badge={unread} />
               <MenuRow testid="menu-members" icon={<IoPeople size={20} style={{ color: "var(--brand)" }} />} label="Membres" onClick={() => go("/membres")} />
               <MenuRow testid="menu-contact" icon={<IoMailOutline size={20} style={{ color: "var(--brand)" }} />} label="Contact" onClick={() => go("/contact")} />
+              <MenuRow testid="menu-library" icon={<IoLibraryOutline size={20} style={{ color: "var(--brand)" }} />} label="Ma bibliothèque" onClick={() => go("/bibliotheque")} />
               <MenuRow testid="menu-settings" icon={<IoSettingsOutline size={20} style={{ color: "var(--brand)" }} />} label="Paramètres" onClick={() => go("/parametres")} />
               <MenuRow testid="menu-tutorial" icon={<IoHelpCircleOutline size={20} style={{ color: "var(--brand)" }} />} label="Comment ça marche" onClick={() => go("/tutoriel")} />
               {user ? (

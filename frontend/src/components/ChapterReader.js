@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline, IoVolumeHigh, IoVolumeMute, IoExpand, IoContract } from "react-icons/io5";
+import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline, IoVolumeHigh, IoVolumeMute, IoExpand, IoContract, IoLockClosed } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { chapterAudioUrl, readingAudioUrl } from "@/lib/api";
 import { toast } from "sonner";
@@ -319,7 +319,15 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
               </div>
             ) : null}
 
-            {chap?.rich ? (
+            {chap?.locked ? (
+              <div data-reveal className="reveal text-center py-16 px-6" data-testid="reader-paywall"
+                style={{ border: "1px solid var(--brand)", borderRadius: "var(--radius-base)", background: "color-mix(in srgb, var(--brand) 10%, transparent)" }}>
+                <IoLockClosed size={44} style={{ color: "var(--brand)" }} className="mx-auto mb-4" />
+                <p className="font-display text-2xl mb-2" style={{ color: "var(--text-primary)" }}>Chapitre réservé</p>
+                <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>Débloque « {item.title} » ou abonne-toi pour continuer la lecture.</p>
+                <button data-testid="reader-paywall-cta" onClick={close} className="px-6 py-3 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Voir les options d'achat</button>
+              </div>
+            ) : chap?.rich ? (
               <div data-reveal className="reveal reader-rich" data-dropcap={readerDropcap ? "on" : "off"} onClick={onCueClick} dangerouslySetInnerHTML={{ __html: chap.content || "" }} />
             ) : (
               <>

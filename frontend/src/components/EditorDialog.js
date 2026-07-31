@@ -8,7 +8,7 @@ const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
   poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0,
+  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0,
 };
 
 const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
@@ -325,6 +325,32 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           )}
 
           <div><Label>Lien d'achat (optionnel)</Label><input data-testid="editor-buy-url" value={form.buy_url} onChange={(e) => set("buy_url", e.target.value)} placeholder="https://..." className="w-full px-3 py-2 border outline-none" style={fs} /></div>
+
+          {/* Monétisation */}
+          <div className="p-3 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+            <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer" style={{ color: "var(--text-primary)" }}>
+              <input type="checkbox" data-testid="editor-is-paid" checked={!!form.is_paid} onChange={(e) => set("is_paid", e.target.checked)} /> 💰 Création payante (achat à l'unité / abonnement)
+            </label>
+            {form.is_paid && (
+              <div className="mt-3 flex flex-wrap items-end gap-4">
+                <div>
+                  <Label>Prix (€)</Label>
+                  <input data-testid="editor-price" type="number" min="0" step="0.5" value={form.price_eur} onChange={(e) => set("price_eur", Number(e.target.value))} className="w-28 px-3 py-2 border outline-none" style={fs} />
+                </div>
+                {form.launch_type === "chapters" && (
+                  <div>
+                    <Label>Chapitres gratuits</Label>
+                    <input data-testid="editor-free-chapters" type="number" min="0" step="1" value={form.free_chapters} onChange={(e) => set("free_chapters", Number(e.target.value))} className="w-28 px-3 py-2 border outline-none" style={fs} />
+                  </div>
+                )}
+                <p className="text-xs flex-1 min-w-[180px]" style={{ color: "var(--text-secondary)" }}>
+                  {form.launch_type === "chapters"
+                    ? `Les ${form.free_chapters || 0} premiers chapitres seront lisibles gratuitement, le reste après achat ou avec l'abonnement.`
+                    : "Le contenu sera débloqué après achat à l'unité ou avec l'abonnement."}
+                </p>
+              </div>
+            )}
+          </div>
 
           <div><Label>Musique d'ambiance de la fiche (max 12 Mo)</Label>
             <div className="flex items-center gap-3">

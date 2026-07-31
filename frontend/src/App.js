@@ -12,6 +12,8 @@ import Contact from "@/pages/Contact";
 import Members from "@/pages/Members";
 import Novelties from "@/pages/Novelties";
 import Tutorial from "@/pages/Tutorial";
+import Library from "@/pages/Library";
+import PaymentResult from "@/pages/PaymentResult";
 import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
 import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
@@ -79,6 +81,9 @@ function App() {
             <Route path="/membres" element={<Members />} />
             <Route path="/nouveautes" element={<Novelties />} />
             <Route path="/tutoriel" element={<Tutorial />} />
+            <Route path="/bibliotheque" element={<Library />} />
+            <Route path="/payment/success" element={<PaymentResult mode="success" />} />
+            <Route path="/payment/cancel" element={<PaymentResult mode="cancel" />} />
           </Routes>
           <CosmicBunny />
         </BrowserRouter>

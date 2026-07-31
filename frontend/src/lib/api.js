@@ -119,3 +119,11 @@ export const emailStatus = () => api.get("/email/status").then((r) => r.data);
 export const listAnnouncements = () => api.get("/announcements").then((r) => r.data);
 export const createAnnouncement = (p) => api.post("/announcements", p).then((r) => r.data);
 export const deleteAnnouncement = (id) => api.delete(`/announcements/${id}`).then((r) => r.data);
+
+// monetization (Stripe)
+export const startCheckout = (payload) => api.post("/payments/checkout", { ...payload, origin_url: window.location.origin }).then((r) => r.data);
+export const paymentStatus = (sessionId) => api.get(`/payments/status/${sessionId}`).then((r) => r.data);
+export const getEntitlements = () => api.get("/me/entitlements").then((r) => r.data);
+export const getLibrary = () => api.get("/me/library").then((r) => r.data);
+export const getMembershipPlan = () => api.get("/membership/plan").then((r) => r.data);
+export const cancelMembership = () => api.post("/membership/cancel").then((r) => r.data);

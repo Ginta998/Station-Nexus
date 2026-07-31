@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline } from "react-icons/io5";
+import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline, IoLockClosed } from "react-icons/io5";
 import { toast } from "sonner";
-import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl } from "@/lib/api";
+import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl, startCheckout, getMembershipPlan } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
+import { useEntitlements } from "@/lib/useEntitlements";
 import { resolveVideoEmbed } from "@/lib/video";
 import EditorDialog from "@/components/EditorDialog";
 import CommentsSection from "@/components/CommentsSection";
@@ -19,6 +21,9 @@ export default function Detail() {
   const nav = useNavigate();
   const location = useLocation();
   const { isAdmin, playAmbient, stopAmbient, isPlaying, playingId, sfx, isFavorite, toggleFavorite } = useApp();
+  const { user, openAuth } = useAuth();
+  const { hasAccess, chapterLocked } = useEntitlements();
+  const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
   const { data: item, refetch, isLoading } = useQuery({ queryKey: ["creation", id], queryFn: () => getCreation(id) });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
   const { data: allCreations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
@@ -31,6 +36,7 @@ export default function Detail() {
   const [showEpisodes, setShowEpisodes] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
+  const [buying, setBuying] = useState(false);
   const cardRef = useRef(null);
 
   // auto-play the creation ambient on open (cuts app ambience)
@@ -105,8 +111,30 @@ export default function Detail() {
     return m ? `https://www.youtube.com/embed/${m[1]}` : null;
   };
 
+  const access = hasAccess(item);
+  const isPaidLocked = item.is_paid && !access;
+
+  const buyThis = async () => {
+    if (!user) { toast.info("Connecte-toi pour acheter cette création."); openAuth(); return; }
+    setBuying(true);
+    try { const r = await startCheckout({ kind: "creation", creation_id: item.id }); window.location.href = r.checkout_url; }
+    catch (e) { toast.error(e?.response?.data?.detail || "Impossible de démarrer l'achat"); setBuying(false); }
+  };
+  const subscribe = async () => {
+    if (!user) { toast.info("Connecte-toi pour t'abonner."); openAuth(); return; }
+    setBuying(true);
+    try { const r = await startCheckout({ kind: "membership" }); window.location.href = r.checkout_url; }
+    catch (e) { toast.error(e?.response?.data?.detail || "Impossible de démarrer l'abonnement"); setBuying(false); }
+  };
+
   const launch = () => {
     sfx("select");
+    // Paywall: film/reader creations fully locked until purchase or membership
+    if (isPaidLocked && (item.launch_type === "film" || item.launch_type === "reader" || item.launch_type === "link")) {
+      toast.info("Cette création est payante — débloque-la pour la lancer.");
+      document.querySelector('[data-testid="detail-paywall"]')?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     if (item.launch_type === "chapters") { setReaderStart(null); setChaptersOpen(true); }
     else if (item.launch_type === "game") setGameOpen(true);
     else if (item.launch_type === "reader") setReaderOpen(true);
@@ -125,7 +153,15 @@ export default function Detail() {
         : { type: "video", src: videoUrl(item.id, "trailer", item.updated_at) })
     : null;
 
-  const openChapter = (i) => { sfx("select"); setReaderStart(i); setChaptersOpen(true); };
+  const openChapter = (i) => {
+    if (chapterLocked(item, i)) {
+      sfx("nav");
+      toast.info("Ce chapitre est réservé — débloque la création ou abonne-toi.");
+      document.querySelector('[data-testid="detail-paywall"]')?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    sfx("select"); setReaderStart(i); setChaptersOpen(true);
+  };
 
   const goToComments = () => {
     setChaptersOpen(false);
@@ -199,6 +235,11 @@ export default function Detail() {
             <div className="flex items-center gap-3 mb-3 flex-wrap">
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="detail-category">{catLabel}</span>
               <span className="font-display text-2xl" style={{ color: "var(--brand)" }}>{item.kanji}</span>
+              {item.is_paid && (access ? (
+                <span data-testid="detail-owned-badge" className="px-2 py-0.5 text-[10px] uppercase tracking-widest font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>✓ Débloqué</span>
+              ) : (
+                <span data-testid="detail-price-badge" className="px-2 py-0.5 text-[10px] uppercase tracking-widest font-semibold border" style={{ borderColor: "var(--brand)", color: "var(--brand)" }}>{Number(item.price_eur || 0).toFixed(2)}€</span>
+              ))}
               {item.coming_soon && <span className="px-2 py-0.5 text-[10px] uppercase tracking-widest border" style={{ borderColor: "rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.75)" }}>À venir</span>}
               {item.coming_soon && [item.release_month, item.release_year].filter(Boolean).length > 0 && (
                 <span data-testid="detail-release" className="px-2 py-0.5 text-[10px] uppercase tracking-widest font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>
@@ -239,6 +280,32 @@ export default function Detail() {
               </button>
             </div>
 
+            {/* Paywall — achat à l'unité + abonnement */}
+            {isPaidLocked && !item.coming_soon && (
+              <div className="mt-8 p-5" data-testid="detail-paywall"
+                style={{ background: "linear-gradient(135deg, color-mix(in srgb, var(--brand) 16%, rgba(0,0,0,0.4)), rgba(0,0,0,0.4))", border: "1px solid var(--brand)", borderRadius: "var(--radius-base)" }}>
+                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--brand)" }}>Création payante</p>
+                <p className="font-display text-2xl mb-1" style={{ color: "#fff" }}>
+                  Débloque « {item.title} »{item.launch_type === "chapters" && (item.free_chapters || 0) > 0 ? ` · ${item.free_chapters} chapitre(s) gratuit(s)` : ""}
+                </p>
+                <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>Accès définitif à cette création, ou soutiens le créateur avec l'abonnement (accès à tout le catalogue).</p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button data-testid="detail-buy-unit" disabled={buying} onClick={buyThis}
+                    className="flex items-center gap-2 px-6 py-3 font-semibold transition-transform hover:scale-105 disabled:opacity-60"
+                    style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+                    <IoCart size={18} /> Acheter · {Number(item.price_eur || 0).toFixed(2)}€
+                  </button>
+                  {plan?.enabled && (
+                    <button data-testid="detail-subscribe" disabled={buying} onClick={subscribe}
+                      className="flex items-center gap-2 px-6 py-3 font-medium border transition-transform hover:scale-105 disabled:opacity-60"
+                      style={{ ...btn }}>
+                      ✨ S'abonner · {plan.price_eur}€/mois
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
             {item.launch_type === "chapters" && (item.chapters?.length > 0) && (
               <div className="mt-10" data-testid="detail-chapters">
                 <div className="flex items-center gap-3 mb-4">
@@ -250,6 +317,7 @@ export default function Detail() {
                   <div className={`grid ${imgGridCls} gap-3`}>
                     {item.chapters.map((c, i) => {
                       const active = savedProgress && (savedProgress.chapter || 0) === i;
+                      const locked = chapterLocked(item, i);
                       return (
                         <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
                           className={`group relative ${imgAspectCls} overflow-hidden text-left transition-transform hover:scale-[1.03]`}
@@ -263,8 +331,9 @@ export default function Detail() {
                           </div>
                           {c.has_music && <IoMusicalNotes size={14} className="absolute top-2 right-2" style={{ color: "#fff" }} />}
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.3)" }}>
-                            <IoPlay size={34} style={{ color: "#fff" }} />
+                            {locked ? <IoLockClosed size={30} style={{ color: "#fff" }} /> : <IoPlay size={34} style={{ color: "#fff" }} />}
                           </div>
+                          {locked && <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[9px] font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}><IoLockClosed size={10} /> Payant</span>}
                         </button>
                       );
                     })}
@@ -273,6 +342,7 @@ export default function Detail() {
                   <div className="space-y-2">
                     {item.chapters.map((c, i) => {
                       const active = savedProgress && (savedProgress.chapter || 0) === i;
+                      const locked = chapterLocked(item, i);
                       return (
                         <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
                           className={`flex items-center gap-3 w-full text-left ${rowPadCls} border transition-colors hover:brightness-110`}
@@ -281,9 +351,10 @@ export default function Detail() {
                           <div className="flex-1 min-w-0">
                             <p className={`${rowTitleCls} truncate`} style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
                             {active && <p className="text-[11px]" style={{ color: "var(--brand)" }}>En cours de lecture</p>}
+                            {locked && !active && <p className="text-[11px] flex items-center gap-1" style={{ color: "var(--brand)" }}><IoLockClosed size={11} /> Réservé — payant</p>}
                           </div>
                           {c.has_music && <IoMusicalNotes size={15} style={{ color: "rgba(255,255,255,0.6)" }} />}
-                          <IoPlay size={16} style={{ color: "rgba(255,255,255,0.8)" }} />
+                          {locked ? <IoLockClosed size={16} style={{ color: "var(--brand)" }} /> : <IoPlay size={16} style={{ color: "rgba(255,255,255,0.8)" }} />}
                         </button>
                       );
                     })}

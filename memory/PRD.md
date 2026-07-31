@@ -416,3 +416,32 @@ Un créateur unique gérant sa bibliothèque personnelle depuis PC / tablette / 
   - index.css : mask `.sx-rail-mask` **desktop-only** (>=768px) car le mask casse le rendu du momentum-scroll iOS ; sur mobile `.sx-poster { transition:none; transform:none }`.
   - Vérifié (390px) : scroll-snap-type=none, wrapper mask=none, 5 cartes sans chevauchement (150px d'écart, 0 overlap).
 - Note pour l'utilisateur : sur son téléphone, recharger 2 fois (ou rouvrir la PWA) pour que le nouveau service worker prenne le contrôle.
+
+## Système économique / Monétisation (Stripe) — 31/07/2026
+Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type Patreon + chapitres gratuits/payants (admin choisit). Devise EUR. Compte obligatoire. Bibliothèque type Steam. Contenu débloqué et consommé dans l'app.
+
+### Backend (server.py)
+- Stripe sandbox Emergent (Flow A, compte FR, mode test). Clés dans backend/.env : STRIPE_SECRET_KEY / PUBLISHABLE / WEBHOOK_SECRET / ACCOUNT_ID.
+- Modèles : Creation + CreationInput => is_paid, price_eur, free_chapters ; Chapter => locked (calculé) ; Creation => locked/owned (calculés) ; SiteSettings => membership_enabled/price_eur/title/perks.
+- Helpers : _optional_uid, _membership_active, _user_owns, _user_has_access, _gate_creation (strip contenu des chapitres verrouillés).
+- Endpoints : POST /api/payments/checkout (creation|membership), GET /api/payments/status/{sid} (poll + grant), POST /api/stripe/webhook (grant idempotent), GET /api/membership/plan, GET /api/me/entitlements, GET /api/me/library, POST /api/membership/cancel.
+- Prix Stripe créés dynamiquement (price_data via Product+Price idempotents par lookup_key). Tax : managed_payments avec fallback session simple.
+- Collections : purchases {user_id, creation_id, session_id}, memberships {user_id, subscription_id, status, current_period_end}, payment_transactions.
+- Gating : GET /api/creations/{id} accepte Authorization optionnel ; sans droit -> chapitres au-delà de free_chapters verrouillés (content vidé, locked=true).
+
+### Frontend
+- api.js : startCheckout, paymentStatus, getEntitlements, getLibrary, getMembershipPlan, cancelMembership.
+- useEntitlements.js : hasAccess(item), chapterLocked(item, index).
+- Detail.js : badge prix / "Débloqué", bloc paywall (Acheter + S'abonner), verrous sur chapitres, redirection Stripe.
+- Library.js (/bibliotheque) : achats + carte abonnement (s'abonner/résilier). PaymentResult.js (/payment/success, /payment/cancel) avec polling du statut.
+- EditorDialog : section Monétisation (is_paid, price_eur, free_chapters). Settings : section Monétisation (MembershipSettings admin).
+- TopBar : entrée "Ma bibliothèque" (desktop + menu mobile).
+
+### Tests
+- pytest tests/test_monetization.py : 11/12 PASS. 1 échec = défaut du test (PUT partiel sans title/category) ; l'app exige l'objet complet, le frontend l'envoie toujours entier => pas un bug applicatif.
+- Frontend vérifié par captures : paywall détail (badge 3.50€, Acheter/S'abonner) + page bibliothèque (carte Soutien Nexus).
+- Déblocage après achat vérifié manuellement (entitlements owned, chapitres déverrouillés, library >=1).
+
+### À faire plus tard (backlog monétisation)
+- Réclamer le compte Stripe (onboarding_url dans /tmp/sandbox.json) pour passer en LIVE et encaisser réellement.
+- Optionnel : prix par chapitre individuel, codes promo, page "revenus" créateur.
