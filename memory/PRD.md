@@ -478,3 +478,17 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
   - Confidentialité : Settings > Mon abonnement (si abonné actif) a un toggle settings-hide-tier "Afficher mon palier de soutien sur mon profil public" (visible par défaut, masquable).
 - Tests : testing_agent iteration_18.json -> frontend 100%. Backend vérifié via curl (tier_name=Mécène affiché ; vidé quand hide_tier=true). Données de test seed nettoyées.
 - Rappel refonte déjà en place (session précédente) : About.js (hero+piliers+créateur+CTA), SupportPage tiers iconiques, home-support-cta (flèche + remplissage au survol via .sx-support-cta).
+
+## Revenus créateur + À propos 100% éditable + Mur des soutiens + CTA raccourci — 01/08/2026
+- **Bouton CTA Accueil raccourci** (Home.js) : texte « Soutiens la station » (au lieu de « …& débloque tout le catalogue ») + flèche animée. testid home-support-cta.
+- **Page « À propos » entièrement éditable en mode création** (About.js) :
+  - Les 3 cartes (piliers) éditables : titre + texte (about-pillar-title-{i} / about-pillar-text-{i}). Stockées dans SiteSettings.about_pillars (backend). Icônes fixes par index (livre/film/cœur).
+  - Upload de l'image de fond hero (about-hero-upload → about_hero_image) et de la photo du créateur (about-creator-upload → creator_image), base64 max 3 Mo.
+  - save() envoie about_pillars/about_hero_image/creator_image via updateSettings. GET /api/about renvoie pillars.
+- **Mur des soutiens** (SupportPage.js, section supporters-wall) : « Merci à nos soutiens » — grille des membres ayant un palier actif (avatar + pastille + nom + palier), via listProfiles filtré sur tier_name. Absente s'il n'y a aucun abonné (comportement normal). Respecte hide_tier.
+- **Page Revenus créateur (admin only)** /revenus (Revenue.js) :
+  - Backend : GET /api/admin/revenue (dépendance get_admin_user, exige compte is_admin). Calcule depuis la BDD (PAS Stripe) : ventes à l'unité (count + Σ price_eur des créations via purchases), abonnements actifs groupés par palier + MRR (Σ count×prix palier), total estimé (achats + 1 mois d'abo), top créations vendues, transactions récentes payées (payment_transactions.amount).
+  - Frontend : KPIs (total/unit/MRR), abonnés par palier, top créations, transactions récentes, bannière Sandbox. Gère 403 (revenue-forbidden) si non-admin.
+  - Liens admin-only : TopBar desktop (revenue-btn) + drawer mobile TopBar (menu-revenue) + MobileMenu des pages secondaires (page-menu-revenue). Route /revenus ajoutée dans App.js.
+- **Compte admin de test** : paytest@stationexus.com est désormais is_admin=true (claim PIN 1234) — noté dans test_credentials.md. A 1 achat test (3,50€ United Sanctum Force).
+- Tests : testing_agent iteration_19.json → frontend 100% (4 features). Backend vérifié via curl (revenue: unit 3,50€/1 achat, about: 3 piliers).
