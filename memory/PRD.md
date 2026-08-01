@@ -468,3 +468,13 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - **Paramètres** : section "Mon abonnement" (MySubscription) -> statut actif + changer de palier + résilier.
 - **Mobile** : barre du haut accueil remontée (sx-header padding-top 0.75rem -> 0.4rem).
 - **À FAIRE (reporté)** : afficher le niveau de soutien (palier) sur les profils PUBLICS de la page Membres (nécessite de lier memberships aux profils publics). Actuellement le palier s'affiche dans Bibliothèque + Paramètres.
+
+## Menu mobile global + palier sur profils publics — 01/08/2026
+- **MobileMenu global** (components/MobileMenu.js) : bouton "Menu" (page-menu-btn, md:hidden = mobile only) + tiroir (page-menu-drawer) avec liens Accueil/Nouveautés/Soutien/Bibliothèque/À propos/Membres/Contact/Comment ça marche/Paramètres + login/logout. Intégré sur TOUTES les pages secondaires : Library, Members, Contact, Settings, SupportPage, Tutorial, About. Caché sur desktop (visible via TopBar).
+- **Palier de soutien sur profils PUBLICS (Membres)** (demande Msg 489, enfin faite) :
+  - Backend (server.py) : Profile a maintenant account_id (lien vers le compte) + hide_tier (bool) + champs calculés tier_id/tier_name. list_profiles joint les memberships ACTIVES par account_id et attache le palier (sauf si hide_tier). upsert_profile n'écrase pas account_id avec vide et ne patch hide_tier que si fourni.
+  - Lien compte<->profil : AuthContext ajoute account_id au profil local à la connexion (auto-link) ; ProfileDialog passe account_id=user.id ; AppContext.saveProfile préserve account_id/hide_tier.
+  - Frontend Members.js : badge coloré du palier sous le nom (member-tier-{id}) + pastille icône sur l'avatar (member-tier-icon-{id}). Couleurs/icônes : Soutien=bleu/cœur, Mécène=or/étoile, Légende=rose/diamant, fallback brand/sparkles.
+  - Confidentialité : Settings > Mon abonnement (si abonné actif) a un toggle settings-hide-tier "Afficher mon palier de soutien sur mon profil public" (visible par défaut, masquable).
+- Tests : testing_agent iteration_18.json -> frontend 100%. Backend vérifié via curl (tier_name=Mécène affiché ; vidé quand hide_tier=true). Données de test seed nettoyées.
+- Rappel refonte déjà en place (session précédente) : About.js (hero+piliers+créateur+CTA), SupportPage tiers iconiques, home-support-cta (flèche + remplissage au survol via .sx-support-cta).
