@@ -273,7 +273,7 @@ export default function Home() {
                 <button data-testid="home-support-cta" onClick={() => { sfx("select"); nav("/soutien"); }}
                   className="sx-support-cta mt-4 inline-flex items-center gap-2.5 px-6 py-3 text-sm font-semibold"
                   style={{ background: "rgba(0,0,0,0.55)", border: "2px solid var(--brand)", color: "var(--brand)", borderRadius: "999px", backdropFilter: "blur(4px)" }}>
-                  Soutiens la station & débloque tout le catalogue
+                  Soutiens la station
                   <IoArrowForward size={18} className="sx-cta-arrow" />
                 </button>
               )}

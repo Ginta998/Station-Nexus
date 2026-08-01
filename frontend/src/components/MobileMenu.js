@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoMenu, IoClose, IoHome, IoSparklesOutline, IoLibraryOutline, IoPlanetOutline, IoPeople, IoMailOutline, IoHelpCircleOutline, IoSettingsOutline, IoLogInOutline, IoLogOutOutline, IoSparkles } from "react-icons/io5";
+import { IoMenu, IoClose, IoHome, IoSparklesOutline, IoLibraryOutline, IoPlanetOutline, IoPeople, IoMailOutline, IoHelpCircleOutline, IoSettingsOutline, IoLogInOutline, IoLogOutOutline, IoSparkles, IoCashOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 
@@ -19,7 +19,7 @@ const LINKS = [
 // Bouton menu + tiroir de navigation, mobile uniquement, autonome (présent sur toutes les pages)
 export default function MobileMenu() {
   const nav = useNavigate();
-  const { sfx } = useApp();
+  const { sfx, isAdmin } = useApp();
   const { user, logout, openAuth } = useAuth();
   const [open, setOpen] = useState(false);
   const go = (to) => { sfx("nav"); setOpen(false); nav(to); };
@@ -48,6 +48,12 @@ export default function MobileMenu() {
                   <l.icon size={20} style={{ color: "var(--brand)" }} /> <span className="text-sm">{l.label}</span>
                 </button>
               ))}
+              {isAdmin && (
+                <button data-testid="page-menu-revenue" onClick={() => go("/revenus")} className="flex items-center gap-3 w-full px-3 py-3 text-left transition-colors"
+                  style={{ color: "var(--text-primary)", borderRadius: "var(--radius-base)" }}>
+                  <IoCashOutline size={20} style={{ color: "var(--brand)" }} /> <span className="text-sm">Mes revenus</span>
+                </button>
+              )}
             </div>
             <div className="mt-auto pt-4 border-t" style={{ borderColor: "var(--border-c)" }}>
               {user ? (

@@ -127,4 +127,5 @@ export const getEntitlements = () => api.get("/me/entitlements").then((r) => r.d
 export const getLibrary = () => api.get("/me/library").then((r) => r.data);
 export const getMembershipPlan = () => api.get("/membership/plan").then((r) => r.data);
 export const getAboutPage = () => api.get("/about").then((r) => r.data);
+export const getAdminRevenue = () => api.get("/admin/revenue").then((r) => r.data);
 export const cancelMembership = () => api.post("/membership/cancel").then((r) => r.data);

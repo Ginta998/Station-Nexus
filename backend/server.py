@@ -340,6 +340,11 @@ class SiteSettings(BaseModel):
         "Ton soutien me permet de continuer à créer, librement et sans compromis. Merci d'être là. 🚀"
     )
     creator_image: str = "https://images.unsplash.com/photo-1584462746497-276f4aeb9fca?crop=entropy&cs=srgb&fm=jpg&q=85&w=800"
+    about_pillars: List[Dict[str, str]] = Field(default_factory=lambda: [
+        {"title": "Des univers écrits", "text": "Livres et séries qui t'embarquent chapitre après chapitre."},
+        {"title": "Une âme cinématique", "text": "Films, bandes-annonces et une ambiance immersive partout."},
+        {"title": "Porté par la communauté", "text": "Chaque soutien fait grandir la station, œuvre après œuvre."},
+    ])
     cosmic_bunny_tips: Dict[str, List[Dict[str, str]]] = Field(default_factory=lambda: {
         "home": [
             {"text": "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", "button_label": "Personnaliser la station ⚙️", "button_target": "/parametres"},
@@ -1303,6 +1308,86 @@ async def auth_claim_admin(data: ClaimAdminInput, user=Depends(get_current_user)
     return {"user": _public_user(u)}
 
 
+async def get_admin_user(user=Depends(get_current_user)):
+    if not user.get("is_admin"):
+        raise HTTPException(403, "Réservé à l'administrateur")
+    return user
+
+
+@api_router.get("/admin/revenue")
+async def admin_revenue(user=Depends(get_admin_user)):
+    """Revenue dashboard computed from the DB (purchases + active memberships)."""
+    s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
+    tiers = s.get("membership_tiers") or SiteSettings().membership_tiers
+    tier_map = {t.get("id"): t for t in tiers}
+
+    # ---- unit purchases ----
+    creations = {c["id"]: c for c in await db.creations.find({}, {"_id": 0, "id": 1, "title": 1, "price_eur": 1}).to_list(10000)}
+    purchases = await db.purchases.find({}, {"_id": 0, "creation_id": 1, "user_id": 1, "created_at": 1}).to_list(100000)
+    unit_count = len(purchases)
+    unit_revenue = 0.0
+    per_creation = {}
+    for p in purchases:
+        cr = creations.get(p.get("creation_id"), {})
+        price = float(cr.get("price_eur") or 0)
+        unit_revenue += price
+        key = p.get("creation_id")
+        agg = per_creation.setdefault(key, {"title": cr.get("title") or "Création supprimée", "count": 0, "revenue": 0.0})
+        agg["count"] += 1
+        agg["revenue"] += price
+    top_creations = sorted(per_creation.values(), key=lambda x: x["revenue"], reverse=True)[:8]
+
+    # ---- active subscriptions ----
+    now = datetime.now(timezone.utc)
+    active_mems = []
+    async for m in db.memberships.find({"status": "active"}, {"_id": 0, "user_id": 1, "tier_id": 1, "current_period_end": 1}):
+        cpe = m.get("current_period_end")
+        if cpe:
+            try:
+                if datetime.fromisoformat(cpe) < now:
+                    continue
+            except Exception:
+                pass
+        active_mems.append(m)
+    by_tier_count = {}
+    for m in active_mems:
+        tid = m.get("tier_id") or "soutien"
+        by_tier_count[tid] = by_tier_count.get(tid, 0) + 1
+    by_tier = []
+    mrr = 0.0
+    for tid, cnt in by_tier_count.items():
+        t = tier_map.get(tid, {})
+        price = float(t.get("price_eur") or 0)
+        monthly = price * cnt
+        mrr += monthly
+        by_tier.append({"id": tid, "name": t.get("name") or tid.title(), "price": price, "count": cnt, "monthly": round(monthly, 2)})
+    by_tier.sort(key=lambda x: x["price"], reverse=True)
+    active_count = len(active_mems)
+
+    # ---- recent paid transactions (best-effort, from stored amounts) ----
+    recent = []
+    async for tx in db.payment_transactions.find({"payment_status": "paid"}, {"_id": 0}).sort("created_at", -1).limit(15):
+        kind = tx.get("kind")
+        if kind == "creation":
+            label = (creations.get(tx.get("creation_id"), {}).get("title") or "Achat")
+            klabel = "Achat"
+        else:
+            tid = tx.get("tier_id") or "soutien"
+            label = f"Abonnement · {tier_map.get(tid, {}).get('name') or tid.title()}"
+            klabel = "Abonnement"
+        recent.append({"kind": klabel, "label": label, "amount": round(float(tx.get("amount") or 0) / 100, 2), "date": tx.get("created_at")})
+
+    return {
+        "currency": "eur",
+        "unit": {"count": unit_count, "revenue": round(unit_revenue, 2)},
+        "subscriptions": {"active_count": active_count, "mrr": round(mrr, 2), "by_tier": by_tier},
+        "total_estimated": round(unit_revenue + mrr, 2),
+        "top_creations": [{"title": c["title"], "count": c["count"], "revenue": round(c["revenue"], 2)} for c in top_creations],
+        "recent": recent,
+        "sandbox": True,
+    }
+
+
 # ---------------- Stripe monetization ----------------
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY") or os.environ.get("STRIPE_API_KEY") or "sk_test_emergent"
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
@@ -1513,7 +1598,8 @@ async def about_page():
             "creator_title": s.get("creator_title") or d.creator_title,
             "creator_name": s.get("creator_name") or d.creator_name,
             "creator_body": s.get("creator_body") if s.get("creator_body") is not None else d.creator_body,
-            "creator_image": s.get("creator_image") or d.creator_image}
+            "creator_image": s.get("creator_image") or d.creator_image,
+            "pillars": s.get("about_pillars") if s.get("about_pillars") else d.about_pillars}
 
 
 @api_router.get("/membership/plan")

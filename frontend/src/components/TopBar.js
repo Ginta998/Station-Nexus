@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoLibraryOutline, IoSparklesOutline, IoPlanetOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoLibraryOutline, IoSparklesOutline, IoPlanetOutline, IoCashOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
@@ -123,6 +123,12 @@ export default function TopBar({ onAdd, onProfile }) {
               <IoLockOpen size={14} style={{ color: "var(--brand)" }} /> Création
             </div>
           )}
+          {isAdmin && (
+            <button data-testid="revenue-btn" onClick={() => go("/revenus")} title="Mes revenus"
+              className="hidden md:flex items-center gap-1.5 px-3 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+              <IoCashOutline size={18} /> Revenus
+            </button>
+          )}
           <button data-testid="tutorial-btn" onClick={() => go("/tutoriel")} title="Comment ça marche"
             className="flex items-center gap-1.5 px-3 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
             <IoHelpCircleOutline size={18} />
@@ -193,6 +199,9 @@ export default function TopBar({ onAdd, onProfile }) {
               )}
               {isAdmin && onAdd && (
                 <MenuRow testid="menu-create" icon={<IoAddOutline size={20} style={{ color: "var(--brand)" }} />} label="Créer une création" onClick={() => { setMenuOpen(false); onAdd(); }} />
+              )}
+              {isAdmin && (
+                <MenuRow testid="menu-revenue" icon={<IoCashOutline size={20} style={{ color: "var(--brand)" }} />} label="Mes revenus" onClick={() => go("/revenus")} />
               )}
               {isAdmin && (
                 <div className="flex items-center gap-2 px-3 py-2 text-xs" style={{ color: "var(--brand)" }}>
