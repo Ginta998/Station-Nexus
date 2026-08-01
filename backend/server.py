@@ -319,6 +319,12 @@ class SiteSettings(BaseModel):
         "chaque abonnement finance les prochaines œuvres, les nouveaux chapitres et l'amélioration de la station.\n\n"
         "Choisis le palier qui te ressemble. Tu peux résilier à tout moment."
     )
+    about_title: str = "À propos de Station Nexus"
+    about_body: str = (
+        "Station Nexus est né d'une envie simple : réunir tout mon univers créatif — livres, films et séries — dans un seul endroit vivant, à mon image.\n\n"
+        "Ma vision : offrir une expérience immersive, cinématographique et personnelle, où chaque création a sa place et où les lecteurs deviennent des voyageurs.\n\n"
+        "L'objectif : construire, œuvre après œuvre, un véritable univers connecté — et le faire grandir grâce au soutien de la communauté."
+    )
     cosmic_bunny_tips: Dict[str, List[Dict[str, str]]] = Field(default_factory=lambda: {
         "home": [
             {"text": "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", "button_label": "Personnaliser la station ⚙️", "button_target": "/parametres"},
@@ -1349,6 +1355,14 @@ async def _grant(session_id: str):
                 cpe = datetime.fromtimestamp(sub["current_period_end"], tz=timezone.utc).isoformat()
             except Exception:
                 pass
+        # Un seul abonnement actif par compte : on résilie l'ancien si le palier change
+        existing = await db.memberships.find_one({"user_id": uid}, {"_id": 0})
+        old_sub = (existing or {}).get("stripe_subscription_id")
+        if old_sub and old_sub != sub_id:
+            try:
+                stripe.Subscription.delete(old_sub)
+            except Exception as e:
+                logging.getLogger(__name__).warning("cancel old sub: %s", e)
         await db.memberships.update_one(
             {"user_id": uid},
             {"$set": {"user_id": uid, "status": "active", "tier_id": rec.get("tier_id"), "stripe_subscription_id": sub_id,
@@ -1445,6 +1459,13 @@ async def stripe_webhook(request: Request):
         await db.memberships.update_one({"stripe_subscription_id": obj.get("id")},
                                         {"$set": {"status": "canceled", "updated_at": datetime.now(timezone.utc).isoformat()}})
     return {"status": "ok"}
+
+
+@api_router.get("/about")
+async def about_page():
+    s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
+    return {"title": s.get("about_title") or SiteSettings().about_title,
+            "body": s.get("about_body") if s.get("about_body") is not None else SiteSettings().about_body}
 
 
 @api_router.get("/membership/plan")

@@ -455,3 +455,16 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - **Payant ne masque plus** le nombre de chapitres/épisodes (liste conservée, chapitres verrouillés = contenu vidé + locked=true). Acheteur ET abonné ont accès aux chapitres FUTURS (accès par création).
 - Tests: /app/backend/tests/test_monetization_tiers.py 7/7 + frontend E2E 100% (iteration_17.json). Aucun bug.
 - Note review (non bloquant): PUT /api/settings exige le body complet (le frontend l'envoie toujours entier via getSettings+merge).
+
+## Ajustements abonnements + pages + profil — 01/08/2026
+- **Anti-double abonnement** : _grant (server.py) résilie automatiquement l'ancien abonnement Stripe si le palier change (un seul actif par compte, tier_id stocké sur memberships).
+- **Accueil** : CTA "Soutiens la station" masqué si l'utilisateur est déjà abonné (useEntitlements.membershipActive).
+- **Page /soutien** : conseil Bunny retiré du corps -> désormais dans la bulle flottante CosmicBunny (tips 'support'/'library'/'about' + mapping routes). Hero redesigné (attractif, image Bunny décorative, checklist avantages). QuickControls ajoutés.
+- **QuickControls** (nouveau composant) : son + plein écran + Aa + paramètres, présents sur Library, Support, About (avant ces pages n'avaient rien).
+- **Boutons TopBar** Soutien & Bibliothèque : même style/animation que les autres (btn + hover scale), emoji ✨ retiré.
+- **Profil = compte obligatoire** : ProfilePrompt ne propose plus de profil local ; message d'accueil "Bienvenue sur la Stationexus !" ; Home.requireProfile ouvre l'auth si non connecté.
+- **Bibliothèque** : suppression mention Steam + 🎮 + "Dès X€" ; si abonné -> mise en avant + remerciement + palier + changer/résilier.
+- **Page À propos** /a-propos (About.js) éditable admin (about_title/about_body dans SiteSettings, GET /api/about). Entrée menu menu-about.
+- **Paramètres** : section "Mon abonnement" (MySubscription) -> statut actif + changer de palier + résilier.
+- **Mobile** : barre du haut accueil remontée (sx-header padding-top 0.75rem -> 0.4rem).
+- **À FAIRE (reporté)** : afficher le niveau de soutien (palier) sur les profils PUBLICS de la page Membres (nécessite de lier memberships aux profils publics). Actuellement le palier s'affiche dans Bibliothèque + Paramètres.

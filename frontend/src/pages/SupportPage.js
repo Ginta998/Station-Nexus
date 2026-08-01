@@ -6,6 +6,7 @@ import { IoArrowBack, IoHome, IoSparkles, IoCheckmarkCircle, IoCreateOutline, Io
 import { getMembershipPlan, getSettings, updateSettings, startCheckout, getLibrary } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
+import QuickControls from "@/components/QuickControls";
 
 const TIER_ACCENTS = ["#4d8dff", "#c4b5fd", "#ffd400"];
 
@@ -19,7 +20,7 @@ export default function SupportPage() {
   const [draft, setDraft] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  const bunny = "/cosmic-bunny/wave.png";
+  const bunny = "/cosmic-bunny.png";
   const active = lib?.membership?.active;
   const activeTier = lib?.membership?.tier_id;
 
@@ -53,46 +54,47 @@ export default function SupportPage() {
     <div className="min-h-screen" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid="support-page">
       <div className="sx-safe-top flex items-center justify-between px-5 md:px-12 pt-6">
         <div className="flex items-center gap-2">
-          <button data-testid="support-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2" style={btn}><IoArrowBack /> <span className="text-sm">Retour</span></button>
-          <button data-testid="support-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2" style={btn}><IoHome size={16} /> <span className="text-sm">Accueil</span></button>
+          <button data-testid="support-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2" style={btn}><IoArrowBack /> <span className="text-sm hidden sm:inline">Retour</span></button>
+          <button data-testid="support-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2" style={btn}><IoHome size={16} /></button>
         </div>
-        {isAdmin && (edit ? (
-          <div className="flex gap-2">
-            <button data-testid="support-save" onClick={save} className="flex items-center gap-2 px-4 py-2 font-semibold" style={primary}><IoSaveOutline /> Enregistrer</button>
-            <button data-testid="support-cancel" onClick={() => setEdit(false)} className="flex items-center gap-2 px-3 py-2" style={btn}><IoCloseOutline /></button>
-          </div>
-        ) : (
-          <button data-testid="support-edit" onClick={() => setEdit(true)} className="flex items-center gap-2 px-4 py-2" style={btn}><IoCreateOutline /> <span className="text-sm">Modifier</span></button>
-        ))}
+        <div className="flex items-center gap-2">
+          {isAdmin && (edit ? (
+            <>
+              <button data-testid="support-save" onClick={save} className="flex items-center gap-2 px-4 py-2 font-semibold" style={primary}><IoSaveOutline /> Enregistrer</button>
+              <button data-testid="support-cancel" onClick={() => setEdit(false)} className="px-3 py-2" style={btn}><IoCloseOutline /></button>
+            </>
+          ) : (
+            <button data-testid="support-edit" onClick={() => setEdit(true)} className="flex items-center gap-2 px-3 py-2" style={btn}><IoCreateOutline /> <span className="text-sm hidden sm:inline">Modifier</span></button>
+          ))}
+          <QuickControls />
+        </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-5 md:px-12 py-8">
-        {/* Hero with Bunny */}
-        <div className="flex items-start gap-5 mb-8">
-          <img src={bunny} alt="Cosmic Bunny" className="w-20 h-20 md:w-28 md:h-28 object-contain flex-shrink-0 drop-shadow-lg" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "var(--brand)" }}>Cosmic Bunny t'explique 🐰</p>
-            <div className="p-4" style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-c)", borderRadius: "var(--radius-base)" }}>
-              <p className="text-sm md:text-base" style={{ color: "var(--text-secondary)" }}>
-                « En t'abonnant, tu deviens un pilier de la station : tu débloques tout le catalogue payant <b style={{ color: "var(--text-primary)" }}>et</b> tu aides le créateur à sortir de nouvelles œuvres. Chaque palier, c'est un niveau de soutien. Merci du fond du cœur ! »
-              </p>
+        {/* Hero — attractif, image de Bunny décorative */}
+        <div className="relative overflow-hidden mb-10 p-8 md:p-10" style={{ background: "linear-gradient(135deg, color-mix(in srgb, var(--brand) 22%, var(--bg-secondary)), var(--bg-secondary))", border: "1px solid var(--brand)", borderRadius: "var(--radius-base)" }}>
+          <img src={bunny} alt="" aria-hidden="true" className="hidden md:block absolute -right-4 bottom-0 w-40 h-40 object-contain opacity-90 drop-shadow-2xl pointer-events-none" />
+          <div className="relative max-w-xl">
+            <p className="text-xs uppercase tracking-[0.3em] mb-3" style={{ color: "var(--brand)" }}>✦ Abonnement Nexus</p>
+            {edit ? (
+              <input data-testid="support-title-input" value={draft?.page_title || ""} onChange={(e) => setDraft((d) => ({ ...d, page_title: e.target.value }))} className="w-full font-display text-3xl md:text-5xl mb-3 px-3 py-2 border outline-none" style={btn} />
+            ) : (
+              <h1 className="font-display text-3xl md:text-5xl mb-3 leading-tight">{plan?.page_title}</h1>
+            )}
+            {edit ? (
+              <textarea data-testid="support-body-input" rows={6} value={draft?.page_body || ""} onChange={(e) => setDraft((d) => ({ ...d, page_body: e.target.value }))} className="w-full px-3 py-2 border outline-none resize-none" style={btn} />
+            ) : (
+              <div className="space-y-2 text-base md:text-lg leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                {(plan?.page_body || "").split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+              </div>
+            )}
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm" style={{ color: "var(--text-primary)" }}>
+              <span className="flex items-center gap-1.5"><IoCheckmarkCircle style={{ color: "var(--brand)" }} /> Accès à tout le catalogue</span>
+              <span className="flex items-center gap-1.5"><IoCheckmarkCircle style={{ color: "var(--brand)" }} /> Prévenu·e des nouveautés</span>
+              <span className="flex items-center gap-1.5"><IoCheckmarkCircle style={{ color: "var(--brand)" }} /> Favoris & préférences sauvegardés</span>
             </div>
           </div>
         </div>
-
-        {edit ? (
-          <input data-testid="support-title-input" value={draft?.page_title || ""} onChange={(e) => setDraft((d) => ({ ...d, page_title: e.target.value }))} className="w-full font-display text-3xl md:text-4xl mb-4 px-3 py-2 border outline-none" style={btn} />
-        ) : (
-          <h1 className="font-display text-3xl md:text-5xl mb-4 flex items-center gap-3"><IoHeart style={{ color: "var(--brand)" }} /> {plan?.page_title}</h1>
-        )}
-
-        {edit ? (
-          <textarea data-testid="support-body-input" rows={7} value={draft?.page_body || ""} onChange={(e) => setDraft((d) => ({ ...d, page_body: e.target.value }))} className="w-full mb-4 px-3 py-2 border outline-none resize-none" style={btn} />
-        ) : (
-          <div className="mb-10 space-y-3 text-base leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            {(plan?.page_body || "").split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
-          </div>
-        )}
 
         {edit && (
           <label className="flex items-center gap-2 text-sm mb-6 cursor-pointer" style={{ color: "var(--text-primary)" }}>

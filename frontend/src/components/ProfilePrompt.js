@@ -21,18 +21,14 @@ export default function ProfilePrompt({ onCreate }) {
       <div className="w-full sm:max-w-md border p-6 relative fade-up" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
         <button onClick={later} className="absolute top-3 right-3 p-1" style={{ color: "var(--text-secondary)" }} data-testid="profile-prompt-close"><IoClose size={20} /></button>
         <div className="flex justify-center mb-3"><IoPersonCircle size={56} style={{ color: "var(--brand)" }} /></div>
-        <h3 className="font-display text-2xl text-center mb-2" style={{ color: "var(--text-primary)" }}>Bienvenue !</h3>
+        <h3 className="font-display text-2xl text-center mb-2" style={{ color: "var(--text-primary)" }}>Bienvenue sur la Stationexus !</h3>
         <p className="text-sm text-center mb-4" style={{ color: "var(--text-secondary)" }}>
-          Crée un compte pour <span style={{ color: "var(--text-primary)" }}>garder tes favoris et tes préférences sur tous tes appareils</span> et être prévenu·e des nouveautés. Tu peux aussi juste créer un profil local, ou explorer en visiteur.
+          Crée ton compte pour <span style={{ color: "var(--text-primary)" }}>avoir ton profil, garder tes favoris et tes préférences sur tous tes appareils</span> et être prévenu·e des nouveautés. Tu peux aussi explorer en visiteur.
         </p>
         <div className="flex flex-col gap-2">
           <button data-testid="profile-prompt-connect" onClick={connect} className="flex items-center justify-center gap-2 w-full py-3 font-semibold transition-transform hover:scale-[1.02]"
             style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-            <IoLogInOutline size={18} /> Se connecter / créer un compte
-          </button>
-          <button data-testid="profile-prompt-create" onClick={create} className="flex items-center justify-center gap-2 w-full py-2.5 border font-medium text-sm transition-transform hover:scale-[1.02]"
-            style={{ borderColor: "var(--border-c)", color: "var(--text-primary)", borderRadius: "var(--radius-base)" }}>
-            <IoSparkles /> Créer un profil local seulement
+            <IoLogInOutline size={18} /> Créer mon compte / me connecter
           </button>
           <button data-testid="profile-prompt-tutorial" onClick={openTuto} className="flex items-center justify-center gap-2 w-full py-2.5 border font-medium text-sm transition-transform hover:scale-[1.02]"
             style={{ borderColor: "var(--brand)", color: "var(--brand)", borderRadius: "var(--radius-base)", background: "color-mix(in srgb, var(--brand) 12%, transparent)" }}>

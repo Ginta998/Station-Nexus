@@ -42,6 +42,19 @@ export const CB_DEFAULT_TIPS = {
     { text: "Tu me trouves bavarde ? Tu peux régler mes conseils ou m'éteindre juste ici. Sans rancune ! 🙈" },
   ],
   members: [{ text: "Voici la communauté ! Crée ton profil pour rejoindre la bande. 🎉", button_label: "Voir les membres 👥", button_target: "/membres" }],
+  support: [
+    { text: "Ici, c'est le cœur de la station ! 💛 En t'abonnant, tu débloques TOUT le catalogue et tu aides le créateur à sortir de nouvelles œuvres." },
+    { text: "3 paliers, 3 façons de soutenir : choisis celui qui te ressemble. Et tu peux résilier quand tu veux, promis !" },
+    { text: "Être abonné·e = accès à tout, préférences et favoris sauvegardés, et prévenu·e des nouveautés en premier. La totale ! ✨" },
+  ],
+  library: [
+    { text: "Ta bibliothèque perso ! 📚 Toutes tes créations débloquées et ton abonnement sont réunis ici." },
+    { text: "Un achat = accès définitif, même aux futurs chapitres. Abonné·e = accès à tout le catalogue. Le luxe !" },
+  ],
+  about: [
+    { text: "Envie de connaître l'histoire et la vision de Station Nexus ? Tu es au bon endroit ! 🪐" },
+    { text: "Un univers connecté qui grandit œuvre après œuvre… et grâce à toi. Merci d'en faire partie !" },
+  ],
   novelties: [{ text: "Toutes les dernières sorties sont ici. Fraîches du jour ! 🍡" }],
   contact: [{ text: "Envie de papoter avec le créateur ? C'est par ici. Sois adorable. 😇" }],
   tutorial: [{ text: "Le grand guide complet est là si tu veux tout savoir. Moi je résume, lui il raconte sa vie !" }],
@@ -74,6 +87,9 @@ function pathToKey(pathname) {
   if (pathname.startsWith("/nouveautes")) return "novelties";
   if (pathname.startsWith("/contact")) return "contact";
   if (pathname.startsWith("/tutoriel")) return "tutorial";
+  if (pathname.startsWith("/soutien")) return "support";
+  if (pathname.startsWith("/bibliotheque")) return "library";
+  if (pathname.startsWith("/a-propos")) return "about";
   return null;
 }
 

@@ -16,6 +16,7 @@ import {
   listSubscribers, deleteSubscriber, getSettings, updateSettings,
   uploadIntroVideo, deleteIntroVideo,
   listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations, emailStatus,
+  getLibrary, cancelMembership, getMembershipPlan,
 } from "@/lib/api";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
@@ -550,6 +551,43 @@ function MembershipSettings({ settings, refetch }) {
   );
 }
 
+function MySubscription() {
+  const nav = useNavigate();
+  const { user } = useAuth();
+  const { data: lib, refetch } = useQuery({ queryKey: ["library"], queryFn: getLibrary, enabled: !!user });
+  const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
+  const m = lib?.membership;
+  const tierName = plan?.tiers?.find((t) => t.id === m?.tier_id)?.name || "Nexus";
+  const doCancel = async () => {
+    if (!window.confirm("Résilier ton abonnement à la fin de la période en cours ?")) return;
+    try { await cancelMembership(); toast.success("Abonnement résilié à la fin de la période."); refetch(); }
+    catch (e) { toast.error(e?.response?.data?.detail || "Erreur"); }
+  };
+  const primary = { background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" };
+  const btnStyle = { border: "1px solid var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)", background: "var(--bg-primary)" };
+  if (!user) return <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Connecte-toi pour voir ton abonnement.</p>;
+  if (m?.active) {
+    return (
+      <div className="flex items-center justify-between gap-4 flex-wrap" data-testid="settings-subscription">
+        <div>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-widest mb-2" style={primary}>✓ Abonné actif</span>
+          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Palier <b style={{ color: "var(--text-primary)" }}>{tierName}</b> · accès à tout le catalogue payant. Merci pour ton soutien ! 💛</p>
+        </div>
+        <div className="flex gap-2">
+          <button data-testid="settings-change-tier" onClick={() => nav("/soutien")} className="px-4 py-2 text-sm" style={btnStyle}>Changer de palier</button>
+          <button data-testid="settings-cancel-sub" onClick={doCancel} className="px-4 py-2 text-sm underline" style={{ color: "var(--text-secondary)" }}>Résilier</button>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center justify-between gap-4 flex-wrap" data-testid="settings-subscription">
+      <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Tu n'es pas encore abonné·e. Soutiens la station et débloque tout le catalogue.</p>
+      <button data-testid="settings-subscribe" onClick={() => nav("/soutien")} className="px-5 py-2.5 font-semibold" style={primary}>Voir les formules</button>
+    </div>
+  );
+}
+
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
@@ -629,6 +667,10 @@ export default function Settings() {
             <MembershipSettings settings={siteSettings} refetch={refetchSite} />
           </Section>
         )}
+
+        <Section title="Mon abonnement">
+          <MySubscription />
+        </Section>
 
         <Section title="Son">
           <button data-testid="mute-all" onClick={() => { toggleMute(); }} className="flex items-center gap-2 px-4 py-2.5 border mb-5" style={{ ...fs, color: muted ? "var(--brand)" : "var(--text-primary)" }}>

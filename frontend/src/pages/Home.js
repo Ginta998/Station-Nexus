@@ -7,6 +7,7 @@ import { listCreations, listCategories, deleteCreation, getMembershipPlan } from
 import { posterUrl, bgUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
+import { useEntitlements } from "@/lib/useEntitlements";
 import TopBar from "@/components/TopBar";
 import PosterCard from "@/components/PosterCard";
 import CreationsGridList from "@/components/CreationsGridList";
@@ -22,6 +23,7 @@ export default function Home() {
   const nav = useNavigate();
   const { isAdmin, sfx, favorites, isFavorite, toggleFavorite, layout } = useApp();
   const { user, openAuth } = useAuth();
+  const { membershipActive } = useEntitlements();
   const requireProfile = () => { if (!user) { toast.info("Crée un compte pour avoir ton profil (nom + avatar) sauvegardé partout."); openAuth(); } else setProfileOpen(true); };
   const { data: all = [], refetch, isLoading } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
@@ -267,7 +269,7 @@ export default function Home() {
               </div>
               <h1 className="font-display text-2xl sm:text-4xl md:text-6xl leading-tight md:leading-none break-words" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
               <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
-              {memberPlan?.enabled && (
+              {memberPlan?.enabled && !membershipActive && (
                 <button data-testid="home-support-cta" onClick={() => { sfx("select"); nav("/soutien"); }}
                   className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-transform hover:scale-105"
                   style={{ background: "rgba(0,0,0,0.4)", border: "1px solid var(--brand)", color: "var(--brand)", borderRadius: "var(--radius-base)", backdropFilter: "blur(4px)" }}>

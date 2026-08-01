@@ -14,6 +14,7 @@ import Novelties from "@/pages/Novelties";
 import Tutorial from "@/pages/Tutorial";
 import Library from "@/pages/Library";
 import SupportPage from "@/pages/SupportPage";
+import About from "@/pages/About";
 import PaymentResult from "@/pages/PaymentResult";
 import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
@@ -84,6 +85,7 @@ function App() {
             <Route path="/tutoriel" element={<Tutorial />} />
             <Route path="/bibliotheque" element={<Library />} />
             <Route path="/soutien" element={<SupportPage />} />
+            <Route path="/a-propos" element={<About />} />
             <Route path="/payment/success" element={<PaymentResult mode="success" />} />
             <Route path="/payment/cancel" element={<PaymentResult mode="cancel" />} />
           </Routes>
