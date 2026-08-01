@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { IoArrowBack, IoHome, IoSparkles, IoCheckmarkCircle, IoCreateOutline, IoSaveOutline, IoCloseOutline, IoAddOutline, IoTrashOutline, IoHeart } from "react-icons/io5";
+import { IoArrowBack, IoHome, IoSparkles, IoCheckmarkCircle, IoCreateOutline, IoSaveOutline, IoCloseOutline, IoAddOutline, IoTrashOutline, IoHeart, IoStar, IoDiamond } from "react-icons/io5";
 import { getMembershipPlan, getSettings, updateSettings, startCheckout, getLibrary } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import QuickControls from "@/components/QuickControls";
 
-const TIER_ACCENTS = ["#4d8dff", "#c4b5fd", "#ffd400"];
+const TIER_ACCENTS = ["#4d8dff", "#ffcc33", "#ff5d8f"];
+const TIER_ICONS = [(p) => <IoHeart {...p} />, (p) => <IoStar {...p} />, (p) => <IoDiamond {...p} />];
 
 export default function SupportPage() {
   const nav = useNavigate();
@@ -110,7 +111,8 @@ export default function SupportPage() {
               const accent = TIER_ACCENTS[i % TIER_ACCENTS.length];
               const isActive = active && activeTier === t.id;
               return (
-                <div key={i} data-testid={`tier-${t.id || i}`} className="p-6 flex flex-col" style={{ background: "var(--bg-secondary)", border: `1px solid ${isActive ? "var(--brand)" : "var(--border-c)"}`, borderRadius: "var(--radius-base)", boxShadow: isActive ? "0 0 0 2px var(--brand) inset" : "none" }}>
+                <div key={i} data-testid={`tier-${t.id || i}`} className="relative p-6 flex flex-col transition-transform hover:-translate-y-1" style={{ background: "var(--bg-secondary)", border: `1px solid ${isActive || i === 1 ? "var(--brand)" : "var(--border-c)"}`, borderRadius: "var(--radius-base)", boxShadow: isActive ? "0 0 0 2px var(--brand) inset" : (i === 1 ? "0 12px 32px rgba(0,0,0,0.35)" : "none"), transform: i === 1 && !edit ? "scale(1.03)" : "none" }}>
+                  {i === 1 && !edit && <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "999px" }}>★ Le plus choisi</span>}
                   {edit ? (
                     <>
                       <input value={t.name} onChange={(e) => setTier(i, "name", e.target.value)} className="font-display text-xl mb-2 px-2 py-1 border outline-none" style={btn} placeholder="Nom" data-testid={`tier-name-${i}`} />
@@ -120,17 +122,19 @@ export default function SupportPage() {
                     </>
                   ) : (
                     <>
-                      <div className="w-10 h-1 mb-3" style={{ background: accent, borderRadius: 4 }} />
+                      <div className="flex items-center justify-center w-14 h-14 mb-4" style={{ background: `color-mix(in srgb, ${accent} 20%, transparent)`, borderRadius: "50%", border: `1.5px solid ${accent}` }}>
+                        {TIER_ICONS[i % TIER_ICONS.length]({ size: 26, style: { color: accent } })}
+                      </div>
                       <p className="font-display text-2xl mb-1">{t.name}</p>
-                      <p className="font-display text-4xl mb-4">{t.price_eur}€<span className="text-sm" style={{ color: "var(--text-secondary)" }}>/mois</span></p>
+                      <p className="font-display text-4xl mb-4" style={{ color: accent }}>{t.price_eur}€<span className="text-sm" style={{ color: "var(--text-secondary)" }}>/mois</span></p>
                       <ul className="space-y-2 text-sm mb-6 flex-1" style={{ color: "var(--text-secondary)" }}>
                         {(t.perks || []).map((p, x) => <li key={x} className="flex items-start gap-2"><IoCheckmarkCircle size={16} className="flex-shrink-0 mt-0.5" style={{ color: accent }} /> {p}</li>)}
                       </ul>
                       {isActive ? (
                         <span className="flex items-center justify-center gap-2 px-5 py-3 font-semibold" style={primary} data-testid={`tier-current-${t.id}`}><IoCheckmarkCircle /> Ton palier actuel</span>
                       ) : (
-                        <button data-testid={`tier-subscribe-${t.id}`} disabled={busy} onClick={() => subscribe(t.id)} className="flex items-center justify-center gap-2 px-5 py-3 font-semibold transition-transform hover:scale-105 disabled:opacity-60" style={primary}>
-                          <IoSparkles size={16} /> {active ? "Changer pour ce palier" : "S'abonner"}
+                        <button data-testid={`tier-subscribe-${t.id}`} disabled={busy} onClick={() => subscribe(t.id)} className="flex items-center justify-center gap-2 px-5 py-3 font-semibold transition-transform hover:scale-105 disabled:opacity-60" style={i === 1 ? primary : { border: `2px solid ${accent}`, color: accent, borderRadius: "var(--radius-base)" }}>
+                          {TIER_ICONS[i % TIER_ICONS.length]({ size: 16 })} {active ? "Changer pour ce palier" : "S'abonner"}
                         </button>
                       )}
                     </>

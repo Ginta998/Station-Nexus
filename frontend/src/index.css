@@ -417,6 +417,14 @@ body {
 :-webkit-full-screen .sx-drawer-footer { padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px)); }
 
 /* Barres du haut (fiche, mode lecture, mode film) : décalage additif pour l'encoche caméra, renforcé en plein écran */
+/* Flèche du bouton "Soutiens la station" — petit va-et-vient vers la droite */
+@keyframes ctaArrowNudge { 0%,100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+.sx-cta-arrow { animation: ctaArrowNudge 1.2s ease-in-out infinite; }
+.sx-support-cta { transition: background-color .2s ease, color .2s ease, transform .15s ease, box-shadow .2s ease; }
+.sx-support-cta:hover { background: var(--brand) !important; color: var(--bg-primary) !important; box-shadow: 0 8px 24px color-mix(in srgb, var(--brand) 40%, transparent); }
+.sx-support-cta:hover .sx-cta-arrow { color: var(--bg-primary); }
+.sx-support-cta:active { transform: scale(0.97); }
+
 .sx-safe-top { margin-top: env(safe-area-inset-top, 0px); }
 :fullscreen .sx-safe-top { margin-top: calc(1.75rem + env(safe-area-inset-top, 0px)); }
 :-webkit-full-screen .sx-safe-top { margin-top: calc(1.75rem + env(safe-area-inset-top, 0px)); }

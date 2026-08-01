@@ -325,6 +325,15 @@ class SiteSettings(BaseModel):
         "Ma vision : offrir une expérience immersive, cinématographique et personnelle, où chaque création a sa place et où les lecteurs deviennent des voyageurs.\n\n"
         "L'objectif : construire, œuvre après œuvre, un véritable univers connecté — et le faire grandir grâce au soutien de la communauté."
     )
+    about_hero_image: str = "https://images.unsplash.com/photo-1677926405168-fa86268b7295?crop=entropy&cs=srgb&fm=jpg&q=85&w=1600"
+    creator_title: str = "Le créateur"
+    creator_name: str = "Le créateur de Station Nexus"
+    creator_body: str = (
+        "Derrière Station Nexus, il y a une personne passionnée par les histoires et les mondes imaginaires.\n\n"
+        "Je crée des livres, des films et des séries pour partager cet univers avec toi. Chaque œuvre est une pièce d'un puzzle plus grand.\n\n"
+        "Ton soutien me permet de continuer à créer, librement et sans compromis. Merci d'être là. 🚀"
+    )
+    creator_image: str = "https://images.unsplash.com/photo-1584462746497-276f4aeb9fca?crop=entropy&cs=srgb&fm=jpg&q=85&w=800"
     cosmic_bunny_tips: Dict[str, List[Dict[str, str]]] = Field(default_factory=lambda: {
         "home": [
             {"text": "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", "button_label": "Personnaliser la station ⚙️", "button_target": "/parametres"},
@@ -1464,8 +1473,14 @@ async def stripe_webhook(request: Request):
 @api_router.get("/about")
 async def about_page():
     s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
-    return {"title": s.get("about_title") or SiteSettings().about_title,
-            "body": s.get("about_body") if s.get("about_body") is not None else SiteSettings().about_body}
+    d = SiteSettings()
+    return {"title": s.get("about_title") or d.about_title,
+            "body": s.get("about_body") if s.get("about_body") is not None else d.about_body,
+            "hero_image": s.get("about_hero_image") or d.about_hero_image,
+            "creator_title": s.get("creator_title") or d.creator_title,
+            "creator_name": s.get("creator_name") or d.creator_name,
+            "creator_body": s.get("creator_body") if s.get("creator_body") is not None else d.creator_body,
+            "creator_image": s.get("creator_image") or d.creator_image}
 
 
 @api_router.get("/membership/plan")

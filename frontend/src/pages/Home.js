@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoChevronForward, IoChevronBack, IoChevronUp, IoChevronDown, IoCreateOutline, IoTrashOutline, IoPlay, IoFilter, IoSearch } from "react-icons/io5";
+import { IoChevronForward, IoChevronBack, IoChevronUp, IoChevronDown, IoCreateOutline, IoTrashOutline, IoPlay, IoFilter, IoSearch, IoArrowForward } from "react-icons/io5";
 import { toast } from "sonner";
 import { listCreations, listCategories, deleteCreation, getMembershipPlan } from "@/lib/api";
 import { posterUrl, bgUrl } from "@/lib/api";
@@ -271,9 +271,10 @@ export default function Home() {
               <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
               {memberPlan?.enabled && !membershipActive && (
                 <button data-testid="home-support-cta" onClick={() => { sfx("select"); nav("/soutien"); }}
-                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-transform hover:scale-105"
-                  style={{ background: "rgba(0,0,0,0.4)", border: "1px solid var(--brand)", color: "var(--brand)", borderRadius: "var(--radius-base)", backdropFilter: "blur(4px)" }}>
-                  ✨ Soutiens la station & débloque tout le catalogue
+                  className="sx-support-cta mt-4 inline-flex items-center gap-2.5 px-6 py-3 text-sm font-semibold"
+                  style={{ background: "rgba(0,0,0,0.55)", border: "2px solid var(--brand)", color: "var(--brand)", borderRadius: "999px", backdropFilter: "blur(4px)" }}>
+                  Soutiens la station & débloque tout le catalogue
+                  <IoArrowForward size={18} className="sx-cta-arrow" />
                 </button>
               )}
             </div>
