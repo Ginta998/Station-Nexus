@@ -250,8 +250,12 @@ class Profile(BaseModel):
     avatar: Optional[str] = ""   # preset avatar url or base64 data uri
     email: Optional[str] = ""
     instagram: Optional[str] = ""
+    account_id: Optional[str] = ""   # linked user account (for subscription tier display)
+    hide_tier: bool = False          # hide subscription tier on public profile
     created_at: str = Field(default_factory=now_iso)
     updated_at: str = Field(default_factory=now_iso)
+    tier_id: Optional[str] = ""      # computed: active membership tier
+    tier_name: Optional[str] = ""    # computed
 
 
 class ProfileInput(BaseModel):
@@ -260,6 +264,8 @@ class ProfileInput(BaseModel):
     avatar: Optional[str] = ""
     email: Optional[str] = ""
     instagram: Optional[str] = ""
+    account_id: Optional[str] = ""
+    hide_tier: Optional[bool] = None
 
 
 class Announcement(BaseModel):
@@ -920,6 +926,12 @@ async def upsert_profile(payload: ProfileInput):
     existing = await db.profiles.find_one({"id": payload.id}, {"_id": 0})
     data = payload.model_dump()
     data["updated_at"] = now_iso()
+    # don't overwrite an existing account link with an empty value (logged-out save)
+    if not data.get("account_id"):
+        data.pop("account_id", None)
+    # only patch hide_tier when explicitly provided
+    if data.get("hide_tier") is None:
+        data.pop("hide_tier", None)
     if existing:
         await db.profiles.update_one({"id": payload.id}, {"$set": data})
     else:
@@ -937,7 +949,28 @@ async def upsert_profile(payload: ProfileInput):
 @api_router.get("/profiles", response_model=List[Profile])
 async def list_profiles():
     docs = await db.profiles.find({}, {"_id": 0}).sort("updated_at", -1).to_list(5000)
-    return [Profile(**d) for d in docs]
+    s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
+    tier_names = {t.get("id"): t.get("name") for t in (s.get("membership_tiers") or [])}
+    now = datetime.now(timezone.utc)
+    mems = {}
+    async for m in db.memberships.find({"status": "active"}, {"_id": 0, "user_id": 1, "tier_id": 1, "current_period_end": 1}):
+        cpe = m.get("current_period_end")
+        if cpe:
+            try:
+                if datetime.fromisoformat(cpe) < now:
+                    continue
+            except Exception:
+                pass
+        mems[m.get("user_id")] = m.get("tier_id")
+    out = []
+    for d in docs:
+        p = Profile(**d)
+        aid = d.get("account_id")
+        if aid and not d.get("hide_tier") and aid in mems:
+            p.tier_id = mems[aid] or ""
+            p.tier_name = tier_names.get(p.tier_id, "") or ""
+        out.append(p)
+    return out
 
 
 @api_router.get("/profiles/{pid}", response_model=Profile)

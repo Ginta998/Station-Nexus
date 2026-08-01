@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoPersonCircle, IoLogoInstagram, IoTrashOutline, IoHome, IoPersonAdd, IoCreateOutline } from "react-icons/io5";
+import { IoArrowBack, IoLogoInstagram, IoTrashOutline, IoHome, IoPersonAdd, IoCreateOutline, IoHeart, IoStar, IoDiamond, IoSparkles } from "react-icons/io5";
 import { toast } from "sonner";
 import { listProfiles, deleteProfile } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import ProfileDialog from "@/components/ProfileDialog";
+import MobileMenu from "@/components/MobileMenu";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
+
+const TIER_STYLE = {
+  soutien: { color: "#4d8dff", Icon: IoHeart },
+  mecene: { color: "#ffcc33", Icon: IoStar },
+  legende: { color: "#ff5d8f", Icon: IoDiamond },
+};
+const tierStyle = (id) => TIER_STYLE[id] || { color: "var(--brand)", Icon: IoSparkles };
 
 function instaUrl(handle) {
   if (!handle) return null;
@@ -31,9 +39,12 @@ export default function Members() {
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
       <div className="max-w-4xl mx-auto px-5 md:px-8 py-8">
-        <div className="flex items-center gap-2 mb-8">
-          <button data-testid="members-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
-          <button data-testid="members-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoHome size={16} /> <span className="text-sm">Accueil</span></button>
+        <div className="flex items-center justify-between gap-2 mb-8">
+          <div className="flex items-center gap-2">
+            <button data-testid="members-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+            <button data-testid="members-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoHome size={16} /> <span className="text-sm hidden sm:inline">Accueil</span></button>
+          </div>
+          <MobileMenu />
         </div>
 
         <h1 className="font-display text-4xl md:text-5xl mb-2" style={{ color: "var(--text-primary)" }}>Membres</h1>
@@ -55,17 +66,28 @@ export default function Members() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" data-testid="members-grid">
           {list.map((p) => {
             const insta = instaUrl(p.instagram);
+            const ts = p.tier_name ? tierStyle(p.tier_id) : null;
             return (
               <div key={p.id} data-testid={`member-${p.id}`} className="relative flex flex-col items-center text-center p-4 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
                 {isAdmin && (
                   <button onClick={() => del(p)} className="absolute top-2 right-2" style={{ color: "var(--brand)" }} data-testid={`member-del-${p.id}`}><IoTrashOutline size={15} /></button>
                 )}
-                <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mb-3" style={{ border: "2px solid var(--brand)", background: "var(--bg-primary)" }}>
+                <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mb-3 relative" style={{ border: `2px solid ${ts ? ts.color : "var(--brand)"}`, background: "var(--bg-primary)" }}>
                   {p.avatar
                     ? <img src={p.avatar} alt={p.name} className="w-full h-full object-cover" />
-                    : <span className="font-display text-3xl" style={{ color: "var(--brand)" }}>{(p.name || "?")[0].toUpperCase()}</span>}
+                    : <span className="font-display text-3xl" style={{ color: ts ? ts.color : "var(--brand)" }}>{(p.name || "?")[0].toUpperCase()}</span>}
+                  {ts && (
+                    <span className="absolute -bottom-1 -right-1 w-7 h-7 flex items-center justify-center rounded-full" style={{ background: ts.color, border: "2px solid var(--bg-secondary)" }} data-testid={`member-tier-icon-${p.id}`}>
+                      <ts.Icon size={13} style={{ color: "#0a0a0a" }} />
+                    </span>
+                  )}
                 </div>
                 <p className="font-display text-base truncate w-full" style={{ color: "var(--text-primary)" }}>{p.name}</p>
+                {ts && (
+                  <span data-testid={`member-tier-${p.id}`} className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide" style={{ background: `color-mix(in srgb, ${ts.color} 20%, transparent)`, color: ts.color, border: `1px solid ${ts.color}`, borderRadius: "999px" }}>
+                    <ts.Icon size={11} /> {p.tier_name}
+                  </span>
+                )}
                 {insta && (
                   <a href={insta} target="_blank" rel="noopener noreferrer" data-testid={`member-insta-${p.id}`}
                     className="mt-1 flex items-center gap-1 text-xs" style={{ color: "var(--brand)" }}>

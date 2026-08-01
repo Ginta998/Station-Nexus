@@ -30,7 +30,7 @@ export default function ProfileDialog({ open, onClose }) {
 
   const save = () => {
     if (!name.trim()) return toast.error("Choisis un nom de profil");
-    saveProfile({ name: name.trim(), avatar, email: profile?.email || "", instagram: instagram.trim() });
+    saveProfile({ name: name.trim(), avatar, email: profile?.email || "", instagram: instagram.trim(), account_id: user?.id || profile?.account_id || "" });
     sfx && sfx("select");
     toast.success("Profil enregistré");
     onClose();

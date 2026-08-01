@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
-import { authRegister, authLogin, authGoogleSession, authMe, authSync, authClaimAdmin } from "@/lib/api";
+import { authRegister, authLogin, authGoogleSession, authMe, authSync, authClaimAdmin, upsertProfile } from "@/lib/api";
 
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -136,6 +136,17 @@ export function AuthProvider({ children }) {
       try { await authSync({ favorites: readFavorites(), preferences: buildPrefs() }); } catch { /* silent */ }
     }, 6000);
     return () => clearInterval(id);
+  }, [user]);
+
+  // Link the local profile to this account (for public subscription-tier display)
+  useEffect(() => {
+    if (!user) return;
+    let p; try { p = JSON.parse(localStorage.getItem("sx_profile") || "null"); } catch { p = null; }
+    if (p && p.id && p.account_id !== user.id) {
+      const linked = { ...p, account_id: user.id };
+      localStorage.setItem("sx_profile", JSON.stringify(linked));
+      upsertProfile(linked).catch(() => {});
+    }
   }, [user]);
 
   return (

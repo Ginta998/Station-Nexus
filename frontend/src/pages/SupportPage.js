@@ -7,6 +7,7 @@ import { getMembershipPlan, getSettings, updateSettings, startCheckout, getLibra
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import QuickControls from "@/components/QuickControls";
+import MobileMenu from "@/components/MobileMenu";
 
 const TIER_ACCENTS = ["#4d8dff", "#ffcc33", "#ff5d8f"];
 const TIER_ICONS = [(p) => <IoHeart {...p} />, (p) => <IoStar {...p} />, (p) => <IoDiamond {...p} />];
@@ -67,6 +68,7 @@ export default function SupportPage() {
           ) : (
             <button data-testid="support-edit" onClick={() => setEdit(true)} className="flex items-center gap-2 px-3 py-2" style={btn}><IoCreateOutline /> <span className="text-sm hidden sm:inline">Modifier</span></button>
           ))}
+          <MobileMenu />
           <QuickControls />
         </div>
       </div>

@@ -7,6 +7,7 @@ import { getLibrary, getMembershipPlan, cancelMembership, startCheckout, posterU
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import QuickControls from "@/components/QuickControls";
+import MobileMenu from "@/components/MobileMenu";
 
 export default function Library() {
   const nav = useNavigate();
@@ -36,7 +37,10 @@ export default function Library() {
           <button data-testid="library-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2" style={btn}><IoArrowBack /> <span className="text-sm hidden sm:inline">Retour</span></button>
           <button data-testid="library-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2" style={btn}><IoHome size={16} /></button>
         </div>
-        <QuickControls />
+        <div className="flex items-center gap-2">
+          <MobileMenu />
+          <QuickControls />
+        </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-5 md:px-12 py-8">

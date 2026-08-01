@@ -4,6 +4,7 @@ import {
   IoHeartOutline, IoPersonCircleOutline, IoMegaphoneOutline, IoGameControllerOutline, IoImagesOutline, IoSparkles,
 } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
+import MobileMenu from "@/components/MobileMenu";
 
 const fs = { background: "var(--bg-secondary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 
@@ -52,9 +53,12 @@ export default function Tutorial() {
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
       <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
-        <div className="flex items-center gap-2 mb-8">
-          <button data-testid="tutorial-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={{ ...fs, background: "var(--bg-primary)" }}><IoArrowBack /> <span className="text-sm">Retour</span></button>
-          <button data-testid="tutorial-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={{ ...fs, background: "var(--bg-primary)" }}><IoHome size={16} /> <span className="text-sm">Accueil</span></button>
+        <div className="flex items-center justify-between gap-2 mb-8">
+          <div className="flex items-center gap-2">
+            <button data-testid="tutorial-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={{ ...fs, background: "var(--bg-primary)" }}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+            <button data-testid="tutorial-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={{ ...fs, background: "var(--bg-primary)" }}><IoHome size={16} /> <span className="text-sm hidden sm:inline">Accueil</span></button>
+          </div>
+          <MobileMenu />
         </div>
 
         <div className="flex items-center gap-3 mb-2">

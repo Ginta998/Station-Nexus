@@ -6,6 +6,7 @@ import { IoArrowBack, IoHome, IoCreateOutline, IoSaveOutline, IoCloseOutline, Io
 import { getAboutPage, getSettings, updateSettings } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import QuickControls from "@/components/QuickControls";
+import MobileMenu from "@/components/MobileMenu";
 
 const PILLARS = [
   { icon: IoBookOutline, title: "Des univers écrits", text: "Livres et séries qui t'embarquent chapitre après chapitre." },
@@ -51,6 +52,7 @@ export default function About() {
           ) : (
             <button data-testid="about-edit" onClick={() => setEdit(true)} className="flex items-center gap-2 px-3 py-2 backdrop-blur-md" style={{ ...btn, background: "rgba(0,0,0,0.45)" }}><IoCreateOutline /> <span className="text-sm hidden sm:inline">Modifier</span></button>
           ))}
+          <MobileMenu />
           <QuickControls />
         </div>
       </div>

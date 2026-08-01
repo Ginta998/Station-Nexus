@@ -5,6 +5,7 @@ import { IoArrowBack, IoMail, IoLogoInstagram, IoLogoYoutube, IoCreateOutline, I
 import { toast } from "sonner";
 import { getSettings, updateSettings, addSubscriber } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
+import MobileMenu from "@/components/MobileMenu";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 
@@ -46,11 +47,14 @@ export default function Contact() {
       <div className="max-w-2xl mx-auto px-5 md:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <button data-testid="contact-back" onClick={() => { sfx("back"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+          <div className="flex items-center gap-2">
           {isAdmin && (edit ? (
             <button data-testid="contact-save" onClick={save} className="flex items-center gap-1.5 px-4 py-2 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSaveOutline /> Enregistrer</button>
           ) : (
             <button data-testid="contact-edit" onClick={() => { setForm(data); setEdit(true); }} className="flex items-center gap-1.5 px-4 py-2 border" style={fs}><IoCreateOutline /> Modifier</button>
           ))}
+          <MobileMenu />
+          </div>
         </div>
 
         <div className="flex flex-col items-center text-center mb-10 fade-up">

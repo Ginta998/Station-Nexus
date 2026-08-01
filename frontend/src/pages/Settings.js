@@ -7,6 +7,7 @@ import { THEMES } from "@/lib/themes";
 import { SOUND_PACKS } from "@/lib/sound";
 import { INTROS } from "@/lib/intro";
 import BootIntro from "@/components/BootIntro";
+import MobileMenu from "@/components/MobileMenu";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { CB_PAGES, CB_PAGE_LABELS, CB_DEFAULT_TIPS, CB_TARGETS, normalizeTip } from "@/components/CosmicBunny";
@@ -554,6 +555,7 @@ function MembershipSettings({ settings, refetch }) {
 function MySubscription() {
   const nav = useNavigate();
   const { user } = useAuth();
+  const { profile, saveProfile } = useApp();
   const { data: lib, refetch } = useQuery({ queryKey: ["library"], queryFn: getLibrary, enabled: !!user });
   const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
   const m = lib?.membership;
@@ -563,20 +565,30 @@ function MySubscription() {
     try { await cancelMembership(); toast.success("Abonnement résilié à la fin de la période."); refetch(); }
     catch (e) { toast.error(e?.response?.data?.detail || "Erreur"); }
   };
+  const toggleHideTier = (show) => {
+    saveProfile({ hide_tier: !show, account_id: user?.id });
+    toast.success(show ? "Ton palier est visible sur ton profil public." : "Ton palier est masqué sur ton profil public.");
+  };
   const primary = { background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" };
   const btnStyle = { border: "1px solid var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)", background: "var(--bg-primary)" };
   if (!user) return <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Connecte-toi pour voir ton abonnement.</p>;
   if (m?.active) {
     return (
-      <div className="flex items-center justify-between gap-4 flex-wrap" data-testid="settings-subscription">
-        <div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-widest mb-2" style={primary}>✓ Abonné actif</span>
-          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Palier <b style={{ color: "var(--text-primary)" }}>{tierName}</b> · accès à tout le catalogue payant. Merci pour ton soutien ! 💛</p>
+      <div data-testid="settings-subscription">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-widest mb-2" style={primary}>✓ Abonné actif</span>
+            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Palier <b style={{ color: "var(--text-primary)" }}>{tierName}</b> · accès à tout le catalogue payant. Merci pour ton soutien ! 💛</p>
+          </div>
+          <div className="flex gap-2">
+            <button data-testid="settings-change-tier" onClick={() => nav("/soutien")} className="px-4 py-2 text-sm" style={btnStyle}>Changer de palier</button>
+            <button data-testid="settings-cancel-sub" onClick={doCancel} className="px-4 py-2 text-sm underline" style={{ color: "var(--text-secondary)" }}>Résilier</button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <button data-testid="settings-change-tier" onClick={() => nav("/soutien")} className="px-4 py-2 text-sm" style={btnStyle}>Changer de palier</button>
-          <button data-testid="settings-cancel-sub" onClick={doCancel} className="px-4 py-2 text-sm underline" style={{ color: "var(--text-secondary)" }}>Résilier</button>
-        </div>
+        <label className="flex items-center gap-2.5 mt-4 pt-4 border-t text-sm cursor-pointer" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }}>
+          <input type="checkbox" data-testid="settings-hide-tier" checked={!profile?.hide_tier} onChange={(e) => toggleHideTier(e.target.checked)} />
+          Afficher mon palier de soutien sur mon profil public {profile ? "" : "(crée ton profil pour l'afficher)"}
+        </label>
       </div>
     );
   }
@@ -630,7 +642,10 @@ export default function Settings() {
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
       <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
-        <button data-testid="settings-back" onClick={() => { sfx("back"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border mb-8" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+        <div className="flex items-center justify-between gap-2 mb-8">
+          <button data-testid="settings-back" onClick={() => { sfx("back"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+          <MobileMenu />
+        </div>
         <h1 className="font-display text-4xl md:text-5xl mb-2" style={{ color: "var(--text-primary)" }}>Paramètres</h1>
         <p className="mb-10" style={{ color: "var(--text-secondary)" }}>Personnalise ta station.</p>
 
