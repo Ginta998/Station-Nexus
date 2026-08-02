@@ -1,0 +1,29 @@
+{
+  "summary": "Frontend Salon (chat) tested end-to-end. All requested flows pass: desktop TopBar salon-btn navigates to /salon; non-subscriber (freshly registered) sees chat-locked with chat-subscribe button routing to /soutien; admin paytest@stationexus.com sees chat-page with chat-online indicator, seed messages, can post text (composer + chat-send), toggle emoji reaction (chat-reaction pill add + toggle-off), create + vote a poll (chat-poll-builder → chat-poll-<id> → % updates from 0 to 100), image button present, and admin delete removes the message from the list. Mobile TopBar hamburger drawer exposes menu-salon which routes to /salon. Backend errors: none observed during frontend flows (401s in console are the initial pre-auth /chat/status call, expected).",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Chat poll builder", "issues": ["React warning: 'A component is changing an uncontrolled input to be controlled' when opening the poll builder. Cause: poll option inputs are initialized with empty strings but reset/toggle transitions trigger controlled↔uncontrolled warnings. Non-blocking but should be cleaned up by always defaulting to empty string."]},
+      {"screen": "Home (all pages)", "issues": ["ProfilePrompt modal (data-testid=profile-prompt) intercepts pointer events for the underlying TopBar (login-btn, salon-btn) even though it is meant to be a soft nudge. Requires clicking 'Plus tard' before any TopBar action — tests had to add dismissal step. Consider making the overlay non-blocking (pointer-events-none on the backdrop) or moving TopBar above the overlay z-index."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Optional: fix controlled/uncontrolled input warning in Chat poll builder by ensuring poll.options are always initialized as strings.",
+    "Optional UX: make ProfilePrompt not intercept clicks on TopBar (currently blocks salon-btn / login-btn) — either dismiss on outside-click or use pointer-events-none on the backdrop layer."
+  ],
+  "critical_code_review_comments": [
+    "Chat.js sends sfx('select') on every incoming message from others (line ~89): OK but no throttling — a burst of messages could spam audio. Consider debouncing.",
+    "Chat.js polling (2.5s) does not pause when tab is hidden — consider using document.visibilityState to reduce load."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "n/a (skipped per request)", "frontend": "100%" },
+  "seed_data_creation": "Registered a throwaway non-subscriber account nontest<epoch>@test.com / password123 to verify the gate. Posted 1 test text message and 1 test poll as admin (paytest@stationexus.com); the text message was deleted via admin moderation. The test poll remains in the salon and can be cleaned by the developer if desired.",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "admin paytest@stationexus.com / password123 (from /app/memory/test_credentials.md)",
+  "context_for_next_testing_agent": "All Salon frontend flows verified working on the preview. Key testids confirmed: salon-btn, menu-salon (mobile TopBar drawer via mobile-menu-btn), chat-locked, chat-subscribe, chat-page, chat-online, chat-messages, chat-msg-<id>, chat-input, chat-send, chat-react-btn-<id>, chat-emoji-<id>-<emoji>, chat-reaction-<id>-<emoji>, chat-poll-btn, chat-poll-builder, chat-poll-question, chat-poll-option-0/1, chat-poll-send, chat-poll-<id>, chat-poll-opt-<id>-<i>, chat-image-btn, chat-del-<id>. Note: MobileMenu component (data-testid=page-menu-btn / page-menu-/salon) is only mounted on pages that include <MobileMenu/> (e.g., Salon page header). On Home, mobile navigation uses TopBar's mobile-menu-btn → mobile-menu drawer with menu-salon. Both drawers expose Salon per the spec. chat-mod-<id> requires a message authored by someone other than the current user; with only paytest active and seed messages authored by paytest, the mod button is not rendered — this is by design, not a bug.",
+  "rca_of_the_issue": "No blocking issues found."
+}

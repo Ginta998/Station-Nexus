@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoMenu, IoClose, IoHome, IoSparklesOutline, IoLibraryOutline, IoPlanetOutline, IoPeople, IoMailOutline, IoHelpCircleOutline, IoSettingsOutline, IoLogInOutline, IoLogOutOutline, IoSparkles, IoCashOutline } from "react-icons/io5";
+import { IoMenu, IoClose, IoHome, IoSparklesOutline, IoLibraryOutline, IoPlanetOutline, IoPeople, IoMailOutline, IoHelpCircleOutline, IoSettingsOutline, IoLogInOutline, IoLogOutOutline, IoSparkles, IoCashOutline, IoChatbubbles } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 
 const LINKS = [
   { to: "/", label: "Accueil", icon: IoHome },
+  { to: "/salon", label: "Salon", icon: IoChatbubbles },
   { to: "/nouveautes", label: "Nouveautés", icon: IoSparkles },
   { to: "/soutien", label: "Soutenir la station", icon: IoSparklesOutline },
   { to: "/bibliotheque", label: "Ma bibliothèque", icon: IoLibraryOutline },

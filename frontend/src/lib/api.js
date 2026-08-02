@@ -130,3 +130,14 @@ export const getMembershipPlan = () => api.get("/membership/plan").then((r) => r
 export const getAboutPage = () => api.get("/about").then((r) => r.data);
 export const getAdminRevenue = () => api.get("/admin/revenue").then((r) => r.data);
 export const cancelMembership = () => api.post("/membership/cancel").then((r) => r.data);
+
+// community chat (salon)
+export const chatStatus = () => api.get("/chat/status").then((r) => r.data);
+export const chatMessages = (since) => api.get("/chat/messages", { params: since ? { since } : {} }).then((r) => r.data);
+export const chatPost = (payload) => api.post("/chat/messages", payload).then((r) => r.data);
+export const chatDelete = (id) => api.delete(`/chat/messages/${id}`).then((r) => r.data);
+export const chatReact = (id, emoji) => api.post(`/chat/messages/${id}/react`, { emoji }).then((r) => r.data);
+export const chatVote = (id, option) => api.post(`/chat/messages/${id}/vote`, { option }).then((r) => r.data);
+export const chatPing = () => api.post("/chat/ping").then((r) => r.data);
+export const chatModerate = (user_id, action) => api.post("/chat/moderate", { user_id, action }).then((r) => r.data);
+export const chatUpload = (file) => { const fd = new FormData(); fd.append("file", file); return api.post("/chat/upload", fd).then((r) => r.data); };

@@ -11,7 +11,7 @@ import asyncio
 import resend
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone, timedelta
 import jwt
@@ -1676,6 +1676,174 @@ async def membership_cancel(user=Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(500, f"Stripe: {e}")
     return {"status": "cancel_scheduled", "current_period_end": m.get("current_period_end")}
+
+
+# ==================== Community Chat (public salon — abonnés) ====================
+CHAT_ONLINE_WINDOW = 90  # seconds a user is considered "online" after last ping
+
+
+class ChatMessageInput(BaseModel):
+    text: str = ""
+    image_id: str = ""
+    reply_to: Optional[str] = None
+    poll: Optional[Dict[str, Any]] = None  # {"question": str, "options": [str], "multi": bool}
+
+
+class ChatModerateInput(BaseModel):
+    user_id: str
+    action: str  # ban | unban | mute | unmute
+
+
+async def _author_info(user: dict) -> dict:
+    p = await db.profiles.find_one({"account_id": user["id"]}, {"_id": 0, "name": 1, "avatar": 1})
+    name = (p or {}).get("name") or user.get("name") or (user.get("email") or "").split("@")[0] or "Membre"
+    avatar = (p or {}).get("avatar") or user.get("avatar") or ""
+    return {"name": name, "avatar": avatar}
+
+
+async def _chat_can_read(user: dict) -> bool:
+    if user.get("is_admin"):
+        return True
+    if user.get("chat_banned"):
+        return False
+    return await _membership_active(user["id"])
+
+
+async def require_chat_reader(user=Depends(get_current_user)):
+    if not await _chat_can_read(user):
+        raise HTTPException(403, "Le salon est réservé aux abonnés de la station")
+    return user
+
+
+@api_router.get("/chat/status")
+async def chat_status(user=Depends(get_current_user)):
+    can = await _chat_can_read(user)
+    return {"can_read": can, "muted": bool(user.get("chat_muted")), "banned": bool(user.get("chat_banned")),
+            "is_admin": bool(user.get("is_admin"))}
+
+
+@api_router.post("/chat/upload")
+async def chat_upload(file: UploadFile = File(...), user=Depends(require_chat_reader)):
+    data = await file.read()
+    if len(data) > MAX_AUDIO_BYTES:
+        raise HTTPException(413, "Image trop lourde (max 12 Mo)")
+    aid = str(uuid.uuid4())
+    b64 = base64.b64encode(data).decode("utf-8")
+    doc = {"id": aid, "creation_id": "chat", "kind": "chat", "name": file.filename or "image",
+           "content_type": file.content_type or "image/jpeg", "data": b64, "created_at": now_iso()}
+    await db.media_assets.insert_one(doc)
+    return {"id": aid, "url": f"/api/assets/{aid}"}
+
+
+@api_router.get("/chat/messages")
+async def chat_messages(since: Optional[str] = None, limit: int = 80, user=Depends(require_chat_reader)):
+    q = {}
+    if since:
+        q["created_at"] = {"$gt": since}
+    cur = db.chat_messages.find(q, {"_id": 0}).sort("created_at", 1)
+    msgs = await cur.to_list(500)
+    if not since and len(msgs) > limit:
+        msgs = msgs[-limit:]
+    return msgs
+
+
+@api_router.post("/chat/messages")
+async def chat_post(payload: ChatMessageInput, user=Depends(require_chat_reader)):
+    if user.get("chat_muted"):
+        raise HTTPException(403, "Tu es en sourdine — tu ne peux pas écrire pour le moment")
+    text = (payload.text or "").strip()[:2000]
+    poll = None
+    if payload.poll and (payload.poll.get("question") or "").strip():
+        opts = [o for o in (payload.poll.get("options") or []) if str(o).strip()][:8]
+        if len(opts) >= 2:
+            poll = {"question": str(payload.poll["question"]).strip()[:200],
+                    "options": [{"text": str(o).strip()[:120], "votes": []} for o in opts],
+                    "multi": bool(payload.poll.get("multi"))}
+    if not text and not payload.image_id and not poll:
+        raise HTTPException(400, "Message vide")
+    info = await _author_info(user)
+    msg = {"id": str(uuid.uuid4()), "author_id": user["id"], "author_name": info["name"],
+           "author_avatar": info["avatar"], "text": text, "image_id": payload.image_id or "",
+           "reply_to": payload.reply_to or None, "poll": poll, "reactions": {},
+           "created_at": now_iso()}
+    await db.chat_messages.insert_one(msg)
+    msg.pop("_id", None)
+    return msg
+
+
+@api_router.delete("/chat/messages/{mid}")
+async def chat_delete(mid: str, user=Depends(get_admin_user)):
+    await db.chat_messages.delete_one({"id": mid})
+    return {"ok": True}
+
+
+@api_router.post("/chat/messages/{mid}/react")
+async def chat_react(mid: str, body: Dict[str, str], user=Depends(require_chat_reader)):
+    emoji = (body.get("emoji") or "").strip()[:8]
+    if not emoji:
+        raise HTTPException(400, "Emoji requis")
+    m = await db.chat_messages.find_one({"id": mid}, {"_id": 0})
+    if not m:
+        raise HTTPException(404, "Message introuvable")
+    reactions = m.get("reactions") or {}
+    users = set(reactions.get(emoji, []))
+    if user["id"] in users:
+        users.discard(user["id"])
+    else:
+        users.add(user["id"])
+    if users:
+        reactions[emoji] = list(users)
+    else:
+        reactions.pop(emoji, None)
+    await db.chat_messages.update_one({"id": mid}, {"$set": {"reactions": reactions}})
+    return {"reactions": reactions}
+
+
+@api_router.post("/chat/messages/{mid}/vote")
+async def chat_vote(mid: str, body: Dict[str, int], user=Depends(require_chat_reader)):
+    idx = int(body.get("option", -1))
+    m = await db.chat_messages.find_one({"id": mid}, {"_id": 0})
+    if not m or not m.get("poll"):
+        raise HTTPException(404, "Sondage introuvable")
+    poll = m["poll"]
+    opts = poll.get("options") or []
+    if idx < 0 or idx >= len(opts):
+        raise HTTPException(400, "Option invalide")
+    uid = user["id"]
+    if not poll.get("multi"):
+        for o in opts:
+            o["votes"] = [v for v in (o.get("votes") or []) if v != uid]
+    votes = set(opts[idx].get("votes") or [])
+    if uid in votes:
+        votes.discard(uid)
+    else:
+        votes.add(uid)
+    opts[idx]["votes"] = list(votes)
+    await db.chat_messages.update_one({"id": mid}, {"$set": {"poll": poll}})
+    return {"poll": poll}
+
+
+@api_router.post("/chat/ping")
+async def chat_ping(user=Depends(require_chat_reader)):
+    info = await _author_info(user)
+    await db.chat_presence.update_one({"user_id": user["id"]},
+        {"$set": {"user_id": user["id"], "name": info["name"], "avatar": info["avatar"], "last_seen": now_iso()}},
+        upsert=True)
+    cutoff = (datetime.now(timezone.utc) - timedelta(seconds=CHAT_ONLINE_WINDOW)).isoformat()
+    online = await db.chat_presence.find({"last_seen": {"$gt": cutoff}}, {"_id": 0}).to_list(500)
+    return {"online": online, "count": len(online)}
+
+
+@api_router.post("/chat/moderate")
+async def chat_moderate(payload: ChatModerateInput, user=Depends(get_admin_user)):
+    field = {"ban": "chat_banned", "unban": "chat_banned", "mute": "chat_muted", "unmute": "chat_muted"}.get(payload.action)
+    if not field:
+        raise HTTPException(400, "Action invalide")
+    val = payload.action in ("ban", "mute")
+    await db.users.update_one({"id": payload.user_id}, {"$set": {field: val}})
+    if payload.action == "ban":
+        await db.chat_presence.delete_one({"user_id": payload.user_id})
+    return {"ok": True, "user_id": payload.user_id, "action": payload.action}
 
 
 app.include_router(api_router)
