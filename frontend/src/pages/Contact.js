@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoMail, IoLogoInstagram, IoLogoYoutube, IoCreateOutline, IoSaveOutline, IoCloudUploadOutline, IoNotifications } from "react-icons/io5";
+import { IoArrowBack, IoMail, IoLogoInstagram, IoLogoYoutube, IoCreateOutline, IoSaveOutline, IoCloudUploadOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { getSettings, updateSettings, addSubscriber } from "@/lib/api";
+import { getSettings, updateSettings } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import MobileMenu from "@/components/MobileMenu";
 
@@ -15,7 +15,6 @@ export default function Contact() {
   const { data, refetch } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const [edit, setEdit] = useState(false);
   const [form, setForm] = useState(null);
-  const [email, setEmail] = useState("");
 
   useEffect(() => { if (data) setForm(data); }, [data]);
   const s = edit && form ? form : data;
@@ -24,12 +23,6 @@ export default function Contact() {
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const save = async () => { await updateSettings(form); toast.success("Profil mis à jour"); setEdit(false); refetch(); };
   const onAvatar = (file) => { if (!file || file.size > 3 * 1024 * 1024) return toast.error("Image trop lourde (max 3 Mo)"); const r = new FileReader(); r.onload = () => set("avatar", r.result); r.readAsDataURL(file); };
-
-  const subscribe = async () => {
-    if (!email.trim()) return;
-    try { await addSubscriber(email.trim()); toast.success("Inscription réussie — tu ne rateras rien !"); setEmail(""); sfx("select"); }
-    catch (e) { toast.error(e?.response?.data?.detail || "Email invalide"); }
-  };
 
   const igUrl = `https://instagram.com/${(s.instagram || "").replace(/^@/, "")}`;
   const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(s.youtube || "")}`;
@@ -88,16 +81,6 @@ export default function Contact() {
             {social("YouTube", s.youtube, ytUrl, IoLogoYoutube)}
           </div>
         )}
-
-        {/* Newsletter */}
-        <div className="p-6 border" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="newsletter">
-          <div className="flex items-center gap-2 mb-2"><IoNotifications style={{ color: "var(--brand)" }} /><h2 className="font-display text-xl" style={{ color: "var(--text-primary)" }}>Ne rate rien</h2></div>
-          <p className="text-sm mb-4" style={{ color: "var(--text-secondary)" }}>Laisse ton email pour être prévenu des nouvelles créations.</p>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input data-testid="newsletter-email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={(e) => e.key === "Enter" && subscribe()} placeholder="ton@email.com" className="flex-1 px-3 py-2.5 border outline-none" style={fs} />
-            <button data-testid="newsletter-submit" onClick={subscribe} className="px-5 py-2.5 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>S'abonner</button>
-          </div>
-        </div>
       </div>
     </div>
   );

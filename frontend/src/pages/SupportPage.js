@@ -30,7 +30,6 @@ export default function SupportPage() {
   const [draft, setDraft] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  const bunny = "/cosmic-bunny.png";
   const active = lib?.membership?.active;
   const activeTier = lib?.membership?.tier_id;
 
@@ -82,9 +81,8 @@ export default function SupportPage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-5 md:px-12 py-8">
-        {/* Hero — attractif, image de Bunny décorative */}
+        {/* Hero — attractif */}
         <div className="relative overflow-hidden mb-10 p-8 md:p-10" style={{ background: "linear-gradient(135deg, color-mix(in srgb, var(--brand) 22%, var(--bg-secondary)), var(--bg-secondary))", border: "1px solid var(--brand)", borderRadius: "var(--radius-base)" }}>
-          <img src={bunny} alt="" aria-hidden="true" className="hidden md:block absolute -right-4 bottom-0 w-40 h-40 object-contain opacity-90 drop-shadow-2xl pointer-events-none" />
           <div className="relative max-w-xl">
             <p className="text-xs uppercase tracking-[0.3em] mb-3" style={{ color: "var(--brand)" }}>✦ Abonnement Nexus</p>
             {edit ? (

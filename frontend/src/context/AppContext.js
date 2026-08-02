@@ -94,7 +94,7 @@ export function AppProvider({ children }) {
   const phoneMQ = "(max-width: 767px)";
   const isPhoneNow = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia(phoneMQ).matches;
   const posterKey = (phone) => (phone ? "sx_postersize_mobile" : "sx_postersize_desktop");
-  const resolvePoster = (phone) => localStorage.getItem(posterKey(phone)) || localStorage.getItem(LS.posterSize) || (phone ? "compact" : "normal");
+  const resolvePoster = (phone) => localStorage.getItem(posterKey(phone)) || localStorage.getItem(LS.posterSize) || (phone ? "compact" : "compact");
   const [posterSize, setPosterSizeState] = useState(() => resolvePoster(isPhoneNow()));
   const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
   const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
