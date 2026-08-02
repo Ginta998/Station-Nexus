@@ -119,6 +119,7 @@ export default function Chat() {
   useEffect(() => {
     if (!canRead) return;
     const poll1 = setInterval(async () => {
+      if (document.hidden) return;
       try { const msgs = await chatMessages(lastTs.current); merge(msgs); if (nearBottom.current) setTimeout(scrollToBottom, 40); } catch {}
     }, 2500);
     const ping = async () => { try { const r = await chatPing(); setOnline(r.count); } catch {} };
@@ -257,7 +258,7 @@ export default function Chat() {
             <input data-testid="chat-poll-question" value={poll.question} onChange={(e) => setPoll((p) => ({ ...p, question: e.target.value }))} placeholder="Ta question…" className="w-full px-3 py-2 border outline-none text-sm" style={btn} />
             {poll.options.map((o, i) => (
               <div key={i} className="flex gap-2">
-                <input data-testid={`chat-poll-option-${i}`} value={o} onChange={(e) => setPoll((p) => ({ ...p, options: p.options.map((x, j) => j === i ? e.target.value : x) }))} placeholder={`Option ${i + 1}`} className="flex-1 px-3 py-2 border outline-none text-sm" style={btn} />
+                <input data-testid={`chat-poll-option-${i}`} value={o || ""} onChange={(e) => setPoll((p) => ({ ...p, options: p.options.map((x, j) => j === i ? e.target.value : x) }))} placeholder={`Option ${i + 1}`} className="flex-1 px-3 py-2 border outline-none text-sm" style={btn} />
                 {poll.options.length > 2 && <button onClick={() => setPoll((p) => ({ ...p, options: p.options.filter((_, j) => j !== i) }))} style={{ color: "var(--brand)" }}><IoTrashOutline /></button>}
               </div>
             ))}

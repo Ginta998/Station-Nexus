@@ -511,3 +511,13 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
   - Éditeur (EditorDialog) : section editor-intention-section (checkbox enabled, titre, texte, images making-of, dossier téléchargeable via uploadAsset kind=file lié après save).
   - Fiche (Detail) : detail-intention (titre + texte + grille images making-of cliquables lightbox + bouton téléchargement dossier via assetDownloadUrl).
 - Tests : testing_agent iteration_20.json -> frontend 100% (badges + section intentions + download). Backend vérifié via API. Données test nettoyées.
+
+## Salon communautaire (chat) — Phase 1 — 02/08/2026
+- Nouvelle page /salon (Chat.js) : salon public réservé aux ABONNÉS (membership active) ou admin. Non-abonnés → écran chat-locked avec invitation "Devenir membre" (→ /soutien). Non connectés → invitation à se connecter.
+- Backend (server.py, section "Community Chat") : collection chat_messages, chat_presence + champs users.chat_banned/chat_muted.
+  - GET /chat/status (can_read/muted/banned/is_admin), GET /chat/messages?since= (polling), POST /chat/messages (texte/image_id/poll), DELETE /chat/messages/{id} (admin), POST /chat/messages/{id}/react (emoji toggle), POST /chat/messages/{id}/vote (sondage), POST /chat/upload (image → media_assets kind=chat), POST /chat/ping (présence + online count fenêtre 90s), POST /chat/moderate (admin: ban/unban/mute/unmute). Gating via require_chat_reader (=_membership_active ou admin).
+- Frontend features : polling 2.5s (pause si onglet masqué), présence "en ligne", avatars (profil>compte), réactions emoji (❤️😂🔥👍😮🎉), envoi d'images, mentions @ surlignées, sondages (création + vote + barres %), son à la réception (sfx), modération admin (supprimer message, mute/ban auteur). PAS de palier affiché à côté des messages (choix user).
+- Navigation : bouton "Salon" TOUJOURS visible — TopBar desktop (salon-btn), drawer TopBar (menu-salon), MobileMenu (page-menu-/salon). Route dans App.js.
+- Tests : testing_agent iteration_21.json → frontend 100% (nav, gate non-abonné, vue admin, post, réactions, sondage+vote, image, suppression admin). Backend vérifié via curl (+ gate 403 non-abonné). Données de test nettoyées (salon vide).
+- RESTE À FAIRE (Phase 2, convenu) : messages privés 1-à-1 entre membres ; compteur de messages non-lus persistant ; (option) badge d'animation sur l'entrée menu.
+- EN ATTENTE user : problème de reconnexion (session) — à confirmer si preview ou production (stationexus.store). Preview OK (JWT 60j). Si prod → JWT_SECRET permanent via variables de déploiement (support Emergent).
