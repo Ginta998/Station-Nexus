@@ -68,12 +68,15 @@ export const CB_DEFAULT_TIPS = {
 // Common navigation targets offered in the admin editor (label -> path)
 export const CB_TARGETS = [
   { v: "", label: "Aucun bouton" },
-  { v: "/parametres", label: "Paramètres" },
   { v: "/", label: "Accueil" },
+  { v: "/soutien", label: "Soutenir la station" },
+  { v: "/bibliotheque", label: "Ma bibliothèque" },
+  { v: "/a-propos", label: "À propos" },
   { v: "/membres", label: "Membres" },
   { v: "/nouveautes", label: "Nouveautés" },
   { v: "/contact", label: "Contact" },
-  { v: "/tutoriel", label: "Tutoriel" },
+  { v: "/tutoriel", label: "Comment ça marche" },
+  { v: "/parametres", label: "Paramètres" },
 ];
 
 // Tips may be plain strings (legacy) or objects — normalize to { text, button_label, button_target }
