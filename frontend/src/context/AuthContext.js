@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
-import { authRegister, authLogin, authGoogleSession, authMe, authSync, authClaimAdmin, upsertProfile } from "@/lib/api";
+import { authRegister, authLogin, authGoogleSession, authMe, authSync, authClaimAdmin, upsertProfile, listProfiles } from "@/lib/api";
 
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -63,6 +63,14 @@ export function AuthProvider({ children }) {
       // parcours compte -> profil : si aucun profil local, on invite à en créer un dans la foulée
       let hasProfile = false;
       try { hasProfile = !!JSON.parse(localStorage.getItem("sx_profile") || "null"); } catch { hasProfile = false; }
+      if (!hasProfile) {
+        // le compte a peut-être déjà un profil lié côté serveur (autre appareil) -> on l'hydrate
+        try {
+          const all = await listProfiles();
+          const mine = all.find((p) => p.account_id === u.id);
+          if (mine) { localStorage.setItem("sx_profile", JSON.stringify(mine)); window.dispatchEvent(new CustomEvent("sx-hydrate-profile")); hasProfile = true; }
+        } catch { /* ignore */ }
+      }
       if (!hasProfile) setTimeout(() => window.dispatchEvent(new CustomEvent("sx-open-profile")), 350);
     } else {
       if (u.is_admin) localStorage.setItem("sx_admin", "1");
@@ -138,15 +146,25 @@ export function AuthProvider({ children }) {
     return () => clearInterval(id);
   }, [user]);
 
-  // Link the local profile to this account (for public subscription-tier display)
+  // Link the local profile to this account (for public subscription-tier display) or hydrate it from the server
   useEffect(() => {
     if (!user) return;
-    let p; try { p = JSON.parse(localStorage.getItem("sx_profile") || "null"); } catch { p = null; }
-    if (p && p.id && p.account_id !== user.id) {
-      const linked = { ...p, account_id: user.id };
-      localStorage.setItem("sx_profile", JSON.stringify(linked));
-      upsertProfile(linked).catch(() => {});
-    }
+    (async () => {
+      let p = null;
+      try { p = JSON.parse(localStorage.getItem("sx_profile") || "null"); } catch { p = null; }
+      if (p && p.id && p.account_id !== user.id) {
+        const linked = { ...p, account_id: user.id };
+        localStorage.setItem("sx_profile", JSON.stringify(linked));
+        upsertProfile(linked).catch(() => {});
+        window.dispatchEvent(new CustomEvent("sx-hydrate-profile"));
+      } else if (!p) {
+        try {
+          const all = await listProfiles();
+          const mine = all.find((x) => x.account_id === user.id);
+          if (mine) { localStorage.setItem("sx_profile", JSON.stringify(mine)); window.dispatchEvent(new CustomEvent("sx-hydrate-profile")); }
+        } catch { /* ignore */ }
+      }
+    })();
   }, [user]);
 
   return (

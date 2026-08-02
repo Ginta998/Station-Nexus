@@ -521,3 +521,11 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Tests : testing_agent iteration_21.json → frontend 100% (nav, gate non-abonné, vue admin, post, réactions, sondage+vote, image, suppression admin). Backend vérifié via curl (+ gate 403 non-abonné). Données de test nettoyées (salon vide).
 - RESTE À FAIRE (Phase 2, convenu) : messages privés 1-à-1 entre membres ; compteur de messages non-lus persistant ; (option) badge d'animation sur l'entrée menu.
 - EN ATTENTE user : problème de reconnexion (session) — à confirmer si preview ou production (stationexus.store). Preview OK (JWT 60j). Si prod → JWT_SECRET permanent via variables de déploiement (support Emergent).
+
+## Salon — Phase 2 (messages privés + épingle + badge non-lus) — 02/08/2026
+- Messages privés 1-à-1 : onglets Salon/Messages dans /salon. Backend chat_dms + endpoints GET /chat/dm (conversations), GET/POST /chat/dm/{partner_id} (thread + envoi, marque lu à l'ouverture). Démarrer une conv depuis le nom d'auteur dans le salon (chat-author-{id}) ou depuis la page Membres (member-dm-{id} → /salon?tab=dm&to=&name=).
+- Message épinglé (admin) : POST /chat/messages/{id}/pin (un seul à la fois), GET /chat/pinned. Bannière chat-pinned en haut du salon, bouton chat-pin-{id}/chat-unpin.
+- Badge non-lus : ChatContext (context/ChatContext.js) poll /chat/unread (public via lastseen localStorage + dm non lus) toutes 30s + au focus. Dot sur salon-btn (TopBar) + menu-salon + page-menu-salon-badge (MobileMenu) + dm-unread-{id} par conversation. markPublicSeen quand on regarde le salon.
+- FIX UX (bug récurrent testing) : le dialogue "Créer mon profil" ne s'ouvre plus automatiquement si le compte a déjà un profil lié côté serveur. AuthContext hydrate désormais le profil local depuis le serveur à la connexion (listProfiles → account_id===user.id) et dispatch sx-hydrate-profile ; AppContext écoute et met à jour le state profile.
+- Tests : testing_agent iteration_22.json → frontend 100% (onglets, pin, DM liste/thread/envoi, start-DM salon+membres, badge non-lus + clear). Backend vérifié via curl. Données de test nettoyées.
+- Reste backlog : compteur non-lus temps réel (SSE/websocket) ; ProfilePrompt visiteur non-bloquant pour la TopBar (mineur).

@@ -62,6 +62,13 @@ export function AppProvider({ children }) {
   }, [profile]);
   const clearProfile = useCallback(() => { localStorage.removeItem("sx_profile"); setProfileState(null); }, []);
 
+  // hydrate profile from localStorage when AuthContext links/fetches an account profile
+  useEffect(() => {
+    const hyd = () => { try { const p = JSON.parse(localStorage.getItem("sx_profile") || "null"); if (p) setProfileState(p); } catch {} };
+    window.addEventListener("sx-hydrate-profile", hyd);
+    return () => window.removeEventListener("sx-hydrate-profile", hyd);
+  }, []);
+
   // ---- favorites ----
   const [favorites, setFavorites] = useState(() => {
     try { return JSON.parse(localStorage.getItem("sx_favorites") || "[]"); } catch { return []; }
