@@ -529,3 +529,10 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - FIX UX (bug récurrent testing) : le dialogue "Créer mon profil" ne s'ouvre plus automatiquement si le compte a déjà un profil lié côté serveur. AuthContext hydrate désormais le profil local depuis le serveur à la connexion (listProfiles → account_id===user.id) et dispatch sx-hydrate-profile ; AppContext écoute et met à jour le state profile.
 - Tests : testing_agent iteration_22.json → frontend 100% (onglets, pin, DM liste/thread/envoi, start-DM salon+membres, badge non-lus + clear). Backend vérifié via curl. Données de test nettoyées.
 - Reste backlog : compteur non-lus temps réel (SSE/websocket) ; ProfilePrompt visiteur non-bloquant pour la TopBar (mineur).
+
+## Salon — accès libre (compte) + Bunny masqué — 02/08/2026
+- Cosmic Bunny masqué sur /salon (CosmicBunny.js: return null si pathname startsWith /salon). Toujours présent ailleurs (Home OK).
+- Suppression du paywall abonnement sur le salon : _chat_can_read(user) = True pour tout compte connecté non banni (plus de _membership_active). Salon accessible gratuitement dès qu'on a un compte.
+- Écran verrouillé Chat.js : seulement pour non-connecté (chat-login "Se connecter / Créer un compte", plus de bouton chat-subscribe/paywall) ou banni (message dédié).
+- Tests : testing_agent iteration_23.json → frontend 100% (Bunny absent /salon + présent Home ; non-connecté = invitation login sans paywall ; non-abonné connecté = accès chat + post ; admin OK). Données test nettoyées.
+- EN ATTENTE user : niveau de notifications de messages (Niveau 1 in-app toast+son+pastille sur toutes pages / Niveau 2 web push app fermée) + réglage on/off ou fin — question posée, pas encore de réponse.
