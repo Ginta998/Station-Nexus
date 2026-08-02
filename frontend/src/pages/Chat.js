@@ -223,10 +223,18 @@ export default function Chat() {
         <div className="flex-1 flex items-center justify-center px-5">
           <div className="max-w-md text-center p-8" style={{ background: "var(--bg-secondary)", border: "1px solid var(--brand)", borderRadius: "var(--radius-base)" }}>
             <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: "color-mix(in srgb, var(--brand) 18%, transparent)", border: "1.5px solid var(--brand)" }}><IoLockClosed size={30} style={{ color: "var(--brand)" }} /></div>
-            <h1 className="font-display text-2xl md:text-3xl mb-2">Le salon des soutiens</h1>
-            <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>{status.need_login ? "Connecte-toi et deviens membre pour rejoindre la discussion, suivre les coulisses et poser tes questions." : "Le salon est réservé aux abonnés de la station. Rejoins la communauté pour discuter, voir les updates et échanger en privé !"}</p>
-            {status.need_login && <button data-testid="chat-login" onClick={openAuth} className="w-full mb-2 px-5 py-3 font-semibold" style={btn}>Se connecter</button>}
-            <button data-testid="chat-subscribe" onClick={() => { sfx("select"); nav("/soutien"); }} className="w-full px-5 py-3 font-semibold inline-flex items-center justify-center gap-2" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSparkles /> Devenir membre</button>
+            {status.banned ? (
+              <>
+                <h1 className="font-display text-2xl md:text-3xl mb-2">Accès au salon suspendu</h1>
+                <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Tu n'as plus accès au salon pour le moment.</p>
+              </>
+            ) : (
+              <>
+                <h1 className="font-display text-2xl md:text-3xl mb-2">Rejoins le salon</h1>
+                <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>Connecte-toi ou crée un compte pour discuter avec la communauté, suivre les coulisses et poser tes questions. C'est gratuit !</p>
+                <button data-testid="chat-login" onClick={openAuth} className="w-full px-5 py-3 font-semibold inline-flex items-center justify-center gap-2" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSparkles /> Se connecter / Créer un compte</button>
+              </>
+            )}
           </div>
         </div>
       </div>

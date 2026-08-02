@@ -1702,11 +1702,10 @@ async def _author_info(user: dict) -> dict:
 
 
 async def _chat_can_read(user: dict) -> bool:
-    if user.get("is_admin"):
-        return True
+    # Le salon est accessible à tout membre connecté (compte requis), pas de paywall abonnement.
     if user.get("chat_banned"):
         return False
-    return await _membership_active(user["id"])
+    return True
 
 
 async def require_chat_reader(user=Depends(get_current_user)):

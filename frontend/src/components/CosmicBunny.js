@@ -156,6 +156,7 @@ export default function CosmicBunny() {
   }, [open, key, tips.length, hidden, enabledGlobal, entered]);
 
   if (hidden || !enabledGlobal || !entered) return null;
+  if (pathname.startsWith("/salon")) return null;   // salon a sa propre UI, pas de Bunny
 
   const onHome = !ctxKey && pathToKey(pathname) === "home";
 

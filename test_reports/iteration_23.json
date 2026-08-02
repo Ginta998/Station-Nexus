@@ -1,0 +1,16 @@
+{
+  "summary": "Frontend-only regression for /salon fixes. Verified: (1) Cosmic Bunny absent on /salon and present on Home; (2) Non-logged visitor on /salon sees [data-testid=chat-locked] with ONLY [data-testid=chat-login] labeled 'Se connecter / Créer un compte' — no [data-testid=chat-subscribe]; (3) Logged-in non-subscriber (salonfree@test.com) sees chat-page with chat-input/chat-send and can post a message that appears in the salon; (4) Admin (paytest@stationexus.com) sees tabs chat-tab-salon and chat-tab-dm and can post.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "100%"},
+  "seed_data_creation": "Posted two ephemeral test messages in the salon (SalonLibre 'non-abonné mais connecté' and TEST_qa_/TEST_admin_ timestamped messages).",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": false,
+  "test_credentials": "salonfree@test.com / password123 (non-subscriber, works); paytest@stationexus.com / password123 (admin, works).",
+  "context_for_next_testing_agent": "Note: on Home, a ProfilePrompt modal (data-testid=profile-prompt) intercepts pointer events over the TopBar login-btn for fresh sessions. Set localStorage sx_intro_off=1 to bypass boot intro, and either close the ProfilePrompt via its close button before clicking [data-testid=login-btn], or click the primary CTA inside the prompt.",
+  "rca_of_the_issue": "All four verification points from the review request pass. Bunny gating by pathname on /salon works; access gate now requires only auth (not membership). No paywall button present."
+}
