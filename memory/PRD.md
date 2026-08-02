@@ -497,3 +497,17 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Page /revenus : suppression de la bannière/mention « Stripe Sandbox ». Sous-titre = « Calculés à partir de tes membres : leurs abonnements et leurs achats. »
 - Backend admin_revenue : « recent » ne lit plus payment_transactions (Stripe) ; reconstruit depuis purchases (achats + prix création) et memberships actives (palier + prix), avec le NOM du membre (profil > compte > email). Résolveur member_name. Champ sandbox retiré. Aucun appel Stripe.
 - Rappel : revenue reste admin-only (visible seulement en mode création / compte is_admin). Vérifié curl : 1 achat 3,50€, recent « Achat · United Sanctum Force · PayTest ».
+
+## Badges statut cartes + Section Intentions + Divers UI — 01/08/2026
+- Badges de statut (En cours/À venir/Terminé) RETIRÉS des cartes d'accueil (PosterCard) — conservés uniquement sur la fiche (Detail, detail-status-badge). Label catégorie conservé sur les cartes.
+- Cartes en COMPACT par défaut sur PC (AppContext resolvePoster(false) -> "compact" ; respecte un choix perso déjà enregistré).
+- Lapin décoratif retiré du hero de la page Soutien (PC).
+- Bloc newsletter retiré de la page Contact (code addSubscriber/email nettoyé).
+- Son du pad mobile gauche/droite : scrollRailBy joue maintenant sfx("nav").
+- Salle de cinéma : bouton mute supprimé ; nouveau "mode média immersif" (enterMediaMode/exitMediaMode dans AppContext) coupe toute ambiance appli/carte et bloque son redémarrage tant que la salle est ouverte, restaure à la fermeture. Seul le film a du son.
+- Cosmic Bunny : CB_TARGETS complété (Accueil, Soutien, Bibliothèque, À propos, Membres, Nouveautés, Contact, Comment ça marche, Paramètres).
+- **NOUVELLE FONCTION — Section « Intentions » par création** :
+  - Backend Creation/CreationInput : intention_enabled, intention_title, intention_text, intention_images (base64), intention_file_id, intention_file_name. _lighten expose has_intention et strip images/text en liste (gardés en détail). GET /api/assets/{id}?dl=1 force le téléchargement (Content-Disposition).
+  - Éditeur (EditorDialog) : section editor-intention-section (checkbox enabled, titre, texte, images making-of, dossier téléchargeable via uploadAsset kind=file lié après save).
+  - Fiche (Detail) : detail-intention (titre + texte + grille images making-of cliquables lightbox + bouton téléchargement dossier via assetDownloadUrl).
+- Tests : testing_agent iteration_20.json -> frontend 100% (badges + section intentions + download). Backend vérifié via API. Données test nettoyées.
