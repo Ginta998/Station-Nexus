@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoLibraryOutline, IoSparklesOutline, IoPlanetOutline, IoCashOutline, IoChatbubbles } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
+import { useChat } from "@/context/ChatContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { listAnnouncements } from "@/lib/api";
 
@@ -11,6 +12,8 @@ export default function TopBar({ onAdd, onProfile }) {
   const nav = useNavigate();
   const { isAdmin, muted, toggleMute, sfx, profile, seenAnnouncements } = useApp();
   const { user, openAuth, logout } = useAuth();
+  const { unread: chatUnreadCount } = useChat() || { unread: { total: 0 } };
+  const salonUnread = chatUnreadCount?.total || 0;
   const [menuOpen, setMenuOpen] = useState(false);
   const [isFs, setIsFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
   useEffect(() => {
@@ -104,8 +107,9 @@ export default function TopBar({ onAdd, onProfile }) {
             <Dot n={unread} />
           </button>
           <button data-testid="salon-btn" onClick={() => go("/salon")}
-            className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            className="relative flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
             <IoChatbubbles size={18} /> Salon
+            <Dot n={salonUnread} />
           </button>
           <button data-testid="members-btn" onClick={() => go("/membres")}
             className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
@@ -189,7 +193,7 @@ export default function TopBar({ onAdd, onProfile }) {
                 </p>
               </div>
               <MenuRow testid="menu-novelties" icon={<IoMegaphone size={20} style={{ color: "var(--brand)" }} />} label="Nouveautés" onClick={() => go("/nouveautes")} badge={unread} />
-              <MenuRow testid="menu-salon" icon={<IoChatbubbles size={20} style={{ color: "var(--brand)" }} />} label="Salon" onClick={() => go("/salon")} />
+              <MenuRow testid="menu-salon" icon={<IoChatbubbles size={20} style={{ color: "var(--brand)" }} />} label="Salon" onClick={() => go("/salon")} badge={salonUnread} />
               <MenuRow testid="menu-members" icon={<IoPeople size={20} style={{ color: "var(--brand)" }} />} label="Membres" onClick={() => go("/membres")} />
               <MenuRow testid="menu-contact" icon={<IoMailOutline size={20} style={{ color: "var(--brand)" }} />} label="Contact" onClick={() => go("/contact")} />
               <MenuRow testid="menu-support" icon={<IoSparklesOutline size={20} style={{ color: "var(--brand)" }} />} label="Soutenir la station" onClick={() => go("/soutien")} />

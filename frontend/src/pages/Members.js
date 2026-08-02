@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoLogoInstagram, IoTrashOutline, IoHome, IoPersonAdd, IoCreateOutline, IoHeart, IoStar, IoDiamond, IoSparkles } from "react-icons/io5";
+import { IoArrowBack, IoLogoInstagram, IoTrashOutline, IoHome, IoPersonAdd, IoCreateOutline, IoHeart, IoStar, IoDiamond, IoSparkles, IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { listProfiles, deleteProfile } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
@@ -83,6 +83,12 @@ export default function Members() {
                   )}
                 </div>
                 <p className="font-display text-base truncate w-full" style={{ color: "var(--text-primary)" }}>{p.name}</p>
+                {p.account_id && p.account_id !== profile?.account_id && (
+                  <button data-testid={`member-dm-${p.id}`} onClick={() => { sfx("nav"); nav(`/salon?tab=dm&to=${p.account_id}&name=${encodeURIComponent(p.name || "Membre")}`); }}
+                    className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold transition-transform hover:scale-105" style={{ border: "1px solid var(--brand)", color: "var(--brand)", borderRadius: "999px" }}>
+                    <IoChatbubbleEllipsesOutline size={12} /> Message
+                  </button>
+                )}
                 {ts && (
                   <span data-testid={`member-tier-${p.id}`} className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide" style={{ background: `color-mix(in srgb, ${ts.color} 20%, transparent)`, color: ts.color, border: `1px solid ${ts.color}`, borderRadius: "999px" }}>
                     <ts.Icon size={11} /> {p.tier_name}

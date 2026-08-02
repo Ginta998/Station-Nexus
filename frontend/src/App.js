@@ -17,6 +17,7 @@ import SupportPage from "@/pages/SupportPage";
 import About from "@/pages/About";
 import Revenue from "@/pages/Revenue";
 import Chat from "@/pages/Chat";
+import { ChatProvider } from "@/context/ChatContext";
 import PaymentResult from "@/pages/PaymentResult";
 import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
@@ -76,6 +77,7 @@ function App() {
     <div className="App">
       <AuthProvider>
       <AppProvider>
+        <ChatProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -98,6 +100,7 @@ function App() {
         <IntroGate />
         <AuthDialog />
         <Toaster position="top-center" theme="dark" richColors />
+        </ChatProvider>
       </AppProvider>
       </AuthProvider>
     </div>

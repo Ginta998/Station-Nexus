@@ -141,3 +141,9 @@ export const chatVote = (id, option) => api.post(`/chat/messages/${id}/vote`, { 
 export const chatPing = () => api.post("/chat/ping").then((r) => r.data);
 export const chatModerate = (user_id, action) => api.post("/chat/moderate", { user_id, action }).then((r) => r.data);
 export const chatUpload = (file) => { const fd = new FormData(); fd.append("file", file); return api.post("/chat/upload", fd).then((r) => r.data); };
+export const chatPin = (id) => api.post(`/chat/messages/${id}/pin`).then((r) => r.data);
+export const chatPinned = () => api.get("/chat/pinned").then((r) => r.data);
+export const chatUnread = (since) => api.get("/chat/unread", { params: since ? { since } : {} }).then((r) => r.data);
+export const dmConversations = () => api.get("/chat/dm").then((r) => r.data);
+export const dmThread = (partnerId, since) => api.get(`/chat/dm/${partnerId}`, { params: since ? { since } : {} }).then((r) => r.data);
+export const dmSend = (partnerId, payload) => api.post(`/chat/dm/${partnerId}`, payload).then((r) => r.data);

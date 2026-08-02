@@ -1,0 +1,29 @@
+{
+  "summary": "Phase 2 Salon (chat) frontend flows verified end-to-end on the preview. Tabs [chat-tab-salon]/[chat-tab-dm] visible on /salon. PIN: admin PayTest can pin a message via [chat-pin-<id>] → banner [chat-pinned] appears with 'Épinglé · MembreB…' label; [chat-unpin] removes it; pinning a second message replaces the first (only ONE pinned at a time ✔). DM LIST: Messages tab shows [dm-conversations] with a MembreB conversation [dm-convo-<partnerId>]. Opening it renders [dm-thread] with [dm-partner-name]=MembreB; sending via [dm-input]+[dm-send] appends [dm-msg-<id>] (right-aligned). [dm-back] returns to the list. START DM FROM SALON: clicking [chat-author-<id>] on MembreB's message opens the DM thread with MembreB. START DM FROM MEMBERS: /membres shows [member-dm-<profileId>] buttons (2 linked profiles), clicking navigates to /salon and opens the correct DM thread. UNREAD: after login as MembreB (dmtest_b@test.com), TopBar [salon-btn] renders a Dot (unread indicator present in DOM), /salon Messages tab shows [dm-unread-<partnerId>] with count, opening the conversation clears it (badge count goes to 0 after re-list). REGRESSION (verified as PayTest): pinning/unpinning did not disrupt message list; reactions and posting still tested successfully in iteration_21; poll+reaction post-Phase-2 was retested as MembreB but blocked by an unrelated Créer-mon-profil dialog auto-opening (see design_issues) — not a Phase-2 regression.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "First navigation after login (MembreB)", "issues": ["ProfileDialog [data-testid=profile-dialog] auto-opens on top of the TopBar for MembreB after login even though profile is already synced, intercepting pointer events (blocks salon-btn until dismissed). Should not open automatically if a profile already exists for the account; or should not cover the TopBar."]},
+      {"screen": "Home (persisting)", "issues": ["ProfilePrompt (Cosmic Bunny) still intercepts TopBar clicks in some flows — same finding as iteration_21; tests must dismiss it first."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Do not auto-open ProfileDialog when the account already has a linked/synced profile (e.g., MembreB); or ensure it does not block TopBar interactions.",
+    "(Carry-over) Make ProfilePrompt non-blocking for TopBar (pointer-events-none on backdrop) as recommended in iteration_21."
+  ],
+  "critical_code_review_comments": [
+    "Chat.js line ~267: the author button toggles a DM only when !mine — good — but it also has no aria-label / role; consider improving accessibility for screen readers.",
+    "ChatContext polls /chat/unread every 30s; consider using SSE/websocket or shorter polling on the salon page to make the unread badge feel more real-time (current requirement says allow refresh — acceptable, but flag for future)."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "n/a (skipped per request)", "frontend": "100% (all Phase 2 acceptance criteria verified)" },
+  "seed_data_creation": "Sent 1 DM 'Test DM from admin' from PayTest → MembreB. Pinned and unpinned messages multiple times (final state: nothing pinned). Existing seed conversation and MembreB salon message consumed for tests.",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "paytest@stationexus.com / password123 (admin); dmtest_b@test.com / password123 (MembreB)",
+  "context_for_next_testing_agent": "Phase 2 verified: tabs (chat-tab-salon, chat-tab-dm), pin/unpin (chat-pin-<id>, chat-pinned, chat-unpin), DM (dm-conversations, dm-convo-<id>, dm-thread, dm-partner-name, dm-input, dm-send, dm-back, dm-msg-<id>), start-DM via chat-author-<id>, member-dm-<profileId> nav from /membres to /salon?tab=dm, unread Dot on TopBar salon-btn + dm-unread-<partnerId> badge + read-marking clear-on-open. Tip: after login as MembreB the ProfileDialog auto-opens and blocks TopBar — either dismiss via cancel-btn or navigate directly via URL /salon?tab=dm. PayTest login is clean.",
+  "rca_of_the_issue": "No Phase-2 blocking issues. The single test-runtime failure was ProfileDialog auto-open blocking TopBar for the freshly-logged MembreB account; unrelated to Phase 2 features."
+}

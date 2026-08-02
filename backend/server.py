@@ -1764,7 +1764,7 @@ async def chat_post(payload: ChatMessageInput, user=Depends(require_chat_reader)
     info = await _author_info(user)
     msg = {"id": str(uuid.uuid4()), "author_id": user["id"], "author_name": info["name"],
            "author_avatar": info["avatar"], "text": text, "image_id": payload.image_id or "",
-           "reply_to": payload.reply_to or None, "poll": poll, "reactions": {},
+           "reply_to": payload.reply_to or None, "poll": poll, "reactions": {}, "pinned": False,
            "created_at": now_iso()}
     await db.chat_messages.insert_one(msg)
     msg.pop("_id", None)
@@ -1844,6 +1844,107 @@ async def chat_moderate(payload: ChatModerateInput, user=Depends(get_admin_user)
     if payload.action == "ban":
         await db.chat_presence.delete_one({"user_id": payload.user_id})
     return {"ok": True, "user_id": payload.user_id, "action": payload.action}
+
+
+# ---- Pinned message ----
+@api_router.post("/chat/messages/{mid}/pin")
+async def chat_pin(mid: str, user=Depends(get_admin_user)):
+    m = await db.chat_messages.find_one({"id": mid}, {"_id": 0})
+    if not m:
+        raise HTTPException(404, "Message introuvable")
+    newval = not m.get("pinned")
+    if newval:
+        await db.chat_messages.update_many({"pinned": True}, {"$set": {"pinned": False}})
+    await db.chat_messages.update_one({"id": mid}, {"$set": {"pinned": newval}})
+    return {"pinned": newval}
+
+
+@api_router.get("/chat/pinned")
+async def chat_pinned(user=Depends(require_chat_reader)):
+    m = await db.chat_messages.find_one({"pinned": True}, {"_id": 0})
+    return m or {}
+
+
+# ---- Unread badge (public + private) ----
+@api_router.get("/chat/unread")
+async def chat_unread(since: Optional[str] = None, user=Depends(get_current_user)):
+    if not await _chat_can_read(user):
+        return {"public": 0, "dm": 0, "total": 0}
+    q = {"author_id": {"$ne": user["id"]}}
+    if since:
+        q["created_at"] = {"$gt": since}
+    pub = await db.chat_messages.count_documents(q) if since else 0
+    dm = await db.chat_dms.count_documents({"to_id": user["id"], "read_by": {"$ne": user["id"]}})
+    return {"public": pub, "dm": dm, "total": pub + dm}
+
+
+# ==================== Private messages (1-to-1) ====================
+class DMInput(BaseModel):
+    text: str = ""
+    image_id: str = ""
+
+
+async def _user_info(uid: str) -> dict:
+    p = await db.profiles.find_one({"account_id": uid}, {"_id": 0, "name": 1, "avatar": 1})
+    u = await db.users.find_one({"id": uid}, {"_id": 0, "name": 1, "email": 1, "avatar": 1}) or {}
+    name = (p or {}).get("name") or u.get("name") or (u.get("email") or "").split("@")[0] or "Membre"
+    avatar = (p or {}).get("avatar") or u.get("avatar") or ""
+    return {"id": uid, "name": name, "avatar": avatar}
+
+
+@api_router.get("/chat/dm")
+async def dm_conversations(user=Depends(require_chat_reader)):
+    uid = user["id"]
+    docs = await db.chat_dms.find({"$or": [{"from_id": uid}, {"to_id": uid}]}, {"_id": 0}).sort("created_at", 1).to_list(5000)
+    convs = {}
+    for d in docs:
+        partner = d["to_id"] if d["from_id"] == uid else d["from_id"]
+        c = convs.setdefault(partner, {"partner_id": partner, "last": None, "unread": 0})
+        c["last"] = d
+        if d["to_id"] == uid and uid not in (d.get("read_by") or []):
+            c["unread"] += 1
+    out = []
+    for partner, c in convs.items():
+        info = await _user_info(partner)
+        last = c["last"]
+        out.append({"partner_id": partner, "partner_name": info["name"], "partner_avatar": info["avatar"],
+                    "last_text": (last.get("text") or ("📷 Image" if last.get("image_id") else "")),
+                    "last_at": last.get("created_at"), "unread": c["unread"]})
+    out.sort(key=lambda x: x["last_at"] or "", reverse=True)
+    return out
+
+
+@api_router.get("/chat/dm/{partner_id}")
+async def dm_thread(partner_id: str, since: Optional[str] = None, user=Depends(require_chat_reader)):
+    uid = user["id"]
+    q = {"$or": [{"from_id": uid, "to_id": partner_id}, {"from_id": partner_id, "to_id": uid}]}
+    if since:
+        q["created_at"] = {"$gt": since}
+    msgs = await db.chat_dms.find(q, {"_id": 0}).sort("created_at", 1).to_list(1000)
+    # mark partner→me messages as read
+    await db.chat_dms.update_many({"from_id": partner_id, "to_id": uid, "read_by": {"$ne": uid}},
+                                  {"$addToSet": {"read_by": uid}})
+    info = await _user_info(partner_id)
+    return {"partner": info, "messages": msgs}
+
+
+@api_router.post("/chat/dm/{partner_id}")
+async def dm_send(partner_id: str, payload: DMInput, user=Depends(require_chat_reader)):
+    if partner_id == user["id"]:
+        raise HTTPException(400, "Impossible de s'écrire à soi-même")
+    partner = await db.users.find_one({"id": partner_id}, {"_id": 0, "id": 1})
+    if not partner:
+        raise HTTPException(404, "Membre introuvable")
+    text = (payload.text or "").strip()[:2000]
+    if not text and not payload.image_id:
+        raise HTTPException(400, "Message vide")
+    info = await _author_info(user)
+    dm = {"id": str(uuid.uuid4()), "from_id": user["id"], "to_id": partner_id,
+          "from_name": info["name"], "from_avatar": info["avatar"], "text": text,
+          "image_id": payload.image_id or "", "read_by": [user["id"]], "created_at": now_iso()}
+    await db.chat_dms.insert_one(dm)
+    dm.pop("_id", None)
+    return dm
 
 
 app.include_router(api_router)

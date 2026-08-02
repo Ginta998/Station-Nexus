@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IoMenu, IoClose, IoHome, IoSparklesOutline, IoLibraryOutline, IoPlanetOutline, IoPeople, IoMailOutline, IoHelpCircleOutline, IoSettingsOutline, IoLogInOutline, IoLogOutOutline, IoSparkles, IoCashOutline, IoChatbubbles } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
+import { useChat } from "@/context/ChatContext";
 
 const LINKS = [
   { to: "/", label: "Accueil", icon: IoHome },
@@ -22,6 +23,8 @@ export default function MobileMenu() {
   const nav = useNavigate();
   const { sfx, isAdmin } = useApp();
   const { user, logout, openAuth } = useAuth();
+  const { unread } = useChat() || { unread: { total: 0 } };
+  const salonUnread = unread?.total || 0;
   const [open, setOpen] = useState(false);
   const go = (to) => { sfx("nav"); setOpen(false); nav(to); };
 
@@ -47,6 +50,9 @@ export default function MobileMenu() {
                 <button key={l.to} data-testid={`page-menu-${l.to}`} onClick={() => go(l.to)} className="flex items-center gap-3 w-full px-3 py-3 text-left transition-colors"
                   style={{ color: "var(--text-primary)", borderRadius: "var(--radius-base)" }}>
                   <l.icon size={20} style={{ color: "var(--brand)" }} /> <span className="text-sm">{l.label}</span>
+                  {l.to === "/salon" && salonUnread > 0 && (
+                    <span data-testid="page-menu-salon-badge" className="ml-auto min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>{salonUnread > 9 ? "9+" : salonUnread}</span>
+                  )}
                 </button>
               ))}
               {isAdmin && (
