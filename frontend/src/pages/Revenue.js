@@ -34,12 +34,7 @@ export default function Revenue() {
       <div className="max-w-5xl mx-auto px-5 md:px-12 py-8">
         <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "var(--brand)" }}>✦ Espace créateur</p>
         <h1 className="font-display text-3xl md:text-5xl mb-2">Mes revenus</h1>
-        <p className="text-sm md:text-base mb-8" style={{ color: "var(--text-secondary)" }}>Suivi de tes ventes à l'unité et de tes abonnements.</p>
-
-        <div className="flex items-start gap-2.5 px-4 py-3 mb-8" style={{ background: "color-mix(in srgb, #ffcc33 12%, transparent)", border: "1px solid #ffcc33", borderRadius: "var(--radius-base)" }} data-testid="revenue-sandbox-note">
-          <IoWarningOutline size={20} style={{ color: "#ffcc33", flexShrink: 0, marginTop: 1 }} />
-          <p className="text-xs" style={{ color: "var(--text-primary)" }}>Mode <b>test (Stripe Sandbox)</b> — les montants ci-dessous proviennent des transactions de test, pas de vrai argent. Ils deviendront réels une fois ton compte Stripe activé en LIVE.</p>
-        </div>
+        <p className="text-sm md:text-base mb-8" style={{ color: "var(--text-secondary)" }}>Calculés à partir de tes membres : leurs abonnements et leurs achats.</p>
 
         {isLoading ? (
           <p style={{ color: "var(--text-secondary)" }}>Chargement…</p>
@@ -119,6 +114,7 @@ export default function Revenue() {
                       <div className="min-w-0">
                         <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 mr-2" style={{ background: "color-mix(in srgb, var(--brand) 18%, transparent)", color: "var(--brand)", borderRadius: "999px" }}>{r.kind}</span>
                         <span className="text-sm">{r.label}</span>
+                        {r.member && <span className="text-xs ml-2" style={{ color: "var(--text-secondary)" }}>· {r.member}</span>}
                       </div>
                       <span className="text-sm whitespace-nowrap font-semibold">{eur(r.amount)}</span>
                     </div>

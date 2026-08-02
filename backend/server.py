@@ -1316,10 +1316,21 @@ async def get_admin_user(user=Depends(get_current_user)):
 
 @api_router.get("/admin/revenue")
 async def admin_revenue(user=Depends(get_admin_user)):
-    """Revenue dashboard computed from the DB (purchases + active memberships)."""
+    """Revenue dashboard computed purely from the DB: members, their subscriptions and purchases. No Stripe calls."""
     s = await db.settings.find_one({"key": "site"}, {"_id": 0}) or {}
     tiers = s.get("membership_tiers") or SiteSettings().membership_tiers
     tier_map = {t.get("id"): t for t in tiers}
+
+    # member name resolver (profile name > account name > email prefix)
+    users = {u["id"]: u for u in await db.users.find({}, {"_id": 0, "id": 1, "name": 1, "email": 1}).to_list(100000)}
+    profiles_by_acc = {}
+    async for p in db.profiles.find({"account_id": {"$nin": [None, ""]}}, {"_id": 0, "account_id": 1, "name": 1}):
+        profiles_by_acc[p.get("account_id")] = p.get("name")
+    def member_name(uid):
+        if profiles_by_acc.get(uid):
+            return profiles_by_acc[uid]
+        u = users.get(uid, {})
+        return u.get("name") or (u.get("email") or "").split("@")[0] or "Membre"
 
     # ---- unit purchases ----
     creations = {c["id"]: c for c in await db.creations.find({}, {"_id": 0, "id": 1, "title": 1, "price_eur": 1}).to_list(10000)}
@@ -1327,6 +1338,7 @@ async def admin_revenue(user=Depends(get_admin_user)):
     unit_count = len(purchases)
     unit_revenue = 0.0
     per_creation = {}
+    recent = []
     for p in purchases:
         cr = creations.get(p.get("creation_id"), {})
         price = float(cr.get("price_eur") or 0)
@@ -1335,12 +1347,14 @@ async def admin_revenue(user=Depends(get_admin_user)):
         agg = per_creation.setdefault(key, {"title": cr.get("title") or "Création supprimée", "count": 0, "revenue": 0.0})
         agg["count"] += 1
         agg["revenue"] += price
+        recent.append({"kind": "Achat", "label": cr.get("title") or "Création supprimée",
+                       "member": member_name(p.get("user_id")), "amount": round(price, 2), "date": p.get("created_at")})
     top_creations = sorted(per_creation.values(), key=lambda x: x["revenue"], reverse=True)[:8]
 
     # ---- active subscriptions ----
     now = datetime.now(timezone.utc)
     active_mems = []
-    async for m in db.memberships.find({"status": "active"}, {"_id": 0, "user_id": 1, "tier_id": 1, "current_period_end": 1}):
+    async for m in db.memberships.find({"status": "active"}, {"_id": 0, "user_id": 1, "tier_id": 1, "current_period_end": 1, "updated_at": 1}):
         cpe = m.get("current_period_end")
         if cpe:
             try:
@@ -1350,11 +1364,15 @@ async def admin_revenue(user=Depends(get_admin_user)):
                 pass
         active_mems.append(m)
     by_tier_count = {}
+    mrr = 0.0
     for m in active_mems:
         tid = m.get("tier_id") or "soutien"
         by_tier_count[tid] = by_tier_count.get(tid, 0) + 1
+        t = tier_map.get(tid, {})
+        price = float(t.get("price_eur") or 0)
+        recent.append({"kind": "Abonnement", "label": t.get("name") or tid.title(),
+                       "member": member_name(m.get("user_id")), "amount": round(price, 2), "date": m.get("updated_at")})
     by_tier = []
-    mrr = 0.0
     for tid, cnt in by_tier_count.items():
         t = tier_map.get(tid, {})
         price = float(t.get("price_eur") or 0)
@@ -1364,18 +1382,8 @@ async def admin_revenue(user=Depends(get_admin_user)):
     by_tier.sort(key=lambda x: x["price"], reverse=True)
     active_count = len(active_mems)
 
-    # ---- recent paid transactions (best-effort, from stored amounts) ----
-    recent = []
-    async for tx in db.payment_transactions.find({"payment_status": "paid"}, {"_id": 0}).sort("created_at", -1).limit(15):
-        kind = tx.get("kind")
-        if kind == "creation":
-            label = (creations.get(tx.get("creation_id"), {}).get("title") or "Achat")
-            klabel = "Achat"
-        else:
-            tid = tx.get("tier_id") or "soutien"
-            label = f"Abonnement · {tier_map.get(tid, {}).get('name') or tid.title()}"
-            klabel = "Abonnement"
-        recent.append({"kind": klabel, "label": label, "amount": round(float(tx.get("amount") or 0) / 100, 2), "date": tx.get("created_at")})
+    recent.sort(key=lambda x: x.get("date") or "", reverse=True)
+    recent = recent[:15]
 
     return {
         "currency": "eur",
@@ -1384,7 +1392,6 @@ async def admin_revenue(user=Depends(get_admin_user)):
         "total_estimated": round(unit_revenue + mrr, 2),
         "top_creations": [{"title": c["title"], "count": c["count"], "revenue": round(c["revenue"], 2)} for c in top_creations],
         "recent": recent,
-        "sandbox": True,
     }
 
 

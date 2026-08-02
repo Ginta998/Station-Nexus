@@ -492,3 +492,8 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
   - Liens admin-only : TopBar desktop (revenue-btn) + drawer mobile TopBar (menu-revenue) + MobileMenu des pages secondaires (page-menu-revenue). Route /revenus ajoutée dans App.js.
 - **Compte admin de test** : paytest@stationexus.com est désormais is_admin=true (claim PIN 1234) — noté dans test_credentials.md. A 1 achat test (3,50€ United Sanctum Force).
 - Tests : testing_agent iteration_19.json → frontend 100% (4 features). Backend vérifié via curl (revenue: unit 3,50€/1 achat, about: 3 piliers).
+
+## Revenus sans Stripe — 01/08/2026
+- Page /revenus : suppression de la bannière/mention « Stripe Sandbox ». Sous-titre = « Calculés à partir de tes membres : leurs abonnements et leurs achats. »
+- Backend admin_revenue : « recent » ne lit plus payment_transactions (Stripe) ; reconstruit depuis purchases (achats + prix création) et memberships actives (palier + prix), avec le NOM du membre (profil > compte > email). Résolveur member_name. Champ sandbox retiré. Aucun appel Stripe.
+- Rappel : revenue reste admin-only (visible seulement en mode création / compte is_admin). Vérifié curl : 1 achat 3,50€, recent « Achat · United Sanctum Force · PayTest ».
