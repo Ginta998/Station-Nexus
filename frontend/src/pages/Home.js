@@ -108,6 +108,7 @@ export default function Home() {
   // D-pad : animation manuelle vers la carte voisine (fluide, aucun re-render pendant le mouvement)
   const scrollRailBy = useCallback((dir) => {
     const rail = railRef.current; if (!rail) return;
+    sfx("nav");
     const n = Math.max(1, rail.children.length - 1);
     const next = Math.max(0, Math.min(n - 1, centeredIndex() + dir));
     const child = rail.children[next]; if (!child) return;
@@ -132,7 +133,7 @@ export default function Home() {
       }
     };
     requestAnimationFrame(anim);
-  }, []);
+  }, [sfx]);
 
   const onKey = useCallback((e) => {
     if (editorOpen) return;
