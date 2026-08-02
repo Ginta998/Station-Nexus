@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo } from "@/lib/api";
+import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset } from "@/lib/api";
 import RichTextEditor from "@/components/RichTextEditor";
 
 const empty = {
@@ -9,6 +9,7 @@ const empty = {
   poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
   launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
+  intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
 };
 
 const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
@@ -30,13 +31,14 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const [chapterFiles, setChapterFiles] = useState({});
   const [filmFile, setFilmFile] = useState(null);
   const [trailerFile, setTrailerFile] = useState(null);
+  const [intentionFile, setIntentionFile] = useState(null);
   const [videoProg, setVideoProg] = useState({ film: 0, trailer: 0 });
   const posterInput = useRef(null);
 
   useEffect(() => {
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
-      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFilmFile(null); setTrailerFile(null); setVideoProg({ film: 0, trailer: 0 }); setFullscreen(false);
+      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFilmFile(null); setTrailerFile(null); setIntentionFile(null); setVideoProg({ film: 0, trailer: 0 }); setFullscreen(false);
       // fetch full item (with base64 images) so editing preserves poster/bg/gallery/chapters
       if (initial && initial.id) {
         getCreationFull(initial.id).then((full) => setForm((f) => ({ ...empty, ...full }))).catch(() => {});
@@ -68,6 +70,17 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   };
   const delGallery = (i) => set("gallery", form.gallery.filter((_, x) => x !== i));
 
+  const addIntentionImages = (files) => {
+    [...files].slice(0, 12).forEach((f) => readFile(f, (d) => setForm((p) => ({ ...p, intention_images: [...(p.intention_images || []), d] })), 4));
+  };
+  const delIntentionImage = (i) => set("intention_images", (form.intention_images || []).filter((_, x) => x !== i));
+  const pickIntentionFile = (file) => {
+    if (!file) return;
+    if (file.size > 12 * 1024 * 1024) return toast.error("Dossier trop lourd (max 12 Mo)");
+    setIntentionFile(file);
+  };
+  const removeIntentionFile = () => { setIntentionFile(null); set("intention_file_id", ""); set("intention_file_name", ""); };
+
   const addEmbed = () => set("embeds", [...(form.embeds || []), { platform: "youtube", url: "", label: "" }]);
   const updEmbed = (i, k, v) => set("embeds", form.embeds.map((e, x) => (x === i ? { ...e, [k]: v } : e)));
   const delEmbed = (i) => set("embeds", form.embeds.filter((_, x) => x !== i));
@@ -82,6 +95,13 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
       if (readingFile) await uploadReadingAudio(saved.id, readingFile);
       if (filmFile) await uploadVideo(saved.id, "film", filmFile, (p) => setVideoProg((s) => ({ ...s, film: p })));
       if (trailerFile) await uploadVideo(saved.id, "trailer", trailerFile, (p) => setVideoProg((s) => ({ ...s, trailer: p })));
+      // intention dossier (uploaded to object assets, then linked to the creation)
+      if (intentionFile) {
+        try {
+          const a = await uploadAsset(saved.id, intentionFile, "file", intentionFile.name);
+          await updateCreation(saved.id, { ...payload, intention_file_id: a.id, intention_file_name: a.name });
+        } catch { toast.error("Dossier trop lourd (max 12 Mo) ?"); }
+      }
       // per-chapter music (chapters keep order → match by index to saved.chapters)
       const chFiles = Object.entries(chapterFiles);
       for (const [i, file] of chFiles) {
@@ -175,6 +195,51 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
               ))}
               {(form.gallery || []).length === 0 && <p className="col-span-full text-xs" style={{ color: "var(--text-secondary)" }}>Aucune image.</p>}
             </div>
+          </div>
+
+          {/* Intentions de l'auteur */}
+          <div className="border p-3 space-y-3" style={fs} data-testid="editor-intention-section">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" data-testid="editor-intention-enabled" checked={!!form.intention_enabled} onChange={(e) => set("intention_enabled", e.target.checked)} />
+              <Label>Section « Intentions » (mot de l'auteur, making-of, dossier)</Label>
+            </label>
+            {form.intention_enabled && (
+              <div className="space-y-3">
+                <div><Label>Titre de la section</Label>
+                  <input data-testid="editor-intention-title" value={form.intention_title || ""} onChange={(e) => set("intention_title", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} placeholder="Intentions de l'auteur" /></div>
+                <div><Label>Texte (intentions, coulisses…)</Label>
+                  <textarea data-testid="editor-intention-text" rows={5} value={form.intention_text || ""} onChange={(e) => set("intention_text", e.target.value)} className="w-full px-3 py-2 border outline-none resize-none" style={fs} placeholder="Pourquoi cette œuvre, ce que tu as voulu raconter…" /></div>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label>Images « making-of »</Label>
+                    <label className="flex items-center gap-1 text-xs cursor-pointer" style={{ color: "var(--brand)" }} data-testid="editor-intention-img-add">
+                      <IoAddOutline /> Ajouter
+                      <input type="file" accept="image/*" multiple hidden onChange={(e) => e.target.files && addIntentionImages(e.target.files)} />
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                    {(form.intention_images || []).map((g, i) => (
+                      <div key={i} className="relative aspect-square overflow-hidden border" style={{ borderColor: "var(--border-c)" }}>
+                        <img src={g} alt="" className="w-full h-full object-cover" />
+                        <button onClick={() => delIntentionImage(i)} className="absolute top-0.5 right-0.5 p-0.5" style={{ background: "rgba(0,0,0,0.6)", color: "#fff" }}><IoTrashOutline size={12} /></button>
+                      </div>
+                    ))}
+                    {(form.intention_images || []).length === 0 && <p className="col-span-full text-xs" style={{ color: "var(--text-secondary)" }}>Aucune image.</p>}
+                  </div>
+                </div>
+                <div>
+                  <Label>Dossier à télécharger (PDF, ZIP… max 12 Mo)</Label>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-intention-file-upload">
+                      <IoCloudUploadOutline style={{ color: (intentionFile || form.intention_file_id) ? "var(--brand)" : "var(--text-secondary)" }} />
+                      {intentionFile ? intentionFile.name : (form.intention_file_name || "Choisir un fichier")}
+                      <input type="file" hidden onChange={(e) => pickIntentionFile(e.target.files?.[0])} />
+                    </label>
+                    {(intentionFile || form.intention_file_id) && <button onClick={removeIntentionFile} style={{ color: "var(--brand)" }} data-testid="editor-intention-file-remove"><IoTrashOutline /></button>}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Embeds / réseaux */}

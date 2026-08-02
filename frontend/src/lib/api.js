@@ -68,6 +68,7 @@ export const uploadAsset = (cid, file, kind = "image", name = "") => {
 export const listAssets = (cid) => api.get(`/creations/${cid}/assets`).then((r) => r.data);
 export const deleteAsset = (aid) => api.delete(`/assets/${aid}`).then((r) => r.data);
 export const assetUrl = (aid) => `${API}/assets/${aid}`;
+export const assetDownloadUrl = (aid) => `${API}/assets/${aid}?dl=1`;
 
 // categories
 export const listCategories = () => api.get("/categories").then((r) => r.data);

@@ -150,6 +150,13 @@ class Creation(BaseModel):
     price_eur: float = 0.0              # unit price in euros
     free_chapters: int = 0              # number of first chapters readable for free (chapters launch_type)
     status: str = ""                    # "en_cours" | "a_venir" | "termine" | ""
+    intention_enabled: bool = False
+    intention_title: str = "Intentions de l'auteur"
+    intention_text: str = ""
+    intention_images: List[str] = Field(default_factory=list)  # base64 making-of images
+    intention_file_id: str = ""          # media_assets id of a downloadable dossier
+    intention_file_name: str = ""
+    has_intention: bool = False          # computed for list responses
     locked: bool = False                # computed for the requesting user: no access to paid content
     owned: bool = False                 # computed: current user owns this creation (unit purchase)
     created_at: str = Field(default_factory=now_iso)
@@ -189,6 +196,12 @@ class CreationInput(BaseModel):
     price_eur: float = 0.0
     free_chapters: int = 0
     status: str = ""
+    intention_enabled: bool = False
+    intention_title: str = "Intentions de l'auteur"
+    intention_text: str = ""
+    intention_images: List[str] = Field(default_factory=list)
+    intention_file_id: str = ""
+    intention_file_name: str = ""
 
 
 class Category(BaseModel):
@@ -406,11 +419,14 @@ def _lighten(doc: dict, keep_gallery_chapters: bool = False) -> dict:
     doc["has_poster"] = bool(doc.get("poster"))
     doc["has_bg"] = bool(doc.get("bg_image"))
     doc["chapters_count"] = len(doc.get("chapters") or [])
+    doc["has_intention"] = bool(doc.get("intention_enabled") and (doc.get("intention_text") or doc.get("intention_images") or doc.get("intention_file_id")))
     doc["poster"] = ""
     doc["bg_image"] = ""
     if not keep_gallery_chapters:
         doc["gallery"] = []
         doc["chapters"] = []
+        doc["intention_images"] = []
+        doc["intention_text"] = ""
     return doc
 
 
@@ -728,12 +744,16 @@ async def list_assets(cid: str):
 
 
 @api_router.get("/assets/{aid}")
-async def get_asset(aid: str):
+async def get_asset(aid: str, dl: int = 0):
     a = await db.media_assets.find_one({"id": aid}, {"_id": 0})
     if not a:
         raise HTTPException(404, "Média introuvable")
+    headers = {"Cache-Control": "public, max-age=31536000, immutable"}
+    if dl:
+        safe = (a.get("name") or "dossier").replace('"', "")
+        headers["Content-Disposition"] = f'attachment; filename="{safe}"'
     return Response(content=base64.b64decode(a["data"]), media_type=a.get("content_type", "application/octet-stream"),
-                    headers={"Cache-Control": "public, max-age=31536000, immutable"})
+                    headers=headers)
 
 
 @api_router.delete("/assets/{aid}")

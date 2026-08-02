@@ -59,21 +59,6 @@ const PosterCard = forwardRef(function PosterCard(
             {catLabel}
           </span>
         )}
-        {(() => {
-          const st = item.status || (item.coming_soon ? "a_venir" : "");
-          const META = {
-            en_cours: { label: "En cours", bg: "#ff7a00", fg: "#1a0f00" },
-            a_venir: { label: [item.release_month, item.release_year].filter(Boolean).join(" ") || "À venir", bg: "#4d8dff", fg: "#00122e" },
-            termine: { label: "✓ Terminé", bg: "#00e5a0", fg: "#04241a" },
-          }[st];
-          if (!META) return null;
-          return (
-            <span data-testid={`poster-status-${item.id}`} className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest"
-              style={{ background: META.bg, color: META.fg, borderRadius: "var(--radius-base)" }}>
-              {META.label}
-            </span>
-          );
-        })()}
       </div>
 
       <span

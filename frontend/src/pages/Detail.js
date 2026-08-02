@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline, IoLockClosed } from "react-icons/io5";
+import { IoArrowBack, IoHome, IoSettingsOutline, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline, IoLockClosed, IoDownloadOutline, IoSparklesOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl, startCheckout, getMembershipPlan } from "@/lib/api";
+import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl, startCheckout, getMembershipPlan, assetDownloadUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
@@ -428,6 +428,37 @@ export default function Detail() {
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {/* Intentions de l'auteur */}
+            {item.intention_enabled && (item.intention_text || item.intention_images?.length > 0 || item.intention_file_id) && (
+              <div className="mt-10" data-testid="detail-intention">
+                <h3 className="font-display text-xl mb-3 flex items-center gap-2" style={{ color: "#fff" }}>
+                  <IoSparklesOutline style={{ color: "var(--brand)" }} /> {item.intention_title || "Intentions de l'auteur"}
+                </h3>
+                {item.intention_text && (
+                  <div className="space-y-3 leading-relaxed max-w-2xl mb-5" style={{ color: "rgba(255,255,255,0.75)" }} data-testid="detail-intention-text">
+                    {item.intention_text.split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+                  </div>
+                )}
+                {item.intention_images?.length > 0 && (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-5">
+                    {item.intention_images.map((g, i) => (
+                      <button key={i} onClick={() => { sfx("nav"); setLightbox(g); }} data-testid={`intention-img-${i}`}
+                        className="aspect-square overflow-hidden border transition-transform hover:scale-[1.03]" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+                        <img src={g} alt="" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {item.intention_file_id && (
+                  <a href={assetDownloadUrl(item.intention_file_id)} target="_blank" rel="noopener noreferrer" onClick={() => sfx("select")} data-testid="detail-intention-download"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 font-semibold transition-transform hover:scale-105"
+                    style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+                    <IoDownloadOutline size={18} /> Télécharger le dossier{item.intention_file_name ? ` · ${item.intention_file_name}` : ""}
+                  </a>
+                )}
               </div>
             )}
 

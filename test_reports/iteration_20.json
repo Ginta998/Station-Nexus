@@ -1,0 +1,20 @@
+{
+  "summary": "Frontend-only verification of the two changes: (1) status badges removed from home poster cards but preserved on detail pages, and (2) new Intentions section (editor + detail render + downloadable dossier). All 4 test cases PASS; test data cleaned up.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped per request)", "frontend": "100%"},
+  "seed_data_creation": "Temporarily enabled Intentions on creation 876fcaf5-6858-4202-a56a-4a2c428eb3a8 (United Sanctum Force) with title 'TEST Intentions Title', text, 1x1 red PNG making-of image, and test_dossier.txt asset. Disabled again in cleanup — detail-intention count = 0 after cleanup.",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "paytest@stationexus.com / password123 (is_admin=true). Login via [data-testid=login-btn] → [data-testid=auth-email]/[data-testid=auth-password]/[data-testid=auth-submit]. PIN 1234 via /parametres [data-testid=pin-input]+[data-testid=unlock-btn] (state persists in localStorage across sessions).",
+  "context_for_next_testing_agent": "IMPORTANT: TopBar login button testid is [data-testid=login-btn] (NOT account-login as suggested in some request texts). Save button in EditorDialog is [data-testid=editor-save]. Making-of image upload label [data-testid=editor-intention-img-add] contains a hidden <input type=file> — target it via '[data-testid=editor-intention-img-add] input[type=file]' with set_input_files. Same pattern for [data-testid=editor-intention-file-upload]. Creations with status set: United Sanctum Force (en_cours), Born X Burn (termine), Liberty's Chroma: Zaina (termine). VERIFIED: home page has 0 [data-testid^=poster-status-] elements (both anonymous and admin views); /oeuvre/<id> shows [data-testid=detail-status-badge] with correct label (e.g., 'En cours'). Editor→save flow: on Save, dossier file is uploaded via /api/creations/{id}/assets (kind=file), then creation is re-updated with intention_file_id/name; editor closes without error; detail page renders [data-testid=detail-intention], [data-testid=detail-intention-text], [data-testid=intention-img-0], and [data-testid=detail-intention-download] with href like https://.../api/assets/<uuid>?dl=1 (well-formed). Screenshot at .screenshots/intention_detail.png confirms visual layout is correct.",
+  "rca_of_the_issue": "N/A — both changes are working exactly as specified."
+}
