@@ -135,6 +135,7 @@ export function AppProvider({ children }) {
   const cardAudio = useRef(null);
   const appAudio = useRef(null);
   const cardActiveRef = useRef(false); // synchronous guard: is a card ambient active?
+  const mediaActiveRef = useRef(false); // synchronous guard: immersive media (cinema) owns the audio
 
   if (!cardAudio.current && typeof Audio !== "undefined") { cardAudio.current = new Audio(); cardAudio.current.loop = true; }
   if (!appAudio.current && typeof Audio !== "undefined") { appAudio.current = new Audio(); appAudio.current.loop = true; }
@@ -196,6 +197,7 @@ export function AppProvider({ children }) {
   const startAppAmbience = useCallback(() => {
     const a = appAudio.current;
     if (!a || !ambienceId || muted) return;
+    if (mediaActiveRef.current) return;           // cinema / immersive media owns the channel
     if (cardActiveRef.current) return;            // a card ambient owns the audio channel
     if (cardAudio.current && !cardAudio.current.paused) return; // card still audible (during fade)
     if (!a.paused && a.dataset.aid === ambienceId) return; // already playing this track
@@ -294,6 +296,22 @@ export function AppProvider({ children }) {
     setIsPlaying(false); setPlayingId(null);
   }, [startAppAmbience]);
 
+  // Immersive media mode (Cinema): only the film's sound plays. Silence app ambience + card ambient
+  // and block the auto-restart, then restore everything on exit.
+  const enterMediaMode = useCallback(() => {
+    mediaActiveRef.current = true;
+    stopAppAmbience(true);
+    const a = cardAudio.current;
+    if (a && !a.paused) { a.pause(); a.currentTime = 0; }
+    cardActiveRef.current = false;
+    setIsPlaying(false); setPlayingId(null);
+  }, [stopAppAmbience]);
+
+  const exitMediaMode = useCallback(() => {
+    mediaActiveRef.current = false;
+    if (!cardActiveRef.current) startAppAmbience();
+  }, [startAppAmbience]);
+
   // Reading / immersion track (chapter reader) — distinct from the card ambient.
   const readingKey = (id) => "reading:" + id;
   const playReading = useCallback((id, hasReading) => {
@@ -384,6 +402,7 @@ export function AppProvider({ children }) {
     seenAnnouncements, markAnnouncementsSeen,
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
     playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio,
+    enterMediaMode, exitMediaMode,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
     layout, setLayout,
     posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor,

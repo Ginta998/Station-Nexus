@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { IoClose, IoBulbOutline, IoBulb, IoExpandOutline, IoContractOutline, IoVolumeHigh, IoVolumeMute, IoFilmOutline } from "react-icons/io5";
+import { IoClose, IoBulbOutline, IoBulb, IoExpandOutline, IoContractOutline, IoFilmOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { videoUrl } from "@/lib/api";
 import { resolveVideoEmbed } from "@/lib/video";
 
 // Immersive cinema-mode player. kind = "film" | "trailer"
 export default function CinemaPlayer({ item, kind = "film", onClose }) {
-  const { muted, toggleMute, sfx } = useApp();
+  const { sfx, enterMediaMode, exitMediaMode } = useApp();
   const rootRef = useRef(null);
   const videoRef = useRef(null);
   const hideTimer = useRef(null);
@@ -31,8 +31,12 @@ export default function CinemaPlayer({ item, kind = "film", onClose }) {
     return () => window.dispatchEvent(new CustomEvent("sx-cb-context", { detail: null }));
   }, []);
 
-  // Keep the <video> element in sync with the global mute toggle
-  useEffect(() => { if (videoRef.current) videoRef.current.muted = muted; }, [muted, source?.type]);
+  // Immersive audio: only the film plays. Silence app/card ambience while open, restore on exit.
+  useEffect(() => {
+    enterMediaMode();
+    return () => exitMediaMode();
+    // eslint-disable-next-line
+  }, []);
 
   // Auto-hide the control bars after inactivity
   const poke = useCallback(() => {
@@ -105,7 +109,7 @@ export default function CinemaPlayer({ item, kind = "film", onClose }) {
           </div>
         ) : source.type === "video" ? (
           <video ref={videoRef} data-testid="cinema-video" src={source.src} controls autoPlay playsInline
-            className="w-full h-full" style={{ background: "#000" }} onLoadedMetadata={() => { if (videoRef.current) videoRef.current.muted = muted; }} />
+            className="w-full h-full" style={{ background: "#000" }} />
         ) : (
           <iframe data-testid="cinema-iframe" src={source.src} title={item.title} className="w-full h-full" frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen />
@@ -117,9 +121,6 @@ export default function CinemaPlayer({ item, kind = "film", onClose }) {
         <button data-testid="cinema-lights" onClick={() => { setDim((v) => !v); sfx && sfx("nav"); }} className="flex items-center gap-2 px-4 py-2.5 text-sm transition-transform hover:scale-105" style={btn} title="Ambiance lumineuse">
           {dim ? <IoBulbOutline size={18} /> : <IoBulb size={18} style={{ color: "var(--brand)" }} />}
           <span className="hidden sm:inline">{dim ? "Allumer les lumières" : "Baisser les lumières"}</span>
-        </button>
-        <button data-testid="cinema-mute" onClick={() => { toggleMute(); sfx && sfx("nav"); }} className="p-2.5 transition-transform hover:scale-105" style={{ ...btn, color: muted ? "rgba(255,255,255,0.6)" : "var(--brand)" }} title={muted ? "Réactiver le son" : "Couper le son"}>
-          {muted ? <IoVolumeMute size={20} /> : <IoVolumeHigh size={20} />}
         </button>
         <button data-testid="cinema-fullscreen" onClick={toggleFs} className="p-2.5 transition-transform hover:scale-105" style={btn} title={fs ? "Quitter le plein écran" : "Plein écran"}>
           {fs ? <IoContractOutline size={20} /> : <IoExpandOutline size={20} />}
