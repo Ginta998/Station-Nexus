@@ -17,8 +17,10 @@ import {
   listSubscribers, deleteSubscriber, getSettings, updateSettings,
   uploadIntroVideo, deleteIntroVideo,
   listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations, emailStatus,
-  getLibrary, cancelMembership, getMembershipPlan,
+  getLibrary, cancelMembership, getMembershipPlan, pushTest,
 } from "@/lib/api";
+import { pushSupported, getPermission, getNotifPref, getSoundPref, setSoundPref, enablePush, updatePref, disablePush, isSubscribed } from "@/lib/push";
+import { IoPhonePortraitOutline } from "react-icons/io5";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const Section = ({ title, extra, children }) => (
@@ -600,6 +602,116 @@ function MySubscription() {
   );
 }
 
+function NotificationsManager() {
+  const { user, openAuth } = useAuth();
+  const [supported] = useState(() => pushSupported());
+  const [perm, setPerm] = useState("default");
+  const [subscribed, setSubscribed] = useState(false);
+  const [pref, setPref] = useState(() => getNotifPref());
+  const [sound, setSound] = useState(() => getSoundPref());
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setPerm(await getPermission());
+      setSubscribed(await isSubscribed());
+    })();
+  }, [user]);
+
+  const enable = async () => {
+    if (!user) { openAuth(); return; }
+    setBusy(true);
+    try {
+      const p = pref === "off" ? "all" : pref;
+      await enablePush(p);
+      setPref(p); setSubscribed(true); setPerm("granted");
+      toast.success("Notifications activées sur cet appareil 🔔");
+    } catch (e) {
+      if (e.message === "denied") toast.error("Autorisation refusée. Active les notifications dans les réglages de ton navigateur.");
+      else if (e.message === "unsupported") toast.error("Ton navigateur ne supporte pas les notifications push.");
+      else toast.error("Impossible d'activer les notifications.");
+    } finally { setBusy(false); }
+  };
+
+  const choosePref = async (v) => {
+    setPref(v);
+    if (v === "off") { await disablePush(); setSubscribed(false); toast.success("Notifications désactivées"); return; }
+    if (subscribed) { await updatePref(v); toast.success("Préférence enregistrée"); }
+    else { await enable(); }
+  };
+
+  const toggleSound = (on) => { setSound(on); setSoundPref(on); };
+
+  const test = async () => {
+    setBusy(true);
+    try { const r = await pushTest(); toast.success(`Notification envoyée à ${r.sent} appareil(s) 🎉`); }
+    catch (e) { toast.error(e?.response?.data?.detail || "Abonne d'abord cet appareil."); }
+    finally { setBusy(false); }
+  };
+
+  const PREFS = [
+    { v: "all", label: "Tout", desc: "Salon public + messages privés" },
+    { v: "dm", label: "Messages privés", desc: "Uniquement les DM qui te sont adressés" },
+    { v: "off", label: "Désactivé", desc: "Aucune notification" },
+  ];
+
+  return (
+    <div data-testid="notifications-manager">
+      {!user && (
+        <div className="mb-4 p-3 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
+          <p className="text-sm mb-2" style={{ color: "var(--text-secondary)" }}>Connecte-toi pour recevoir des notifications du salon sur cet appareil.</p>
+          <button data-testid="notif-login" onClick={openAuth} className="px-4 py-2 font-semibold text-sm" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Se connecter</button>
+        </div>
+      )}
+
+      {!supported && (
+        <p className="text-sm mb-4" style={{ color: "var(--brand)" }} data-testid="notif-unsupported">⚠ Ton navigateur ne prend pas en charge les notifications push. Sur iPhone, installe d'abord l'app sur l'écran d'accueil (Partager → « Sur l'écran d'accueil »).</p>
+      )}
+
+      {supported && (
+        <>
+          <div className="flex items-center justify-between gap-3 p-3 border mb-4" style={{ ...fs, background: "var(--bg-secondary)" }}>
+            <span className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-primary)" }}>
+              <IoPhonePortraitOutline size={20} style={{ color: "var(--brand)" }} />
+              <span>
+                Notifications sur cet appareil
+                <span className="block text-xs" style={{ color: subscribed ? "var(--brand)" : "var(--text-secondary)" }}>
+                  {perm === "denied" ? "Bloquées par le navigateur" : subscribed ? "Activées ✓" : "Non activées"}
+                </span>
+              </span>
+            </span>
+            {subscribed ? (
+              <button data-testid="notif-test" onClick={test} disabled={busy} className="px-4 py-2 text-sm border" style={fs}>Tester 🔔</button>
+            ) : (
+              <button data-testid="notif-enable" onClick={enable} disabled={busy || perm === "denied"} className="px-4 py-2 text-sm font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", opacity: perm === "denied" ? 0.5 : 1 }}>Activer</button>
+            )}
+          </div>
+
+          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Ce que je reçois</p>
+          <div className="space-y-2 mb-4" data-testid="notif-pref-grid">
+            {PREFS.map((p) => (
+              <button key={p.v} data-testid={`notif-pref-${p.v}`} onClick={() => choosePref(p.v)}
+                className="flex items-center justify-between gap-3 w-full p-3 border text-left" style={{ ...fs, background: "var(--bg-secondary)", outline: pref === p.v ? "2px solid var(--brand)" : "none" }}>
+                <span>
+                  <span className="text-sm block" style={{ color: "var(--text-primary)" }}>{p.label}</span>
+                  <span className="text-xs" style={{ color: "var(--text-secondary)" }}>{p.desc}</span>
+                </span>
+                {pref === p.v && <IoCheckmarkCircle size={20} style={{ color: "var(--brand)" }} />}
+              </button>
+            ))}
+          </div>
+
+          <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="notif-sound-toggle">
+            <span className="text-sm" style={{ color: "var(--text-primary)" }}>Son de notification (dans l'app)
+              <span className="block text-xs" style={{ color: "var(--text-secondary)" }}>Petit bip quand un message arrive et que l'app est ouverte.</span></span>
+            <input type="checkbox" checked={sound} onChange={(e) => toggleSound(e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
+          </label>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
@@ -685,6 +797,10 @@ export default function Settings() {
 
         <Section title="Mon abonnement">
           <MySubscription />
+        </Section>
+
+        <Section title="Notifications" extra="— salon & messages privés">
+          <NotificationsManager />
         </Section>
 
         <Section title="Son">

@@ -1,6 +1,7 @@
 import "@/App.css";
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AppProvider } from "@/context/AppContext";
 import { AuthProvider } from "@/context/AuthContext";
@@ -26,6 +27,22 @@ import { INTROS } from "@/lib/intro";
 import { useQueryClient } from "@tanstack/react-query";
 
 const markEntered = () => { sessionStorage.setItem("sx_entered", "1"); window.dispatchEvent(new Event("sx-entered")); };
+
+// Navigue in-app quand l'utilisateur clique sur une notification push (app déjà ouverte)
+function PushClickNav() {
+  const nav = useNavigate();
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    const onMsg = (e) => {
+      if (e.data && e.data.type === "navigate" && e.data.url) {
+        try { nav(e.data.url.replace(window.location.origin, "")); } catch (_) {}
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", onMsg);
+    return () => navigator.serviceWorker.removeEventListener("message", onMsg);
+  }, [nav]);
+  return null;
+}
 
 function IntroGate() {
   const [show, setShow] = useState(false);
@@ -96,6 +113,7 @@ function App() {
             <Route path="/payment/cancel" element={<PaymentResult mode="cancel" />} />
           </Routes>
           <CosmicBunny />
+          <PushClickNav />
         </BrowserRouter>
         <IntroGate />
         <AuthDialog />

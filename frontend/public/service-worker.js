@@ -1,4 +1,4 @@
-const CACHE = "stationexus-v4";
+const CACHE = "stationexus-v5";
 const ASSETS = ["/manifest.json"];
 
 self.addEventListener("install", (e) => {
@@ -13,8 +13,7 @@ self.addEventListener("activate", (e) => {
   self.clients.claim();
 });
 
-self.addEventListener("fetch", (e) => {
-  const req = e.request;
+self.addEventListener("fetch", (e) => {  const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
@@ -53,5 +52,37 @@ self.addEventListener("fetch", (e) => {
         return res;
       })
       .catch(() => caches.match(req))
+  );
+});
+
+// ---------------- Web Push (Niveau 2) ----------------
+self.addEventListener("push", (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch (_) { data = { body: event.data ? event.data.text() : "" }; }
+  const title = data.title || "Stationexus";
+  const options = {
+    body: data.body || "",
+    tag: data.tag || "stationexus",
+    renotify: true,
+    icon: "/icon-192.png",
+    badge: "/icon-192.png",
+    data: { url: data.url || "/salon" },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || "/salon";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if ("focus" in client) {
+          client.postMessage({ type: "navigate", url: target });
+          return client.focus();
+        }
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(target);
+    })
   );
 });

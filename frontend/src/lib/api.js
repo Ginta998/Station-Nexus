@@ -150,3 +150,10 @@ export const chatUnread = (since) => api.get("/chat/unread", { params: since ? {
 export const dmConversations = () => api.get("/chat/dm").then((r) => r.data);
 export const dmThread = (partnerId, since) => api.get(`/chat/dm/${partnerId}`, { params: since ? { since } : {} }).then((r) => r.data);
 export const dmSend = (partnerId, payload) => api.post(`/chat/dm/${partnerId}`, payload).then((r) => r.data);
+
+// web push (notifications OS/système)
+export const pushPublicKey = () => api.get("/push/public-key").then((r) => r.data);
+export const pushSubscribe = (subscription, pref) => api.post("/push/subscribe", { subscription, pref }).then((r) => r.data);
+export const pushPref = (pref) => api.post("/push/pref", { pref }).then((r) => r.data);
+export const pushUnsubscribe = (endpoint) => api.post("/push/unsubscribe", endpoint ? { endpoint } : {}).then((r) => r.data);
+export const pushTest = () => api.post("/push/test").then((r) => r.data);

@@ -17,7 +17,9 @@ from datetime import datetime, timezone, timedelta
 import jwt
 import httpx
 import stripe
+import json
 from pwdlib import PasswordHash
+from pywebpush import webpush, WebPushException
 
 
 ROOT_DIR = Path(__file__).parent
@@ -32,6 +34,11 @@ api_router = APIRouter(prefix="/api")
 
 MAX_AUDIO_BYTES = 12 * 1024 * 1024
 MAX_VIDEO_BYTES = 200 * 1024 * 1024
+
+# ---------------- Web Push (notifications OS/système) ----------------
+VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', '')
+VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', '')
+VAPID_SUBJECT = os.environ.get('VAPID_SUBJECT', 'mailto:admin@stationexus.app')
 
 # ---------------- Emergent Object Storage (video uploads) ----------------
 OBJ_STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
@@ -1785,7 +1792,7 @@ async def chat_messages(since: Optional[str] = None, channel: str = "general", l
 
 
 @api_router.post("/chat/messages")
-async def chat_post(payload: ChatMessageInput, user=Depends(require_chat_reader)):
+async def chat_post(payload: ChatMessageInput, background_tasks: BackgroundTasks, user=Depends(require_chat_reader)):
     if user.get("chat_muted"):
         raise HTTPException(403, "Tu es en sourdine — tu ne peux pas écrire pour le moment")
     text = (payload.text or "").strip()[:2000]
@@ -1805,6 +1812,7 @@ async def chat_post(payload: ChatMessageInput, user=Depends(require_chat_reader)
            "poll": poll, "reactions": {}, "pinned": False, "created_at": now_iso()}
     await db.chat_messages.insert_one(msg)
     msg.pop("_id", None)
+    background_tasks.add_task(_broadcast_chat_push, dict(msg))
     return msg
 
 
@@ -1967,7 +1975,7 @@ async def dm_thread(partner_id: str, since: Optional[str] = None, user=Depends(r
 
 
 @api_router.post("/chat/dm/{partner_id}")
-async def dm_send(partner_id: str, payload: DMInput, user=Depends(require_chat_reader)):
+async def dm_send(partner_id: str, payload: DMInput, background_tasks: BackgroundTasks, user=Depends(require_chat_reader)):
     if partner_id == user["id"]:
         raise HTTPException(400, "Impossible de s'écrire à soi-même")
     partner = await db.users.find_one({"id": partner_id}, {"_id": 0, "id": 1})
@@ -1982,7 +1990,113 @@ async def dm_send(partner_id: str, payload: DMInput, user=Depends(require_chat_r
           "image_id": payload.image_id or "", "read_by": [user["id"]], "created_at": now_iso()}
     await db.chat_dms.insert_one(dm)
     dm.pop("_id", None)
+    background_tasks.add_task(_dm_push, dict(dm))
     return dm
+
+
+# ==================== Web Push notifications (Niveau 2 — OS/système) ====================
+class PushSubInput(BaseModel):
+    subscription: Dict[str, Any]
+    pref: str = "all"  # all | dm | off
+
+
+class PushPrefInput(BaseModel):
+    pref: str
+
+
+def _webpush_send(subscription: dict, data: str):
+    webpush(subscription_info=subscription, data=data,
+            vapid_private_key=VAPID_PRIVATE_KEY,
+            vapid_claims={"sub": VAPID_SUBJECT},
+            ttl=86400)
+
+
+async def _send_push_sub(sub_doc: dict, data: dict):
+    if not VAPID_PRIVATE_KEY:
+        return
+    try:
+        await asyncio.to_thread(_webpush_send, sub_doc["subscription"], json.dumps(data))
+    except WebPushException as e:
+        code = getattr(getattr(e, "response", None), "status_code", None)
+        if code in (404, 410):
+            await db.push_subscriptions.delete_one({"id": sub_doc["id"]})
+    except Exception as e:  # noqa: BLE001
+        logger.error("web push send failed: %s", e)
+
+
+async def _broadcast_chat_push(msg: dict):
+    sender = msg.get("author_id")
+    body = msg.get("text") or ("📷 Image" if msg.get("image_id") else ("📊 Sondage" if msg.get("poll") else "Nouveau message"))
+    ch = msg.get("channel_id", "general")
+    data = {"title": f"💬 {msg.get('author_name', 'Salon')}", "body": body[:140],
+            "url": "/salon", "tag": f"salon-{ch}", "kind": "public"}
+    subs = await db.push_subscriptions.find({"user_id": {"$ne": sender}, "pref": "all"}, {"_id": 0}).to_list(1000)
+    for s in subs:
+        await _send_push_sub(s, data)
+
+
+async def _dm_push(dm: dict):
+    body = dm.get("text") or "📷 Image"
+    data = {"title": f"💌 {dm.get('from_name', 'Message privé')}", "body": body[:140],
+            "url": f"/salon?tab=dm&to={dm['from_id']}&name={dm.get('from_name', '')}",
+            "tag": f"dm-{dm['from_id']}", "kind": "dm"}
+    subs = await db.push_subscriptions.find({"user_id": dm["to_id"], "pref": {"$ne": "off"}}, {"_id": 0}).to_list(50)
+    for s in subs:
+        await _send_push_sub(s, data)
+
+
+@api_router.get("/push/public-key")
+async def push_public_key():
+    return {"key": VAPID_PUBLIC_KEY, "enabled": bool(VAPID_PRIVATE_KEY and VAPID_PUBLIC_KEY)}
+
+
+@api_router.post("/push/subscribe")
+async def push_subscribe(payload: PushSubInput, user=Depends(get_current_user)):
+    sub = payload.subscription or {}
+    endpoint = sub.get("endpoint")
+    if not endpoint:
+        raise HTTPException(400, "Abonnement push invalide")
+    pref = payload.pref if payload.pref in ("all", "dm", "off") else "all"
+    existing = await db.push_subscriptions.find_one({"endpoint": endpoint})
+    doc = {"user_id": user["id"], "endpoint": endpoint, "subscription": sub, "pref": pref,
+           "updated_at": now_iso()}
+    if existing:
+        await db.push_subscriptions.update_one({"endpoint": endpoint}, {"$set": doc})
+        sid = existing["id"]
+    else:
+        sid = str(uuid.uuid4())
+        doc["id"] = sid
+        doc["created_at"] = now_iso()
+        await db.push_subscriptions.insert_one(doc)
+    return {"ok": True, "id": sid, "pref": pref}
+
+
+@api_router.post("/push/pref")
+async def push_pref(payload: PushPrefInput, user=Depends(get_current_user)):
+    pref = payload.pref if payload.pref in ("all", "dm", "off") else "all"
+    await db.push_subscriptions.update_many({"user_id": user["id"]}, {"$set": {"pref": pref, "updated_at": now_iso()}})
+    return {"ok": True, "pref": pref}
+
+
+@api_router.post("/push/unsubscribe")
+async def push_unsubscribe(payload: Dict[str, str], user=Depends(get_current_user)):
+    endpoint = (payload or {}).get("endpoint")
+    if endpoint:
+        await db.push_subscriptions.delete_one({"endpoint": endpoint, "user_id": user["id"]})
+    else:
+        await db.push_subscriptions.delete_many({"user_id": user["id"]})
+    return {"ok": True}
+
+
+@api_router.post("/push/test")
+async def push_test(user=Depends(get_current_user)):
+    subs = await db.push_subscriptions.find({"user_id": user["id"], "pref": {"$ne": "off"}}, {"_id": 0}).to_list(50)
+    if not subs:
+        raise HTTPException(400, "Aucun appareil abonné aux notifications")
+    data = {"title": "🔔 Test Stationexus", "body": "Les notifications fonctionnent ! 🐰", "url": "/salon", "tag": "test", "kind": "test"}
+    for s in subs:
+        await _send_push_sub(s, data)
+    return {"ok": True, "sent": len(subs)}
 
 
 app.include_router(api_router)

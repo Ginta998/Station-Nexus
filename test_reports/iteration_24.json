@@ -1,0 +1,33 @@
+{
+  "summary": "Iteration 24 — Web Push (Niveau 2) + Multi-channels + chat regression. Backend: 11/11 pytest passing (push endpoints, VAPID key exposure, subscribe/pref/unsubscribe/test with fake FCM endpoint sans crash, channels create/list/filter/delete, general non supprimable, chat + DM regression avec BackgroundTasks). Frontend (headless): section NotificationsManager rendue correctement avec tous les data-testids attendus, toggle son OK écrit localStorage sx_chat_notif_sound, salon /salon fonctionne pleinement (chat-channels affiche '# Général', envoi message OK, onglets Salon/Messages OK).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Notifications preference buttons (unsubscribed state)",
+        "issue": "Cliquer notif-pref-dm ou notif-pref-all quand l'appareil n'est PAS encore abonné déclenche enablePush() qui échoue en headless (et échouera aussi pour un utilisateur ayant refusé la permission navigateur). Résultat: la sélection visuelle change (outline actif) mais localStorage 'sx_chat_notif' n'est PAS mis à jour, seul 'off' l'est via disablePush(). Un utilisateur bloqué en 'off' ne peut plus revenir à 'all'/'dm' proprement si la permission navigateur est refusée. Recommandation: dans choosePref, écrire localStorage.setItem('sx_chat_notif', v) AVANT d'appeler enable(), ou toujours passer par updatePref (qui écrit LS) puis tenter enablePush en best-effort.",
+        "affected_selectors": ["[data-testid='notif-pref-all']", "[data-testid='notif-pref-dm']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration24_push_channels.py",
+    "/app/test_reports/pytest/iter24.xml"
+  ],
+  "action_items": [
+    "(Mineur) Améliorer NotificationsManager.choosePref pour toujours persister 'sx_chat_notif' en localStorage et appeler /api/push/pref, même si l'abonnement navigateur échoue — sinon l'utilisateur peut se retrouver bloqué en 'off'."
+  ],
+  "critical_code_review_comments": [
+    "server.py > 2100 lignes — envisager de scinder les modules chat/push/paiements dans des routers séparés (dépassement du seuil DRY/File Size)."
+  ],
+  "updated_files": ["/app/backend/tests/test_iteration24_push_channels.py"],
+  "success_rate": {"backend": "100%", "frontend": "95%"},
+  "seed_data_creation": "Utilisateur temporaire TEST_dm_*@example.com créé pour tester DM regression (non nettoyé — pas d'endpoint public delete-user; laissé pour cohérence avec précédentes itérations).",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "paytest@stationexus.com / password123",
+  "context_for_next_testing_agent": "Backend push endpoints + multi-channels validés. En headless, l'abonnement push réel (pushManager.subscribe) ne peut pas être testé — seuls les endpoints et l'UI sont testables. L'écran d'intro se bypasse via localStorage.sx_intro_off=1 + sessionStorage.sx_entered=1 + injection de sx_token/sx_user en localStorage après un POST /api/auth/login.",
+  "rca_of_the_issue": "choosePref() appelle updatePref() UNIQUEMENT si subscribed=true; sinon il tente enable() qui, en cas de refus/headless, jette une exception avant que localStorage.sx_chat_notif ne soit écrit dans enablePush (ligne 49 push.js). Pour 'off', disablePush() écrit toujours localStorage. D'où le décalage visuel/LS observé en test."
+}
