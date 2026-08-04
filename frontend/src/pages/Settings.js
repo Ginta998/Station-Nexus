@@ -635,9 +635,17 @@ function NotificationsManager() {
 
   const choosePref = async (v) => {
     setPref(v);
+    await updatePref(v);              // écrit toujours localStorage + serveur (best-effort)
     if (v === "off") { await disablePush(); setSubscribed(false); toast.success("Notifications désactivées"); return; }
-    if (subscribed) { await updatePref(v); toast.success("Préférence enregistrée"); }
-    else { await enable(); }
+    if (!subscribed) {
+      try { await enablePush(v); setSubscribed(true); setPerm("granted"); }
+      catch (e) {
+        if (e.message === "denied") { setPerm("denied"); toast.error("Autorisation refusée. Active les notifications dans les réglages de ton navigateur."); }
+        else if (e.message === "unsupported") toast.error("Ton navigateur ne supporte pas les notifications push.");
+        // sinon: préférence enregistrée quand même (le push OS s'activera au clic sur « Activer »)
+      }
+    }
+    toast.success("Préférence enregistrée");
   };
 
   const toggleSound = (on) => { setSound(on); setSoundPref(on); };
