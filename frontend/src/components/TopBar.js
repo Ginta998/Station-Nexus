@@ -73,101 +73,33 @@ export default function TopBar({ onAdd, onProfile }) {
       </button>
 
       <div className="flex items-center gap-2 md:gap-3">
-        {/* Always visible: mute + fullscreen + text size */}
+        {/* Toujours visibles : profil · son · agrandissement · Aa */}
+        {onProfile && (
+          <button data-testid="profile-btn" onClick={() => { sfx("nav"); onProfile(); }} title="Mon profil"
+            className="relative flex items-center gap-1.5 pl-1.5 pr-2.5 md:pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            {profile?.avatar
+              ? <img src={profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover" style={{ border: "1px solid var(--brand)" }} />
+              : <IoPersonCircle size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }} />}
+            <span className="hidden sm:inline max-w-[90px] truncate">{profile?.name || "Profil"}</span>
+            <Dot n={unread} />
+          </button>
+        )}
         <MuteBtn />
         <FsBtn />
         <TextSizeButton btnStyle={btn} />
 
-        {/* Desktop: full button set */}
-        <div className="hidden md:flex items-center gap-3">
-          {user ? (
-            <button data-testid="account-btn" onClick={() => { sfx("nav"); logout(); }} title="Se déconnecter"
-              className="relative flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-              <IoLogOutOutline size={18} /> <span className="max-w-[90px] truncate">{user.name || "Compte"}</span>
-            </button>
-          ) : (
-            <button data-testid="login-btn" onClick={() => { sfx("select"); openAuth(); }} title="Se connecter pour sauvegarder tes favoris"
-              className="relative flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-              <IoLogInOutline size={18} /> Se connecter
-            </button>
-          )}
-          {onProfile && (
-            <button data-testid="profile-btn" onClick={() => { sfx("nav"); onProfile(); }}
-              className="relative flex items-center gap-1.5 pl-1.5 pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-              {profile?.avatar
-                ? <img src={profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover" style={{ border: "1px solid var(--brand)" }} />
-                : <IoPersonCircle size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }} />}
-              <span className="max-w-[90px] truncate">{profile?.name || "Profil"}</span>
-              <Dot n={unread} />
-            </button>
-          )}
-          <button data-testid="novelties-btn" onClick={() => go("/nouveautes")}
-            className="relative flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-            <IoMegaphone size={18} /> Nouveautés
-            <Dot n={unread} />
-          </button>
-          <button data-testid="salon-btn" onClick={() => go("/salon")}
-            className="relative flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-            <IoChatbubbles size={18} /> Salon
-            <Dot n={salonUnread} />
-          </button>
-          <button data-testid="members-btn" onClick={() => go("/membres")}
-            className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-            <IoPeople size={18} /> Membres
-          </button>
-          <button data-testid="contact-btn" onClick={() => go("/contact")}
-            className="flex items-center gap-1.5 px-4 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-            <IoMailOutline size={18} /> Contact
-          </button>
-          {isAdmin && onAdd && (
-            <button data-testid="add-creation-btn" onClick={() => { sfx("select"); onAdd(); }}
-              className="flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
-              style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-              <IoAddOutline size={18} /> Créer
-            </button>
-          )}
-          {isAdmin && (
-            <div data-testid="admin-badge" className="flex items-center gap-1.5 px-3 py-2.5 border text-xs" style={{ ...btn, color: "var(--brand)" }}>
-              <IoLockOpen size={14} style={{ color: "var(--brand)" }} /> Création
-            </div>
-          )}
-          {isAdmin && (
-            <button data-testid="revenue-btn" onClick={() => go("/revenus")} title="Mes revenus"
-              className="hidden md:flex items-center gap-1.5 px-3 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-              <IoCashOutline size={18} /> Revenus
-            </button>
-          )}
-          <button data-testid="tutorial-btn" onClick={() => go("/tutoriel")} title="Comment ça marche"
-            className="flex items-center gap-1.5 px-3 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-            <IoHelpCircleOutline size={18} />
-          </button>
-          <button data-testid="support-btn" onClick={() => go("/soutien")} title="Soutenir la station"
-            className="hidden md:flex items-center gap-1.5 px-3 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-            <IoSparklesOutline size={18} /> Soutien
-          </button>
-          <button data-testid="library-btn" onClick={() => go("/bibliotheque")} title="Ma bibliothèque"
-            className="hidden md:flex items-center gap-1.5 px-3 py-2.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
-            <IoLibraryOutline size={18} /> Bibliothèque
-          </button>
-          <button data-testid="settings-btn" onClick={() => go("/parametres")}
-            className="flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
-            style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-            <IoSettingsOutline size={18} /> Paramètres
-          </button>
-        </div>
-
-        {/* Mobile: menu button (label + theme color) */}
+        {/* Bouton Menu (toutes tailles — ouvre le tiroir avec toutes les pages) */}
         <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }}
-          className="relative md:hidden flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
+          className="relative flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
           style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
           <IoMenu size={18} /> Menu
-          {unread > 0 && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{unread > 9 ? "9+" : unread}</span>}
+          {(unread > 0 || salonUnread > 0) && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{(unread + salonUnread) > 9 ? "9+" : (unread + salonUnread)}</span>}
         </button>
       </div>
 
-      {/* Mobile drawer */}
+      {/* Drawer (toutes tailles) */}
       {menuOpen && (
-        <div className="md:hidden fixed inset-0 z-[70] flex justify-end" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} onClick={() => setMenuOpen(false)} data-testid="mobile-menu">
+        <div className="fixed inset-0 z-[70] flex justify-end" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} onClick={() => setMenuOpen(false)} data-testid="mobile-menu">
           <div className="w-72 max-w-[85%] h-full flex flex-col" style={{ background: "var(--bg-secondary)", borderLeft: "1px solid var(--border-c)" }} onClick={(e) => e.stopPropagation()}>
             <div className="sx-drawer-header flex items-center justify-between p-4 border-b" style={{ borderColor: "var(--border-c)" }}>
               <span className="font-display text-lg" style={{ color: "var(--text-primary)" }}>Menu</span>
