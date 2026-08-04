@@ -545,3 +545,9 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - **Tests** : iteration_24.json → backend 11/11 pytest (push endpoints, VAPID, subscribe/pref/unsubscribe/test sans crash sur endpoint factice, channels create/list/filter/delete, régression chat+DM). Frontend : section Notifications rendue, toggles OK, salon fonctionnel. Point mineur (choosePref localStorage) corrigé après le rapport.
 - **LIMITE connue** : l'abonnement push RÉEL (pushManager.subscribe → service de push navigateur) ne se teste pas en headless ; nécessite un vrai navigateur + permission accordée. Sur iOS, l'app doit être installée sur l'écran d'accueil (PWA) pour que les push fonctionnent.
 - **En production** : nécessite un redéploiement pour que les clés VAPID (backend/.env → variables d'env de déploiement) et le nouveau service worker soient actifs.
+
+## Pastille compteur sur l'icône de l'app (Badging API) — 04/08/2026
+- `lib/push.js` : `setAppBadge(n)` → navigator.setAppBadge/clearAppBadge + postMessage 'set-badge' au service worker pour synchroniser le compteur persistant.
+- `ChatContext.js` : applique la pastille = unread.total à chaque refresh (app ouverte) et sur markPublicSeen (= dm restants) ; remet à 0 si déconnecté.
+- `service-worker.js` : compteur persistant en IndexedDB (store 'sx-badge'), `applyBadge()`, listener message 'set-badge', et à la réception d'un push → incrémente la pastille SEULEMENT si aucune fenêtre visible (app fermée/arrière-plan). Cache bumpé v5→v6.
+- LIMITE : la Badging API nécessite une PWA INSTALLÉE (écran d'accueil) + navigateur compatible (Chrome/Edge desktop+Android, Safari macOS/iOS installée). Non testable en headless. Compile OK, aucune erreur console (helpers protégés par feature-detection).

@@ -83,3 +83,20 @@ export async function isSubscribed() {
     return false;
   }
 }
+
+// Pastille de compteur sur l'icône de l'app installée (Badging API).
+export function setAppBadge(n) {
+  const count = Math.max(0, Number(n) || 0);
+  try {
+    if ("setAppBadge" in navigator) {
+      if (count > 0) navigator.setAppBadge(count).catch(() => {});
+      else navigator.clearAppBadge().catch(() => {});
+    }
+  } catch (_) { /* ignore */ }
+  // Synchronise le compteur mémorisé par le service worker (pour l'app fermée).
+  try {
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: "set-badge", value: count });
+    }
+  } catch (_) { /* ignore */ }
+}

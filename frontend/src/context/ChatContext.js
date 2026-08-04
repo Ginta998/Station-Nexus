@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { chatUnread } from "@/lib/api";
+import { setAppBadge } from "@/lib/push";
 import { useAuth } from "@/context/AuthContext";
 
 const ChatCtx = createContext(null);
@@ -33,11 +34,12 @@ export function ChatProvider({ children }) {
   const prev = useRef({ public: 0, dm: 0 });
 
   const refresh = useCallback(async () => {
-    if (!user) { setUnread({ public: 0, dm: 0, total: 0 }); prev.current = { public: 0, dm: 0 }; return; }
+    if (!user) { setUnread({ public: 0, dm: 0, total: 0 }); prev.current = { public: 0, dm: 0 }; setAppBadge(0); return; }
     try {
       const since = localStorage.getItem(LS) || undefined;
       const u = await chatUnread(since);
       setUnread(u);
+      setAppBadge(u.total);
       // ---- Niveau 1: in-app notification on increase ----
       const pref = localStorage.getItem(NOTIF) || "all";
       const soundOn = (localStorage.getItem(NOTIF_SOUND) || "1") === "1";
@@ -59,7 +61,7 @@ export function ChatProvider({ children }) {
 
   const markPublicSeen = useCallback(() => {
     localStorage.setItem(LS, new Date().toISOString());
-    setUnread((u) => ({ ...u, public: 0, total: u.dm }));
+    setUnread((u) => { const nu = { ...u, public: 0, total: u.dm }; setAppBadge(nu.total); return nu; });
     prev.current = { ...prev.current, public: 0 };
   }, []);
 

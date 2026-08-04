@@ -1,4 +1,4 @@
-const CACHE = "stationexus-v5";
+const CACHE = "stationexus-v6";
 const ASSETS = ["/manifest.json"];
 
 self.addEventListener("install", (e) => {
@@ -56,6 +56,51 @@ self.addEventListener("fetch", (e) => {  const req = e.request;
 });
 
 // ---------------- Web Push (Niveau 2) ----------------
+// Compteur de pastille persistant (Badging API) via IndexedDB.
+function idb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open("sx-badge", 1);
+    req.onupgradeneeded = () => req.result.createObjectStore("kv");
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbGet(key) {
+  try {
+    const db = await idb();
+    return await new Promise((res) => {
+      const tx = db.transaction("kv", "readonly").objectStore("kv").get(key);
+      tx.onsuccess = () => res(tx.result || 0);
+      tx.onerror = () => res(0);
+    });
+  } catch (_) { return 0; }
+}
+async function idbSet(key, val) {
+  try {
+    const db = await idb();
+    await new Promise((res) => {
+      const tx = db.transaction("kv", "readwrite").objectStore("kv").put(val, key);
+      tx.onsuccess = () => res();
+      tx.onerror = () => res();
+    });
+  } catch (_) { /* ignore */ }
+}
+async function applyBadge(count) {
+  const n = Math.max(0, count || 0);
+  await idbSet("badge", n);
+  if (self.navigator && "setAppBadge" in self.navigator) {
+    try {
+      if (n > 0) await self.navigator.setAppBadge(n);
+      else await self.navigator.clearAppBadge();
+    } catch (_) { /* ignore */ }
+  }
+}
+
+self.addEventListener("message", (event) => {
+  const d = event.data || {};
+  if (d.type === "set-badge") event.waitUntil(applyBadge(Number(d.value) || 0));
+});
+
 self.addEventListener("push", (event) => {
   let data = {};
   try { data = event.data ? event.data.json() : {}; } catch (_) { data = { body: event.data ? event.data.text() : "" }; }
@@ -68,21 +113,29 @@ self.addEventListener("push", (event) => {
     badge: "/icon-192.png",
     data: { url: data.url || "/salon" },
   };
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil((async () => {
+    await self.registration.showNotification(title, options);
+    // Incrémente la pastille seulement si aucune fenêtre visible (app fermée / arrière-plan).
+    const wins = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    const visible = wins.some((w) => w.visibilityState === "visible");
+    if (!visible) {
+      const cur = await idbGet("badge");
+      await applyBadge((cur || 0) + 1);
+    }
+  })());
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const target = (event.notification.data && event.notification.data.url) || "/salon";
-  event.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
-      for (const client of list) {
-        if ("focus" in client) {
-          client.postMessage({ type: "navigate", url: target });
-          return client.focus();
-        }
+  event.waitUntil((async () => {
+    const list = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const client of list) {
+      if ("focus" in client) {
+        client.postMessage({ type: "navigate", url: target });
+        return client.focus();
       }
-      if (self.clients.openWindow) return self.clients.openWindow(target);
-    })
-  );
+    }
+    if (self.clients.openWindow) return self.clients.openWindow(target);
+  })());
 });
