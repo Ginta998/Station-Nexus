@@ -1686,7 +1686,12 @@ class ChatMessageInput(BaseModel):
     text: str = ""
     image_id: str = ""
     reply_to: Optional[str] = None
+    channel_id: str = "general"
     poll: Optional[Dict[str, Any]] = None  # {"question": str, "options": [str], "multi": bool}
+
+
+class ChatChannelInput(BaseModel):
+    name: str
 
 
 class ChatModerateInput(BaseModel):
@@ -1721,6 +1726,39 @@ async def chat_status(user=Depends(get_current_user)):
             "is_admin": bool(user.get("is_admin"))}
 
 
+async def _ensure_channels():
+    n = await db.chat_channels.count_documents({})
+    if n == 0:
+        await db.chat_channels.insert_one({"id": "general", "name": "Général", "order": 0, "created_at": now_iso()})
+
+
+@api_router.get("/chat/channels")
+async def chat_channels(user=Depends(require_chat_reader)):
+    await _ensure_channels()
+    return await db.chat_channels.find({}, {"_id": 0}).sort("order", 1).to_list(200)
+
+
+@api_router.post("/chat/channels")
+async def chat_channel_create(payload: ChatChannelInput, user=Depends(get_admin_user)):
+    name = (payload.name or "").strip()[:40]
+    if not name:
+        raise HTTPException(400, "Nom requis")
+    n = await db.chat_channels.count_documents({})
+    ch = {"id": str(uuid.uuid4()), "name": name, "order": n, "created_at": now_iso()}
+    await db.chat_channels.insert_one(ch)
+    ch.pop("_id", None)
+    return ch
+
+
+@api_router.delete("/chat/channels/{cid}")
+async def chat_channel_delete(cid: str, user=Depends(get_admin_user)):
+    if cid == "general":
+        raise HTTPException(400, "Le salon Général ne peut pas être supprimé")
+    await db.chat_channels.delete_one({"id": cid})
+    await db.chat_messages.delete_many({"channel_id": cid})
+    return {"ok": True}
+
+
 @api_router.post("/chat/upload")
 async def chat_upload(file: UploadFile = File(...), user=Depends(require_chat_reader)):
     data = await file.read()
@@ -1735,8 +1773,8 @@ async def chat_upload(file: UploadFile = File(...), user=Depends(require_chat_re
 
 
 @api_router.get("/chat/messages")
-async def chat_messages(since: Optional[str] = None, limit: int = 80, user=Depends(require_chat_reader)):
-    q = {}
+async def chat_messages(since: Optional[str] = None, channel: str = "general", limit: int = 80, user=Depends(require_chat_reader)):
+    q = {"channel_id": channel}
     if since:
         q["created_at"] = {"$gt": since}
     cur = db.chat_messages.find(q, {"_id": 0}).sort("created_at", 1)
@@ -1763,8 +1801,8 @@ async def chat_post(payload: ChatMessageInput, user=Depends(require_chat_reader)
     info = await _author_info(user)
     msg = {"id": str(uuid.uuid4()), "author_id": user["id"], "author_name": info["name"],
            "author_avatar": info["avatar"], "text": text, "image_id": payload.image_id or "",
-           "reply_to": payload.reply_to or None, "poll": poll, "reactions": {}, "pinned": False,
-           "created_at": now_iso()}
+           "reply_to": payload.reply_to or None, "channel_id": payload.channel_id or "general",
+           "poll": poll, "reactions": {}, "pinned": False, "created_at": now_iso()}
     await db.chat_messages.insert_one(msg)
     msg.pop("_id", None)
     return msg
@@ -1852,15 +1890,16 @@ async def chat_pin(mid: str, user=Depends(get_admin_user)):
     if not m:
         raise HTTPException(404, "Message introuvable")
     newval = not m.get("pinned")
+    ch = m.get("channel_id") or "general"
     if newval:
-        await db.chat_messages.update_many({"pinned": True}, {"$set": {"pinned": False}})
+        await db.chat_messages.update_many({"pinned": True, "channel_id": ch}, {"$set": {"pinned": False}})
     await db.chat_messages.update_one({"id": mid}, {"$set": {"pinned": newval}})
     return {"pinned": newval}
 
 
 @api_router.get("/chat/pinned")
-async def chat_pinned(user=Depends(require_chat_reader)):
-    m = await db.chat_messages.find_one({"pinned": True}, {"_id": 0})
+async def chat_pinned(channel: str = "general", user=Depends(require_chat_reader)):
+    m = await db.chat_messages.find_one({"pinned": True, "channel_id": channel}, {"_id": 0})
     return m or {}
 
 

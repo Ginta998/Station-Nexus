@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { IoArrowBack, IoHome, IoSend, IoImageOutline, IoBarChartOutline, IoTrashOutline, IoClose, IoAddOutline, IoHappyOutline, IoBanOutline, IoVolumeMuteOutline, IoLockClosed, IoPeople, IoSparkles, IoCheckmarkCircle, IoChatbubblesOutline, IoMailOutline, IoBookmark, IoBookmarkOutline, IoMegaphone } from "react-icons/io5";
-import { chatStatus, chatMessages, chatPost, chatDelete, chatReact, chatVote, chatPing, chatModerate, chatUpload, assetUrl, chatPin, chatPinned, dmConversations, dmThread, dmSend } from "@/lib/api";
+import { chatStatus, chatMessages, chatPost, chatDelete, chatReact, chatVote, chatPing, chatModerate, chatUpload, assetUrl, chatPin, chatPinned, dmConversations, dmThread, dmSend, chatChannels, chatChannelCreate, chatChannelDelete } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
@@ -62,6 +62,8 @@ export default function Chat() {
 
   // public salon state
   const [messages, setMessages] = useState([]);
+  const [channels, setChannels] = useState([]);
+  const [channel, setChannel] = useState("general");
   const [pinned, setPinned] = useState(null);
   const [online, setOnline] = useState(0);
   const [text, setText] = useState("");
@@ -106,7 +108,7 @@ export default function Chat() {
     });
   }, [uid, sfx]);
 
-  // status + initial public load
+  // status + channels
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -114,32 +116,44 @@ export default function Chat() {
         const st = await chatStatus();
         if (!alive) return;
         setStatus(st);
-        if (st.can_read) {
-          const [msgs, pin] = await Promise.all([chatMessages(), chatPinned()]);
-          if (!alive) return;
-          setMessages(msgs); setPinned(pin && pin.id ? pin : null);
-          lastTs.current = msgs[msgs.length - 1]?.created_at || null;
-          setTimeout(() => scrollBottom(scrollRef), 60);
-          setTimeout(() => { initialLoaded.current = true; }, 400);
-          markPublicSeen && markPublicSeen();
-        }
+        if (st.can_read) { try { setChannels(await chatChannels()); } catch {} }
       } catch (e) { if (e?.response?.status === 401) setStatus({ can_read: false, need_login: true }); }
     })();
     return () => { alive = false; };
   }, [user]); // eslint-disable-line
+
+  // load messages + pinned for the active channel
+  useEffect(() => {
+    if (!canRead || tab !== "salon") return;
+    let alive = true;
+    initialLoaded.current = false;
+    setMessages([]); lastTs.current = null;
+    (async () => {
+      try {
+        const [msgs, pin] = await Promise.all([chatMessages(null, channel), chatPinned(channel)]);
+        if (!alive) return;
+        setMessages(msgs); setPinned(pin && pin.id ? pin : null);
+        lastTs.current = msgs[msgs.length - 1]?.created_at || null;
+        setTimeout(() => scrollBottom(scrollRef), 60);
+        setTimeout(() => { initialLoaded.current = true; }, 400);
+        markPublicSeen && markPublicSeen();
+      } catch {}
+    })();
+    return () => { alive = false; };
+  }, [canRead, tab, channel]); // eslint-disable-line
 
   // public polling + presence
   useEffect(() => {
     if (!canRead || tab !== "salon") return;
     const p1 = setInterval(async () => {
       if (document.hidden) return;
-      try { const msgs = await chatMessages(lastTs.current); merge(msgs); if (msgs.length) markPublicSeen && markPublicSeen(); if (nearBottom.current) setTimeout(() => scrollBottom(scrollRef), 40); } catch {}
+      try { const msgs = await chatMessages(lastTs.current, channel); merge(msgs); if (msgs.length) markPublicSeen && markPublicSeen(); if (nearBottom.current) setTimeout(() => scrollBottom(scrollRef), 40); } catch {}
     }, 2500);
     const ping = async () => { try { const r = await chatPing(); setOnline(r.count); } catch {} };
     ping();
     const p2 = setInterval(ping, 20000);
     return () => { clearInterval(p1); clearInterval(p2); };
-  }, [canRead, tab, merge]); // eslint-disable-line
+  }, [canRead, tab, channel, merge]); // eslint-disable-line
 
   // DM conversations polling (when in dm tab, no active partner)
   useEffect(() => {
@@ -182,19 +196,30 @@ export default function Chat() {
 
   const send = async () => {
     const t = text.trim(); if (!t) return;
-    try { const m = await chatPost({ text: t }); setText(""); merge([m]); setTimeout(() => scrollBottom(scrollRef), 40); sfx("select"); }
+    try { const m = await chatPost({ text: t, channel_id: channel }); setText(""); merge([m]); setTimeout(() => scrollBottom(scrollRef), 40); sfx("select"); }
     catch (e) { toast.error(e?.response?.data?.detail || "Erreur d'envoi"); }
   };
   const sendImage = async (file) => {
     if (!file) return; if (file.size > 12 * 1024 * 1024) return toast.error("Image trop lourde (max 12 Mo)");
-    try { const up = await chatUpload(file); const m = await chatPost({ image_id: up.id }); merge([m]); setTimeout(() => scrollBottom(scrollRef), 40); }
+    try { const up = await chatUpload(file); const m = await chatPost({ image_id: up.id, channel_id: channel }); merge([m]); setTimeout(() => scrollBottom(scrollRef), 40); }
     catch { toast.error("Échec de l'image"); }
   };
   const sendPoll = async () => {
     const opts = poll.options.map((o) => o.trim()).filter(Boolean);
     if (!poll.question.trim() || opts.length < 2) return toast.error("Une question et au moins 2 options");
-    try { const m = await chatPost({ poll: { question: poll.question, options: opts, multi: false } }); merge([m]); setPoll({ question: "", options: ["", ""] }); setPollMode(false); setTimeout(() => scrollBottom(scrollRef), 40); }
+    try { const m = await chatPost({ poll: { question: poll.question, options: opts, multi: false }, channel_id: channel }); merge([m]); setPoll({ question: "", options: ["", ""] }); setPollMode(false); setTimeout(() => scrollBottom(scrollRef), 40); }
     catch { toast.error("Erreur sondage"); }
+  };
+  const createChannel = async () => {
+    const name = window.prompt("Nom du nouveau salon :");
+    if (!name || !name.trim()) return;
+    try { const ch = await chatChannelCreate(name.trim()); setChannels((c) => [...c, ch]); setChannel(ch.id); toast.success(`Salon « ${ch.name} » créé`); }
+    catch (e) { toast.error(e?.response?.data?.detail || "Erreur"); }
+  };
+  const removeChannel = async (cid, name) => {
+    if (!window.confirm(`Supprimer le salon « ${name} » et tous ses messages ?`)) return;
+    try { await chatChannelDelete(cid); setChannels((c) => c.filter((x) => x.id !== cid)); if (channel === cid) setChannel("general"); toast.success("Salon supprimé"); }
+    catch (e) { toast.error(e?.response?.data?.detail || "Erreur"); }
   };
   const react = async (mid, emoji) => { setEmojiFor(null); try { const r = await chatReact(mid, emoji); setMessages((prev) => prev.map((m) => m.id === mid ? { ...m, reactions: r.reactions } : m)); } catch {} };
   const vote = async (mid, opt) => { try { const r = await chatVote(mid, opt); setMessages((prev) => prev.map((m) => m.id === mid ? { ...m, poll: r.poll } : m)); if (pinned?.id === mid) setPinned((p) => ({ ...p, poll: r.poll })); } catch {} };
@@ -247,6 +272,25 @@ export default function Chat() {
 
       {tab === "salon" ? (
         <>
+          {/* Channel selector */}
+          <div className="max-w-3xl w-full mx-auto px-4 md:px-8 pt-3 flex items-center gap-2 overflow-x-auto" data-testid="chat-channels" style={{ scrollbarWidth: "none" }}>
+            {channels.map((c) => (
+              <div key={c.id} className="relative group flex-shrink-0">
+                <button data-testid={`chat-channel-${c.id}`} onClick={() => setChannel(c.id)}
+                  className="px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
+                  style={{ background: channel === c.id ? "var(--brand)" : "var(--bg-secondary)", color: channel === c.id ? "var(--bg-primary)" : "var(--text-secondary)", border: `1px solid ${channel === c.id ? "var(--brand)" : "var(--border-c)"}`, borderRadius: "999px" }}>
+                  # {c.name}
+                </button>
+                {isAdmin && c.id !== "general" && (
+                  <button onClick={() => removeChannel(c.id, c.name)} data-testid={`chat-channel-del-${c.id}`} className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}><IoClose size={10} /></button>
+                )}
+              </div>
+            ))}
+            {isAdmin && (
+              <button data-testid="chat-channel-add" onClick={createChannel} className="px-2.5 py-1.5 flex-shrink-0 flex items-center gap-1 text-sm" style={{ border: "1px dashed var(--brand)", color: "var(--brand)", borderRadius: "999px" }}><IoAddOutline size={15} /> Salon</button>
+            )}
+          </div>
+
           {pinned && (
             <div className="max-w-3xl w-full mx-auto px-4 md:px-8 pt-3" data-testid="chat-pinned">
               <div className="flex items-start gap-2 px-3 py-2.5" style={{ background: "color-mix(in srgb, var(--brand) 12%, var(--bg-secondary))", border: "1px solid var(--brand)", borderRadius: "var(--radius-base)" }}>
@@ -399,19 +443,34 @@ export default function Chat() {
 }
 
 function Header({ nav, sfx, online, showOnline, tab, onTab }) {
+  const { unread } = useChat() || { unread: { dm: 0 } };
+  const dmUnread = unread?.dm || 0;
   return (
-    <div className="sx-safe-top flex items-center justify-between gap-2 px-4 md:px-8 py-3 border-b" style={{ borderColor: "var(--border-c)", background: "var(--bg-primary)" }}>
-      <div className="flex items-center gap-2">
-        <button data-testid="chat-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2" style={btn}><IoArrowBack /> <span className="text-sm hidden sm:inline">Retour</span></button>
-        <button data-testid="chat-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2" style={btn}><IoHome size={16} /></button>
+    <div className="sx-safe-top border-b" style={{ borderColor: "var(--border-c)", background: "var(--bg-primary)" }}>
+      <div className="flex items-center justify-between gap-2 px-3 md:px-8 pt-3 pb-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <button data-testid="chat-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-2.5 py-2" style={btn}><IoArrowBack size={18} /></button>
+          <button data-testid="chat-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-2.5 py-2" style={btn}><IoHome size={16} /></button>
+          <div className="ml-1 min-w-0">
+            <h1 className="font-display text-lg leading-none flex items-center gap-1.5"><IoChatbubblesOutline size={18} style={{ color: "var(--brand)" }} /> Salon</h1>
+            {showOnline && <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--brand)" }} data-testid="chat-online"><IoPeople size={11} /> {online} en ligne</span>}
+          </div>
+        </div>
+        <MobileMenu />
       </div>
       {tab && (
-        <div className="flex items-center gap-1 p-1" style={{ background: "var(--bg-secondary)", borderRadius: "999px", border: "1px solid var(--border-c)" }}>
-          <button data-testid="chat-tab-salon" onClick={() => onTab("salon")} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium" style={{ background: tab === "salon" ? "var(--brand)" : "transparent", color: tab === "salon" ? "var(--bg-primary)" : "var(--text-secondary)", borderRadius: "999px" }}><IoChatbubblesOutline size={16} /> Salon {showOnline && <span className="text-[10px] opacity-80">· {online}</span>}</button>
-          <button data-testid="chat-tab-dm" onClick={() => onTab("dm")} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium" style={{ background: tab === "dm" ? "var(--brand)" : "transparent", color: tab === "dm" ? "var(--bg-primary)" : "var(--text-secondary)", borderRadius: "999px" }}><IoMailOutline size={16} /> Messages</button>
+        <div className="flex items-center gap-2 px-3 md:px-8 pb-2 max-w-3xl w-full mx-auto">
+          <button data-testid="chat-tab-salon" onClick={() => onTab("salon")} className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold transition-colors"
+            style={{ background: tab === "salon" ? "var(--brand)" : "var(--bg-secondary)", color: tab === "salon" ? "var(--bg-primary)" : "var(--text-secondary)", border: `1px solid ${tab === "salon" ? "var(--brand)" : "var(--border-c)"}`, borderRadius: "var(--radius-base)" }}>
+            <IoChatbubblesOutline size={16} /> Salon
+          </button>
+          <button data-testid="chat-tab-dm" onClick={() => onTab("dm")} className="relative flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold transition-colors"
+            style={{ background: tab === "dm" ? "var(--brand)" : "var(--bg-secondary)", color: tab === "dm" ? "var(--bg-primary)" : "var(--text-secondary)", border: `1px solid ${tab === "dm" ? "var(--brand)" : "var(--border-c)"}`, borderRadius: "var(--radius-base)" }}>
+            <IoMailOutline size={16} /> Messages
+            {dmUnread > 0 && <span data-testid="chat-tab-dm-badge" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: tab === "dm" ? "var(--bg-primary)" : "var(--brand)", color: tab === "dm" ? "var(--brand)" : "var(--bg-primary)" }}>{dmUnread > 9 ? "9+" : dmUnread}</span>}
+          </button>
         </div>
       )}
-      <MobileMenu />
     </div>
   );
 }

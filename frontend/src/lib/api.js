@@ -133,7 +133,7 @@ export const cancelMembership = () => api.post("/membership/cancel").then((r) =>
 
 // community chat (salon)
 export const chatStatus = () => api.get("/chat/status").then((r) => r.data);
-export const chatMessages = (since) => api.get("/chat/messages", { params: since ? { since } : {} }).then((r) => r.data);
+export const chatMessages = (since, channel = "general") => api.get("/chat/messages", { params: { channel, ...(since ? { since } : {}) } }).then((r) => r.data);
 export const chatPost = (payload) => api.post("/chat/messages", payload).then((r) => r.data);
 export const chatDelete = (id) => api.delete(`/chat/messages/${id}`).then((r) => r.data);
 export const chatReact = (id, emoji) => api.post(`/chat/messages/${id}/react`, { emoji }).then((r) => r.data);
@@ -142,7 +142,10 @@ export const chatPing = () => api.post("/chat/ping").then((r) => r.data);
 export const chatModerate = (user_id, action) => api.post("/chat/moderate", { user_id, action }).then((r) => r.data);
 export const chatUpload = (file) => { const fd = new FormData(); fd.append("file", file); return api.post("/chat/upload", fd).then((r) => r.data); };
 export const chatPin = (id) => api.post(`/chat/messages/${id}/pin`).then((r) => r.data);
-export const chatPinned = () => api.get("/chat/pinned").then((r) => r.data);
+export const chatPinned = (channel = "general") => api.get("/chat/pinned", { params: { channel } }).then((r) => r.data);
+export const chatChannels = () => api.get("/chat/channels").then((r) => r.data);
+export const chatChannelCreate = (name) => api.post("/chat/channels", { name }).then((r) => r.data);
+export const chatChannelDelete = (id) => api.delete(`/chat/channels/${id}`).then((r) => r.data);
 export const chatUnread = (since) => api.get("/chat/unread", { params: since ? { since } : {} }).then((r) => r.data);
 export const dmConversations = () => api.get("/chat/dm").then((r) => r.data);
 export const dmThread = (partnerId, since) => api.get(`/chat/dm/${partnerId}`, { params: since ? { since } : {} }).then((r) => r.data);
