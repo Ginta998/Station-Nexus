@@ -76,7 +76,7 @@ export default function TopBar({ onAdd, onProfile }) {
         {/* Toujours visibles : profil · son · agrandissement · Aa */}
         {onProfile && (
           <button data-testid="profile-btn" onClick={() => { sfx("nav"); onProfile(); }} title="Mon profil"
-            className="relative flex items-center gap-1.5 pl-1.5 pr-2.5 md:pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
+            className="relative hidden md:flex items-center gap-1.5 pl-1.5 pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
             {profile?.avatar
               ? <img src={profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover" style={{ border: "1px solid var(--brand)" }} />
               : <IoPersonCircle size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }} />}
