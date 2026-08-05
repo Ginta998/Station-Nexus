@@ -39,7 +39,7 @@ export default function CommentsSection({ creationId }) {
         <input data-testid="comment-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ton nom"
           className="sm:w-40 px-3 py-2 border outline-none text-sm" style={fs} />
         <AutoTextarea data-testid="comment-text" value={text} maxHeight={200} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } }}
-          placeholder="Laisse un commentaire… (Entrée pour publier, Maj+Entrée pour un retour à la ligne)" className="flex-1 w-full px-3 py-2 border outline-none text-sm" style={fs} />
+          placeholder="Laisse un commentaire… (Entrée pour publier, Maj+Entrée pour un retour à la ligne)" className="w-full sm:flex-1 px-3 py-2 border outline-none text-sm" style={fs} />
         <button data-testid="comment-submit" onClick={submit} disabled={busy}
           className="flex items-center justify-center gap-1.5 px-4 py-2 font-semibold text-sm flex-shrink-0" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
           <IoSend size={16} /> Publier
