@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline, IoVolumeHigh, IoVolumeMute, IoExpand, IoContract, IoLockClosed } from "react-icons/io5";
+import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown, IoMusicalNotes, IoPause, IoPlay, IoPlayBack, IoPlayForward, IoText, IoChatbubbleEllipsesOutline, IoShareSocialOutline, IoVolumeHigh, IoVolumeMute, IoExpand, IoContract, IoLockClosed, IoCreateOutline, IoSaveOutline } from "react-icons/io5";
+import { useQueryClient } from "@tanstack/react-query";
 import { useApp } from "@/context/AppContext";
-import { chapterAudioUrl, readingAudioUrl } from "@/lib/api";
+import { chapterAudioUrl, readingAudioUrl, getCreationFull, updateCreation } from "@/lib/api";
+import RichTextEditor from "@/components/RichTextEditor";
 import { toast } from "sonner";
 
 function useReveal(deps) {
@@ -87,11 +89,12 @@ function ReadingPlayer({ getAudio, title, isPlaying, onToggle }) {
 export default function ChapterReader({ item, onClose, startChapter = null, onComment }) {
   const {
     playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio, endReading, isPlaying, playingId, sfx,
-    muted, toggleMute,
+    muted, toggleMute, isAdmin,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine,
     readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   } = useApp();
-  const chapters = item.chapters || [];
+  const qc = useQueryClient();
+  const [chapters, setChapters] = useState(item.chapters || []);
   const progressKey = "sx_progress_" + item.id;
   const saved = (() => { try { return JSON.parse(localStorage.getItem(progressKey) || "null"); } catch (_) { return null; } })();
   const useStart = Number.isInteger(startChapter);
@@ -107,6 +110,9 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   const [trackTitle, setTrackTitle] = useState("Musique de lecture");
   const [hideBars, setHideBars] = useState(false);
   const [isFs, setIsFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
+  const [editing, setEditing] = useState(false);
+  const [editHtml, setEditHtml] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
   const lastY = useRef(0);
   const headerRef = useRef(null);
   const [headerH, setHeaderH] = useState(72);
@@ -203,6 +209,33 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   const close = () => { endReading(item.id, item.has_audio); onClose(); };
   const go = (d) => { sfx("nav"); setIdx((i) => Math.min(Math.max(i + d, 0), chapters.length - 1)); setToc(false); };
 
+  const escapeHtml = (s) => (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const openEdit = () => {
+    sfx("nav");
+    const html = chap?.rich ? (chap.content || "") : ((chap?.content || "").split(/\n{2,}/).filter(Boolean).map((p) => `<p>${escapeHtml(p)}</p>`).join("") || "");
+    setEditHtml(html);
+    setEditing(true);
+    setToc(false); setPrefs(false);
+  };
+  const saveEdit = async () => {
+    if (!chap) return;
+    setSavingEdit(true);
+    try {
+      const full = await getCreationFull(item.id); // version complète (images préservées)
+      const chid = chap.id;
+      const chs = (full.chapters || []).map((c) => (c.id === chid ? { ...c, content: editHtml, rich: true } : c));
+      await updateCreation(item.id, { ...full, chapters: chs });
+      setChapters((prev) => prev.map((c, i) => (i === idx ? { ...c, content: editHtml, rich: true } : c)));
+      if (item.chapters && item.chapters[idx]) { item.chapters[idx].content = editHtml; item.chapters[idx].rich = true; }
+      qc.invalidateQueries({ queryKey: ["creation", item.id] });
+      qc.invalidateQueries({ queryKey: ["creations"] });
+      setEditing(false);
+      toast.success("Chapitre enregistré ✓");
+    } catch (e) {
+      toast.error(e?.response?.data?.detail || "Erreur d'enregistrement");
+    } finally { setSavingEdit(false); }
+  };
+
   // music cues placed inline in the chapter — reader taps to play (no loop, fades over previous)
   const onCueClick = (e) => {
     const cue = e.target.closest && e.target.closest(".sx-music-cue");
@@ -254,6 +287,11 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
           <button data-testid="reader-prefs-toggle" onClick={() => { sfx("nav"); setPrefs((v) => !v); }} className="p-2.5 border flex items-center" style={{ color: prefs ? "var(--brand)" : "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title="Réglages de lecture">
             <IoText size={22} />
           </button>
+          {isAdmin && !chap?.locked && (
+            <button data-testid="reader-edit" onClick={openEdit} className="p-2.5 border flex items-center" style={{ color: editing ? "var(--brand)" : "var(--text-primary)", borderColor: editing ? "var(--brand)" : "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title="Modifier ce chapitre">
+              <IoCreateOutline size={22} />
+            </button>
+          )}
           {(hasMusic || hasCues || anyMusicOn) && (
             <button data-testid="reader-music" onClick={() => { sfx("nav"); if (anyMusicOn) pauseReading(); else { setTrackTitle("Musique de lecture"); setShowPlayer(true); toggleReadingUrl(trackFor(chap), readingKey); } }} className="p-2.5 border" style={{ color: anyMusicOn ? "var(--brand)" : "var(--text-secondary)", borderColor: anyMusicOn ? "var(--brand)" : "var(--border-c)", borderRadius: "var(--radius-base)", background: anyMusicOn ? "color-mix(in srgb, var(--brand) 16%, transparent)" : "rgba(255,255,255,0.06)" }} title={anyMusicOn ? "Couper la musique" : "Musique de lecture"}>
               {anyMusicOn ? <IoPause size={24} /> : <IoMusicalNotes size={24} />}
@@ -292,6 +330,29 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
             <span className="text-sm" style={{ color: "var(--text-primary)" }}>Lettrine</span>
             <input type="checkbox" checked={readerDropcap} onChange={(e) => setReaderDropcap(e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
           </label>
+        </div>
+      )}
+
+      {/* panneau d'édition du chapitre (admin) */}
+      {editing && (
+        <div className="absolute inset-0 z-40 flex flex-col" style={{ background: "var(--bg-primary)" }} data-testid="reader-editor">
+          <div className="sx-reader-header flex items-center justify-between gap-2 px-4 md:px-8 py-3 border-b" style={{ borderColor: "var(--border-c)", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(12px)" }}>
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-widest" style={{ color: "var(--brand)" }}>Modifier · Chapitre {idx + 1}</p>
+              <p className="font-display text-base truncate" style={{ color: "var(--text-primary)" }}>{chap?.title}</p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button data-testid="reader-edit-cancel" onClick={() => setEditing(false)} disabled={savingEdit} className="px-3 py-2 border text-sm" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }}>Annuler</button>
+              <button data-testid="reader-edit-save" onClick={saveEdit} disabled={savingEdit} className="flex items-center gap-1.5 px-4 py-2 font-semibold text-sm disabled:opacity-50" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+                <IoSaveOutline size={16} /> {savingEdit ? "Enregistrement…" : "Enregistrer"}
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 md:px-8 py-5">
+            <div className="max-w-2xl mx-auto">
+              <RichTextEditor value={editHtml} onChange={setEditHtml} creationId={item.id} placeholder="Écris ou modifie ton chapitre…" />
+            </div>
+          </div>
         </div>
       )}
 

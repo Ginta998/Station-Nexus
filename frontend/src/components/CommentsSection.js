@@ -4,6 +4,7 @@ import { IoSend, IoTrashOutline, IoChatbubbleEllipsesOutline } from "react-icons
 import { toast } from "sonner";
 import { listComments, addComment, deleteComment } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
+import AutoTextarea from "@/components/AutoTextarea";
 
 export default function CommentsSection({ creationId }) {
   const { isAdmin, sfx } = useApp();
@@ -34,13 +35,13 @@ export default function CommentsSection({ creationId }) {
         Ton avis compte énormément ✨ Qu'as-tu ressenti en découvrant cette création ? Partage ton émotion, ton passage préféré ou un petit mot d'encouragement — avec bienveillance et respect. Chaque message fait vivre l'univers un peu plus fort. 🌸
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-2 mb-6">
+      <div className="flex flex-col sm:flex-row gap-2 mb-6 items-start">
         <input data-testid="comment-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ton nom"
           className="sm:w-40 px-3 py-2 border outline-none text-sm" style={fs} />
-        <input data-testid="comment-text" value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submit()}
-          placeholder="Laisse un commentaire…" className="flex-1 px-3 py-2 border outline-none text-sm" style={fs} />
+        <AutoTextarea data-testid="comment-text" value={text} maxHeight={200} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } }}
+          placeholder="Laisse un commentaire… (Entrée pour publier, Maj+Entrée pour un retour à la ligne)" className="flex-1 w-full px-3 py-2 border outline-none text-sm" style={fs} />
         <button data-testid="comment-submit" onClick={submit} disabled={busy}
-          className="flex items-center justify-center gap-1.5 px-4 py-2 font-semibold text-sm" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+          className="flex items-center justify-center gap-1.5 px-4 py-2 font-semibold text-sm flex-shrink-0" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
           <IoSend size={16} /> Publier
         </button>
       </div>

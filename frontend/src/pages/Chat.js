@@ -7,6 +7,7 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
 import MobileMenu from "@/components/MobileMenu";
+import AutoTextarea from "@/components/AutoTextarea";
 
 const REACTIONS = ["❤️", "😂", "🔥", "👍", "😮", "🎉"];
 const btn = { border: "1px solid var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)", background: "var(--bg-secondary)" };
@@ -376,7 +377,7 @@ export default function Chat() {
                 <button data-testid="chat-image-btn" onClick={() => fileRef.current?.click()} className="p-2.5" style={btn} disabled={status?.muted}><IoImageOutline size={18} /></button>
                 <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => sendImage(e.target.files?.[0])} />
                 <button data-testid="chat-poll-btn" onClick={() => setPollMode(true)} className="p-2.5" style={btn} disabled={status?.muted}><IoBarChartOutline size={18} /></button>
-                <textarea data-testid="chat-input" rows={1} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={status?.muted ? "En sourdine…" : "Écris un message… (@ pour mentionner)"} disabled={status?.muted} className="flex-1 px-3 py-2.5 border outline-none resize-none text-sm" style={{ ...btn, background: "var(--bg-primary)", maxHeight: 120 }} />
+                <AutoTextarea data-testid="chat-input" value={text} maxHeight={180} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={status?.muted ? "En sourdine…" : "Écris un message… (@ pour mentionner)"} disabled={status?.muted} className="flex-1 px-3 py-2.5 border outline-none text-sm" style={{ ...btn, background: "var(--bg-primary)" }} />
                 <button data-testid="chat-send" onClick={send} disabled={status?.muted || !text.trim()} className="p-2.5 disabled:opacity-40" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSend size={18} /></button>
               </div>
             )}
@@ -410,7 +411,7 @@ export default function Chat() {
               <div className="flex items-end gap-2">
                 <button data-testid="dm-image-btn" onClick={() => dmFileRef.current?.click()} className="p-2.5" style={btn}><IoImageOutline size={18} /></button>
                 <input ref={dmFileRef} type="file" accept="image/*" hidden onChange={(e) => sendDMImage(e.target.files?.[0])} />
-                <textarea data-testid="dm-input" rows={1} value={dmText} onChange={(e) => setDmText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendDM(); } }} placeholder={`Message à ${partner.name}…`} className="flex-1 px-3 py-2.5 border outline-none resize-none text-sm" style={{ ...btn, background: "var(--bg-primary)", maxHeight: 120 }} />
+                <AutoTextarea data-testid="dm-input" value={dmText} maxHeight={180} onChange={(e) => setDmText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendDM(); } }} placeholder={`Message à ${partner.name}…`} className="flex-1 px-3 py-2.5 border outline-none text-sm" style={{ ...btn, background: "var(--bg-primary)" }} />
                 <button data-testid="dm-send" onClick={sendDM} disabled={!dmText.trim()} className="p-2.5 disabled:opacity-40" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSend size={18} /></button>
               </div>
             </div>
