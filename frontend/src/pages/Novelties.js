@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoHome, IoMegaphone, IoChevronForward } from "react-icons/io5";
 import { listAnnouncements, listCreations, posterUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
+import MobileMenu from "@/components/MobileMenu";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 
@@ -25,9 +26,12 @@ export default function Novelties() {
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
       <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
-        <div className="flex items-center gap-2 mb-8">
-          <button data-testid="novelties-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
-          <button data-testid="novelties-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoHome size={16} /> <span className="text-sm">Accueil</span></button>
+        <div className="flex items-center justify-between gap-2 mb-8">
+          <div className="flex items-center gap-2">
+            <button data-testid="novelties-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+            <button data-testid="novelties-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoHome size={16} /> <span className="text-sm">Accueil</span></button>
+          </div>
+          <MobileMenu />
         </div>
 
         <h1 className="font-display text-4xl md:text-5xl mb-2" style={{ color: "var(--text-primary)" }}>Nouveautés</h1>

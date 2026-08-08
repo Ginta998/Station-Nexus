@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoMenu, IoClose, IoHome, IoSparklesOutline, IoLibraryOutline, IoPlanetOutline, IoPeople, IoMailOutline, IoHelpCircleOutline, IoSettingsOutline, IoLogInOutline, IoLogOutOutline, IoSparkles, IoCashOutline, IoChatbubbles } from "react-icons/io5";
+import { IoMenu, IoClose, IoHome, IoSparklesOutline, IoLibraryOutline, IoPlanetOutline, IoPeople, IoMailOutline, IoHelpCircleOutline, IoSettingsOutline, IoLogInOutline, IoLogOutOutline, IoSparkles, IoCashOutline, IoChatbubbles, IoCalendarOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
+import QuickControls from "@/components/QuickControls";
 
 const LINKS = [
   { to: "/", label: "Accueil", icon: IoHome },
   { to: "/salon", label: "Salon", icon: IoChatbubbles },
   { to: "/nouveautes", label: "Nouveautés", icon: IoSparkles },
+  { to: "/planning", label: "Planning des sorties", icon: IoCalendarOutline },
   { to: "/soutien", label: "Soutenir la station", icon: IoSparklesOutline },
   { to: "/bibliotheque", label: "Ma bibliothèque", icon: IoLibraryOutline },
   { to: "/a-propos", label: "À propos", icon: IoPlanetOutline },
@@ -18,8 +20,9 @@ const LINKS = [
   { to: "/parametres", label: "Paramètres", icon: IoSettingsOutline },
 ];
 
-// Bouton menu + tiroir de navigation, mobile uniquement, autonome (présent sur toutes les pages)
-export default function MobileMenu() {
+// Contrôles rapides (son/plein écran/Aa) + bouton Menu + tiroir de navigation.
+// Autonome, identique sur TOUTES les pages, visible sur mobile ET PC.
+export default function MobileMenu({ compact = false }) {
   const nav = useNavigate();
   const { sfx, isAdmin } = useApp();
   const { user, logout, openAuth } = useAuth();
@@ -29,16 +32,17 @@ export default function MobileMenu() {
   const go = (to) => { sfx("nav"); setOpen(false); nav(to); };
 
   return (
-    <>
+    <div className="flex items-center gap-2">
+      {!compact && <QuickControls />}
       <button data-testid="page-menu-btn" onClick={() => { sfx("nav"); setOpen(true); }} title="Menu" aria-label="Menu"
-        className="md:hidden flex items-center gap-1.5 px-3.5 py-2.5 font-semibold text-sm"
+        className="flex items-center gap-1.5 px-3.5 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
         style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
         <IoMenu size={18} /> Menu
       </button>
 
       {open && (
-        <div className="md:hidden fixed inset-0 z-[60]" data-testid="page-menu-drawer">
-          <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setOpen(false)} />
+        <div className="fixed inset-0 z-[70]" data-testid="page-menu-drawer">
+          <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} onClick={() => setOpen(false)} />
           <div className="sx-drawer-header absolute top-0 right-0 h-full w-72 max-w-[85%] overflow-y-auto p-4 flex flex-col"
             style={{ background: "var(--bg-secondary)", borderLeft: "1px solid var(--border-c)" }}>
             <div className="flex items-center justify-between mb-4">
@@ -72,6 +76,6 @@ export default function MobileMenu() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

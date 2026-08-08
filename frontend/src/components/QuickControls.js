@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { IoVolumeHigh, IoVolumeMute, IoExpand, IoContract, IoSettingsOutline } from "react-icons/io5";
+import { IoVolumeHigh, IoVolumeMute, IoExpand, IoContract } from "react-icons/io5";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { useApp } from "@/context/AppContext";
 
-// Contrôles présents sur TOUTES les pages : son, plein écran, taille du texte (Aa), paramètres
+// Contrôles présents sur TOUTES les pages : son, plein écran, taille du texte (Aa)
 export default function QuickControls() {
-  const nav = useNavigate();
   const { muted, toggleMute, sfx } = useApp();
   const [isFs, setIsFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
   useEffect(() => {
@@ -31,9 +29,6 @@ export default function QuickControls() {
         {isFs ? <IoContract size={18} /> : <IoExpand size={18} />}
       </button>
       <TextSizeButton btnStyle={btn} />
-      <button data-testid="qc-settings" onClick={() => { sfx("nav"); nav("/parametres"); }} title="Paramètres" className="p-2.5 border transition-colors" style={{ ...btn, color: "var(--text-primary)" }}>
-        <IoSettingsOutline size={18} />
-      </button>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -9,7 +9,7 @@ import {
 } from "react-icons/io5";
 import { listRoadmap, createRoadmap, updateRoadmap, deleteRoadmap, listCreations, posterUrl, getSettings, updateSettings } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
-import TopBar from "@/components/TopBar";
+import MobileMenu from "@/components/MobileMenu";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const primary = { background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" };
@@ -66,6 +66,9 @@ export default function Planning() {
   const { data: settings, refetch: refetchSettings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const byId = useMemo(() => Object.fromEntries(creations.map((c) => [c.id, c])), [creations]);
 
+  const [nowTs, setNowTs] = useState(Date.now());
+  useEffect(() => { const t = setInterval(() => setNowTs(Date.now()), 1000); return () => clearInterval(t); }, []);
+
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [editIntro, setEditIntro] = useState(false);
@@ -82,6 +85,16 @@ export default function Planning() {
   };
   const entryTitle = (e) => e.title || (e.creation_id && byId[e.creation_id]?.title) || "Sortie à venir";
   const dateChip = (e) => (e.date_type === "approx" ? (e.approx_label || "À venir") : fmtDate(e.release_date));
+
+  // Prochaine sortie + compte à rebours live
+  const todayMid = new Date(); todayMid.setHours(0, 0, 0, 0);
+  const nextEntry = entries.find((e) => { const d = calDate(e); return d && new Date(d).setHours(0, 0, 0, 0) >= todayMid.getTime(); });
+  const cd = (() => {
+    if (!nextEntry) return null;
+    const diff = new Date(calDate(nextEntry)).setHours(0, 0, 0, 0) - nowTs;
+    if (diff <= 0) return { days: 0, h: 0, m: 0, s: 0, now: true };
+    return { days: Math.floor(diff / 86400000), h: Math.floor((diff % 86400000) / 3600000), m: Math.floor((diff % 3600000) / 60000), s: Math.floor((diff % 60000) / 1000) };
+  })();
 
   const openAdd = () => { sfx("nav"); setEditing(null); setEditorOpen(true); };
   const openEdit = (e) => { sfx("nav"); setEditing(e); setEditorOpen(true); };
@@ -152,9 +165,11 @@ export default function Planning() {
 
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
-      <TopBar />
       <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
-        <button data-testid="planning-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border mb-8" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+        <div className="flex items-center justify-between gap-2 mb-8">
+          <button data-testid="planning-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+          <MobileMenu />
+        </div>
 
         {editIntro ? (
           <div className="mb-8 p-4 border" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="planning-intro-editor">
@@ -175,6 +190,34 @@ export default function Planning() {
             {isAdmin && (
               <button data-testid="planning-edit-intro" onClick={startEditIntro} className="mt-3 flex items-center gap-1.5 px-3 py-1.5 border text-xs" style={fs}><IoCreateOutline size={13} /> Modifier l'intro</button>
             )}
+          </div>
+        )}
+
+        {cd && nextEntry && (
+          <div data-testid="planning-next" className="mb-8 p-4 sm:p-5 border relative overflow-hidden" style={{ ...fs, background: "var(--bg-secondary)" }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ background: "var(--brand)", boxShadow: "0 0 8px var(--brand)" }} />
+              <span className="text-[11px] uppercase tracking-widest font-semibold" style={{ color: "var(--brand)" }}>Prochaine sortie · en direct</span>
+            </div>
+            <div className="flex gap-4 items-center">
+              <button onClick={() => onGo(nextEntry)} className="flex-none w-16 sm:w-20 aspect-[2/3] overflow-hidden" style={{ borderRadius: "var(--radius-base)", background: "var(--bg-primary)" }} data-testid="planning-next-poster">
+                {posterSrc(nextEntry)
+                  ? <img src={posterSrc(nextEntry)} alt="" className="w-full h-full object-cover" />
+                  : <div className="w-full h-full flex items-center justify-center font-display text-2xl" style={{ color: "var(--brand)" }}>{entryTitle(nextEntry)[0]}</div>}
+              </button>
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-lg sm:text-xl leading-tight mb-1 truncate" style={{ color: "var(--text-primary)" }} data-testid="planning-next-title">{entryTitle(nextEntry)}</p>
+                {cd.now ? (
+                  <p className="font-display text-3xl" style={{ color: "var(--brand)" }} data-testid="planning-countdown">C'est aujourd'hui ! 🎉</p>
+                ) : (
+                  <div className="flex items-end gap-2" data-testid="planning-countdown">
+                    <span className="font-display text-4xl sm:text-5xl leading-none" style={{ color: "var(--brand)" }}>J-{cd.days}</span>
+                    <span className="text-sm sm:text-base font-mono tabular-nums mb-1" style={{ color: "var(--text-secondary)" }}>· {pad(cd.h)}h {pad(cd.m)}m <span style={{ color: "var(--brand)" }}>{pad(cd.s)}s</span></span>
+                  </div>
+                )}
+                <p className="text-[11px] uppercase tracking-widest mt-1" style={{ color: "var(--text-secondary)" }}>{dateChip(nextEntry)}</p>
+              </div>
+            </div>
           </div>
         )}
 

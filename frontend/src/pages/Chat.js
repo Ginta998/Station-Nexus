@@ -457,7 +457,7 @@ function Header({ nav, sfx, online, showOnline, tab, onTab }) {
             {showOnline && <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--brand)" }} data-testid="chat-online"><IoPeople size={11} /> {online} en ligne</span>}
           </div>
         </div>
-        <MobileMenu />
+        <MobileMenu compact />
       </div>
       {tab && (
         <div className="flex items-center gap-2 px-3 md:px-8 pb-2 max-w-3xl w-full mx-auto">

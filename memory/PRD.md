@@ -578,3 +578,12 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - **Description** : nouveau champ `description` (backend RoadmapInput + éditeur textarea + affichage carte + inclus dans .ics/Google).
 - **Contrôles d'en-tête** : ajout de `<TopBar />` (logo + Aa + son + plein écran + Menu) en haut de la page Planning, comme demandé.
 - Vérifié : backend (description round-trip, reminder loop, tri). Frontend compile OK. ⚠️ E2E auto impossible (Cloudflare anti-bot bloque screenshot_tool + testing_agent). À valider par l'utilisateur.
+
+## Compte à rebours live + menu unifié partout — 04/08/2026
+- **Compte à rebours live (Planning)** : bloc "Prochaine sortie · en direct" (data-testid planning-next) tout en haut, qui tick chaque seconde et affiche « J-{jours} · HHh MMm SSs » (state nowTs + setInterval 1s). Prend la 1re sortie datée >= aujourd'hui (entries triées). Poster + titre + date. Indicateur pulse animé.
+- **Menu unifié sur TOUTES les pages** :
+  - `MobileMenu` refondu : n'est plus md:hidden (visible PC + mobile) ; ajout du lien **Planning des sorties** ; intègre `QuickControls` (son/plein écran/Aa) à gauche du bouton Menu ; drawer = tous les liens (Accueil, Salon, Nouveautés, Planning, Soutien, Bibliothèque, À propos, Membres, Contact, Comment ça marche, Paramètres) + Revenus (admin) + login/logout. Prop `compact` (bouton Menu seul, sans QuickControls) pour le salon afin de ne pas surcharger son en-tête.
+  - `QuickControls` allégé : son + plein écran + Aa (bouton Paramètres retiré, redondant avec le tiroir).
+  - Ajout de `MobileMenu` aux pages qui n'en avaient pas : Novelties, Detail (remplace l'ancien TextSizeButton + bouton Paramètres autonomes). Planning bascule de TopBar → header standard (Retour + MobileMenu). Chat utilise `MobileMenu compact`.
+  - Home garde son TopBar (drawer contient déjà Planning).
+- Vérifié : compile OK (aucun import inutilisé). ⚠️ E2E auto bloqué par Cloudflare anti-bot (screenshot + testing_agent timeout) — à valider par l'utilisateur sur preview.
