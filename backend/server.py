@@ -365,6 +365,11 @@ class SiteSettings(BaseModel):
         {"title": "Une âme cinématique", "text": "Films, bandes-annonces et une ambiance immersive partout."},
         {"title": "Porté par la communauté", "text": "Chaque soutien fait grandir la station, œuvre après œuvre."},
     ])
+    planning_title: str = "Planning des sorties"
+    planning_intro: str = (
+        "Voici la feuille de route de la station 🚀 Découvre en avant-première toutes les créations à venir, "
+        "leur date de sortie sur la timeline, et ajoute-les à ton agenda pour ne rien manquer."
+    )
     cosmic_bunny_tips: Dict[str, List[Dict[str, str]]] = Field(default_factory=lambda: {
         "home": [
             {"text": "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", "button_label": "Personnaliser la station ⚙️", "button_target": "/parametres"},
@@ -1068,6 +1073,55 @@ async def update_settings(payload: SiteSettings):
     data["key"] = "site"
     await db.settings.update_one({"key": "site"}, {"$set": data}, upsert=True)
     return payload
+
+
+# ---------------- Roadmap / Planning des sorties ----------------
+class RoadmapInput(BaseModel):
+    creation_id: Optional[str] = ""
+    title: str = ""
+    subtitle: Optional[str] = ""
+    poster: Optional[str] = ""          # data URI (affiche personnalisée) — sinon on utilise l'affiche de la création liée
+    date_type: str = "exact"            # "exact" | "approx"
+    release_date: Optional[str] = ""    # YYYY-MM-DD (exact)
+    approx_label: Optional[str] = ""    # ex: "Printemps 2026"
+    approx_date: Optional[str] = ""     # YYYY-MM-DD utilisé pour le tri chronologique quand approx
+
+
+def _roadmap_sort_key(e):
+    d = e.get("release_date") if e.get("date_type") == "exact" else e.get("approx_date")
+    return d or "9999-12-31"
+
+
+@api_router.get("/roadmap")
+async def list_roadmap():
+    docs = await db.roadmap.find({}, {"_id": 0}).to_list(500)
+    docs.sort(key=_roadmap_sort_key)
+    return docs
+
+
+@api_router.post("/roadmap")
+async def create_roadmap(payload: RoadmapInput):
+    doc = payload.model_dump()
+    doc["id"] = str(uuid.uuid4())
+    doc["created_at"] = now_iso()
+    await db.roadmap.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@api_router.put("/roadmap/{rid}")
+async def update_roadmap(rid: str, payload: RoadmapInput):
+    res = await db.roadmap.update_one({"id": rid}, {"$set": payload.model_dump()})
+    if res.matched_count == 0:
+        raise HTTPException(404, "Entrée introuvable")
+    updated = await db.roadmap.find_one({"id": rid}, {"_id": 0})
+    return updated
+
+
+@api_router.delete("/roadmap/{rid}")
+async def delete_roadmap(rid: str):
+    await db.roadmap.delete_one({"id": rid})
+    return {"ok": True}
 
 
 MAX_INTRO_BYTES = 10 * 1024 * 1024

@@ -101,6 +101,12 @@ export const deleteSubscriber = (id) => api.delete(`/subscribers/${id}`).then((r
 export const getSettings = () => api.get("/settings").then((r) => r.data);
 export const updateSettings = (p) => api.put("/settings", p).then((r) => r.data);
 
+// Planning / Roadmap des sorties
+export const listRoadmap = () => api.get("/roadmap").then((r) => r.data);
+export const createRoadmap = (p) => api.post("/roadmap", p).then((r) => r.data);
+export const updateRoadmap = (id, p) => api.put(`/roadmap/${id}`, p).then((r) => r.data);
+export const deleteRoadmap = (id) => api.delete(`/roadmap/${id}`).then((r) => r.data);
+
 // intro / boot screen
 export const uploadIntroVideo = (file) => {
   const fd = new FormData(); fd.append("file", file);

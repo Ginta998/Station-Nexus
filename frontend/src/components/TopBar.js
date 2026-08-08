@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoLibraryOutline, IoSparklesOutline, IoPlanetOutline, IoCashOutline, IoChatbubbles } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoLockOpen, IoVolumeHigh, IoVolumeMute, IoMailOutline, IoPersonCircle, IoMenu, IoClose, IoPeople, IoColorPaletteOutline, IoMegaphone, IoHelpCircleOutline, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoLibraryOutline, IoSparklesOutline, IoPlanetOutline, IoCashOutline, IoChatbubbles, IoCalendarOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
@@ -125,6 +125,7 @@ export default function TopBar({ onAdd, onProfile }) {
                 </p>
               </div>
               <MenuRow testid="menu-novelties" icon={<IoMegaphone size={20} style={{ color: "var(--brand)" }} />} label="Nouveautés" onClick={() => go("/nouveautes")} badge={unread} />
+              <MenuRow testid="menu-planning" icon={<IoCalendarOutline size={20} style={{ color: "var(--brand)" }} />} label="Planning des sorties" onClick={() => go("/planning")} />
               <MenuRow testid="menu-salon" icon={<IoChatbubbles size={20} style={{ color: "var(--brand)" }} />} label="Salon" onClick={() => go("/salon")} badge={salonUnread} />
               <MenuRow testid="menu-members" icon={<IoPeople size={20} style={{ color: "var(--brand)" }} />} label="Membres" onClick={() => go("/membres")} />
               <MenuRow testid="menu-contact" icon={<IoMailOutline size={20} style={{ color: "var(--brand)" }} />} label="Contact" onClick={() => go("/contact")} />

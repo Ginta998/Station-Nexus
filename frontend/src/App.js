@@ -12,6 +12,7 @@ import Settings from "@/pages/Settings";
 import Contact from "@/pages/Contact";
 import Members from "@/pages/Members";
 import Novelties from "@/pages/Novelties";
+import Planning from "@/pages/Planning";
 import Tutorial from "@/pages/Tutorial";
 import Library from "@/pages/Library";
 import SupportPage from "@/pages/SupportPage";
@@ -103,6 +104,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/membres" element={<Members />} />
             <Route path="/nouveautes" element={<Novelties />} />
+            <Route path="/planning" element={<Planning />} />
             <Route path="/tutoriel" element={<Tutorial />} />
             <Route path="/bibliotheque" element={<Library />} />
             <Route path="/soutien" element={<SupportPage />} />

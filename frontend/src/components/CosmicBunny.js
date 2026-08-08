@@ -42,6 +42,11 @@ export const CB_DEFAULT_TIPS = {
     { text: "Tu me trouves bavarde ? Tu peux régler mes conseils ou m'éteindre juste ici. Sans rancune ! 🙈" },
   ],
   members: [{ text: "Voici la communauté ! Crée ton profil pour rejoindre la bande. 🎉", button_label: "Voir les membres 👥", button_target: "/membres" }],
+  planning: [
+    { text: "Bienvenue sur le Planning des sorties ! 🗓️ C'est la feuille de route de la station : tout ce qui arrive, dans l'ordre du temps." },
+    { text: "La timeline part d'Aujourd'hui et file vers le futur ➡️. Les affiches se rangent toutes seules dans l'ordre chronologique !" },
+    { text: "Clique sur une affiche pour aller voir la création (si elle a déjà une fiche). Et le bouton 📅 ajoute la sortie à ton agenda pour ne rien manquer !" },
+  ],
   support: [
     { text: "Ici, c'est le cœur de la station ! 💛 En t'abonnant, tu débloques TOUT le catalogue et tu aides le créateur à sortir de nouvelles œuvres." },
     { text: "3 paliers, 3 façons de soutenir : choisis celui qui te ressemble. Et tu peux résilier quand tu veux, promis !" },
@@ -88,6 +93,7 @@ function pathToKey(pathname) {
   if (pathname.startsWith("/parametres")) return "settings";
   if (pathname.startsWith("/membres")) return "members";
   if (pathname.startsWith("/nouveautes")) return "novelties";
+  if (pathname.startsWith("/planning")) return "planning";
   if (pathname.startsWith("/contact")) return "contact";
   if (pathname.startsWith("/tutoriel")) return "tutorial";
   if (pathname.startsWith("/soutien")) return "support";
