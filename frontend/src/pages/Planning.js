@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  IoArrowBack, IoHome, IoAdd, IoCalendarOutline, IoCreateOutline, IoTrashOutline,
-  IoClose, IoSaveOutline, IoChevronForward, IoDownloadOutline, IoLogoGoogle, IoRocketOutline, IoImageOutline,
+  IoArrowBack, IoAdd, IoCalendarOutline, IoCreateOutline, IoTrashOutline,
+  IoClose, IoSaveOutline, IoChevronForward, IoDownloadOutline, IoLogoGoogle,
+  IoRocketOutline, IoImageOutline,
 } from "react-icons/io5";
 import { listRoadmap, createRoadmap, updateRoadmap, deleteRoadmap, listCreations, posterUrl, getSettings, updateSettings } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
+import TopBar from "@/components/TopBar";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const primary = { background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" };
@@ -41,7 +43,7 @@ function downloadICS(e, title) {
     "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Stationexus//Planning//FR", "CALSCALE:GREGORIAN",
     "BEGIN:VEVENT", `UID:${e.id}@stationexus`, `DTSTAMP:${icsDay(new Date().toISOString())}T000000Z`,
     `DTSTART;VALUE=DATE:${icsDay(dt)}`, `DTEND;VALUE=DATE:${nextDay(dt)}`,
-    `SUMMARY:Sortie — ${title}`, e.subtitle ? `DESCRIPTION:${String(e.subtitle).replace(/\n/g, " ")}` : "",
+    `SUMMARY:Sortie — ${title}`, (e.description || e.subtitle) ? `DESCRIPTION:${String(e.description || e.subtitle).replace(/\n/g, " ")}` : "",
     "END:VEVENT", "END:VCALENDAR",
   ].filter(Boolean).join("\r\n");
   const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
@@ -52,7 +54,7 @@ function downloadICS(e, title) {
 }
 function googleCal(e, title) {
   const dt = calDate(e); if (!dt) return "#";
-  const params = new URLSearchParams({ action: "TEMPLATE", text: `Sortie — ${title}`, dates: `${icsDay(dt)}/${nextDay(dt)}`, details: e.subtitle || "Sortie sur Stationexus 🚀" });
+  const params = new URLSearchParams({ action: "TEMPLATE", text: `Sortie — ${title}`, dates: `${icsDay(dt)}/${nextDay(dt)}`, details: e.description || e.subtitle || "Sortie sur Stationexus 🚀" });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
@@ -66,8 +68,6 @@ export default function Planning() {
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [calFor, setCalFor] = useState(null);
-
   const [editIntro, setEditIntro] = useState(false);
   const [draftTitle, setDraftTitle] = useState("");
   const [draftIntro, setDraftIntro] = useState("");
@@ -98,46 +98,51 @@ export default function Planning() {
     setEditIntro(false); refetchSettings(); toast.success("Intro du planning enregistrée ✓");
   };
 
+  const Dot = ({ today }) => (
+    <div className="flex flex-col items-center self-stretch flex-none w-6">
+      <div className={`rounded-full ${today ? "w-4 h-4" : "w-3.5 h-3.5"} mt-1.5`} style={{ background: "var(--brand)", boxShadow: today ? "0 0 0 5px color-mix(in srgb, var(--brand) 22%, transparent)" : "0 0 0 3px color-mix(in srgb, var(--brand) 15%, transparent)" }} />
+      <div className="w-0.5 flex-1 mt-1" style={{ background: "var(--border-c)" }} />
+    </div>
+  );
+
   const Card = ({ e }) => {
     const src = posterSrc(e);
     const linked = !!(e.creation_id && byId[e.creation_id]);
     return (
-      <div className="w-full md:w-[230px] md:flex-none flex-1" data-testid={`roadmap-card-${e.id}`}>
-        <div className="border overflow-hidden flex flex-col h-full" style={{ ...fs, background: "var(--bg-secondary)" }}>
-          <button onClick={() => onGo(e)} className="relative w-full aspect-[2/3] overflow-hidden group" style={{ background: "var(--bg-primary)", cursor: linked ? "pointer" : "default" }} data-testid={`roadmap-poster-${e.id}`}>
+      <div className="flex-1 min-w-0 pb-6" data-testid={`roadmap-card-${e.id}`}>
+        <div className="flex gap-3 sm:gap-4 p-3 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
+          <button onClick={() => onGo(e)} className="relative flex-none w-24 sm:w-28 aspect-[2/3] overflow-hidden group" style={{ borderRadius: "var(--radius-base)", background: "var(--bg-primary)", cursor: linked ? "pointer" : "default" }} data-testid={`roadmap-poster-${e.id}`}>
             {src
               ? <img src={src} alt={entryTitle(e)} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              : <div className="w-full h-full flex items-center justify-center font-display text-5xl" style={{ color: "var(--brand)" }}>{entryTitle(e)[0]}</div>}
-            <span className="absolute top-2 left-2 px-2 py-1 text-[10px] font-bold rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>{relative(calDate(e))}</span>
-            {linked && <span className="absolute bottom-2 right-2 flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded-full opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.7)", color: "#fff" }}>Voir <IoChevronForward size={10} /></span>}
+              : <div className="w-full h-full flex items-center justify-center font-display text-4xl" style={{ color: "var(--brand)" }}>{entryTitle(e)[0]}</div>}
+            {linked && <span className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 py-1 text-[10px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.72)", color: "#fff" }}>Voir la fiche <IoChevronForward size={10} /></span>}
           </button>
-          <div className="p-3 flex flex-col flex-1">
-            <p className="text-[11px] uppercase tracking-widest mb-1 truncate" style={{ color: "var(--brand)" }}>{dateChip(e)}</p>
-            <p className="font-display text-lg leading-tight" style={{ color: "var(--text-primary)" }} data-testid={`roadmap-title-${e.id}`}>{entryTitle(e)}</p>
-            {e.subtitle && <p className="text-xs mt-1" style={{ color: "var(--text-secondary)" }}>{e.subtitle}</p>}
 
-            <div className="mt-3 pt-3 border-t flex items-center gap-2 flex-wrap" style={{ borderColor: "var(--border-c)" }}>
-              <div className="relative">
-                <button data-testid={`roadmap-cal-${e.id}`} onClick={() => { sfx("nav"); setCalFor(calFor === e.id ? null : e.id); }} className="flex items-center gap-1.5 px-2.5 py-1.5 border text-xs font-medium" style={fs}>
-                  <IoCalendarOutline size={14} style={{ color: "var(--brand)" }} /> Agenda
+          <div className="min-w-0 flex-1 flex flex-col">
+            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+              <span className="px-2.5 py-1 text-[11px] font-bold rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid={`roadmap-countdown-${e.id}`}>{relative(calDate(e))}</span>
+              <span className="text-[11px] uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>{dateChip(e)}</span>
+            </div>
+            <p className="font-display text-xl sm:text-2xl leading-tight" style={{ color: "var(--text-primary)" }} data-testid={`roadmap-title-${e.id}`}>{entryTitle(e)}</p>
+            {e.subtitle && <p className="text-sm mt-0.5" style={{ color: "var(--brand)" }} data-testid={`roadmap-subtitle-${e.id}`}>{e.subtitle}</p>}
+            {e.description && <p className="text-sm mt-2 leading-relaxed" style={{ color: "var(--text-secondary)" }} data-testid={`roadmap-desc-${e.id}`}>{e.description}</p>}
+
+            <div className="mt-auto pt-3">
+              <p className="text-[10px] uppercase tracking-widest mb-1.5" style={{ color: "var(--text-secondary)" }}>Ajouter à mon agenda</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <button data-testid={`roadmap-ics-${e.id}`} onClick={() => downloadICS(e, entryTitle(e))} className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold transition-transform hover:scale-105" style={primary}>
+                  <IoDownloadOutline size={16} /> .ics
                 </button>
-                {calFor === e.id && (
-                  <div className="absolute z-20 left-0 mt-1 w-44 border shadow-xl overflow-hidden" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid={`roadmap-cal-menu-${e.id}`}>
-                    <button onClick={() => { downloadICS(e, entryTitle(e)); setCalFor(null); }} className="flex items-center gap-2 w-full px-3 py-2.5 text-xs text-left hover:opacity-80" style={{ color: "var(--text-primary)" }}>
-                      <IoDownloadOutline size={15} style={{ color: "var(--brand)" }} /> Fichier .ics
-                    </button>
-                    <a href={googleCal(e, entryTitle(e))} target="_blank" rel="noopener noreferrer" onClick={() => setCalFor(null)} className="flex items-center gap-2 w-full px-3 py-2.5 text-xs text-left border-t hover:opacity-80" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)" }}>
-                      <IoLogoGoogle size={15} style={{ color: "var(--brand)" }} /> Google Agenda
-                    </a>
-                  </div>
+                <a data-testid={`roadmap-google-${e.id}`} href={googleCal(e, entryTitle(e))} target="_blank" rel="noopener noreferrer" onClick={() => sfx("nav")} className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold border transition-transform hover:scale-105" style={fs}>
+                  <IoLogoGoogle size={16} style={{ color: "var(--brand)" }} /> Google
+                </a>
+                {isAdmin && (
+                  <>
+                    <button data-testid={`roadmap-edit-${e.id}`} onClick={() => openEdit(e)} className="ml-auto p-2 border" style={fs} title="Modifier"><IoCreateOutline size={16} style={{ color: "var(--brand)" }} /></button>
+                    <button data-testid={`roadmap-delete-${e.id}`} onClick={() => onDelete(e)} className="p-2 border" style={fs} title="Supprimer"><IoTrashOutline size={16} style={{ color: "#ff6b6b" }} /></button>
+                  </>
                 )}
               </div>
-              {isAdmin && (
-                <>
-                  <button data-testid={`roadmap-edit-${e.id}`} onClick={() => openEdit(e)} className="p-1.5 border" style={fs} title="Modifier"><IoCreateOutline size={14} style={{ color: "var(--brand)" }} /></button>
-                  <button data-testid={`roadmap-delete-${e.id}`} onClick={() => onDelete(e)} className="p-1.5 border" style={fs} title="Supprimer"><IoTrashOutline size={14} style={{ color: "#ff6b6b" }} /></button>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -145,38 +150,14 @@ export default function Planning() {
     );
   };
 
-  // rails: horizontal top (desktop) + vertical left (mobile)
-  const Rails = ({ today }) => (
-    <>
-      <div className="hidden md:flex items-center mb-3 h-4">
-        <div className="h-px flex-1" style={{ background: "var(--border-c)" }} />
-        <div className={`rounded-full ${today ? "w-4 h-4" : "w-3 h-3"}`} style={{ background: "var(--brand)", boxShadow: today ? "0 0 0 4px color-mix(in srgb, var(--brand) 25%, transparent)" : "none" }} />
-        <div className="h-px flex-1" style={{ background: "var(--border-c)" }} />
-      </div>
-      <div className="md:hidden flex flex-col items-center self-stretch">
-        <div className={`rounded-full mt-2 ${today ? "w-4 h-4" : "w-3 h-3"}`} style={{ background: "var(--brand)", boxShadow: today ? "0 0 0 4px color-mix(in srgb, var(--brand) 25%, transparent)" : "none" }} />
-        <div className="w-px flex-1 mt-1" style={{ background: "var(--border-c)" }} />
-      </div>
-    </>
-  );
-
-  const Item = ({ children }) => (
-    <div className="flex md:flex-col gap-3 md:gap-0 md:min-w-[230px] md:flex-none">
-      {children}
-    </div>
-  );
-
   return (
     <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
-      <div className="max-w-6xl mx-auto px-5 md:px-8 py-8">
-        <div className="flex items-center gap-2 mb-8">
-          <button data-testid="planning-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
-          <button data-testid="planning-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoHome size={16} /> <span className="text-sm">Accueil</span></button>
-        </div>
+      <TopBar />
+      <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
+        <button data-testid="planning-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border mb-8" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
 
-        {/* header / intro (editable admin) */}
         {editIntro ? (
-          <div className="mb-10 p-4 border" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="planning-intro-editor">
+          <div className="mb-8 p-4 border" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="planning-intro-editor">
             <input data-testid="planning-title-input" value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} className="w-full font-display text-2xl mb-3 px-3 py-2 border outline-none" style={fs} placeholder="Titre du planning" />
             <textarea data-testid="planning-intro-input" value={draftIntro} onChange={(e) => setDraftIntro(e.target.value)} rows={3} className="w-full px-3 py-2 border outline-none text-sm resize-y" style={fs} placeholder="Petit texte qui décrit le planning de sortie…" />
             <div className="flex gap-2 mt-3">
@@ -185,7 +166,7 @@ export default function Planning() {
             </div>
           </div>
         ) : (
-          <div className="mb-10 relative">
+          <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <IoRocketOutline size={30} style={{ color: "var(--brand)" }} />
               <h1 className="font-display text-4xl md:text-5xl" style={{ color: "var(--text-primary)" }} data-testid="planning-title">{title}</h1>
@@ -200,43 +181,42 @@ export default function Planning() {
         {isLoading ? (
           <p style={{ color: "var(--text-secondary)" }}>Chargement du planning…</p>
         ) : (
-          <div className="md:overflow-x-auto md:pb-4 sx-timeline">
-            <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-0">
-              {/* Aujourd'hui */}
-              <Item>
-                <Rails today />
-                <div className="w-full md:w-[150px] md:flex-none flex md:flex-col items-center md:items-start md:pr-4">
-                  <div className="px-3 py-2 border text-center md:text-left" style={{ ...fs, background: "var(--bg-secondary)" }}>
-                    <p className="text-[10px] uppercase tracking-widest" style={{ color: "var(--brand)" }}>Nous sommes le</p>
-                    <p className="font-display text-lg" style={{ color: "var(--text-primary)" }} data-testid="planning-today">{new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}</p>
-                    <p className="text-[10px]" style={{ color: "var(--text-secondary)" }}>Le futur défile →</p>
-                  </div>
+          <div data-testid="planning-timeline">
+            {/* Aujourd'hui */}
+            <div className="flex gap-3 sm:gap-4">
+              <Dot today />
+              <div className="flex-1 min-w-0 pb-6">
+                <div className="inline-flex flex-col px-4 py-2.5 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
+                  <span className="text-[10px] uppercase tracking-widest" style={{ color: "var(--brand)" }}>Nous sommes le</span>
+                  <span className="font-display text-lg" style={{ color: "var(--text-primary)" }} data-testid="planning-today">{new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</span>
+                  <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>Les sorties à venir, dans l'ordre ↓</span>
                 </div>
-              </Item>
-
-              {entries.map((e) => (
-                <Item key={e.id}>
-                  <Rails />
-                  <Card e={e} />
-                </Item>
-              ))}
-
-              {entries.length === 0 && !isAdmin && (
-                <p className="py-6" style={{ color: "var(--text-secondary)" }} data-testid="planning-empty">Aucune sortie annoncée pour le moment. Reviens bientôt ! ✨</p>
-              )}
-
-              {isAdmin && (
-                <Item>
-                  <Rails />
-                  <div className="w-full md:w-[230px] md:flex-none">
-                    <button data-testid="roadmap-add" onClick={openAdd} className="w-full aspect-[2/3] md:aspect-auto md:h-full min-h-[220px] flex flex-col items-center justify-center gap-2 border-2 border-dashed transition-transform hover:scale-[1.02]" style={{ borderColor: "var(--brand)", borderRadius: "var(--radius-base)", background: "var(--bg-secondary)", color: "var(--brand)" }}>
-                      <IoAdd size={40} />
-                      <span className="font-semibold text-sm">Ajouter une sortie</span>
-                    </button>
-                  </div>
-                </Item>
-              )}
+              </div>
             </div>
+
+            {entries.map((e) => (
+              <div key={e.id} className="flex gap-3 sm:gap-4">
+                <Dot />
+                <Card e={e} />
+              </div>
+            ))}
+
+            {entries.length === 0 && !isAdmin && (
+              <p className="py-4 pl-9" style={{ color: "var(--text-secondary)" }} data-testid="planning-empty">Aucune sortie annoncée pour le moment. Reviens bientôt ! ✨</p>
+            )}
+
+            {isAdmin && (
+              <div className="flex gap-3 sm:gap-4">
+                <div className="flex flex-col items-center flex-none w-6">
+                  <div className="w-3.5 h-3.5 rounded-full mt-1.5" style={{ background: "var(--border-c)" }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <button data-testid="roadmap-add" onClick={openAdd} className="w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed transition-transform hover:scale-[1.01]" style={{ borderColor: "var(--brand)", borderRadius: "var(--radius-base)", background: "var(--bg-secondary)", color: "var(--brand)" }}>
+                    <IoAdd size={26} /> <span className="font-semibold">Ajouter une sortie</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -253,7 +233,7 @@ export default function Planning() {
   );
 }
 
-const empty = { creation_id: "", title: "", subtitle: "", poster: "", date_type: "exact", release_date: "", approx_label: "", approx_date: "" };
+const empty = { creation_id: "", title: "", subtitle: "", description: "", poster: "", date_type: "exact", release_date: "", approx_label: "", approx_date: "" };
 
 function RoadmapEditor({ initial, creations, onClose, onSaved }) {
   const { sfx } = useApp();
@@ -328,8 +308,12 @@ function RoadmapEditor({ initial, creations, onClose, onSaved }) {
             <input data-testid="roadmap-title-input" value={form.title} onChange={(e) => set("title", e.target.value)} className="w-full px-3 py-2 border outline-none text-sm" style={fs} placeholder="Titre de la sortie" />
           </div>
           <div>
-            <Label>Sous-titre / note (optionnel)</Label>
+            <Label>Sous-titre (optionnel)</Label>
             <input data-testid="roadmap-subtitle-input" value={form.subtitle} onChange={(e) => set("subtitle", e.target.value)} className="w-full px-3 py-2 border outline-none text-sm" style={fs} placeholder="ex: Tome 2 · Le grand final" />
+          </div>
+          <div>
+            <Label>Description — de quoi il s'agit (optionnel)</Label>
+            <textarea data-testid="roadmap-description-input" value={form.description} onChange={(e) => set("description", e.target.value)} rows={3} className="w-full px-3 py-2 border outline-none text-sm resize-y" style={fs} placeholder="Décris ce qui arrive : l'histoire, ce que les gens vont découvrir…" />
           </div>
 
           <div>

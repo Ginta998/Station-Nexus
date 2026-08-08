@@ -1080,6 +1080,7 @@ class RoadmapInput(BaseModel):
     creation_id: Optional[str] = ""
     title: str = ""
     subtitle: Optional[str] = ""
+    description: Optional[str] = ""     # texte plus long : de quoi il s'agit
     poster: Optional[str] = ""          # data URI (affiche personnalisée) — sinon on utilise l'affiche de la création liée
     date_type: str = "exact"            # "exact" | "approx"
     release_date: Optional[str] = ""    # YYYY-MM-DD (exact)
@@ -1111,7 +1112,9 @@ async def create_roadmap(payload: RoadmapInput):
 
 @api_router.put("/roadmap/{rid}")
 async def update_roadmap(rid: str, payload: RoadmapInput):
-    res = await db.roadmap.update_one({"id": rid}, {"$set": payload.model_dump()})
+    data = payload.model_dump()
+    data["reminder_sent"] = False  # ré-arme le rappel J-1 si la date change
+    res = await db.roadmap.update_one({"id": rid}, {"$set": data})
     if res.matched_count == 0:
         raise HTTPException(404, "Entrée introuvable")
     updated = await db.roadmap.find_one({"id": rid}, {"_id": 0})
@@ -1122,6 +1125,27 @@ async def update_roadmap(rid: str, payload: RoadmapInput):
 async def delete_roadmap(rid: str):
     await db.roadmap.delete_one({"id": rid})
     return {"ok": True}
+
+
+async def _roadmap_reminder_loop():
+    """Envoie une notification push la veille (J-1) des sorties datées du planning."""
+    await asyncio.sleep(20)
+    while True:
+        try:
+            tomorrow = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+            cur = db.roadmap.find({"date_type": "exact", "release_date": tomorrow, "reminder_sent": {"$ne": True}})
+            async for e in cur:
+                name = e.get("title") or "Une nouvelle création"
+                data = {"title": "🚀 Sortie demain !", "body": f"« {name} » sort demain sur Stationexus. Prépare-toi ! 🎉",
+                        "url": "/planning", "tag": f"release-{e['id']}", "kind": "public"}
+                subs = await db.push_subscriptions.find({"pref": "all"}, {"_id": 0}).to_list(2000)
+                for s in subs:
+                    await _send_push_sub(s, data)
+                await db.roadmap.update_one({"id": e["id"]}, {"$set": {"reminder_sent": True}})
+                logger.info("J-1 reminder sent for roadmap '%s' to %d subs", name, len(subs))
+        except Exception as ex:  # noqa: BLE001
+            logger.error("roadmap reminder loop: %s", ex)
+        await asyncio.sleep(3600)
 
 
 MAX_INTRO_BYTES = 10 * 1024 * 1024
@@ -2169,6 +2193,7 @@ async def startup():
         logger.info("Object storage initialized")
     except Exception as e:
         logger.error("Object storage init failed: %s", e)
+    asyncio.create_task(_roadmap_reminder_loop())
 
 
 @app.on_event("shutdown")
