@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { IoCheckmarkCircle, IoCloseCircle, IoHourglassOutline, IoLibraryOutline, IoHome } from "react-icons/io5";
 import { useQueryClient } from "@tanstack/react-query";
 import { paymentStatus } from "@/lib/api";
+import Celebration from "@/components/Celebration";
 
 const MAX_TRIES = 12;
 
@@ -13,6 +14,7 @@ export default function PaymentResult({ mode = "success" }) {
   const sessionId = params.get("session_id");
   const [state, setState] = useState(mode === "cancel" ? "canceled" : "checking");
   const [kind, setKind] = useState(null);
+  const [celebrate, setCelebrate] = useState(false);
   const tries = useRef(0);
 
   useEffect(() => {
@@ -25,6 +27,7 @@ export default function PaymentResult({ mode = "success" }) {
         setKind(r.kind);
         if (r.payment_status === "paid") {
           setState("paid");
+          if (r.kind === "membership") setCelebrate(true);
           qc.invalidateQueries({ queryKey: ["entitlements"] });
           qc.invalidateQueries({ queryKey: ["library"] });
           qc.invalidateQueries({ queryKey: ["creation"] });
@@ -54,6 +57,7 @@ export default function PaymentResult({ mode = "success" }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-5" style={{ background: "var(--bg-primary)" }} data-testid="payment-result">
+      {celebrate && <Celebration onClose={() => setCelebrate(false)} />}
       <div className="w-full max-w-md text-center p-8" style={card}>
         <div className="flex justify-center mb-4">{content.icon}</div>
         <h1 className="font-display text-2xl mb-2" style={{ color: "var(--text-primary)" }} data-testid="payment-title">{content.title}</h1>

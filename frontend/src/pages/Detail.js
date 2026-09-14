@@ -3,13 +3,15 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoHome, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline, IoLockClosed, IoDownloadOutline, IoSparklesOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl, startCheckout, getMembershipPlan, assetDownloadUrl } from "@/lib/api";
+import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl, startCheckout, getMembershipPlan, assetDownloadUrl, getSettings } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import { resolveVideoEmbed } from "@/lib/video";
 import EditorDialog from "@/components/EditorDialog";
 import CommentsSection from "@/components/CommentsSection";
+import { FicheSupport } from "@/components/SupportersWall";
+import LaunchGate from "@/components/LaunchGate";
 import ChapterReader from "@/components/ChapterReader";
 import CosmicBunnyGame from "@/components/CosmicBunnyGame";
 import CinemaPlayer from "@/components/CinemaPlayer";
@@ -22,13 +24,15 @@ export default function Detail() {
   const location = useLocation();
   const { isAdmin, playAmbient, stopAmbient, isPlaying, playingId, sfx, isFavorite, toggleFavorite } = useApp();
   const { user, openAuth } = useAuth();
-  const { hasAccess, chapterLocked } = useEntitlements();
+  const { hasAccess, chapterLocked, membershipActive } = useEntitlements();
   const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
+  const { data: siteSettings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const { data: item, refetch, isLoading } = useQuery({ queryKey: ["creation", id], queryFn: () => getCreation(id) });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
   const { data: allCreations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
 
   const [readerOpen, setReaderOpen] = useState(false);
+  const [gateOpen, setGateOpen] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [gameOpen, setGameOpen] = useState(false);
   const [cinemaKind, setCinemaKind] = useState(null); // "film" | "trailer" | null
@@ -124,6 +128,7 @@ export default function Detail() {
 
   const launch = () => {
     sfx("select");
+    if (!user) { setGateOpen(true); return; }
     // Paywall: film/reader creations fully locked until purchase or membership
     if (isPaidLocked && (item.launch_type === "film" || item.launch_type === "reader" || item.launch_type === "link")) {
       toast.info("Cette création est payante — débloque-la pour la lancer.");
@@ -149,6 +154,7 @@ export default function Detail() {
     : null;
 
   const openChapter = (i) => {
+    if (!user) { sfx("nav"); setGateOpen(true); return; }
     if (chapterLocked(item, i)) {
       sfx("nav");
       toast.info("Ce chapitre est réservé — débloque la création ou abonne-toi.");
@@ -461,6 +467,8 @@ export default function Detail() {
               </div>
             )}
 
+            <FicheSupport membershipActive={membershipActive} />
+
             <CommentsSection creationId={item.id} />
 
             {recommendations.length > 0 && (
@@ -487,9 +495,15 @@ export default function Detail() {
                 </div>
               </div>
             )}
+
+            <p className="mt-14 pt-6 border-t text-xs leading-relaxed text-center" style={{ borderColor: "var(--border-c)", color: "var(--text-secondary)" }} data-testid="fiche-copyright">
+              {siteSettings?.copyright_notice || "© Stationexus — Toutes les créations sont protégées par le droit d'auteur. Toute reproduction ou diffusion sans autorisation est interdite. Merci de respecter le travail de l'artiste. 💛"}
+            </p>
           </div>
         </div>
       </div>
+
+      {gateOpen && <LaunchGate onClose={() => setGateOpen(false)} />}
 
       {readerOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(4px)" }} data-testid="reader-modal">

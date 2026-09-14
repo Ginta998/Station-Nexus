@@ -587,3 +587,21 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
   - Ajout de `MobileMenu` aux pages qui n'en avaient pas : Novelties, Detail (remplace l'ancien TextSizeButton + bouton Paramètres autonomes). Planning bascule de TopBar → header standard (Retour + MobileMenu). Chat utilise `MobileMenu compact`.
   - Home garde son TopBar (drawer contient déjà Planning).
 - Vérifié : compile OK (aucun import inutilisé). ⚠️ E2E auto bloqué par Cloudflare anti-bot (screenshot + testing_agent timeout) — à valider par l'utilisateur sur preview.
+
+## Célébration d'abonnement (Bunny + feux d'artifice) — 04/08/2026
+- Demande user : à chaque nouvel abonnement, un message de Cosmic Bunny au milieu de l'écran avec feux d'artifice, remerciement chaleureux invitant à découvrir les créations + écrire au créateur dans le salon. Message modifiable dans les Paramètres.
+- Backend : SiteSettings + `subscribe_celebration_title` / `subscribe_celebration_body` (défauts FR chaleureux). Persistance PUT /settings sans régression (vérifié).
+- Frontend : `components/Celebration.js` — overlay plein écran z-[120], feux d'artifice canvas (requestAnimationFrame, bursts de particules colorées), Cosmic Bunny (settings.cosmic_bunny_image || /cosmic-bunny/excited.png) qui rebondit, titre + message (whitespace-pre-line), boutons « Découvrir les créations » (/) et « Écrire au créateur dans le Salon » (/salon) + fermer. Props overrideTitle/overrideBody pour l'aperçu admin. Animations CSS sxCelebratePop/sxCelebrateBounce (index.css).
+- Déclencheur : `PaymentResult.js` — quand payment_status="paid" ET kind="membership", affiche <Celebration>. 
+- Édition : `Settings.js` → section admin « Message de bienvenue abonné » (CelebrationManager) : champs titre + message + bouton Enregistrer + bouton Aperçu 🎆 (prévisualise avec le brouillon).
+- Vérifié : backend (champs présents, round-trip, non-régression planning/about), frontend compile OK. ⚠️ Visuel non testé en auto (Cloudflare anti-bot). L'admin peut prévisualiser via le bouton Aperçu.
+
+## Fiches enrichies + connexion au lancement + compte à rebours accueil — 04/08/2026
+- **Connexion obligatoire pour lancer** : Detail.launch() et openChapter() → si !user, ouvre `LaunchGate` (components/LaunchGate.js) : Bunny + message éditable (settings.launch_gate_title/body) + boutons « Créer un compte » / « J'ai déjà un compte » (openAuth). S'applique à TOUTES les créations. La création de compte inscrit déjà à la newsletter (_subscribe_email au register/google).
+- **Bloc soutien sur chaque fiche** (components/SupportersWall.js → FicheSupport) avant les commentaires : si membershipActive → remerciement, sinon CTA « Soutenir la station » → /soutien. + **Mur des soutiens** réutilisable (SupportersWall, filtre profiles.tier_name, mêmes styles que page Soutien).
+- **Droits d'auteur** : mention en bas de chaque fiche (data-testid fiche-copyright), texte settings.copyright_notice (défaut fourni).
+- **Compte à rebours accueil** (components/HomeCountdown.js) : bannière sous TopBar, prochaine sortie datée, tick 1s, clic → /planning. Masquable via settings.home_countdown_enabled.
+- **Réglages (Settings.js, admin)** : nouvelle section « Accueil & lancement » (HomeLaunchManager : toggle home_countdown_enabled + éditeur launch_gate_title/body). Section « Message de bienvenue abonné » (CelebrationManager).
+- Backend SiteSettings : + launch_gate_title, launch_gate_body, home_countdown_enabled(bool), copyright_notice, subscribe_celebration_title/body. Round-trips vérifiés (persistance + non-régression planning/about/celebration).
+- Newsletter : bouton d'envoi laissé de côté (déjà géré par l'utilisateur). Rappel : SENDER_EMAIL=onboarding@resend.dev → Resend ne livre qu'à l'adresse du compte tant qu'un domaine n'est pas vérifié.
+- Vérifié : backend curl OK ; frontend compile OK. ⚠️ E2E auto bloqué (Cloudflare anti-bot).

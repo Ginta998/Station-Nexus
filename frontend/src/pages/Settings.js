@@ -20,7 +20,8 @@ import {
   getLibrary, cancelMembership, getMembershipPlan, pushTest,
 } from "@/lib/api";
 import { pushSupported, getPermission, getNotifPref, getSoundPref, setSoundPref, enablePush, updatePref, disablePush, isSubscribed } from "@/lib/push";
-import { IoPhonePortraitOutline } from "react-icons/io5";
+import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles } from "react-icons/io5";
+import Celebration from "@/components/Celebration";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const Section = ({ title, extra, children }) => (
@@ -720,6 +721,58 @@ function NotificationsManager() {
   );
 }
 
+function CelebrationManager({ settings, refetch }) {
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [preview, setPreview] = useState(false);
+  useEffect(() => { if (settings) { setTitle(settings.subscribe_celebration_title || ""); setBody(settings.subscribe_celebration_body || ""); } }, [settings]);
+  const save = async () => {
+    await updateSettings({ ...settings, subscribe_celebration_title: title, subscribe_celebration_body: body });
+    toast.success("Message de bienvenue enregistré ✓"); refetch();
+  };
+  return (
+    <div data-testid="celebration-manager">
+      <p className="text-sm mb-4" style={{ color: "var(--text-secondary)" }}>
+        Ce message s'affiche au milieu de l'écran avec des feux d'artifice 🎆 juste après qu'une personne s'abonne. Un grand merci chaleureux qui invite à découvrir tes créations et à te parler dans le Salon.
+      </p>
+      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--text-secondary)" }}>Titre</label>
+      <input data-testid="celeb-title-input" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full font-display text-xl mb-4 px-3 py-2 border outline-none" style={fs} placeholder="Bienvenue dans la station ! 🎉" />
+      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--text-secondary)" }}>Message (les retours à la ligne sont conservés)</label>
+      <textarea data-testid="celeb-body-input" value={body} onChange={(e) => setBody(e.target.value)} rows={5} className="w-full px-3 py-2 border outline-none text-sm resize-y" style={fs} placeholder="Merci du fond du cœur pour ton soutien…" />
+      <div className="flex flex-wrap gap-2 mt-4">
+        <button data-testid="celeb-save" onClick={save} className="flex items-center gap-2 px-4 py-2.5 font-semibold text-sm" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSaveOutline /> Enregistrer</button>
+        <button data-testid="celeb-preview" onClick={() => setPreview(true)} className="flex items-center gap-2 px-4 py-2.5 border text-sm" style={fs}><IoSparkles /> Aperçu 🎆</button>
+      </div>
+      {preview && <Celebration onClose={() => setPreview(false)} overrideTitle={title} overrideBody={body} />}
+    </div>
+  );
+}
+
+
+function HomeLaunchManager({ settings, refetch }) {
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  useEffect(() => { if (settings) { setTitle(settings.launch_gate_title || ""); setBody(settings.launch_gate_body || ""); } }, [settings]);
+  const countdownOn = settings ? settings.home_countdown_enabled !== false : true;
+  const toggleCountdown = async (v) => { await updateSettings({ ...settings, home_countdown_enabled: v }); toast.success(v ? "Compte à rebours affiché sur l'accueil" : "Compte à rebours masqué"); refetch(); };
+  const saveGate = async () => { await updateSettings({ ...settings, launch_gate_title: title, launch_gate_body: body }); toast.success("Message de lancement enregistré ✓"); refetch(); };
+  return (
+    <div className="space-y-6" data-testid="home-launch-manager">
+      <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="home-countdown-toggle">
+        <span className="text-sm" style={{ color: "var(--text-primary)" }}>Compte à rebours de la prochaine sortie sur l'accueil
+          <span className="block text-xs" style={{ color: "var(--text-secondary)" }}>Un clic dessus ouvre le Planning des sorties.</span></span>
+        <input type="checkbox" checked={countdownOn} onChange={(e) => toggleCountdown(e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
+      </label>
+      <div className="pt-4 border-t" style={{ borderColor: "var(--border-c)" }}>
+        <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Message de Bunny au lancement (visiteur non connecté)</p>
+        <input data-testid="gate-title-input" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full font-display text-xl mb-3 px-3 py-2 border outline-none" style={fs} placeholder="Rejoins l'aventure ! 🚀" />
+        <textarea data-testid="gate-body-input" value={body} onChange={(e) => setBody(e.target.value)} rows={4} className="w-full px-3 py-2 border outline-none text-sm resize-y" style={fs} placeholder="Crée un compte pour lancer les créations et être prévenu·e des sorties…" />
+        <button data-testid="gate-save" onClick={saveGate} className="mt-3 flex items-center gap-2 px-4 py-2.5 font-semibold text-sm" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSaveOutline /> Enregistrer</button>
+      </div>
+    </div>
+  );
+}
+
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
@@ -800,6 +853,18 @@ export default function Settings() {
         {isAdmin && (
           <Section title="Monétisation" extra="— gagne de l'argent avec ton art">
             <MembershipSettings settings={siteSettings} refetch={refetchSite} />
+          </Section>
+        )}
+
+        {isAdmin && (
+          <Section title="Message de bienvenue abonné" extra="— feux d'artifice 🎆">
+            <CelebrationManager settings={siteSettings} refetch={refetchSite} />
+          </Section>
+        )}
+
+        {isAdmin && (
+          <Section title="Accueil & lancement" extra="— compte à rebours + message de connexion">
+            <HomeLaunchManager settings={siteSettings} refetch={refetchSite} />
           </Section>
         )}
 

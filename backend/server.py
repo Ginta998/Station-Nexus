@@ -370,6 +370,21 @@ class SiteSettings(BaseModel):
         "Voici la feuille de route de la station 🚀 Découvre en avant-première toutes les créations à venir, "
         "leur date de sortie sur la timeline, et ajoute-les à ton agenda pour ne rien manquer."
     )
+    subscribe_celebration_title: str = "Bienvenue dans la station ! 🎉"
+    subscribe_celebration_body: str = (
+        "Merci du fond du cœur pour ton soutien 💛 Grâce à toi, l'univers continue de grandir.\n\n"
+        "Tu as désormais accès à TOUTES les créations. Plonge dans les histoires, et n'hésite pas à passer dans le Salon pour dire coucou au créateur — un petit mot fait toujours plaisir ! 🐰✨"
+    )
+    launch_gate_title: str = "Rejoins l'aventure ! 🚀"
+    launch_gate_body: str = (
+        "Crée un compte gratuit pour lancer les créations, être prévenu·e des prochaines sorties et ne rien louper ✨\n\n"
+        "Tu as déjà un compte ? Connecte-toi, ça prend deux secondes ! 🐰"
+    )
+    home_countdown_enabled: bool = True
+    copyright_notice: str = (
+        "© Stationexus — Toutes les créations (textes, images, vidéos, musiques) sont protégées par le droit d'auteur. "
+        "Toute reproduction, diffusion ou réutilisation sans autorisation est interdite. Merci de respecter le travail de l'artiste. 💛"
+    )
     cosmic_bunny_tips: Dict[str, List[Dict[str, str]]] = Field(default_factory=lambda: {
         "home": [
             {"text": "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", "button_label": "Personnaliser la station ⚙️", "button_target": "/parametres"},

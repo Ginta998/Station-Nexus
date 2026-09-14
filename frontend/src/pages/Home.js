@@ -15,6 +15,7 @@ import EditorDialog from "@/components/EditorDialog";
 import ProfileDialog from "@/components/ProfileDialog";
 import ProfilePrompt from "@/components/ProfilePrompt";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
+import HomeCountdown from "@/components/HomeCountdown";
 
 const ALL = "__all__";
 const FAV = "__fav__";
@@ -219,6 +220,8 @@ export default function Home() {
 
       <div className="relative z-10 flex flex-col h-full">
         <TopBar onAdd={openCreate} onProfile={requireProfile} />
+
+        <HomeCountdown />
 
         <nav className="flex items-center gap-2 md:gap-3 px-5 md:px-12 mt-6 md:mt-8 overflow-x-auto hide-scrollbar" data-testid="category-nav">
           {tabs.map((c, i) => {
