@@ -625,3 +625,8 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Problème : à la 1re visite, la bulle Cosmic Bunny ET le guide (GuidedTour) s'affichaient en même temps → écran surchargé/illisible.
 - Fix : CosmicBunny se masque quand la visite est active. GuidedTour émet un event `sx-tour-active` (true en welcome/running, false à la fin) ; CosmicBunny écoute et fait return null. Init CosmicBunny.tourActive = !localStorage.sx_tour_done (masqué dès le départ à la 1re visite), garde `first` ref dans GuidedTour pour ne pas ré-afficher Bunny au montage. → Seul le guide s'affiche à la première venue.
 - ⚠️ Signalé sur production (stationexus.store) : nécessite un redéploiement. Le point « mise en page ultra serrée sur DuckDuckGo/certains PC » venait surtout du chevauchement des 2 bulles (corrigé) ; si ça persiste après redeploy, demander une capture de la vue concernée.
+
+## Ajustements onboarding + affiche mobile — 04/08/2026
+- Affiche « compact » (la plus petite) réduite sur mobile : 8.5rem→6.5rem (base), 10rem→9rem (sm) → plus petit et aéré sur téléphone.
+- ProfilePrompt (popup « Bienvenue sur la Stationexus ! » + créer un compte/profil) masqué tant que la visite guidée n'est pas terminée ET pendant la visite (state tourActive init = !sx_tour_done + écoute event sx-tour-active). → À la 1re visite, SEUL le guide s'affiche ; le prompt profil peut apparaître après la fin de la visite.
+- ⚠️ Signalé sur production → nécessite un redéploiement.

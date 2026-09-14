@@ -208,8 +208,8 @@ body {
 @media (min-width: 640px) { .sx-poster { width: calc(13rem / var(--text-scale)); } }
 @media (min-width: 768px) { .sx-poster { width: calc(15rem / var(--text-scale)); } }
 
-[data-poster="compact"] .sx-poster { width: calc(8.5rem / var(--text-scale)); }
-@media (min-width: 640px) { [data-poster="compact"] .sx-poster { width: calc(10rem / var(--text-scale)); } }
+[data-poster="compact"] .sx-poster { width: calc(6.5rem / var(--text-scale)); }
+@media (min-width: 640px) { [data-poster="compact"] .sx-poster { width: calc(9rem / var(--text-scale)); } }
 @media (min-width: 768px) { [data-poster="compact"] .sx-poster { width: calc(11rem / var(--text-scale)); } }
 
 [data-poster="grand"] .sx-poster { width: calc(13rem / var(--text-scale)); }

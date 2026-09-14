@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoClose, IoPersonCircle, IoSparkles, IoHelpCircleOutline, IoLogInOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
@@ -9,7 +9,13 @@ export default function ProfilePrompt({ onCreate }) {
   const { profile } = useApp();
   const { user, openAuth } = useAuth();
   const [dismissed, setDismissed] = useState(() => localStorage.getItem("sx_profile_prompted") === "1");
-  if (profile || dismissed || user) return null;
+  const [tourActive, setTourActive] = useState(() => typeof window !== "undefined" && !localStorage.getItem("sx_tour_done"));
+  useEffect(() => {
+    const on = (e) => setTourActive(!!(e && e.detail));
+    window.addEventListener("sx-tour-active", on);
+    return () => window.removeEventListener("sx-tour-active", on);
+  }, []);
+  if (profile || dismissed || user || tourActive) return null;
 
   const later = () => { localStorage.setItem("sx_profile_prompted", "1"); setDismissed(true); };
   const create = () => { localStorage.setItem("sx_profile_prompted", "1"); setDismissed(true); onCreate(); };
