@@ -827,6 +827,7 @@ export default function Settings() {
   const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const defTheme = siteSettings?.default_theme || "tengoku";
   const setDefaultTheme = async (k) => { await updateSettings({ ...siteSettings, default_theme: k }); toast.success("Thème par défaut défini"); refetchSite(); };
+  const setDefaultPoster = async (phone, v) => { await updateSettings({ ...siteSettings, [phone ? "default_poster_mobile" : "default_poster_desktop"]: v }); toast.success("Taille d'affiche par défaut mise à jour ✓"); refetchSite(); };
 
   const tryUnlock = () => { if (unlock(pin)) { toast.success("Mode création déverrouillé"); setPin(""); } else toast.error("PIN incorrect"); };
   const savePin = () => { if (!/^\d{4,6}$/.test(newPin)) return toast.error("PIN : 4 à 6 chiffres"); changePin(newPin); toast.success("PIN mis à jour"); setNewPin(""); };
@@ -1069,6 +1070,26 @@ export default function Settings() {
               </div>
             </div>
           ))}
+
+          {isAdmin && (
+            <div className="mt-4 p-3.5 border" style={{ ...fs, background: "var(--bg-secondary)", borderColor: "var(--brand)" }} data-testid="poster-default-admin">
+              <p className="text-[11px] uppercase tracking-widest mb-1" style={{ color: "var(--brand)" }}>Taille des affiches par défaut (admin)</p>
+              <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>S'applique à tous les visiteurs dès leur première venue, séparément pour l'ordinateur et le mobile. Chacun peut ensuite ajuster pour son appareil.</p>
+              {[{ phone: false, label: "Ordinateur", cur: siteSettings?.default_poster_desktop || "compact" }, { phone: true, label: "Mobile", cur: siteSettings?.default_poster_mobile || "compact" }].map((dev) => (
+                <div key={dev.label} className="mb-3">
+                  <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: "var(--text-secondary)" }}>{dev.label}</p>
+                  <div className="flex flex-wrap gap-2" data-testid={`poster-default-${dev.phone ? "mobile" : "desktop"}-grid`}>
+                    {POSTERS.map((p) => (
+                      <button key={p.v} data-testid={`poster-default-${dev.phone ? "mobile" : "desktop"}-${p.v}`} onClick={() => { setDefaultPoster(dev.phone, p.v); sfx("nav"); }}
+                        className="px-4 py-2 border text-sm" style={{ ...fs, background: "var(--bg-primary)", outline: dev.cur === p.v ? "2px solid var(--brand)" : "none" }}>
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="mt-5 space-y-3">
             <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="toggle-motion">

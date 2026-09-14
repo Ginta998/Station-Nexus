@@ -313,6 +313,8 @@ class SiteSettings(BaseModel):
     youtube: str = "Brichel Louzala"
     default_ambience_id: Optional[str] = ""
     default_theme: str = "tengoku"
+    default_poster_desktop: str = "compact"   # taille des affiches par défaut sur PC
+    default_poster_mobile: str = "compact"    # taille des affiches par défaut sur mobile
     intro_type: str = "tengoku"   # animation key or "video"
     intro_has_video: bool = False
     intro_hidden: List[str] = Field(default_factory=list)

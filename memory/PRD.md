@@ -636,3 +636,9 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Compaction mobile globale (index.css) : media query `max-width: 767px` réduit la police racine à 85% (et proportionnellement chaque niveau data-textscale : petit 74.4%, normal 85%, grand 95.6%, xl 106.25%, max 119%). Tout le rem-based (textes, boutons, marges, posters) rapetisse d'~15% → interface nettement plus compacte sur téléphone, PC inchangé.
 - D-pad gauche/droite accueil mobile : confirmé OK par l'utilisateur (navLeft/navRight liés lignes ~335/337 de Home.js).
 - Vérifié : capture mobile 390px → bannière/prompt absents, seul le Guide s'affiche, layout compacté. ⚠️ Changements en preview uniquement → nécessite un redéploiement pour apparaître sur stationexus.store.
+
+## Réglage global « taille des affiches par défaut » PC/Mobile — 14/09/2026
+- Backend SiteSettings : + `default_poster_desktop` et `default_poster_mobile` (valeurs compact/normal/grand, défaut "compact"/"compact"). Round-trip PUT/GET vérifié par curl.
+- AppContext : effet getSettings applique le défaut serveur par appareil UNIQUEMENT si le visiteur n'a jamais choisi (pas de clé localStorage sx_postersize_{mobile|desktop} ni legacy sx_postersize). Chaque visiteur garde ensuite son réglage local. (Réduction mobile 85% conservée, indépendante.)
+- Settings.js (admin) : bloc « Taille des affiches par défaut (admin) » dans « Personnalisation de l'interface », sélecteurs Compact/Normal/Grand pour Ordinateur et Mobile → updateSettings. data-testid poster-default-admin, poster-default-{desktop|mobile}-{compact|normal|grand}.
+- ⚠️ UI admin non vérifiée en auto (challenge Cloudflare du preview crashe le navigateur headless sur /parametres). Backend + compilation OK. À valider visuellement par l'utilisateur, puis redéployer pour la prod.

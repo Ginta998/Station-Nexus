@@ -191,12 +191,19 @@ export function AppProvider({ children }) {
   }, [musicVolume, muted]);
   useEffect(() => { localStorage.setItem(LS.ui, String(uiVolume)); }, [uiVolume]);
 
-  // default ambience & theme from server settings when the visitor has never chosen
+  // default ambience, theme & poster size from server settings when the visitor has never chosen
   useEffect(() => {
-    if (storedAmbience !== null && storedTheme !== null) return;
+    const legacyPoster = localStorage.getItem(LS.posterSize);
+    const needPosterD = !(localStorage.getItem(posterKey(false)) || legacyPoster);
+    const needPosterM = !(localStorage.getItem(posterKey(true)) || legacyPoster);
+    const needAmb = storedAmbience === null;
+    const needTheme = storedTheme === null;
+    if (!needAmb && !needTheme && !needPosterD && !needPosterM) return;
     getSettings().then((s) => {
-      if (storedAmbience === null && s?.default_ambience_id) setAmbienceId(s.default_ambience_id);
-      if (storedTheme === null && s?.default_theme) setThemeState(s.default_theme);
+      if (needAmb && s?.default_ambience_id) setAmbienceId(s.default_ambience_id);
+      if (needTheme && s?.default_theme) setThemeState(s.default_theme);
+      if (needPosterD && s?.default_poster_desktop) { setPosterDesktopState(s.default_poster_desktop); if (!isPhoneNow()) setPosterSizeState(s.default_poster_desktop); }
+      if (needPosterM && s?.default_poster_mobile) { setPosterMobileState(s.default_poster_mobile); if (isPhoneNow()) setPosterSizeState(s.default_poster_mobile); }
     }).catch(() => {});
   }, []); // eslint-disable-line
 
