@@ -22,6 +22,7 @@ import {
 import { pushSupported, getPermission, getNotifPref, getSoundPref, setSoundPref, enablePush, updatePref, disablePush, isSubscribed } from "@/lib/push";
 import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles } from "react-icons/io5";
 import Celebration from "@/components/Celebration";
+import { TOUR_STEPS } from "@/lib/tourSteps";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const Section = ({ title, extra, children }) => (
@@ -791,6 +792,32 @@ function HomeLaunchManager({ settings, refetch }) {
   );
 }
 
+function TourTextsManager({ settings, refetch }) {
+  const [map, setMap] = useState({});
+  useEffect(() => { setMap(settings?.tour_texts || {}); }, [settings]);
+  const setField = (key, field, v) => setMap((m) => ({ ...m, [key]: { ...(m[key] || {}), [field]: v } }));
+  const save = async () => { await updateSettings({ ...settings, tour_texts: map }); toast.success("Textes de la visite enregistrés ✓"); refetch(); };
+  const reset = async () => { await updateSettings({ ...settings, tour_texts: {} }); setMap({}); toast.success("Textes réinitialisés"); refetch(); };
+  return (
+    <div className="mt-6 pt-6 border-t" style={{ borderColor: "var(--border-c)" }} data-testid="tour-texts-manager">
+      <p className="text-xs uppercase tracking-widest mb-3" style={{ color: "var(--text-secondary)" }}>Modifier les phrases de la visite (admin)</p>
+      <div className="space-y-4">
+        {TOUR_STEPS.map((s, i) => (
+          <div key={s.key} className="p-3 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
+            <p className="text-[11px] uppercase tracking-widest mb-2" style={{ color: "var(--brand)" }}>{i + 1}. {s.label}</p>
+            <input data-testid={`tour-title-${s.key}`} value={map[s.key]?.title ?? s.title} onChange={(e) => setField(s.key, "title", e.target.value)} className="w-full font-display text-base mb-2 px-3 py-2 border outline-none" style={fs} />
+            <textarea data-testid={`tour-text-${s.key}`} value={map[s.key]?.text ?? s.text} onChange={(e) => setField(s.key, "text", e.target.value)} rows={2} className="w-full px-3 py-2 border outline-none text-sm resize-y" style={fs} />
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-2 mt-4">
+        <button data-testid="tour-texts-save" onClick={save} className="flex items-center gap-2 px-4 py-2.5 font-semibold text-sm" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSaveOutline /> Enregistrer les textes</button>
+        <button data-testid="tour-texts-reset" onClick={reset} className="px-4 py-2.5 border text-sm" style={fs}>Réinitialiser</button>
+      </div>
+    </div>
+  );
+}
+
 export default function Settings() {
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
@@ -849,6 +876,7 @@ export default function Settings() {
           <button data-testid="restart-tour" onClick={() => { localStorage.removeItem("sx_tour_done"); window.dispatchEvent(new Event("sx-start-tour")); nav("/"); }} className="flex items-center gap-2 px-5 py-3 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
             <IoPlay /> Refaire la visite guidée
           </button>
+          {isAdmin && <TourTextsManager settings={siteSettings} refetch={refetchSite} />}
         </Section>
 
         <Section title="Mode création">

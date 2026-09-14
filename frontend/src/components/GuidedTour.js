@@ -1,66 +1,67 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoClose, IoArrowBack, IoArrowForward, IoSparkles, IoPlay } from "react-icons/io5";
-import { getSettings, listAmbiences } from "@/lib/api";
+import { getSettings, listAmbiences, listCreations } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { THEMES } from "@/lib/themes";
+import { TOUR_STEPS } from "@/lib/tourSteps";
 
 const DONE_KEY = "sx_tour_done";
+const ROUTE = { home: "/", planning: "/planning", salon: "/salon", members: "/membres", contact: "/contact", about: "/a-propos", support: "/soutien", settings: "/parametres", theme: "/parametres", accent: "/parametres", music: "/parametres", reading: "/parametres", end: "/" };
 
 export default function GuidedTour() {
   const nav = useNavigate();
-  const { theme, setTheme, setAccent, selectAmbience, setReaderFont, setReaderSize, sfx } = useApp();
+  const { theme, setTheme, accent, setAccent, ambienceId, selectAmbience, readerFont, setReaderFont, readerSize, setReaderSize, sfx } = useApp();
   const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const { data: ambiences = [] } = useQuery({ queryKey: ["ambiences"], queryFn: listAmbiences });
-  const [phase, setPhase] = useState("hidden"); // hidden | welcome | running
+  const { data: creations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
+  const [phase, setPhase] = useState("hidden");
   const [idx, setIdx] = useState(0);
+  const snap = useRef(null);
   const bunny = settings?.cosmic_bunny_image || "/cosmic-bunny/wave.png";
+  const texts = settings?.tour_texts || {};
+  const creationId = creations[0]?.id;
 
-  const demoTheme = useCallback(() => { const keys = (THEMES || []).map((t) => t.key).filter(Boolean); const other = keys.find((k) => k !== theme) || keys[0]; if (other) setTheme(other); }, [theme, setTheme]);
-  const demoAccent = useCallback(() => setAccent("#ff5d8f"), [setAccent]);
-  const demoMusic = useCallback(() => { if (ambiences[0]?.id) selectAmbience(ambiences[0].id); }, [ambiences, selectAmbience]);
-  const demoFont = useCallback(() => { setReaderFont("sans"); setReaderSize(23); }, [setReaderFont, setReaderSize]);
+  const routeFor = (key) => (key === "creation" ? (creationId ? `/oeuvre/${creationId}` : "/") : (ROUTE[key] || "/"));
+  const runFor = (key) => {
+    if (key === "theme") { const keys = (THEMES || []).map((t) => t.key); const other = keys.find((k) => k !== theme) || keys[0]; if (other) setTheme(other); }
+    else if (key === "accent") setAccent("#ff5d8f");
+    else if (key === "music") { if (ambiences[0]?.id) selectAmbience(ambiences[0].id); }
+    else if (key === "reading") { setReaderFont("sans"); setReaderSize(23); }
+  };
 
-  const STEPS = [
-    { route: "/", title: "L'accueil 🏠", text: "Voici ta station ! Toutes les créations rangées par catégories. Tu peux changer l'affichage en cartes, grille ou liste quand tu veux." },
-    { route: "/planning", title: "Le Planning 🗓️", text: "Ici tu vois tout ce qui arrive, avec un compte à rebours en direct. Tu peux même ajouter une sortie à ton agenda pour ne rien louper !" },
-    { route: "/salon", title: "Le Salon 💬", text: "La communauté se retrouve ici : discute en public, envoie des messages privés, et papote avec le créateur." },
-    { route: "/soutien", title: "Le Soutien 💛", text: "Tu peux soutenir la station et rejoindre le mur des soutiens. C'est ce qui fait vivre tout cet univers." },
-    { route: "/parametres", title: "La personnalisation ✨", text: "Les Paramètres, ton terrain de jeu ! Regarde bien, je vais tout transformer sous tes yeux…" },
-    { route: "/parametres", title: "Le thème 🎨", text: "Hop ! Je change le thème d'un simple geste. Tu choisiras le tien juste ici après la visite.", run: demoTheme },
-    { route: "/parametres", title: "Les couleurs 🌈", text: "Et voilà la couleur d'accent qui change tout ! Chaque détail s'adapte à ton goût.", run: demoAccent },
-    { route: "/parametres", title: "La musique 🎵", text: "J'allume une ambiance sonore ! Tu peux couper le son ou changer de morceau quand tu veux.", run: demoMusic },
-    { route: "/parametres", title: "La lecture 📖", text: "Quand tu lis un chapitre, tu peux changer la police et la taille du texte pour lire tout confortablement.", run: demoFont },
-    { route: "/", title: "Bonne visite ! 🐰", text: "Et voilà le tour du propriétaire ! Amuse-toi bien. Tu pourras refaire cette visite quand tu veux depuis les Paramètres." },
-  ];
+  const restore = useCallback(() => {
+    const s = snap.current; if (!s) return;
+    setTheme(s.theme); setAccent(s.accent); selectAmbience(s.ambienceId); setReaderFont(s.readerFont); setReaderSize(s.readerSize);
+  }, [setTheme, setAccent, selectAmbience, setReaderFont, setReaderSize]);
 
-  const finish = useCallback(() => { localStorage.setItem(DONE_KEY, "1"); setPhase("hidden"); setIdx(0); }, []);
-  const start = useCallback(() => { setIdx(0); setPhase("running"); }, []);
+  const finish = useCallback(() => { restore(); localStorage.setItem(DONE_KEY, "1"); setPhase("hidden"); setIdx(0); }, [restore]);
+  const start = useCallback(() => { snap.current = { theme, accent, ambienceId, readerFont, readerSize }; setIdx(0); setPhase("running"); }, [theme, accent, ambienceId, readerFont, readerSize]);
 
-  // Première visite (après l'intro) : proposer la visite. Écoute aussi le relancement depuis les Paramètres.
   useEffect(() => {
-    const maybeWelcome = () => { if (!localStorage.getItem(DONE_KEY) && sessionStorage.getItem("sx_entered")) setPhase((p) => (p === "hidden" ? "welcome" : p)); };
-    const t = setTimeout(maybeWelcome, 1200);
-    const onEntered = () => setTimeout(maybeWelcome, 400);
+    const maybe = () => { if (!localStorage.getItem(DONE_KEY) && sessionStorage.getItem("sx_entered")) setPhase((p) => (p === "hidden" ? "welcome" : p)); };
+    const t = setTimeout(maybe, 1200);
+    const onEntered = () => setTimeout(maybe, 400);
     const onStart = () => start();
     window.addEventListener("sx-entered", onEntered);
     window.addEventListener("sx-start-tour", onStart);
     return () => { clearTimeout(t); window.removeEventListener("sx-entered", onEntered); window.removeEventListener("sx-start-tour", onStart); };
   }, [start]);
 
-  // Exécute la navigation + l'action de démonstration à chaque étape
   useEffect(() => {
     if (phase !== "running") return;
-    const step = STEPS[idx];
-    if (!step) return;
-    nav(step.route);
-    if (step.run) { const t = setTimeout(() => { try { step.run(); } catch (_) {} sfx("select"); }, 500); return () => clearTimeout(t); }
-    sfx("nav");
+    const step = TOUR_STEPS[idx]; if (!step) return;
+    nav(routeFor(step.key));
+    const t = setTimeout(() => { runFor(step.key); sfx("nav"); }, 500);
+    return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, phase]);
 
   if (phase === "hidden") return null;
+  const meta = TOUR_STEPS[idx] || {};
+  const stepTitle = texts[meta.key]?.title || meta.title;
+  const stepText = texts[meta.key]?.text || meta.text;
 
   if (phase === "welcome") {
     return (
@@ -82,8 +83,7 @@ export default function GuidedTour() {
     );
   }
 
-  const step = STEPS[idx];
-  const last = idx === STEPS.length - 1;
+  const last = idx === TOUR_STEPS.length - 1;
   return (
     <div className="fixed inset-x-0 bottom-0 z-[130] p-3 sm:p-5 flex justify-center pointer-events-none" data-testid="tour-step">
       <div className="w-full max-w-lg pointer-events-auto sx-celebrate-pop" style={{ background: "var(--bg-secondary)", border: "1px solid var(--brand)", borderRadius: "var(--radius-lg, 16px)", boxShadow: "0 -8px 40px rgba(0,0,0,0.5)" }}>
@@ -93,12 +93,12 @@ export default function GuidedTour() {
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
-              <p className="font-display text-lg" style={{ color: "var(--brand)" }} data-testid="tour-title">{step.title}</p>
+              <p className="font-display text-lg" style={{ color: "var(--brand)" }} data-testid="tour-title">{stepTitle}</p>
               <button data-testid="tour-close" onClick={finish} style={{ color: "var(--text-secondary)" }}><IoClose size={18} /></button>
             </div>
-            <p className="text-sm mt-1 leading-relaxed" style={{ color: "var(--text-primary)" }} data-testid="tour-text">{step.text}</p>
+            <p className="text-sm mt-1 leading-relaxed" style={{ color: "var(--text-primary)" }} data-testid="tour-text">{stepText}</p>
             <div className="flex items-center justify-between mt-3">
-              <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>{idx + 1} / {STEPS.length}</span>
+              <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>{idx + 1} / {TOUR_STEPS.length}</span>
               <div className="flex items-center gap-2">
                 {idx > 0 && <button data-testid="tour-prev" onClick={() => setIdx((i) => i - 1)} className="flex items-center gap-1 px-3 py-2 border text-sm" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)", borderRadius: "var(--radius-base)" }}><IoArrowBack size={14} /></button>}
                 {last

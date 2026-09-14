@@ -613,3 +613,10 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
   - 10 étapes page par page : Accueil → Planning → Salon → Soutien → Paramètres, avec DÉMOS EN DIRECT : setTheme (change le thème), setAccent (#ff5d8f), selectAmbience (musique), setReaderFont/Size (lecture), puis retour Accueil. Bulle Bunny fixe en bas avec progression + Précédent/Suivant/Terminer/Fermer.
   - Relançable : Settings > section « Visite guidée » (pour tous) → bouton restart-tour (efface sx_tour_done + dispatch event sx-start-tour + nav /).
 - Vérifié : backend curl (champs + round-trip sans régression), frontend compile OK. ⚠️ E2E auto bloqué (Cloudflare anti-bot) — à valider par l'utilisateur.
+
+## Visite guidée v2 — pages en plus, textes éditables, restauration — 04/08/2026
+- lib/tourSteps.js : TOUR_STEPS (14 étapes canoniques key/label/title/text) partagé GuidedTour + Settings.
+- Nouvelles étapes : creation (nav vers 1re création /oeuvre/{id} pour montrer film/lecture/commentaire/soutien), members (/membres), contact (/contact), about (/a-propos), en plus de home/planning/salon/soutien/settings + démos theme/accent/music/reading + end.
+- Textes éditables : SiteSettings.tour_texts (Dict). GuidedTour lit texts[key]?.title/text sinon défaut. Éditeur Settings > « Visite guidée » > TourTextsManager (admin) : title+text par étape, Enregistrer/Réinitialiser. Round-trip vérifié.
+- Restauration en fin de visite : snapshot {theme, accent, ambienceId, readerFont, readerSize} au start() ; restore() appelé dans finish() (Terminer/Fermer/Passer) → tout revient comme avant la démo.
+- Vérifié : backend curl (tour_texts dict persistant, non-régression) ; frontend compile OK. ⚠️ E2E auto bloqué (Cloudflare).
