@@ -32,6 +32,16 @@ html[data-textscale="grand"]  { font-size: 112.5%; --text-scale: 1.125; }
 html[data-textscale="xl"]     { font-size: 125%; --text-scale: 1.25; }
 html[data-textscale="max"]    { font-size: 140%; --text-scale: 1.4; }
 
+/* ===== Mobile compaction — shrink the whole UI ~15% on phones (rem-based) ===== */
+@media (max-width: 767px) {
+  html                          { font-size: 85%; }
+  html[data-textscale="petit"]  { font-size: 74.4%; }
+  html[data-textscale="normal"] { font-size: 85%; }
+  html[data-textscale="grand"]  { font-size: 95.6%; }
+  html[data-textscale="xl"]     { font-size: 106.25%; }
+  html[data-textscale="max"]    { font-size: 119%; }
+}
+
 [data-theme="tengoku"] {
   --bg-primary:#0a0a0a; --bg-secondary:#171717; --brand:#e60012; --brand-2:#e60012;
   --border-c:rgba(230,0,18,0.3); --text-primary:#fff; --text-secondary:rgba(255,255,255,0.72);

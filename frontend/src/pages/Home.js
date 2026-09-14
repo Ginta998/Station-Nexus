@@ -13,8 +13,6 @@ import PosterCard from "@/components/PosterCard";
 import CreationsGridList from "@/components/CreationsGridList";
 import EditorDialog from "@/components/EditorDialog";
 import ProfileDialog from "@/components/ProfileDialog";
-import ProfilePrompt from "@/components/ProfilePrompt";
-import AnnouncementBanner from "@/components/AnnouncementBanner";
 import HomeCountdown from "@/components/HomeCountdown";
 
 const ALL = "__all__";
@@ -237,8 +235,6 @@ export default function Home() {
           })}
         </nav>
 
-        <AnnouncementBanner />
-
         {/* filter + search bar */}
         <div className="flex items-center gap-2 px-5 md:px-12 mt-4">
           <div className="flex items-center gap-1 px-2 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", background: "rgba(0,0,0,0.25)" }}>
@@ -332,9 +328,9 @@ export default function Home() {
           <div className="md:hidden flex flex-col items-center gap-1.5" data-testid="mobile-dpad">
             <button data-testid="dpad-up" onClick={() => { buzz(); catUp(); }} aria-label="Catégorie précédente" className="dpad-btn" style={dpadStyle}><IoChevronUp size="1.3em" /></button>
             <div className="flex items-center gap-3">
-              <button data-testid="dpad-left" onClick={() => { buzz(); scrollRailBy(-1); }} aria-label="Création précédente" className="dpad-btn" style={dpadStyle}><IoChevronBack size="1.3em" /></button>
+              <button data-testid="dpad-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="dpad-btn" style={dpadStyle}><IoChevronBack size="1.3em" /></button>
               <button data-testid="dpad-ok" onClick={openFocused} aria-label="Ouvrir la création" className="dpad-btn" style={dpadOkStyle}>OK</button>
-              <button data-testid="dpad-right" onClick={() => { buzz(); scrollRailBy(1); }} aria-label="Création suivante" className="dpad-btn" style={dpadStyle}><IoChevronForward size="1.3em" /></button>
+              <button data-testid="dpad-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="dpad-btn" style={dpadStyle}><IoChevronForward size="1.3em" /></button>
             </div>
             <button data-testid="dpad-down" onClick={() => { buzz(); catDown(); }} aria-label="Catégorie suivante" className="dpad-btn" style={dpadStyle}><IoChevronDown size="1.3em" /></button>
           </div>
@@ -351,7 +347,6 @@ export default function Home() {
 
       <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} />
       <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
-      <ProfilePrompt onCreate={requireProfile} />
     </div>
   );
 }

@@ -630,3 +630,9 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Affiche « compact » (la plus petite) réduite sur mobile : 8.5rem→6.5rem (base), 10rem→9rem (sm) → plus petit et aéré sur téléphone.
 - ProfilePrompt (popup « Bienvenue sur la Stationexus ! » + créer un compte/profil) masqué tant que la visite guidée n'est pas terminée ET pendant la visite (state tourActive init = !sx_tour_done + écoute event sx-tour-active). → À la 1re visite, SEUL le guide s'affiche ; le prompt profil peut apparaître après la fin de la visite.
 - ⚠️ Signalé sur production → nécessite un redéploiement.
+
+## Nettoyage accueil + compaction mobile ~85% — 14/09/2026
+- Retiré de Home.js : `ProfilePrompt` (message de bienvenue) et `AnnouncementBanner` (bannière Nouveautés) — imports + usages. Il ne reste sur l'accueil que le Guide (Cosmic Bunny à la 1re visite) et le compte à rebours (HomeCountdown).
+- Compaction mobile globale (index.css) : media query `max-width: 767px` réduit la police racine à 85% (et proportionnellement chaque niveau data-textscale : petit 74.4%, normal 85%, grand 95.6%, xl 106.25%, max 119%). Tout le rem-based (textes, boutons, marges, posters) rapetisse d'~15% → interface nettement plus compacte sur téléphone, PC inchangé.
+- D-pad gauche/droite accueil mobile : confirmé OK par l'utilisateur (navLeft/navRight liés lignes ~335/337 de Home.js).
+- Vérifié : capture mobile 390px → bannière/prompt absents, seul le Guide s'affiche, layout compacté. ⚠️ Changements en preview uniquement → nécessite un redéploiement pour apparaître sur stationexus.store.
