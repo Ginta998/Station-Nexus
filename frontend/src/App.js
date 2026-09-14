@@ -23,6 +23,7 @@ import { ChatProvider } from "@/context/ChatContext";
 import PaymentResult from "@/pages/PaymentResult";
 import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
+import GuidedTour from "@/components/GuidedTour";
 import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
 import { INTROS } from "@/lib/intro";
 import { useQueryClient } from "@tanstack/react-query";
@@ -116,6 +117,7 @@ function App() {
           </Routes>
           <CosmicBunny />
           <PushClickNav />
+          <GuidedTour />
         </BrowserRouter>
         <IntroGate />
         <AuthDialog />

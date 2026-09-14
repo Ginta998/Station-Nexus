@@ -752,10 +752,19 @@ function CelebrationManager({ settings, refetch }) {
 function HomeLaunchManager({ settings, refetch }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  useEffect(() => { if (settings) { setTitle(settings.launch_gate_title || ""); setBody(settings.launch_gate_body || ""); } }, [settings]);
+  const [sTitle, setSTitle] = useState("");
+  const [sBody, setSBody] = useState("");
+  const [tTitle, setTTitle] = useState("");
+  const [tBody, setTBody] = useState("");
+  useEffect(() => { if (settings) {
+    setTitle(settings.launch_gate_title || ""); setBody(settings.launch_gate_body || "");
+    setSTitle(settings.fiche_support_title || ""); setSBody(settings.fiche_support_body || "");
+    setTTitle(settings.fiche_support_thanks_title || ""); setTBody(settings.fiche_support_thanks_body || "");
+  } }, [settings]);
   const countdownOn = settings ? settings.home_countdown_enabled !== false : true;
   const toggleCountdown = async (v) => { await updateSettings({ ...settings, home_countdown_enabled: v }); toast.success(v ? "Compte à rebours affiché sur l'accueil" : "Compte à rebours masqué"); refetch(); };
   const saveGate = async () => { await updateSettings({ ...settings, launch_gate_title: title, launch_gate_body: body }); toast.success("Message de lancement enregistré ✓"); refetch(); };
+  const saveSupport = async () => { await updateSettings({ ...settings, fiche_support_title: sTitle, fiche_support_body: sBody, fiche_support_thanks_title: tTitle, fiche_support_thanks_body: tBody }); toast.success("Message de soutien enregistré ✓"); refetch(); };
   return (
     <div className="space-y-6" data-testid="home-launch-manager">
       <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="home-countdown-toggle">
@@ -768,6 +777,15 @@ function HomeLaunchManager({ settings, refetch }) {
         <input data-testid="gate-title-input" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full font-display text-xl mb-3 px-3 py-2 border outline-none" style={fs} placeholder="Rejoins l'aventure ! 🚀" />
         <textarea data-testid="gate-body-input" value={body} onChange={(e) => setBody(e.target.value)} rows={4} className="w-full px-3 py-2 border outline-none text-sm resize-y" style={fs} placeholder="Crée un compte pour lancer les créations et être prévenu·e des sorties…" />
         <button data-testid="gate-save" onClick={saveGate} className="mt-3 flex items-center gap-2 px-4 py-2.5 font-semibold text-sm" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSaveOutline /> Enregistrer</button>
+      </div>
+      <div className="pt-4 border-t" style={{ borderColor: "var(--border-c)" }}>
+        <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Message de soutien sur les fiches (visiteur non-membre)</p>
+        <input data-testid="fsupport-title-input" value={sTitle} onChange={(e) => setSTitle(e.target.value)} className="w-full font-display text-lg mb-2 px-3 py-2 border outline-none" style={fs} placeholder="Soutiens la station 🌟" />
+        <textarea data-testid="fsupport-body-input" value={sBody} onChange={(e) => setSBody(e.target.value)} rows={3} className="w-full px-3 py-2 border outline-none text-sm resize-y mb-4" style={fs} placeholder="Cette création existe grâce aux soutiens…" />
+        <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Message affiché si la personne soutient déjà (remerciement)</p>
+        <input data-testid="fthanks-title-input" value={tTitle} onChange={(e) => setTTitle(e.target.value)} className="w-full font-display text-lg mb-2 px-3 py-2 border outline-none" style={fs} placeholder="Merci pour ton soutien 💛" />
+        <textarea data-testid="fthanks-body-input" value={tBody} onChange={(e) => setTBody(e.target.value)} rows={3} className="w-full px-3 py-2 border outline-none text-sm resize-y" style={fs} placeholder="Grâce à toi, l'univers peut exister…" />
+        <button data-testid="fsupport-save" onClick={saveSupport} className="mt-3 flex items-center gap-2 px-4 py-2.5 font-semibold text-sm" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoSaveOutline /> Enregistrer le message de soutien</button>
       </div>
     </div>
   );
@@ -824,6 +842,13 @@ export default function Settings() {
 
         <Section title="Mon compte" extra="— sauvegarde partout">
           <AccountManager />
+        </Section>
+
+        <Section title="Visite guidée" extra="— avec Cosmic Bunny 🐰">
+          <p className="text-sm mb-4" style={{ color: "var(--text-secondary)" }}>Redécouvre toute la station page par page, avec la personnalisation en direct.</p>
+          <button data-testid="restart-tour" onClick={() => { localStorage.removeItem("sx_tour_done"); window.dispatchEvent(new Event("sx-start-tour")); nav("/"); }} className="flex items-center gap-2 px-5 py-3 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+            <IoPlay /> Refaire la visite guidée
+          </button>
         </Section>
 
         <Section title="Mode création">

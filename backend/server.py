@@ -385,6 +385,10 @@ class SiteSettings(BaseModel):
         "© Stationexus — Toutes les créations (textes, images, vidéos, musiques) sont protégées par le droit d'auteur. "
         "Toute reproduction, diffusion ou réutilisation sans autorisation est interdite. Merci de respecter le travail de l'artiste. 💛"
     )
+    fiche_support_title: str = "Soutiens la station 🌟"
+    fiche_support_body: str = "Cette création existe grâce aux soutiens. Rejoins-les pour débloquer tout le catalogue et faire grandir l'univers."
+    fiche_support_thanks_title: str = "Merci pour ton soutien 💛"
+    fiche_support_thanks_body: str = "Grâce à toi, cette création et tout l'univers de la station peuvent exister. Tu es une étoile ✨"
     cosmic_bunny_tips: Dict[str, List[Dict[str, str]]] = Field(default_factory=lambda: {
         "home": [
             {"text": "Coucou toi ! Moi c'est Cosmic Bunny 🐰, ta copilote de l'espace. Je te fais le tour du vaisseau ?", "button_label": "Personnaliser la station ⚙️", "button_target": "/parametres"},

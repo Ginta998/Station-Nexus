@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { IoSparkles, IoHeart, IoStar, IoDiamond, IoCheckmarkCircle } from "react-icons/io5";
-import { listProfiles } from "@/lib/api";
+import { listProfiles, getSettings } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 
 const WALL_STYLE = {
@@ -50,20 +50,25 @@ export function SupportersWall({ compact = false }) {
 export function FicheSupport({ membershipActive }) {
   const nav = useNavigate();
   const { sfx } = useApp();
+  const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
+  const inviteTitle = settings?.fiche_support_title || "Soutiens la station 🌟";
+  const inviteBody = settings?.fiche_support_body || "Cette création existe grâce aux soutiens. Rejoins-les pour débloquer tout le catalogue et faire grandir l'univers.";
+  const thanksTitle = settings?.fiche_support_thanks_title || "Merci pour ton soutien 💛";
+  const thanksBody = settings?.fiche_support_thanks_body || "Grâce à toi, cette création et tout l'univers de la station peuvent exister. Tu es une étoile ✨";
   return (
     <div className="my-10 space-y-8" data-testid="fiche-support">
       <div className="p-6 sm:p-8 text-center border relative overflow-hidden" style={{ background: "var(--bg-secondary)", borderColor: "var(--brand)", borderRadius: "var(--radius-base)" }}>
         {membershipActive ? (
           <>
             <IoCheckmarkCircle size={40} style={{ color: "var(--brand)" }} className="mx-auto mb-3" />
-            <h3 className="font-display text-2xl sm:text-3xl mb-2" style={{ color: "var(--text-primary)" }} data-testid="fiche-support-thanks">Merci pour ton soutien 💛</h3>
-            <p className="text-sm max-w-lg mx-auto" style={{ color: "var(--text-secondary)" }}>Grâce à toi, cette création et tout l'univers de la station peuvent exister. Tu es une étoile ✨</p>
+            <h3 className="font-display text-2xl sm:text-3xl mb-2" style={{ color: "var(--text-primary)" }} data-testid="fiche-support-thanks">{thanksTitle}</h3>
+            <p className="text-sm max-w-lg mx-auto whitespace-pre-line" style={{ color: "var(--text-secondary)" }}>{thanksBody}</p>
           </>
         ) : (
           <>
             <IoSparkles size={40} style={{ color: "var(--brand)" }} className="mx-auto mb-3" />
-            <h3 className="font-display text-2xl sm:text-3xl mb-2" style={{ color: "var(--text-primary)" }}>Soutiens la station 🌟</h3>
-            <p className="text-sm max-w-lg mx-auto mb-5" style={{ color: "var(--text-secondary)" }}>Cette création existe grâce aux soutiens. Rejoins-les pour débloquer tout le catalogue et faire grandir l'univers.</p>
+            <h3 className="font-display text-2xl sm:text-3xl mb-2" style={{ color: "var(--text-primary)" }}>{inviteTitle}</h3>
+            <p className="text-sm max-w-lg mx-auto mb-5 whitespace-pre-line" style={{ color: "var(--text-secondary)" }}>{inviteBody}</p>
             <button data-testid="fiche-support-cta" onClick={() => { sfx("select"); nav("/soutien"); }} className="inline-flex items-center gap-2 px-6 py-3 font-semibold transition-transform hover:scale-105" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
               <IoHeart size={18} /> Soutenir la station
             </button>

@@ -605,3 +605,11 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Backend SiteSettings : + launch_gate_title, launch_gate_body, home_countdown_enabled(bool), copyright_notice, subscribe_celebration_title/body. Round-trips vérifiés (persistance + non-régression planning/about/celebration).
 - Newsletter : bouton d'envoi laissé de côté (déjà géré par l'utilisateur). Rappel : SENDER_EMAIL=onboarding@resend.dev → Resend ne livre qu'à l'adresse du compte tant qu'un domaine n'est pas vérifié.
 - Vérifié : backend curl OK ; frontend compile OK. ⚠️ E2E auto bloqué (Cloudflare anti-bot).
+
+## Message de soutien éditable + Visite guidée Bunny — 04/08/2026
+- **Message de soutien éditable** : SiteSettings + fiche_support_title/body (invite non-membre) + fiche_support_thanks_title/body (remerciement membre). FicheSupport (SupportersWall.js) lit ces textes via getSettings. Éditeur dans Settings > section « Accueil & lancement » (HomeLaunchManager) avec sauvegarde. Round-trip vérifié.
+- **Visite guidée Cosmic Bunny** (components/GuidedTour.js, monté dans App.js) :
+  - Prompt de bienvenue « Hey, première fois ? » à la 1re visite (localStorage sx_tour_done, après l'intro via sessionStorage sx_entered / event sx-entered) — pour TOUT LE MONDE une fois, même avec un compte. Boutons « C'est parti » / « Passer ».
+  - 10 étapes page par page : Accueil → Planning → Salon → Soutien → Paramètres, avec DÉMOS EN DIRECT : setTheme (change le thème), setAccent (#ff5d8f), selectAmbience (musique), setReaderFont/Size (lecture), puis retour Accueil. Bulle Bunny fixe en bas avec progression + Précédent/Suivant/Terminer/Fermer.
+  - Relançable : Settings > section « Visite guidée » (pour tous) → bouton restart-tour (efface sx_tour_done + dispatch event sx-start-tour + nav /).
+- Vérifié : backend curl (champs + round-trip sans régression), frontend compile OK. ⚠️ E2E auto bloqué (Cloudflare anti-bot) — à valider par l'utilisateur.
