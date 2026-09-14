@@ -147,6 +147,15 @@ export default function CosmicBunny() {
   const markSeen = (k) => { const s = readSeen(); if (!s.includes(k)) localStorage.setItem("sx_cb_seen", JSON.stringify([...s, k])); };
 
   // Auto-open on first visit of a context
+  // Pendant la visite guidée, on masque Cosmic Bunny (on garde seulement le guide)
+  const [tourActive, setTourActive] = useState(() => (typeof window !== "undefined" && !localStorage.getItem("sx_tour_done")));
+  useEffect(() => {
+    const onTour = (e) => setTourActive(!!(e && e.detail));
+    window.addEventListener("sx-tour-active", onTour);
+    return () => window.removeEventListener("sx-tour-active", onTour);
+  }, []);
+
+
   useEffect(() => {
     if (!entered || hidden || tipsOff || !enabledGlobal) return;
     if (!key || !tips.length || readSeen().includes(key)) return;
@@ -162,6 +171,7 @@ export default function CosmicBunny() {
   }, [open, key, tips.length, hidden, enabledGlobal, entered]);
 
   if (hidden || !enabledGlobal || !entered) return null;
+  if (tourActive) return null;                        // visite guidée en cours → seul le guide s'affiche
   if (pathname.startsWith("/salon")) return null;   // salon a sa propre UI, pas de Bunny
 
   const onHome = !ctxKey && pathToKey(pathname) === "home";

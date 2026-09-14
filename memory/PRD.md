@@ -620,3 +620,8 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Textes éditables : SiteSettings.tour_texts (Dict). GuidedTour lit texts[key]?.title/text sinon défaut. Éditeur Settings > « Visite guidée » > TourTextsManager (admin) : title+text par étape, Enregistrer/Réinitialiser. Round-trip vérifié.
 - Restauration en fin de visite : snapshot {theme, accent, ambienceId, readerFont, readerSize} au start() ; restore() appelé dans finish() (Terminer/Fermer/Passer) → tout revient comme avant la démo.
 - Vérifié : backend curl (tour_texts dict persistant, non-régression) ; frontend compile OK. ⚠️ E2E auto bloqué (Cloudflare).
+
+## Fix double onboarding (garder seulement le guide) — 04/08/2026
+- Problème : à la 1re visite, la bulle Cosmic Bunny ET le guide (GuidedTour) s'affichaient en même temps → écran surchargé/illisible.
+- Fix : CosmicBunny se masque quand la visite est active. GuidedTour émet un event `sx-tour-active` (true en welcome/running, false à la fin) ; CosmicBunny écoute et fait return null. Init CosmicBunny.tourActive = !localStorage.sx_tour_done (masqué dès le départ à la 1re visite), garde `first` ref dans GuidedTour pour ne pas ré-afficher Bunny au montage. → Seul le guide s'affiche à la première venue.
+- ⚠️ Signalé sur production (stationexus.store) : nécessite un redéploiement. Le point « mise en page ultra serrée sur DuckDuckGo/certains PC » venait surtout du chevauchement des 2 bulles (corrigé) ; si ça persiste après redeploy, demander une capture de la vue concernée.

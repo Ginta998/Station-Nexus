@@ -39,6 +39,12 @@ export default function GuidedTour() {
   const finish = useCallback(() => { restore(); localStorage.setItem(DONE_KEY, "1"); setPhase("hidden"); setIdx(0); }, [restore]);
   const start = useCallback(() => { snap.current = { theme, accent, ambienceId, readerFont, readerSize }; setIdx(0); setPhase("running"); }, [theme, accent, ambienceId, readerFont, readerSize]);
 
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; if (phase === "hidden") return; }
+    window.dispatchEvent(new CustomEvent("sx-tour-active", { detail: phase !== "hidden" }));
+  }, [phase]);
+
   useEffect(() => {
     const maybe = () => { if (!localStorage.getItem(DONE_KEY) && sessionStorage.getItem("sx_entered")) setPhase((p) => (p === "hidden" ? "welcome" : p)); };
     const t = setTimeout(maybe, 1200);
