@@ -66,7 +66,9 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const hyd = () => { try { const p = JSON.parse(localStorage.getItem("sx_profile") || "null"); if (p) setProfileState(p); } catch {} };
     window.addEventListener("sx-hydrate-profile", hyd);
-    return () => window.removeEventListener("sx-hydrate-profile", hyd);
+    const clr = () => { setProfileState(null); };
+    window.addEventListener("sx-clear-profile", clr);
+    return () => { window.removeEventListener("sx-hydrate-profile", hyd); window.removeEventListener("sx-clear-profile", clr); };
   }, []);
 
   // ---- favorites ----

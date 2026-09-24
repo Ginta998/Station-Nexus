@@ -98,6 +98,9 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(() => {
     setToken(null); setUser(null); lastSync.current = "";
+    // compte = profil : se déconnecter déconnecte aussi le profil
+    localStorage.removeItem("sx_profile"); localStorage.removeItem("sx_visitor_id");
+    window.dispatchEvent(new CustomEvent("sx-clear-profile"));
     toast.success("Déconnecté·e");
   }, []);
 

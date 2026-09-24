@@ -642,3 +642,11 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - AppContext : effet getSettings applique le défaut serveur par appareil UNIQUEMENT si le visiteur n'a jamais choisi (pas de clé localStorage sx_postersize_{mobile|desktop} ni legacy sx_postersize). Chaque visiteur garde ensuite son réglage local. (Réduction mobile 85% conservée, indépendante.)
 - Settings.js (admin) : bloc « Taille des affiches par défaut (admin) » dans « Personnalisation de l'interface », sélecteurs Compact/Normal/Grand pour Ordinateur et Mobile → updateSettings. data-testid poster-default-admin, poster-default-{desktop|mobile}-{compact|normal|grand}.
 - ⚠️ UI admin non vérifiée en auto (challenge Cloudflare du preview crashe le navigateur headless sur /parametres). Backend + compilation OK. À valider visuellement par l'utilisateur, puis redéployer pour la prod.
+
+## Compte = Profil : tous les comptes visibles dans Membres — 24/09/2026
+- Problème : comptes (db.users) et profils Membres (db.profiles) étaient dissociés ; un compte n'apparaissait dans Membres que si la personne remplissait son profil. Résultat : beaucoup de comptes absents de Membres (seulement dans la newsletter).
+- Backend (server.py) : nouveau helper `_ensure_profile_for_user(user)` qui garantit un profil canonique keyé par `account_id` (id = account_id), créé à l'inscription, à la connexion Google ET au login (backfill auto). Email volontairement NON copié dans le profil public (pas d'exposition d'emails).
+- `upsert_profile` déduplique par `account_id` : si un profil canonique existe déjà sous un autre id (ancien profil anonyme local qui se lie), on fusionne dans le canonique et on supprime le doublon.
+- Backfill one-off : `backend/backfill_profiles.py` (idempotent) exécuté → 9 comptes = 9 profils, 0 doublon.
+- Frontend : `logout` efface le profil local (sx_profile, sx_visitor_id) + event `sx-clear-profile` écouté par AppContext → déconnexion déconnecte aussi le profil.
+- Vérifié par curl : register/login créent le profil, il apparaît dans GET /api/profiles ; dedup OK (1 profil/compte, stray supprimé) ; email non exposé (''). ⚠️ UI Membres non capturée en auto (challenge Cloudflare crashe le navigateur headless sur le preview) — à confirmer visuellement + redéployer pour la prod.

@@ -982,17 +982,28 @@ async def email_status():
 # ---------------- Profiles (visitor social profiles) ----------------
 @api_router.post("/profiles", response_model=Profile)
 async def upsert_profile(payload: ProfileInput):
-    existing = await db.profiles.find_one({"id": payload.id}, {"_id": 0})
     data = payload.model_dump()
     data["updated_at"] = now_iso()
-    # don't overwrite an existing account link with an empty value (logged-out save)
-    if not data.get("account_id"):
-        data.pop("account_id", None)
     # only patch hide_tier when explicitly provided
     if data.get("hide_tier") is None:
         data.pop("hide_tier", None)
+    aid = data.get("account_id")
+    if not aid:
+        # don't overwrite an existing account link with an empty value (logged-out save)
+        data.pop("account_id", None)
+        target_id = payload.id
+    else:
+        # compte = profil : le profil canonique est keyé par account_id (pas de doublon)
+        canonical = await db.profiles.find_one({"account_id": aid}, {"_id": 0})
+        if canonical and canonical.get("id") != payload.id:
+            await db.profiles.delete_one({"id": payload.id})  # supprime le doublon anonyme
+            target_id = canonical["id"]
+        else:
+            target_id = payload.id
+        data["id"] = target_id
+    existing = await db.profiles.find_one({"id": target_id}, {"_id": 0})
     if existing:
-        await db.profiles.update_one({"id": payload.id}, {"$set": data})
+        await db.profiles.update_one({"id": target_id}, {"$set": data})
     else:
         data["created_at"] = now_iso()
         await db.profiles.insert_one(dict(data))
@@ -1001,7 +1012,7 @@ async def upsert_profile(payload: ProfileInput):
         if re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
             if not await db.subscribers.find_one({"email": email}):
                 await db.subscribers.insert_one(Subscriber(email=email).model_dump())
-    doc = await db.profiles.find_one({"id": payload.id}, {"_id": 0})
+    doc = await db.profiles.find_one({"id": target_id}, {"_id": 0})
     return Profile(**doc)
 
 
@@ -1344,6 +1355,28 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
     return u
 
 
+async def _ensure_profile_for_user(user: dict):
+    """Compte = profil : garantit un profil Membre (canonique, keyé par account_id) pour chaque compte."""
+    uid = user.get("id")
+    if not uid:
+        return
+    existing = await db.profiles.find_one({"account_id": uid})
+    if existing:
+        return
+    name = user.get("name") or ((user.get("email") or "").split("@")[0]) or "Membre"
+    now = now_iso()
+    await db.profiles.update_one(
+        {"account_id": uid},
+        {"$setOnInsert": {
+            "id": uid, "account_id": uid, "name": name,
+            "avatar": user.get("avatar") or "", "email": "",
+            "instagram": "", "hide_tier": False,
+            "created_at": now, "updated_at": now,
+        }},
+        upsert=True,
+    )
+
+
 @api_router.post("/auth/register")
 async def auth_register(data: RegisterInput):
     email = data.email.strip().lower()
@@ -1364,6 +1397,7 @@ async def auth_register(data: RegisterInput):
         await db.users.insert_one(user)
         user = await db.users.find_one({"email": email}, {"_id": 0})
     await _subscribe_email(email)
+    await _ensure_profile_for_user(user)
     return {"token": _mint_token(user["id"], email), "user": _public_user(user)}
 
 
@@ -1373,6 +1407,7 @@ async def auth_login(data: LoginInput):
     user = await db.users.find_one({"email": email})
     if not user or not user.get("password_hash") or not pwd.verify(data.password, user["password_hash"]):
         raise HTTPException(401, "Email ou mot de passe incorrect")
+    await _ensure_profile_for_user(user)
     return {"token": _mint_token(user["id"], email), "user": _public_user(user)}
 
 
@@ -1400,6 +1435,7 @@ async def auth_google_session(data: GoogleSessionInput):
         await db.users.insert_one(user)
     user = await db.users.find_one({"email": email}, {"_id": 0})
     await _subscribe_email(email)
+    await _ensure_profile_for_user(user)
     return {"token": _mint_token(user["id"], email), "user": _public_user(user)}
 
 
