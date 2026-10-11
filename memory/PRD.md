@@ -715,3 +715,7 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - FIX Detail.js : header en `flex flex-wrap justify-between gap-2` ; groupes gauche/droite en flex-wrap. Bouton Retour = icône flèche seule (IoArrowBack), Accueil = icône maison seule (IoHome), p-2.5 border flex-shrink-0 (plus de libellés texte).
 - FIX MobileMenu.js : conteneur racine `flex flex-wrap justify-end`, bouton Menu `flex-shrink-0`. QuickControls.js : conteneur en flex-wrap.
 - Résultat : à Aa max sur mobile, les boutons passent à la ligne et restent dans le cadre + cliquables. ⚠️ Capture auto a planté (instabilité preview) ; à confirmer sur navigateur.
+
+## Commentaires par chapitre (lecteur) comme les épisodes — 11/06/2026
+- CommentsSection généralisé : props `units` (array) + `term` ("Chapitre"/"Épisode"). Detail.js passe item.chapters + term="Chapitre" si launch_type==="chapters", sinon item.episodes + "Épisode".
+- Sélecteur "À propos de", badges et filtres fonctionnent identiquement pour chapitres et épisodes. Réutilise episode_index/episode_label backend (aucun changement backend). Compile OK.

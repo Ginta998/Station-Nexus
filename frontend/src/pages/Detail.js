@@ -480,7 +480,11 @@ export default function Detail() {
 
             <FicheSupport membershipActive={membershipActive} />
 
-            <CommentsSection creationId={item.id} episodes={item.episodes || []} />
+            <CommentsSection
+              creationId={item.id}
+              units={item.launch_type === "chapters" ? (item.chapters || []) : (item.episodes || [])}
+              term={item.launch_type === "chapters" ? "Chapitre" : "Épisode"}
+            />
 
             {recommendations.length > 0 && (
               <div className="mt-14" data-testid="recommendations">

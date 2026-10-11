@@ -6,24 +6,24 @@ import { listComments, addComment, deleteComment } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import AutoTextarea from "@/components/AutoTextarea";
 
-export default function CommentsSection({ creationId, episodes = [] }) {
+export default function CommentsSection({ creationId, units = [], term = "Épisode" }) {
   const { isAdmin, sfx } = useApp();
   const { data: comments = [], refetch } = useQuery({ queryKey: ["comments", creationId], queryFn: () => listComments(creationId) });
   const [name, setName] = useState(() => localStorage.getItem("sx_cname") || "");
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
-  const hasEpisodes = episodes && episodes.length > 0;
-  const [target, setTarget] = useState(-1); // -1 = général, sinon index d'épisode
+  const hasUnits = units && units.length > 0;
+  const [target, setTarget] = useState(-1); // -1 = général, sinon index d'unité
   const [filter, setFilter] = useState("all"); // "all" | "-1" | "<index>"
 
   const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
-  const epLabel = (i) => (episodes[i]?.title ? episodes[i].title : `Épisode ${i + 1}`);
+  const unitLabel = (i) => (units[i]?.title ? units[i].title : `${term} ${i + 1}`);
 
   const shown = useMemo(() => {
-    if (!hasEpisodes || filter === "all") return comments;
+    if (!hasUnits || filter === "all") return comments;
     const f = Number(filter);
     return comments.filter((c) => (c.episode_index ?? -1) === f);
-  }, [comments, filter, hasEpisodes]);
+  }, [comments, filter, hasUnits]);
 
   const submit = async () => {
     if (!name.trim() || !text.trim()) return toast.error("Nom et commentaire requis");
@@ -33,8 +33,8 @@ export default function CommentsSection({ creationId, episodes = [] }) {
         creation_id: creationId,
         name: name.trim(),
         text: text.trim(),
-        episode_index: hasEpisodes ? target : -1,
-        episode_label: hasEpisodes && target >= 0 ? epLabel(target) : "",
+        episode_index: hasUnits ? target : -1,
+        episode_label: hasUnits && target >= 0 ? unitLabel(target) : "",
       });
       localStorage.setItem("sx_cname", name.trim());
       setText(""); sfx("select"); refetch();
@@ -51,7 +51,7 @@ export default function CommentsSection({ creationId, episodes = [] }) {
         Ton avis compte énormément ✨ Qu'as-tu ressenti en découvrant cette création ? Partage ton émotion, ton passage préféré ou un petit mot d'encouragement — avec bienveillance et respect. Chaque message fait vivre l'univers un peu plus fort. 🌸
       </p>
 
-      {hasEpisodes && (
+      {hasUnits && (
         <div className="mb-4">
           <label className="block text-xs uppercase tracking-widest mb-1.5 flex items-center gap-1.5" style={{ color: "var(--text-secondary)" }}>
             <IoTvOutline size={13} style={{ color: "var(--brand)" }} /> À propos de
@@ -59,8 +59,8 @@ export default function CommentsSection({ creationId, episodes = [] }) {
           <select data-testid="comment-episode-select" value={target} onChange={(e) => setTarget(Number(e.target.value))}
             className="w-full sm:w-80 px-3 py-2 border outline-none text-sm" style={fs}>
             <option value={-1}>💬 Commentaire général</option>
-            {episodes.map((ep, i) => (
-              <option key={i} value={i}>{String(i + 1).padStart(2, "0")} · {epLabel(i)}</option>
+            {units.map((u, i) => (
+              <option key={i} value={i}>{String(i + 1).padStart(2, "0")} · {unitLabel(i)}</option>
             ))}
           </select>
         </div>
@@ -77,7 +77,7 @@ export default function CommentsSection({ creationId, episodes = [] }) {
         </button>
       </div>
 
-      {hasEpisodes && (
+      {hasUnits && (
         <div className="flex items-center gap-2 flex-wrap mb-5" data-testid="comment-filter">
           <button onClick={() => setFilter("all")} data-testid="comment-filter-all"
             className="px-3 py-1.5 text-xs font-semibold transition-colors"
@@ -85,7 +85,7 @@ export default function CommentsSection({ creationId, episodes = [] }) {
           <button onClick={() => setFilter("-1")} data-testid="comment-filter-general"
             className="px-3 py-1.5 text-xs font-semibold transition-colors"
             style={{ borderRadius: "999px", border: "1px solid var(--border-c)", background: filter === "-1" ? "var(--brand)" : "transparent", color: filter === "-1" ? "var(--bg-primary)" : "rgba(255,255,255,0.8)" }}>Général</button>
-          {episodes.map((ep, i) => (
+          {units.map((u, i) => (
             <button key={i} onClick={() => setFilter(String(i))} data-testid={`comment-filter-ep-${i}`}
               className="px-3 py-1.5 text-xs font-semibold transition-colors"
               style={{ borderRadius: "999px", border: "1px solid var(--border-c)", background: filter === String(i) ? "var(--brand)" : "transparent", color: filter === String(i) ? "var(--bg-primary)" : "rgba(255,255,255,0.8)" }}>{String(i + 1).padStart(2, "0")}</button>
@@ -103,7 +103,7 @@ export default function CommentsSection({ creationId, episodes = [] }) {
                 <p className="text-sm font-semibold" style={{ color: "var(--brand)" }}>{c.name}</p>
                 {(c.episode_index ?? -1) >= 0 && (
                   <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: "color-mix(in srgb, var(--brand) 20%, transparent)", color: "var(--brand)", borderRadius: 4 }}>
-                    <IoTvOutline size={10} /> {c.episode_label || epLabel(c.episode_index)}
+                    <IoTvOutline size={10} /> {c.episode_label || unitLabel(c.episode_index)}
                   </span>
                 )}
               </div>
