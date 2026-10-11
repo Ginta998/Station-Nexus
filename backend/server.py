@@ -142,6 +142,7 @@ class Creation(BaseModel):
     has_trailer: bool = False             # an uploaded trailer exists in object storage
     buy_url: Optional[str] = ""
     chapter_display: str = "button"  # button | image — how chapters show on the detail page
+    unit_display: str = "movix"      # movix (menu déroulant + grande affiche) | list (liste complète)
     unit_label: Optional[str] = ""   # libellé de section personnalisable (Épisodes, Saisons, Tomes, Volumes…)
     chapter_size: str = "md"         # sm | md | lg | xl — size of chapter/episode cards on the fiche
     button_size: str = "md"          # md | lg — size of the main action buttons

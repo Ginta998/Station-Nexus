@@ -8,7 +8,7 @@ const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
   poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
+  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
   intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
 };
 
@@ -299,10 +299,18 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           </div>
 
           {(form.launch_type === "chapters" || form.launch_type === "episodes") && (
-            <div><Label>Libellé de la section (optionnel)</Label>
-              <input data-testid="editor-unit-label" value={form.unit_label || ""} onChange={(e) => set("unit_label", e.target.value)}
-                placeholder={form.launch_type === "episodes" ? "Épisodes (ou Saisons, Volumes…)" : "Chapitres (ou Tomes, Parties…)"}
-                className="w-full px-3 py-2 border outline-none" style={fs} />
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1"><Label>Libellé de la section (optionnel)</Label>
+                <input data-testid="editor-unit-label" value={form.unit_label || ""} onChange={(e) => set("unit_label", e.target.value)}
+                  placeholder={form.launch_type === "episodes" ? "Épisodes (ou Saisons, Volumes…)" : "Chapitres (ou Tomes, Parties…)"}
+                  className="w-full px-3 py-2 border outline-none" style={fs} />
+              </div>
+              <div className="flex-1"><Label>Affichage de la section</Label>
+                <select data-testid="editor-unit-display" value={form.unit_display || "movix"} onChange={(e) => set("unit_display", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
+                  <option value="movix">Menu déroulant + grande affiche</option>
+                  <option value="list">Liste complète (les uns derrière les autres)</option>
+                </select>
+              </div>
             </div>
           )}
 

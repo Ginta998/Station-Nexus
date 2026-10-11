@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoChevronForward, IoChevronBack, IoChevronUp, IoChevronDown, IoCreateOutline, IoTrashOutline, IoPlay, IoFilter, IoSearch, IoArrowForward, IoOptionsOutline } from "react-icons/io5";
+import { IoChevronForward, IoChevronBack, IoChevronUp, IoChevronDown, IoCreateOutline, IoTrashOutline, IoPlay, IoFilter, IoSearch, IoArrowForward, IoOptionsOutline, IoStar, IoStarOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { listCreations, listCategories, deleteCreation, getMembershipPlan, getSettings, updateSettings } from "@/lib/api";
 import { posterUrl, bgUrl } from "@/lib/api";
@@ -72,8 +72,12 @@ export default function Home() {
     else if (sort === "za") list.sort((a, b) => b.title.localeCompare(a.title));
     else if (sort === "recent") list.sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""));
     else list.sort((a, b) => (a.order || 0) - (b.order || 0));
+    const fid = settings?.featured_creation_id;
+    if (fid) { const idx = list.findIndex((x) => x.id === fid); if (idx > 0) { const [f] = list.splice(idx, 1); list.unshift(f); } }
     return list;
-  }, [all, activeTab, query, sort, favorites]);
+  }, [all, activeTab, query, sort, favorites, settings]);
+
+  const featuredId = settings?.featured_creation_id || "";
 
   const focused = items[focusIndex];
 
@@ -191,6 +195,13 @@ export default function Home() {
   const bgImg = focused ? (focused.has_bg ? bgUrl(focused.id, focused.updated_at) : (focused.has_poster ? posterUrl(focused.id, focused.updated_at) : null)) : null;
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
   const openEdit = () => { if (focused) { setEditing(focused); setEditorOpen(true); } };
+  const setFeatured = async () => {
+    if (!settings || !focused) return;
+    const next = settings.featured_creation_id === focused.id ? "" : focused.id;
+    await updateSettings({ ...settings, featured_creation_id: next });
+    toast.success(next ? "⭐ Mise à la une ✓" : "Retirée de la une");
+    refetchSettings();
+  };
   const doDelete = async () => {
     if (!focused || !window.confirm(`Supprimer « ${focused.title} » ?`)) return;
     await deleteCreation(focused.id); toast.success("Supprimé"); refetch();
@@ -306,7 +317,7 @@ export default function Home() {
         <div className="flex-1 min-h-0 flex items-center sx-rail-mask">
           <div ref={railRef} onScroll={onRailScroll} className="w-full h-full flex items-center overflow-x-auto overflow-y-hidden hide-scrollbar px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
             {items.map((it, i) => (
-              <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex}
+              <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex} featured={it.id === featuredId}
                 catLabel={catLabelByKey[it.category] || it.category}
                 isFav={isFavorite(it.id)} onToggleFav={() => { toggleFavorite(it.id); sfx("select"); }}
                 onFocus={() => { if (i !== focusIndex) { sfx("hover"); focusSrc.current = "hover"; setFocusIndex(i); } }}
@@ -335,6 +346,10 @@ export default function Home() {
               )}
               {isAdmin && focused && (
                 <>
+                  <button data-testid="home-set-featured" onClick={setFeatured} title={focused.id === featuredId ? "À la une (cliquer pour retirer)" : "Mettre à la une"}
+                    className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: focused.id === featuredId ? "var(--brand)" : "var(--on-media)", background: "rgba(0,0,0,0.25)" }}>
+                    {focused.id === featuredId ? <IoStar size={18} /> : <IoStarOutline size={18} />}
+                  </button>
                   <button data-testid="home-edit" onClick={openEdit} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" }}><IoCreateOutline size={18} /></button>
                   <button data-testid="home-delete" onClick={doDelete} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--brand)", background: "rgba(0,0,0,0.25)" }}><IoTrashOutline size={18} /></button>
                 </>

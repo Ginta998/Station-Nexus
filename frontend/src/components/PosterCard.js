@@ -1,9 +1,9 @@
 import { forwardRef } from "react";
-import { IoHeart, IoHeartOutline, IoPlay } from "react-icons/io5";
+import { IoHeart, IoHeartOutline, IoPlay, IoStar } from "react-icons/io5";
 import { posterUrl } from "@/lib/api";
 
 const PosterCard = forwardRef(function PosterCard(
-  { item, focused, onFocus, onClick, onResume, onTrailer, catLabel, isFav, onToggleFav, hideTitle },
+  { item, focused, onFocus, onClick, onResume, onTrailer, catLabel, isFav, onToggleFav, hideTitle, featured },
   ref
 ) {
   const hasImg = item.has_poster || (item.poster && item.poster.length > 4);
@@ -53,6 +53,12 @@ const PosterCard = forwardRef(function PosterCard(
       <div className="absolute inset-x-0 bottom-0 h-2/5" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), transparent)" }} />
 
       <div className="absolute top-3 left-3 z-10 flex flex-col gap-1 items-start">
+        {featured && (
+          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1" data-testid="featured-badge"
+            style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", boxShadow: "0 0 14px color-mix(in srgb, var(--brand) 55%, transparent)" }}>
+            <IoStar size={10} /> À la une
+          </span>
+        )}
         {catLabel && (
           <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest backdrop-blur-sm"
             style={{ background: "rgba(0,0,0,0.45)", color: "#fff", borderRadius: "var(--radius-base)" }}>

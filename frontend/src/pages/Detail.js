@@ -101,6 +101,26 @@ export default function Detail() {
   const savedProgress = item.launch_type === "chapters" ? (() => { try { return JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) { return null; } })() : null;
   const canResume = savedProgress && ((savedProgress.chapter || 0) > 0 || (savedProgress.ratio || 0) > 0.02);
 
+  // Prochain à regarder (reprise de lecture) — affiché en haut de la fiche
+  const continueTarget = (() => {
+    if (item.launch_type === "chapters" && item.chapters?.length) {
+      const idx = Math.min(savedProgress?.chapter || 0, item.chapters.length - 1);
+      const c = item.chapters[idx];
+      return { kind: "chapter", idx, item: c, image: c.image, title: c.title || `Chapitre ${idx + 1}`,
+        label: canResume ? "Reprendre la lecture" : "Commencer la lecture", badge: `Chapitre ${idx + 1}`,
+        onOpen: () => openChapter(idx) };
+    }
+    if (item.launch_type === "episodes" && item.episodes?.length) {
+      let last = null; try { last = JSON.parse(localStorage.getItem("sx_eplast_" + item.id) ?? "null"); } catch (_) {}
+      const idx = last != null ? Math.min(Number(last) + 1, item.episodes.length - 1) : 0;
+      const e = item.episodes[idx];
+      return { kind: "episode", idx, item: e, image: e.image, title: e.title || `Épisode ${idx + 1}`,
+        label: last != null ? "Continuer" : "Commencer", badge: `Épisode ${idx + 1}`,
+        onOpen: () => openEpisode(idx) };
+    }
+    return null;
+  })();
+
   const chSize = item.chapter_size || "md";
   const btnSizeCls = { md: "px-7 py-3.5 text-lg", lg: "px-9 py-4 text-xl", xl: "px-12 py-5 text-2xl" }[item.button_size || "md"];
   const secondaryBtnCls = { md: "px-5 py-3.5", lg: "px-6 py-4 text-lg", xl: "px-8 py-5 text-xl" }[item.button_size || "md"];
@@ -163,6 +183,14 @@ export default function Detail() {
       return;
     }
     sfx("select"); setReaderStart(i); setChaptersOpen(true);
+  };
+
+  const openEpisode = (i) => {
+    const ep = item.episodes?.[i];
+    if (!ep) return;
+    try { localStorage.setItem("sx_eplast_" + item.id, String(i)); } catch (_) {}
+    if (ep.url) { sfx("select"); window.open(ep.url, "_blank", "noopener,noreferrer"); }
+    else { toast.info("Aucun lien pour cet épisode."); }
   };
 
   const goToComments = () => {
@@ -286,6 +314,24 @@ export default function Detail() {
               </button>
             </div>
 
+            {/* Reprise de lecture — prochain chapitre/épisode à regarder */}
+            {continueTarget && (
+              <button data-testid="detail-continue" onClick={continueTarget.onOpen}
+                className="group mt-7 w-full flex items-center gap-4 text-left overflow-hidden transition-transform hover:scale-[1.01] movix-pop"
+                style={{ borderRadius: "calc(var(--radius-base)*1.3)", border: "1px solid color-mix(in srgb, var(--brand) 45%, transparent)", background: "linear-gradient(100deg, color-mix(in srgb, var(--brand) 20%, var(--bg-secondary)), var(--bg-secondary) 60%, var(--bg-primary))", boxShadow: "var(--shadow-1)" }}>
+                <div className="relative flex-shrink-0 w-28 sm:w-44 self-stretch overflow-hidden" style={{ aspectRatio: "16/9" }}>
+                  {continueTarget.image ? <img src={continueTarget.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.8))" }}><span className="font-display text-4xl" style={{ color: "var(--brand)" }}>{item.kanji || continueTarget.title[0]}</span></div>}
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.25))" }} />
+                </div>
+                <div className="flex-1 min-w-0 py-3 pr-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--brand)" }}>{continueTarget.label}</p>
+                  <p className="font-display text-lg md:text-2xl leading-tight mt-0.5 truncate" style={{ color: "#fff" }}>{continueTarget.badge} · {continueTarget.title}</p>
+                </div>
+                <span className="flex-shrink-0 mr-4 w-12 h-12 flex items-center justify-center rounded-full transition-transform group-hover:scale-110" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}><IoPlay size={24} /></span>
+              </button>
+            )}
+
             {/* Paywall — achat à l'unité + abonnement */}
             {isPaidLocked && !item.coming_soon && (
               <div className="mt-8 p-5" data-testid="detail-paywall"
@@ -315,6 +361,7 @@ export default function Detail() {
             {item.launch_type === "chapters" && (item.chapters?.length > 0) && (
               <MovixSelector
                 testid="detail-chapters"
+                mode={item.unit_display || "movix"}
                 label={item.unit_label || "Chapitres"}
                 kanji={item.kanji || "章"}
                 items={item.chapters.map((c, i) => ({
@@ -335,6 +382,7 @@ export default function Detail() {
             {(showEpisodes || item.launch_type === "episodes") && item.episodes?.length > 0 && (
               <MovixSelector
                 testid="detail-episodes"
+                mode={item.unit_display || "movix"}
                 label={item.unit_label || "Épisodes"}
                 kanji={item.kanji || "話"}
                 items={item.episodes.map((ep, i) => ({
@@ -343,7 +391,7 @@ export default function Detail() {
                   title: ep.title || `Épisode ${i + 1}`,
                   description: ep.description,
                   badge: `N° ${String(i + 1).padStart(2, "0")}`,
-                  onOpen: () => { if (ep.url) window.open(ep.url, "_blank", "noopener,noreferrer"); },
+                  onOpen: () => openEpisode(i),
                 }))}
               />
             )}

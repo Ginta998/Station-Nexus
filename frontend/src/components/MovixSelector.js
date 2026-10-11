@@ -3,7 +3,7 @@ import { IoChevronDown, IoChevronBack, IoChevronForward, IoPlay, IoLockClosed, I
 
 // Sélecteur façon Movix : menu déroulant pour choisir + grande affiche animée de l'élément sélectionné.
 // items: [{ key, image, title, description, badge, locked, music, active, onOpen }]
-export default function MovixSelector({ label, kanji, items, testid = "movix" }) {
+export default function MovixSelector({ label, kanji, items, testid = "movix", mode = "movix" }) {
   const [sel, setSel] = useState(() => {
     const a = items.findIndex((x) => x.active);
     return a >= 0 ? a : 0;
@@ -18,6 +18,42 @@ export default function MovixSelector({ label, kanji, items, testid = "movix" })
   if (!items || items.length === 0) return null;
   const cur = items[Math.min(sel, items.length - 1)];
   const go = (i) => { setSel(Math.max(0, Math.min(items.length - 1, i))); };
+  const countBadge = (
+    <span className="text-xs px-2 py-0.5 flex-shrink-0" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }} data-testid={`${testid}-count`}>{items.length}</span>
+  );
+
+  // ---- Mode "liste complète" : tous les éléments les uns derrière les autres ----
+  if (mode === "list") {
+    return (
+      <div className="mt-10" data-testid={testid}>
+        <div className="flex items-center gap-3 mb-4">
+          <span className="font-display text-lg opacity-70" style={{ color: "var(--brand)" }}>{kanji}</span>
+          <h3 className="font-display text-xl" style={{ color: "#fff" }}>{label}</h3>
+          {countBadge}
+        </div>
+        <div className="flex flex-col gap-4" data-testid={`${testid}-list`}>
+          {items.map((it, i) => (
+            <button key={it.key || i} data-testid={`${testid}-row-${i}`} onClick={it.onOpen}
+              className="group flex items-stretch gap-4 w-full text-left overflow-hidden transition-transform hover:scale-[1.008] movix-pop"
+              style={{ borderRadius: "calc(var(--radius-base)*1.3)", border: it.active ? "2px solid var(--brand)" : "1px solid rgba(255,255,255,0.1)", background: "var(--bg-secondary)", boxShadow: "var(--shadow-1)" }}>
+              <div className="relative flex-shrink-0 w-32 sm:w-56 self-stretch overflow-hidden" style={{ aspectRatio: "16/9" }}>
+                {it.image ? <img src={it.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.8))" }}><span className="font-display text-4xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{kanji || i + 1}</span></div>}
+                <span className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}>{it.badge || String(i + 1).padStart(2, "0")}</span>
+                <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span className="w-10 h-10 flex items-center justify-center rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>{it.locked ? <IoLockClosed size={18} /> : <IoPlay size={20} />}</span></span>
+              </div>
+              <div className="flex-1 min-w-0 py-3 pr-4 self-center">
+                <p className="font-display text-base md:text-lg leading-tight" style={{ color: "#fff" }}>{it.title}</p>
+                {it.note && <p className="text-[11px] mt-0.5" style={{ color: "var(--brand)" }}>{it.note}</p>}
+                {it.description && <p className="text-xs md:text-sm mt-1.5 line-clamp-2 md:line-clamp-3" style={{ color: "var(--text-secondary)" }}>{it.description}</p>}
+                {it.locked && <span className="inline-flex items-center gap-1 mt-2 px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}><IoLockClosed size={10} /> Payant</span>}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-10" data-testid={testid}>
@@ -25,6 +61,7 @@ export default function MovixSelector({ label, kanji, items, testid = "movix" })
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <span className="font-display text-lg opacity-70" style={{ color: "var(--brand)" }}>{kanji}</span>
         <h3 className="font-display text-xl" style={{ color: "#fff" }}>{label}</h3>
+        {countBadge}
         <div className="relative ml-auto" ref={ddRef}>
           <button data-testid={`${testid}-dropdown`} onClick={() => setOpen((v) => !v)}
             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold min-w-[200px] justify-between transition-colors"
