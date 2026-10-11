@@ -197,6 +197,8 @@ class CreationInput(BaseModel):
     chapter_display: str = "button"
     chapter_size: str = "md"
     button_size: str = "md"
+    unit_display: str = "movix"
+    unit_label: Optional[str] = ""
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     coming_soon: bool = False

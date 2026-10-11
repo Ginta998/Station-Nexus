@@ -700,3 +700,8 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - À LA UNE (accueil classique) : création épinglée affichée EN PREMIER + badge "★ À la une" (PosterCard prop featured). Admin : bouton étoile dans la barre d'actions (data-testid home-set-featured) pour épingler/retirer -> SiteSettings.featured_creation_id. Vérifié : badge visible sur l'accueil.
 - AFFICHAGE PAR FICHE (épisodes/chapitres) : nouveau champ Creation.unit_display (movix | list). Éditeur : select "Affichage de la section" (Menu déroulant + grande affiche / Liste complète) à côté du libellé. MovixSelector gère les 2 modes + affiche le NOMBRE (badge count). mode="list" = toutes les cartes empilées les unes derrière les autres (pas de slide).
 - Compile OK. ⚠️ Fiche détail (reprise/compteur/mode liste) non capturée en auto (Cloudflare crashe l'automatisation) ; à confirmer sur navigateur + redéployer.
+
+## Fix bug « Affichage Liste » épisodes/chapitres non sauvegardé — 11/06/2026
+- CAUSE : CreationInput (modèle backend utilisé par create/update) ne déclarait PAS unit_display ni unit_label -> Pydantic les supprimait du payload à l'enregistrement, donc le choix "Liste complète" n'avait aucun effet.
+- FIX : ajout de `unit_display: str = "movix"` et `unit_label: Optional[str] = ""` à CreationInput (server.py). La page Detail lit déjà item.unit_display et MovixSelector gère mode="list".
+- Vérifié curl : création test avec unit_display=list + unit_label=Saisons -> relecture renvoie bien list/Saisons (puis supprimée). Backend auto-reload OK.
