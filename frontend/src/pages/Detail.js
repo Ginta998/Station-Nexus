@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import { resolveVideoEmbed } from "@/lib/video";
 import EditorDialog from "@/components/EditorDialog";
+import MovixSelector from "@/components/MovixSelector";
 import CommentsSection from "@/components/CommentsSection";
 import { FicheSupport } from "@/components/SupportersWall";
 import LaunchGate from "@/components/LaunchGate";
@@ -215,11 +216,11 @@ export default function Detail() {
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
-          <div ref={cardRef} className="flex-shrink-0 w-56 sm:w-64 md:w-80 aspect-[2/3] overflow-hidden border relative fade-up"
-            style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", boxShadow: "var(--shadow-1)" }} data-testid="detail-poster">
+        <div className="max-w-6xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
+          <div ref={cardRef} className="group flex-shrink-0 w-64 sm:w-80 md:w-96 lg:w-[26rem] aspect-[2/3] overflow-hidden border relative fade-up"
+            style={{ borderColor: "var(--border-c)", borderRadius: "calc(var(--radius-base)*1.3)", boxShadow: "0 24px 60px rgba(0,0,0,0.55)" }} data-testid="detail-poster">
             {hasImg ? (
-              <img src={posterSrc} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
+              <img src={posterSrc} alt={item.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))" }}>
                 <span className="font-display text-8xl" style={{ color: "var(--brand)" }}>{item.kanji || item.title[0]}</span>
@@ -231,7 +232,7 @@ export default function Detail() {
             </div>
           </div>
 
-          <div className="w-full md:flex-1 min-w-0 fade-up">
+          <div className="w-full md:flex-1 min-w-0 fade-up" style={{ animationDelay: ".12s" }}>
             <div className="flex items-center gap-3 mb-3 flex-wrap">
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="detail-category">{catLabel}</span>
               <span className="font-display text-2xl" style={{ color: "var(--brand)" }}>{item.kanji}</span>
@@ -312,78 +313,39 @@ export default function Detail() {
             )}
 
             {item.launch_type === "chapters" && (item.chapters?.length > 0) && (
-              <div className="mt-10" data-testid="detail-chapters">
-                <div className="flex items-center gap-3 mb-4">
-                  <h3 className="font-display text-xl" style={{ color: "#fff" }}>{item.unit_label || "Chapitres"}</h3>
-                  <span className="text-xs px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{item.chapters.length}</span>
-                </div>
-
-                <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-3 -mx-1 px-1 snap-x">
-                  {item.chapters.map((c, i) => {
-                    const active = savedProgress && (savedProgress.chapter || 0) === i;
-                    const locked = chapterLocked(item, i);
-                    const w = { sm: 240, md: 300, lg: 360, xl: 440 }[chSize] || 300;
-                    return (
-                      <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
-                        className="group snap-start flex-shrink-0 overflow-hidden flex flex-col text-left transition-transform hover:scale-[1.015]"
-                        style={{ width: `min(82vw, ${w}px)`, borderRadius: "calc(var(--radius-base)*1.4)", border: active ? "2px solid var(--brand)" : "1px solid rgba(255,255,255,0.1)", background: "var(--bg-secondary)", boxShadow: "var(--shadow-1)" }}>
-                        <div className="relative w-full aspect-video overflow-hidden">
-                          {c.image ? <img src={c.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                            : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.75))" }}><span className="font-display text-5xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{item.kanji || (i + 1)}</span></div>}
-                          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.78), transparent 60%)" }} />
-                          <span className="absolute top-2.5 left-2.5 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Ch. {String(i + 1).padStart(2, "0")}</span>
-                          {c.has_music && <IoMusicalNotes size={15} className="absolute top-2.5 right-2.5" style={{ color: "#fff" }} />}
-                          <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="w-12 h-12 flex items-center justify-center rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>{locked ? <IoLockClosed size={20} /> : <IoPlay size={22} />}</span>
-                          </span>
-                          {locked && <span className="absolute bottom-2.5 left-2.5 px-1.5 py-0.5 text-[9px] font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}><IoLockClosed size={10} /> Payant</span>}
-                        </div>
-                        <div className="p-3.5 flex-1">
-                          <p className="font-display text-base leading-tight" style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
-                          {active && <p className="text-[11px] mt-0.5" style={{ color: "var(--brand)" }}>▸ En cours de lecture</p>}
-                          {c.description && <p className="text-xs mt-1.5 line-clamp-3" style={{ color: "var(--text-secondary)" }}>{c.description}</p>}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <MovixSelector
+                testid="detail-chapters"
+                label={item.unit_label || "Chapitres"}
+                kanji={item.kanji || "章"}
+                items={item.chapters.map((c, i) => ({
+                  key: c.id || i,
+                  image: c.image,
+                  title: c.title || `Chapitre ${i + 1}`,
+                  description: c.description,
+                  badge: `Ch. ${String(i + 1).padStart(2, "0")}`,
+                  locked: chapterLocked(item, i),
+                  music: c.has_music,
+                  active: savedProgress && (savedProgress.chapter || 0) === i,
+                  note: (savedProgress && (savedProgress.chapter || 0) === i) ? "▸ En cours de lecture" : "",
+                  onOpen: () => openChapter(i),
+                }))}
+              />
             )}
 
             {(showEpisodes || item.launch_type === "episodes") && item.episodes?.length > 0 && (
-              <div className="mt-10" data-testid="detail-episodes">
-                <div className="flex items-center gap-3 mb-4">
-                  <h3 className="font-display text-xl" style={{ color: "#fff" }}>{item.unit_label || "Épisodes"}</h3>
-                  <span className="text-xs px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{item.episodes.length}</span>
-                </div>
-                <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-3 -mx-1 px-1 snap-x">
-                  {item.episodes.map((ep, i) => {
-                    const Tag = ep.url ? "a" : "div";
-                    const props = ep.url ? { href: ep.url, target: "_blank", rel: "noopener noreferrer" } : {};
-                    return (
-                      <Tag key={ep.id || i} data-testid={`episode-item-${i}`} {...props}
-                        className="group snap-start flex-shrink-0 w-[78vw] sm:w-[340px] overflow-hidden flex flex-col transition-transform hover:scale-[1.015]"
-                        style={{ borderRadius: "calc(var(--radius-base)*1.4)", border: "1px solid rgba(255,255,255,0.1)", background: "var(--bg-secondary)", boxShadow: "var(--shadow-1)", cursor: ep.url ? "pointer" : "default" }}>
-                        <div className="relative w-full aspect-video overflow-hidden">
-                          {ep.image ? <img src={ep.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                            : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.75))" }}><span className="font-display text-5xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{item.kanji || (i + 1)}</span></div>}
-                          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent 60%)" }} />
-                          <span className="absolute top-2.5 left-2.5 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{String(i + 1).padStart(2, "0")}</span>
-                          {ep.url && (
-                            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <span className="w-12 h-12 flex items-center justify-center rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}><IoPlay size={22} /></span>
-                            </span>
-                          )}
-                        </div>
-                        <div className="p-3.5 flex-1">
-                          <p className="font-display text-base leading-tight" style={{ color: "#fff" }}>{ep.title || `Épisode ${i + 1}`}</p>
-                          {ep.description && <p className="text-xs mt-1.5 line-clamp-3" style={{ color: "var(--text-secondary)" }}>{ep.description}</p>}
-                        </div>
-                      </Tag>
-                    );
-                  })}
-                </div>
-              </div>
+              <MovixSelector
+                testid="detail-episodes"
+                label={item.unit_label || "Épisodes"}
+                kanji={item.kanji || "話"}
+                items={item.episodes.map((ep, i) => ({
+                  key: ep.id || i,
+                  image: ep.image,
+                  title: ep.title || `Épisode ${i + 1}`,
+                  description: ep.description,
+                  badge: `N° ${String(i + 1).padStart(2, "0")}`,
+                  onOpen: () => { if (ep.url) window.open(ep.url, "_blank", "noopener,noreferrer"); },
+                }))}
+              />
             )}
 
             {/* Bande-annonce (inline, comme la galerie) */}

@@ -687,3 +687,10 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
   * EditorDialog : par chapitre = titre + image + description + bouton « Rédiger/Modifier le chapitre » qui ouvre l'éditeur riche (repliable) ; suppression du réglage « affichage des chapitres » devenu inutile. Par épisode = image + description + lien.
 - ÉDITION EN LECTURE : déjà existante (bouton crayon « Modifier ce chapitre » dans ChapterReader -> updateCreation). Conservée.
 - ⚠️ Vérifs : accueil + Personnaliser OK en capture. L'affichage Canal+ chapitres/épisodes et le bouton « Rédiger » n'ont PAS pu être capturés (challenge Cloudflare du preview plante la nav + chapitres gated pour non-connecté) ; code compile, calqué sur le motif épisodes validé. À confirmer connecté + redéployer.
+
+## Épisodes/chapitres façon Movix (menu déroulant + grande affiche) + animations fiche — 11/10/2026
+- Nouveau composant components/MovixSelector.js : menu DÉROULANT (dropdown custom) pour choisir l'épisode/chapitre + GRANDE affiche 16/9 animée de l'élément sélectionné (titre, description, bouton play, cadenas/musique), flèches prev/next + pastilles de pagination. Remplace les anciens rails horizontaux (jugés peu navigables).
+- Detail.js : chapitres ET épisodes utilisent MovixSelector (chapitres -> openChapter avec lock/progress ; épisodes -> ouvre le lien). Libellé via unit_label.
+- Fiche création « meilleures animations » : affiche (poster) agrandie (w-64→lg:w-[26rem]) + ombre portée + zoom au survol ; entrée fade-up échelonnée (poster + contenu, delay .12s) ; carte Movix en movix-pop/fade. CSS : fadeDown, movixPop, movix-pop, movix-text dans index.css.
+- Testids : detail-episodes / detail-chapters (conteneur MovixSelector), {testid}-dropdown, {testid}-menu, {testid}-opt-{i}, {testid}-feature, {testid}-prev/next.
+- Vérifié : compile OK ; création test « épisodes » créée puis SUPPRIMÉE (nettoyée). ⚠️ Rendu visuel Movix NON capturé (challenge Cloudflare du preview crashe l'automatisation de façon persistante ce jour). À confirmer sur ton navigateur (non bloqué) + redéployer.
