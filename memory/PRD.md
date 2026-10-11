@@ -650,3 +650,20 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Backfill one-off : `backend/backfill_profiles.py` (idempotent) exécuté → 9 comptes = 9 profils, 0 doublon.
 - Frontend : `logout` efface le profil local (sx_profile, sx_visitor_id) + event `sx-clear-profile` écouté par AppContext → déconnexion déconnecte aussi le profil.
 - Vérifié par curl : register/login créent le profil, il apparaît dans GET /api/profiles ; dedup OK (1 profil/compte, stray supprimé) ; email non exposé (''). ⚠️ UI Membres non capturée en auto (challenge Cloudflare crashe le navigateur headless sur le preview) — à confirmer visuellement + redéployer pour la prod.
+
+## Refonte accueil (3 layouts test) + correctif chargement — 11/10/2026
+- BUG CHARGEMENT corrigé : react-query (index.js) retry x4 + backoff + refetchOnReconnect ; axios timeout 20s (api.js) ; Home.js affiche désormais un vrai état Chargement (spinner) + état Erreur « Connexion interrompue · Réessayer » (ré-essai manuel + auto) au lieu d'un écran vide. _lighten() strip aussi episodes en liste (payload plus léger).
+- 3 LAYOUTS d'accueil commutables (la refonte devient l'accueil par défaut = "steam") :
+  * SteamLayout : héro + rangées horizontales par catégorie + bannière Soutien dédiée.
+  * OverwatchLayout : spine catégories à gauche (+ item Soutien) + héro + grille 4 col à droite.
+  * ValorantLayout : stage plein écran d'une création + barre catégories + strip de vignettes en bas.
+  * Switcher : components/home/LayoutSwitcher.js (STEAM/OVERWATCH/VALORANT), état sx_homelayout (AppContext homeLayout/setHomeLayout).
+- NAVIGATION : clavier (flèches + Entrée) + manette via lib/useGamepad.js (D-pad/stick/A/B/LB-RB) dans chaque layout. Vérifié : → change le stage Valorant (UNITED SANCTUM FORCE -> BLUE FLOWER). Mobile = tap + scroll naturel (D-pad virtuel on-screen non repris pour l'instant).
+- HÉRO "création du moment" : choisi par l'admin via bouton étoile ⭐ (hero-set-featured) directement sur l'accueil -> SiteSettings.featured_creation_id (backend ajouté). Fallback = 1re création.
+- Backend prêt pour épisodes Canal+ : Episode.image + Creation.unit_label ajoutés (PAS encore d'UI ni d'affichage Detail — à faire après le choix du layout).
+- Composants : components/home/{LayoutSwitcher,HeroSpotlight,SupportBanner,SteamLayout,OverwatchLayout,ValorantLayout}.js ; lib/useGamepad.js. Home.js réécrit (orchestrateur).
+- data-testid : layout-switcher-toggle, layout-option-{steam|overwatch|valorant}, home-{steam|overwatch|valorant}, hero-spotlight-container, hero-launch-button, hero-set-featured, category-row-{key}, spine-{key}, valorant-title, home-loading, home-error, home-retry.
+- ⚠️ Vérifs auto partielles (challenge Cloudflare du preview fait planter l'automatisation par intermittence) ; captures manuelles OK sur les 3 layouts. Redéployer pour la prod.
+### RESTE À FAIRE (prochaine étape)
+- Épisodes/chapitres façon Canal+ : affichage en cartes défilantes avec image + description (Detail.js) + libellé de section modifiable (unit_label) ; UI éditeur pour image d'épisode + unit_label.
+- Optionnel : D-pad virtuel on-screen pour mobile ; polish du layout retenu par l'utilisateur.

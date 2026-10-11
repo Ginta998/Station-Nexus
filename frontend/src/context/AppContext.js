@@ -108,6 +108,7 @@ export function AppProvider({ children }) {
   const [reduceMotion, setReduceMotionState] = useState(() => localStorage.getItem(LS.motion) === "1");
   const [cardTagline, setCardTaglineState] = useState(() => localStorage.getItem(LS.cardTagline) !== "0");
   const [layout, setLayoutState] = useState(() => localStorage.getItem(LS.layout) || "card");
+  const [homeLayout, setHomeLayoutState] = useState(() => localStorage.getItem("sx_homelayout") || "steam");
   const scaleKey = (phone) => (phone ? "sx_textscale_mobile" : "sx_textscale_desktop");
   // resolve per-device text scale: device key -> legacy key -> default (petit on phone, grand on PC)
   const resolveScale = (phone) => localStorage.getItem(scaleKey(phone)) || localStorage.getItem(LS.textScale) || (phone ? "petit" : "grand");
@@ -257,6 +258,7 @@ export function AppProvider({ children }) {
   const setReduceMotion = (v) => { setReduceMotionState(v); localStorage.setItem(LS.motion, v ? "1" : "0"); };
   const setCardTagline = (v) => { setCardTaglineState(v); localStorage.setItem(LS.cardTagline, v ? "1" : "0"); };
   const setLayout = (v) => { setLayoutState(v); localStorage.setItem(LS.layout, v); };
+  const setHomeLayout = (v) => { setHomeLayoutState(v); localStorage.setItem("sx_homelayout", v); };
   const setTextScale = (v) => { const ph = isPhoneNow(); setTextScaleState(v); localStorage.setItem(scaleKey(ph), v); if (ph) setTextMobileState(v); else setTextDesktopState(v); };
 
   const setReaderFont = (v) => { setReaderFontState(v); localStorage.setItem(LS.rFont, v); };
@@ -421,6 +423,7 @@ export function AppProvider({ children }) {
     enterMediaMode, exitMediaMode,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
     layout, setLayout,
+    homeLayout, setHomeLayout,
     posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor,
     readerFont, setReaderFont, readerSize, setReaderSize, readerLine, setReaderLine, readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   };

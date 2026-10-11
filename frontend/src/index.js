@@ -6,7 +6,13 @@ import App from "@/App";
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { staleTime: 60_000, refetchOnWindowFocus: false },
+    queries: {
+      staleTime: 60_000,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      retry: 4,
+      retryDelay: (attempt) => Math.min(800 * 2 ** attempt, 6000),
+    },
   },
 });
 

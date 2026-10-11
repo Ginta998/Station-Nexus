@@ -2,7 +2,7 @@ import axios from "axios";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
-export const api = axios.create({ baseURL: API });
+export const api = axios.create({ baseURL: API, timeout: 20000 });
 
 // attach auth token if present
 api.interceptors.request.use((config) => {

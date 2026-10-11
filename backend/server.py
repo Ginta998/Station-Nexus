@@ -97,6 +97,7 @@ class Episode(BaseModel):
     title: str
     description: Optional[str] = ""
     url: Optional[str] = ""
+    image: Optional[str] = ""  # data uri / url — vignette de l'épisode (style Canal+)
 
 
 class Chapter(BaseModel):
@@ -140,6 +141,7 @@ class Creation(BaseModel):
     has_trailer: bool = False             # an uploaded trailer exists in object storage
     buy_url: Optional[str] = ""
     chapter_display: str = "button"  # button | image — how chapters show on the detail page
+    unit_label: Optional[str] = ""   # libellé de section personnalisable (Épisodes, Saisons, Tomes, Volumes…)
     chapter_size: str = "md"         # sm | md | lg | xl — size of chapter/episode cards on the fiche
     button_size: str = "md"          # md | lg — size of the main action buttons
     episodes: List[Episode] = Field(default_factory=list)
@@ -315,6 +317,7 @@ class SiteSettings(BaseModel):
     default_theme: str = "tengoku"
     default_poster_desktop: str = "compact"   # taille des affiches par défaut sur PC
     default_poster_mobile: str = "compact"    # taille des affiches par défaut sur mobile
+    featured_creation_id: str = ""            # "création du moment" épinglée par l'admin (héro accueil)
     intro_type: str = "tengoku"   # animation key or "video"
     intro_has_video: bool = False
     intro_hidden: List[str] = Field(default_factory=list)
@@ -459,6 +462,7 @@ def _lighten(doc: dict, keep_gallery_chapters: bool = False) -> dict:
     if not keep_gallery_chapters:
         doc["gallery"] = []
         doc["chapters"] = []
+        doc["episodes"] = []
         doc["intention_images"] = []
         doc["intention_text"] = ""
     return doc
