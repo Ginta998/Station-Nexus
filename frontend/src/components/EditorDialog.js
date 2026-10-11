@@ -8,7 +8,7 @@ const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
   poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
+  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
   intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
 };
 
@@ -50,7 +50,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const isEdit = Boolean(initial && initial.id);
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
-  const addEp = () => set("episodes", [...(form.episodes || []), { title: "", description: "", url: "" }]);
+  const addEp = () => set("episodes", [...(form.episodes || []), { title: "", description: "", url: "", image: "" }]);
   const updEp = (i, k, v) => set("episodes", form.episodes.map((e, x) => (x === i ? { ...e, [k]: v } : e)));
   const delEp = (i) => set("episodes", form.episodes.filter((_, x) => x !== i));
 
@@ -297,6 +297,14 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             )}
           </div>
 
+          {(form.launch_type === "chapters" || form.launch_type === "episodes") && (
+            <div><Label>Libellé de la section (optionnel)</Label>
+              <input data-testid="editor-unit-label" value={form.unit_label || ""} onChange={(e) => set("unit_label", e.target.value)}
+                placeholder={form.launch_type === "episodes" ? "Épisodes (ou Saisons, Volumes…)" : "Chapitres (ou Tomes, Parties…)"}
+                className="w-full px-3 py-2 border outline-none" style={fs} />
+            </div>
+          )}
+
           {form.launch_type === "reader" && (
             <div><Label>Contenu à lire</Label><textarea data-testid="editor-launch-content" rows={4} value={form.launch_content} onChange={(e) => set("launch_content", e.target.value)} className="w-full px-3 py-2 border outline-none resize-none" style={fs} /></div>
           )}
@@ -377,14 +385,22 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             <div>
               <div className="flex items-center justify-between mb-2"><Label>Épisodes</Label>
                 <button onClick={addEp} data-testid="editor-add-episode" className="flex items-center gap-1 text-xs px-2 py-1" style={{ color: "var(--brand)" }}><IoAddOutline /> Ajouter</button></div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {(form.episodes || []).map((ep, i) => (
-                  <div key={i} className="flex gap-2 items-center">
-                    <input value={ep.title} onChange={(e) => updEp(i, "title", e.target.value)} placeholder="Titre" className="flex-1 px-2 py-1.5 border outline-none text-sm" style={fs} />
-                    <input value={ep.url} onChange={(e) => updEp(i, "url", e.target.value)} placeholder="URL" className="flex-1 px-2 py-1.5 border outline-none text-sm" style={fs} />
-                    <button onClick={() => delEp(i)} style={{ color: "var(--brand)" }}><IoTrashOutline /></button>
+                  <div key={i} data-testid={`editor-episode-${i}`} className="flex gap-3 p-2.5 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+                    <label className="relative flex-shrink-0 w-24 aspect-video overflow-hidden cursor-pointer flex items-center justify-center" style={{ borderRadius: "var(--radius-base)", border: "1px dashed var(--border-c)", background: "var(--bg-secondary)" }}>
+                      {ep.image ? <img src={ep.image} alt="" className="absolute inset-0 w-full h-full object-cover" /> : <IoImageOutline size={20} style={{ color: "var(--text-secondary)" }} />}
+                      <input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0], (dta) => updEp(i, "image", dta), 4)} />
+                    </label>
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <input value={ep.title} onChange={(e) => updEp(i, "title", e.target.value)} placeholder={`Titre épisode ${i + 1}`} className="w-full px-2 py-1.5 border outline-none text-sm" style={fs} />
+                      <textarea value={ep.description} onChange={(e) => updEp(i, "description", e.target.value)} placeholder="Description (résumé de l'épisode)" rows={2} className="w-full px-2 py-1.5 border outline-none text-sm resize-none" style={fs} />
+                      <input value={ep.url} onChange={(e) => updEp(i, "url", e.target.value)} placeholder="Lien (optionnel)" className="w-full px-2 py-1.5 border outline-none text-sm" style={fs} />
+                    </div>
+                    <button onClick={() => delEp(i)} className="flex-shrink-0" style={{ color: "var(--brand)" }}><IoTrashOutline /></button>
                   </div>
                 ))}
+                {(form.episodes || []).length === 0 && <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Aucun épisode.</p>}
               </div>
             </div>
           )}

@@ -314,7 +314,7 @@ export default function Detail() {
             {item.launch_type === "chapters" && (item.chapters?.length > 0) && (
               <div className="mt-10" data-testid="detail-chapters">
                 <div className="flex items-center gap-3 mb-4">
-                  <h3 className="font-display text-xl" style={{ color: "#fff" }}>Chapitres</h3>
+                  <h3 className="font-display text-xl" style={{ color: "#fff" }}>{item.unit_label || "Chapitres"}</h3>
                   <span className="text-xs px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{item.chapters.length}</span>
                 </div>
 
@@ -370,17 +370,36 @@ export default function Detail() {
 
             {(showEpisodes || item.launch_type === "episodes") && item.episodes?.length > 0 && (
               <div className="mt-10" data-testid="detail-episodes">
-                <h3 className="font-display text-xl mb-3" style={{ color: "#fff" }}>Épisodes</h3>
-                <div className="space-y-2">
-                  {item.episodes.map((ep, i) => (
-                    <div key={ep.id || i} data-testid={`episode-item-${i}`} className={`flex items-center justify-between ${rowPadCls} border`} style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "var(--bg-secondary)" }}>
-                      <div>
-                        <p className={rowTitleCls} style={{ color: "var(--text-primary)" }}>{ep.title}</p>
-                        {ep.description && <p className="text-xs" style={{ color: "var(--text-secondary)" }}>{ep.description}</p>}
-                      </div>
-                      {ep.url && <a href={ep.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)" }}><IoOpenOutline size={18} /></a>}
-                    </div>
-                  ))}
+                <div className="flex items-center gap-3 mb-4">
+                  <h3 className="font-display text-xl" style={{ color: "#fff" }}>{item.unit_label || "Épisodes"}</h3>
+                  <span className="text-xs px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{item.episodes.length}</span>
+                </div>
+                <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-3 -mx-1 px-1 snap-x">
+                  {item.episodes.map((ep, i) => {
+                    const Tag = ep.url ? "a" : "div";
+                    const props = ep.url ? { href: ep.url, target: "_blank", rel: "noopener noreferrer" } : {};
+                    return (
+                      <Tag key={ep.id || i} data-testid={`episode-item-${i}`} {...props}
+                        className="group snap-start flex-shrink-0 w-[78vw] sm:w-[340px] overflow-hidden flex flex-col transition-transform hover:scale-[1.015]"
+                        style={{ borderRadius: "calc(var(--radius-base)*1.4)", border: "1px solid rgba(255,255,255,0.1)", background: "var(--bg-secondary)", boxShadow: "var(--shadow-1)", cursor: ep.url ? "pointer" : "default" }}>
+                        <div className="relative w-full aspect-video overflow-hidden">
+                          {ep.image ? <img src={ep.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                            : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.75))" }}><span className="font-display text-5xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{item.kanji || (i + 1)}</span></div>}
+                          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent 60%)" }} />
+                          <span className="absolute top-2.5 left-2.5 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{String(i + 1).padStart(2, "0")}</span>
+                          {ep.url && (
+                            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="w-12 h-12 flex items-center justify-center rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}><IoPlay size={22} /></span>
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-3.5 flex-1">
+                          <p className="font-display text-base leading-tight" style={{ color: "#fff" }}>{ep.title || `Épisode ${i + 1}`}</p>
+                          {ep.description && <p className="text-xs mt-1.5 line-clamp-3" style={{ color: "var(--text-secondary)" }}>{ep.description}</p>}
+                        </div>
+                      </Tag>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -318,6 +318,11 @@ class SiteSettings(BaseModel):
     default_poster_desktop: str = "compact"   # taille des affiches par défaut sur PC
     default_poster_mobile: str = "compact"    # taille des affiches par défaut sur mobile
     featured_creation_id: str = ""            # "création du moment" épinglée par l'admin (héro accueil)
+    home_hero_size: str = "l"                 # s | m | l — taille de la grande tuile mise en avant
+    home_card_size: str = "m"                 # s | m | l — taille des jaquettes
+    home_density: str = "normal"              # compact | normal | spacious
+    home_show_titles: bool = True             # afficher les titres sur les cartes
+    home_shelves: List[str] = Field(default_factory=lambda: ["soutien", "membres", "nouveautes"])  # pages en bas (Big Picture)
     intro_type: str = "tengoku"   # animation key or "video"
     intro_has_video: bool = False
     intro_hidden: List[str] = Field(default_factory=list)

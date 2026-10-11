@@ -3,7 +3,7 @@ import { IoHeart, IoHeartOutline, IoPlay } from "react-icons/io5";
 import { posterUrl } from "@/lib/api";
 
 const PosterCard = forwardRef(function PosterCard(
-  { item, focused, onFocus, onClick, onResume, onTrailer, catLabel, isFav, onToggleFav },
+  { item, focused, onFocus, onClick, onResume, onTrailer, catLabel, isFav, onToggleFav, hideTitle },
   ref
 ) {
   const hasImg = item.has_poster || (item.poster && item.poster.length > 4);
@@ -74,7 +74,7 @@ const PosterCard = forwardRef(function PosterCard(
         {isFav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}
       </span>
 
-      <div className="absolute inset-x-0 bottom-0 p-3 text-left">
+      <div className="absolute inset-x-0 bottom-0 p-3 text-left" style={{ display: hideTitle ? "none" : undefined }}>
         <p className="font-display text-base md:text-lg leading-tight" style={{ color: "#fff" }}>{item.title}</p>
         {prog ? (
           <span
