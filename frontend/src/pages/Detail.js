@@ -318,53 +318,35 @@ export default function Detail() {
                   <span className="text-xs px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{item.chapters.length}</span>
                 </div>
 
-                {item.chapter_display === "image" ? (
-                  <div className={`grid ${imgGridCls} gap-3`}>
-                    {item.chapters.map((c, i) => {
-                      const active = savedProgress && (savedProgress.chapter || 0) === i;
-                      const locked = chapterLocked(item, i);
-                      return (
-                        <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
-                          className={`group relative ${imgAspectCls} overflow-hidden text-left transition-transform hover:scale-[1.03]`}
-                          style={{ borderRadius: "var(--radius-base)", border: active ? "2px solid var(--brand)" : "1px solid rgba(255,255,255,0.15)" }}>
-                          {c.image ? <img src={c.image} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                            : <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.7))" }} />}
-                          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.1))" }} />
-                          <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                            <p className="text-[10px] uppercase tracking-widest" style={{ color: "var(--brand)" }}>Ch. {i + 1}{active ? " · en cours" : ""}</p>
-                            <p className={`${imgTitleCls} font-medium line-clamp-2`} style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
-                          </div>
-                          {c.has_music && <IoMusicalNotes size={14} className="absolute top-2 right-2" style={{ color: "#fff" }} />}
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.3)" }}>
-                            {locked ? <IoLockClosed size={30} style={{ color: "#fff" }} /> : <IoPlay size={34} style={{ color: "#fff" }} />}
-                          </div>
-                          {locked && <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[9px] font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}><IoLockClosed size={10} /> Payant</span>}
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {item.chapters.map((c, i) => {
-                      const active = savedProgress && (savedProgress.chapter || 0) === i;
-                      const locked = chapterLocked(item, i);
-                      return (
-                        <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
-                          className={`flex items-center gap-3 w-full text-left ${rowPadCls} border transition-colors hover:brightness-110`}
-                          style={{ borderColor: active ? "var(--brand)" : "rgba(255,255,255,0.15)", borderRadius: "var(--radius-base)", background: "rgba(0,0,0,0.35)" }}>
-                          <span className={`font-display ${rowNumCls} flex-shrink-0 text-center`} style={{ color: "var(--brand)" }}>{i + 1}</span>
-                          <div className="flex-1 min-w-0">
-                            <p className={`${rowTitleCls} truncate`} style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
-                            {active && <p className="text-[11px]" style={{ color: "var(--brand)" }}>En cours de lecture</p>}
-                            {locked && !active && <p className="text-[11px] flex items-center gap-1" style={{ color: "var(--brand)" }}><IoLockClosed size={11} /> Réservé — payant</p>}
-                          </div>
-                          {c.has_music && <IoMusicalNotes size={15} style={{ color: "rgba(255,255,255,0.6)" }} />}
-                          {locked ? <IoLockClosed size={16} style={{ color: "var(--brand)" }} /> : <IoPlay size={16} style={{ color: "rgba(255,255,255,0.8)" }} />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-3 -mx-1 px-1 snap-x">
+                  {item.chapters.map((c, i) => {
+                    const active = savedProgress && (savedProgress.chapter || 0) === i;
+                    const locked = chapterLocked(item, i);
+                    const w = { sm: 240, md: 300, lg: 360, xl: 440 }[chSize] || 300;
+                    return (
+                      <button key={c.id || i} data-testid={`chapter-item-${i}`} onClick={() => openChapter(i)}
+                        className="group snap-start flex-shrink-0 overflow-hidden flex flex-col text-left transition-transform hover:scale-[1.015]"
+                        style={{ width: `min(82vw, ${w}px)`, borderRadius: "calc(var(--radius-base)*1.4)", border: active ? "2px solid var(--brand)" : "1px solid rgba(255,255,255,0.1)", background: "var(--bg-secondary)", boxShadow: "var(--shadow-1)" }}>
+                        <div className="relative w-full aspect-video overflow-hidden">
+                          {c.image ? <img src={c.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                            : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.75))" }}><span className="font-display text-5xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{item.kanji || (i + 1)}</span></div>}
+                          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.78), transparent 60%)" }} />
+                          <span className="absolute top-2.5 left-2.5 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Ch. {String(i + 1).padStart(2, "0")}</span>
+                          {c.has_music && <IoMusicalNotes size={15} className="absolute top-2.5 right-2.5" style={{ color: "#fff" }} />}
+                          <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="w-12 h-12 flex items-center justify-center rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>{locked ? <IoLockClosed size={20} /> : <IoPlay size={22} />}</span>
+                          </span>
+                          {locked && <span className="absolute bottom-2.5 left-2.5 px-1.5 py-0.5 text-[9px] font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}><IoLockClosed size={10} /> Payant</span>}
+                        </div>
+                        <div className="p-3.5 flex-1">
+                          <p className="font-display text-base leading-tight" style={{ color: "#fff" }}>{c.title || `Chapitre ${i + 1}`}</p>
+                          {active && <p className="text-[11px] mt-0.5" style={{ color: "var(--brand)" }}>▸ En cours de lecture</p>}
+                          {c.description && <p className="text-xs mt-1.5 line-clamp-3" style={{ color: "var(--text-secondary)" }}>{c.description}</p>}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
 

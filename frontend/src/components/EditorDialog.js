@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
+import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoExpandOutline, IoContractOutline, IoCreateOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset } from "@/lib/api";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -33,6 +33,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const [trailerFile, setTrailerFile] = useState(null);
   const [intentionFile, setIntentionFile] = useState(null);
   const [videoProg, setVideoProg] = useState({ film: 0, trailer: 0 });
+  const [openCh, setOpenCh] = useState({});
   const posterInput = useRef(null);
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const updEp = (i, k, v) => set("episodes", form.episodes.map((e, x) => (x === i ? { ...e, [k]: v } : e)));
   const delEp = (i) => set("episodes", form.episodes.filter((_, x) => x !== i));
 
-  const addCh = () => set("chapters", [...(form.chapters || []), { title: "", content: "", image: "", rich: true, has_music: false }]);
+  const addCh = () => set("chapters", [...(form.chapters || []), { title: "", content: "", description: "", image: "", rich: true, has_music: false }]);
   const updCh = (i, k, v) => set("chapters", form.chapters.map((c, x) => (x === i ? { ...c, [k]: v } : c)));
   const delCh = (i) => { set("chapters", form.chapters.filter((_, x) => x !== i)); setChapterFiles((f) => { const n = { ...f }; delete n[i]; return n; }); };
   const removeChapterMusic = async (i) => {
@@ -346,13 +347,6 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             <div>
               <div className="flex items-center justify-between mb-2"><Label>Chapitres</Label>
                 <button onClick={addCh} data-testid="editor-add-chapter" className="flex items-center gap-1 text-xs px-2 py-1" style={{ color: "var(--brand)" }}><IoAddOutline /> Ajouter</button></div>
-              <div className="mb-3">
-                <Label>Affichage des chapitres sur la fiche</Label>
-                <select data-testid="editor-chapter-display" value={form.chapter_display || "button"} onChange={(e) => set("chapter_display", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
-                  <option value="button">Boutons (liste)</option>
-                  <option value="image">Images (vignettes)</option>
-                </select>
-              </div>
               <div className="space-y-3">
                 {(form.chapters || []).map((ch, i) => (
                   <div key={i} className="p-3 border space-y-2" style={fs} data-testid={`editor-chapter-${i}`}>
@@ -364,8 +358,15 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
                       </label>
                       <button onClick={() => delCh(i)} style={{ color: "var(--brand)" }} data-testid={`editor-chapter-delete-${i}`}><IoTrashOutline /></button>
                     </div>
-                    <RichTextEditor creationId={isEdit ? initial.id : form.id} value={ch.rich ? (ch.content || "") : (ch.content ? ch.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : "")}
-                      onChange={(html) => setForm((f) => ({ ...f, chapters: f.chapters.map((c, x) => (x === i ? { ...c, content: html, rich: true } : c)) }))} />
+                    <textarea value={ch.description || ""} onChange={(e) => updCh(i, "description", e.target.value)} placeholder="Description (résumé affiché sur la carte)" rows={2} data-testid={`editor-chapter-desc-${i}`} className="w-full px-2 py-1.5 border outline-none text-sm resize-none" style={fs} />
+                    <button onClick={() => setOpenCh((o) => ({ ...o, [i]: !o[i] }))} data-testid={`editor-chapter-write-${i}`}
+                      className="flex items-center gap-2 px-3 py-2 border text-sm font-semibold w-full justify-center" style={{ ...fs, color: "var(--brand)", borderColor: "var(--brand)" }}>
+                      <IoCreateOutline /> {openCh[i] ? "Masquer la rédaction" : (ch.content ? "Modifier le chapitre" : "Rédiger le chapitre")}
+                    </button>
+                    {openCh[i] && (
+                      <RichTextEditor creationId={isEdit ? initial.id : form.id} value={ch.rich ? (ch.content || "") : (ch.content ? ch.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : "")}
+                        onChange={(html) => setForm((f) => ({ ...f, chapters: f.chapters.map((c, x) => (x === i ? { ...c, content: html, rich: true } : c)) }))} />
+                    )}
                     {/* per-chapter music */}
                     <div className="flex items-center gap-2 flex-wrap pt-1">
                       <label className="flex items-center gap-2 px-3 py-1.5 border cursor-pointer text-xs" style={fs} data-testid={`editor-chapter-music-${i}`}>

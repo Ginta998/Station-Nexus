@@ -104,6 +104,7 @@ class Chapter(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     content: Optional[str] = ""
+    description: Optional[str] = ""  # résumé court (affiché sur la carte façon Canal+)
     image: Optional[str] = ""  # data uri / url
     rich: bool = False          # content is sanitized HTML (WYSIWYG) vs plain text
     has_music: bool = False     # dedicated per-chapter reading music
