@@ -22,31 +22,35 @@ export default function MovixSelector({ label, kanji, items, testid = "movix", m
     <span className="text-xs px-2 py-0.5 flex-shrink-0" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }} data-testid={`${testid}-count`}>{items.length}</span>
   );
 
-  // ---- Mode "liste complète" : tous les éléments les uns derrière les autres ----
+  // ---- Mode "liste complète" : grandes cartes verticales (image 16:9 + titre + description dessous) ----
   if (mode === "list") {
     return (
       <div className="mt-10" data-testid={testid}>
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-6">
           <span className="font-display text-lg opacity-70" style={{ color: "var(--brand)" }}>{kanji}</span>
           <h3 className="font-display text-xl" style={{ color: "#fff" }}>{label}</h3>
           {countBadge}
         </div>
-        <div className="flex flex-col gap-4" data-testid={`${testid}-list`}>
+        <div className="flex flex-col gap-8" data-testid={`${testid}-list`}>
           {items.map((it, i) => (
             <button key={it.key || i} data-testid={`${testid}-row-${i}`} onClick={it.onOpen}
-              className="group flex items-stretch gap-4 w-full text-left overflow-hidden transition-transform hover:scale-[1.008] movix-pop"
-              style={{ borderRadius: "calc(var(--radius-base)*1.3)", border: it.active ? "2px solid var(--brand)" : "1px solid rgba(255,255,255,0.1)", background: "var(--bg-secondary)", boxShadow: "var(--shadow-1)" }}>
-              <div className="relative flex-shrink-0 w-32 sm:w-56 self-stretch overflow-hidden" style={{ aspectRatio: "16/9" }}>
-                {it.image ? <img src={it.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.8))" }}><span className="font-display text-4xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{kanji || i + 1}</span></div>}
-                <span className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}>{it.badge || String(i + 1).padStart(2, "0")}</span>
-                <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span className="w-10 h-10 flex items-center justify-center rounded-full" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>{it.locked ? <IoLockClosed size={18} /> : <IoPlay size={20} />}</span></span>
+              className="group block w-full text-left overflow-hidden transition-transform hover:scale-[1.01] movix-pop"
+              style={{ borderRadius: "calc(var(--radius-base)*1.5)", border: it.active ? "2px solid var(--brand)" : "1px solid rgba(255,255,255,0.1)", background: "var(--bg-secondary)", boxShadow: "var(--shadow-1)" }}>
+              <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16/9" }}>
+                {it.image ? <img src={it.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.8))" }}><span className="font-display text-8xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{kanji || i + 1}</span></div>}
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5), transparent 45%)" }} />
+                <span className="absolute top-4 left-4 text-[11px] font-bold uppercase tracking-widest px-2.5 py-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{it.badge || String(i + 1).padStart(2, "0")}</span>
+                {it.music && <IoMusicalNotes size={18} className="absolute top-4 right-4" style={{ color: "#fff" }} />}
+                <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="w-16 h-16 flex items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110" style={{ background: "var(--brand)", color: "var(--bg-primary)", boxShadow: "0 0 30px color-mix(in srgb, var(--brand) 55%, transparent)" }}>{it.locked ? <IoLockClosed size={26} /> : <IoPlay size={28} />}</span>
+                </span>
               </div>
-              <div className="flex-1 min-w-0 py-3 pr-4 self-center">
-                <p className="font-display text-base md:text-lg leading-tight" style={{ color: "#fff" }}>{it.title}</p>
-                {it.note && <p className="text-[11px] mt-0.5" style={{ color: "var(--brand)" }}>{it.note}</p>}
-                {it.description && <p className="text-xs md:text-sm mt-1.5 line-clamp-2 md:line-clamp-3" style={{ color: "var(--text-secondary)" }}>{it.description}</p>}
-                {it.locked && <span className="inline-flex items-center gap-1 mt-2 px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}><IoLockClosed size={10} /> Payant</span>}
+              <div className="p-5 md:p-7">
+                <p className="font-display text-2xl md:text-3xl leading-tight" style={{ color: "#fff" }}>{it.title}</p>
+                {it.note && <p className="text-sm mt-1.5" style={{ color: "var(--brand)" }}>{it.note}</p>}
+                {it.description && <p className="text-sm md:text-base mt-2.5 line-clamp-3" style={{ color: "var(--text-secondary)", maxWidth: "70ch" }}>{it.description}</p>}
+                {it.locked && <span className="inline-flex items-center gap-1 mt-3 px-2 py-1 text-[11px] font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}><IoLockClosed size={11} /> Réservé — payant</span>}
               </div>
             </button>
           ))}
@@ -91,7 +95,7 @@ export default function MovixSelector({ label, kanji, items, testid = "movix", m
       <div className="relative">
         <button key={cur.key || sel} data-testid={`${testid}-feature`} onClick={cur.onOpen}
           className="group relative block w-full overflow-hidden text-left movix-pop"
-          style={{ aspectRatio: "16/9", maxHeight: "clamp(240px, 46vh, 460px)", borderRadius: "calc(var(--radius-base)*1.6)", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "var(--shadow-1)" }}>
+          style={{ aspectRatio: "16/9", maxHeight: "clamp(340px, 64vh, 640px)", borderRadius: "calc(var(--radius-base)*1.6)", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "var(--shadow-1)" }}>
           {cur.image ? <img src={cur.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.8))" }}><span className="font-display text-8xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{kanji || cur.title[0]}</span></div>}
           <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.9) 5%, rgba(0,0,0,0.25) 55%, transparent)" }} />
