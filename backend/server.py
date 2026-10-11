@@ -237,6 +237,8 @@ class Comment(BaseModel):
     creation_id: str
     name: str
     text: str
+    episode_index: int = -1
+    episode_label: str = ""
     created_at: str = Field(default_factory=now_iso)
 
 
@@ -244,6 +246,8 @@ class CommentInput(BaseModel):
     creation_id: str
     name: str
     text: str
+    episode_index: int = -1
+    episode_label: str = ""
 
 
 class Ambience(BaseModel):

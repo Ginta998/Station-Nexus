@@ -245,8 +245,8 @@ export default function Detail() {
         </div>
 
         <div className="max-w-6xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
-          <div ref={cardRef} className="group flex-shrink-0 w-64 sm:w-80 md:w-96 lg:w-[26rem] aspect-[2/3] overflow-hidden border relative fade-up"
-            style={{ borderColor: "var(--border-c)", borderRadius: "calc(var(--radius-base)*1.3)", boxShadow: "0 24px 60px rgba(0,0,0,0.55)" }} data-testid="detail-poster">
+          <div ref={cardRef} className="group flex-shrink-0 w-72 sm:w-96 md:w-[28rem] lg:w-[34rem] aspect-[2/3] overflow-hidden border relative poster-in"
+            style={{ borderColor: "var(--border-c)", borderRadius: "calc(var(--radius-base)*1.3)", boxShadow: "0 30px 80px rgba(0,0,0,0.6)" }} data-testid="detail-poster">
             {hasImg ? (
               <img src={posterSrc} alt={item.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             ) : (
@@ -480,7 +480,7 @@ export default function Detail() {
 
             <FicheSupport membershipActive={membershipActive} />
 
-            <CommentsSection creationId={item.id} />
+            <CommentsSection creationId={item.id} episodes={item.episodes || []} />
 
             {recommendations.length > 0 && (
               <div className="mt-14" data-testid="recommendations">

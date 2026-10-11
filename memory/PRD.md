@@ -705,3 +705,7 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - CAUSE : CreationInput (modèle backend utilisé par create/update) ne déclarait PAS unit_display ni unit_label -> Pydantic les supprimait du payload à l'enregistrement, donc le choix "Liste complète" n'avait aucun effet.
 - FIX : ajout de `unit_display: str = "movix"` et `unit_label: Optional[str] = ""` à CreationInput (server.py). La page Detail lit déjà item.unit_display et MovixSelector gère mode="list".
 - Vérifié curl : création test avec unit_display=list + unit_label=Saisons -> relecture renvoie bien list/Saisons (puis supprimée). Backend auto-reload OK.
+
+## Affiche détail plus grande + animation + commentaires par épisode — 11/06/2026
+- AFFICHE PRINCIPALE (Detail.js) : agrandie w-72/sm:w-96/md:[28rem]/lg:[34rem] (avant w-64…[26rem]) + ombre renforcée. Nouvelle animation d'entrée `posterIn` (index.css) : .5s cubic-bezier, translateY 46px->0, scale .8->1.03->1, rotate léger, blur 10px->0 (rapide + dynamique). Remplace fade-up sur le poster uniquement.
+- COMMENTAIRES PAR ÉPISODE : backend Comment/CommentInput + episode_index (int, -1=général) + episode_label (str). CommentsSection reçoit prop episodes depuis Detail. Si épisodes : sélecteur "À propos de" (Général ou épisode N), badge épisode sur chaque commentaire, filtres pilule (Tout/Général/n°). Testids: comment-episode-select, comment-filter(-all/-general/-ep-{i}). Vérifié curl : index/label persistés OK.

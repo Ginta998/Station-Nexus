@@ -1,25 +1,41 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { IoSend, IoTrashOutline, IoChatbubbleEllipsesOutline } from "react-icons/io5";
+import { IoSend, IoTrashOutline, IoChatbubbleEllipsesOutline, IoTvOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { listComments, addComment, deleteComment } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import AutoTextarea from "@/components/AutoTextarea";
 
-export default function CommentsSection({ creationId }) {
+export default function CommentsSection({ creationId, episodes = [] }) {
   const { isAdmin, sfx } = useApp();
   const { data: comments = [], refetch } = useQuery({ queryKey: ["comments", creationId], queryFn: () => listComments(creationId) });
   const [name, setName] = useState(() => localStorage.getItem("sx_cname") || "");
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
+  const hasEpisodes = episodes && episodes.length > 0;
+  const [target, setTarget] = useState(-1); // -1 = général, sinon index d'épisode
+  const [filter, setFilter] = useState("all"); // "all" | "-1" | "<index>"
 
   const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
+  const epLabel = (i) => (episodes[i]?.title ? episodes[i].title : `Épisode ${i + 1}`);
+
+  const shown = useMemo(() => {
+    if (!hasEpisodes || filter === "all") return comments;
+    const f = Number(filter);
+    return comments.filter((c) => (c.episode_index ?? -1) === f);
+  }, [comments, filter, hasEpisodes]);
 
   const submit = async () => {
     if (!name.trim() || !text.trim()) return toast.error("Nom et commentaire requis");
     setBusy(true);
     try {
-      await addComment({ creation_id: creationId, name: name.trim(), text: text.trim() });
+      await addComment({
+        creation_id: creationId,
+        name: name.trim(),
+        text: text.trim(),
+        episode_index: hasEpisodes ? target : -1,
+        episode_label: hasEpisodes && target >= 0 ? epLabel(target) : "",
+      });
       localStorage.setItem("sx_cname", name.trim());
       setText(""); sfx("select"); refetch();
     } catch { toast.error("Erreur"); } finally { setBusy(false); }
@@ -35,6 +51,21 @@ export default function CommentsSection({ creationId }) {
         Ton avis compte énormément ✨ Qu'as-tu ressenti en découvrant cette création ? Partage ton émotion, ton passage préféré ou un petit mot d'encouragement — avec bienveillance et respect. Chaque message fait vivre l'univers un peu plus fort. 🌸
       </p>
 
+      {hasEpisodes && (
+        <div className="mb-4">
+          <label className="block text-xs uppercase tracking-widest mb-1.5 flex items-center gap-1.5" style={{ color: "var(--text-secondary)" }}>
+            <IoTvOutline size={13} style={{ color: "var(--brand)" }} /> À propos de
+          </label>
+          <select data-testid="comment-episode-select" value={target} onChange={(e) => setTarget(Number(e.target.value))}
+            className="w-full sm:w-80 px-3 py-2 border outline-none text-sm" style={fs}>
+            <option value={-1}>💬 Commentaire général</option>
+            {episodes.map((ep, i) => (
+              <option key={i} value={i}>{String(i + 1).padStart(2, "0")} · {epLabel(i)}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-2 mb-6 items-start">
         <input data-testid="comment-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ton nom"
           className="sm:w-40 px-3 py-2 border outline-none text-sm" style={fs} />
@@ -46,13 +77,36 @@ export default function CommentsSection({ creationId }) {
         </button>
       </div>
 
+      {hasEpisodes && (
+        <div className="flex items-center gap-2 flex-wrap mb-5" data-testid="comment-filter">
+          <button onClick={() => setFilter("all")} data-testid="comment-filter-all"
+            className="px-3 py-1.5 text-xs font-semibold transition-colors"
+            style={{ borderRadius: "999px", border: "1px solid var(--border-c)", background: filter === "all" ? "var(--brand)" : "transparent", color: filter === "all" ? "var(--bg-primary)" : "rgba(255,255,255,0.8)" }}>Tout</button>
+          <button onClick={() => setFilter("-1")} data-testid="comment-filter-general"
+            className="px-3 py-1.5 text-xs font-semibold transition-colors"
+            style={{ borderRadius: "999px", border: "1px solid var(--border-c)", background: filter === "-1" ? "var(--brand)" : "transparent", color: filter === "-1" ? "var(--bg-primary)" : "rgba(255,255,255,0.8)" }}>Général</button>
+          {episodes.map((ep, i) => (
+            <button key={i} onClick={() => setFilter(String(i))} data-testid={`comment-filter-ep-${i}`}
+              className="px-3 py-1.5 text-xs font-semibold transition-colors"
+              style={{ borderRadius: "999px", border: "1px solid var(--border-c)", background: filter === String(i) ? "var(--brand)" : "transparent", color: filter === String(i) ? "var(--bg-primary)" : "rgba(255,255,255,0.8)" }}>{String(i + 1).padStart(2, "0")}</button>
+          ))}
+        </div>
+      )}
+
       <div className="space-y-3">
-        {comments.length === 0 && <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Sois le premier à commenter.</p>}
-        {comments.map((c) => (
+        {shown.length === 0 && <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Aucun commentaire ici pour le moment.</p>}
+        {shown.map((c) => (
           <div key={c.id} data-testid={`comment-${c.id}`} className="p-3 border flex items-start justify-between gap-3"
             style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-            <div>
-              <p className="text-sm font-semibold" style={{ color: "var(--brand)" }}>{c.name}</p>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-sm font-semibold" style={{ color: "var(--brand)" }}>{c.name}</p>
+                {(c.episode_index ?? -1) >= 0 && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: "color-mix(in srgb, var(--brand) 20%, transparent)", color: "var(--brand)", borderRadius: 4 }}>
+                    <IoTvOutline size={10} /> {c.episode_label || epLabel(c.episode_index)}
+                  </span>
+                )}
+              </div>
               <p className="text-sm mt-0.5 whitespace-pre-wrap" style={{ color: "var(--text-primary)" }}>{c.text}</p>
               <p className="text-[10px] mt-1" style={{ color: "var(--text-secondary)" }}>{new Date(c.created_at).toLocaleDateString("fr-FR")}</p>
             </div>
