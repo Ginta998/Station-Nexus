@@ -709,3 +709,9 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 ## Affiche détail plus grande + animation + commentaires par épisode — 11/06/2026
 - AFFICHE PRINCIPALE (Detail.js) : agrandie w-72/sm:w-96/md:[28rem]/lg:[34rem] (avant w-64…[26rem]) + ombre renforcée. Nouvelle animation d'entrée `posterIn` (index.css) : .5s cubic-bezier, translateY 46px->0, scale .8->1.03->1, rotate léger, blur 10px->0 (rapide + dynamique). Remplace fade-up sur le poster uniquement.
 - COMMENTAIRES PAR ÉPISODE : backend Comment/CommentInput + episode_index (int, -1=général) + episode_label (str). CommentsSection reçoit prop episodes depuis Detail. Si épisodes : sélecteur "À propos de" (Général ou épisode N), badge épisode sur chaque commentaire, filtres pilule (Tout/Général/n°). Testids: comment-episode-select, comment-filter(-all/-general/-ep-{i}). Vérifié curl : index/label persistés OK.
+
+## Fix barre d'en-tête fiche mobile (débordement Aa/Menu) — 11/06/2026
+- CAUSE : le réglage Aa (data-textscale) augmente la font-size racine -> tous les rem (paddings/libellés) grossissent ; la barre d'en-tête de la fiche était en flex justify-between SANS wrap, donc à grand/max le contenu débordait horizontalement et le bouton Menu sortait de l'écran (inclaquable).
+- FIX Detail.js : header en `flex flex-wrap justify-between gap-2` ; groupes gauche/droite en flex-wrap. Bouton Retour = icône flèche seule (IoArrowBack), Accueil = icône maison seule (IoHome), p-2.5 border flex-shrink-0 (plus de libellés texte).
+- FIX MobileMenu.js : conteneur racine `flex flex-wrap justify-end`, bouton Menu `flex-shrink-0`. QuickControls.js : conteneur en flex-wrap.
+- Résultat : à Aa max sur mobile, les boutons passent à la ligne et restent dans le cadre + cliquables. ⚠️ Capture auto a planté (instabilité preview) ; à confirmer sur navigateur.

@@ -223,16 +223,16 @@ export default function Detail() {
       </div>
 
       <div className="relative z-10">
-        <div className="sx-safe-top flex items-center justify-between px-5 md:px-12 pt-6">
-          <div className="flex items-center gap-2">
-            <button data-testid="detail-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={btn}>
-              <IoArrowBack /> <span className="text-sm">Retour</span>
+        <div className="sx-safe-top flex flex-wrap items-center justify-between gap-2 px-5 md:px-12 pt-6">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button data-testid="detail-back" onClick={() => { sfx("back"); nav(-1); }} title="Retour" aria-label="Retour" className="p-2.5 border flex-shrink-0" style={btn}>
+              <IoArrowBack size={18} />
             </button>
-            <button data-testid="detail-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={btn}>
-              <IoHome size={16} /> <span className="text-sm">Accueil</span>
+            <button data-testid="detail-home" onClick={() => { sfx("nav"); nav("/"); }} title="Accueil" aria-label="Accueil" className="p-2.5 border flex-shrink-0" style={btn}>
+              <IoHome size={18} />
             </button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             <ShareMenu item={item} cardRef={cardRef} testid="detail-share-icon" />
             {isAdmin && (
               <>

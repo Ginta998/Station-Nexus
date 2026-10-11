@@ -21,7 +21,7 @@ export default function QuickControls() {
   };
   const btn = { border: "1px solid var(--border-c)", borderRadius: "var(--radius-base)", background: "var(--bg-secondary)" };
   return (
-    <div className="flex items-center gap-2" data-testid="quick-controls">
+    <div className="flex flex-wrap items-center gap-2" data-testid="quick-controls">
       <button data-testid="qc-mute" onClick={() => { toggleMute(); sfx("nav"); }} title="Son" className="p-2.5 border transition-colors" style={{ ...btn, color: muted ? "var(--text-secondary)" : "var(--brand)" }}>
         {muted ? <IoVolumeMute size={18} /> : <IoVolumeHigh size={18} />}
       </button>

@@ -32,10 +32,10 @@ export default function MobileMenu({ compact = false }) {
   const go = (to) => { sfx("nav"); setOpen(false); nav(to); };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2 justify-end">
       {!compact && <QuickControls />}
       <button data-testid="page-menu-btn" onClick={() => { sfx("nav"); setOpen(true); }} title="Menu" aria-label="Menu"
-        className="flex items-center gap-1.5 px-3.5 py-2.5 font-semibold text-sm transition-transform hover:scale-105"
+        className="flex items-center gap-1.5 px-3.5 py-2.5 font-semibold text-sm transition-transform hover:scale-105 flex-shrink-0"
         style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
         <IoMenu size={18} /> Menu
       </button>
