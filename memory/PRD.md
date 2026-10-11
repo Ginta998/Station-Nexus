@@ -719,3 +719,9 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 ## Commentaires par chapitre (lecteur) comme les épisodes — 11/06/2026
 - CommentsSection généralisé : props `units` (array) + `term` ("Chapitre"/"Épisode"). Detail.js passe item.chapters + term="Chapitre" si launch_type==="chapters", sinon item.episodes + "Épisode".
 - Sélecteur "À propos de", badges et filtres fonctionnent identiquement pour chapitres et épisodes. Réutilise episode_index/episode_label backend (aucun changement backend). Compile OK.
+
+## Fiche détail PC : pleine largeur horizontale — 11/06/2026
+- PROBLÈME : toutes les sections (chapitres/épisodes, intentions, galerie, commentaires, recos) étaient dans la colonne droite étroite (md:flex-1) à côté de la grosse affiche, et tout bridé à max-w-6xl -> sections petites/verticales + espace vide sur PC.
+- FIX Detail.js : le héros (affiche + badges/titre/synopsis/boutons/paywall/reprise) reste en 2 colonnes ; TOUT le reste (chapitres, épisodes, bande-annonce, galerie, embeds, intentions, support, commentaires, recommandations, copyright) déplacé dans un nouveau conteneur PLEINE LARGEUR sous le héros. Conteneurs passés max-w-6xl -> max-w-7xl.
+- Intentions : grille lg:grid-cols-2 (texte | images) au lieu d'une pile étroite. Galerie lg:grid-cols-6. Bande-annonce max-w-2xl -> max-w-4xl.
+- Vérifié capture PC 1920 : titre OK, commentaires largeur ~1332px (pleine largeur), boutons Retour/Accueil en icônes. Compile OK.

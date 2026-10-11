@@ -244,7 +244,7 @@ export default function Detail() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
+        <div className="max-w-7xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
           <div ref={cardRef} className="group flex-shrink-0 w-72 sm:w-96 md:w-[28rem] lg:w-[34rem] aspect-[2/3] overflow-hidden border relative poster-in"
             style={{ borderColor: "var(--border-c)", borderRadius: "calc(var(--radius-base)*1.3)", boxShadow: "0 30px 80px rgba(0,0,0,0.6)" }} data-testid="detail-poster">
             {hasImg ? (
@@ -357,7 +357,10 @@ export default function Detail() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
 
+        <div className="max-w-7xl mx-auto px-5 md:px-12 pb-8 md:pb-14 fade-up">
             {item.launch_type === "chapters" && (item.chapters?.length > 0) && (
               <MovixSelector
                 testid="detail-chapters"
@@ -400,7 +403,7 @@ export default function Detail() {
             {trailerSource && (
               <div className="mt-10" data-testid="detail-trailer-section">
                 <h3 className="font-display text-xl mb-3 flex items-center gap-2" style={{ color: "#fff" }}><IoFilmOutline style={{ color: "var(--brand)" }} /> Bande-annonce</h3>
-                <div className="aspect-video w-full max-w-2xl overflow-hidden border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "#000", boxShadow: "var(--shadow-1)" }}>
+                <div className="aspect-video w-full max-w-4xl overflow-hidden border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "#000", boxShadow: "var(--shadow-1)" }}>
                   {trailerSource.type === "video"
                     ? <video data-testid="trailer-video" src={trailerSource.src} controls playsInline className="w-full h-full" />
                     : <iframe data-testid="trailer-iframe" src={trailerSource.src} title="Bande-annonce" className="w-full h-full" frameBorder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen />}
@@ -412,7 +415,7 @@ export default function Detail() {
             {item.gallery?.length > 0 && (
               <div className="mt-10" data-testid="detail-gallery">
                 <h3 className="font-display text-xl mb-3" style={{ color: "#fff" }}>Galerie</h3>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5">
                   {item.gallery.map((g, i) => (
                     <button key={i} onClick={() => { sfx("nav"); setLightbox(g); }} data-testid={`gallery-img-${i}`}
                       className="aspect-square overflow-hidden border transition-transform hover:scale-[1.03]" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
@@ -453,24 +456,26 @@ export default function Detail() {
                 <h3 className="font-display text-xl mb-3 flex items-center gap-2" style={{ color: "#fff" }}>
                   <IoSparklesOutline style={{ color: "var(--brand)" }} /> {item.intention_title || "Intentions de l'auteur"}
                 </h3>
-                {item.intention_text && (
-                  <div className="space-y-3 leading-relaxed max-w-2xl mb-5" style={{ color: "rgba(255,255,255,0.75)" }} data-testid="detail-intention-text">
-                    {item.intention_text.split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
-                  </div>
-                )}
-                {item.intention_images?.length > 0 && (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-5">
-                    {item.intention_images.map((g, i) => (
-                      <button key={i} onClick={() => { sfx("nav"); setLightbox(g); }} data-testid={`intention-img-${i}`}
-                        className="aspect-square overflow-hidden border transition-transform hover:scale-[1.03]" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-                        <img src={g} alt="" className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
+                  {item.intention_text && (
+                    <div className="space-y-3 leading-relaxed text-base md:text-lg" style={{ color: "rgba(255,255,255,0.78)" }} data-testid="detail-intention-text">
+                      {item.intention_text.split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+                    </div>
+                  )}
+                  {item.intention_images?.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      {item.intention_images.map((g, i) => (
+                        <button key={i} onClick={() => { sfx("nav"); setLightbox(g); }} data-testid={`intention-img-${i}`}
+                          className="aspect-square overflow-hidden border transition-transform hover:scale-[1.03]" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+                          <img src={g} alt="" className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 {item.intention_file_id && (
                   <a href={assetDownloadUrl(item.intention_file_id)} target="_blank" rel="noopener noreferrer" onClick={() => sfx("select")} data-testid="detail-intention-download"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 font-semibold transition-transform hover:scale-105"
+                    className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 font-semibold transition-transform hover:scale-105"
                     style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
                     <IoDownloadOutline size={18} /> Télécharger le dossier{item.intention_file_name ? ` · ${item.intention_file_name}` : ""}
                   </a>
@@ -515,7 +520,6 @@ export default function Detail() {
               {siteSettings?.copyright_notice || "© Stationexus — Toutes les créations sont protégées par le droit d'auteur. Toute reproduction ou diffusion sans autorisation est interdite. Merci de respecter le travail de l'artiste. 💛"}
             </p>
           </div>
-        </div>
       </div>
 
       {gateOpen && <LaunchGate onClose={() => setGateOpen(false)} />}
