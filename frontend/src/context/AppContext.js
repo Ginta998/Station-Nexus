@@ -1,3 +1,4 @@
+import { THEMES } from "@/lib/themes";
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { audioUrl, ambienceUrl, readingAudioUrl, getSettings, upsertProfile } from "@/lib/api";
 import { configureSound, playUiSound, primeAudioCtx } from "@/lib/sound";
@@ -38,7 +39,8 @@ function fadeTo(audio, target, ms, onDone) {
 }
 
 export function AppProvider({ children }) {
-  const storedTheme = localStorage.getItem(LS.theme);
+  const rawTheme = localStorage.getItem(LS.theme);
+  const storedTheme = THEMES.some((t) => t.key === rawTheme) ? rawTheme : null;
   const [theme, setThemeState] = useState(() => storedTheme || "abysse");
   const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem(LS.admin) === "1" || DEV_LOCAL);
   const [musicVolume, setMusicVolumeState] = useState(() => {
@@ -217,7 +219,7 @@ export function AppProvider({ children }) {
     if (!needAmb && !needTheme && !needPosterD && !needPosterM) return;
     getSettings().then((s) => {
       if (needAmb && s?.default_ambience_id) setAmbienceId(s.default_ambience_id);
-      if (needTheme && s?.default_theme) setThemeState(s.default_theme);
+      if (needTheme && THEMES.some((t) => t.key === s?.default_theme)) setThemeState(s.default_theme);
       if (needPosterD && s?.default_poster_desktop) { setPosterDesktopState(s.default_poster_desktop); if (!isPhoneNow()) setPosterSizeState(s.default_poster_desktop); }
       if (needPosterM && s?.default_poster_mobile) { setPosterMobileState(s.default_poster_mobile); if (isPhoneNow()) setPosterSizeState(s.default_poster_mobile); }
     }).catch(() => {});

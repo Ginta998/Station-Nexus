@@ -860,7 +860,7 @@ export default function Settings() {
     posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor, layout, setLayout } = useApp();
   const [pin, setPin] = useState(""); const [newPin, setNewPin] = useState("");
   const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
-  const defTheme = siteSettings?.default_theme || "tengoku";
+  const defTheme = siteSettings?.default_theme || "abysse";
   const setDefaultTheme = async (k) => { await updateSettings({ ...siteSettings, default_theme: k }); toast.success("Thème par défaut défini"); refetchSite(); };
   const setDefaultPoster = async (phone, v) => { await updateSettings({ ...siteSettings, [phone ? "default_poster_mobile" : "default_poster_desktop"]: v }); toast.success("Taille d'affiche par défaut mise à jour ✓"); refetchSite(); };
 

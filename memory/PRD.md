@@ -734,3 +734,9 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Vérifié : compile OK (avert. webpack déprécation bénin), home rend le nouveau look avec données réelles ; tous les endpoints utilisés (categories, settings, announcements, roadmap, ambiences, creations, membership/plan) renvoient 200.
 - Backup avant remplacement : /app/memory/backups/frontend_backup_20261023_193016.tar.gz
 - Note : la clé secret GITHUB_TOKEN saisie n'était pas un vrai PAT (texte) ; dépôt finalement rendu public pour le clone. Clé inoffensive, peut être supprimée.
+
+## 2026-10-23 — Synchronisation des thèmes après la migration GitHub
+- Frontend vérifié identique au dépôt GitHub (diff -rq vide) ; backend server.py identique.
+- Bug dans le dépôt : lib/themes.js listait les anciens thèmes (tengoku…) alors que index.css ne définit que 17 thèmes cosmiques. THEMES réécrit (abysse, neptune, glacier, singularite, blackhole, supernova, helios, akira, aurum, megapole, biome, monolithe, neant, bunny, albatre, olympe, yorha).
+- Défaut default_theme = abysse (backend + Settings) ; valeur en base migrée de tengoku vers abysse ; un ancien thème mémorisé dans le navigateur bascule automatiquement sur un thème valide.
+- L intro tengoku (animation de démarrage) est conservée, ce n est pas un thème.
