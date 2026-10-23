@@ -7,7 +7,7 @@ export const useAuth = () => useContext(AuthContext);
 
 // localStorage keys that follow the account across devices (NOT admin/pin/session)
 const PREF_KEYS = [
-  "sx_theme", "sx_accent", "sx_radius", "sx_motion", "sx_cardtagline",
+  "sx_theme", "sx_radius", "sx_motion", "sx_cardtagline",
   "sx_musicvolume", "sx_uivolume", "sx_mute", "sx_soundpack", "sx_customsounds", "sx_ambience",
   "sx_postersize", "sx_postersize_desktop", "sx_postersize_mobile", "sx_layout",
   "sx_textscale", "sx_textscale_desktop", "sx_textscale_mobile",

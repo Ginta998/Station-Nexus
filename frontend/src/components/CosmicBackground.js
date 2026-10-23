@@ -207,6 +207,7 @@ export default function CosmicBackground() {
   const l1 = useRef(null), l2 = useRef(null), l3 = useRef(null), eye = useRef(null), pupil = useRef(null);
 
   useEffect(() => {
+    if (window.matchMedia("(pointer:coarse)").matches) return; // pas de parallaxe au doigt : scroll plus fluide
     let t = false;
     const onScroll = () => {
       if (t) return; t = true;

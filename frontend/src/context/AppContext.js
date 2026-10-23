@@ -113,7 +113,8 @@ export function AppProvider({ children }) {
   }, []);
 
   // ---- interface customization ----
-  const [accent, setAccentState] = useState(() => localStorage.getItem(LS.accent) || "");
+  // accent : uniquement temporaire (démo de la visite), jamais mémorisé
+  const [accent, setAccentState] = useState(() => { localStorage.removeItem(LS.accent); return ""; });
   const [radius, setRadiusState] = useState(() => localStorage.getItem(LS.radius) || "");
   const phoneMQ = "(max-width: 767px)";
   const isPhoneNow = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia(phoneMQ).matches;
@@ -267,7 +268,7 @@ export function AppProvider({ children }) {
   const toggleMute = () => setMuted((m) => { const nv = !m; localStorage.setItem(LS.mute, nv ? "1" : "0"); return nv; });
   const selectAmbience = (id) => { setAmbienceId(id); localStorage.setItem(LS.ambience, id || ""); };
 
-  const setAccent = (v) => { setAccentState(v); v ? localStorage.setItem(LS.accent, v) : localStorage.removeItem(LS.accent); };
+  const setAccent = (v) => setAccentState(v || "");
   const setRadius = (v) => { setRadiusState(v); v ? localStorage.setItem(LS.radius, v) : localStorage.removeItem(LS.radius); };
   const setPosterSize = (v) => { const ph = isPhoneNow(); setPosterSizeState(v); localStorage.setItem(posterKey(ph), v); if (ph) setPosterMobileState(v); else setPosterDesktopState(v); };
   const setReduceMotion = (v) => { setReduceMotionState(v); localStorage.setItem(LS.motion, v ? "1" : "0"); };

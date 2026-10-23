@@ -1323,3 +1323,24 @@ html[data-theme="olympia"] .sx-exp .pcap .pcat,html[data-theme="bunny"] .sx-exp 
 /* décor du thème partagé par toutes les pages, derrière le contenu */
 .App{position:relative;z-index:0}
 .App > .cosmic-bg{z-index:-1}
+@media(max-width:640px){.sx-sound-menu{position:fixed;top:calc(env(safe-area-inset-top,0px) + 64px);left:12px;right:12px;width:auto;max-height:70vh;overflow-y:auto}}
+.sx-sound-menu{max-height:min(70vh,520px);overflow-y:auto}
+
+/* ===== Téléphone : fluidité du scroll + rien qui déborde ===== */
+@media (max-width:768px), (pointer:coarse){
+  body::after{display:none}
+  .cosmic-bg .cb-nebula{mix-blend-mode:normal;animation:none;filter:blur(40px)}
+  .cosmic-bg .fx-neb b{animation:none}
+  .cosmic-bg .fx-aurora,.cosmic-bg .sgeye .iris .fib,.cosmic-bg .s-glacier .aur{mix-blend-mode:normal}
+  .sx-exp .arc-bgblur{filter:brightness(.45) saturate(1.2)}
+  .sx-exp .poster::before{display:none}
+  .sx-exp .art,.sx-exp .rcard{animation:none!important;filter:none}
+  .fxl{animation:none!important;mix-blend-mode:normal!important}
+  .sx-fxcard{filter:none}
+  .sx-set-tabs{backdrop-filter:none}
+}
+@media (max-width:640px){
+  .sx-cyber{display:none}
+  .sx-set-tabs{flex-wrap:wrap;overflow-x:visible;gap:6px}
+  .sx-set-tab{padding:8px 12px;font-size:11px}
+}
