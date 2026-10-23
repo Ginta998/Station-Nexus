@@ -748,3 +748,12 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - 17 phrases de thèmes posées (fournies par l utilisateur ; Néant = "Quelque chose respire dans le noir", inventée). Trou noir renommé Black Hole, Olympe affiché Elysium (clé olympe inchangée).
 - Néant : scène inquiétante (silhouette qui respire, paires d yeux qui apparaissent et clignent rarement).
 - Accueil : phrase du thème apparaît lettre par lettre à chaque changement de thème (data-testid home-theme-tagline).
+
+## 2026-10-23 — Passe thèmes + sons
+- Elysium (clé olympe) noir & argent, sphère cryptique 2D (glyphes, géométrie sacrée, wireframe), sans or.
+- YoRHa : plus de cendres + comètes, ligne horizontale .hz retirée, maillage resserré. Albâtre : cendres + comètes sombres + maillage serré.
+- Biome & Glacier : bandes répétées retirées, maillage .cb-grid.
+- Néant renforcé : 10 paires d yeux, silhouettes, volutes, vignette qui se resserre, étoiles qui vacillent.
+- Anciens sons UI supprimés ; 3 packs synthétisés (Monolithe, Abysse, Elysium) ; mode Auto suit le thème (autres thèmes -> Abysse) ; choix dans Paramètres > Son (UiSoundPicker).
+- Sélecteur de thèmes accueil : boutons data-testid home-theme-pick-{key}, Cosmic Bunny masqué quand le sélecteur est ouvert.
+- Tests : iteration_25 100%.

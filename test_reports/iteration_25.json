@@ -1,0 +1,29 @@
+{
+  "summary": "Frontend-only test of the theme pass (Elysium/Néant/YoRHa/Albâtre/Glacier/Biome), home tagline animation, and the 3 synthesized UI sound packs. Everything requested works: no runtime errors, no red error overlay, no console errors. All 6 theme DOM/CSS checks pass. The tagline re-renders letter by letter. The sound picker highlights the chosen pack and saves it. The 'zen' value falls back to auto. The theme grid has 17 themes.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Home theme picker (.sx-themepick) vs Cosmic Bunny tip bubble", "issue": "On first visit the Cosmic Bunny bubble (appears even when sx_tour_done=1) sits on top of the right column of the open theme picker. At 768px, elementFromPoint at the 'Elysium' tile returns [data-testid=cb-cta] 'Personnaliser la station', so a click there opens /parametres instead of changing the theme. The picker works once the bubble is closed.", "selector": ".sx-themepick .tp / [data-testid=cb-cta]", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Give .sx-themepick (z-index 40) a higher z-index than the Cosmic Bunny bubble, or hide/close the bubble while the theme picker is open.",
+    "Optional: theme picker items are plain <div>s with no data-testid. Add data-testid=home-theme-pick-{key} and make them buttons for accessibility."
+  ],
+  "critical_code_review_comments": [
+    "sound.js out(): when echo is set, setTimeout disconnects g and d but not fb or lp, so the feedback loop nodes stay connected to destination until garbage-collected. Fine in practice but could pile up on fast hovering. Consider disconnecting fb and lp too.",
+    "AppContext: an invalid stored pack (e.g. 'zen') falls back to 'auto' in React state, but localStorage keeps 'zen' until the user picks a pack. Harmless.",
+    "The settings route is /parametres. /settings (named in the review request) gives 'No routes matched'. Consider adding a redirect alias.",
+    "Settings.js is 1096 lines (more than 700). Consider splitting it."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100% of requested checks (1 medium overlay issue found outside scope)"},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "IMPORTANT: in headless Chromium, any 2nd navigation (reload/goto) crashed the target ('Target crashed') because of the PWA service worker. Workaround: in the first step run navigator.serviceWorker.getRegistrations() and unregister each one, call page.route('**/service-worker.js', abort), then set localStorage sx_intro_off=1, sx_tour_done=1, sessionStorage sx_entered=1, sx_theme=<key>, and do ONE page.goto per browser_automation run (several gotos in one run still crashed). Settings route is /parametres. Results: olympe body bg rgb(4,4,5), .sform.s-olympe svg visible at 430px, all gradient stops silver/white. neant: 10 .eyes, 2 .shade, 3 .wisp, .vign displayed. yorha: .hz display none, .comets block (cometCross animation). albatre: comets block, cb-grid opacity .11 (26px mesh). glacier: .aur none, grid .1. biome: .s-aurora2 none, grid .09. Auto hint: abysse->Abysse, olympe->Elysium, monolithe->Monolithe, akira->Abysse.",
+  "rca of the issue": "Headless crash: the service worker controlling the page on navigation crashes Chromium in this sandbox (not seen once the SW is unregistered and blocked). This is likely an environment issue, not an app bug. Overlay issue: the Cosmic Bunny tip bubble has a higher stacking order than .sx-themepick (z-index:40) and overlaps its right-hand columns."
+}

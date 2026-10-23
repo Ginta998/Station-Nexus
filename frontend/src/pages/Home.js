@@ -111,6 +111,7 @@ export default function Home() {
   const [themeOpen, setThemeOpen] = useState(false);
 
   const requireProfile = () => { if (!user) { toast.info("Crée un compte pour sauvegarder ton profil partout."); openAuth(); } else setProfileOpen(true); };
+  useEffect(() => { document.body.classList.toggle("sx-picking", themeOpen); return () => document.body.classList.remove("sx-picking"); }, [themeOpen]);
   const themeMeta = useMemo(() => THEMES.find((t) => t.key === theme) || THEMES[0], [theme]);
   const catLabelByKey = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c.label])), [cats]);
   const catKanjiByKey = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c.kanji])), [cats]);
@@ -360,19 +361,19 @@ export default function Home() {
             <IoSearch size={14} style={{ color: "var(--text-secondary)" }} />
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher une création…" />
           </div>
-          <button className="sbtn" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }}>
+          <button className="sbtn" data-testid="home-theme-toggle" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }}>
             <IoColorPaletteOutline size={14} style={{ marginRight: 5 }} /> Thèmes
           </button>
           {themeOpen && (
             <>
-              <div style={{ position: "fixed", inset: 0, zIndex: 39 }} onClick={() => setThemeOpen(false)} />
+              <div style={{ position: "fixed", inset: 0, zIndex: 89 }} onClick={() => setThemeOpen(false)} />
               <div className="sx-themepick">
                 {THEMES.map((t) => (
-                  <div key={t.key} className={"tp" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); setThemeOpen(false); }}>
+                  <button type="button" key={t.key} data-testid={`home-theme-pick-${t.key}`} className={"tp" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); setThemeOpen(false); }}>
                     <span className="sw" style={{ background: `linear-gradient(135deg, ${t.swatch[0]}, ${t.swatch[1]} 55%, ${t.swatch[2]})` }} />
                     <span className="nm">{t.name}</span>
                     <span className="kj">{t.kanji}</span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </>
