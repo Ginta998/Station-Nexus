@@ -7,7 +7,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { listAnnouncements, listAmbiences } from "@/lib/api";
-import { THEMES } from "@/lib/themes";
 import { getCover } from "@/lib/covers";
 
 const btn = { borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" };
@@ -110,7 +109,7 @@ function FsBtn({ style }) {
  */
 export default function StationMenu({ onAdd, onProfile }) {
   const nav = useNavigate();
-  const { isAdmin, sfx, profile, seenAnnouncements, theme, setTheme } = useApp();
+  const { isAdmin, sfx, profile, seenAnnouncements } = useApp();
   const { user, openAuth, logout } = useAuth();
   const { unread: chatUnreadCount } = useChat() || { unread: { total: 0 } };
   const salonUnread = chatUnreadCount?.total || 0;
@@ -176,18 +175,6 @@ export default function StationMenu({ onAdd, onProfile }) {
                   </span>
                 </button>
               ))}
-            </div>
-
-            <div className="sx-menu-themes">
-              <div className="smt-h mono">// THÈME DE LA STATION</div>
-              <div className="smt-grid">
-                {THEMES.map((t) => (
-                  <button key={t.key} className={"smt-chip" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); }}>
-                    <span className="dot" style={{ background: `linear-gradient(135deg, ${t.swatch[1]}, ${t.swatch[2]})` }} />
-                    {t.name}
-                  </button>
-                ))}
-              </div>
             </div>
 
             <div className="sx-menu-foot">

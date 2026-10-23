@@ -771,3 +771,4 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Effets de cartes passés en variables CSS sur html[data-theme] : appliqués à l affiche de la fiche (detail-poster-fx) et aux cartes épisodes/chapitres (MovixSelector .sx-fxcard).
 - Neptune allégé (calques plein écran sans masque/scale, reflets des cartes en transform) + HUD propre "NEPTUNE".
 - Tests iteration_27 ~95% ; crashs Chromium headless = instabilité de l environnement (neptune OK 2/2 sur pages neuves après allègement).
+- Correction utilisateur : grille des thèmes remise dans les Paramètres (comme avant, étoile admin = défaut) ; sélection des thèmes retirée du menu Station. Bouton Thèmes de l accueil conservé.
