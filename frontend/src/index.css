@@ -119,10 +119,10 @@ html[data-textscale="max"]    { font-size: 140%; --text-scale: 1.4; }
   --font-display:"Space Grotesk",sans-serif; --font-body:"Space Grotesk",sans-serif; --display-transform:none; --display-style:normal; --display-spacing:0;
 }
 [data-theme="olympe"] {
-  --bg-primary:#eef0f2; --bg-secondary:#f4f6f8; --brand:#8a919e; --brand-2:#c3c9d3;
-  --border-c:rgba(120,130,145,.24); --text-primary:#2a2d33; --text-secondary:#767b85; --on-media:#2a2d33; --on-media-2:rgba(42,45,51,.7);
-  --radius-base:4px; --border-width:1px; --shadow-1:0 10px 30px rgba(150,160,175,.18); --scrim:rgba(238,240,242,.5);
-  --font-display:"Cormorant Garamond",serif; --font-body:"Space Grotesk",sans-serif; --display-transform:none; --display-style:normal; --display-spacing:0;
+  --bg-primary:#040405; --bg-secondary:#0a0a0d; --brand:#dfe4ec; --brand-2:#9aa3b1;
+  --border-c:rgba(210,216,226,.16); --text-primary:#f1f3f7; --text-secondary:#8d939e; --on-media:#ffffff; --on-media-2:rgba(255,255,255,.72);
+  --radius-base:4px; --border-width:1px; --shadow-1:0 0 26px rgba(220,226,236,.12); --scrim:rgba(4,4,5,.66);
+  --font-display:"Cormorant Garamond",serif; --font-body:"Space Grotesk",sans-serif; --display-transform:none; --display-style:normal; --display-spacing:.02em;
 }
 [data-theme="neant"] {
   --bg-primary:#000000; --bg-secondary:#040404; --brand:#ffffff; --brand-2:#aaaaaa;
@@ -686,10 +686,10 @@ html[data-theme="megapole"] .cb-scan,html[data-theme="yorha"] .cb-scan{opacity:.
 html[data-theme="megapole"] .cb-grid{opacity:.05}
 
 /* thèmes clairs : discret, poussières sombres, pas d'étoiles */
-html[data-theme="albatre"] .cb-stars,html[data-theme="yorha"] .cb-stars,html[data-theme="olympe"] .cb-stars,html[data-theme="bunny"] .cb-stars{opacity:0}
-html[data-theme="albatre"] .cb-nebula,html[data-theme="yorha"] .cb-nebula,html[data-theme="olympe"] .cb-nebula,html[data-theme="bunny"] .cb-nebula{opacity:.1;mix-blend-mode:normal}
-html[data-theme="albatre"] .cb-halo,html[data-theme="yorha"] .cb-halo,html[data-theme="olympe"] .cb-halo,html[data-theme="bunny"] .cb-halo{opacity:.08}
-html[data-theme="albatre"] .cb-motes span,html[data-theme="yorha"] .cb-motes span,html[data-theme="olympe"] .cb-motes span,html[data-theme="bunny"] .cb-motes span{--mote:color-mix(in srgb,var(--text-primary) 26%,transparent);box-shadow:none}
+html[data-theme="albatre"] .cb-stars,html[data-theme="yorha"] .cb-stars,html[data-theme="bunny"] .cb-stars{opacity:0}
+html[data-theme="albatre"] .cb-nebula,html[data-theme="yorha"] .cb-nebula,html[data-theme="bunny"] .cb-nebula{opacity:.1;mix-blend-mode:normal}
+html[data-theme="albatre"] .cb-halo,html[data-theme="yorha"] .cb-halo,html[data-theme="bunny"] .cb-halo{opacity:.08}
+html[data-theme="albatre"] .cb-motes span,html[data-theme="yorha"] .cb-motes span,html[data-theme="bunny"] .cb-motes span{--mote:color-mix(in srgb,var(--text-primary) 26%,transparent);box-shadow:none}
 
 /* néant : quasi vide, juste quelques étoiles */
 html[data-theme="neant"] .cb-nebula,html[data-theme="neant"] .cb-halo{opacity:.05}
@@ -715,7 +715,7 @@ html[data-motion="reduced"] .cosmic-bg *{animation-duration:0s!important}
   --bg:var(--bg-primary);
   --star:rgba(255,255,255,.72);
 }
-html[data-theme="albatre"] .cosmic-bg,html[data-theme="yorha"] .cosmic-bg,html[data-theme="olympe"] .cosmic-bg,html[data-theme="bunny"] .cosmic-bg{--star:color-mix(in srgb,var(--text-primary) 32%,transparent)}
+html[data-theme="albatre"] .cosmic-bg,html[data-theme="yorha"] .cosmic-bg,html[data-theme="bunny"] .cosmic-bg{--star:color-mix(in srgb,var(--text-primary) 32%,transparent)}
 
 /* ---- couches d'étoiles (parallaxe) ---- */
 .cosmic-bg .layer{position:absolute;inset:-10% 0;will-change:transform}
@@ -724,7 +724,7 @@ html[data-theme="albatre"] .cosmic-bg,html[data-theme="yorha"] .cosmic-bg,html[d
 .cosmic-bg .l2 i{animation:cbxDrift 17s linear infinite}
 .cosmic-bg .l3 i{animation:cbxDrift 11s linear infinite}
 @keyframes cbxDrift{from{transform:translateY(-6vh)}to{transform:translateY(112vh)}}
-html[data-theme="albatre"] .cosmic-bg .layer,html[data-theme="yorha"] .cosmic-bg .layer,html[data-theme="olympe"] .cosmic-bg .layer,html[data-theme="bunny"] .cosmic-bg .layer{opacity:0}
+html[data-theme="albatre"] .cosmic-bg .layer,html[data-theme="yorha"] .cosmic-bg .layer,html[data-theme="bunny"] .cosmic-bg .layer{opacity:0}
 
 /* ---- couches FX ---- */
 .cosmic-bg .fx{position:absolute;inset:-10% 0;opacity:0;transition:opacity .7s}
@@ -744,12 +744,12 @@ html[data-theme="albatre"] .cosmic-bg .layer,html[data-theme="yorha"] .cosmic-bg
 @keyframes cbxScanRoll{to{background-position:0 60px}}
 .cosmic-bg .fx-vortex{background:conic-gradient(from 0deg at 50% 32%,transparent,var(--glow),transparent 40%,var(--glow) 60%,transparent);animation:cbxSpin 26s linear infinite;-webkit-mask-image:radial-gradient(40% 30% at 50% 32%,#000,transparent 70%);mask-image:radial-gradient(40% 30% at 50% 32%,#000,transparent 70%)}
 @keyframes cbxSpin{to{transform:rotate(360deg)}}
-html[data-theme="albatre"] .fx-ash{opacity:1}
+html[data-theme="albatre"] .fx-ash,html[data-theme="yorha"] .fx-ash{opacity:1}
 html[data-theme="supernova"] .fx-ember,html[data-theme="biome"] .fx-ember{opacity:.9}
 html[data-theme="abysse"] .fx-neb{opacity:.35}
 html[data-theme="singularite"] .fx-neb,html[data-theme="blackhole"] .fx-neb{opacity:.6}
 html[data-theme="singularite"] .fx-vortex,html[data-theme="blackhole"] .fx-vortex{opacity:.6}
-html[data-theme="helios"] .fx-aurora,html[data-theme="glacier"] .fx-aurora,html[data-theme="biome"] .fx-aurora{opacity:.8}
+html[data-theme="helios"] .fx-aurora{opacity:.8}
 html[data-theme="monolithe"] .fx-scan,html[data-theme="megapole"] .fx-scan,html[data-theme="yorha"] .fx-scan{opacity:.6}
 
 /* ---- scènes planétaires ---- */
@@ -761,7 +761,6 @@ html[data-theme="helios"] .s-sun{display:block}
 html[data-theme="supernova"] .s-sun{display:block}
 html[data-theme="supernova"] .s-shock{display:block}
 html[data-theme="biome"] .s-greenplanet{display:block}
-html[data-theme="biome"] .s-aurora2{display:block}
 html[data-theme="monolithe"] .s-monolith{display:block}
 html[data-theme="singularite"] .s-blackhole{display:block}
 html[data-theme="blackhole"] .s-blackhole{display:block}
@@ -773,13 +772,6 @@ html[data-theme="megapole"] .s-megapole{display:block}
 html[data-theme="bunny"] .s-bunny{display:block}
 html[data-theme="olympe"] .s-olympe{display:block}
 html[data-theme="neant"] .s-neant{display:block}
-/* néant : une présence qu'on devine à peine */
-.cosmic-bg .s-neant .shade{position:absolute;left:50%;bottom:-8%;width:46vmin;height:80vmin;transform:translateX(-50%);border-radius:50% 50% 12% 12%/38% 38% 10% 10%;background:radial-gradient(ellipse at 50% 30%,rgba(255,255,255,.035),transparent 62%);filter:blur(18px);animation:nxBreathe 9s ease-in-out infinite}
-.cosmic-bg .s-neant .eyes{position:absolute;display:flex;gap:9px;opacity:0;animation:nxEyes 23s ease-in-out infinite}
-.cosmic-bg .s-neant .eyes i{width:4px;height:2px;border-radius:50%;background:#e8e8e8;box-shadow:0 0 6px rgba(255,255,255,.5);animation:nxBlink 23s steps(1) infinite;animation-delay:inherit}
-@keyframes nxBreathe{0%,100%{opacity:.35;transform:translateX(-50%) scale(1)}50%{opacity:.9;transform:translateX(-50%) scale(1.04)}}
-@keyframes nxEyes{0%,70%,100%{opacity:0}76%,90%{opacity:.32}}
-@keyframes nxBlink{0%,82%,84%,100%{transform:scaleY(1)}83%{transform:scaleY(.1)}}
 .sx-exp .cinehead .ctag .ctag-ch{display:inline-block;opacity:0;animation:ctagIn .5s cubic-bezier(.2,.7,.2,1) forwards}
 @keyframes ctagIn{from{opacity:0;transform:translateY(6px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
 html[data-motion="reduced"] .sx-exp .cinehead .ctag .ctag-ch{animation:none;opacity:1}
@@ -1028,7 +1020,7 @@ html[data-theme="neptune"] .sform.s-neptune-jelly{display:block}
 .cosmic-bg .comet{position:absolute;left:-14%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 12px 3px var(--accent2),0 0 4px 1px #fff;opacity:0;animation-name:cometCross;animation-timing-function:cubic-bezier(.4,.05,.35,1);animation-iteration-count:infinite}
 .cosmic-bg .comet::before{content:"";position:absolute;right:3px;top:50%;width:180px;height:2px;transform:translateY(-50%);background:linear-gradient(270deg,color-mix(in srgb,var(--accent2) 85%,#fff),transparent);border-radius:2px}
 @keyframes cometCross{0%{transform:translate(0,0) rotate(13deg);opacity:0}4%{opacity:1}58%{opacity:1}100%{transform:translate(132vw,44vh) rotate(13deg);opacity:0}}
-html[data-theme="albatre"] .comets,html[data-theme="yorha"] .comets,html[data-theme="olympe"] .comets,html[data-theme="bunny"] .comets,html[data-theme="megapole"] .comets,html[data-theme="neant"] .comets{display:none}
+html[data-theme="olympe"] .comets,html[data-theme="bunny"] .comets,html[data-theme="megapole"] .comets,html[data-theme="neant"] .comets{display:none}
 
 /* réduction mouvement */
 .cosmic-bg[data-reduced] .comets,.cosmic-bg[data-reduced] .cb-spin,.cosmic-bg[data-reduced] .cb-spin-rev,.cosmic-bg[data-reduced] .cb-spin-slow,.cosmic-bg[data-reduced] .cb-spin-rev-slow,.cosmic-bg[data-reduced] .cb-bob,.cosmic-bg[data-reduced] .cb-sway{animation:none}
@@ -1233,5 +1225,34 @@ html[data-motion="reduced"] .sx-cyber .micro{animation:none}
 .sx-set-tabs + section{animation:setFade .35s ease}
 @keyframes setFade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 
+/* ===== passe thèmes : maillages, cendres, Elysium, Néant ===== */
+.cosmic-bg .s-glacier .aur{display:none}
+.cosmic-bg .s-yorha .hz{display:none}
+html[data-theme="biome"] .cb-grid{opacity:.09;background-size:38px 38px}
+html[data-theme="glacier"] .cb-grid{opacity:.1;background-size:32px 32px}
+html[data-theme="albatre"] .cb-grid{opacity:.11;background-size:26px 26px;background-image:linear-gradient(rgba(26,22,17,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(26,22,17,.5) 1px,transparent 1px)}
+html[data-theme="yorha"] .s-yorha .yg{background-size:30px 30px}
+html[data-theme="albatre"] .fx-ash i,html[data-theme="yorha"] .fx-ash i{width:3px;height:3px;background:color-mix(in srgb,var(--text-primary) 45%,transparent)}
+html[data-theme="albatre"] .comet,html[data-theme="yorha"] .comet{background:var(--text-primary);box-shadow:0 0 8px 1px color-mix(in srgb,var(--text-primary) 40%,transparent)}
+html[data-theme="albatre"] .comet::before,html[data-theme="yorha"] .comet::before{background:linear-gradient(270deg,color-mix(in srgb,var(--text-primary) 70%,transparent),transparent)}
+html[data-theme="olympe"] .cb-grid{opacity:.05;background-size:48px 48px}
+html[data-theme="olympe"] .cb-halo{opacity:.1}
+html[data-theme="olympe"] .cb-nebula{opacity:.06}
+.cosmic-bg .svgform-elysium{filter:drop-shadow(0 0 30px rgba(220,228,240,.22))}
 
-
+/* Néant : une présence qui se rapproche */
+html[data-theme="neant"] .cb-stars{animation:nxFlicker 6s steps(1) infinite}
+@keyframes nxFlicker{0%,100%{opacity:1}47%{opacity:.25}49%{opacity:1}73%{opacity:.5}74%{opacity:1}}
+.cosmic-bg .s-neant .vign{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 30%,rgba(0,0,0,.92) 80%);animation:nxClose 12s ease-in-out infinite}
+@keyframes nxClose{0%,100%{transform:scale(1.15)}50%{transform:scale(1)}}
+.cosmic-bg .s-neant .shade{position:absolute;left:50%;bottom:-6%;width:44vmin;height:82vmin;transform:translateX(-50%);border-radius:50% 50% 14% 14%/36% 36% 10% 10%;background:radial-gradient(ellipse at 50% 26%,rgba(255,255,255,.12),rgba(255,255,255,.03) 45%,transparent 66%);filter:blur(14px);animation:nxBreathe 7s ease-in-out infinite}
+.cosmic-bg .s-neant .shade.s2{left:14%;bottom:10%;width:20vmin;height:44vmin;opacity:.6;animation:nxLurk 19s ease-in-out infinite}
+@keyframes nxBreathe{0%,100%{opacity:.4;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.06)}}
+@keyframes nxLurk{0%,100%{transform:translateX(-40%);opacity:0}30%,60%{opacity:.55}50%{transform:translateX(30%)}}
+.cosmic-bg .s-neant .wisp{position:absolute;width:38vmin;height:12vmin;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.1),transparent 70%);filter:blur(10px);animation:nxWisp 16s linear infinite}
+.cosmic-bg .s-neant .w0{top:22%;animation-delay:0s}.cosmic-bg .s-neant .w1{top:58%;animation-delay:-6s;animation-duration:22s}.cosmic-bg .s-neant .w2{top:80%;animation-delay:-12s;animation-duration:19s}
+@keyframes nxWisp{0%{left:-40vmin;opacity:0}20%,80%{opacity:1}100%{left:110%;opacity:0}}
+.cosmic-bg .s-neant .eyes{position:absolute;display:flex;gap:11px;opacity:0;animation:nxEyes 11s ease-in-out infinite}
+.cosmic-bg .s-neant .eyes i{width:7px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 10px 2px rgba(255,255,255,.55);animation:nxBlink 11s steps(1) infinite;animation-delay:inherit}
+@keyframes nxEyes{0%,58%,100%{opacity:0}64%,84%{opacity:.85}}
+@keyframes nxBlink{0%,72%,74%,100%{transform:scaleY(1)}73%{transform:scaleY(.08)}}

@@ -5,7 +5,7 @@ import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline,
 import { toast } from "sonner";
 import { THEMES } from "@/lib/themes";
 import { getCover, setCover, fileToCover } from "@/lib/covers";
-import { SOUND_PACKS } from "@/lib/sound";
+import { SOUND_PACKS, packForTheme, playUiSound } from "@/lib/sound";
 import { INTROS } from "@/lib/intro";
 import BootIntro from "@/components/BootIntro";
 import MobileMenu from "@/components/MobileMenu";
@@ -855,7 +855,7 @@ function TourTextsManager({ settings, refetch }) {
 
 export default function Settings() {
   const nav = useNavigate();
-  const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, customSounds, setCustom, sfx,
+  const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, sfx,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
     posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor, layout, setLayout } = useApp();
   const [pin, setPin] = useState(""); const [newPin, setNewPin] = useState("");
@@ -867,13 +867,7 @@ export default function Settings() {
   const tryUnlock = () => { if (unlock(pin)) { toast.success("Mode création déverrouillé"); setPin(""); } else toast.error("PIN incorrect"); };
   const savePin = () => { if (!/^\d{4,6}$/.test(newPin)) return toast.error("PIN : 4 à 6 chiffres"); changePin(newPin); toast.success("PIN mis à jour"); setNewPin(""); };
 
-  const setCustomSound = (event, file) => {
-    if (!file) return;
-    if (file.size > 1 * 1024 * 1024) return toast.error("Son trop lourd (max 1 Mo)");
-    const r = new FileReader(); r.onload = () => { setCustom({ ...(customSounds || {}), [event]: r.result }); toast.success("Son enregistré"); }; r.readAsDataURL(file);
-  };
 
-  const packs = [...SOUND_PACKS, { key: "silence", label: "Silence", emoji: "🔕" }];
 
   const ACCENTS = [
     { v: "", label: "Thème", c: "var(--brand)" }, { v: "#e60012", label: "Rouge", c: "#e60012" },
@@ -920,7 +914,7 @@ export default function Settings() {
         </div>
 
         {tab === "apparence" && (<>
-        <Section title="Thèmes" extra="— 12 ambiances">
+        <Section title="Thèmes" extra={`— ${THEMES.length} ambiances`}>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="theme-grid">
             {THEMES.map((t) => {
               const active = theme === t.key;
@@ -985,6 +979,10 @@ export default function Settings() {
           <input data-testid="music-volume-slider" type="range" min="0" max="1" step="0.05" value={musicVolume} onChange={(e) => setMusicVolume(parseFloat(e.target.value))} className="w-full mt-2 mb-5" style={{ accentColor: "var(--brand)" }} />
           <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Volume de l'interface ({Math.round(uiVolume * 100)}%)</label>
           <input data-testid="ui-volume-slider" type="range" min="0" max="1" step="0.05" value={uiVolume} onChange={(e) => { setUiVolume(parseFloat(e.target.value)); }} onMouseUp={() => sfx("select")} onTouchEnd={() => sfx("select")} className="w-full mt-2" style={{ accentColor: "var(--brand)" }} />
+        </Section>
+
+        <Section title="Sons d'interface" extra="— un pack par thème">
+          <UiSoundPicker theme={theme} soundPack={soundPack} setPack={setPack} />
         </Section>
 
         <Section title="Pistes & ambiances" extra="— choisis ou ajoute">
@@ -1072,6 +1070,27 @@ export default function Settings() {
 
         <p className="mt-4 text-xs text-center" style={{ color: "var(--text-secondary)" }}>Astuce : installe Stationexus via « Ajouter à l'écran d'accueil ».</p>
       </div>
+    </div>
+  );
+}
+
+function UiSoundPicker({ theme, soundPack, setPack }) {
+  const auto = SOUND_PACKS.find((p) => p.key === packForTheme(theme));
+  const opts = [{ key: "auto", label: "Auto", hint: `Suit le thème · ${auto?.label}` }, ...SOUND_PACKS, { key: "silence", label: "Silence", hint: "Aucun son d'interface" }];
+  const pick = (k) => { setPack(k); if (k !== "silence") playUiSound("select", k === "auto" ? packForTheme(theme) : k); };
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="ui-sound-grid">
+      {opts.map((o) => {
+        const on = soundPack === o.key;
+        return (
+          <button key={o.key} data-testid={`ui-sound-${o.key}`} onClick={() => pick(o.key)} onMouseEnter={() => o.key !== "silence" && playUiSound("hover", o.key === "auto" ? packForTheme(theme) : o.key)}
+            className="text-left px-4 py-3 border transition-transform hover:-translate-y-0.5"
+            style={{ borderColor: on ? "var(--brand)" : "var(--border-c)", background: on ? "color-mix(in srgb,var(--brand) 12%,transparent)" : "transparent", borderRadius: "var(--radius-base)", color: "var(--text-primary)" }}>
+            <div className="font-semibold text-sm">{o.label}</div>
+            <div className="text-xs mt-1" style={{ color: "var(--text-secondary)" }}>{o.hint}</div>
+          </button>
+        );
+      })}
     </div>
   );
 }

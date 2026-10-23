@@ -1,7 +1,7 @@
 import { THEMES } from "@/lib/themes";
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { audioUrl, ambienceUrl, readingAudioUrl, getSettings, upsertProfile } from "@/lib/api";
-import { configureSound, playUiSound, primeAudioCtx } from "@/lib/sound";
+import { configureSound, playUiSound, primeAudioCtx, isValidPack } from "@/lib/sound";
 
 const AppContext = createContext(null);
 export const useApp = () => useContext(AppContext);
@@ -50,7 +50,7 @@ export function AppProvider({ children }) {
     const v = parseFloat(localStorage.getItem(LS.ui)); return Number.isFinite(v) ? v : 0.8;
   });
   const [muted, setMuted] = useState(() => localStorage.getItem(LS.mute) === "1");
-  const [soundPack, setSoundPack] = useState(() => localStorage.getItem(LS.pack) || "zen");
+  const [soundPack, setSoundPack] = useState(() => { const p = localStorage.getItem(LS.pack); return isValidPack(p) ? p : "auto"; });
   const [customSounds, setCustomSounds] = useState(() => {
     try { return JSON.parse(localStorage.getItem(LS.custom) || "null"); } catch { return null; }
   });
@@ -200,7 +200,7 @@ export function AppProvider({ children }) {
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => { configureSound({ pack: soundPack, muted, custom: customSounds, volume: uiVolume }); }, [soundPack, muted, customSounds, uiVolume]);
+  useEffect(() => { configureSound({ pack: soundPack, theme, muted, volume: uiVolume }); }, [soundPack, theme, muted, uiVolume]);
   useEffect(() => {
     const v = muted ? 0 : musicVolume;
     if (cardAudio.current) cardAudio.current.volume = v;

@@ -67,31 +67,47 @@ const ArmillarySVG = () => (
   </svg>
 );
 
-/* ELYSIUM — halo cosmique doré délicat (Supergirl: Woman of Tomorrow) */
-const SPARKS = [[150, 48, 7], [300, 70, 5], [352, 170, 8], [320, 300, 5], [210, 352, 6], [70, 320, 5], [40, 190, 7], [92, 70, 5], [255, 120, 4], [128, 150, 3.5], [285, 250, 4], [120, 288, 4]];
+/* ELYSIUM — sphère cryptique divine, noir & argent (2D) */
+const GLYPHS = "ᚠᛟᚱᛞ ΔΞΨΩ ⟁⟐⌬ ᛉᛝᛋ ⊹⋔⌖ ᚦᚨᛁ ΣΘΛ ⟡⟢ ᛗᛚᛜ ⌘⍟⎔ ".repeat(2);
+const Ring = ({ r, n, len, w = 1, op = 0.5 }) => (
+  <g stroke="url(#elS)" strokeWidth={w} opacity={op}>
+    {Array.from({ length: n }).map((_, i) => { const a = (i / n) * Math.PI * 2, l = i % 4 ? len : len * 2.2; return <line key={i} x1={210 + Math.cos(a) * r} y1={210 + Math.sin(a) * r} x2={210 + Math.cos(a) * (r + l)} y2={210 + Math.sin(a) * (r + l)} />; })}
+  </g>
+);
 const MandalaSVG = () => (
-  <svg viewBox="0 0 400 400" className="svgform" aria-hidden="true">
+  <svg viewBox="0 0 420 420" className="svgform svgform-elysium" aria-hidden="true">
     <defs>
-      <radialGradient id="elG" cx="50%" cy="50%" r="50%">
-        <stop offset="0" stopColor="#fff6e2" /><stop offset="60%" stopColor="#e8d1a0" /><stop offset="100%" stopColor="#b88f44" />
+      <linearGradient id="elS" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#ffffff" /><stop offset="0.45" stopColor="#c9cfd8" /><stop offset="1" stopColor="#6c7380" />
+      </linearGradient>
+      <radialGradient id="elCore" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stopColor="#ffffff" stopOpacity="0.95" /><stop offset="0.35" stopColor="#dfe4ec" stopOpacity="0.35" /><stop offset="1" stopColor="#dfe4ec" stopOpacity="0" />
       </radialGradient>
+      <path id="elTxt" d="M210 210 m-178 0 a178 178 0 1 1 356 0 a178 178 0 1 1 -356 0" />
     </defs>
-    <g className="cb-spin-slow" style={{ transformOrigin: "200px 200px" }}>
-      <circle cx="200" cy="200" r="152" fill="none" stroke="url(#elG)" strokeWidth="1" opacity="0.5" />
-      <circle cx="200" cy="200" r="120" fill="none" stroke="url(#elG)" strokeWidth="1.3" opacity="0.7" />
-      <circle cx="200" cy="200" r="150" fill="none" stroke="url(#elG)" strokeWidth="1" strokeDasharray="1 7" opacity="0.6" />
-      <g stroke="url(#elG)" strokeWidth="1" opacity="0.4">
-        {Array.from({ length: 36 }).map((_, i) => { const a = i * 10 * Math.PI / 180; return <line key={i} x1={200 + Math.cos(a) * 158} y1={200 + Math.sin(a) * 158} x2={200 + Math.cos(a) * (i % 3 ? 166 : 172)} y2={200 + Math.sin(a) * (i % 3 ? 166 : 172)} />; })}
-      </g>
+    <g className="cb-spin-slow" style={{ transformOrigin: "210px 210px" }}>
+      <circle cx="210" cy="210" r="196" fill="none" stroke="url(#elS)" strokeWidth="0.8" opacity="0.45" />
+      <Ring r={186} n={72} len={5} op={0.55} />
+      <text fill="#cfd5de" fontSize="11" letterSpacing="3" opacity="0.6" fontFamily="serif"><textPath href="#elTxt">{GLYPHS}</textPath></text>
+      <circle cx="210" cy="210" r="166" fill="none" stroke="url(#elS)" strokeWidth="1.2" opacity="0.7" />
     </g>
-    <g className="cb-spin-rev-slow" style={{ transformOrigin: "200px 200px" }}>
-      <circle cx="200" cy="200" r="92" fill="none" stroke="url(#elG)" strokeWidth="0.8" strokeDasharray="2 10" opacity="0.5" />
-      <g fill="url(#elG)">
-        {SPARKS.map(([x, y, s], i) => <path key={i} transform={`translate(${x} ${y})`} d={`M0 ${-s} L${s * .28} ${-s * .28} L${s} 0 L${s * .28} ${s * .28} L0 ${s} L${-s * .28} ${s * .28} L${-s} 0 L${-s * .28} ${-s * .28} Z`} />)}
-      </g>
+    <g className="cb-spin-rev-slow" style={{ transformOrigin: "210px 210px" }} fill="none" stroke="url(#elS)">
+      {[0, 30, 60, 90].map((a) => <rect key={a} x="96" y="96" width="228" height="228" strokeWidth="0.8" opacity="0.32" transform={`rotate(${a} 210 210)`} />)}
+      <polygon points="210,52 347,289 73,289" strokeWidth="1" opacity="0.45" />
+      <polygon points="210,368 73,131 347,131" strokeWidth="1" opacity="0.45" />
+      <circle cx="210" cy="210" r="150" strokeWidth="0.7" strokeDasharray="1 6" opacity="0.6" />
     </g>
-    <circle cx="200" cy="200" r="7" fill="url(#elG)" />
-    <circle cx="200" cy="200" r="20" fill="none" stroke="url(#elG)" strokeWidth="0.8" opacity="0.6" />
+    <g fill="none" stroke="url(#elS)">
+      <circle cx="210" cy="210" r="108" strokeWidth="1.6" opacity="0.9" />
+      {[94, 70, 38].map((ry, i) => <ellipse key={ry} cx="210" cy="210" rx="108" ry={ry} strokeWidth="0.8" opacity={0.5 - i * 0.08} />)}
+      <g className="cb-spin" style={{ transformOrigin: "210px 210px" }}>
+        {[90, 62, 30].map((rx) => <ellipse key={rx} cx="210" cy="210" rx={rx} ry="108" strokeWidth="0.8" opacity="0.45" />)}
+      </g>
+      <line x1="102" y1="210" x2="318" y2="210" strokeWidth="0.6" opacity="0.4" />
+    </g>
+    <circle cx="210" cy="210" r="46" fill="url(#elCore)" className="cb-glow" />
+    <circle cx="210" cy="210" r="16" fill="none" stroke="url(#elS)" strokeWidth="1.2" />
+    <circle cx="210" cy="210" r="4" fill="#ffffff" />
   </svg>
 );
 
@@ -167,10 +183,10 @@ export default function CosmicBackground() {
     const col = (n) => Array.from({ length: n }, () => ({ x: rnd(0, 100), y: rnd(0, 100), delay: rnd(0, 14), dur: rnd(10, 22) }));
     return {
       l1: stars(34, 0.6, 1.1), l2: stars(24, 1, 1.6), l3: stars(13, 1.6, 2.4),
-      ash: col(26), ember: col(22),
+      ash: col(56), ember: col(22),
       bubbles: Array.from({ length: 14 }, () => ({ x: rnd(0, 100), s: rnd(3, 10), dur: rnd(7, 16), delay: rnd(0, 9) })),
       snow: Array.from({ length: 40 }, () => ({ x: rnd(0, 100), s: rnd(2, 6), dur: rnd(5, 12), delay: rnd(0, 7) })),
-      dust: Array.from({ length: 22 }, () => ({ x: rnd(0, 100), y: rnd(0, 100), dur: rnd(9, 19), delay: rnd(0, 10) })),
+      dust: Array.from({ length: 46 }, () => ({ x: rnd(0, 100), y: rnd(0, 100), dur: rnd(9, 19), delay: rnd(0, 10) })),
       comets: Array.from({ length: 4 }, (_, i) => ({ top: rnd(2, 40), dur: rnd(7, 12), delay: -i * rnd(5, 9) - rnd(0, 4) })),
     };
   }, []);
@@ -251,7 +267,7 @@ export default function CosmicBackground() {
         <div className="sc s-yorha"><div className="yg" /><div className="emblem"><span /><span /><span /></div><div className="sun" /><div className="hz" /></div>
         <div className="sc s-megapole"><div className="sky" /><div className="city" /></div>
         <div className="sc s-bunny"><div className="b1" /><div className="b2" /></div>
-        <div className="sc s-neant"><div className="shade" />{[[12,30,0],[78,22,7],[64,70,13],[22,76,4],[88,58,19],[44,14,10]].map(([x,y,d],i) => <span key={i} className="eyes" style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${d}s` }}><i /><i /></span>)}</div>
+        <div className="sc s-neant"><div className="vign" /><div className="shade" /><div className="shade s2" />{[0, 1, 2].map((i) => <div key={i} className={`wisp w${i}`} />)}{[[12,30,0],[78,22,3],[64,70,6],[22,76,1.5],[88,58,8],[44,14,4.5],[8,55,9.5],[54,40,2.2],[33,48,7],[92,84,5.3]].map(([x,y,d],i) => <span key={i} className="eyes" style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${d}s` }}><i /><i /></span>)}</div>
         <div className="sc s-glacier"><div className="moon" /><div className="aur" /></div>
       </div>
 

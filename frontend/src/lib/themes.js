@@ -14,7 +14,7 @@ export const THEMES = [
   { key: "neant", name: "Néant", kanji: "無", tagline: "Quelque chose respire dans le noir", swatch: ["#000000", "#ffffff", "#aaaaaa"] },
   { key: "bunny", name: "Bunny", kanji: "兎", tagline: "Tout en douceur", swatch: ["#ebe2e5", "#f4a9c0", "#9fe0dc"] },
   { key: "albatre", name: "Albâtre", kanji: "白", tagline: "La pierre se souvient", swatch: ["#e7e1d2", "#1a1611", "#8c7a46"] },
-  { key: "olympe", name: "Elysium", kanji: "雲", tagline: "Le marbre des dieux", swatch: ["#eef0f2", "#8a919e", "#c3c9d3"] },
+  { key: "olympe", name: "Elysium", kanji: "雲", tagline: "Le marbre des dieux", swatch: ["#040405", "#dfe4ec", "#9aa3b1"] },
   { key: "yorha", name: "YoRHa", kanji: "機", tagline: "Le repos à l'humanité", swatch: ["#d9d2c0", "#1a1712", "#4a4436"] },
 ];
 
