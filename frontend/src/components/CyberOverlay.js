@@ -10,7 +10,7 @@ const MICRO = {
   biome: "生葉木根芽緑", monolithe: "鋼機械金属零壱", singularite: "空無黒洞引力",
   glacier: "氷雪結晶冷凍寒", megapole: "都市煙霧電力夜", aurum: "金輝黄金純度",
   blackhole: "虚無暗闇重力無", albatre: "石灰白月静寂", bunny: "兎桃柔光夢",
-  olympe: "聖神殿大理石光", neant: "無空虚零",
+  olympe: "聖神殿大理石光", olympia: "神山白銀光雲", neant: "無空虚零",
 };
 const READOUT = {
   abysse: ["PROFONDEUR <b>−3214 M</b>", "PRESSION 318 BAR", "ABYSSE"],
@@ -28,6 +28,7 @@ const READOUT = {
   aurum: ["RELIQUE <b>AU·79</b>", "PURETÉ 99.9%", "OR"],
   blackhole: ["HORIZON <b>Rs→0</b>", "MARÉE ∞", "ABÎME"],
   olympe: ["ORACLE <b>ΔXII</b>", "MARBRE 100%", "ELYSIUM"],
+  olympia: ["SOMMET <b>2917 M</b>", "LUMIÈRE 100%", "OLYMPE"],
   neant: ["<b>NÉANT</b>", "PRÉSENCE ?", "VIDE"],
 };
 

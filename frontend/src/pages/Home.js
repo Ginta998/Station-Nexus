@@ -65,6 +65,7 @@ function Poster({ it, idx, catLabel, soon, isAdmin, featured, onOpen, onEdit, on
       <div className={"art" + (img ? " pimg" : "")} style={style}>
         <span className="pm">{String(idx).padStart(3, "0")}</span>
         <span className="pt a" />
+        <span className="fxl" aria-hidden="true" />
         <span className="wmk">{init}</span>
         <div className="ptt">{it.title}</div>
         <span className={"pst" + (soon ? " soon" : "")}>{soon ? "À VENIR" : "DISPO"}</span>

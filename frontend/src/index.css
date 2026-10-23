@@ -124,6 +124,12 @@ html[data-textscale="max"]    { font-size: 140%; --text-scale: 1.4; }
   --radius-base:4px; --border-width:1px; --shadow-1:0 0 26px rgba(220,226,236,.12); --scrim:rgba(4,4,5,.66);
   --font-display:"Cormorant Garamond",serif; --font-body:"Space Grotesk",sans-serif; --display-transform:none; --display-style:normal; --display-spacing:.02em;
 }
+[data-theme="olympia"] {
+  --bg-primary:#eef0f3; --bg-secondary:#f5f6f8; --brand:#7d8592; --brand-2:#c6ccd5;
+  --border-c:rgba(110,120,135,.22); --text-primary:#24272d; --text-secondary:#6f7580; --on-media:#24272d; --on-media-2:rgba(36,39,45,.7);
+  --radius-base:4px; --border-width:1px; --shadow-1:0 10px 30px rgba(140,150,165,.2); --scrim:rgba(238,240,243,.5);
+  --font-display:"Cormorant Garamond",serif; --font-body:"Space Grotesk",sans-serif; --display-transform:none; --display-style:normal; --display-spacing:.02em;
+}
 [data-theme="neant"] {
   --bg-primary:#000000; --bg-secondary:#040404; --brand:#ffffff; --brand-2:#aaaaaa;
   --border-c:rgba(255,255,255,.14); --text-primary:#ffffff; --text-secondary:#777777; --on-media:#ffffff; --on-media-2:rgba(255,255,255,.72);
@@ -686,10 +692,10 @@ html[data-theme="megapole"] .cb-scan,html[data-theme="yorha"] .cb-scan{opacity:.
 html[data-theme="megapole"] .cb-grid{opacity:.05}
 
 /* thèmes clairs : discret, poussières sombres, pas d'étoiles */
-html[data-theme="albatre"] .cb-stars,html[data-theme="yorha"] .cb-stars,html[data-theme="bunny"] .cb-stars{opacity:0}
-html[data-theme="albatre"] .cb-nebula,html[data-theme="yorha"] .cb-nebula,html[data-theme="bunny"] .cb-nebula{opacity:.1;mix-blend-mode:normal}
-html[data-theme="albatre"] .cb-halo,html[data-theme="yorha"] .cb-halo,html[data-theme="bunny"] .cb-halo{opacity:.08}
-html[data-theme="albatre"] .cb-motes span,html[data-theme="yorha"] .cb-motes span,html[data-theme="bunny"] .cb-motes span{--mote:color-mix(in srgb,var(--text-primary) 26%,transparent);box-shadow:none}
+html[data-theme="albatre"] .cb-stars,html[data-theme="yorha"] .cb-stars,html[data-theme="bunny"] .cb-stars,html[data-theme="olympia"] .cb-stars{opacity:0}
+html[data-theme="albatre"] .cb-nebula,html[data-theme="yorha"] .cb-nebula,html[data-theme="bunny"] .cb-nebula,html[data-theme="olympia"] .cb-nebula{opacity:.1;mix-blend-mode:normal}
+html[data-theme="albatre"] .cb-halo,html[data-theme="yorha"] .cb-halo,html[data-theme="bunny"] .cb-halo,html[data-theme="olympia"] .cb-halo{opacity:.08}
+html[data-theme="albatre"] .cb-motes span,html[data-theme="yorha"] .cb-motes span,html[data-theme="bunny"] .cb-motes span,html[data-theme="olympia"] .cb-motes span{--mote:color-mix(in srgb,var(--text-primary) 26%,transparent);box-shadow:none}
 
 /* néant : quasi vide, juste quelques étoiles */
 html[data-theme="neant"] .cb-nebula,html[data-theme="neant"] .cb-halo{opacity:.05}
@@ -715,7 +721,7 @@ html[data-motion="reduced"] .cosmic-bg *{animation-duration:0s!important}
   --bg:var(--bg-primary);
   --star:rgba(255,255,255,.72);
 }
-html[data-theme="albatre"] .cosmic-bg,html[data-theme="yorha"] .cosmic-bg,html[data-theme="bunny"] .cosmic-bg{--star:color-mix(in srgb,var(--text-primary) 32%,transparent)}
+html[data-theme="albatre"] .cosmic-bg,html[data-theme="yorha"] .cosmic-bg,html[data-theme="bunny"] .cosmic-bg,html[data-theme="olympia"] .cosmic-bg{--star:color-mix(in srgb,var(--text-primary) 32%,transparent)}
 
 /* ---- couches d'étoiles (parallaxe) ---- */
 .cosmic-bg .layer{position:absolute;inset:-10% 0;will-change:transform}
@@ -724,7 +730,7 @@ html[data-theme="albatre"] .cosmic-bg,html[data-theme="yorha"] .cosmic-bg,html[d
 .cosmic-bg .l2 i{animation:cbxDrift 17s linear infinite}
 .cosmic-bg .l3 i{animation:cbxDrift 11s linear infinite}
 @keyframes cbxDrift{from{transform:translateY(-6vh)}to{transform:translateY(112vh)}}
-html[data-theme="albatre"] .cosmic-bg .layer,html[data-theme="yorha"] .cosmic-bg .layer,html[data-theme="bunny"] .cosmic-bg .layer{opacity:0}
+html[data-theme="albatre"] .cosmic-bg .layer,html[data-theme="yorha"] .cosmic-bg .layer,html[data-theme="bunny"] .cosmic-bg .layer,html[data-theme="olympia"] .cosmic-bg .layer{opacity:0}
 
 /* ---- couches FX ---- */
 .cosmic-bg .fx{position:absolute;inset:-10% 0;opacity:0;transition:opacity .7s}
@@ -992,7 +998,7 @@ html[data-theme="blackhole"] .s-blackhole .core{box-shadow:0 0 50px 10px rgba(13
 .cosmic-bg .svgform-tall{width:clamp(220px,32vw,400px)}
 .cosmic-bg .svgform-marker{width:clamp(230px,34vw,430px)}
 html[data-theme="aurum"] .sform.s-aurum{display:block}
-html[data-theme="olympe"] .sform.s-olympe{display:block}
+html[data-theme="olympe"] .sform.s-olympe,html[data-theme="olympia"] .sform.s-olympe{display:block}
 html[data-theme="monolithe"] .sform.s-monolith{display:block}
 html[data-theme="neptune"] .sform.s-neptune-jelly{display:block}
 /* Monolithe : le marqueur tourne sur son axe (3D) */
@@ -1020,7 +1026,7 @@ html[data-theme="neptune"] .sform.s-neptune-jelly{display:block}
 .cosmic-bg .comet{position:absolute;left:-14%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 12px 3px var(--accent2),0 0 4px 1px #fff;opacity:0;animation-name:cometCross;animation-timing-function:cubic-bezier(.4,.05,.35,1);animation-iteration-count:infinite}
 .cosmic-bg .comet::before{content:"";position:absolute;right:3px;top:50%;width:180px;height:2px;transform:translateY(-50%);background:linear-gradient(270deg,color-mix(in srgb,var(--accent2) 85%,#fff),transparent);border-radius:2px}
 @keyframes cometCross{0%{transform:translate(0,0) rotate(13deg);opacity:0}4%{opacity:1}58%{opacity:1}100%{transform:translate(132vw,44vh) rotate(13deg);opacity:0}}
-html[data-theme="olympe"] .comets,html[data-theme="bunny"] .comets,html[data-theme="megapole"] .comets,html[data-theme="neant"] .comets{display:none}
+html[data-theme="olympe"] .comets,html[data-theme="olympia"] .comets,html[data-theme="bunny"] .comets,html[data-theme="megapole"] .comets,html[data-theme="neant"] .comets{display:none}
 
 /* réduction mouvement */
 .cosmic-bg[data-reduced] .comets,.cosmic-bg[data-reduced] .cb-spin,.cosmic-bg[data-reduced] .cb-spin-rev,.cosmic-bg[data-reduced] .cb-spin-slow,.cosmic-bg[data-reduced] .cb-spin-rev-slow,.cosmic-bg[data-reduced] .cb-bob,.cosmic-bg[data-reduced] .cb-sway{animation:none}
@@ -1257,3 +1263,116 @@ html[data-theme="neant"] .cb-stars{animation:nxFlicker 6s steps(1) infinite}
 @keyframes nxEyes{0%,58%,100%{opacity:0}64%,84%{opacity:.85}}
 @keyframes nxBlink{0%,72%,74%,100%{transform:scaleY(1)}73%{transform:scaleY(.08)}}
 body.sx-picking .cb-root{display:none}
+
+/* Elysium / Olympe : couleurs de la sphère */
+.cosmic-bg{--el1:#ffffff;--el2:#c9cfd8;--el3:#6c7380}
+html[data-theme="olympia"] .cosmic-bg{--el1:#5d6470;--el2:#8d95a2;--el3:#b9c0ca}
+html[data-theme="olympia"] .svgform-elysium{filter:drop-shadow(0 0 26px rgba(150,160,175,.35))}
+html[data-theme="olympia"] .cb-grid{opacity:.06;background-size:44px 44px}
+.cosmic-bg .svgform-aurum{filter:drop-shadow(0 0 36px rgba(230,190,110,.28))}
+
+/* ======================================================================
+   EFFETS DE CARTES PAR THÈME — légers, jamais sur le texte (texte z-index 3)
+   ====================================================================== */
+.sx-exp .poster{position:relative}
+.sx-exp .poster::before{content:"";position:absolute;left:8%;right:8%;top:6%;height:62%;z-index:-1;border-radius:50%;opacity:0;pointer-events:none;filter:blur(22px);transition:opacity .4s}
+.sx-exp .art{border-radius:var(--card-r,6px);transition:box-shadow .4s,border-color .4s}
+.sx-exp .art .fxl{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0}
+.sx-exp .rcard{border-radius:var(--card-r,10px)}
+@keyframes cfPulse{0%,100%{opacity:.45}50%{opacity:.85}}
+@keyframes cfFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes cfDrift{from{background-position:0 0,0 0}to{background-position:120px 60px,-80px 40px}}
+@keyframes cfFrost{0%,100%{opacity:.55}50%{opacity:.85}}
+
+/* Abysse : lumière bleue derrière les cartes */
+html[data-theme="abysse"] .sx-exp{--card-r:10px}
+html[data-theme="abysse"] .sx-exp .poster::before{background:var(--brand);opacity:.5;animation:cfPulse 5s ease-in-out infinite}
+html[data-theme="abysse"] .sx-exp .art{border-color:rgba(63,134,255,.35)}
+
+/* Neptune : tout flotte sous l'eau, reflets de caustiques */
+html[data-theme="neptune"] .sx-exp{--card-r:16px}
+html[data-theme="neptune"] .sx-exp .art{animation:cfFloat 6s ease-in-out infinite;box-shadow:0 18px 30px -18px rgba(31,159,224,.6)}
+html[data-theme="neptune"] .sx-exp .poster:nth-child(2n) .art{animation-delay:-2s}
+html[data-theme="neptune"] .sx-exp .poster:nth-child(3n) .art{animation-delay:-4s}
+html[data-theme="neptune"] .sx-exp .art .fxl{opacity:.35;mix-blend-mode:screen;background-image:radial-gradient(40px 18px at 30% 20%,rgba(160,240,255,.5),transparent 70%),radial-gradient(60px 22px at 70% 35%,rgba(120,220,240,.4),transparent 70%);animation:cfDrift 9s linear infinite alternate}
+html[data-theme="neptune"] .sx-exp .rcard{animation:cfFloat 7s ease-in-out infinite}
+
+/* Glacier : tout se refroidit, givre sur les bords */
+html[data-theme="glacier"] .sx-exp{--card-r:12px}
+html[data-theme="glacier"] .sx-exp .art{border-color:rgba(200,235,255,.55);box-shadow:inset 0 0 18px rgba(220,245,255,.35),0 0 22px -6px rgba(143,212,240,.45);filter:saturate(.8) brightness(1.03)}
+html[data-theme="glacier"] .sx-exp .art .fxl{opacity:.7;background:radial-gradient(70% 40% at 0 0,rgba(235,250,255,.55),transparent 60%),radial-gradient(60% 34% at 100% 0,rgba(235,250,255,.4),transparent 60%),linear-gradient(180deg,rgba(214,242,255,.16),transparent 30%);animation:cfFrost 6s ease-in-out infinite}
+html[data-theme="glacier"] .sx-exp .poster::before{background:#bfe9ff;opacity:.22}
+
+/* Monolithe : métal brossé */
+html[data-theme="monolithe"] .sx-exp{--card-r:2px}
+html[data-theme="monolithe"] .sx-exp .art{border:1px solid transparent;background-clip:padding-box;box-shadow:0 0 0 1px #6b717c,inset 0 1px 0 rgba(255,255,255,.35),0 12px 24px -14px #000}
+html[data-theme="monolithe"] .sx-exp .art .fxl{opacity:.16;background:repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 1px,transparent 1px 3px),linear-gradient(115deg,transparent 35%,rgba(255,255,255,.3) 50%,transparent 65%)}
+
+/* Biome : bords arrondis, végétation */
+html[data-theme="biome"] .sx-exp{--card-r:20px}
+html[data-theme="biome"] .sx-exp .art{border-color:rgba(120,210,160,.4);box-shadow:0 0 24px -8px rgba(79,184,122,.55)}
+html[data-theme="biome"] .sx-exp .art .fxl{opacity:.55;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg fill='%238fd9a8' fill-opacity='.55'%3E%3Cpath d='M0 60 C6 44 16 40 22 30 C18 42 12 50 0 60Z'/%3E%3Cpath d='M0 46 C10 40 14 30 26 26 C18 34 12 42 0 46Z'/%3E%3Cpath d='M8 60 C14 52 22 50 30 44 C24 52 18 58 8 60Z'/%3E%3C/g%3E%3C/svg%3E") left bottom/46% auto no-repeat}
+html[data-theme="biome"] .sx-exp .poster::before{background:#4fb87a;opacity:.25}
+
+/* Singularité : liseré qui hésite entre violet et turquoise */
+html[data-theme="singularite"] .sx-exp{--card-r:10px}
+html[data-theme="singularite"] .sx-exp .art{animation:cfSing 6s ease-in-out infinite}
+@keyframes cfSing{0%,100%{box-shadow:0 0 0 1px rgba(123,107,255,.6),0 0 22px -6px rgba(123,107,255,.6)}50%{box-shadow:0 0 0 1px rgba(53,214,191,.6),0 0 22px -6px rgba(53,214,191,.6)}}
+
+/* Black Hole : la lumière est aspirée par le bas */
+html[data-theme="blackhole"] .sx-exp .art{box-shadow:0 22px 30px -16px rgba(255,106,60,.45),0 0 0 1px rgba(138,92,255,.35)}
+html[data-theme="blackhole"] .sx-exp .poster::before{top:auto;bottom:24%;height:20%;background:linear-gradient(90deg,#8a5cff,#ff6a3c);opacity:.45}
+
+/* Supernova : braise sur les bords */
+html[data-theme="supernova"] .sx-exp{--card-r:4px}
+html[data-theme="supernova"] .sx-exp .art{animation:cfEmber 3.2s ease-in-out infinite}
+@keyframes cfEmber{0%,100%{box-shadow:0 0 0 1px rgba(255,90,26,.5),0 0 16px -6px rgba(255,120,40,.6)}50%{box-shadow:0 0 0 1px rgba(255,171,74,.7),0 0 26px -4px rgba(255,120,40,.75)}}
+
+/* Hélios : lumière dorée venue d'en haut */
+html[data-theme="helios"] .sx-exp .art{box-shadow:inset 0 2px 0 rgba(255,220,140,.5),0 -10px 26px -14px rgba(217,166,46,.7)}
+html[data-theme="helios"] .sx-exp .art .fxl{opacity:.4;background:linear-gradient(180deg,rgba(255,210,120,.35),transparent 35%)}
+
+/* Akira : angles vifs, néon rouge, léger décalage au survol */
+html[data-theme="akira"] .sx-exp{--card-r:2px}
+html[data-theme="akira"] .sx-exp .art{box-shadow:0 0 0 1px rgba(229,36,31,.6),0 0 14px -4px rgba(229,36,31,.6)}
+html[data-theme="akira"] .sx-exp .poster:hover .art{box-shadow:-3px 0 0 rgba(255,90,70,.6),3px 0 0 rgba(80,200,255,.35),0 0 18px -4px rgba(229,36,31,.7)}
+
+/* Aurum : double filet d'or */
+html[data-theme="aurum"] .sx-exp{--card-r:3px}
+html[data-theme="aurum"] .sx-exp .art{border-color:rgba(230,190,110,.7);outline:1px solid rgba(230,190,110,.35);outline-offset:3px}
+html[data-theme="aurum"] .sx-exp .art::before{background:linear-gradient(115deg,transparent 30%,rgba(255,220,150,.28) 48%,transparent 62%);background-size:220% 100%}
+
+/* Mégapole : néons bicolores, trame fine */
+html[data-theme="megapole"] .sx-exp{--card-r:6px}
+html[data-theme="megapole"] .sx-exp .art{box-shadow:-6px 0 18px -10px rgba(255,169,77,.8),6px 0 18px -10px rgba(95,208,208,.8)}
+html[data-theme="megapole"] .sx-exp .art .fxl{opacity:.18;background:repeating-linear-gradient(0deg,rgba(255,255,255,.2) 0 1px,transparent 1px 4px)}
+
+/* Néant : les cartes émergent de l'obscurité */
+html[data-theme="neant"] .sx-exp .art{border-color:rgba(255,255,255,.1);box-shadow:0 0 0 1px #000,0 20px 40px -10px #000}
+html[data-theme="neant"] .sx-exp .art .fxl{opacity:1;background:radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(0,0,0,.55));animation:cfPulse 8s ease-in-out infinite}
+
+/* Bunny : très doux, rose */
+html[data-theme="bunny"] .sx-exp{--card-r:20px}
+html[data-theme="bunny"] .sx-exp .art{border-color:rgba(244,169,192,.6);box-shadow:0 12px 26px -14px rgba(244,169,192,.9)}
+html[data-theme="bunny"] .sx-exp .poster::before{background:linear-gradient(90deg,#f4a9c0,#9fe0dc);opacity:.35}
+
+/* Albâtre : pierre, biseau et grain */
+html[data-theme="albatre"] .sx-exp{--card-r:6px}
+html[data-theme="albatre"] .sx-exp .art{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.25),0 10px 22px -12px rgba(90,75,45,.55)}
+html[data-theme="albatre"] .sx-exp .art .fxl{opacity:.22;background-image:radial-gradient(rgba(255,250,235,.6) .6px,transparent .7px),radial-gradient(rgba(60,50,30,.5) .6px,transparent .7px);background-size:5px 5px,7px 7px;background-position:0 0,2px 3px}
+
+/* Elysium : liseré d'argent, lumière divine */
+html[data-theme="olympe"] .sx-exp{--card-r:4px}
+html[data-theme="olympe"] .sx-exp .art{border-color:rgba(223,228,236,.55);box-shadow:0 0 0 1px rgba(0,0,0,.6),0 -6px 24px -12px rgba(223,228,236,.6)}
+html[data-theme="olympe"] .sx-exp .poster::before{top:-6%;height:30%;background:#dfe4ec;opacity:.18}
+
+/* Olympe : veines de marbre */
+html[data-theme="olympia"] .sx-exp{--card-r:4px}
+html[data-theme="olympia"] .sx-exp .art{border-color:rgba(125,133,146,.5);box-shadow:0 12px 26px -14px rgba(120,130,145,.6)}
+html[data-theme="olympia"] .sx-exp .art .fxl{opacity:.2;background:linear-gradient(125deg,transparent 40%,rgba(255,255,255,.7) 41%,transparent 43%),linear-gradient(60deg,transparent 62%,rgba(255,255,255,.5) 63%,transparent 64.5%)}
+
+/* YoRHa : cadre double, angles nets */
+html[data-theme="yorha"] .sx-exp{--card-r:0px}
+html[data-theme="yorha"] .sx-exp .art{border-color:rgba(26,23,18,.6);outline:1px solid rgba(26,23,18,.3);outline-offset:3px}
+
+html[data-motion="reduced"] .sx-exp .art,html[data-motion="reduced"] .sx-exp .art .fxl,html[data-motion="reduced"] .sx-exp .poster::before,html[data-motion="reduced"] .sx-exp .rcard{animation:none!important}

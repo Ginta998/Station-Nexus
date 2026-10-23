@@ -45,12 +45,8 @@ export default function Detail() {
   const [buying, setBuying] = useState(false);
   const cardRef = useRef(null);
 
-  // auto-play the creation ambient on open (cuts app ambience)
-  useEffect(() => {
-    if (item && item.has_audio) playAmbient(item.id);
-    return () => stopAmbient();
-    // eslint-disable-next-line
-  }, [item?.id, item?.has_audio]);
+  // l'ambiance de la création ne démarre qu'au bouton ; on la coupe en quittant la fiche
+  useEffect(() => () => stopAmbient(), [item?.id]); // eslint-disable-line
 
   // Cosmic Bunny special context on her own creation page ("Cosmic Bunny")
   useEffect(() => {

@@ -63,9 +63,6 @@ function noise(c, dest, { at = 0, dur, gain, type = "bandpass", f = 2500, q = 1 
   s.start(t); s.stop(t + dur + 0.02);
 }
 
-const bell = (c, d, f, at, dur, gain) => [1, 2.76, 5.4, 8.93].forEach((r, i) =>
-  tone(c, d, { f: f * r, at, dur: dur / (1 + i * 0.6), gain: gain / (1 + i * 1.4), attack: 0.003 }));
-
 const PACKS = {
   monolithe: {
     label: "Monolithe", hint: "Acier · mécanique précise",
@@ -88,19 +85,19 @@ const PACKS = {
     },
   },
   elysium: {
-    label: "Elysium", hint: "Cristal · divin",
+    label: "Elysium", hint: "Halo · futuriste feutré",
     play(c, ev) {
-      const d = out(c, { time: 0.13, fb: 0.32, tone: 5200 });
-      if (ev === "hover") tone(c, d, { f: 2637, dur: 0.12, gain: 0.012 });
-      if (ev === "nav") bell(c, d, 1318, 0, 0.5, 0.035);
-      if (ev === "select") { bell(c, d, 784, 0, 0.9, 0.035); bell(c, d, 1175, 0.035, 0.8, 0.028); bell(c, d, 1568, 0.07, 0.7, 0.024); }
-      if (ev === "back") { bell(c, d, 988, 0, 0.35, 0.03); bell(c, d, 659, 0.08, 0.5, 0.03); }
+      const d = out(c, { time: 0.16, fb: 0.26, tone: 2600 });
+      if (ev === "hover") tone(c, d, { f: 1180, f2: 1420, dur: 0.06, gain: 0.012, lp: 2200 });
+      if (ev === "nav") { tone(c, d, { f: 660, dur: 0.2, gain: 0.03, attack: 0.012, lp: 2400 }); tone(c, d, { f: 990, at: 0.02, dur: 0.16, gain: 0.014, attack: 0.012, lp: 2400 }); }
+      if (ev === "select") { tone(c, d, { type: "triangle", f: 523, f2: 587, dur: 0.34, gain: 0.035, attack: 0.015, lp: 2000 }); tone(c, d, { f: 784, at: 0.05, dur: 0.3, gain: 0.02, attack: 0.02, lp: 2400 }); noise(c, d, { dur: 0.18, gain: 0.006, type: "highpass", f: 6000 }); }
+      if (ev === "back") tone(c, d, { f: 784, f2: 494, dur: 0.22, gain: 0.03, attack: 0.01, lp: 2000 });
     },
   },
 };
 
 // thème -> pack (les thèmes sans pack dédié prennent Abysse)
-export const THEME_SOUND = { monolithe: "monolithe", abysse: "abysse", olympe: "elysium" };
+export const THEME_SOUND = { monolithe: "monolithe", abysse: "abysse", olympe: "elysium", olympia: "elysium" };
 export const packForTheme = (theme) => THEME_SOUND[theme] || "abysse";
 export const SOUND_PACKS = Object.entries(PACKS).map(([key, v]) => ({ key, label: v.label, hint: v.hint }));
 export const isValidPack = (p) => p === "auto" || p === "silence" || !!PACKS[p];

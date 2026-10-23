@@ -40,30 +40,43 @@ const PlanetSVG = () => (
   </svg>
 );
 
-/* AURUM — sphère armillaire dorée */
+/* AURUM — sceau solaire forgé (même famille qu'Elysium, géométrie différente) */
+const AU_RUNES = "☉ ♄ ♃ ♂ ♀ ☿ ☽ ⊕ ⚶ ⚷ ⚸ ⚹ ".repeat(3);
 const ArmillarySVG = () => (
-  <svg viewBox="0 0 380 380" className="svgform" aria-hidden="true">
+  <svg viewBox="0 0 420 420" className="svgform svgform-aurum" aria-hidden="true">
     <defs>
       <linearGradient id="auG" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stopColor="#fff2cf" /><stop offset="0.5" stopColor="#e9c66a" /><stop offset="1" stopColor="#9a7420" />
       </linearGradient>
+      <radialGradient id="auCore" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stopColor="#fff6dc" stopOpacity="0.95" /><stop offset="0.4" stopColor="#e6be6e" stopOpacity="0.35" /><stop offset="1" stopColor="#e6be6e" stopOpacity="0" />
+      </radialGradient>
+      <path id="auTxt" d="M210 210 m-160 0 a160 160 0 1 1 320 0 a160 160 0 1 1 -320 0" />
     </defs>
     <g fill="none" stroke="url(#auG)">
-      <circle cx="190" cy="190" r="160" strokeWidth="1.4" opacity="0.5" />
-      <circle cx="190" cy="190" r="150" strokeWidth="2" opacity="0.85" />
-      <g className="cb-spin" style={{ transformOrigin: "190px 190px" }}>
-        <ellipse cx="190" cy="190" rx="150" ry="150" strokeWidth="1.6" />
-        <ellipse cx="190" cy="190" rx="150" ry="56" strokeWidth="1.6" />
-        <ellipse cx="190" cy="190" rx="56" ry="150" strokeWidth="1.6" />
-        <ellipse cx="190" cy="190" rx="112" ry="112" strokeWidth="1" opacity="0.55" />
+      <g className="cb-spin-slow" style={{ transformOrigin: "210px 210px" }}>
+        {Array.from({ length: 24 }).map((_, i) => { const a = (i / 24) * Math.PI * 2, l = i % 2 ? 14 : 30; return <line key={i} x1={210 + Math.cos(a) * 178} y1={210 + Math.sin(a) * 178} x2={210 + Math.cos(a) * (178 + l)} y2={210 + Math.sin(a) * (178 + l)} strokeWidth={i % 2 ? 1 : 1.8} opacity="0.75" />; })}
+        <circle cx="210" cy="210" r="174" strokeWidth="1.6" opacity="0.85" />
+        <circle cx="210" cy="210" r="146" strokeWidth="0.8" opacity="0.6" />
       </g>
-      <g className="cb-spin-rev" style={{ transformOrigin: "190px 190px" }}>
-        <ellipse cx="190" cy="190" rx="150" ry="98" strokeWidth="1.3" transform="rotate(34 190 190)" opacity="0.8" />
-        <ellipse cx="190" cy="190" rx="150" ry="98" strokeWidth="1.3" transform="rotate(-34 190 190)" opacity="0.8" />
+      <text fill="#e9c66a" stroke="none" fontSize="13" letterSpacing="4" opacity="0.7"><textPath href="#auTxt">{AU_RUNES}</textPath></text>
+      <g className="cb-spin-rev" style={{ transformOrigin: "210px 210px" }}>
+        {[0, 1].map((k) => <polygon key={k} points={Array.from({ length: 6 }).map((_, i) => { const a = (i / 6) * Math.PI * 2 + k * Math.PI / 6 - Math.PI / 2; return `${210 + Math.cos(a) * 132},${210 + Math.sin(a) * 132}`; }).join(" ")} strokeWidth="1.2" opacity="0.6" />)}
+        <polygon points={Array.from({ length: 6 }).map((_, i) => { const a = (i * 2 / 6) * Math.PI * 2 - Math.PI / 2; return `${210 + Math.cos(a) * 132},${210 + Math.sin(a) * 132}`; }).join(" ")} strokeWidth="1" opacity="0.5" />
+        {Array.from({ length: 6 }).map((_, i) => { const a = (i / 6) * Math.PI * 2 - Math.PI / 2; return <circle key={i} cx={210 + Math.cos(a) * 132} cy={210 + Math.sin(a) * 132} r="6" fill="url(#auG)" stroke="none" />; })}
       </g>
+      <g className="cb-spin" style={{ transformOrigin: "210px 210px" }}>
+        <circle cx="210" cy="210" r="92" strokeWidth="1.4" opacity="0.9" />
+        <ellipse cx="210" cy="210" rx="92" ry="34" strokeWidth="1" opacity="0.6" transform="rotate(30 210 210)" />
+        <ellipse cx="210" cy="210" rx="92" ry="34" strokeWidth="1" opacity="0.6" transform="rotate(-30 210 210)" />
+        <ellipse cx="210" cy="210" rx="34" ry="92" strokeWidth="1" opacity="0.5" />
+      </g>
+      <circle cx="210" cy="210" r="62" strokeWidth="0.7" strokeDasharray="2 5" opacity="0.7" />
+      {Array.from({ length: 12 }).map((_, i) => { const a = (i / 12) * Math.PI * 2; return <line key={i} x1={210 + Math.cos(a) * 26} y1={210 + Math.sin(a) * 26} x2={210 + Math.cos(a) * 56} y2={210 + Math.sin(a) * 56} strokeWidth="1" opacity="0.55" />; })}
     </g>
-    <circle cx="190" cy="190" r="13" fill="url(#auG)" />
-    <circle cx="190" cy="190" r="25" fill="none" stroke="url(#auG)" strokeWidth="1.4" opacity="0.7" />
+    <circle cx="210" cy="210" r="50" fill="url(#auCore)" className="cb-glow" />
+    <circle cx="210" cy="210" r="18" fill="none" stroke="url(#auG)" strokeWidth="1.6" />
+    <circle cx="210" cy="210" r="7" fill="url(#auG)" />
   </svg>
 );
 
@@ -78,17 +91,17 @@ const MandalaSVG = () => (
   <svg viewBox="0 0 420 420" className="svgform svgform-elysium" aria-hidden="true">
     <defs>
       <linearGradient id="elS" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#ffffff" /><stop offset="0.45" stopColor="#c9cfd8" /><stop offset="1" stopColor="#6c7380" />
+        <stop offset="0" style={{ stopColor: "var(--el1)" }} /><stop offset="0.45" style={{ stopColor: "var(--el2)" }} /><stop offset="1" style={{ stopColor: "var(--el3)" }} />
       </linearGradient>
       <radialGradient id="elCore" cx="50%" cy="50%" r="50%">
-        <stop offset="0" stopColor="#ffffff" stopOpacity="0.95" /><stop offset="0.35" stopColor="#dfe4ec" stopOpacity="0.35" /><stop offset="1" stopColor="#dfe4ec" stopOpacity="0" />
+        <stop offset="0" style={{ stopColor: "var(--el1)", stopOpacity: 0.95 }} /><stop offset="0.35" style={{ stopColor: "var(--el2)", stopOpacity: 0.35 }} /><stop offset="1" style={{ stopColor: "var(--el2)", stopOpacity: 0 }} />
       </radialGradient>
       <path id="elTxt" d="M210 210 m-178 0 a178 178 0 1 1 356 0 a178 178 0 1 1 -356 0" />
     </defs>
     <g className="cb-spin-slow" style={{ transformOrigin: "210px 210px" }}>
       <circle cx="210" cy="210" r="196" fill="none" stroke="url(#elS)" strokeWidth="0.8" opacity="0.45" />
       <Ring r={186} n={72} len={5} op={0.55} />
-      <text fill="#cfd5de" fontSize="11" letterSpacing="3" opacity="0.6" fontFamily="serif"><textPath href="#elTxt">{GLYPHS}</textPath></text>
+      <text style={{ fill: "var(--el2)" }} fontSize="11" letterSpacing="3" opacity="0.6" fontFamily="serif"><textPath href="#elTxt">{GLYPHS}</textPath></text>
       <circle cx="210" cy="210" r="166" fill="none" stroke="url(#elS)" strokeWidth="1.2" opacity="0.7" />
     </g>
     <g className="cb-spin-rev-slow" style={{ transformOrigin: "210px 210px" }} fill="none" stroke="url(#elS)">
@@ -107,7 +120,7 @@ const MandalaSVG = () => (
     </g>
     <circle cx="210" cy="210" r="46" fill="url(#elCore)" className="cb-glow" />
     <circle cx="210" cy="210" r="16" fill="none" stroke="url(#elS)" strokeWidth="1.2" />
-    <circle cx="210" cy="210" r="4" fill="#ffffff" />
+    <circle cx="210" cy="210" r="4" style={{ fill: "var(--el1)" }} />
   </svg>
 );
 
