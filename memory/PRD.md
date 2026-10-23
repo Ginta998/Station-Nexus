@@ -740,3 +740,6 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Bug dans le dépôt : lib/themes.js listait les anciens thèmes (tengoku…) alors que index.css ne définit que 17 thèmes cosmiques. THEMES réécrit (abysse, neptune, glacier, singularite, blackhole, supernova, helios, akira, aurum, megapole, biome, monolithe, neant, bunny, albatre, olympe, yorha).
 - Défaut default_theme = abysse (backend + Settings) ; valeur en base migrée de tengoku vers abysse ; un ancien thème mémorisé dans le navigateur bascule automatiquement sur un thème valide.
 - L intro tengoku (animation de démarrage) est conservée, ce n est pas un thème.
+
+## 2026-10-23 — Accès propriétaire preview
+- Compte louzalabrichel@gmail.com créé dans la base preview avec mot de passe et droits admin (aucun changement de code).
