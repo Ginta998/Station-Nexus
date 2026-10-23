@@ -19,7 +19,7 @@ export default function Revenue() {
   const forbidden = error && (error?.response?.status === 403 || error?.response?.status === 401);
 
   return (
-    <div className="min-h-screen pb-16" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid="revenue-page">
+    <div className="min-h-screen pb-16" style={{ background: "transparent", color: "var(--text-primary)" }} data-testid="revenue-page">
       <div className="sx-safe-top flex items-center justify-between px-5 md:px-12 pt-6">
         <div className="flex items-center gap-2">
           <button data-testid="revenue-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2" style={btn}><IoArrowBack /> <span className="text-sm hidden sm:inline">Retour</span></button>

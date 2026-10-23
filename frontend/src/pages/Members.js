@@ -37,7 +37,7 @@ export default function Members() {
   const closeProfile = () => { setProfileOpen(false); setTimeout(() => refetch(), 400); };
 
   return (
-    <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
+    <div className="relative min-h-screen w-full" style={{ background: "transparent" }}>
       <div className="max-w-4xl mx-auto px-5 md:px-8 py-8">
         <div className="flex items-center justify-between gap-2 mb-8">
           <div className="flex items-center gap-2">

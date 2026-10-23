@@ -56,7 +56,7 @@ export default function PaymentResult({ mode = "success" }) {
   }[state];
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-5" style={{ background: "var(--bg-primary)" }} data-testid="payment-result">
+    <div className="min-h-screen flex items-center justify-center px-5" style={{ background: "transparent" }} data-testid="payment-result">
       {celebrate && <Celebration onClose={() => setCelebrate(false)} />}
       <div className="w-full max-w-md text-center p-8" style={card}>
         <div className="flex justify-center mb-4">{content.icon}</div>

@@ -164,7 +164,7 @@ export default function Planning() {
   };
 
   return (
-    <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
+    <div className="relative min-h-screen w-full" style={{ background: "transparent" }}>
       <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
         <div className="flex items-center justify-between gap-2 mb-8">
           <button data-testid="planning-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>

@@ -24,7 +24,7 @@ export default function Novelties() {
   const go = (a) => { if (a.creation_id) { sfx("select"); nav(`/oeuvre/${a.creation_id}`); } };
 
   return (
-    <div className="relative min-h-screen w-full" style={{ background: "var(--bg-primary)" }}>
+    <div className="relative min-h-screen w-full" style={{ background: "transparent" }}>
       <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
         <div className="flex items-center justify-between gap-2 mb-8">
           <div className="flex items-center gap-2">

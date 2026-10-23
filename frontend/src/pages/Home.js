@@ -9,7 +9,6 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import TopBar from "@/components/TopBar";
-import CosmicBackground from "@/components/CosmicBackground";
 import EditorDialog from "@/components/EditorDialog";
 import ProfileDialog from "@/components/ProfileDialog";
 import HomeCountdown from "@/components/HomeCountdown";
@@ -252,7 +251,6 @@ export default function Home() {
 
   return (
     <div style={{ minHeight: "100vh", background: "transparent", color: "var(--text-primary)", position: "relative" }}>
-      <CosmicBackground />
       <div style={{ position: "relative", zIndex: 1 }}>
       <TopBar onAdd={openCreate} onProfile={requireProfile} />
       <HomeCountdown />

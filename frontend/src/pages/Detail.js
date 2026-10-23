@@ -10,7 +10,6 @@ import { useEntitlements } from "@/lib/useEntitlements";
 import { resolveVideoEmbed } from "@/lib/video";
 import EditorDialog from "@/components/EditorDialog";
 import MovixSelector from "@/components/MovixSelector";
-import CosmicBackground from "@/components/CosmicBackground";
 import CommentsSection from "@/components/CommentsSection";
 import { FicheSupport } from "@/components/SupportersWall";
 import LaunchGate from "@/components/LaunchGate";
@@ -210,7 +209,6 @@ export default function Detail() {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden" style={{ background: "transparent", color: "var(--text-primary)" }}>
       {/* Même direction artistique que l'accueil : décor cosmique du thème */}
-      <CosmicBackground />
       {/* Voile coloré discret tiré de l'affiche de la création */}
       {bgSrc && (
         <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true"

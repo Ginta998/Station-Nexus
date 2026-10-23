@@ -244,7 +244,7 @@ export default function Chat() {
   // ---- Access gate ----
   if (status && !canRead) {
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid="chat-locked">
+      <div className="min-h-screen flex flex-col" style={{ background: "transparent", color: "var(--text-primary)" }} data-testid="chat-locked">
         <Header nav={nav} sfx={sfx} online={0} showOnline={false} tab={null} />
         <div className="flex-1 flex items-center justify-center px-5">
           <div className="max-w-md text-center p-8" style={{ background: "var(--bg-secondary)", border: "1px solid var(--brand)", borderRadius: "var(--radius-base)" }}>

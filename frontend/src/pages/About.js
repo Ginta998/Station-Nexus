@@ -44,7 +44,7 @@ export default function About() {
   const pillars = (view?.pillars || []);
 
   return (
-    <div className="min-h-screen pb-16" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid="about-page">
+    <div className="min-h-screen pb-16" style={{ background: "transparent", color: "var(--text-primary)" }} data-testid="about-page">
       {/* Top bar */}
       <div className="sx-safe-top absolute top-0 left-0 right-0 z-20 flex items-center justify-between gap-2 px-5 md:px-12 pt-6">
         <div className="flex items-center gap-2">

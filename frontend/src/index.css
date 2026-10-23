@@ -1320,3 +1320,6 @@ html[data-theme="yorha"]{--card-r:0px;--card-bd:rgba(26,23,18,.6);--card-ol:1px 
 
 html[data-motion="reduced"] .sx-exp .art,html[data-motion="reduced"] .fxl,html[data-motion="reduced"] .sx-exp .poster::before,html[data-motion="reduced"] .sx-exp .rcard{animation:none!important}
 html[data-theme="olympia"] .sx-exp .pcap .pcat,html[data-theme="bunny"] .sx-exp .pcap .pcat,html[data-theme="albatre"] .sx-exp .pcap .pcat,html[data-theme="yorha"] .sx-exp .pcap .pcat{color:color-mix(in srgb,var(--text-primary) 72%,var(--brand))}
+/* décor du thème partagé par toutes les pages, derrière le contenu */
+.App{position:relative;z-index:0}
+.App > .cosmic-bg{z-index:-1}
