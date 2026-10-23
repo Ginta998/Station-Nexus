@@ -1,0 +1,36 @@
+{
+  "summary": "Frontend-only test of new batch (Olympe/olympia theme, Aurum seal, Elysium sound pack, no creation autoplay, per-theme card effects). All requested checks PASSED. No pageerrors / console errors on Home, /parametres, /oeuvre/:id (only browser AudioContext-before-gesture warnings).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Cosmic Bunny bubble (cb-bubble) on Detail page", "issue": "At 1100x800 the auto-opened Cosmic Bunny tip bubble sits on top of the Ambiance button (elementFromPoint at detail-ambient center = cb-bubble) and the share/action row; user must close the bubble before clicking Ambiance. Pre-existing, not part of this batch.", "selector": "[data-testid=detail-ambient]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home poster captions on light themes (olympia, bunny)", "issues": ["The small category label .pcap .pcat ('FILMS') is very faint (silver on #eef0f3 for olympia, pale pink on bunny bg) – low contrast. Titles .ct are fine (rgb(36,39,45) olympia, rgb(74,63,69) bunny)."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Optional: darken .pcat color for olympia/bunny light themes",
+    "Optional: avoid Cosmic Bunny bubble covering Detail action buttons (detail-ambient) on ~1100px viewports"
+  ],
+  "critical_code_review_comments": [
+    "Detail.js: useEffect(() => () => stopAmbient(), [item?.id]) captures stopAmbient from the render when item.id changed; works now since stopAmbient only reads refs, but keep it ref-based to avoid stale closures.",
+    "Headless Chromium crashes ('Target crashed') after ~4-5 consecutive in-page theme switches on Home – could hint at heavy per-theme background/animation memory; worth checking CosmicBackground cleanup on theme change."
+  ],
+  "verified": {
+    "themes": "18 themes in home picker (home-theme-pick-*) and Settings theme-grid (theme-*), incl. olympe(Elysium) & olympia(Olympe)",
+    "olympia": "html[data-theme=olympia], body bg rgb(238,240,243), .sform.s-olympe svg display block with silver gradient strokes (url(#elS)), tagline 'LA LUMIÈRE DES CIMES'",
+    "aurum": ".sform.s-aurum display block, svg.svgform-aurum with 3 polygons + 1 textPath",
+    "card_effects": "All 18 themes: .art .fxl present (z-index 2, pointer-events none), .ptt z-index 3 opacity 1, .pcap .ct opacity 1. border-radius: abysse 10, neptune 16, glacier 12, monolithe 2, biome 20, singularite 10, blackhole 6, supernova 4, helios 6, akira 2, aurum 3, megapole 6, neant 6, bunny 20, albatre 6, olympe 4, olympia 4, yorha 0px. Screenshots (abysse, neptune, glacier, biome, monolithe, neant, bunny, albatre, olympe, olympia, yorha) show readable titles.",
+    "detail_no_autoplay": "/oeuvre/b60c... (Blue Flower) opened from Home: no /audio request, Ambiance button shows music-note icon; after click -> /api/creations/{id}/audio requested, pause icon, color var(--brand)",
+    "sound": "ui-sound-elysium present ('Halo · futuriste feutré'), click sets localStorage sx_soundpack=elysium, no errors; Auto hint with olympia = 'Suit le thème · Elysium'"
+  },
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Use workaround from iteration_25: unregister SW, route service-worker.js abort, set localStorage sx_intro_off=1, sx_tour_done=1, sessionStorage sx_entered=1, sx_theme=<key>, ONE goto per run. Switch themes in-page via JS click on home-theme-toggle then home-theme-pick-{key} (Playwright click fails for items scrolled inside picker); limit to ~4 switches per run or the target crashes. Cosmic Bunny bubble overlays detail-ambient -> use JS click. Settings route /parametres, tabs settings-tab-apparence/son."
+}

@@ -757,3 +757,10 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Anciens sons UI supprimés ; 3 packs synthétisés (Monolithe, Abysse, Elysium) ; mode Auto suit le thème (autres thèmes -> Abysse) ; choix dans Paramètres > Son (UiSoundPicker).
 - Sélecteur de thèmes accueil : boutons data-testid home-theme-pick-{key}, Cosmic Bunny masqué quand le sélecteur est ouvert.
 - Tests : iteration_25 100%.
+
+## 2026-10-23 — Olympe, Aurum, effets de cartes
+- Nouveau thème Olympe (clé olympia) blanc & argent, même sphère qu Elysium (couleurs via --el1/2/3). Phrase inventée : "La lumière des cimes".
+- Aurum : nouveau sceau solaire (hexagramme, runes, armillaire).
+- Son Elysium refait (feutré, futuriste). Olympe utilise aussi Elysium.
+- Ambiance des créations : plus de lecture auto, seulement via le bouton Ambiance.
+- Effets de cartes pour les 18 thèmes (.fxl + poster::before + --card-r). Tests iteration_26 100%.

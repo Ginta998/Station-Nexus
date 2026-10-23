@@ -1376,3 +1376,4 @@ html[data-theme="yorha"] .sx-exp{--card-r:0px}
 html[data-theme="yorha"] .sx-exp .art{border-color:rgba(26,23,18,.6);outline:1px solid rgba(26,23,18,.3);outline-offset:3px}
 
 html[data-motion="reduced"] .sx-exp .art,html[data-motion="reduced"] .sx-exp .art .fxl,html[data-motion="reduced"] .sx-exp .poster::before,html[data-motion="reduced"] .sx-exp .rcard{animation:none!important}
+html[data-theme="olympia"] .sx-exp .pcap .pcat,html[data-theme="bunny"] .sx-exp .pcap .pcat,html[data-theme="albatre"] .sx-exp .pcap .pcat,html[data-theme="yorha"] .sx-exp .pcap .pcat{color:color-mix(in srgb,var(--text-primary) 72%,var(--brand))}
