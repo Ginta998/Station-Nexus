@@ -1,387 +1,532 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoChevronForward, IoChevronBack, IoChevronUp, IoChevronDown, IoCreateOutline, IoTrashOutline, IoPlay, IoFilter, IoSearch, IoArrowForward, IoOptionsOutline, IoStar, IoStarOutline } from "react-icons/io5";
+import { IoPlay, IoSearch, IoCreateOutline, IoTrashOutline, IoStar, IoStarOutline, IoArrowForward, IoColorPaletteOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { listCreations, listCategories, deleteCreation, getMembershipPlan, getSettings, updateSettings } from "@/lib/api";
-import { posterUrl, bgUrl } from "@/lib/api";
+import { listCreations, listCategories, deleteCreation, getMembershipPlan, getSettings, updateSettings, posterUrl, bgUrl, listAnnouncements } from "@/lib/api";
+import { THEMES } from "@/lib/themes";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import TopBar from "@/components/TopBar";
-import PosterCard from "@/components/PosterCard";
-import CreationsGridList from "@/components/CreationsGridList";
+import CosmicBackground from "@/components/CosmicBackground";
 import EditorDialog from "@/components/EditorDialog";
 import ProfileDialog from "@/components/ProfileDialog";
 import HomeCountdown from "@/components/HomeCountdown";
 import HomeCustomizer from "@/components/home/HomeCustomizer";
 
-const ALL = "__all__";
-const FAV = "__fav__";
+/* ---------- Compte à rebours vers la prochaine sortie (dim. 20h) ---------- */
+function nextSunday() {
+  const d = new Date();
+  let add = (7 - d.getDay()) % 7;
+  if (add === 0 && d.getHours() >= 20) add = 7;
+  d.setDate(d.getDate() + add); d.setHours(20, 0, 0, 0);
+  return d;
+}
+function Countdown({ compact }) {
+  const [, tick] = useState(0);
+  useEffect(() => { const t = setInterval(() => tick((n) => n + 1), 1000); return () => clearInterval(t); }, []);
+  let diff = Math.max(0, nextSunday() - new Date());
+  const D = Math.floor(diff / 864e5); diff -= D * 864e5;
+  const H = Math.floor(diff / 36e5); diff -= H * 36e5;
+  const M = Math.floor(diff / 6e4); diff -= M * 6e4;
+  const S = Math.floor(diff / 1e3);
+  const p2 = (n) => String(n).padStart(2, "0");
+  if (compact) return <span className="cd-num">{D}<small>J</small> {p2(H)}:{p2(M)}:{p2(S)}</span>;
+  return <span className="cd-num">{D}<small>J</small> {p2(H)}<small>:</small>{p2(M)}<small>:</small>{p2(S)}</span>;
+}
+
+const MOIS = ["JANV", "FÉVR", "MARS", "AVR", "MAI", "JUIN", "JUIL", "AOÛT", "SEPT", "OCT", "NOV", "DÉC"];
+function fmtDate(v) {
+  if (!v) return "—";
+  const d = new Date(v);
+  if (isNaN(d)) return String(v).slice(0, 8);
+  return `${String(d.getDate()).padStart(2, "0")} ${MOIS[d.getMonth()]}`;
+}
+
+const JOURNAL_SECTIONS = [
+  { tag: "NOUVEAUTÉS", title: "Les dernières sorties", sub: "ACTUALITÉS · STATION", route: "/nouveautes", c1: "#2b3a60", c2: "#0a1020" },
+  { tag: "PLANNING", title: "Prochaines sorties", sub: "AGENDA · DIMANCHE 20H", route: "/planning", c1: "#4a2367", c2: "#140a22" },
+  { tag: "COULISSES", title: "Dans l'atelier", sub: "MAKING-OF · CARNET", route: "/nouveautes", c1: "#5a1e12", c2: "#1a0805" },
+  { tag: "LA STATION", title: "À propos", sub: "MANIFESTE · BRICHEL", route: "/a-propos", c1: "#1f3a4a", c2: "#0a141a" },
+];
+
+/* ---------- Poster (carte affiche, style maquette) ---------- */
+function Poster({ it, idx, catLabel, soon, isAdmin, featured, onOpen, onEdit, onDelete, onFeature }) {
+  const img = it.has_poster ? posterUrl(it.id, it.updated_at) : null;
+  const key = String(it.id || it.title || "x");
+  const init = (it.title || "?").replace(/[^A-Za-zÀ-ÿ0-9]/g, "").slice(0, 1).toUpperCase() || "✦";
+  const hue = [...key].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+  const style = img
+    ? { backgroundImage: `url(${img})` }
+    : { "--c1": `hsl(${hue} 52% 30%)`, "--c2": `hsl(${(hue + 36) % 360} 58% 11%)` };
+  return (
+    <article className="poster" onClick={onOpen}>
+      <div className={"art" + (img ? " pimg" : "")} style={style}>
+        <span className="pm">{String(idx).padStart(3, "0")}</span>
+        <span className="pt a" />
+        <span className="wmk">{init}</span>
+        <div className="ptt">{it.title}</div>
+        <span className={"pst" + (soon ? " soon" : "")}>{soon ? "À VENIR" : "DISPO"}</span>
+        {isAdmin && (
+          <div className="padm" onClick={(e) => e.stopPropagation()}>
+            <button className={featured ? "on" : ""} title="Mettre à la une" onClick={onFeature}>{featured ? <IoStar size={13} /> : <IoStarOutline size={13} />}</button>
+            <button title="Modifier" onClick={onEdit}><IoCreateOutline size={13} /></button>
+            <button title="Supprimer" onClick={onDelete}><IoTrashOutline size={13} /></button>
+          </div>
+        )}
+      </div>
+      <div className="pcap">
+        {catLabel && <div className="pcat">{catLabel}</div>}
+        <div className="ct">{it.title}</div>
+        {it.tagline && <div className="cs">{it.tagline}</div>}
+      </div>
+    </article>
+  );
+}
 
 export default function Home() {
   const nav = useNavigate();
-  const { isAdmin, sfx, favorites, isFavorite, toggleFavorite, layout, posterSize } = useApp();
+  const { isAdmin, sfx, theme, setTheme, playAmbient } = useApp();
   const { user, openAuth } = useAuth();
   const { membershipActive } = useEntitlements();
-  const requireProfile = () => { if (!user) { toast.info("Crée un compte pour avoir ton profil (nom + avatar) sauvegardé partout."); openAuth(); } else setProfileOpen(true); };
+
   const { data: all = [], refetch, isLoading } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
   const { data: memberPlan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
   const { data: settings, refetch: refetchSettings } = useQuery({ queryKey: ["site-settings"], queryFn: getSettings });
+  const { data: announcements = [] } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
 
-  const [catIndex, setCatIndex] = useState(0);
-  const [focusIndex, setFocusIndex] = useState(0);
-  const [sort, setSort] = useState("order");
+  const [view, setView] = useState("rails");      // rails | map | arcade
   const [query, setQuery] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [customizerOpen, setCustomizerOpen] = useState(false);
-  const [savingDefault, setSavingDefault] = useState(false);
-  const isPhone = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
-  const saveDefaultPoster = useCallback(async () => {
-    if (!settings) return;
-    setSavingDefault(true);
-    try {
-      const key = isPhone ? "default_poster_mobile" : "default_poster_desktop";
-      await updateSettings({ ...settings, [key]: posterSize });
-      toast.success("Taille des affiches par défaut enregistrée ✓");
-      refetchSettings();
-    } finally { setSavingDefault(false); }
-  }, [settings, posterSize, isPhone, refetchSettings]);
-  const cardRefs = useRef([]);
-  const focusSrc = useRef("kbd");
-  const railRef = useRef(null);
-  const edgeDir = useRef(0);
+  const [heroIdx, setHeroIdx] = useState(0);
+  const [mapCat, setMapCat] = useState("__all__");
+  const [arcCat, setArcCat] = useState("__all__");
+  const [arcSel, setArcSel] = useState(0);
+  const [openJ, setOpenJ] = useState(null);
+  const [themeOpen, setThemeOpen] = useState(false);
 
-  const tabs = useMemo(() => [{ key: ALL, label: "Toutes mes créations", kanji: "全" }, { key: FAV, label: "Favoris", kanji: "愛" }, ...cats], [cats]);
+  const requireProfile = () => { if (!user) { toast.info("Crée un compte pour sauvegarder ton profil partout."); openAuth(); } else setProfileOpen(true); };
+  const themeMeta = useMemo(() => THEMES.find((t) => t.key === theme) || THEMES[0], [theme]);
   const catLabelByKey = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c.label])), [cats]);
-  const activeTab = tabs[catIndex] || tabs[0];
+  const catKanjiByKey = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c.kanji])), [cats]);
+  // LA UNE = uniquement les créations étoilées (multi). Compat : ancien champ unique.
+  const featuredIds = useMemo(() => {
+    const arr = Array.isArray(settings?.featured_ids) ? settings.featured_ids.filter(Boolean) : [];
+    if (arr.length) return arr;
+    return settings?.featured_creation_id ? [settings.featured_creation_id] : [];
+  }, [settings]);
+  const isFeatured = (id) => featuredIds.includes(id);
+  const featuredId = featuredIds[0] || "";
+  const isSoon = (it) => it.category === "avenir";
 
-  const items = useMemo(() => {
-    let list = activeTab.key === ALL ? [...all]
-      : activeTab.key === FAV ? all.filter((x) => favorites.includes(x.id))
-      : all.filter((x) => x.category === activeTab.key);
+  // recherche globale
+  const filtered = useMemo(() => {
+    let list = [...all].sort((a, b) => (a.order || 0) - (b.order || 0));
     if (query.trim()) {
       const q = query.toLowerCase();
       list = list.filter((x) => (x.title + " " + (x.tagline || "") + " " + (x.synopsis || "")).toLowerCase().includes(q));
     }
-    if (sort === "az") list.sort((a, b) => a.title.localeCompare(b.title));
-    else if (sort === "za") list.sort((a, b) => b.title.localeCompare(a.title));
-    else if (sort === "recent") list.sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""));
-    else list.sort((a, b) => (a.order || 0) - (b.order || 0));
-    const fid = settings?.featured_creation_id;
-    if (fid) { const idx = list.findIndex((x) => x.id === fid); if (idx > 0) { const [f] = list.splice(idx, 1); list.unshift(f); } }
     return list;
-  }, [all, activeTab, query, sort, favorites, settings]);
+  }, [all, query]);
 
-  const featuredId = settings?.featured_creation_id || "";
+  // rails groupés par catégorie, dans l'ordre de l'artefact
+  const rails = useMemo(() => {
+    const RAIL_ORDER = ["films", "livres", "series", "avenir", "dojo"];
+    const ord = (k) => { const i = RAIL_ORDER.indexOf(k); return i < 0 ? 99 : i; };
+    return [...cats]
+      .sort((a, b) => ord(a.key) - ord(b.key))
+      .map((c) => ({ ...c, items: filtered.filter((x) => x.category === c.key) }))
+      .filter((r) => r.items.length);
+  }, [cats, filtered]);
 
-  const focused = items[focusIndex];
+  // LA UNE : SEULEMENT les créations étoilées, dans l'ordre d'ajout de l'étoile.
+  const heroes = useMemo(() => {
+    if (!featuredIds.length) return [];
+    const byId = Object.fromEntries(all.map((x) => [x.id, x]));
+    return featuredIds.map((id) => byId[id]).filter(Boolean).slice(0, 8);
+  }, [all, featuredIds]);
 
-  useEffect(() => { focusSrc.current = "kbd"; setFocusIndex(0); }, [catIndex, query, sort]);
+  useEffect(() => { if (heroIdx >= heroes.length) setHeroIdx(0); }, [heroes.length, heroIdx]);
   useEffect(() => {
-    // Ne recentre le rail QUE sur navigation clavier / D-pad — pas au survol souris ni au scroll natif
-    if (focusSrc.current === "hover" || focusSrc.current === "scroll") { focusSrc.current = "kbd"; return; }
-    const el = cardRefs.current[focusIndex];
-    if (el) el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  }, [focusIndex, catIndex, items.length]);
+    if (heroes.length < 2) return;
+    const t = setInterval(() => setHeroIdx((i) => (i + 1) % heroes.length), 6000);
+    return () => clearInterval(t);
+  }, [heroes.length]);
+  const hero = heroes[heroIdx];
 
-  const navRight = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setFocusIndex((i) => Math.min(i + 1, items.length - 1)); }, [items.length, sfx]);
-  const navLeft = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setFocusIndex((i) => Math.max(i - 1, 0)); }, [sfx]);
-  const catDown = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.min(c + 1, tabs.length - 1)); }, [tabs.length, sfx]);
-  const catUp = useCallback(() => { focusSrc.current = "kbd"; sfx("nav"); setCatIndex((c) => Math.max(c - 1, 0)); }, [sfx]);
+  // ARCADE : œuvres avec affiche, filtrées
+  const arcItems = useMemo(() => {
+    let list = filtered.filter((x) => x.has_poster);
+    if (arcCat !== "__all__") list = list.filter((x) => x.category === arcCat);
+    return list;
+  }, [filtered, arcCat]);
+  useEffect(() => { setArcSel(0); }, [arcCat]);
+  const arcCur = arcItems[arcSel];
+  // Garde la tuile sélectionnée visible (clavier, clic, flèches) — sinon on finit "bloqué" hors écran.
+  const arcRailRef = useRef(null);
+  useEffect(() => {
+    const rail = arcRailRef.current; if (!rail || view !== "arcade") return;
+    if (arcSel <= 0) { rail.scrollTo({ left: 0, behavior: "smooth" }); return; }
+    if (arcSel >= arcItems.length - 1) { rail.scrollTo({ left: rail.scrollWidth, behavior: "smooth" }); return; }
+    const tile = rail.children[arcSel];
+    if (tile && tile.scrollIntoView) tile.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }, [arcSel, view, arcItems.length]);
 
-  // Focus (surlignage + fond) mis à jour SEULEMENT quand le défilement s'arrête -> fluide
-  const scrollSettle = useRef(0);
-  const autoScrolling = useRef(false);
-  const centeredIndex = () => {
-    const rail = railRef.current; if (!rail) return 0;
-    const n = Math.max(1, rail.children.length - 1);
-    const max = rail.scrollWidth - rail.clientWidth;
-    if (rail.scrollLeft <= 2) return 0;              // tout à gauche -> 1ʳᵉ fiche
-    if (rail.scrollLeft >= max - 2) return n - 1;    // tout à droite -> dernière fiche
-    const rc = rail.getBoundingClientRect();
-    const railCenter = rc.left + rc.width / 2;
-    let best = 0, bd = Infinity;
-    for (let i = 0; i < n; i++) {
-      const r = rail.children[i].getBoundingClientRect();
-      const c = r.left + r.width / 2;
-      const d = Math.abs(c - railCenter);
-      if (d < bd) { bd = d; best = i; }
-    }
-    return best;
-  };
-  const onRailScroll = useCallback(() => {
-    if (window.innerWidth >= 768) return;
-    if (autoScrolling.current) return;
-    clearTimeout(scrollSettle.current);
-    scrollSettle.current = setTimeout(() => {
-      const best = centeredIndex();
-      setFocusIndex((prev) => { if (best !== prev) { focusSrc.current = "scroll"; return best; } return prev; });
-    }, 110);
-  }, []);
-  // D-pad : animation manuelle vers la carte voisine (fluide, aucun re-render pendant le mouvement)
-  const scrollRailBy = useCallback((dir) => {
-    const rail = railRef.current; if (!rail) return;
-    sfx("nav");
-    const n = Math.max(1, rail.children.length - 1);
-    const next = Math.max(0, Math.min(n - 1, centeredIndex() + dir));
-    const child = rail.children[next]; if (!child) return;
-    const rr = rail.getBoundingClientRect(), cr = child.getBoundingClientRect();
-    const delta = (cr.left + cr.width / 2) - (rr.left + rr.width / 2);
-    const max = rail.scrollWidth - rail.clientWidth;
-    const from = rail.scrollLeft;
-    const to = Math.max(0, Math.min(max, from + delta));
-    if (Math.abs(to - from) < 1) return;
-    autoScrolling.current = true;
-    const dur = 300; let t0 = null;
-    const anim = (ts) => {
-      if (t0 === null) t0 = ts;
-      const p = Math.min(1, (ts - t0) / dur);
-      const e = 1 - Math.pow(1 - p, 3);
-      rail.scrollLeft = from + (to - from) * e;
-      if (p < 1) requestAnimationFrame(anim);
-      else {
-        autoScrolling.current = false;
-        const best = centeredIndex();
-        setFocusIndex((prev) => { if (best !== prev) { focusSrc.current = "scroll"; return best; } return prev; });
-      }
-    };
-    requestAnimationFrame(anim);
-  }, [sfx]);
-
+  // clavier (navigation arcade)
   const onKey = useCallback((e) => {
-    if (editorOpen) return;
-    if (["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(e.key)) { e.preventDefault(); }
-    if (e.key === "ArrowRight") navRight();
-    else if (e.key === "ArrowLeft") navLeft();
-    else if (e.key === "ArrowDown") catDown();
-    else if (e.key === "ArrowUp") catUp();
-    else if (e.key === "Enter" && focused) { sfx("select"); nav(`/oeuvre/${focused.id}`); }
-  }, [focused, editorOpen, nav, sfx, navRight, navLeft, catDown, catUp]);
-
+    if (editorOpen || view !== "arcade") return;
+    if (e.key === "ArrowRight") { e.preventDefault(); sfx("nav"); setArcSel((i) => Math.min(i + 1, arcItems.length - 1)); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); sfx("nav"); setArcSel((i) => Math.max(i - 1, 0)); }
+    else if (e.key === "Enter" && arcCur) { sfx("select"); nav(`/oeuvre/${arcCur.id}`); }
+  }, [editorOpen, view, arcItems.length, arcCur, sfx, nav]);
   useEffect(() => { window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [onKey]);
 
-  // Ouvre la fenêtre profil après création de compte (parcours compte -> profil)
   useEffect(() => {
     const open = () => setProfileOpen(true);
     window.addEventListener("sx-open-profile", open);
     return () => window.removeEventListener("sx-open-profile", open);
   }, []);
 
-  // Glissement fluide aux extrémités (PC) : la vitesse augmente à mesure qu'on approche du bord.
-  const onEdgeMove = useCallback((e) => {
-    if (window.innerWidth < 768) { edgeDir.current = 0; return; } // PC uniquement — jamais sur mobile/tactile
-    if (editorOpen || profileOpen) { edgeDir.current = 0; return; }
-    const EDGE = 110, w = window.innerWidth;
-    if (e.clientX <= EDGE) edgeDir.current = -(1 - e.clientX / EDGE);
-    else if (e.clientX >= w - EDGE) edgeDir.current = (e.clientX - (w - EDGE)) / EDGE;
-    else edgeDir.current = 0;
-  }, [editorOpen, profileOpen]);
-  useEffect(() => {
-    let raf;
-    const step = () => {
-      const rail = railRef.current;
-      if (rail && window.innerWidth >= 768 && Math.abs(edgeDir.current) > 0.02) rail.scrollLeft += edgeDir.current * 16;
-      raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  const bgImg = focused ? (focused.has_bg ? bgUrl(focused.id, focused.updated_at) : (focused.has_poster ? posterUrl(focused.id, focused.updated_at) : null)) : null;
+  // actions
+  const pushRecent = (id) => { try { const r = JSON.parse(localStorage.getItem("sx_recent") || "[]"); const nx = [id, ...r.filter((x) => x !== id)].slice(0, 8); localStorage.setItem("sx_recent", JSON.stringify(nx)); } catch (_) {} };
+  const open = (id) => { sfx("select"); pushRecent(id); nav(`/oeuvre/${id}`); };
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
-  const openEdit = () => { if (focused) { setEditing(focused); setEditorOpen(true); } };
-  const setFeatured = async () => {
-    if (!settings || !focused) return;
-    const next = settings.featured_creation_id === focused.id ? "" : focused.id;
-    await updateSettings({ ...settings, featured_creation_id: next });
-    toast.success(next ? "⭐ Mise à la une ✓" : "Retirée de la une");
+  const openEditItem = (it) => { setEditing(it); setEditorOpen(true); };
+  const doDeleteItem = async (it) => {
+    if (!it || !window.confirm(`Supprimer « ${it.title} » ?`)) return;
+    await deleteCreation(it.id); toast.success("Supprimé"); refetch();
+  };
+  const setFeaturedItem = async (it) => {
+    if (!settings || !it) return;
+    const cur = Array.isArray(settings.featured_ids) ? settings.featured_ids.filter(Boolean)
+      : (settings.featured_creation_id ? [settings.featured_creation_id] : []);
+    const on = cur.includes(it.id);
+    const nextArr = on ? cur.filter((x) => x !== it.id) : [...cur, it.id];
+    // On écrit la liste ET l'ancien champ (1er élément) pour rester compatible backend.
+    await updateSettings({ ...settings, featured_ids: nextArr, featured_creation_id: nextArr[0] || "" });
+    toast.success(on ? "Retirée de la une" : "⭐ Mise à la une ✓");
     refetchSettings();
   };
-  const doDelete = async () => {
-    if (!focused || !window.confirm(`Supprimer « ${focused.title} » ?`)) return;
-    await deleteCreation(focused.id); toast.success("Supprimé"); refetch();
-  };
-  const open = (id) => { sfx("select"); nav(`/oeuvre/${id}`); };
-  const resume = (id) => { sfx("select"); nav(`/oeuvre/${id}`, { state: { resume: true } }); };
-  const dpadStyle = { width: "2.4em", height: "2.4em", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)" };
-  const dpadOkStyle = { width: "2.7em", height: "2.7em", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--brand)", borderRadius: "999px", color: "var(--bg-primary)", background: "var(--brand)", fontWeight: 700, fontSize: "0.72em", letterSpacing: "0.05em", boxShadow: "0 0 16px color-mix(in srgb, var(--brand) 55%, transparent)" };
+  const ambiance = (it) => { try { sfx("select"); if (playAmbient && it) playAmbient(it.id); } catch (_) {} };
 
-  const buzz = () => { try { if (navigator.vibrate) navigator.vibrate(15); } catch (_) {} };
-  const openFocused = () => { if (focused) { buzz(); sfx("select"); nav(`/oeuvre/${focused.id}`); } };
+  // ---- Carte : positions des catégories autour d'un centre ----
+  const mapNodes = useMemo(() => {
+    const n = cats.length;
+    const nodes = cats.map((c, i) => {
+      const ang = (i / Math.max(1, n)) * Math.PI * 2 - Math.PI / 2;
+      return { key: c.key, label: c.label, kanji: c.kanji, x: 50 + Math.cos(ang) * 32, y: 50 + Math.sin(ang) * 32 };
+    });
+    nodes.push({ key: "__all__", label: "Tout", kanji: "全", x: 50, y: 50 });
+    return nodes;
+  }, [cats]);
+  const mapItems = useMemo(() => (mapCat === "__all__" ? filtered : filtered.filter((x) => x.category === mapCat)), [filtered, mapCat]);
 
-  const touchRef = useRef(null);
-  const onTouchStart = (e) => { edgeDir.current = 0; const t = e.touches[0]; touchRef.current = { x: t.clientX, y: t.clientY, t: Date.now() }; };
-  const onTouchEnd = (e) => {
-    const s = touchRef.current; if (!s || editorOpen) return;
-    const t = e.changedTouches[0]; const dx = t.clientX - s.x, dy = t.clientY - s.y;
-    if (Math.abs(dy) > 60 && Math.abs(dy) > Math.abs(dx) * 1.4 && Date.now() - s.t < 700) {
-      buzz(); if (dy < 0) catDown(); else catUp();
-    }
-  };
+  // ---- prochaine sortie / reprendre / journal ----
+  const upcoming = useMemo(() => [...all].filter((x) => x.category === "avenir").sort((a, b) => (a.order || 0) - (b.order || 0)), [all]);
+  const nextDrop = useMemo(() => {
+    if (upcoming.length) return upcoming[0];
+    if (featuredId) return all.find((x) => x.id === featuredId) || null;
+    return null;
+  }, [upcoming, featuredId, all]);
+  const resumeItems = useMemo(() => {
+    let ids = []; try { ids = JSON.parse(localStorage.getItem("sx_recent") || "[]"); } catch (_) {}
+    return ids.map((id) => all.find((x) => x.id === id)).filter(Boolean).slice(0, 6);
+  }, [all]);
+  const journal = useMemo(() => (announcements || []).slice(0, 6).map((a, i) => ({
+    id: a.id || i,
+    date: a.created_at || a.date || a.updated_at || "",
+    title: a.title || a.heading || a.name || "Note",
+    body: a.body || a.text || a.message || a.content || a.description || "",
+  })), [announcements]);
+
+  const heroImg = hero ? (hero.has_bg ? bgUrl(hero.id, hero.updated_at) : (hero.has_poster ? posterUrl(hero.id, hero.updated_at) : null)) : null;
+
+  let gi = 0; // compteur d'index global pour les affiches
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden" style={{ background: "var(--bg-primary)" }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onMouseMove={onEdgeMove} onMouseLeave={() => { edgeDir.current = 0; }}>
-      <div className="absolute inset-0 z-0" aria-hidden="true">
-        {bgImg ? (
-          <div key={focused.id} className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${bgImg})`, filter: `blur(${focused.bg_blur ?? 28}px)`, animation: "bgFade 0.6s ease", transform: "scale(1.1) translateZ(0)" }} />
-        ) : (
-          <div className="absolute inset-0" style={{ background: focused?.kanji ? "radial-gradient(circle at 50% 30%, var(--bg-secondary), var(--bg-primary) 70%)" : "var(--bg-primary)" }} />
+    <div style={{ minHeight: "100vh", background: "transparent", color: "var(--text-primary)", position: "relative" }}>
+      <CosmicBackground />
+      <div style={{ position: "relative", zIndex: 1 }}>
+      <TopBar onAdd={openCreate} onProfile={requireProfile} />
+      <HomeCountdown />
+
+      <div className="sx-exp">
+        {/* CINEHEAD */}
+        <div className="cinehead">
+          <span className="ck">// STATION NEXUS</span>
+          <h2 className="ct-title">{(themeMeta.name || "STATION").toUpperCase()}</h2>
+          <span className="ctag">{themeMeta.tagline}</span>
+        </div>
+
+        {/* LA UNE */}
+        {hero && (
+          <section className="hero">
+            <div className={"viewport" + (heroImg ? " himg" : "")} onClick={() => open(hero.id)}
+              style={{ background: `radial-gradient(85% 120% at 74% 6%, var(--glow), transparent 55%), linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))` }}>
+              {heroes.map((h, i) => {
+                const im = h.has_bg ? bgUrl(h.id, h.updated_at) : (h.has_poster ? posterUrl(h.id, h.updated_at) : null);
+                return im ? (
+                  <div key={h.id} className="vp-slot" style={{ opacity: i === heroIdx ? 1 : 0 }}>
+                    <div className="vp-blur" style={{ backgroundImage: `url(${im})` }} />
+                    <div className="vp-img" style={{ backgroundImage: `url(${im})` }} />
+                  </div>
+                ) : null;
+              })}
+              <div className="vp-shade" />
+              <span className="idx mono">{String(heroIdx + 1).padStart(3, "0")} / {String(heroes.length).padStart(2, "0")}</span>
+              <span className="tick t1" /><span className="tick t2" />
+              {!heroImg && <div className="ring" />}
+              {!heroImg && <div className="k2">{hero.kanji || themeMeta.kanji}</div>}
+              <div className="scan" />
+              <div className="hdots">
+                {heroes.map((_, i) => (
+                  <i key={i} className={i === heroIdx ? "on" : ""} onClick={(e) => { e.stopPropagation(); sfx("nav"); setHeroIdx(i); }} />
+                ))}
+              </div>
+            </div>
+            <div className="hmeta herofade" key={hero.id}>
+              <div className="cat mono"><b>{catLabelByKey[hero.category] || hero.category || "STATION"}</b>{isFeatured(hero.id) ? " · À LA UNE" : ""}</div>
+              <h1>{hero.title}</h1>
+              <p>{hero.tagline || hero.synopsis || ""}</p>
+              <div className="herobtns">
+                <span className="btn p" onClick={() => open(hero.id)}>Entrer dans l'univers <span className="ar">→</span></span>
+                <span className="btn s" onClick={() => ambiance(hero)}><span className="ar">▷</span> Ambiance</span>
+              </div>
+              {memberPlan?.enabled && !membershipActive && (
+                <div className="herobtns">
+                  <span className="btn s" onClick={() => { sfx("select"); nav("/soutien"); }} style={{ borderColor: "var(--accent)", color: "var(--accent)" }}>
+                    Soutiens la station <IoArrowForward size={15} />
+                  </span>
+                </div>
+              )}
+              {isAdmin && (
+                <div className="hero-admin">
+                  <button onClick={(e) => { e.stopPropagation(); setFeaturedItem(hero); }}>{isFeatured(hero.id) ? <IoStar size={14} /> : <IoStarOutline size={14} />} {isFeatured(hero.id) ? "Retirer de la une" : "Mettre à la une"}</button>
+                  <button onClick={(e) => { e.stopPropagation(); openEditItem(hero); }}><IoCreateOutline size={14} /> Modifier</button>
+                </div>
+              )}
+            </div>
+          </section>
         )}
-        <div className="absolute inset-0" style={{ background: `rgba(0,0,0,${focused?.bg_dim ?? 0.5})` }} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.55), rgba(0,0,0,0.25))" }} />
+
+        {/* PROCHAINE SORTIE */}
+        {nextDrop && (
+          <section className="sx-drop">
+            <div className="drop" onClick={() => open(nextDrop.id)}>
+              <div className={"dpos" + (nextDrop.has_poster ? " bimg" : "")} style={nextDrop.has_poster ? { backgroundImage: `url(${posterUrl(nextDrop.id, nextDrop.updated_at)})` } : undefined}>
+                {!nextDrop.has_poster && <span className="dk">{nextDrop.kanji || themeMeta.kanji}</span>}
+                <span className="pst">{isSoon(nextDrop) ? "À VENIR" : "À LA UNE"}</span>
+              </div>
+              <div className="dinfo">
+                <div className="dl mono">// PROCHAINE SORTIE · DIM. 20H</div>
+                <div className="dt">{nextDrop.title}</div>
+                <div className="ds">{nextDrop.tagline || nextDrop.synopsis || ""}</div>
+                <div className="cd"><Countdown /></div>
+                <span className="notify" onClick={(e) => { e.stopPropagation(); sfx("select"); nav("/planning"); }}>⊕ Préviens-moi</span>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* REPRENDRE */}
+        {resumeItems.length > 0 && (
+          <section className="sx-resume">
+            <div className="seclabel"><div className="lt"><h2>Reprendre</h2><span className="kj">続</span></div></div>
+            <div className="resume">
+              {resumeItems.map((it) => (
+                <article key={it.id} className="rcard" onClick={() => open(it.id)}>
+                  <div className={"rv2" + (it.has_poster ? " bimg" : "")} style={it.has_poster ? { backgroundImage: `url(${posterUrl(it.id, it.updated_at)})` } : undefined}><span className="play">▶</span></div>
+                  <div className="ri"><div className="rt">{it.title}</div><div className="rs mono">{(catLabelByKey[it.category] || "").toUpperCase()}</div></div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* EXPLORER */}
+        <div className="seclabel sx-explore-head">
+          <div className="lt"><h2>Explorer</h2><span className="kj">探</span></div>
+          <span className="all mono">RAILS · CARTE · ARCADE</span>
+        </div>
+
+        {/* RECHERCHE */}
+        <div className="sx-search">
+          <div className="field">
+            <IoSearch size={14} style={{ color: "var(--text-secondary)" }} />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher une création…" />
+          </div>
+          <button className="sbtn" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }}>
+            <IoColorPaletteOutline size={14} style={{ marginRight: 5 }} /> Thèmes
+          </button>
+          {themeOpen && (
+            <>
+              <div style={{ position: "fixed", inset: 0, zIndex: 39 }} onClick={() => setThemeOpen(false)} />
+              <div className="sx-themepick">
+                {THEMES.map((t) => (
+                  <div key={t.key} className={"tp" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); setThemeOpen(false); }}>
+                    <span className="sw" style={{ background: `linear-gradient(135deg, ${t.swatch[0]}, ${t.swatch[1]} 55%, ${t.swatch[2]})` }} />
+                    <span className="nm">{t.name}</span>
+                    <span className="kj">{t.kanji}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* VIEW TOGGLE */}
+        <div className="vtog">
+          {[["rails", "⊞ Rails"], ["map", "✦ Carte"], ["arcade", "▶ Arcade"]].map(([v, label]) => (
+            <button key={v} aria-pressed={view === v} onClick={() => { sfx("nav"); setView(v); }}>{label}</button>
+          ))}
+        </div>
+
+        {isLoading && <div className="empty">Chargement…</div>}
+        {!isLoading && filtered.length === 0 && <div className="empty">Aucune création{query ? " pour cette recherche." : "."}</div>}
+
+        {/* ---------- RAILS ---------- */}
+        {view === "rails" && (
+          <div>
+            {rails.map((r) => (
+              <section className="rail" key={r.key}>
+                <div className="seclabel">
+                  <div className="lt"><h2>{r.label}</h2><span className="kj">{r.kanji}</span></div>
+                  <span className="all mono">{r.items.length} ŒUVRE{r.items.length > 1 ? "S" : ""}</span>
+                </div>
+                <div className="scroller">
+                  {r.items.map((it) => (
+                    <Poster key={it.id} it={it} idx={++gi} catLabel={r.label} soon={isSoon(it)} isAdmin={isAdmin}
+                      featured={isFeatured(it.id)} onOpen={() => open(it.id)}
+                      onEdit={() => openEditItem(it)} onDelete={() => doDeleteItem(it)} onFeature={() => setFeaturedItem(it)} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+
+        {/* ---------- CARTE ---------- */}
+        {view === "map" && (
+          <div>
+            <div className="seclabel" style={{ marginTop: 14 }}>
+              <div className="lt"><span className="mono" style={{ fontSize: 9.5, letterSpacing: ".14em", color: "var(--faint)" }}>// CHOISIS UN SECTEUR</span></div>
+            </div>
+            <div className="const">
+              <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+                {mapNodes.filter((n) => n.key !== "__all__").map((n) => (
+                  <line key={n.key} x1="50%" y1="50%" x2={`${n.x}%`} y2={`${n.y}%`} stroke="var(--border-c)" strokeWidth="1" />
+                ))}
+              </svg>
+              {mapNodes.map((n) => (
+                <div key={n.key} className={"cnode" + (mapCat === n.key ? " sel" : "")}
+                  onClick={() => { sfx("select"); setMapCat(n.key); }}
+                  style={{ position: "absolute", left: `${n.x}%`, top: `${n.y}%`, transform: "translate(-50%,-50%)", cursor: "pointer", textAlign: "center" }}>
+                  <div className="cdisc">{n.kanji}</div>
+                  <div className="cnm">{n.label}</div>
+                </div>
+              ))}
+            </div>
+            <div className="mapres">
+              <div className="scroller">
+                {mapItems.map((it) => (
+                  <Poster key={it.id} it={it} idx={++gi} catLabel={catLabelByKey[it.category]} soon={isSoon(it)} isAdmin={isAdmin}
+                    featured={isFeatured(it.id)} onOpen={() => open(it.id)}
+                    onEdit={() => openEditItem(it)} onDelete={() => doDeleteItem(it)} onFeature={() => setFeaturedItem(it)} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ---------- ARCADE ---------- */}
+        {view === "arcade" && (
+          <div className="arc">
+            <div className="arc-filters">
+              {[{ key: "__all__", label: "Tout" }, ...cats].map((c) => (
+                <button key={c.key} className={"arc-chip" + (arcCat === c.key ? " on" : "")} onClick={() => { sfx("nav"); setArcCat(c.key); }}>{c.label}</button>
+              ))}
+            </div>
+            <div className="arc-stage">
+              {arcCur && <div className="arc-bgblur" key={"b" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at)})` }} />}
+              {arcCur && <div className="arc-bgimg" key={"i" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at)})` }} />}
+              <div className="arc-shade" />
+              <div className="arc-info">
+                <div className="arc-k mono">◆ {arcCur ? (catKanjiByKey[arcCur.category] || themeMeta.kanji) : themeMeta.kanji}</div>
+                <h2>{arcCur ? arcCur.title : "—"}</h2>
+                <div className="arc-sub">{arcCur ? `${(catLabelByKey[arcCur.category] || "").toUpperCase()} · ${arcCur.tagline || ""}` : "Aucune affiche dans ce secteur"}</div>
+                {arcCur && <span className="arc-play" onClick={() => open(arcCur.id)}><IoPlay size={14} style={{ marginRight: 6 }} /> Ouvrir</span>}
+              </div>
+            </div>
+            <div className="arc-railwrap">
+              <button className="arc-nav prev" aria-label="Précédent" onClick={() => { sfx("nav"); setArcSel((i) => Math.max(0, i - 1)); }}>‹</button>
+              <div className="arc-rail" ref={arcRailRef}>
+                {arcItems.map((it, i) => (
+                  <div key={it.id} className={"arc-tile" + (i === arcSel ? " on" : "")}
+                    style={{ backgroundImage: `url(${posterUrl(it.id, it.updated_at)})` }}
+                    onClick={() => { sfx("nav"); setArcSel(i); }} />
+                ))}
+              </div>
+              <button className="arc-nav next" aria-label="Suivant" onClick={() => { sfx("nav"); setArcSel((i) => Math.min(arcItems.length - 1, i + 1)); }}>›</button>
+            </div>
+          </div>
+        )}
+
+        {/* ---------- JOURNAL DE BORD ---------- */}
+        <section className="sx-journal">
+          <div className="seclabel"><div className="lt"><h2>Journal de bord</h2><span className="kj">録</span></div><span className="all mono" onClick={() => { sfx("nav"); nav("/nouveautes"); }}>TOUT VOIR →</span></div>
+          <div className="bts">
+            {JOURNAL_SECTIONS.map((s) => (
+              <article key={s.title} className="btc" onClick={() => { sfx("select"); nav(s.route); }}>
+                <div className="bv" style={{ "--c1": s.c1, "--c2": s.c2 }}><span className="tag">{s.tag}</span></div>
+                <div className="bi"><div className="bt">{s.title}</div><div className="bs">{s.sub}</div></div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* ---------- CARTE D'EMBARQUEMENT ---------- */}
+        <section className="sx-pass-wrap">
+          <div className="seclabel"><div className="lt"><h2>Carte d'embarquement</h2><span className="kj">搭乗</span></div></div>
+          <div className="boarding" onClick={() => { sfx("select"); nav("/soutien"); }}>
+            <div className="bp-main">
+              <div className="bp-k mono">STATION NEXUS · EMBARQUEMENT</div>
+              <div className="bp-name">{membershipActive ? "Membre à bord" : "Explorateur libre"}</div>
+              <div className="bp-subline mono">{membershipActive ? "ACCÈS COMPLET À TOUS LES UNIVERS" : "ACCÈS LIBRE · SOUTIENS POUR EMBARQUER"}</div>
+              <div className="bp-row">
+                <div className="bp-c"><b>{all.length}</b><span>UNIVERS</span></div>
+                <div className="bp-c"><b>{cats.length}</b><span>SECTEURS</span></div>
+                <div className="bp-c"><b>DIM·20H</b><span>SORTIES</span></div>
+              </div>
+            </div>
+            <div className="bp-stub">
+              <div className="bp-k mono">PORTE</div>
+              <div className="bp-gate">{membershipActive ? "A1" : "—"}</div>
+              <span className="bp-cta">{membershipActive ? "Mon accès" : "Embarquer"} <IoArrowForward size={14} /></span>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- SOUTIEN À LA STATION ---------- */}
+        <section className="sx-soutien">
+          <div className="sk" aria-hidden="true">{themeMeta.kanji}</div>
+          <div className="eyebrow mono">// SOUTIEN</div>
+          <h2>Fais vivre<br />la station</h2>
+          <p className="slead">Ton soutien ne finance pas une plateforme. Il finance la suite : les prochaines œuvres, les chapitres à venir, et le temps de créer librement.</p>
+          <span className="s-cta" onClick={() => { sfx("select"); nav("/soutien"); }}>Soutiens la station <IoArrowForward size={16} /></span>
+        </section>
       </div>
 
-      {focused && (
-        <div className="absolute right-4 top-1/4 z-0 pointer-events-none select-none font-display leading-none"
-          style={{ fontSize: "34vh", color: "var(--brand)", opacity: 0.06 }}>{focused.kanji}</div>
-      )}
-
-      <div className="relative z-10 flex flex-col h-full">
-        <TopBar onAdd={openCreate} onProfile={requireProfile} />
-
-        <HomeCountdown />
-
-        <nav className="flex items-center gap-2 md:gap-3 px-5 md:px-12 mt-6 md:mt-8 overflow-x-auto hide-scrollbar" data-testid="category-nav">
-          {tabs.map((c, i) => {
-            const active = i === catIndex;
-            return (
-              <button key={c.key} data-testid={`cat-${c.key}`} onClick={() => { sfx("nav"); setCatIndex(i); }} aria-current={active}
-                className="flex items-center gap-2 px-3 md:px-4 py-2 whitespace-nowrap transition-all duration-300"
-                style={{ borderBottom: active ? "2px solid var(--brand)" : "2px solid transparent", color: active ? "var(--on-media)" : "var(--on-media-2)", textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>
-                <span className="font-display text-sm opacity-70">{c.kanji}</span>
-                <span className="text-sm md:text-base font-medium">{c.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* filter + search bar */}
-        <div className="flex items-center gap-2 px-5 md:px-12 mt-4">
-          <div className="flex items-center gap-1 px-2 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", background: "rgba(0,0,0,0.25)" }}>
-            <IoSearch size={14} style={{ color: "var(--on-media-2)" }} />
-            <input data-testid="search-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher une création…"
-              className="bg-transparent outline-none text-xs py-1.5 w-40 md:w-64" style={{ color: "var(--on-media)" }} />
-          </div>
-          <button data-testid="filter-toggle" onClick={() => { sfx("nav"); setShowFilters((v) => !v); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 border text-xs" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media-2)", background: "rgba(0,0,0,0.25)" }}>
-            <IoFilter size={14} /> Trier
-          </button>
-          <button data-testid="home-customize" onClick={() => { sfx("nav"); setCustomizerOpen(true); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 border text-xs" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media-2)", background: "rgba(0,0,0,0.25)" }}>
-            <IoOptionsOutline size={14} /> Personnaliser
-          </button>
-          {showFilters && (
-            <select data-testid="sort-select" value={sort} onChange={(e) => setSort(e.target.value)}
-              className="px-2 py-1.5 border text-xs outline-none fade-up" style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-              <option value="order">Ordre</option>
-              <option value="az">A → Z</option>
-              <option value="za">Z → A</option>
-              <option value="recent">Récent</option>
-            </select>
-          )}
-        </div>
-
-        {layout === "card" ? (
-        <>
-        <div className="px-5 md:px-12 mt-4 md:mt-6 min-h-[100px]">
-          {focused ? (
-            <div key={focused.id} className="fade-up max-w-2xl">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="focused-category">
-                  {catLabelByKey[focused.category] || focused.category}
-                </span>
-              </div>
-              <h1 className="font-display text-2xl sm:text-4xl md:text-6xl leading-tight md:leading-none break-words" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="focused-title">{focused.title}</h1>
-              <p className="mt-2 text-sm md:text-base" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}>{focused.tagline}</p>
-              {memberPlan?.enabled && !membershipActive && (
-                <button data-testid="home-support-cta" onClick={() => { sfx("select"); nav("/soutien"); }}
-                  className="sx-support-cta mt-4 inline-flex items-center gap-2.5 px-6 py-3 text-sm font-semibold"
-                  style={{ background: "rgba(0,0,0,0.55)", border: "2px solid var(--brand)", color: "var(--brand)", borderRadius: "999px", backdropFilter: "blur(4px)" }}>
-                  Soutiens la station
-                  <IoArrowForward size={18} className="sx-cta-arrow" />
-                </button>
-              )}
-            </div>
-          ) : (
-            <p style={{ color: "var(--text-secondary)" }}>{isLoading ? "Chargement…" : "Aucune création."}</p>
-          )}
-        </div>
-
-        {/* Le masque de bord est porté par CE wrapper fixe (il ne défile pas) — évite les repaints continus sur mobile */}
-        <div className="flex-1 min-h-0 flex items-center sx-rail-mask">
-          <div ref={railRef} onScroll={onRailScroll} className="w-full h-full flex items-center overflow-x-auto overflow-y-hidden hide-scrollbar px-5 md:px-12 gap-4 md:gap-6" data-testid="poster-rail">
-            {items.map((it, i) => (
-              <PosterCard key={it.id} ref={(el) => (cardRefs.current[i] = el)} item={it} focused={i === focusIndex} featured={it.id === featuredId}
-                catLabel={catLabelByKey[it.category] || it.category}
-                isFav={isFavorite(it.id)} onToggleFav={() => { toggleFavorite(it.id); sfx("select"); }}
-                onFocus={() => { if (i !== focusIndex) { sfx("hover"); focusSrc.current = "hover"; setFocusIndex(i); } }}
-                onClick={() => open(it.id)} onResume={() => resume(it.id)}
-                onTrailer={() => { sfx("select"); nav(`/oeuvre/${it.id}`, { state: { trailer: true } }); }} />
-            ))}
-            {items.length > 0 && <div className="flex-shrink-0 w-[42vw] md:w-[38vw]" aria-hidden="true" />}
-          </div>
-        </div>
-
-        <div className="sx-bottom-bar flex items-center justify-between px-5 md:px-12 pb-6 md:pb-6 pt-2 md:-mt-4">
-          <div className="flex flex-col items-start gap-2.5">
-            {focused && (
-              <div className="hidden md:flex items-center gap-2" data-testid="home-nav-arrows">
-                <button data-testid="nav-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="w-11 h-11 flex items-center justify-center border transition-transform hover:scale-110 active:scale-95" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.3)" }}><IoChevronBack size={20} /></button>
-                <button data-testid="nav-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="w-11 h-11 flex items-center justify-center border transition-transform hover:scale-110 active:scale-95" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.3)" }}><IoChevronForward size={20} /></button>
-              </div>
-            )}
-            <div className="flex items-center gap-3">
-              {focused && (
-                <button data-testid="launch-cta" onClick={() => open(focused.id)}
-                  className="flex items-center gap-2 px-6 py-3 font-semibold transition-transform hover:scale-105"
-                  style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", boxShadow: "var(--shadow-1)" }}>
-                  <IoPlay size={18} /> {focused.launch_label || "Lancer"} <IoChevronForward size={16} />
-                </button>
-              )}
-              {isAdmin && focused && (
-                <>
-                  <button data-testid="home-set-featured" onClick={setFeatured} title={focused.id === featuredId ? "À la une (cliquer pour retirer)" : "Mettre à la une"}
-                    className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: focused.id === featuredId ? "var(--brand)" : "var(--on-media)", background: "rgba(0,0,0,0.25)" }}>
-                    {focused.id === featuredId ? <IoStar size={18} /> : <IoStarOutline size={18} />}
-                  </button>
-                  <button data-testid="home-edit" onClick={openEdit} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" }}><IoCreateOutline size={18} /></button>
-                  <button data-testid="home-delete" onClick={doDelete} className="p-3 border" style={{ borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--brand)", background: "rgba(0,0,0,0.25)" }}><IoTrashOutline size={18} /></button>
-                </>
-              )}
-            </div>
-          </div>
-          <p className="hidden md:block text-xs" style={{ color: "var(--on-media-2)", textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>← → naviguer · ↑ ↓ catégories · Entrée : ouvrir</p>
-
-          {/* Mobile D-pad: navigate the launcher by tapping (in addition to swipe) */}
-          <div className="md:hidden flex flex-col items-center gap-1.5" data-testid="mobile-dpad">
-            <button data-testid="dpad-up" onClick={() => { buzz(); catUp(); }} aria-label="Catégorie précédente" className="dpad-btn" style={dpadStyle}><IoChevronUp size="1.3em" /></button>
-            <div className="flex items-center gap-3">
-              <button data-testid="dpad-left" onClick={() => { buzz(); navLeft(); }} aria-label="Création précédente" className="dpad-btn" style={dpadStyle}><IoChevronBack size="1.3em" /></button>
-              <button data-testid="dpad-ok" onClick={openFocused} aria-label="Ouvrir la création" className="dpad-btn" style={dpadOkStyle}>OK</button>
-              <button data-testid="dpad-right" onClick={() => { buzz(); navRight(); }} aria-label="Création suivante" className="dpad-btn" style={dpadStyle}><IoChevronForward size="1.3em" /></button>
-            </div>
-            <button data-testid="dpad-down" onClick={() => { buzz(); catDown(); }} aria-label="Catégorie suivante" className="dpad-btn" style={dpadStyle}><IoChevronDown size="1.3em" /></button>
-          </div>
-        </div>
-        </>
-        ) : (
-          <CreationsGridList items={items} layout={layout} isLoading={isLoading} catLabelByKey={catLabelByKey}
-            onOpen={open}
-            isFavorite={isFavorite}
-            toggleFavorite={(id) => { toggleFavorite(id); sfx("select"); }}
-            onTrailer={(id) => { sfx("select"); nav(`/oeuvre/${id}`, { state: { trailer: true } }); }} />
-        )}
       </div>
 
       <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} />
       <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
-      <HomeCustomizer open={customizerOpen} onClose={() => setCustomizerOpen(false)} isAdmin={isAdmin} onSaveDefault={saveDefaultPoster} saving={savingDefault} />
+      <HomeCustomizer open={customizerOpen} onClose={() => setCustomizerOpen(false)} isAdmin={isAdmin} onSaveDefault={() => {}} saving={false} />
     </div>
   );
 }
+

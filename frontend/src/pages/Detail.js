@@ -10,6 +10,7 @@ import { useEntitlements } from "@/lib/useEntitlements";
 import { resolveVideoEmbed } from "@/lib/video";
 import EditorDialog from "@/components/EditorDialog";
 import MovixSelector from "@/components/MovixSelector";
+import CosmicBackground from "@/components/CosmicBackground";
 import CommentsSection from "@/components/CommentsSection";
 import { FicheSupport } from "@/components/SupportersWall";
 import LaunchGate from "@/components/LaunchGate";
@@ -149,7 +150,7 @@ export default function Detail() {
 
   const launch = () => {
     sfx("select");
-    if (!user) { setGateOpen(true); return; }
+    // Lecture libre : pas besoin de compte pour le contenu gratuit (le paywall gère le payant).
     // Paywall: film/reader creations fully locked until purchase or membership
     if (isPaidLocked && (item.launch_type === "film" || item.launch_type === "reader" || item.launch_type === "link")) {
       toast.info("Cette création est payante — débloque-la pour la lancer.");
@@ -175,7 +176,7 @@ export default function Detail() {
     : null;
 
   const openChapter = (i) => {
-    if (!user) { sfx("nav"); setGateOpen(true); return; }
+    // Lecture libre : pas de connexion requise pour ouvrir un chapitre gratuit.
     if (chapterLocked(item, i)) {
       sfx("nav");
       toast.info("Ce chapitre est réservé — débloque la création ou abonne-toi.");
@@ -208,19 +209,17 @@ export default function Detail() {
     await deleteCreation(item.id); stopAmbient(); toast.success("Supprimé"); nav("/");
   };
 
-  const btn = { borderColor: "rgba(255,255,255,0.3)", borderRadius: "var(--radius-base)", color: "#fff", background: "rgba(0,0,0,0.25)" };
+  const btn = { borderColor: "color-mix(in srgb, var(--brand) 30%, var(--border-c))", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "color-mix(in srgb, var(--bg-primary) 42%, transparent)" };
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden" style={{ background: "var(--bg-primary)" }}>
-      <div className="fixed inset-0 z-0" aria-hidden="true">
-        {bgSrc ? (
-          <div className="absolute inset-0 bg-cover bg-center scale-110" style={{ backgroundImage: `url(${bgSrc})`, filter: `blur(${item.bg_blur ?? 32}px)` }} />
-        ) : (
-          <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 50% 30%, var(--bg-secondary), var(--bg-primary) 70%)" }} />
-        )}
-        <div className="absolute inset-0" style={{ background: `rgba(0,0,0,${item.bg_dim ?? 0.55})` }} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.25))" }} />
-      </div>
+    <div className="relative min-h-screen w-full overflow-x-hidden" style={{ background: "transparent", color: "var(--text-primary)" }}>
+      {/* Même direction artistique que l'accueil : décor cosmique du thème */}
+      <CosmicBackground />
+      {/* Voile coloré discret tiré de l'affiche de la création */}
+      {bgSrc && (
+        <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true"
+          style={{ backgroundImage: `url(${bgSrc})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(72px) saturate(1.15)", opacity: 0.2 }} />
+      )}
 
       <div className="relative z-10">
         <div className="sx-safe-top flex flex-wrap items-center justify-between gap-2 px-5 md:px-12 pt-6">
@@ -246,7 +245,7 @@ export default function Detail() {
 
         <div className="max-w-7xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
           <div ref={cardRef} className="group flex-shrink-0 w-72 sm:w-96 md:w-[28rem] lg:w-[34rem] aspect-[2/3] overflow-hidden border relative poster-in"
-            style={{ borderColor: "var(--border-c)", borderRadius: "calc(var(--radius-base)*1.3)", boxShadow: "0 30px 80px rgba(0,0,0,0.6)" }} data-testid="detail-poster">
+            style={{ borderColor: "color-mix(in srgb, var(--brand) 40%, var(--border-c))", borderRadius: "calc(var(--radius-base)*1.3)", boxShadow: "0 30px 80px rgba(0,0,0,0.6), 0 0 60px -14px color-mix(in srgb, var(--brand) 55%, transparent)" }} data-testid="detail-poster">
             {hasImg ? (
               <img src={posterSrc} alt={item.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             ) : (
@@ -254,13 +253,19 @@ export default function Detail() {
                 <span className="font-display text-8xl" style={{ color: "var(--brand)" }}>{item.kanji || item.title[0]}</span>
               </div>
             )}
-            <div className="absolute inset-x-0 bottom-0 p-4" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.9), transparent)" }}>
+            {/* Cadre HUD — coins façon station */}
+            <span style={{ position: "absolute", top: 10, left: 10, width: 18, height: 18, borderTop: "1.5px solid var(--brand)", borderLeft: "1.5px solid var(--brand)", opacity: 0.85, zIndex: 2, pointerEvents: "none" }} />
+            <span style={{ position: "absolute", top: 10, right: 10, width: 18, height: 18, borderTop: "1.5px solid var(--brand)", borderRight: "1.5px solid var(--brand)", opacity: 0.85, zIndex: 2, pointerEvents: "none" }} />
+            <span style={{ position: "absolute", bottom: 10, left: 10, width: 18, height: 18, borderBottom: "1.5px solid var(--brand)", borderLeft: "1.5px solid var(--brand)", opacity: 0.85, zIndex: 2, pointerEvents: "none" }} />
+            <span style={{ position: "absolute", bottom: 10, right: 10, width: 18, height: 18, borderBottom: "1.5px solid var(--brand)", borderRight: "1.5px solid var(--brand)", opacity: 0.85, zIndex: 2, pointerEvents: "none" }} />
+            <div className="absolute inset-x-0 bottom-0 p-4" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.92), transparent)", zIndex: 1 }}>
               <p className="font-display text-2xl" style={{ color: "#fff" }}>{item.title}</p>
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.7)" }}>Stationexus 天</p>
+              <p className="text-[10px] tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.72)", fontFamily: "var(--font-mono, monospace)" }}>// STATION NEXUS · 天</p>
             </div>
           </div>
 
           <div className="w-full md:flex-1 min-w-0 fade-up" style={{ animationDelay: ".12s" }}>
+            <div className="mb-3" style={{ fontSize: 10, letterSpacing: "0.3em", color: "var(--brand)", fontFamily: "var(--font-mono, monospace)" }}>// FICHE DE CRÉATION</div>
             <div className="flex items-center gap-3 mb-3 flex-wrap">
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="detail-category">{catLabel}</span>
               <span className="font-display text-2xl" style={{ color: "var(--brand)" }}>{item.kanji}</span>
@@ -274,16 +279,16 @@ export default function Detail() {
               ) : (
                 <span data-testid="detail-price-badge" className="px-2 py-0.5 text-[10px] uppercase tracking-widest font-semibold border" style={{ borderColor: "var(--brand)", color: "var(--brand)" }}>{Number(item.price_eur || 0).toFixed(2)}€</span>
               ))}
-              {item.coming_soon && <span className="px-2 py-0.5 text-[10px] uppercase tracking-widest border" style={{ borderColor: "rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.75)" }}>À venir</span>}
+              {item.coming_soon && <span className="px-2 py-0.5 text-[10px] uppercase tracking-widest border" style={{ borderColor: "color-mix(in srgb, var(--on-media) 30%, transparent)", color: "var(--on-media-2)" }}>À venir</span>}
               {item.coming_soon && [item.release_month, item.release_year].filter(Boolean).length > 0 && (
                 <span data-testid="detail-release" className="px-2 py-0.5 text-[10px] uppercase tracking-widest font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}>
                   Sortie · {[item.release_month, item.release_year].filter(Boolean).join(" ")}
                 </span>
               )}
             </div>
-            <h1 className="font-display text-4xl md:text-6xl leading-none break-words" style={{ color: "#fff", textShadow: "0 2px 20px rgba(0,0,0,0.6)" }} data-testid="detail-title">{item.title}</h1>
-            <p className="mt-3 text-base md:text-lg" style={{ color: "rgba(255,255,255,0.9)" }}>{item.tagline}</p>
-            <p className="mt-5 leading-relaxed max-w-xl" style={{ color: "rgba(255,255,255,0.72)" }}>{item.synopsis}</p>
+            <h1 className="font-display text-4xl md:text-6xl leading-none break-words" style={{ color: "var(--on-media)" }} data-testid="detail-title">{item.title}</h1>
+            <p className="mt-3 text-base md:text-lg" style={{ color: "var(--on-media)", opacity: 0.92 }}>{item.tagline}</p>
+            <p className="mt-5 leading-relaxed max-w-xl" style={{ color: "var(--on-media-2)" }}>{item.synopsis}</p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {!item.coming_soon && (
@@ -326,7 +331,7 @@ export default function Detail() {
                 </div>
                 <div className="flex-1 min-w-0 py-3 pr-3">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--brand)" }}>{continueTarget.label}</p>
-                  <p className="font-display text-lg md:text-2xl leading-tight mt-0.5 truncate" style={{ color: "#fff" }}>{continueTarget.badge} · {continueTarget.title}</p>
+                  <p className="font-display text-lg md:text-2xl leading-tight mt-0.5 truncate" style={{ color: "var(--text-primary)" }}>{continueTarget.badge} · {continueTarget.title}</p>
                 </div>
                 <span className="flex-shrink-0 mr-4 w-12 h-12 flex items-center justify-center rounded-full transition-transform group-hover:scale-110" style={{ background: "var(--brand)", color: "var(--bg-primary)" }}><IoPlay size={24} /></span>
               </button>
@@ -402,7 +407,7 @@ export default function Detail() {
             {/* Bande-annonce (inline, comme la galerie) */}
             {trailerSource && (
               <div className="mt-10" data-testid="detail-trailer-section">
-                <h3 className="font-display text-xl mb-3 flex items-center gap-2" style={{ color: "#fff" }}><IoFilmOutline style={{ color: "var(--brand)" }} /> Bande-annonce</h3>
+                <h3 className="font-display text-xl mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}><IoFilmOutline style={{ color: "var(--brand)" }} /> Bande-annonce</h3>
                 <div className="aspect-video w-full max-w-4xl overflow-hidden border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "#000", boxShadow: "var(--shadow-1)" }}>
                   {trailerSource.type === "video"
                     ? <video data-testid="trailer-video" src={trailerSource.src} controls playsInline className="w-full h-full" />
@@ -414,7 +419,7 @@ export default function Detail() {
             {/* Gallery */}
             {item.gallery?.length > 0 && (
               <div className="mt-10" data-testid="detail-gallery">
-                <h3 className="font-display text-xl mb-3" style={{ color: "#fff" }}>Galerie</h3>
+                <h3 className="font-display text-xl mb-3" style={{ color: "var(--text-primary)" }}>Galerie</h3>
                 <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5">
                   {item.gallery.map((g, i) => (
                     <button key={i} onClick={() => { sfx("nav"); setLightbox(g); }} data-testid={`gallery-img-${i}`}
@@ -429,7 +434,7 @@ export default function Detail() {
             {/* Embeds / réseaux */}
             {item.embeds?.length > 0 && (
               <div className="mt-10" data-testid="detail-embeds">
-                <h3 className="font-display text-xl mb-3" style={{ color: "#fff" }}>Sur les réseaux</h3>
+                <h3 className="font-display text-xl mb-3" style={{ color: "var(--text-primary)" }}>Sur les réseaux</h3>
                 <div className="space-y-4">
                   {item.embeds.map((em, i) => {
                     const yt = em.platform === "youtube" ? ytEmbed(em.url) : null;
@@ -453,7 +458,7 @@ export default function Detail() {
             {/* Intentions de l'auteur */}
             {item.intention_enabled && (item.intention_text || item.intention_images?.length > 0 || item.intention_file_id) && (
               <div className="mt-10" data-testid="detail-intention">
-                <h3 className="font-display text-xl mb-3 flex items-center gap-2" style={{ color: "#fff" }}>
+                <h3 className="font-display text-xl mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
                   <IoSparklesOutline style={{ color: "var(--brand)" }} /> {item.intention_title || "Intentions de l'auteur"}
                 </h3>
                 <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
@@ -493,7 +498,7 @@ export default function Detail() {
 
             {recommendations.length > 0 && (
               <div className="mt-14" data-testid="recommendations">
-                <h3 className="font-display text-xl mb-1" style={{ color: "#fff" }}>Recommandations</h3>
+                <h3 className="font-display text-xl mb-1" style={{ color: "var(--text-primary)" }}>Recommandations</h3>
                 <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.65)" }}>D'autres créations qui pourraient te plaire ✨</p>
                 <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
                   {recommendations.map((r) => {
@@ -508,7 +513,7 @@ export default function Detail() {
                             </div>
                           )}
                         </div>
-                        <p className="text-xs mt-1.5 line-clamp-2" style={{ color: "rgba(255,255,255,0.85)" }}>{r.title}</p>
+                        <p className="text-xs mt-1.5 line-clamp-2" style={{ color: "var(--text-secondary)" }}>{r.title}</p>
                       </button>
                     );
                   })}

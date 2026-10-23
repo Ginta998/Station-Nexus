@@ -13,6 +13,17 @@ const LS = {
 };
 const DEFAULT_PIN = "1234";
 
+// Dev local : accès admin + profil créateur automatiques sur localhost / réseau local
+// (désactivé en production : un domaine public ne matche pas).
+function isLocalHost() {
+  try {
+    const h = window.location.hostname;
+    return h === "localhost" || h === "127.0.0.1" || h === "::1" || h.endsWith(".local") ||
+      /^(192\.168\.|10\.|127\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h);
+  } catch (_) { return false; }
+}
+const DEV_LOCAL = isLocalHost();
+
 function fadeTo(audio, target, ms, onDone) {
   if (!audio) return;
   if (audio._fade) clearInterval(audio._fade);
@@ -28,8 +39,8 @@ function fadeTo(audio, target, ms, onDone) {
 
 export function AppProvider({ children }) {
   const storedTheme = localStorage.getItem(LS.theme);
-  const [theme, setThemeState] = useState(() => storedTheme || "tengoku");
-  const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem(LS.admin) === "1");
+  const [theme, setThemeState] = useState(() => storedTheme || "abysse");
+  const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem(LS.admin) === "1" || DEV_LOCAL);
   const [musicVolume, setMusicVolumeState] = useState(() => {
     const v = parseFloat(localStorage.getItem(LS.music) ?? localStorage.getItem("sx_volume")); return Number.isFinite(v) ? v : 0.2;
   });
@@ -46,7 +57,9 @@ export function AppProvider({ children }) {
 
   // ---- visitor social profile ----
   const [profile, setProfileState] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("sx_profile") || "null"); } catch { return null; }
+    try { const p = JSON.parse(localStorage.getItem("sx_profile") || "null"); if (p) return p; } catch {}
+    if (DEV_LOCAL) return { id: "dev-brichel", name: "Brichel Louzala", avatar: "", email: "", instagram: "", account_id: "", hide_tier: false };
+    return null;
   });
   const saveProfile = useCallback((data) => {
     let id = (profile && profile.id) || localStorage.getItem("sx_visitor_id");

@@ -23,6 +23,7 @@ import { ChatProvider } from "@/context/ChatContext";
 import PaymentResult from "@/pages/PaymentResult";
 import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
+import CyberOverlay from "@/components/CyberOverlay";
 import GuidedTour from "@/components/GuidedTour";
 import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
 import { INTROS } from "@/lib/intro";
@@ -106,8 +107,6 @@ function App() {
             <Route path="/membres" element={<Members />} />
             <Route path="/nouveautes" element={<Novelties />} />
             <Route path="/planning" element={<Planning />} />
-            <Route path="/tutoriel" element={<Tutorial />} />
-            <Route path="/bibliotheque" element={<Library />} />
             <Route path="/soutien" element={<SupportPage />} />
             <Route path="/a-propos" element={<About />} />
             <Route path="/revenus" element={<Revenue />} />
@@ -119,6 +118,7 @@ function App() {
           <PushClickNav />
           <GuidedTour />
         </BrowserRouter>
+        <CyberOverlay />
         <IntroGate />
         <AuthDialog />
         <Toaster position="top-center" theme="dark" richColors />

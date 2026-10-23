@@ -725,3 +725,12 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - FIX Detail.js : le héros (affiche + badges/titre/synopsis/boutons/paywall/reprise) reste en 2 colonnes ; TOUT le reste (chapitres, épisodes, bande-annonce, galerie, embeds, intentions, support, commentaires, recommandations, copyright) déplacé dans un nouveau conteneur PLEINE LARGEUR sous le héros. Conteneurs passés max-w-6xl -> max-w-7xl.
 - Intentions : grille lg:grid-cols-2 (texte | images) au lieu d'une pile étroite. Galerie lg:grid-cols-6. Bande-annonce max-w-2xl -> max-w-4xl.
 - Vérifié capture PC 1920 : titre OK, commentaires largeur ~1332px (pleine largeur), boutons Retour/Accueil en icônes. Compile OK.
+
+## Remplacement du frontend par le code GitHub (look cosmic futuriste) — 23/10/2026
+- Source : dépôt GitHub public https://github.com/Ginta998/Station-Nexus.git (branche main), cloné dans le pod.
+- Remplacé : /app/frontend/src, public, plugins, package.json, craco/tailwind/postcss/components/jsconfig configs. PRÉSERVÉ : /app/frontend/.env (REACT_APP_BACKEND_URL) et node_modules. Backend NON touché (demande utilisateur).
+- Dépendances identiques (aucun yarn install requis). craco & tailwind configs identiques.
+- Nouveau design : thème cosmic/sombre (bleu/noir/blanc/rouge "TENGOKU/PARADIS"), CosmicBackground, CyberOverlay, StationMenu (nouvelle navigation), nouvelles pages (Planning, Novelties, SupportPage, Tutorial), constants/testIds + hooks/.
+- Vérifié : compile OK (avert. webpack déprécation bénin), home rend le nouveau look avec données réelles ; tous les endpoints utilisés (categories, settings, announcements, roadmap, ambiences, creations, membership/plan) renvoient 200.
+- Backup avant remplacement : /app/memory/backups/frontend_backup_20261023_193016.tar.gz
+- Note : la clé secret GITHUB_TOKEN saisie n'était pas un vrai PAT (texte) ; dépôt finalement rendu public pour le clone. Clé inoffensive, peut être supprimée.

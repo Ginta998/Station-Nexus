@@ -28,7 +28,7 @@ export default function MovixSelector({ label, kanji, items, testid = "movix", m
       <div className="mt-10" data-testid={testid}>
         <div className="flex items-center gap-3 mb-6">
           <span className="font-display text-lg opacity-70" style={{ color: "var(--brand)" }}>{kanji}</span>
-          <h3 className="font-display text-xl" style={{ color: "#fff" }}>{label}</h3>
+          <h3 className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{label}</h3>
           {countBadge}
         </div>
         <div className="flex flex-col gap-8" data-testid={`${testid}-list`}>
@@ -47,7 +47,7 @@ export default function MovixSelector({ label, kanji, items, testid = "movix", m
                 </span>
               </div>
               <div className="p-5 md:p-7">
-                <p className="font-display text-2xl md:text-3xl leading-tight" style={{ color: "#fff" }}>{it.title}</p>
+                <p className="font-display text-2xl md:text-3xl leading-tight" style={{ color: "var(--text-primary)" }}>{it.title}</p>
                 {it.note && <p className="text-sm mt-1.5" style={{ color: "var(--brand)" }}>{it.note}</p>}
                 {it.description && <p className="text-sm md:text-base mt-2.5 line-clamp-3" style={{ color: "var(--text-secondary)", maxWidth: "70ch" }}>{it.description}</p>}
                 {it.locked && <span className="inline-flex items-center gap-1 mt-3 px-2 py-1 text-[11px] font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: 4 }}><IoLockClosed size={11} /> Réservé — payant</span>}
@@ -64,12 +64,12 @@ export default function MovixSelector({ label, kanji, items, testid = "movix", m
       {/* Header + dropdown */}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <span className="font-display text-lg opacity-70" style={{ color: "var(--brand)" }}>{kanji}</span>
-        <h3 className="font-display text-xl" style={{ color: "#fff" }}>{label}</h3>
+        <h3 className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{label}</h3>
         {countBadge}
         <div className="relative ml-auto" ref={ddRef}>
           <button data-testid={`${testid}-dropdown`} onClick={() => setOpen((v) => !v)}
             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold min-w-[200px] justify-between transition-colors"
-            style={{ background: "var(--bg-secondary)", color: "#fff", border: "1px solid var(--border-c)", borderRadius: "999px" }}>
+            style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", border: "1px solid var(--border-c)", borderRadius: "999px" }}>
             <span className="truncate">{String(sel + 1).padStart(2, "0")} · {cur.title}</span>
             <IoChevronDown size={16} className="transition-transform flex-shrink-0" style={{ transform: open ? "rotate(180deg)" : "none", color: "var(--brand)" }} />
           </button>
@@ -81,7 +81,7 @@ export default function MovixSelector({ label, kanji, items, testid = "movix", m
                   className="flex items-center gap-3 w-full px-3 py-2.5 text-left transition-colors hover:brightness-125"
                   style={{ background: i === sel ? "color-mix(in srgb, var(--brand) 18%, transparent)" : "transparent" }}>
                   <span className="font-display text-sm w-7 flex-shrink-0 text-center" style={{ color: "var(--brand)" }}>{String(i + 1).padStart(2, "0")}</span>
-                  <span className="flex-1 min-w-0 text-sm truncate" style={{ color: "#fff" }}>{it.title}</span>
+                  <span className="flex-1 min-w-0 text-sm truncate" style={{ color: "var(--text-primary)" }}>{it.title}</span>
                   {it.locked && <IoLockClosed size={13} style={{ color: "var(--brand)" }} />}
                   {i === sel && <IoCheckmark size={15} style={{ color: "var(--brand)" }} />}
                 </button>
