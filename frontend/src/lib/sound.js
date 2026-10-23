@@ -53,12 +53,13 @@ function tone(c, dest, { type = "sine", f, f2, at = 0, dur, gain, attack = 0.004
   o.start(t); o.stop(t + dur + 0.05);
 }
 
-function noise(c, dest, { at = 0, dur, gain, type = "bandpass", f = 2500, q = 1 }) {
+function noise(c, dest, { at = 0, dur, gain, type = "bandpass", f = 2500, q = 1, attack = 0 }) {
   const t = c.currentTime + at;
   const s = c.createBufferSource(); s.buffer = getNoise(c);
   const fl = c.createBiquadFilter(); fl.type = type; fl.frequency.value = f; fl.Q.value = q;
   const g = c.createGain();
-  g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  if (attack) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + attack); } else g.gain.setValueAtTime(gain, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   s.connect(fl); fl.connect(g); g.connect(dest);
   s.start(t); s.stop(t + dur + 0.02);
 }
@@ -94,10 +95,40 @@ const PACKS = {
       if (ev === "back") tone(c, d, { f: 784, f2: 494, dur: 0.22, gain: 0.03, attack: 0.01, lp: 2000 });
     },
   },
+  neant: {
+    label: "Néant", hint: "Souffle · présence sourde",
+    play(c, ev) {
+      const d = out(c, { time: 0.24, fb: 0.3, tone: 700 });
+      if (ev === "hover") tone(c, d, { f: 140, dur: 0.08, gain: 0.03, attack: 0.01, lp: 400 });
+      if (ev === "nav") { noise(c, d, { dur: 0.28, gain: 0.03, type: "lowpass", f: 600, attack: 0.08 }); tone(c, d, { f: 98, dur: 0.22, gain: 0.04, attack: 0.03, lp: 300 }); }
+      if (ev === "select") { tone(c, d, { f: 73, dur: 0.6, gain: 0.07, attack: 0.04, lp: 300 }); tone(c, d, { f: 110, at: 0.02, dur: 0.55, gain: 0.03, attack: 0.05, lp: 420 }); tone(c, d, { f: 111.6, at: 0.02, dur: 0.55, gain: 0.025, attack: 0.05, lp: 420 }); }
+      if (ev === "back") { tone(c, d, { f: 147, f2: 92, dur: 0.3, gain: 0.04, attack: 0.02, lp: 400 }); noise(c, d, { dur: 0.2, gain: 0.015, type: "lowpass", f: 500, attack: 0.05 }); }
+    },
+  },
+  glacier: {
+    label: "Glacier", hint: "Givre · cristal feutré",
+    play(c, ev) {
+      const d = out(c, { time: 0.11, fb: 0.22, tone: 3800 });
+      if (ev === "hover") tone(c, d, { f: 1760, dur: 0.05, gain: 0.008, lp: 3200 });
+      if (ev === "nav") { tone(c, d, { type: "triangle", f: 880, dur: 0.12, gain: 0.02, attack: 0.006, lp: 3000 }); noise(c, d, { at: 0.01, dur: 0.06, gain: 0.006, type: "highpass", f: 7000 }); }
+      if (ev === "select") { tone(c, d, { f: 659, f2: 988, dur: 0.22, gain: 0.03, attack: 0.008, lp: 3000 }); tone(c, d, { f: 1318, at: 0.06, dur: 0.18, gain: 0.01, lp: 3400 }); noise(c, d, { at: 0.04, dur: 0.1, gain: 0.008, f: 4200, q: 6 }); }
+      if (ev === "back") tone(c, d, { type: "triangle", f: 988, f2: 659, dur: 0.18, gain: 0.022, attack: 0.006, lp: 2800 });
+    },
+  },
+  neptune: {
+    label: "Neptune", hint: "Bulles · sous la surface",
+    play(c, ev) {
+      const d = out(c, { time: 0.22, fb: 0.3, tone: 900 });
+      if (ev === "hover") tone(c, d, { f: 380, f2: 680, dur: 0.035, gain: 0.025, lp: 1200 });
+      if (ev === "nav") { tone(c, d, { f: 420, f2: 760, dur: 0.04, gain: 0.03, lp: 1300 }); tone(c, d, { f: 520, f2: 900, at: 0.06, dur: 0.035, gain: 0.02, lp: 1300 }); }
+      if (ev === "select") { tone(c, d, { f: 220, f2: 440, dur: 0.16, gain: 0.06, attack: 0.01, lp: 900 }); tone(c, d, { f: 110, dur: 0.35, gain: 0.04, attack: 0.02, lp: 500 }); }
+      if (ev === "back") tone(c, d, { f: 600, f2: 250, dur: 0.12, gain: 0.04, lp: 1000 });
+    },
+  },
 };
 
 // thème -> pack (les thèmes sans pack dédié prennent Abysse)
-export const THEME_SOUND = { monolithe: "monolithe", abysse: "abysse", olympe: "elysium", olympia: "elysium" };
+export const THEME_SOUND = { monolithe: "monolithe", abysse: "abysse", olympe: "elysium", olympia: "elysium", neant: "neant", glacier: "glacier", neptune: "neptune" };
 export const packForTheme = (theme) => THEME_SOUND[theme] || "abysse";
 export const SOUND_PACKS = Object.entries(PACKS).map(([key, v]) => ({ key, label: v.label, hint: v.hint }));
 export const isValidPack = (p) => p === "auto" || p === "silence" || !!PACKS[p];

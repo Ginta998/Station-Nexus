@@ -1272,108 +1272,48 @@ html[data-theme="olympia"] .cb-grid{opacity:.06;background-size:44px 44px}
 .cosmic-bg .svgform-aurum{filter:drop-shadow(0 0 36px rgba(230,190,110,.28))}
 
 /* ======================================================================
-   EFFETS DE CARTES PAR THÈME — légers, jamais sur le texte (texte z-index 3)
+   EFFETS DE CARTES PAR THÈME — variables partagées (accueil + fiches)
+   légers, jamais au-dessus du texte
    ====================================================================== */
 .sx-exp .poster{position:relative}
-.sx-exp .poster::before{content:"";position:absolute;left:8%;right:8%;top:6%;height:62%;z-index:-1;border-radius:50%;opacity:0;pointer-events:none;filter:blur(22px);transition:opacity .4s}
-.sx-exp .art{border-radius:var(--card-r,6px);transition:box-shadow .4s,border-color .4s}
-.sx-exp .art .fxl{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0}
-.sx-exp .rcard{border-radius:var(--card-r,10px)}
+.sx-exp .poster::before{content:"";position:absolute;left:8%;right:8%;top:6%;height:62%;z-index:-1;border-radius:50%;pointer-events:none;filter:blur(22px);background:var(--halo-bg,none);opacity:var(--halo-op,0);animation:var(--halo-an,none)}
+.sx-exp .art{border-radius:var(--card-r,6px);border-color:var(--card-bd,var(--line));box-shadow:var(--card-sh,0 14px 34px -18px var(--c1,var(--glow)));outline:var(--card-ol,none);outline-offset:3px;filter:var(--card-flt,none);animation:var(--card-an,none)}
+.sx-exp .rcard{border-radius:var(--card-r,10px);animation:var(--card-an,none)}
+.fxl{position:absolute;inset:0;pointer-events:none;background:var(--fx-bg,none);opacity:var(--fx-op,0);mix-blend-mode:var(--fx-bl,normal);animation:var(--fx-an,none)}
+.sx-exp .art .fxl{z-index:2}
+.sx-fxcard{filter:var(--card-flt,none);outline:var(--card-ol,none);outline-offset:3px}
 @keyframes cfPulse{0%,100%{opacity:.45}50%{opacity:.85}}
 @keyframes cfFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @keyframes cfDrift{from{background-position:0 0,0 0}to{background-position:120px 60px,-80px 40px}}
 @keyframes cfFrost{0%,100%{opacity:.55}50%{opacity:.85}}
-
-/* Abysse : lumière bleue derrière les cartes */
-html[data-theme="abysse"] .sx-exp{--card-r:10px}
-html[data-theme="abysse"] .sx-exp .poster::before{background:var(--brand);opacity:.5;animation:cfPulse 5s ease-in-out infinite}
-html[data-theme="abysse"] .sx-exp .art{border-color:rgba(63,134,255,.35)}
-
-/* Neptune : tout flotte sous l'eau, reflets de caustiques */
-html[data-theme="neptune"] .sx-exp{--card-r:16px}
-html[data-theme="neptune"] .sx-exp .art{animation:cfFloat 6s ease-in-out infinite;box-shadow:0 18px 30px -18px rgba(31,159,224,.6)}
-html[data-theme="neptune"] .sx-exp .poster:nth-child(2n) .art{animation-delay:-2s}
-html[data-theme="neptune"] .sx-exp .poster:nth-child(3n) .art{animation-delay:-4s}
-html[data-theme="neptune"] .sx-exp .art .fxl{opacity:.35;mix-blend-mode:screen;background-image:radial-gradient(40px 18px at 30% 20%,rgba(160,240,255,.5),transparent 70%),radial-gradient(60px 22px at 70% 35%,rgba(120,220,240,.4),transparent 70%);animation:cfDrift 9s linear infinite alternate}
-html[data-theme="neptune"] .sx-exp .rcard{animation:cfFloat 7s ease-in-out infinite}
-
-/* Glacier : tout se refroidit, givre sur les bords */
-html[data-theme="glacier"] .sx-exp{--card-r:12px}
-html[data-theme="glacier"] .sx-exp .art{border-color:rgba(200,235,255,.55);box-shadow:inset 0 0 18px rgba(220,245,255,.35),0 0 22px -6px rgba(143,212,240,.45);filter:saturate(.8) brightness(1.03)}
-html[data-theme="glacier"] .sx-exp .art .fxl{opacity:.7;background:radial-gradient(70% 40% at 0 0,rgba(235,250,255,.55),transparent 60%),radial-gradient(60% 34% at 100% 0,rgba(235,250,255,.4),transparent 60%),linear-gradient(180deg,rgba(214,242,255,.16),transparent 30%);animation:cfFrost 6s ease-in-out infinite}
-html[data-theme="glacier"] .sx-exp .poster::before{background:#bfe9ff;opacity:.22}
-
-/* Monolithe : métal brossé */
-html[data-theme="monolithe"] .sx-exp{--card-r:2px}
-html[data-theme="monolithe"] .sx-exp .art{border:1px solid transparent;background-clip:padding-box;box-shadow:0 0 0 1px #6b717c,inset 0 1px 0 rgba(255,255,255,.35),0 12px 24px -14px #000}
-html[data-theme="monolithe"] .sx-exp .art .fxl{opacity:.16;background:repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 1px,transparent 1px 3px),linear-gradient(115deg,transparent 35%,rgba(255,255,255,.3) 50%,transparent 65%)}
-
-/* Biome : bords arrondis, végétation */
-html[data-theme="biome"] .sx-exp{--card-r:20px}
-html[data-theme="biome"] .sx-exp .art{border-color:rgba(120,210,160,.4);box-shadow:0 0 24px -8px rgba(79,184,122,.55)}
-html[data-theme="biome"] .sx-exp .art .fxl{opacity:.55;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg fill='%238fd9a8' fill-opacity='.55'%3E%3Cpath d='M0 60 C6 44 16 40 22 30 C18 42 12 50 0 60Z'/%3E%3Cpath d='M0 46 C10 40 14 30 26 26 C18 34 12 42 0 46Z'/%3E%3Cpath d='M8 60 C14 52 22 50 30 44 C24 52 18 58 8 60Z'/%3E%3C/g%3E%3C/svg%3E") left bottom/46% auto no-repeat}
-html[data-theme="biome"] .sx-exp .poster::before{background:#4fb87a;opacity:.25}
-
-/* Singularité : liseré qui hésite entre violet et turquoise */
-html[data-theme="singularite"] .sx-exp{--card-r:10px}
-html[data-theme="singularite"] .sx-exp .art{animation:cfSing 6s ease-in-out infinite}
 @keyframes cfSing{0%,100%{box-shadow:0 0 0 1px rgba(123,107,255,.6),0 0 22px -6px rgba(123,107,255,.6)}50%{box-shadow:0 0 0 1px rgba(53,214,191,.6),0 0 22px -6px rgba(53,214,191,.6)}}
-
-/* Black Hole : la lumière est aspirée par le bas */
-html[data-theme="blackhole"] .sx-exp .art{box-shadow:0 22px 30px -16px rgba(255,106,60,.45),0 0 0 1px rgba(138,92,255,.35)}
-html[data-theme="blackhole"] .sx-exp .poster::before{top:auto;bottom:24%;height:20%;background:linear-gradient(90deg,#8a5cff,#ff6a3c);opacity:.45}
-
-/* Supernova : braise sur les bords */
-html[data-theme="supernova"] .sx-exp{--card-r:4px}
-html[data-theme="supernova"] .sx-exp .art{animation:cfEmber 3.2s ease-in-out infinite}
 @keyframes cfEmber{0%,100%{box-shadow:0 0 0 1px rgba(255,90,26,.5),0 0 16px -6px rgba(255,120,40,.6)}50%{box-shadow:0 0 0 1px rgba(255,171,74,.7),0 0 26px -4px rgba(255,120,40,.75)}}
 
-/* Hélios : lumière dorée venue d'en haut */
-html[data-theme="helios"] .sx-exp .art{box-shadow:inset 0 2px 0 rgba(255,220,140,.5),0 -10px 26px -14px rgba(217,166,46,.7)}
-html[data-theme="helios"] .sx-exp .art .fxl{opacity:.4;background:linear-gradient(180deg,rgba(255,210,120,.35),transparent 35%)}
-
-/* Akira : angles vifs, néon rouge, léger décalage au survol */
-html[data-theme="akira"] .sx-exp{--card-r:2px}
-html[data-theme="akira"] .sx-exp .art{box-shadow:0 0 0 1px rgba(229,36,31,.6),0 0 14px -4px rgba(229,36,31,.6)}
+html[data-theme="abysse"]{--card-r:10px;--card-bd:rgba(63,134,255,.35);--card-sh:0 0 46px -12px rgba(63,134,255,.6);--halo-bg:var(--brand);--halo-op:.5;--halo-an:cfPulse 5s ease-in-out infinite}
+html[data-theme="neptune"]{--card-r:16px;--card-sh:0 18px 30px -18px rgba(31,159,224,.6);--card-an:cfFloat 6s ease-in-out infinite;--fx-op:.35;--fx-bl:screen;--fx-bg:radial-gradient(40px 18px at 30% 20%,rgba(160,240,255,.5),transparent 70%),radial-gradient(60px 22px at 70% 35%,rgba(120,220,240,.4),transparent 70%);--fx-an:cfDrift 9s linear infinite alternate}
+html[data-theme="neptune"] .sx-exp .poster:nth-child(2n) .art{animation-delay:-2s}
+html[data-theme="neptune"] .sx-exp .poster:nth-child(3n) .art{animation-delay:-4s}
+html[data-theme="glacier"]{--card-r:12px;--card-bd:rgba(200,235,255,.55);--card-sh:inset 0 0 18px rgba(220,245,255,.35),0 0 22px -6px rgba(143,212,240,.45);--card-flt:saturate(.8) brightness(1.03);--fx-op:.7;--fx-bg:radial-gradient(70% 40% at 0 0,rgba(235,250,255,.55),transparent 60%),radial-gradient(60% 34% at 100% 0,rgba(235,250,255,.4),transparent 60%),linear-gradient(180deg,rgba(214,242,255,.16),transparent 30%);--fx-an:cfFrost 6s ease-in-out infinite;--halo-bg:#bfe9ff;--halo-op:.22}
+html[data-theme="monolithe"]{--card-r:2px;--card-bd:#6b717c;--card-sh:inset 0 1px 0 rgba(255,255,255,.35),0 12px 24px -14px #000;--fx-op:.16;--fx-bg:repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 1px,transparent 1px 3px),linear-gradient(115deg,transparent 35%,rgba(255,255,255,.3) 50%,transparent 65%)}
+html[data-theme="biome"]{--card-r:20px;--card-bd:rgba(120,210,160,.4);--card-sh:0 0 24px -8px rgba(79,184,122,.55);--fx-op:.55;--fx-bg:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg fill='%238fd9a8' fill-opacity='.55'%3E%3Cpath d='M0 60 C6 44 16 40 22 30 C18 42 12 50 0 60Z'/%3E%3Cpath d='M0 46 C10 40 14 30 26 26 C18 34 12 42 0 46Z'/%3E%3Cpath d='M8 60 C14 52 22 50 30 44 C24 52 18 58 8 60Z'/%3E%3C/g%3E%3C/svg%3E") left bottom/46% auto no-repeat;--halo-bg:#4fb87a;--halo-op:.25}
+html[data-theme="singularite"]{--card-r:10px;--card-sh:0 0 0 1px rgba(123,107,255,.6),0 0 22px -6px rgba(123,107,255,.6)}
+html[data-theme="singularite"] .sx-exp .art{animation:cfSing 6s ease-in-out infinite}
+html[data-theme="blackhole"]{--card-sh:0 22px 30px -16px rgba(255,106,60,.45),0 0 0 1px rgba(138,92,255,.35);--halo-bg:linear-gradient(90deg,#8a5cff,#ff6a3c);--halo-op:.45}
+html[data-theme="blackhole"] .sx-exp .poster::before{top:auto;bottom:24%;height:20%}
+html[data-theme="supernova"]{--card-r:4px;--card-sh:0 0 0 1px rgba(255,90,26,.5),0 0 20px -6px rgba(255,120,40,.65)}
+html[data-theme="supernova"] .sx-exp .art{animation:cfEmber 3.2s ease-in-out infinite}
+html[data-theme="helios"]{--card-sh:inset 0 2px 0 rgba(255,220,140,.5),0 -10px 26px -14px rgba(217,166,46,.7);--fx-op:.4;--fx-bg:linear-gradient(180deg,rgba(255,210,120,.35),transparent 35%)}
+html[data-theme="akira"]{--card-r:2px;--card-sh:0 0 0 1px rgba(229,36,31,.6),0 0 14px -4px rgba(229,36,31,.6)}
 html[data-theme="akira"] .sx-exp .poster:hover .art{box-shadow:-3px 0 0 rgba(255,90,70,.6),3px 0 0 rgba(80,200,255,.35),0 0 18px -4px rgba(229,36,31,.7)}
+html[data-theme="aurum"]{--card-r:3px;--card-bd:rgba(230,190,110,.7);--card-ol:1px solid rgba(230,190,110,.35);--fx-op:.5;--fx-bg:linear-gradient(115deg,transparent 35%,rgba(255,220,150,.22) 50%,transparent 62%)}
+html[data-theme="megapole"]{--card-r:6px;--card-sh:-6px 0 18px -10px rgba(255,169,77,.8),6px 0 18px -10px rgba(95,208,208,.8);--fx-op:.18;--fx-bg:repeating-linear-gradient(0deg,rgba(255,255,255,.2) 0 1px,transparent 1px 4px)}
+html[data-theme="neant"]{--card-bd:rgba(255,255,255,.1);--card-sh:0 0 0 1px #000,0 20px 40px -10px #000;--fx-op:1;--fx-bg:radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(0,0,0,.55));--fx-an:cfPulse 8s ease-in-out infinite}
+html[data-theme="bunny"]{--card-r:20px;--card-bd:rgba(244,169,192,.6);--card-sh:0 12px 26px -14px rgba(244,169,192,.9);--halo-bg:linear-gradient(90deg,#f4a9c0,#9fe0dc);--halo-op:.35}
+html[data-theme="albatre"]{--card-r:6px;--card-sh:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.25),0 10px 22px -12px rgba(90,75,45,.55);--fx-op:.22;--fx-bg:radial-gradient(rgba(255,250,235,.6) .6px,transparent .7px) 0 0/5px 5px,radial-gradient(rgba(60,50,30,.5) .6px,transparent .7px) 2px 3px/7px 7px}
+html[data-theme="olympe"]{--card-r:4px;--card-bd:rgba(223,228,236,.55);--card-sh:0 0 0 1px rgba(0,0,0,.6),0 -6px 24px -12px rgba(223,228,236,.6);--halo-bg:#dfe4ec;--halo-op:.18}
+html[data-theme="olympe"] .sx-exp .poster::before{top:-6%;height:30%}
+html[data-theme="olympia"]{--card-r:4px;--card-bd:rgba(125,133,146,.5);--card-sh:0 12px 26px -14px rgba(120,130,145,.6);--fx-op:.2;--fx-bg:linear-gradient(125deg,transparent 40%,rgba(255,255,255,.7) 41%,transparent 43%),linear-gradient(60deg,transparent 62%,rgba(255,255,255,.5) 63%,transparent 64.5%)}
+html[data-theme="yorha"]{--card-r:0px;--card-bd:rgba(26,23,18,.6);--card-ol:1px solid rgba(26,23,18,.3)}
 
-/* Aurum : double filet d'or */
-html[data-theme="aurum"] .sx-exp{--card-r:3px}
-html[data-theme="aurum"] .sx-exp .art{border-color:rgba(230,190,110,.7);outline:1px solid rgba(230,190,110,.35);outline-offset:3px}
-html[data-theme="aurum"] .sx-exp .art::before{background:linear-gradient(115deg,transparent 30%,rgba(255,220,150,.28) 48%,transparent 62%);background-size:220% 100%}
-
-/* Mégapole : néons bicolores, trame fine */
-html[data-theme="megapole"] .sx-exp{--card-r:6px}
-html[data-theme="megapole"] .sx-exp .art{box-shadow:-6px 0 18px -10px rgba(255,169,77,.8),6px 0 18px -10px rgba(95,208,208,.8)}
-html[data-theme="megapole"] .sx-exp .art .fxl{opacity:.18;background:repeating-linear-gradient(0deg,rgba(255,255,255,.2) 0 1px,transparent 1px 4px)}
-
-/* Néant : les cartes émergent de l'obscurité */
-html[data-theme="neant"] .sx-exp .art{border-color:rgba(255,255,255,.1);box-shadow:0 0 0 1px #000,0 20px 40px -10px #000}
-html[data-theme="neant"] .sx-exp .art .fxl{opacity:1;background:radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(0,0,0,.55));animation:cfPulse 8s ease-in-out infinite}
-
-/* Bunny : très doux, rose */
-html[data-theme="bunny"] .sx-exp{--card-r:20px}
-html[data-theme="bunny"] .sx-exp .art{border-color:rgba(244,169,192,.6);box-shadow:0 12px 26px -14px rgba(244,169,192,.9)}
-html[data-theme="bunny"] .sx-exp .poster::before{background:linear-gradient(90deg,#f4a9c0,#9fe0dc);opacity:.35}
-
-/* Albâtre : pierre, biseau et grain */
-html[data-theme="albatre"] .sx-exp{--card-r:6px}
-html[data-theme="albatre"] .sx-exp .art{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.25),0 10px 22px -12px rgba(90,75,45,.55)}
-html[data-theme="albatre"] .sx-exp .art .fxl{opacity:.22;background-image:radial-gradient(rgba(255,250,235,.6) .6px,transparent .7px),radial-gradient(rgba(60,50,30,.5) .6px,transparent .7px);background-size:5px 5px,7px 7px;background-position:0 0,2px 3px}
-
-/* Elysium : liseré d'argent, lumière divine */
-html[data-theme="olympe"] .sx-exp{--card-r:4px}
-html[data-theme="olympe"] .sx-exp .art{border-color:rgba(223,228,236,.55);box-shadow:0 0 0 1px rgba(0,0,0,.6),0 -6px 24px -12px rgba(223,228,236,.6)}
-html[data-theme="olympe"] .sx-exp .poster::before{top:-6%;height:30%;background:#dfe4ec;opacity:.18}
-
-/* Olympe : veines de marbre */
-html[data-theme="olympia"] .sx-exp{--card-r:4px}
-html[data-theme="olympia"] .sx-exp .art{border-color:rgba(125,133,146,.5);box-shadow:0 12px 26px -14px rgba(120,130,145,.6)}
-html[data-theme="olympia"] .sx-exp .art .fxl{opacity:.2;background:linear-gradient(125deg,transparent 40%,rgba(255,255,255,.7) 41%,transparent 43%),linear-gradient(60deg,transparent 62%,rgba(255,255,255,.5) 63%,transparent 64.5%)}
-
-/* YoRHa : cadre double, angles nets */
-html[data-theme="yorha"] .sx-exp{--card-r:0px}
-html[data-theme="yorha"] .sx-exp .art{border-color:rgba(26,23,18,.6);outline:1px solid rgba(26,23,18,.3);outline-offset:3px}
-
-html[data-motion="reduced"] .sx-exp .art,html[data-motion="reduced"] .sx-exp .art .fxl,html[data-motion="reduced"] .sx-exp .poster::before,html[data-motion="reduced"] .sx-exp .rcard{animation:none!important}
+html[data-motion="reduced"] .sx-exp .art,html[data-motion="reduced"] .fxl,html[data-motion="reduced"] .sx-exp .poster::before,html[data-motion="reduced"] .sx-exp .rcard{animation:none!important}
 html[data-theme="olympia"] .sx-exp .pcap .pcat,html[data-theme="bunny"] .sx-exp .pcap .pcat,html[data-theme="albatre"] .sx-exp .pcap .pcat,html[data-theme="yorha"] .sx-exp .pcap .pcat{color:color-mix(in srgb,var(--text-primary) 72%,var(--brand))}

@@ -914,32 +914,14 @@ export default function Settings() {
         </div>
 
         {tab === "apparence" && (<>
-        <Section title="Thèmes" extra={`— ${THEMES.length} ambiances`}>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="theme-grid">
-            {THEMES.map((t) => {
-              const active = theme === t.key;
-              return (
-                <button key={t.key} data-testid={`theme-${t.key}`} onClick={() => { setTheme(t.key); sfx("select"); toast.success(`Thème ${t.name}`); }}
-                  className="relative text-left p-4 border transition-transform hover:scale-[1.02]" style={{ ...fs, background: "var(--bg-secondary)", outline: active ? "2px solid var(--brand)" : "none" }}>
-                  {isAdmin && (
-                    <span role="button" data-testid={`theme-default-${t.key}`} title="Définir par défaut"
-                      onClick={(e) => { e.stopPropagation(); setDefaultTheme(t.key); }}
-                      className="absolute top-2 right-2 cursor-pointer" style={{ color: defTheme === t.key ? "var(--brand)" : "var(--text-secondary)" }}>
-                      {defTheme === t.key ? <IoStar size={16} /> : <IoStarOutline size={16} />}
-                    </span>
-                  )}
-                  <div className="flex items-center gap-1.5 mb-3">{t.swatch.map((c, i) => <span key={i} className="w-5 h-5 rounded-full border" style={{ background: c, borderColor: "rgba(255,255,255,0.15)" }} />)}</div>
-                  <div className="flex items-baseline justify-between"><span className="font-display text-lg" style={{ color: "var(--text-primary)" }}>{t.name}</span><span className="text-sm" style={{ color: "var(--text-secondary)" }}>{t.kanji}</span></div>
-                  <p className="text-[11px] mt-1 line-clamp-1" style={{ color: "var(--text-secondary)" }}>{t.tagline}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    {active && <span className="flex items-center gap-1 text-xs" style={{ color: "var(--brand)" }}><IoCheckmarkCircle /> Actif</span>}
-                    {defTheme === t.key && <span className="text-[10px] uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>défaut</span>}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </Section>
+        {isAdmin && (
+          <Section title="Thème par défaut" extra="— pour les nouveaux visiteurs">
+            <select data-testid="default-theme-select" value={defTheme} onChange={(e) => setDefaultTheme(e.target.value)} className="w-full sm:w-72 px-4 py-2.5 border outline-none" style={fs}>
+              {THEMES.map((t) => <option key={t.key} value={t.key}>{t.name}</option>)}
+            </select>
+            <p className="text-xs mt-2" style={{ color: "var(--text-secondary)" }}>Le thème se change depuis le bouton Thèmes de l'accueil.</p>
+          </Section>
+        )}
 
         <Section title="Accessibilité" extra="— confort de lecture">
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Taille du texte</p>

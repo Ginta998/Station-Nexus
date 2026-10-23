@@ -34,11 +34,12 @@ export default function MovixSelector({ label, kanji, items, testid = "movix", m
         <div className="flex flex-col gap-8" data-testid={`${testid}-list`}>
           {items.map((it, i) => (
             <button key={it.key || i} data-testid={`${testid}-row-${i}`} onClick={it.onOpen}
-              className="group block w-full text-left overflow-hidden transition-transform hover:scale-[1.01] movix-pop"
-              style={{ borderRadius: "calc(var(--radius-base)*1.5)", border: it.active ? "2px solid var(--brand)" : "1px solid rgba(255,255,255,0.1)", background: "var(--bg-secondary)", boxShadow: "var(--shadow-1)" }}>
+              className="group block w-full text-left overflow-hidden transition-transform hover:scale-[1.01] movix-pop sx-fxcard"
+              style={{ borderRadius: "var(--card-r, calc(var(--radius-base)*1.5))", border: it.active ? "2px solid var(--brand)" : "1px solid var(--card-bd, rgba(255,255,255,0.1))", background: "var(--bg-secondary)", boxShadow: "var(--card-sh, var(--shadow-1))" }}>
               <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16/9" }}>
                 {it.image ? <img src={it.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.8))" }}><span className="font-display text-8xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{kanji || i + 1}</span></div>}
+                <span className="fxl" aria-hidden="true" />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5), transparent 45%)" }} />
                 <span className="absolute top-4 left-4 text-[11px] font-bold uppercase tracking-widest px-2.5 py-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>{it.badge || String(i + 1).padStart(2, "0")}</span>
                 {it.music && <IoMusicalNotes size={18} className="absolute top-4 right-4" style={{ color: "#fff" }} />}
@@ -94,10 +95,11 @@ export default function MovixSelector({ label, kanji, items, testid = "movix", m
       {/* Grande affiche de l'élément sélectionné */}
       <div className="relative">
         <button key={cur.key || sel} data-testid={`${testid}-feature`} onClick={cur.onOpen}
-          className="group relative block w-full overflow-hidden text-left movix-pop"
-          style={{ aspectRatio: "16/9", maxHeight: "clamp(340px, 64vh, 640px)", borderRadius: "calc(var(--radius-base)*1.6)", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "var(--shadow-1)" }}>
+          className="group relative block w-full overflow-hidden text-left movix-pop sx-fxcard"
+          style={{ aspectRatio: "16/9", maxHeight: "clamp(340px, 64vh, 640px)", borderRadius: "var(--card-r, calc(var(--radius-base)*1.6))", border: "1px solid var(--card-bd, rgba(255,255,255,0.1))", boxShadow: "var(--card-sh, var(--shadow-1))" }}>
           {cur.image ? <img src={cur.image} alt="" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             : <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--bg-secondary), rgba(0,0,0,0.8))" }}><span className="font-display text-8xl" style={{ color: "var(--brand)", opacity: 0.85 }}>{kanji || cur.title[0]}</span></div>}
+          <span className="fxl" aria-hidden="true" data-testid={`${testid}-fx`} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.9) 5%, rgba(0,0,0,0.25) 55%, transparent)" }} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.55), transparent 55%)" }} />
 
