@@ -62,7 +62,7 @@ function IntroGate() {
     qc.prefetchQuery({ queryKey: ["categories"], queryFn: listCategories });
     qc.prefetchQuery({ queryKey: ["creations"], queryFn: () => listCreations() }).then(() => {
       const data = qc.getQueryData(["creations"]) || [];
-      data.slice(0, 16).forEach((c) => { if (c.has_poster) { const img = new Image(); img.src = posterUrl(c.id, c.updated_at); } });
+      data.slice(0, 16).forEach((c) => { if (c.has_poster) { const img = new Image(); img.src = posterUrl(c.id, c.updated_at, 360); } });
     });
 
     qc.fetchQuery({ queryKey: ["settings"], queryFn: getSettings })

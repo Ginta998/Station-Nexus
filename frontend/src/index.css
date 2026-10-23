@@ -1344,3 +1344,11 @@ html[data-theme="olympia"] .sx-exp .pcap .pcat,html[data-theme="bunny"] .sx-exp 
   .sx-set-tabs{flex-wrap:wrap;overflow-x:visible;gap:6px}
   .sx-set-tab{padding:8px 12px;font-size:11px}
 }
+@media (max-width:768px), (pointer:coarse){
+  .sx-exp .scroller{overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;transform:translateZ(0);contain:layout paint}
+  .sx-exp .poster{transition:none;contain:layout paint}
+  .sx-exp .poster:hover,.sx-exp .poster.live{transform:none;filter:none}
+  .sx-exp .art::before,.sx-exp .art::after{display:none}
+  .sx-exp .art{box-shadow:none!important;outline:none}
+  .sx-exp .art .fxl{display:none}
+}

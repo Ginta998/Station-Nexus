@@ -25,7 +25,7 @@ export default function AnnouncementBanner() {
       style={{ background: "rgba(0,0,0,0.4)", borderColor: "var(--brand)", borderRadius: "var(--radius-base)", backdropFilter: "blur(8px)" }}>
       {c && (c.has_poster || (c.poster && c.poster.length > 4)) ? (
         <button onClick={go} className="flex-shrink-0 w-10 h-14 overflow-hidden rounded" style={{ borderRadius: "var(--radius-base)" }} data-testid="announcement-poster">
-          <img src={c.poster && c.poster.length > 4 ? c.poster : posterUrl(c.id, c.updated_at)} alt="" className="w-full h-full object-cover" />
+          <img src={c.poster && c.poster.length > 4 ? c.poster : posterUrl(c.id, c.updated_at, 240)} alt="" className="w-full h-full object-cover" />
         </button>
       ) : (
         <IoMegaphone size={20} style={{ color: "var(--brand)", flexShrink: 0 }} />

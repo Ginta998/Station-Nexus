@@ -49,7 +49,7 @@ export default function Novelties() {
                 {c ? (
                   <button onClick={() => go(a)} className="flex-shrink-0 w-16 md:w-20 aspect-[2/3] overflow-hidden rounded" style={{ borderRadius: "var(--radius-base)", background: "var(--bg-primary)" }} data-testid={`novelty-poster-${a.id}`}>
                     {c.has_poster || (c.poster && c.poster.length > 4)
-                      ? <img src={c.poster && c.poster.length > 4 ? c.poster : posterUrl(c.id, c.updated_at)} alt={c.title} className="w-full h-full object-cover" />
+                      ? <img src={c.poster && c.poster.length > 4 ? c.poster : posterUrl(c.id, c.updated_at, 360)} alt={c.title} className="w-full h-full object-cover" />
                       : <div className="w-full h-full flex items-center justify-center font-display text-3xl" style={{ color: "var(--brand)" }}>{c.kanji || c.title[0]}</div>}
                   </button>
                 ) : (

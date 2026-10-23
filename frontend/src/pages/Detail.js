@@ -502,7 +502,7 @@ export default function Detail() {
                       <button key={r.id} data-testid={`reco-${r.id}`} onClick={() => { sfx("select"); nav(`/oeuvre/${r.id}`); }}
                         className="flex-shrink-0 w-28 sm:w-32 text-left transition-transform hover:scale-105">
                         <div className="w-full aspect-[2/3] overflow-hidden border relative" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-                          {rimg ? <img src={r.poster && r.poster.length > 4 ? r.poster : posterUrl(r.id, r.updated_at)} alt={r.title} loading="lazy" className="w-full h-full object-cover" /> : (
+                          {rimg ? <img src={r.poster && r.poster.length > 4 ? r.poster : posterUrl(r.id, r.updated_at, 360)} alt={r.title} loading="lazy" className="w-full h-full object-cover" /> : (
                             <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))" }}>
                               <span className="font-display text-4xl" style={{ color: "var(--brand)" }}>{r.kanji || r.title[0]}</span>
                             </div>

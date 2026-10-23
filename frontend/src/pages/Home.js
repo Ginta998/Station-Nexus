@@ -52,7 +52,7 @@ const JOURNAL_SECTIONS = [
 
 /* ---------- Poster (carte affiche, style maquette) ---------- */
 function Poster({ it, idx, catLabel, soon, isAdmin, featured, onOpen, onEdit, onDelete, onFeature }) {
-  const img = it.has_poster ? posterUrl(it.id, it.updated_at) : null;
+  const img = it.has_poster ? posterUrl(it.id, it.updated_at, 360) : null;
   const key = String(it.id || it.title || "x");
   const init = (it.title || "?").replace(/[^A-Za-zÀ-ÿ0-9]/g, "").slice(0, 1).toUpperCase() || "✦";
   const hue = [...key].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
@@ -269,7 +269,7 @@ export default function Home() {
             <div className={"viewport" + (heroImg ? " himg" : "")} onClick={() => open(hero.id)}
               style={{ background: `radial-gradient(85% 120% at 74% 6%, var(--glow), transparent 55%), linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))` }}>
               {heroes.map((h, i) => {
-                const im = h.has_bg ? bgUrl(h.id, h.updated_at) : (h.has_poster ? posterUrl(h.id, h.updated_at) : null);
+                const im = h.has_bg ? bgUrl(h.id, h.updated_at) : (h.has_poster ? posterUrl(h.id, h.updated_at, 900) : null);
                 return im ? (
                   <div key={h.id} className="vp-slot" style={{ opacity: i === heroIdx ? 1 : 0 }}>
                     <div className="vp-blur" style={{ backgroundImage: `url(${im})` }} />
@@ -318,7 +318,7 @@ export default function Home() {
         {nextDrop && (
           <section className="sx-drop">
             <div className="drop" onClick={() => open(nextDrop.id)}>
-              <div className={"dpos" + (nextDrop.has_poster ? " bimg" : "")} style={nextDrop.has_poster ? { backgroundImage: `url(${posterUrl(nextDrop.id, nextDrop.updated_at)})` } : undefined}>
+              <div className={"dpos" + (nextDrop.has_poster ? " bimg" : "")} style={nextDrop.has_poster ? { backgroundImage: `url(${posterUrl(nextDrop.id, nextDrop.updated_at, 360)})` } : undefined}>
                 {!nextDrop.has_poster && <span className="dk">{nextDrop.kanji || themeMeta.kanji}</span>}
                 <span className="pst">{isSoon(nextDrop) ? "À VENIR" : "À LA UNE"}</span>
               </div>
@@ -340,7 +340,7 @@ export default function Home() {
             <div className="resume">
               {resumeItems.map((it) => (
                 <article key={it.id} className="rcard" onClick={() => open(it.id)}>
-                  <div className={"rv2" + (it.has_poster ? " bimg" : "")} style={it.has_poster ? { backgroundImage: `url(${posterUrl(it.id, it.updated_at)})` } : undefined}><span className="play">▶</span></div>
+                  <div className={"rv2" + (it.has_poster ? " bimg" : "")} style={it.has_poster ? { backgroundImage: `url(${posterUrl(it.id, it.updated_at, 360)})` } : undefined}><span className="play">▶</span></div>
                   <div className="ri"><div className="rt">{it.title}</div><div className="rs mono">{(catLabelByKey[it.category] || "").toUpperCase()}</div></div>
                 </article>
               ))}
@@ -452,8 +452,8 @@ export default function Home() {
               ))}
             </div>
             <div className="arc-stage">
-              {arcCur && <div className="arc-bgblur" key={"b" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at)})` }} />}
-              {arcCur && <div className="arc-bgimg" key={"i" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at)})` }} />}
+              {arcCur && <div className="arc-bgblur" key={"b" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at, 160)})` }} />}
+              {arcCur && <div className="arc-bgimg" key={"i" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at, 900)})` }} />}
               <div className="arc-shade" />
               <div className="arc-info">
                 <div className="arc-k mono">◆ {arcCur ? (catKanjiByKey[arcCur.category] || themeMeta.kanji) : themeMeta.kanji}</div>
@@ -467,7 +467,7 @@ export default function Home() {
               <div className="arc-rail" ref={arcRailRef}>
                 {arcItems.map((it, i) => (
                   <div key={it.id} className={"arc-tile" + (i === arcSel ? " on" : "")}
-                    style={{ backgroundImage: `url(${posterUrl(it.id, it.updated_at)})` }}
+                    style={{ backgroundImage: `url(${posterUrl(it.id, it.updated_at, 360)})` }}
                     onClick={() => { sfx("nav"); setArcSel(i); }} />
                 ))}
               </div>

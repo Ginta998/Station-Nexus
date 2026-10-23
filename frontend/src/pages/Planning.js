@@ -80,7 +80,7 @@ export default function Planning() {
 
   const posterSrc = (e) => {
     if (e.poster && e.poster.length > 4) return e.poster;
-    if (e.creation_id && byId[e.creation_id]) { const c = byId[e.creation_id]; return c.has_poster ? posterUrl(c.id, c.updated_at) : null; }
+    if (e.creation_id && byId[e.creation_id]) { const c = byId[e.creation_id]; return c.has_poster ? posterUrl(c.id, c.updated_at, 360) : null; }
     return null;
   };
   const entryTitle = (e) => e.title || (e.creation_id && byId[e.creation_id]?.title) || "Sortie à venir";
@@ -298,7 +298,7 @@ function RoadmapEditor({ initial, creations, onClose, onSaved }) {
   const linkedC = creations.find((c) => c.id === form.creation_id);
   const previewSrc = form.poster && form.poster.length > 4
     ? form.poster
-    : (linkedC && linkedC.has_poster ? posterUrl(linkedC.id, linkedC.updated_at) : null);
+    : (linkedC && linkedC.has_poster ? posterUrl(linkedC.id, linkedC.updated_at, 360) : null);
 
   const save = async () => {
     if (!form.title.trim() && !form.creation_id) return toast.error("Donne un titre ou lie une création");

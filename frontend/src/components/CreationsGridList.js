@@ -3,7 +3,7 @@ import { posterUrl } from "@/lib/api";
 
 const hasTrailer = (it) => !!((it.trailer_url && it.trailer_url.trim()) || it.has_trailer);
 const hasImg = (it) => it.has_poster || (it.poster && it.poster.length > 4);
-const imgSrc = (it) => (it.poster && it.poster.length > 4 ? it.poster : posterUrl(it.id, it.updated_at));
+const imgSrc = (it) => (it.poster && it.poster.length > 4 ? it.poster : posterUrl(it.id, it.updated_at, 480));
 
 export default function CreationsGridList({ items, layout, isLoading, catLabelByKey, onOpen, isFavorite, toggleFavorite, onTrailer }) {
   if (!items.length) {

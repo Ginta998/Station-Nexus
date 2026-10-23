@@ -5,6 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import base64
+import io
 import logging
 import re
 import asyncio
@@ -578,11 +579,43 @@ async def get_creation(cid: str, media: bool = False, authorization: Optional[st
     return Creation(**doc)
 
 
+_THUMBS: Dict[str, bytes] = {}
+
+
+def _thumb(data: str, w: int) -> Optional[bytes]:
+    """Miniature JPEG d'une image data URI (cache mémoire)."""
+    if not data or not data.startswith("data:"):
+        return None
+    key = f"{hash(data)}:{w}"
+    if key in _THUMBS:
+        return _THUMBS[key]
+    from PIL import Image
+    try:
+        img = Image.open(io.BytesIO(base64.b64decode(data.split(",", 1)[1])))
+        img.thumbnail((w, w * 2))
+        if img.mode not in ("RGB", "L"):
+            bg = Image.new("RGB", img.size, (8, 10, 16))
+            bg.paste(img, mask=img.convert("RGBA").split()[-1])
+            img = bg
+        buf = io.BytesIO()
+        img.save(buf, "JPEG", quality=82, optimize=True, progressive=True)
+    except Exception:
+        return None
+    if len(_THUMBS) > 300:
+        _THUMBS.clear()
+    _THUMBS[key] = buf.getvalue()
+    return _THUMBS[key]
+
+
 @api_router.get("/creations/{cid}/poster")
-async def get_creation_poster(cid: str):
+async def get_creation_poster(cid: str, w: Optional[int] = None):
     doc = await db.creations.find_one({"id": cid}, {"_id": 0, "poster": 1})
     if not doc:
         raise HTTPException(404, "Création introuvable")
+    if w:
+        small = _thumb(doc.get("poster") or "", max(120, min(w, 1200)))
+        if small:
+            return Response(content=small, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=604800"})
     return _serve_image(doc.get("poster"))
 
 

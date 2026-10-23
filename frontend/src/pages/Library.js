@@ -97,7 +97,7 @@ export default function Library() {
               return (
                 <button key={c.id} data-testid={`library-item-${c.id}`} onClick={() => { sfx("select"); nav(`/oeuvre/${c.id}`); }} className="text-left transition-transform hover:scale-[1.03]">
                   <div className="w-full aspect-[2/3] overflow-hidden relative" style={{ borderRadius: "var(--radius-base)", border: "1px solid var(--border-c)" }}>
-                    {img ? <img src={posterUrl(c.id, c.updated_at)} alt={c.title} className="w-full h-full object-cover" /> : (
+                    {img ? <img src={posterUrl(c.id, c.updated_at, 360)} alt={c.title} className="w-full h-full object-cover" /> : (
                       <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))" }}><span className="font-display text-4xl" style={{ color: "var(--brand)" }}>{c.kanji || c.title[0]}</span></div>
                     )}
                     <span className="absolute top-2 left-2 px-2 py-0.5 text-[10px] font-semibold" style={{ ...primary }}>Débloqué</span>

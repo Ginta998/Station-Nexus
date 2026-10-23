@@ -7,7 +7,7 @@ const PosterCard = forwardRef(function PosterCard(
   ref
 ) {
   const hasImg = item.has_poster || (item.poster && item.poster.length > 4);
-  const src = item.poster && item.poster.length > 4 ? item.poster : posterUrl(item.id, item.updated_at);
+  const src = item.poster && item.poster.length > 4 ? item.poster : posterUrl(item.id, item.updated_at, 480);
   const hasTrailer = !!((item.trailer_url && item.trailer_url.trim()) || item.has_trailer);
 
   let prog = null;
