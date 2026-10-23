@@ -28,7 +28,7 @@ const READOUT = {
   aurum: ["RELIQUE <b>AU·79</b>", "PURETÉ 99.9%", "OR"],
   blackhole: ["HORIZON <b>Rs→0</b>", "MARÉE ∞", "ABÎME"],
   olympe: ["ORACLE <b>ΔXII</b>", "MARBRE 100%", "ELYSIUM"],
-  neant: ["<b>NÉANT</b>", "—", "VIDE"],
+  neant: ["<b>NÉANT</b>", "PRÉSENCE ?", "VIDE"],
 };
 
 function microFor(t) {

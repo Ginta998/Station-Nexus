@@ -251,6 +251,7 @@ export default function CosmicBackground() {
         <div className="sc s-yorha"><div className="yg" /><div className="emblem"><span /><span /><span /></div><div className="sun" /><div className="hz" /></div>
         <div className="sc s-megapole"><div className="sky" /><div className="city" /></div>
         <div className="sc s-bunny"><div className="b1" /><div className="b2" /></div>
+        <div className="sc s-neant"><div className="shade" />{[[12,30,0],[78,22,7],[64,70,13],[22,76,4],[88,58,19],[44,14,10]].map(([x,y,d],i) => <span key={i} className="eyes" style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${d}s` }}><i /><i /></span>)}</div>
         <div className="sc s-glacier"><div className="moon" /><div className="aur" /></div>
       </div>
 

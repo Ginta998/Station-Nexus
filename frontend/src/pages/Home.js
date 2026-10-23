@@ -260,7 +260,7 @@ export default function Home() {
         <div className="cinehead">
           <span className="ck">// STATION NEXUS</span>
           <h2 className="ct-title">{(themeMeta.name || "STATION").toUpperCase()}</h2>
-          <span className="ctag">{themeMeta.tagline}</span>
+          <span className="ctag" key={theme} data-testid="home-theme-tagline">{[...(themeMeta.tagline || "")].map((c, i) => <span key={i} className="ctag-ch" style={{ animationDelay: `${i * 35}ms` }}>{c === " " ? "\u00a0" : c}</span>)}</span>
         </div>
 
         {/* LA UNE */}

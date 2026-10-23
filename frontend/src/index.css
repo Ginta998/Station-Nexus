@@ -772,6 +772,17 @@ html[data-theme="aurum"] .s-aurum{display:block}
 html[data-theme="megapole"] .s-megapole{display:block}
 html[data-theme="bunny"] .s-bunny{display:block}
 html[data-theme="olympe"] .s-olympe{display:block}
+html[data-theme="neant"] .s-neant{display:block}
+/* néant : une présence qu'on devine à peine */
+.cosmic-bg .s-neant .shade{position:absolute;left:50%;bottom:-8%;width:46vmin;height:80vmin;transform:translateX(-50%);border-radius:50% 50% 12% 12%/38% 38% 10% 10%;background:radial-gradient(ellipse at 50% 30%,rgba(255,255,255,.035),transparent 62%);filter:blur(18px);animation:nxBreathe 9s ease-in-out infinite}
+.cosmic-bg .s-neant .eyes{position:absolute;display:flex;gap:9px;opacity:0;animation:nxEyes 23s ease-in-out infinite}
+.cosmic-bg .s-neant .eyes i{width:4px;height:2px;border-radius:50%;background:#e8e8e8;box-shadow:0 0 6px rgba(255,255,255,.5);animation:nxBlink 23s steps(1) infinite;animation-delay:inherit}
+@keyframes nxBreathe{0%,100%{opacity:.35;transform:translateX(-50%) scale(1)}50%{opacity:.9;transform:translateX(-50%) scale(1.04)}}
+@keyframes nxEyes{0%,70%,100%{opacity:0}76%,90%{opacity:.32}}
+@keyframes nxBlink{0%,82%,84%,100%{transform:scaleY(1)}83%{transform:scaleY(.1)}}
+.sx-exp .cinehead .ctag .ctag-ch{display:inline-block;opacity:0;animation:ctagIn .5s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes ctagIn{from{opacity:0;transform:translateY(6px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+html[data-motion="reduced"] .sx-exp .cinehead .ctag .ctag-ch{animation:none;opacity:1}
 
 .cosmic-bg .s-planet .body{position:absolute;top:-70px;right:-50px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#5579c0,#17284e 62%,#0a1430);box-shadow:inset -16px -16px 40px rgba(0,0,0,.5)}
 .cosmic-bg .s-planet .ring{position:absolute;top:45px;right:-120px;width:400px;height:110px;border-radius:50%;border:3px solid rgba(130,170,235,.4);transform:rotate(-26deg)}

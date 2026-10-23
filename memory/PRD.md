@@ -745,3 +745,6 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Compte louzalabrichel@gmail.com créé dans la base preview avec mot de passe et droits admin (aucun changement de code).
 - Admin activé immédiatement après connexion (événement sx-admin-on), plus besoin de recharger.
 - Phrases thèmes fournies par l utilisateur : Abysse, Akira, Neptune. 14 autres en attente de ses textes.
+- 17 phrases de thèmes posées (fournies par l utilisateur ; Néant = "Quelque chose respire dans le noir", inventée). Trou noir renommé Black Hole, Olympe affiché Elysium (clé olympe inchangée).
+- Néant : scène inquiétante (silhouette qui respire, paires d yeux qui apparaissent et clignent rarement).
+- Accueil : phrase du thème apparaît lettre par lettre à chaque changement de thème (data-testid home-theme-tagline).
