@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
         setUser(up.user);
       } catch { setUser(u); }
       lastSync.current = snapshot();
-      if (u.is_admin) localStorage.setItem("sx_admin", "1");
+      if (u.is_admin) { localStorage.setItem("sx_admin", "1"); window.dispatchEvent(new Event("sx-admin-on")); }
       setAuthOpen(false);
       if (greet) toast.success(greet);
       // parcours compte -> profil : si aucun profil local, on invite à en créer un dans la foulée
@@ -73,7 +73,7 @@ export function AuthProvider({ children }) {
       }
       if (!hasProfile) setTimeout(() => window.dispatchEvent(new CustomEvent("sx-open-profile")), 350);
     } else {
-      if (u.is_admin) localStorage.setItem("sx_admin", "1");
+      if (u.is_admin) { localStorage.setItem("sx_admin", "1"); window.dispatchEvent(new Event("sx-admin-on")); }
       setUser(u);
       setAuthOpen(false);
       if (greet) toast.success(greet);
@@ -129,7 +129,7 @@ export function AuthProvider({ children }) {
       }
       if (sessionStorage.getItem("sx_auth_applied")) sessionStorage.removeItem("sx_auth_applied");
       if (localStorage.getItem("sx_token")) {
-        try { const d = await authMe(); setUser(d.user); lastSync.current = snapshot(); if (d.user.is_admin) localStorage.setItem("sx_admin", "1"); }
+        try { const d = await authMe(); setUser(d.user); lastSync.current = snapshot(); if (d.user.is_admin) { localStorage.setItem("sx_admin", "1"); window.dispatchEvent(new Event("sx-admin-on")); } }
         catch { setToken(null); }
       }
       setReady(true);

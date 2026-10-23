@@ -287,6 +287,7 @@ export function AppProvider({ children }) {
       setIsAdmin(true); localStorage.setItem(LS.admin, "1"); return true;
     } return false;
   };
+  useEffect(() => { const on = () => setIsAdmin(true); window.addEventListener("sx-admin-on", on); return () => window.removeEventListener("sx-admin-on", on); }, []);
   const lock = () => { setIsAdmin(false); localStorage.removeItem(LS.admin); };
   const changePin = (p) => { localStorage.setItem(LS.pin, p); return true; };
 

@@ -743,3 +743,5 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 
 ## 2026-10-23 — Accès propriétaire preview
 - Compte louzalabrichel@gmail.com créé dans la base preview avec mot de passe et droits admin (aucun changement de code).
+- Admin activé immédiatement après connexion (événement sx-admin-on), plus besoin de recharger.
+- Phrases thèmes fournies par l utilisateur : Abysse, Akira, Neptune. 14 autres en attente de ses textes.
