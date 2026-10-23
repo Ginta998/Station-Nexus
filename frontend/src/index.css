@@ -810,7 +810,8 @@ html[data-theme="supernova"] .s-sun .raysx{background:conic-gradient(from 0deg,t
 @keyframes cbxGrid{to{background-position:0 44px}}
 .cosmic-bg .s-akira::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,30,60,.07) 0 1px,transparent 1px 3px)}
 .cosmic-bg .s-neptune .body{position:absolute;inset:0;background:radial-gradient(130% 90% at 50% 120%,rgba(31,159,224,.4),transparent 62%),radial-gradient(100% 60% at 50% -10%,rgba(79,224,224,.2),transparent 55%)}
-.cosmic-bg .s-neptune .cur{position:absolute;inset:0;background:repeating-linear-gradient(60deg,transparent 0 26px,rgba(120,220,230,.05) 26px 30px);animation:cbxNeb 24s ease-in-out infinite alternate}
+.cosmic-bg .s-neptune .cur{position:absolute;inset:-40px;background:repeating-linear-gradient(60deg,transparent 0 26px,rgba(120,220,230,.05) 26px 30px);will-change:transform;animation:nptCur 24s ease-in-out infinite alternate}
+@keyframes nptCur{to{transform:translate(20px,-18px)}}
 .cosmic-bg .s-yorha .sun{position:absolute;bottom:-150px;left:50%;transform:translateX(-50%);width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,#efe9d8,#d8cfb8 58%,transparent 72%)}
 .cosmic-bg .s-yorha .hz{position:absolute;bottom:32%;left:0;right:0;height:1px;background:rgba(26,23,18,.32);box-shadow:0 0 0 0 transparent,0 20px 0 -1px rgba(26,23,18,.12),0 -20px 0 -1px rgba(26,23,18,.12)}
 .cosmic-bg .s-yorha .yg{position:absolute;inset:0;background-image:linear-gradient(rgba(26,23,18,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(26,23,18,.16) 1px,transparent 1px);background-size:46px 46px;-webkit-mask:radial-gradient(130% 80% at 50% 10%,#000 30%,transparent 78%);mask:radial-gradient(130% 80% at 50% 10%,#000 30%,transparent 78%)}
@@ -896,7 +897,8 @@ html[data-theme="glacier"] .s-glacier{display:block}
 html[data-theme="bunny"] .fx-ember{opacity:.5}
 html[data-theme="bunny"] .fx-ember i{background:color-mix(in srgb,var(--accent) 72%,#fff);box-shadow:0 0 6px color-mix(in srgb,var(--accent) 55%,transparent);width:3px;height:3px}
 /* Neptune : god-rays sous-marins */
-.cosmic-bg .s-neptune::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(104deg,transparent 0 30px,rgba(150,230,240,.05) 30px 46px,transparent 46px 82px);-webkit-mask:linear-gradient(180deg,#000,transparent 70%);mask:linear-gradient(180deg,#000,transparent 70%);opacity:.6;animation:cbxAur2 14s ease-in-out infinite alternate}
+.cosmic-bg .s-neptune::after{content:"";position:absolute;inset:0 -60px 30% -60px;background:repeating-linear-gradient(104deg,transparent 0 30px,rgba(150,230,240,.04) 30px 46px,transparent 46px 82px);opacity:.6;will-change:transform;animation:nptRays 14s ease-in-out infinite alternate}
+@keyframes nptRays{to{transform:translateX(40px)}}
 /* Black hole : anneau de lentille gravitationnelle */
 html[data-theme="blackhole"] .s-blackhole .core{box-shadow:0 0 50px 10px rgba(138,92,255,.5),0 0 0 2px rgba(255,106,60,.35),0 0 0 6px rgba(138,92,255,.18)}
 
@@ -1290,7 +1292,8 @@ html[data-theme="olympia"] .cb-grid{opacity:.06;background-size:44px 44px}
 @keyframes cfEmber{0%,100%{box-shadow:0 0 0 1px rgba(255,90,26,.5),0 0 16px -6px rgba(255,120,40,.6)}50%{box-shadow:0 0 0 1px rgba(255,171,74,.7),0 0 26px -4px rgba(255,120,40,.75)}}
 
 html[data-theme="abysse"]{--card-r:10px;--card-bd:rgba(63,134,255,.35);--card-sh:0 0 46px -12px rgba(63,134,255,.6);--halo-bg:var(--brand);--halo-op:.5;--halo-an:cfPulse 5s ease-in-out infinite}
-html[data-theme="neptune"]{--card-r:16px;--card-sh:0 18px 30px -18px rgba(31,159,224,.6);--card-an:cfFloat 6s ease-in-out infinite;--fx-op:.35;--fx-bl:screen;--fx-bg:radial-gradient(40px 18px at 30% 20%,rgba(160,240,255,.5),transparent 70%),radial-gradient(60px 22px at 70% 35%,rgba(120,220,240,.4),transparent 70%);--fx-an:cfDrift 9s linear infinite alternate}
+html[data-theme="neptune"]{--card-r:16px;--card-sh:0 18px 30px -18px rgba(31,159,224,.6);--card-an:cfFloat 6s ease-in-out infinite;--fx-op:.35;--fx-bl:screen;--fx-bg:radial-gradient(40px 18px at 30% 20%,rgba(160,240,255,.5),transparent 70%),radial-gradient(60px 22px at 70% 35%,rgba(120,220,240,.4),transparent 70%);--fx-an:cfDriftT 9s ease-in-out infinite alternate}
+@keyframes cfDriftT{to{transform:translate(18%,10%)}}
 html[data-theme="neptune"] .sx-exp .poster:nth-child(2n) .art{animation-delay:-2s}
 html[data-theme="neptune"] .sx-exp .poster:nth-child(3n) .art{animation-delay:-4s}
 html[data-theme="glacier"]{--card-r:12px;--card-bd:rgba(200,235,255,.55);--card-sh:inset 0 0 18px rgba(220,245,255,.35),0 0 22px -6px rgba(143,212,240,.45);--card-flt:saturate(.8) brightness(1.03);--fx-op:.7;--fx-bg:radial-gradient(70% 40% at 0 0,rgba(235,250,255,.55),transparent 60%),radial-gradient(60% 34% at 100% 0,rgba(235,250,255,.4),transparent 60%),linear-gradient(180deg,rgba(214,242,255,.16),transparent 30%);--fx-an:cfFrost 6s ease-in-out infinite;--halo-bg:#bfe9ff;--halo-op:.22}

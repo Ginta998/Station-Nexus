@@ -19,18 +19,24 @@ let settings = { pack: "auto", theme: "abysse", muted: false, volume: 0.7 };
 export const configureSound = (s) => { settings = { ...settings, ...s }; };
 export const primeAudioCtx = () => { getCtx(); };
 
-// sortie avec écho optionnel (profondeur / réverbération)
+// sortie avec écho optionnel — un bus partagé par réglage d'écho
+const buses = new Map();
 function out(c, echo) {
-  const g = c.createGain(); g.gain.value = (settings.volume ?? 0.7) * 1.6;
-  g.connect(c.destination);
-  if (echo) {
-    const d = c.createDelay(1); d.delayTime.value = echo.time;
-    const fb = c.createGain(); fb.gain.value = echo.fb;
-    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = echo.tone || 2400;
-    g.connect(d); d.connect(lp); lp.connect(fb); fb.connect(d); lp.connect(c.destination);
-    setTimeout(() => { try { g.disconnect(); d.disconnect(); } catch (_) {} }, 3000);
+  const vol = (settings.volume ?? 0.7) * 1.6;
+  const id = echo ? `${echo.time}|${echo.fb}|${echo.tone}` : "dry";
+  let bus = buses.get(id);
+  if (!bus) {
+    bus = c.createGain(); bus.connect(c.destination);
+    if (echo) {
+      const d = c.createDelay(1); d.delayTime.value = echo.time;
+      const fb = c.createGain(); fb.gain.value = echo.fb;
+      const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = echo.tone || 2400;
+      bus.connect(d); d.connect(lp); lp.connect(fb); fb.connect(d); lp.connect(c.destination);
+    }
+    buses.set(id, bus);
   }
-  return g;
+  bus.gain.value = vol;
+  return bus;
 }
 
 function tone(c, dest, { type = "sine", f, f2, at = 0, dur, gain, attack = 0.004, lp, mod }) {

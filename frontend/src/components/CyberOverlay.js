@@ -14,7 +14,7 @@ const MICRO = {
 };
 const READOUT = {
   abysse: ["PROFONDEUR <b>−3214 M</b>", "PRESSION 318 BAR", "ABYSSE"],
-  neptune: ["PROFONDEUR <b>−3214 M</b>", "PRESSION 318 BAR", "ABYSSE"],
+  neptune: ["IMMERSION <b>−42 M</b>", "COURANT 1,8 NŒUD", "NEPTUNE"],
   yorha: ["UNITÉ <b>2B · 9S</b>", "AVANT-POSTE 7G", "DÉSERT"],
   akira: ["NEO-TOKYO <b>第3区</b>", "ÉNERGIE 89%", "紅"],
   supernova: ["TEMPÉRATURE <b>8600 K</b>", "EXPANSION +12%", "BRASIER"],

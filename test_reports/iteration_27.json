@@ -1,0 +1,37 @@
+{
+  "summary": "Frontend-only test of batch: theme grid removed from Settings, default-theme-select (admin), new sound packs Néant/Glacier/Neptune, theme card effects on creation page (detail-poster + MovixSelector cards) via CSS variables, Home regression. All functional checks that could be executed PASSED. The only problem: headless Chromium crashed ('Target crashed') on most page loads with theme=neptune (8 of 10 tries, on /, /parametres and /oeuvre/:id). The crash is intermittent: it also happened once with every animation/filter/blend/mask disabled, and other themes (abysse, glacier, neant, biome, monolithe, yorha) never crashed. No pageerrors on Home, /parametres or /oeuvre/:id. The only console error is a React hydration warning ('<span> cannot be a child of <option>') in the CommentsSection select; it comes from the Emergent visual-edit instrumentation wrapping {expr} in <option>, not from the app.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Theme Neptune (global)", "issue": "Headless Chromium renderer crashes ~1s after load with sx_theme=neptune on /parametres, / and /oeuvre/:id (8/10 attempts). It worked 2 times: Detail page once, and /parametres once with a style that disabled animation/filter/mask/blend. It crashed again with that same override later, so the root cause is not proven. Overriding only the new neptune card vars (--card-an/--fx-an/--fx-bl/--fx-bg) did not stop the crash, so it is probably not the new card-effect block. It may only affect headless/software-GL, but worth checking the neptune GPU load (animated masks/gradients, bubbles, jelly SVG, CyberOverlay scan) on low-end devices.", "selector": "html[data-theme=neptune]", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "CyberOverlay HUD (bottom-left) on Neptune", "issues": ["READOUT.neptune is a copy of abysse: it shows 'PROFONDEUR −3214 M / PRESSION 318 BAR / ABYSSE', so the Neptune theme says 'ABYSSE'. Give Neptune its own readout (components/CyberOverlay.js line 17)."]},
+      {"screen": "MovixSelector feature card", "issues": ["The badge 'Ch. 01' sits under the absolute inset-0 play overlay span (elementFromPoint hits the overlay). It is still visible, so this is cosmetic only."]}
+    ]
+  },
+  "verified": {
+    "settings_apparence": "No [data-testid=theme-grid] and no theme-* buttons (logged out and admin). Logged out: no default-theme-select, Accessibilité section present. Admin (louzalabrichel@gmail.com): default-theme-select has 18 options (abysse..yorha). Selecting glacier shows the toast 'Thème par défaut défini' and /api/settings default_theme=glacier persists. Restored to the original 'abysse'.",
+    "settings_son": "ui-sound-grid keys = auto, monolithe, abysse, elysium, neant, glacier, neptune, silence. Clicking each sets localStorage sx_soundpack, no errors. Auto hint: glacier -> 'Suit le thème · Glacier', neant -> 'Suit le thème · Néant'. Neptune hint not verified in the browser because of the crash; the code maps THEME_SOUND.neptune -> 'Neptune'. Hints: Néant 'Souffle · présence sourde', Glacier 'Givre · cristal feutré', Neptune 'Bulles · sous la surface'.",
+    "detail_card_fx": "La Cité des Cieux (16 chapters) and Liberty's Chroma: Andgi (2 episodes). detail-poster has class sx-fxcard. border-radius biome 20px / monolithe 2px / glacier 12px / neptune 16px / abysse 10px / yorha 0px. detail-poster-fx opacity biome .55, monolithe .16, glacier ~.75 (frost animation), neptune .35, abysse 0, yorha 0. The Movix feature card (detail-chapters-feature / detail-episodes-feature) gets the same themed radius and its .fxl the same opacity. Screenshots for biome, glacier and neptune: titles and descriptions stay readable (elementFromPoint on the title = the title).",
+    "home_regression": "biome: .sx-exp .art border-radius 20px, border rgba(120,210,160,.4), .fxl opacity .55, z-index 2. home-theme-toggle shows 18 home-theme-pick-* items. Picking monolithe gives data-theme=monolithe, radius 2px, persisted in localStorage."
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Look into the Neptune theme renderer crash in headless Chromium (repeatable on fresh load). Profile the neptune background/overlay layers (animated masks, repeating gradients, bubbles, jelly SVG) and reduce GPU cost if possible.",
+    "Give Neptune its own CyberOverlay READOUT (it currently shows 'ABYSSE').",
+    "Optional: fix the <option> children in CommentsSection select (use a template string) to silence the hydration warning."
+  ],
+  "critical_code_review_comments": [
+    "sound.js out(): the echo feedback loop (d->lp->fb->d) is only partly disconnected after 3s (g and d). lp/fb nodes stay referenced until GC. This is fine, but each UI sound builds a new delay graph, so heavy hovering creates many nodes. Consider one shared echo bus per pack.",
+    "Settings.js UiSoundPicker plays a hover sound on every mouseenter of every pack card. Fine, but throttle it to avoid stacked graphs."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "~95% (all requested checks passed except the Neptune Settings hint, which could not be checked in the browser because of the headless crash)"},
+  "seed_data_creation": "none (default_theme changed to glacier during the test then restored to abysse)",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "test_credentials": "Admin louzalabrichel@gmail.com / Nexus-434b58 (login via fetch /api/auth/login then localStorage sx_token)",
+  "context_for_next_testing_agent": "Pages to test: /oeuvre/e13edb26-e385-4efc-842c-2c0e47fd7b7a (chapters, carousel feature card) and /oeuvre/dc32c729-9f62-48e4-ba0c-6577c3339943 (episodes). Set localStorage sx_intro_off=1, sx_tour_done=1, sessionStorage sx_entered=1, sx_theme=<key>, then reload. Do one theme per run because reloading several times in one run crashes. The admin Settings page crashed until posters were blocked with page.route('**/poster*', abort). Neptune crashes the headless renderer most of the time."
+}

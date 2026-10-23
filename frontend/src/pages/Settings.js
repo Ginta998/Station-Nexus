@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoAlbumsOutline, IoGridOutline, IoListOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline } from "react-icons/io5";
@@ -1059,13 +1059,15 @@ export default function Settings() {
 function UiSoundPicker({ theme, soundPack, setPack }) {
   const auto = SOUND_PACKS.find((p) => p.key === packForTheme(theme));
   const opts = [{ key: "auto", label: "Auto", hint: `Suit le thème · ${auto?.label}` }, ...SOUND_PACKS, { key: "silence", label: "Silence", hint: "Aucun son d'interface" }];
+  const lastHover = useRef(0);
+  const hover = (k) => { const n = Date.now(); if (k === "silence" || n - lastHover.current < 120) return; lastHover.current = n; playUiSound("hover", k === "auto" ? packForTheme(theme) : k); };
   const pick = (k) => { setPack(k); if (k !== "silence") playUiSound("select", k === "auto" ? packForTheme(theme) : k); };
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="ui-sound-grid">
       {opts.map((o) => {
         const on = soundPack === o.key;
         return (
-          <button key={o.key} data-testid={`ui-sound-${o.key}`} onClick={() => pick(o.key)} onMouseEnter={() => o.key !== "silence" && playUiSound("hover", o.key === "auto" ? packForTheme(theme) : o.key)}
+          <button key={o.key} data-testid={`ui-sound-${o.key}`} onClick={() => pick(o.key)} onMouseEnter={() => hover(o.key)}
             className="text-left px-4 py-3 border transition-transform hover:-translate-y-0.5"
             style={{ borderColor: on ? "var(--brand)" : "var(--border-c)", background: on ? "color-mix(in srgb,var(--brand) 12%,transparent)" : "transparent", borderRadius: "var(--radius-base)", color: "var(--text-primary)" }}>
             <div className="font-semibold text-sm">{o.label}</div>

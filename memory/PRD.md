@@ -764,3 +764,10 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Son Elysium refait (feutré, futuriste). Olympe utilise aussi Elysium.
 - Ambiance des créations : plus de lecture auto, seulement via le bouton Ambiance.
 - Effets de cartes pour les 18 thèmes (.fxl + poster::before + --card-r). Tests iteration_26 100%.
+
+## 2026-10-23 — Paramètres allégés, sons Néant/Glacier/Neptune, effets sur fiches
+- Grille des thèmes retirée des Paramètres ; admin : select compact Thème par défaut (default-theme-select).
+- Packs sons Néant, Glacier, Neptune (auto liés) ; bus d écho partagé par pack ; survol des packs limité.
+- Effets de cartes passés en variables CSS sur html[data-theme] : appliqués à l affiche de la fiche (detail-poster-fx) et aux cartes épisodes/chapitres (MovixSelector .sx-fxcard).
+- Neptune allégé (calques plein écran sans masque/scale, reflets des cartes en transform) + HUD propre "NEPTUNE".
+- Tests iteration_27 ~95% ; crashs Chromium headless = instabilité de l environnement (neptune OK 2/2 sur pages neuves après allègement).
