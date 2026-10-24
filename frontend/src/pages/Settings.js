@@ -942,12 +942,6 @@ export default function Settings() {
           </div>
         </Section>
 
-        {isAdmin && (
-          <Section title="Identité du site" extra="— icône & description (Google, appli, liens partagés)">
-            <SiteIdentity />
-          </Section>
-        )}
-
         <Section title="Accessibilité" extra="— confort de lecture">
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Taille du texte</p>
           <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Agrandit tout le texte de l'application (descriptions, commentaires, chapitres…). Réglable séparément pour l'ordinateur et le mobile.</p>
@@ -988,12 +982,13 @@ export default function Settings() {
           <input data-testid="ui-volume-slider" type="range" min="0" max="1" step="0.05" value={uiVolume} onChange={(e) => { setUiVolume(parseFloat(e.target.value)); }} onMouseUp={() => sfx("select")} onTouchEnd={() => sfx("select")} className="w-full mt-2" style={{ accentColor: "var(--brand)" }} />
         </Section>
 
-        <Section title="Sons d'interface" extra="— un pack par thème">
-          <UiSoundPicker theme={theme} soundPack={soundPack} setPack={setPack} />
-        </Section>
-
         <Section title="Pistes & ambiances" extra="— choisis ou ajoute">
           <AmbienceManager />
+        </Section>
+
+
+        <Section title="Sons d'interface" extra="— un pack par thème">
+          <UiSoundPicker theme={theme} soundPack={soundPack} setPack={setPack} />
         </Section>
 
         </>)}
@@ -1052,6 +1047,10 @@ export default function Settings() {
         </>)}
 
         {isAdmin && tab === "admin" && (<>
+        <Section title="Identité du site" extra="— favicon & description (Google, appli, liens partagés)">
+          <SiteIdentity />
+        </Section>
+
         <Section title="Écran de démarrage" extra="— intro type PS2 / Steam">
           <IntroManager />
         </Section>

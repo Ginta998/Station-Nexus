@@ -772,3 +772,17 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Neptune allégé (calques plein écran sans masque/scale, reflets des cartes en transform) + HUD propre "NEPTUNE".
 - Tests iteration_27 ~95% ; crashs Chromium headless = instabilité de l environnement (neptune OK 2/2 sur pages neuves après allègement).
 - Correction utilisateur : grille des thèmes remise dans les Paramètres (comme avant, étoile admin = défaut) ; sélection des thèmes retirée du menu Station. Bouton Thèmes de l accueil conservé.
+
+## 2026-10-24 — Lot mobile / identité / couvertures
+- Accent rose bloqué (démo visite guidée mémorisée + synchronisée) : accent désormais temporaire, ancienne valeur purgée.
+- Mobile : menu musique en position fixe, HUD masqué, onglets Paramètres en retour à la ligne, perf (grain sans blend, pas de halo/flou/animations de cartes, rangées isolées, pas de parallaxe tactile).
+- Miniatures serveur des affiches (GET /api/creations/{id}/poster?w=N, cache mémoire).
+- Logo TopBar : emblème à anneaux tournants + 天 (texte seulement sur desktop), tap -> accueil.
+- Grain renforcé (.11 desktop / .075 mobile sans blend).
+- À la une : featured_ids ajouté à SiteSettings (était ignoré).
+- Décor du thème global (CosmicBackground dans App), pages en fond transparent.
+- Sons : 18 packs (un par thème).
+- Couvertures musiques : stockées serveur (PUT/GET /api/ambiences/{id}/cover, has_cover/cover_v), migration auto des couvertures locales.
+- Identité : favicon/manifeste dynamiques (/api/site/icon, /api/site/manifest.json), nouvelle icône backend/assets/default_icon.png, description site_description ; réglages dans Paramètres > Admin. Anciens favicon/icônes/manifest supprimés.
+- Paramètres > Son : musique avant sons d interface.
+- Utilisateur : ne plus lancer de tests inutiles sauf nécessité/demande.
