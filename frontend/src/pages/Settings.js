@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoAlbumsOutline, IoGridOutline, IoListOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { THEMES } from "@/lib/themes";
-import { getCover, setCover, fileToCover } from "@/lib/covers";
+import { getCover, setCover, fileToCover, registerAmbiences } from "@/lib/covers";
 import { SOUND_PACKS, packForTheme, playUiSound } from "@/lib/sound";
 import { INTROS } from "@/lib/intro";
 import BootIntro from "@/components/BootIntro";
@@ -15,7 +15,7 @@ import { CB_PAGES, CB_PAGE_LABELS, CB_DEFAULT_TIPS, CB_TARGETS, normalizeTip } f
 import {
   listAmbiences, createAmbience, updateAmbience, uploadAmbienceAudio, deleteAmbience, ambienceUrl,
   listCategories, createCategory, updateCategory, deleteCategory,
-  listSubscribers, deleteSubscriber, getSettings, updateSettings,
+  listSubscribers, deleteSubscriber, getSettings, updateSettings, api, API,
   uploadIntroVideo, deleteIntroVideo,
   listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations, emailStatus,
   getLibrary, cancelMembership, getMembershipPlan, pushTest,
@@ -46,6 +46,7 @@ const AMBIENCE_ICONS = ["🎵","🌙","🌧️","🔥","🌊","🍃","🎐","�
 function AmbienceManager() {
   const { isAdmin, ambienceId, selectAmbience, sfx } = useApp();
   const { data: list = [], refetch } = useQuery({ queryKey: ["ambiences"], queryFn: listAmbiences });
+  registerAmbiences(list);
   const { data: settings, refetch: refetchSettings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const [title, setTitle] = useState(""); const [emoji, setEmoji] = useState("🎵");
   const defaultId = settings?.default_ambience_id || "";
@@ -59,7 +60,7 @@ function AmbienceManager() {
   const add = async () => {
     if (!title.trim()) return toast.error("Titre requis");
     const a = await createAmbience({ title: title.trim(), emoji: emoji || "🎵", order: list.length });
-    if (newCover && a?.id) setCover(a.id, newCover);
+    if (newCover && a?.id) await setCover(a.id, newCover).catch(() => toast.error("Couverture non enregistrée"));
     toast.success("Ambiance créée — ajoute un fichier audio"); setTitle(""); setEmoji("🎵"); setNewCover(""); refetch();
     return a;
   };
@@ -67,7 +68,7 @@ function AmbienceManager() {
   const del = async (id) => { await deleteAmbience(id); if (ambienceId === id) selectAmbience(""); refetch(); };
   const [, setCovTick] = useState(0);
   useEffect(() => { const h = () => setCovTick((t) => t + 1); window.addEventListener("sx-covers", h); return () => window.removeEventListener("sx-covers", h); }, []);
-  const onCover = async (id, file) => { if (!file) return; try { const d = await fileToCover(file); setCover(id, d); toast.success("Couverture ajoutée ✓"); } catch { toast.error("Image invalide"); } };
+  const onCover = async (id, file) => { if (!file) return; try { const d = await fileToCover(file); await setCover(id, d); toast.success("Couverture enregistrée sur tous tes appareils ✓"); refetch(); } catch { toast.error("Image invalide ou envoi impossible"); } };
   const [newCover, setNewCover] = useState("");
   const onNewCover = async (file) => { if (!file) return; try { setNewCover(await fileToCover(file)); } catch { toast.error("Image invalide"); } };
 
@@ -105,7 +106,7 @@ function AmbienceManager() {
                     <IoImageOutline /><input type="file" accept="image/*" hidden onChange={(e) => onCover(a.id, e.target.files?.[0])} />
                   </label>
                   {getCover(a.id) && (
-                    <button onClick={() => { setCover(a.id, ""); toast.success("Couverture retirée"); }} className="text-xs" style={{ color: "var(--text-secondary)" }} title="Retirer la couverture">✕</button>
+                    <button onClick={async () => { try { await setCover(a.id, ""); toast.success("Couverture retirée"); refetch(); } catch { toast.error("Impossible de retirer la couverture"); } }} className="text-xs" style={{ color: "var(--text-secondary)" }} title="Retirer la couverture">✕</button>
                   )}
                   <button onClick={() => del(a.id)} className="text-xs" style={{ color: "var(--brand)" }} title="Supprimer la piste"><IoTrashOutline /></button>
                 </>
@@ -941,6 +942,12 @@ export default function Settings() {
           </div>
         </Section>
 
+        {isAdmin && (
+          <Section title="Identité du site" extra="— icône & description (Google, appli, liens partagés)">
+            <SiteIdentity />
+          </Section>
+        )}
+
         <Section title="Accessibilité" extra="— confort de lecture">
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Taille du texte</p>
           <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Agrandit tout le texte de l'application (descriptions, commentaires, chapitres…). Réglable séparément pour l'ordinateur et le mobile.</p>
@@ -1093,6 +1100,46 @@ function UiSoundPicker({ theme, soundPack, setPack }) {
           </button>
         );
       })}
+    </div>
+  );
+}
+
+function SiteIdentity() {
+  const { data: settings, refetch } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
+  const [v, setV] = useState(() => Date.now());
+  const [desc, setDesc] = useState("");
+  const [busy, setBusy] = useState(false);
+  useEffect(() => { if (settings) setDesc(settings.site_description || ""); }, [settings?.site_description]); // eslint-disable-line
+  const toPng = (file) => new Promise((res, rej) => {
+    const img = new Image(); img.onerror = rej;
+    img.onload = () => { const side = Math.min(img.width, img.height), c = document.createElement("canvas"); c.width = c.height = 512;
+      c.getContext("2d").drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, 512, 512); res(c.toDataURL("image/png")); };
+    img.src = URL.createObjectURL(file);
+  });
+  const putIcon = async (data) => { setBusy(true); try { await api.put("/site/icon", { data }); setV(Date.now()); toast.success(data ? "Nouvelle icône enregistrée" : "Icône Station Nexus rétablie"); } catch { toast.error("Image invalide ou trop lourde"); } setBusy(false); };
+  const onIcon = async (file) => { if (!file) return; try { await putIcon(await toPng(file)); } catch { toast.error("Image invalide"); } };
+  const saveDesc = async () => { await updateSettings({ ...settings, site_description: desc.trim() }); toast.success("Description enregistrée"); refetch(); };
+  const fs = { borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "var(--bg-secondary)", color: "var(--text-primary)" };
+  return (
+    <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex items-center gap-4">
+        <img src={`${API}/site/icon?size=128&v=${v}`} alt="Icône du site" data-testid="site-icon-preview" className="w-20 h-20 object-cover" style={{ borderRadius: 18, border: "1px solid var(--border-c)" }} />
+        <div className="flex flex-col gap-2">
+          <label className="text-sm px-3 py-2 border cursor-pointer text-center" style={fs} data-testid="site-icon-upload-label">
+            {busy ? "Envoi…" : "Changer l'icône"}
+            <input type="file" accept="image/*" hidden data-testid="site-icon-input" onChange={(e) => onIcon(e.target.files?.[0])} />
+          </label>
+          <button type="button" className="text-xs" style={{ color: "var(--text-secondary)" }} data-testid="site-icon-reset" onClick={() => putIcon("")}>Rétablir l'icône par défaut</button>
+        </div>
+      </div>
+      <div className="flex-1">
+        <textarea data-testid="site-description-input" value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} maxLength={300}
+          className="w-full px-4 py-3 border outline-none text-sm" style={fs} placeholder="Description affichée sur Google et dans les aperçus de lien" />
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-xs" style={{ color: "var(--text-secondary)" }}>{desc.length}/300 · idéal : 120 à 160 caractères</span>
+          <button type="button" data-testid="site-description-save" onClick={saveDesc} className="text-sm px-4 py-2" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Enregistrer</button>
+        </div>
+      </div>
     </div>
   );
 }

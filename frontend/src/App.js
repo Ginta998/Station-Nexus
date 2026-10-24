@@ -25,6 +25,7 @@ import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
 import CyberOverlay from "@/components/CyberOverlay";
 import CosmicBackground from "@/components/CosmicBackground";
+import SiteMeta from "@/components/SiteMeta";
 import GuidedTour from "@/components/GuidedTour";
 import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
 import { INTROS } from "@/lib/intro";
@@ -101,6 +102,7 @@ function App() {
         <ChatProvider>
         <BrowserRouter>
           <CosmicBackground />
+          <SiteMeta />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/oeuvre/:id" element={<Detail />} />

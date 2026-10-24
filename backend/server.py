@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks, Header, Depends, Request
-from fastapi.responses import Response, RedirectResponse
+from fastapi.responses import Response, RedirectResponse, JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -256,6 +256,8 @@ class Ambience(BaseModel):
     title: str
     emoji: Optional[str] = "🎵"
     order: int = 0
+    has_cover: bool = False
+    cover_v: str = ""
     created_at: str = Field(default_factory=now_iso)
 
 
@@ -315,7 +317,11 @@ class AnnouncementInput(BaseModel):
     notify_email: bool = False
 
 
+DEFAULT_SITE_DESCRIPTION = "Station Nexus — la station cosmique de Brichel Louzala : films, séries et livres originaux à explorer, écouter et lire."
+
+
 class SiteSettings(BaseModel):
+    site_description: str = DEFAULT_SITE_DESCRIPTION
     name: str = "Brichel Louzala"
     bio: str = "Créateur d'histoires, d'univers et d'émotions. Bienvenue dans ma station."
     avatar: Optional[str] = ""
@@ -907,11 +913,97 @@ async def delete_comment(cid: str):
     return {"ok": True}
 
 
+# ---------------- Identité du site : icône + manifeste ----------------
+DEFAULT_ICON_PATH = ROOT_DIR / "assets" / "default_icon.png"
+_ICON_CACHE: Dict[str, bytes] = {}
+
+
+async def _site_icon_source() -> bytes:
+    doc = await db.site_assets.find_one({"key": "icon"}, {"_id": 0})
+    if doc and doc.get("data", "").startswith("data:"):
+        return base64.b64decode(doc["data"].split(",", 1)[1])
+    return DEFAULT_ICON_PATH.read_bytes()
+
+
+@api_router.get("/site/icon")
+async def get_site_icon(size: int = 192, v: str = ""):
+    from PIL import Image
+    size = max(16, min(size, 1024))
+    doc = await db.site_assets.find_one({"key": "icon"}, {"_id": 0, "v": 1})
+    key = f"{(doc or {}).get('v', 'default')}:{size}"
+    if key not in _ICON_CACHE:
+        img = Image.open(io.BytesIO(await _site_icon_source())).convert("RGB")
+        side = min(img.size)
+        img = img.crop(((img.width - side) // 2, (img.height - side) // 2, (img.width + side) // 2, (img.height + side) // 2))
+        img = img.resize((size, size), Image.LANCZOS)
+        buf = io.BytesIO(); img.save(buf, "PNG", optimize=True)
+        if len(_ICON_CACHE) > 40:
+            _ICON_CACHE.clear()
+        _ICON_CACHE[key] = buf.getvalue()
+    return Response(content=_ICON_CACHE[key], media_type="image/png", headers={"Cache-Control": "public, max-age=3600"})
+
+
+class IconInput(BaseModel):
+    data: str = ""  # data URI ; vide = icône par défaut
+
+
+@api_router.put("/site/icon")
+async def set_site_icon(payload: IconInput):
+    if payload.data and (not payload.data.startswith("data:image/") or len(payload.data) > 4_000_000):
+        raise HTTPException(400, "Image invalide ou trop lourde (max ~3 Mo)")
+    if payload.data:
+        await db.site_assets.update_one({"key": "icon"}, {"$set": {"key": "icon", "data": payload.data, "v": now_iso()}}, upsert=True)
+    else:
+        await db.site_assets.delete_one({"key": "icon"})
+    _ICON_CACHE.clear()
+    return {"ok": True}
+
+
+@api_router.get("/site/manifest.json")
+async def site_manifest():
+    s = await db.settings.find_one({"key": "site"}, {"_id": 0, "site_description": 1}) or {}
+    doc = await db.site_assets.find_one({"key": "icon"}, {"_id": 0, "v": 1}) or {}
+    v = doc.get("v", "default")
+    return JSONResponse({
+        "name": "Station Nexus", "short_name": "Station Nexus",
+        "description": s.get("site_description") or DEFAULT_SITE_DESCRIPTION,
+        "start_url": "/", "display": "standalone", "orientation": "any",
+        "background_color": "#04060d", "theme_color": "#04060d",
+        "icons": [
+            {"src": f"/api/site/icon?size=192&v={v}", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+            {"src": f"/api/site/icon?size=512&v={v}", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+            {"src": f"/api/site/icon?size=512&v={v}", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+        ],
+    }, headers={"Cache-Control": "no-cache"})
+
+
 # ---------------- Ambiences (app music) ----------------
 @api_router.get("/ambiences", response_model=List[Ambience])
 async def list_ambiences():
-    docs = await db.ambiences.find({}, {"_id": 0}).sort("order", 1).to_list(200)
+    docs = await db.ambiences.find({}, {"_id": 0, "cover": 0}).sort("order", 1).to_list(200)
     return [Ambience(**d) for d in docs]
+
+
+class CoverInput(BaseModel):
+    cover: str = ""  # data URI (vide = retirer)
+
+
+@api_router.put("/ambiences/{aid}/cover")
+async def set_ambience_cover(aid: str, payload: CoverInput):
+    if not await db.ambiences.find_one({"id": aid}):
+        raise HTTPException(404, "Ambiance introuvable")
+    if payload.cover and (not payload.cover.startswith("data:image/") or len(payload.cover) > 1_500_000):
+        raise HTTPException(400, "Image invalide ou trop lourde")
+    await db.ambiences.update_one({"id": aid}, {"$set": {"cover": payload.cover, "has_cover": bool(payload.cover), "cover_v": now_iso()}})
+    return {"ok": True}
+
+
+@api_router.get("/ambiences/{aid}/cover")
+async def get_ambience_cover(aid: str):
+    doc = await db.ambiences.find_one({"id": aid}, {"_id": 0, "cover": 1})
+    if not doc:
+        raise HTTPException(404, "Ambiance introuvable")
+    return _serve_image(doc.get("cover"))
 
 
 @api_router.post("/ambiences", response_model=Ambience, status_code=201)
@@ -926,7 +1018,7 @@ async def update_ambience(aid: str, payload: AmbienceInput):
     if not await db.ambiences.find_one({"id": aid}):
         raise HTTPException(404, "Ambiance introuvable")
     await db.ambiences.update_one({"id": aid}, {"$set": payload.model_dump()})
-    doc = await db.ambiences.find_one({"id": aid}, {"_id": 0})
+    doc = await db.ambiences.find_one({"id": aid}, {"_id": 0, "cover": 0})
     return Ambience(**doc)
 
 

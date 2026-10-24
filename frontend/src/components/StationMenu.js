@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { listAnnouncements, listAmbiences } from "@/lib/api";
-import { getCover } from "@/lib/covers";
+import { getCover, registerAmbiences } from "@/lib/covers";
 
 const btn = { borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" };
 
@@ -28,6 +28,7 @@ export function SoundBtn({ btn: bstyle = btn }) {
   const [, setTick] = useState(0);
   useEffect(() => { const h = () => setTick((t) => t + 1); window.addEventListener("sx-covers", h); return () => window.removeEventListener("sx-covers", h); }, []);
   const { data: ambiences = [] } = useQuery({ queryKey: ["ambiences"], queryFn: listAmbiences });
+  registerAmbiences(ambiences);
   const playing = appPlaying && !muted;
   const current = ambiences.find((a) => a.id === ambienceId);
   const pick = (id) => { if (muted) toggleMute(); selectAmbience(id); sfx("select"); setOpen(false); };

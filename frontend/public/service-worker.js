@@ -1,5 +1,5 @@
-const CACHE = "stationexus-v6";
-const ASSETS = ["/manifest.json"];
+const CACHE = "stationexus-v7";
+const ASSETS = [];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).catch(() => {}));
@@ -104,13 +104,13 @@ self.addEventListener("message", (event) => {
 self.addEventListener("push", (event) => {
   let data = {};
   try { data = event.data ? event.data.json() : {}; } catch (_) { data = { body: event.data ? event.data.text() : "" }; }
-  const title = data.title || "Stationexus";
+  const title = data.title || "Station Nexus";
   const options = {
     body: data.body || "",
     tag: data.tag || "stationexus",
     renotify: true,
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
+    icon: "/api/site/icon?size=192",
+    badge: "/api/site/icon?size=96",
     data: { url: data.url || "/salon" },
   };
   event.waitUntil((async () => {
