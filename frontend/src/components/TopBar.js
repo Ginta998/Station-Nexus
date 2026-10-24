@@ -35,11 +35,11 @@ export default function TopBar({ onAdd, onProfile }) {
 
   return (
     <header className="sx-header relative z-20 flex items-center justify-between px-5 md:px-12 pt-6 md:pt-8">
-      <button data-testid="logo-home" onClick={() => { sfx("select"); nav("/"); }} className="flex items-baseline gap-1.5 outline-none">
-        <span className="font-display text-lg md:text-3xl" style={{ color: "var(--on-media)", textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
+      <button data-testid="logo-home" onClick={() => { sfx("select"); nav("/"); }} className="sx-logo flex items-center gap-3 outline-none" aria-label="Station Nexus — accueil">
+        <NexusEmblem />
+        <span className="hidden md:inline font-display text-2xl" style={{ color: "var(--on-media)", textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>
           STATION <span style={{ color: "var(--brand)" }}>NEXUS</span>
         </span>
-        <span className="font-display text-sm md:text-lg" style={{ color: "var(--brand)", opacity: 0.7 }}>天</span>
       </button>
 
       <div className="flex items-center gap-2 md:gap-3">
@@ -65,5 +65,22 @@ export default function TopBar({ onAdd, onProfile }) {
         <StationMenu onAdd={onAdd} onProfile={onProfile} />
       </div>
     </header>
+  );
+}
+
+// emblème : anneaux qui tournent autour du kanji 天
+function NexusEmblem() {
+  return (
+    <span className="sx-emblem" data-testid="logo-emblem" aria-hidden="true">
+      <svg viewBox="0 0 64 64" className="em-ring em-r1">
+        <circle cx="32" cy="32" r="29" fill="none" stroke="var(--brand)" strokeWidth="1.4" strokeDasharray="14 4 2 4" strokeLinecap="round" />
+        {[0, 90, 180, 270].map((a) => <rect key={a} x="31" y="0.5" width="2" height="5" rx="1" fill="var(--brand)" transform={`rotate(${a} 32 32)`} />)}
+      </svg>
+      <svg viewBox="0 0 64 64" className="em-ring em-r2">
+        <circle cx="32" cy="32" r="23" fill="none" stroke="var(--on-media)" strokeOpacity=".45" strokeWidth="0.8" strokeDasharray="1 3" />
+        <circle cx="32" cy="9" r="1.8" fill="var(--brand-2, var(--brand))" />
+      </svg>
+      <span className="em-kj font-display">天</span>
+    </span>
   );
 }

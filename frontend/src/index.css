@@ -1067,7 +1067,7 @@ html[data-motion="reduced"] .cosmic-bg .comets{display:none}
    GRAIN PAPIER GLOBAL · ÉGALISEUR · MENU SON · SÉLECTEUR THÈMES · CYBER
    ====================================================================== */
 /* grain illustré (pellicule) sur toute l'interface */
-body::after{content:"";position:fixed;inset:0;z-index:9000;pointer-events:none;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px}
+body::after{content:"";position:fixed;inset:0;z-index:9000;pointer-events:none;opacity:.11;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px}
 html[data-motion="reduced"] body::after{opacity:.035}
 
 /* égaliseur du bouton son */
@@ -1328,7 +1328,7 @@ html[data-theme="olympia"] .sx-exp .pcap .pcat,html[data-theme="bunny"] .sx-exp 
 
 /* ===== Téléphone : fluidité du scroll + rien qui déborde ===== */
 @media (max-width:768px), (pointer:coarse){
-  body::after{display:none}
+  body::after{mix-blend-mode:normal;opacity:.075;transform:translateZ(0)}
   .cosmic-bg .cb-nebula{mix-blend-mode:normal;animation:none;filter:blur(40px)}
   .cosmic-bg .fx-neb b{animation:none}
   .cosmic-bg .fx-aurora,.cosmic-bg .sgeye .iris .fib,.cosmic-bg .s-glacier .aur{mix-blend-mode:normal}
@@ -1352,3 +1352,14 @@ html[data-theme="olympia"] .sx-exp .pcap .pcat,html[data-theme="bunny"] .sx-exp 
   .sx-exp .art{box-shadow:none!important;outline:none}
   .sx-exp .art .fxl{display:none}
 }
+/* logo : emblème à anneaux */
+.sx-emblem{position:relative;display:inline-grid;place-items:center;width:46px;height:46px;flex-shrink:0;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--brand) 45%,transparent))}
+.sx-emblem .em-ring{position:absolute;inset:0;width:100%;height:100%}
+.sx-emblem .em-r1{animation:emSpin 14s linear infinite}
+.sx-emblem .em-r2{animation:emSpin 9s linear infinite reverse}
+.sx-emblem .em-kj{position:relative;font-size:20px;line-height:1;color:var(--on-media);text-shadow:0 0 12px var(--brand)}
+.sx-logo:hover .sx-emblem .em-r1{animation-duration:4s}
+.sx-logo:active .sx-emblem{transform:scale(.92)}
+@keyframes emSpin{to{transform:rotate(360deg)}}
+@media(min-width:768px){.sx-emblem{width:54px;height:54px}.sx-emblem .em-kj{font-size:23px}}
+html[data-motion="reduced"] .sx-emblem .em-ring{animation:none}

@@ -41,3 +41,29 @@ def test_put_empty_featured_ids(original):
     r = requests.put(f"{BASE_URL}/api/settings", json=payload, timeout=20)
     assert r.status_code == 200
     assert requests.get(f"{BASE_URL}/api/settings", timeout=20).json()["featured_ids"] == []
+
+
+# Poster thumbnail (?w=360) vs original
+def _first_creation_with_poster():
+    cs = requests.get(f"{BASE_URL}/api/creations", timeout=30).json()
+    for c in cs:
+        r = requests.get(f"{BASE_URL}/api/creations/{c['id']}/poster", timeout=30)
+        if r.status_code == 200 and len(r.content) > 50000:
+            return c["id"], r
+    pytest.skip("no creation with big poster")
+
+
+def test_poster_thumb_smaller():
+    cid, full = _first_creation_with_poster()
+    t = requests.get(f"{BASE_URL}/api/creations/{cid}/poster?w=360", timeout=30)
+    assert t.status_code == 200
+    assert t.headers["content-type"].startswith("image/jpeg")
+    assert len(t.content) < len(full.content) / 2, (len(t.content), len(full.content))
+    from PIL import Image
+    import io
+    assert Image.open(io.BytesIO(t.content)).size[0] <= 360
+
+
+def test_poster_404():
+    r = requests.get(f"{BASE_URL}/api/creations/TEST_nope/poster?w=360", timeout=20)
+    assert r.status_code == 404
