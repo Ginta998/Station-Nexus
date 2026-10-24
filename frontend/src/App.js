@@ -1,6 +1,6 @@
 import "@/App.css";
 import { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AppProvider } from "@/context/AppContext";
@@ -11,7 +11,9 @@ import Detail from "@/pages/Detail";
 import Settings from "@/pages/Settings";
 import Contact from "@/pages/Contact";
 import Members from "@/pages/Members";
-import Novelties from "@/pages/Novelties";
+import Journal from "@/pages/Journal";
+import JournalEntry from "@/pages/JournalEntry";
+import JournalEditor from "@/pages/JournalEditor";
 import Planning from "@/pages/Planning";
 import Tutorial from "@/pages/Tutorial";
 import Library from "@/pages/Library";
@@ -109,7 +111,11 @@ function App() {
             <Route path="/parametres" element={<Settings />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/membres" element={<Members />} />
-            <Route path="/nouveautes" element={<Novelties />} />
+            <Route path="/nouveautes" element={<Navigate to="/journal" replace />} />
+            <Route path="/journal" element={<Journal />} />
+            <Route path="/journal/nouveau" element={<JournalEditor />} />
+            <Route path="/journal/:id" element={<JournalEntry />} />
+            <Route path="/journal/:id/modifier" element={<JournalEditor />} />
             <Route path="/planning" element={<Planning />} />
             <Route path="/soutien" element={<SupportPage />} />
             <Route path="/a-propos" element={<About />} />

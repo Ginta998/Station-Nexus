@@ -332,9 +332,7 @@ function WelcomeMessagesManager() {
 }
 
 function AccountManager() {
-  const { user, openAuth, logout, claimAdmin } = useAuth();
-  const [pin, setPin] = useState("");
-  const [busy, setBusy] = useState(false);
+  const { user, openAuth, logout } = useAuth();
   const bx = { borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)" };
 
   if (!user) {
@@ -350,14 +348,6 @@ function AccountManager() {
     );
   }
 
-  const claim = async () => {
-    if (!pin) return;
-    setBusy(true);
-    try { await claimAdmin(pin); toast.success("Ce compte est maintenant administrateur ✓"); setPin(""); }
-    catch (e) { toast.error(e?.response?.data?.detail || "Code PIN incorrect"); }
-    finally { setBusy(false); }
-  };
-
   return (
     <div data-testid="account-manager">
       <div className="flex items-center gap-3 mb-4">
@@ -368,13 +358,6 @@ function AccountManager() {
           <p className="text-xs truncate" style={{ color: "var(--text-secondary)" }}>{user.email}{user.is_admin ? " · Administrateur ✓" : ""}</p>
         </div>
       </div>
-
-      {!user.is_admin && (
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <input data-testid="account-pin" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="Code PIN admin" className="px-3 py-2 border text-sm outline-none" style={bx} />
-          <button data-testid="account-claim-admin" onClick={claim} disabled={busy} className="px-4 py-2 border text-sm" style={bx}>Lier l'admin à ce compte</button>
-        </div>
-      )}
 
       <button data-testid="account-logout" onClick={logout} className="px-5 py-2 border text-sm" style={bx}>Se déconnecter</button>
     </div>
@@ -856,17 +839,14 @@ function TourTextsManager({ settings, refetch }) {
 
 export default function Settings() {
   const nav = useNavigate();
-  const { theme, setTheme, isAdmin, unlock, lock, changePin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, sfx,
+  const { theme, setTheme, isAdmin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, sfx,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
     posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor, layout, setLayout } = useApp();
-  const [pin, setPin] = useState(""); const [newPin, setNewPin] = useState("");
   const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const defTheme = siteSettings?.default_theme || "abysse";
   const setDefaultTheme = async (k) => { await updateSettings({ ...siteSettings, default_theme: k }); toast.success("Thème par défaut défini"); refetchSite(); };
   const setDefaultPoster = async (phone, v) => { await updateSettings({ ...siteSettings, [phone ? "default_poster_mobile" : "default_poster_desktop"]: v }); toast.success("Taille d'affiche par défaut mise à jour ✓"); refetchSite(); };
 
-  const tryUnlock = () => { if (unlock(pin)) { toast.success("Mode création déverrouillé"); setPin(""); } else toast.error("PIN incorrect"); };
-  const savePin = () => { if (!/^\d{4,6}$/.test(newPin)) return toast.error("PIN : 4 à 6 chiffres"); changePin(newPin); toast.success("PIN mis à jour"); setNewPin(""); };
 
 
 
@@ -1006,29 +986,6 @@ export default function Settings() {
           <NotificationsManager />
         </Section>
 
-        <Section title="Mode création">
-          {isAdmin ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm" style={{ color: "var(--brand)" }}><IoLockOpen /> Déverrouillé — ajout, édition, suppression.</div>
-              <button data-testid="lock-btn" onClick={() => { lock(); toast.success("Verrouillé"); }} className="px-5 py-2.5 border font-medium" style={fs}>Verrouiller</button>
-              <div className="pt-4 border-t" style={{ borderColor: "var(--border-c)" }}>
-                <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Changer le PIN (4 à 6 chiffres)</p>
-                <div className="flex gap-2">
-                  <input data-testid="new-pin-input" value={newPin} onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))} maxLength={6} inputMode="numeric" placeholder="Nouveau PIN" className="px-4 py-2.5 border outline-none" style={fs} />
-                  <button data-testid="save-pin-btn" onClick={savePin} className="px-5 py-2.5 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Enregistrer</button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Entre ton PIN pour débloquer la création (défaut : 1234).</p>
-              <div className="flex gap-2">
-                <input data-testid="pin-input" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} maxLength={6} inputMode="numeric" type="password" onKeyDown={(e) => e.key === "Enter" && tryUnlock()} placeholder="PIN" className="px-4 py-2.5 border outline-none" style={fs} />
-                <button data-testid="unlock-btn" onClick={tryUnlock} className="px-5 py-2.5 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Déverrouiller</button>
-              </div>
-            </div>
-          )}
-        </Section>
 
         </>)}
 

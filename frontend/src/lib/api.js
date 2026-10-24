@@ -163,3 +163,17 @@ export const pushSubscribe = (subscription, pref) => api.post("/push/subscribe",
 export const pushPref = (pref) => api.post("/push/pref", { pref }).then((r) => r.data);
 export const pushUnsubscribe = (endpoint) => api.post("/push/unsubscribe", endpoint ? { endpoint } : {}).then((r) => r.data);
 export const pushTest = () => api.post("/push/test").then((r) => r.data);
+
+// journal de bord
+export const listJournal = (params = {}) => api.get("/journal", { params }).then((r) => r.data);
+export const getJournalEntry = (id) => api.get(`/journal/${id}`).then((r) => r.data);
+export const createJournalEntry = (p) => api.post("/journal", p).then((r) => r.data);
+export const updateJournalEntry = (id, p) => api.put(`/journal/${id}`, p).then((r) => r.data);
+export const deleteJournalEntry = (id) => api.delete(`/journal/${id}`).then((r) => r.data);
+export const listJournalCategories = () => api.get("/journal/categories").then((r) => r.data);
+export const createJournalCategory = (p) => api.post("/journal/categories", p).then((r) => r.data);
+export const updateJournalCategory = (id, p) => api.put(`/journal/categories/${id}`, p).then((r) => r.data);
+export const deleteJournalCategory = (id) => api.delete(`/journal/categories/${id}`).then((r) => r.data);
+export const uploadJournalImage = (file) => { const fd = new FormData(); fd.append("file", file); return api.post("/journal-files", fd, { timeout: 120000 }).then((r) => r.data); };
+// les URLs d'images du journal sont relatives (/api/...) : on les rend absolues
+export const mediaUrl = (u) => (u && u.startsWith("/api/") ? `${BACKEND_URL}${u}` : u || "");

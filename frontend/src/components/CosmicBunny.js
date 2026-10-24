@@ -78,7 +78,7 @@ export const CB_TARGETS = [
   { v: "/bibliotheque", label: "Ma bibliothèque" },
   { v: "/a-propos", label: "À propos" },
   { v: "/membres", label: "Membres" },
-  { v: "/nouveautes", label: "Nouveautés" },
+  { v: "/journal", label: "Journal de bord" },
   { v: "/contact", label: "Contact" },
   { v: "/tutoriel", label: "Comment ça marche" },
   { v: "/parametres", label: "Paramètres" },
@@ -92,7 +92,7 @@ function pathToKey(pathname) {
   if (pathname.startsWith("/oeuvre/")) return "detail";
   if (pathname.startsWith("/parametres")) return "settings";
   if (pathname.startsWith("/membres")) return "members";
-  if (pathname.startsWith("/nouveautes")) return "novelties";
+  if (pathname.startsWith("/nouveautes") || pathname.startsWith("/journal")) return "novelties";
   if (pathname.startsWith("/planning")) return "planning";
   if (pathname.startsWith("/contact")) return "contact";
   if (pathname.startsWith("/tutoriel")) return "tutorial";

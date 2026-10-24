@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoPlay, IoSearch, IoCreateOutline, IoTrashOutline, IoStar, IoStarOutline, IoArrowForward, IoColorPaletteOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { listCreations, listCategories, deleteCreation, getMembershipPlan, getSettings, updateSettings, posterUrl, bgUrl, listAnnouncements } from "@/lib/api";
+import { listCreations, listCategories, deleteCreation, getMembershipPlan, getSettings, updateSettings, posterUrl, bgUrl, listAnnouncements, listJournal, listJournalCategories, mediaUrl } from "@/lib/api";
+import { fmtDate as fmtJournalDate } from "@/components/journal/JournalParts";
 import { THEMES } from "@/lib/themes";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -44,9 +45,9 @@ function fmtDate(v) {
 }
 
 const JOURNAL_SECTIONS = [
-  { tag: "NOUVEAUTÉS", title: "Les dernières sorties", sub: "ACTUALITÉS · STATION", route: "/nouveautes", c1: "#2b3a60", c2: "#0a1020" },
+  { tag: "NOUVEAUTÉS", title: "Les dernières sorties", sub: "ACTUALITÉS · STATION", route: "/journal", c1: "#2b3a60", c2: "#0a1020" },
   { tag: "PLANNING", title: "Prochaines sorties", sub: "AGENDA · DIMANCHE 20H", route: "/planning", c1: "#4a2367", c2: "#140a22" },
-  { tag: "COULISSES", title: "Dans l'atelier", sub: "MAKING-OF · CARNET", route: "/nouveautes", c1: "#5a1e12", c2: "#1a0805" },
+  { tag: "COULISSES", title: "Dans l'atelier", sub: "MAKING-OF · CARNET", route: "/journal", c1: "#5a1e12", c2: "#1a0805" },
   { tag: "LA STATION", title: "À propos", sub: "MANIFESTE · BRICHEL", route: "/a-propos", c1: "#1f3a4a", c2: "#0a141a" },
 ];
 
@@ -96,6 +97,8 @@ export default function Home() {
   const { data: memberPlan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
   const { data: settings, refetch: refetchSettings } = useQuery({ queryKey: ["site-settings"], queryFn: getSettings });
   const { data: announcements = [] } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
+  const { data: homeJournal = [] } = useQuery({ queryKey: ["journal", "home"], queryFn: () => listJournal({ home: 1, limit: 4 }).then((l) => l.filter((e) => e.published)) });
+  const { data: journalCats = [] } = useQuery({ queryKey: ["journal-cats"], queryFn: listJournalCategories });
 
   const [view, setView] = useState("rails");      // rails | map | arcade
   const [query, setQuery] = useState("");
@@ -478,9 +481,17 @@ export default function Home() {
 
         {/* ---------- JOURNAL DE BORD ---------- */}
         <section className="sx-journal">
-          <div className="seclabel"><div className="lt"><h2>Journal de bord</h2><span className="kj">録</span></div><span className="all mono" onClick={() => { sfx("nav"); nav("/nouveautes"); }}>TOUT VOIR →</span></div>
-          <div className="bts">
-            {JOURNAL_SECTIONS.map((s) => (
+          <div className="seclabel"><div className="lt"><h2>Journal de bord</h2><span className="kj">録</span></div><span className="all mono" data-testid="home-journal-all" onClick={() => { sfx("nav"); nav("/journal"); }}>TOUT VOIR →</span></div>
+          <div className="bts" data-testid="home-journal">
+            {homeJournal.length ? homeJournal.map((e) => {
+              const c = journalCats.find((k) => k.id === e.category_id);
+              return (
+                <article key={e.id} className="btc" data-testid={`home-journal-${e.id}`} onClick={() => { sfx("select"); nav(`/journal/${e.id}`); }}>
+                  <div className={"bv" + (e.cover ? " bimg" : "")} style={e.cover ? { backgroundImage: `url(${mediaUrl(e.cover)})`, backgroundSize: "cover", backgroundPosition: "center" } : { "--c1": c?.color || "#2b3a60", "--c2": "#0a1020" }}><span className="tag">{(c?.name || "JOURNAL").toUpperCase()}</span></div>
+                  <div className="bi"><div className="bt">{e.title}</div><div className="bs">{fmtJournalDate(e.date).toUpperCase()}</div></div>
+                </article>
+              );
+            }) : JOURNAL_SECTIONS.map((s) => (
               <article key={s.title} className="btc" onClick={() => { sfx("select"); nav(s.route); }}>
                 <div className="bv" style={{ "--c1": s.c1, "--c2": s.c2 }}><span className="tag">{s.tag}</span></div>
                 <div className="bi"><div className="bt">{s.title}</div><div className="bs">{s.sub}</div></div>

@@ -1,4 +1,5 @@
 import { THEMES } from "@/lib/themes";
+import { useAuth } from "@/context/AuthContext";
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { audioUrl, ambienceUrl, readingAudioUrl, getSettings, upsertProfile } from "@/lib/api";
 import { configureSound, playUiSound, primeAudioCtx, isValidPack } from "@/lib/sound";
@@ -12,7 +13,6 @@ const LS = {
   accent: "sx_accent", radius: "sx_radius", posterSize: "sx_postersize", motion: "sx_motion", cardTagline: "sx_cardtagline", textScale: "sx_textscale", layout: "sx_layout",
   rFont: "sx_reader_font", rSize: "sx_reader_size", rLine: "sx_reader_line", rWidth: "sx_reader_width", rDrop: "sx_reader_dropcap",
 };
-const DEFAULT_PIN = "1234";
 
 // Dev local : accès admin + profil créateur automatiques sur localhost / réseau local
 // (désactivé en production : un domaine public ne matche pas).
@@ -42,7 +42,10 @@ export function AppProvider({ children }) {
   const rawTheme = localStorage.getItem(LS.theme);
   const storedTheme = THEMES.some((t) => t.key === rawTheme) ? rawTheme : null;
   const [theme, setThemeState] = useState(() => storedTheme || "abysse");
-  const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem(LS.admin) === "1" || DEV_LOCAL);
+  // admin = uniquement le compte administrateur connecté
+  const { user: authUser } = useAuth();
+  const isAdmin = !!authUser?.is_admin || DEV_LOCAL;
+  useEffect(() => { localStorage.removeItem(LS.admin); }, []);
   const [musicVolume, setMusicVolumeState] = useState(() => {
     const v = parseFloat(localStorage.getItem(LS.music) ?? localStorage.getItem("sx_volume")); return Number.isFinite(v) ? v : 0.2;
   });
@@ -166,7 +169,7 @@ export function AppProvider({ children }) {
   if (!cardAudio.current && typeof Audio !== "undefined") { cardAudio.current = new Audio(); cardAudio.current.loop = true; }
   if (!appAudio.current && typeof Audio !== "undefined") { appAudio.current = new Audio(); appAudio.current.loop = true; }
 
-  useEffect(() => { if (!localStorage.getItem(LS.pin)) localStorage.setItem(LS.pin, DEFAULT_PIN); }, []);
+  useEffect(() => { localStorage.removeItem(LS.pin); }, []);
   useEffect(() => { document.documentElement.setAttribute("data-theme", theme); }, [theme]);
   // non-looping reading tracks (music cues) reset the UI when they finish
   useEffect(() => {
@@ -283,14 +286,6 @@ export function AppProvider({ children }) {
   const setReaderWidth = (v) => { setReaderWidthState(v); localStorage.setItem(LS.rWidth, v); };
   const setReaderDropcap = (v) => { setReaderDropcapState(v); localStorage.setItem(LS.rDrop, v ? "1" : "0"); };
 
-  const unlock = (pin) => {
-    if (pin === (localStorage.getItem(LS.pin) || DEFAULT_PIN)) {
-      setIsAdmin(true); localStorage.setItem(LS.admin, "1"); return true;
-    } return false;
-  };
-  useEffect(() => { const on = () => setIsAdmin(true); window.addEventListener("sx-admin-on", on); return () => window.removeEventListener("sx-admin-on", on); }, []);
-  const lock = () => { setIsAdmin(false); localStorage.removeItem(LS.admin); };
-  const changePin = (p) => { localStorage.setItem(LS.pin, p); return true; };
 
   const sfx = useCallback((event) => { if (!muted) playUiSound(event); }, [muted]);
 
@@ -428,7 +423,7 @@ export function AppProvider({ children }) {
   }, [playAmbient, startAppAmbience]);
 
   const value = {
-    theme, setTheme, isAdmin, unlock, lock, changePin,
+    theme, setTheme, isAdmin,
     musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying,

@@ -92,6 +92,14 @@ def now_iso():
     return datetime.now(timezone.utc).isoformat()
 
 
+async def require_admin(authorization: Optional[str] = Header(None)):
+    """Toute modification d'administration exige le compte admin connecté."""
+    user = await get_current_user(authorization)
+    if not user.get("is_admin"):
+        raise HTTPException(403, "Réservé à l'administrateur")
+    return user
+
+
 # ---------------- Models ----------------
 class Episode(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -634,14 +642,14 @@ async def get_creation_bg(cid: str):
 
 
 @api_router.post("/creations", response_model=Creation, status_code=201)
-async def create_creation(payload: CreationInput):
+async def create_creation(payload: CreationInput, _admin=Depends(require_admin)):
     obj = Creation(**payload.model_dump())
     await db.creations.insert_one(obj.model_dump())
     return obj
 
 
 @api_router.put("/creations/{cid}", response_model=Creation)
-async def update_creation(cid: str, payload: CreationInput):
+async def update_creation(cid: str, payload: CreationInput, _admin=Depends(require_admin)):
     if not await db.creations.find_one({"id": cid}):
         raise HTTPException(404, "Création introuvable")
     data = payload.model_dump()
@@ -652,7 +660,7 @@ async def update_creation(cid: str, payload: CreationInput):
 
 
 @api_router.delete("/creations/{cid}")
-async def delete_creation(cid: str):
+async def delete_creation(cid: str, _admin=Depends(require_admin)):
     res = await db.creations.delete_one({"id": cid})
     if res.deleted_count == 0:
         raise HTTPException(404, "Création introuvable")
@@ -666,7 +674,7 @@ async def delete_creation(cid: str):
 
 
 @api_router.post("/creations/{cid}/audio")
-async def upload_audio(cid: str, file: UploadFile = File(...)):
+async def upload_audio(cid: str, file: UploadFile = File(..., _admin=Depends(require_admin))):
     if not await db.creations.find_one({"id": cid}):
         raise HTTPException(404, "Création introuvable")
     data = await file.read()
@@ -688,14 +696,14 @@ async def stream_audio(cid: str):
 
 
 @api_router.delete("/creations/{cid}/audio")
-async def delete_audio(cid: str):
+async def delete_audio(cid: str, _admin=Depends(require_admin)):
     await db.media.delete_many({"creation_id": cid})
     await db.creations.update_one({"id": cid}, {"$set": {"has_audio": False}})
     return {"ok": True}
 
 
 @api_router.post("/creations/{cid}/video")
-async def upload_video(cid: str, kind: str = Form("film"), file: UploadFile = File(...)):
+async def upload_video(cid: str, kind: str = Form("film", _admin=Depends(require_admin)), file: UploadFile = File(...)):
     if kind not in ("film", "trailer"):
         raise HTTPException(400, "Type de vidéo invalide")
     if not await db.creations.find_one({"id": cid}):
@@ -736,7 +744,7 @@ async def stream_video(cid: str, request: Request, kind: str = "film"):
 
 
 @api_router.delete("/creations/{cid}/video")
-async def delete_video(cid: str, kind: str = "film"):
+async def delete_video(cid: str, kind: str = "film", _admin=Depends(require_admin)):
     await db.film_media.delete_many({"creation_id": cid, "kind": kind})
     field = "has_film" if kind == "film" else "has_trailer"
     await db.creations.update_one({"id": cid}, {"$set": {field: False}})
@@ -744,7 +752,7 @@ async def delete_video(cid: str, kind: str = "film"):
 
 
 @api_router.post("/creations/{cid}/reading-audio")
-async def upload_reading_audio(cid: str, file: UploadFile = File(...)):
+async def upload_reading_audio(cid: str, file: UploadFile = File(..., _admin=Depends(require_admin))):
     if not await db.creations.find_one({"id": cid}):
         raise HTTPException(404, "Création introuvable")
     data = await file.read()
@@ -766,7 +774,7 @@ async def stream_reading_audio(cid: str):
 
 
 @api_router.delete("/creations/{cid}/reading-audio")
-async def delete_reading_audio(cid: str):
+async def delete_reading_audio(cid: str, _admin=Depends(require_admin)):
     await db.reading_media.delete_many({"creation_id": cid})
     await db.creations.update_one({"id": cid}, {"$set": {"has_reading_audio": False}})
     return {"ok": True}
@@ -787,7 +795,7 @@ async def _set_chapter_music(cid: str, chid: str, value: bool):
 
 
 @api_router.post("/creations/{cid}/chapters/{chid}/audio")
-async def upload_chapter_audio(cid: str, chid: str, file: UploadFile = File(...)):
+async def upload_chapter_audio(cid: str, chid: str, file: UploadFile = File(..., _admin=Depends(require_admin))):
     data = await file.read()
     if len(data) > MAX_AUDIO_BYTES:
         raise HTTPException(413, "Fichier audio trop volumineux (max 12 Mo)")
@@ -807,7 +815,7 @@ async def stream_chapter_audio(cid: str, chid: str):
 
 
 @api_router.delete("/creations/{cid}/chapters/{chid}/audio")
-async def delete_chapter_audio(cid: str, chid: str):
+async def delete_chapter_audio(cid: str, chid: str, _admin=Depends(require_admin)):
     await db.chapter_media.delete_many({"creation_id": cid, "chapter_id": chid})
     await _set_chapter_music(cid, chid, False)
     return {"ok": True}
@@ -815,7 +823,7 @@ async def delete_chapter_audio(cid: str, chid: str):
 
 # ---------------- Inline media assets (images + music cues placed in chapters) ----------------
 @api_router.post("/creations/{cid}/assets")
-async def upload_asset(cid: str, file: UploadFile = File(...), kind: str = Form("image"), name: str = Form("")):
+async def upload_asset(cid: str, file: UploadFile = File(..., _admin=Depends(require_admin)), kind: str = Form("image"), name: str = Form("")):
     data = await file.read()
     if len(data) > MAX_AUDIO_BYTES:
         raise HTTPException(413, "Fichier trop volumineux (max 12 Mo)")
@@ -848,7 +856,7 @@ async def get_asset(aid: str, dl: int = 0):
 
 
 @api_router.delete("/assets/{aid}")
-async def delete_asset(aid: str):
+async def delete_asset(aid: str, _admin=Depends(require_admin)):
     await db.media_assets.delete_one({"id": aid})
     return {"ok": True}
 
@@ -861,7 +869,7 @@ async def list_categories():
 
 
 @api_router.post("/categories", response_model=Category, status_code=201)
-async def create_category(payload: CategoryInput):
+async def create_category(payload: CategoryInput, _admin=Depends(require_admin)):
     key = payload.key or slugify(payload.label)
     if await db.categories.find_one({"key": key}):
         key = f"{key}-{str(uuid.uuid4())[:4]}"
@@ -871,7 +879,7 @@ async def create_category(payload: CategoryInput):
 
 
 @api_router.put("/categories/{cid}", response_model=Category)
-async def update_category(cid: str, payload: CategoryInput):
+async def update_category(cid: str, payload: CategoryInput, _admin=Depends(require_admin)):
     existing = await db.categories.find_one({"id": cid}, {"_id": 0})
     if not existing:
         raise HTTPException(404, "Catégorie introuvable")
@@ -882,7 +890,7 @@ async def update_category(cid: str, payload: CategoryInput):
 
 
 @api_router.delete("/categories/{cid}")
-async def delete_category(cid: str):
+async def delete_category(cid: str, _admin=Depends(require_admin)):
     res = await db.categories.delete_one({"id": cid})
     if res.deleted_count == 0:
         raise HTTPException(404, "Catégorie introuvable")
@@ -906,7 +914,7 @@ async def create_comment(payload: CommentInput):
 
 
 @api_router.delete("/comments/{cid}")
-async def delete_comment(cid: str):
+async def delete_comment(cid: str, _admin=Depends(require_admin)):
     res = await db.comments.delete_one({"id": cid})
     if res.deleted_count == 0:
         raise HTTPException(404, "Commentaire introuvable")
@@ -948,7 +956,7 @@ class IconInput(BaseModel):
 
 
 @api_router.put("/site/icon")
-async def set_site_icon(payload: IconInput):
+async def set_site_icon(payload: IconInput, _admin=Depends(require_admin)):
     if payload.data and (not payload.data.startswith("data:image/") or len(payload.data) > 4_000_000):
         raise HTTPException(400, "Image invalide ou trop lourde (max ~3 Mo)")
     if payload.data:
@@ -989,7 +997,7 @@ class CoverInput(BaseModel):
 
 
 @api_router.put("/ambiences/{aid}/cover")
-async def set_ambience_cover(aid: str, payload: CoverInput):
+async def set_ambience_cover(aid: str, payload: CoverInput, _admin=Depends(require_admin)):
     if not await db.ambiences.find_one({"id": aid}):
         raise HTTPException(404, "Ambiance introuvable")
     if payload.cover and (not payload.cover.startswith("data:image/") or len(payload.cover) > 1_500_000):
@@ -1007,14 +1015,14 @@ async def get_ambience_cover(aid: str):
 
 
 @api_router.post("/ambiences", response_model=Ambience, status_code=201)
-async def create_ambience(payload: AmbienceInput):
+async def create_ambience(payload: AmbienceInput, _admin=Depends(require_admin)):
     obj = Ambience(**payload.model_dump())
     await db.ambiences.insert_one(obj.model_dump())
     return obj
 
 
 @api_router.put("/ambiences/{aid}", response_model=Ambience)
-async def update_ambience(aid: str, payload: AmbienceInput):
+async def update_ambience(aid: str, payload: AmbienceInput, _admin=Depends(require_admin)):
     if not await db.ambiences.find_one({"id": aid}):
         raise HTTPException(404, "Ambiance introuvable")
     await db.ambiences.update_one({"id": aid}, {"$set": payload.model_dump()})
@@ -1023,7 +1031,7 @@ async def update_ambience(aid: str, payload: AmbienceInput):
 
 
 @api_router.post("/ambiences/{aid}/audio")
-async def upload_ambience_audio(aid: str, file: UploadFile = File(...)):
+async def upload_ambience_audio(aid: str, file: UploadFile = File(..., _admin=Depends(require_admin))):
     if not await db.ambiences.find_one({"id": aid}):
         raise HTTPException(404, "Ambiance introuvable")
     data = await file.read()
@@ -1044,7 +1052,7 @@ async def stream_ambience_audio(aid: str):
 
 
 @api_router.delete("/ambiences/{aid}")
-async def delete_ambience(aid: str):
+async def delete_ambience(aid: str, _admin=Depends(require_admin)):
     res = await db.ambiences.delete_one({"id": aid})
     if res.deleted_count == 0:
         raise HTTPException(404, "Ambiance introuvable")
@@ -1054,7 +1062,7 @@ async def delete_ambience(aid: str):
 
 # ---------------- Subscribers ----------------
 @api_router.get("/subscribers", response_model=List[Subscriber])
-async def list_subscribers():
+async def list_subscribers(_admin=Depends(require_admin)):
     docs = await db.subscribers.find({}, {"_id": 0}).sort("created_at", -1).to_list(5000)
     return [Subscriber(**d) for d in docs]
 
@@ -1073,7 +1081,7 @@ async def add_subscriber(payload: SubscriberInput):
 
 
 @api_router.delete("/subscribers/{sid}")
-async def delete_subscriber(sid: str):
+async def delete_subscriber(sid: str, _admin=Depends(require_admin)):
     await db.subscribers.delete_one({"id": sid})
     return {"ok": True}
 
@@ -1195,7 +1203,7 @@ async def get_profile(pid: str):
 
 
 @api_router.delete("/profiles/{pid}")
-async def delete_profile(pid: str):
+async def delete_profile(pid: str, _admin=Depends(require_admin)):
     res = await db.profiles.delete_one({"id": pid})
     if res.deleted_count == 0:
         raise HTTPException(404, "Profil introuvable")
@@ -1210,7 +1218,7 @@ async def list_announcements():
 
 
 @api_router.post("/announcements", response_model=Announcement, status_code=201)
-async def create_announcement(payload: AnnouncementInput, background_tasks: BackgroundTasks):
+async def create_announcement(payload: AnnouncementInput, background_tasks: BackgroundTasks, _admin=Depends(require_admin)):
     if not payload.title.strip() or not payload.text.strip():
         raise HTTPException(400, "Titre et message requis")
     obj = Announcement(**payload.model_dump(exclude={"notify_email"}))
@@ -1227,7 +1235,7 @@ async def create_announcement(payload: AnnouncementInput, background_tasks: Back
 
 
 @api_router.delete("/announcements/{aid}")
-async def delete_announcement(aid: str):
+async def delete_announcement(aid: str, _admin=Depends(require_admin)):
     res = await db.announcements.delete_one({"id": aid})
     if res.deleted_count == 0:
         raise HTTPException(404, "Annonce introuvable")
@@ -1244,7 +1252,7 @@ async def get_settings():
 
 
 @api_router.put("/settings", response_model=SiteSettings)
-async def update_settings(payload: SiteSettings):
+async def update_settings(payload: SiteSettings, _admin=Depends(require_admin)):
     data = payload.model_dump()
     data["key"] = "site"
     await db.settings.update_one({"key": "site"}, {"$set": data}, upsert=True)
@@ -1277,7 +1285,7 @@ async def list_roadmap():
 
 
 @api_router.post("/roadmap")
-async def create_roadmap(payload: RoadmapInput):
+async def create_roadmap(payload: RoadmapInput, _admin=Depends(require_admin)):
     doc = payload.model_dump()
     doc["id"] = str(uuid.uuid4())
     doc["created_at"] = now_iso()
@@ -1287,7 +1295,7 @@ async def create_roadmap(payload: RoadmapInput):
 
 
 @api_router.put("/roadmap/{rid}")
-async def update_roadmap(rid: str, payload: RoadmapInput):
+async def update_roadmap(rid: str, payload: RoadmapInput, _admin=Depends(require_admin)):
     data = payload.model_dump()
     data["reminder_sent"] = False  # ré-arme le rappel J-1 si la date change
     res = await db.roadmap.update_one({"id": rid}, {"$set": data})
@@ -1298,7 +1306,7 @@ async def update_roadmap(rid: str, payload: RoadmapInput):
 
 
 @api_router.delete("/roadmap/{rid}")
-async def delete_roadmap(rid: str):
+async def delete_roadmap(rid: str, _admin=Depends(require_admin)):
     await db.roadmap.delete_one({"id": rid})
     return {"ok": True}
 
@@ -1328,7 +1336,7 @@ MAX_INTRO_BYTES = 10 * 1024 * 1024
 
 
 @api_router.post("/intro/video")
-async def upload_intro_video(file: UploadFile = File(...)):
+async def upload_intro_video(file: UploadFile = File(..., _admin=Depends(require_admin))):
     data = await file.read()
     if len(data) > MAX_INTRO_BYTES:
         raise HTTPException(413, "Vidéo trop volumineuse (max 10 Mo)")
@@ -1348,7 +1356,7 @@ async def stream_intro_video():
 
 
 @api_router.delete("/intro/video")
-async def delete_intro_video():
+async def delete_intro_video(_admin=Depends(require_admin)):
     await db.intro_media.delete_many({"key": "intro"})
     await db.settings.update_one({"key": "site"}, {"$set": {"intro_has_video": False}}, upsert=True)
     return {"ok": True}
@@ -1423,7 +1431,7 @@ async def ensure_seed():
 
 
 @api_router.post("/seed")
-async def seed(force: bool = False):
+async def seed(force: bool = False, _admin=Depends(require_admin)):
     if force:
         await db.creations.delete_many({})
         await db.categories.delete_many({})
@@ -1599,17 +1607,6 @@ async def auth_sync(data: SyncInput, user=Depends(get_current_user)):
     if data.preferences is not None:
         patch["preferences"] = data.preferences
     await db.users.update_one({"id": user["id"]}, {"$set": patch})
-    u = await db.users.find_one({"id": user["id"]}, {"_id": 0})
-    return {"user": _public_user(u)}
-
-
-@api_router.post("/auth/claim-admin")
-async def auth_claim_admin(data: ClaimAdminInput, user=Depends(get_current_user)):
-    s = await db.settings.find_one({"key": "site"}, {"_id": 0})
-    admin_pin = (s or {}).get("admin_pin") or "1234"
-    if data.pin != admin_pin:
-        raise HTTPException(403, "Code PIN incorrect")
-    await db.users.update_one({"id": user["id"]}, {"$set": {"is_admin": True}})
     u = await db.users.find_one({"id": user["id"]}, {"_id": 0})
     return {"user": _public_user(u)}
 
@@ -2378,6 +2375,206 @@ async def push_test(user=Depends(get_current_user)):
     return {"ok": True, "sent": len(subs)}
 
 
+
+# ---------------- Journal de bord ----------------
+DEFAULT_JOURNAL_CATEGORIES = [("Nouveautés", "#3f86ff"), ("Coulisses", "#e8524a"), ("Making-of", "#d9a62e"), ("Croquis", "#8fd9a8"), ("Annonces", "#c4b5fd")]
+JOURNAL_BLOCK_TYPES = {"text", "heading", "image", "gallery", "sketch", "youtube", "quote"}
+
+
+class JournalCategory(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    color: str = "#3f86ff"
+    order: int = 0
+
+
+class JournalCategoryInput(BaseModel):
+    name: str
+    color: str = "#3f86ff"
+    order: int = 0
+
+
+class JournalEntryInput(BaseModel):
+    title: str
+    subtitle: str = ""
+    category_id: str = ""
+    creation_id: str = ""
+    date: str = ""            # AAAA-MM-JJ
+    cover: str = ""           # URL /api/journal/files/...
+    blocks: List[Dict[str, Any]] = Field(default_factory=list)
+    show_home: bool = False
+    published: bool = True
+
+
+class JournalEntry(JournalEntryInput):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    created_at: str = Field(default_factory=now_iso)
+    updated_at: str = Field(default_factory=now_iso)
+
+
+async def _optional_user(authorization: Optional[str]):
+    try:
+        return await get_current_user(authorization) if authorization else None
+    except HTTPException:
+        return None
+
+
+def _clean_blocks(blocks):
+    out = []
+    for b in blocks or []:
+        if isinstance(b, dict) and b.get("type") in JOURNAL_BLOCK_TYPES:
+            out.append({k: v for k, v in b.items() if k in ("type", "text", "url", "urls", "caption", "author", "wide")})
+    return out
+
+
+async def _journal_push(entry: dict):
+    data = {"title": f"📓 Journal de bord — {entry['title']}"[:80], "body": (entry.get("subtitle") or "Nouvelle entrée dans le journal")[:140],
+            "url": f"/journal/{entry['id']}", "tag": f"journal-{entry['id']}", "kind": "public"}
+    subs = await db.push_subscriptions.find({"pref": {"$ne": "off"}}, {"_id": 0}).to_list(5000)
+    for sub in subs:
+        await _send_push_sub(sub, data)
+
+
+@api_router.get("/journal/categories", response_model=List[JournalCategory])
+async def journal_categories():
+    if not await db.journal_categories.count_documents({}):
+        for i, (n, c) in enumerate(DEFAULT_JOURNAL_CATEGORIES):
+            await db.journal_categories.insert_one(JournalCategory(name=n, color=c, order=i).model_dump())
+    docs = await db.journal_categories.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+    return [JournalCategory(**d) for d in docs]
+
+
+@api_router.post("/journal/categories", response_model=JournalCategory, status_code=201)
+async def journal_category_create(payload: JournalCategoryInput, _admin=Depends(require_admin)):
+    if not payload.name.strip():
+        raise HTTPException(400, "Nom requis")
+    obj = JournalCategory(**{**payload.model_dump(), "name": payload.name.strip()})
+    await db.journal_categories.insert_one(obj.model_dump())
+    return obj
+
+
+@api_router.put("/journal/categories/{cid}", response_model=JournalCategory)
+async def journal_category_update(cid: str, payload: JournalCategoryInput, _admin=Depends(require_admin)):
+    res = await db.journal_categories.update_one({"id": cid}, {"$set": {**payload.model_dump(), "name": payload.name.strip()}})
+    if not res.matched_count:
+        raise HTTPException(404, "Catégorie introuvable")
+    return JournalCategory(**await db.journal_categories.find_one({"id": cid}, {"_id": 0}))
+
+
+@api_router.delete("/journal/categories/{cid}")
+async def journal_category_delete(cid: str, _admin=Depends(require_admin)):
+    await db.journal_categories.delete_one({"id": cid})
+    await db.journal_entries.update_many({"category_id": cid}, {"$set": {"category_id": ""}})
+    return {"ok": True}
+
+
+@api_router.get("/journal")
+async def journal_list(category: str = "", creation_id: str = "", home: int = 0, month: str = "", limit: int = 200,
+                       authorization: Optional[str] = Header(None)):
+    user = await _optional_user(authorization)
+    q: Dict[str, Any] = {}
+    if not (user and user.get("is_admin")):
+        q["published"] = True
+    if category:
+        q["category_id"] = category
+    if creation_id:
+        q["creation_id"] = creation_id
+    if home:
+        q["show_home"] = True
+    if month:
+        q["date"] = {"$regex": f"^{re.escape(month)}"}
+    docs = await db.journal_entries.find(q, {"_id": 0}).sort([("date", -1), ("created_at", -1)]).to_list(max(1, min(limit, 500)))
+    for d in docs:  # liste légère : extrait + nombre de blocs
+        first = next((b.get("text", "") for b in d.get("blocks", []) if b.get("type") == "text" and b.get("text")), "")
+        d["excerpt"] = first[:220]
+        d["block_count"] = len(d.get("blocks", []))
+        d.pop("blocks", None)
+    return docs
+
+
+@api_router.get("/journal/{eid}", response_model=JournalEntry)
+async def journal_get(eid: str, authorization: Optional[str] = Header(None)):
+    d = await db.journal_entries.find_one({"id": eid}, {"_id": 0})
+    if not d:
+        raise HTTPException(404, "Entrée introuvable")
+    if not d.get("published"):
+        user = await _optional_user(authorization)
+        if not (user and user.get("is_admin")):
+            raise HTTPException(404, "Entrée introuvable")
+    return JournalEntry(**d)
+
+
+@api_router.post("/journal", response_model=JournalEntry, status_code=201)
+async def journal_create(payload: JournalEntryInput, background_tasks: BackgroundTasks, _admin=Depends(require_admin)):
+    if not payload.title.strip():
+        raise HTTPException(400, "Titre requis")
+    obj = JournalEntry(**{**payload.model_dump(), "title": payload.title.strip(), "blocks": _clean_blocks(payload.blocks),
+                          "date": payload.date or datetime.now(timezone.utc).strftime("%Y-%m-%d")})
+    await db.journal_entries.insert_one(obj.model_dump())
+    if obj.published:
+        background_tasks.add_task(_journal_push, obj.model_dump())
+    return obj
+
+
+@api_router.put("/journal/{eid}", response_model=JournalEntry)
+async def journal_update(eid: str, payload: JournalEntryInput, background_tasks: BackgroundTasks, _admin=Depends(require_admin)):
+    old = await db.journal_entries.find_one({"id": eid}, {"_id": 0})
+    if not old:
+        raise HTTPException(404, "Entrée introuvable")
+    patch = {**payload.model_dump(), "title": payload.title.strip(), "blocks": _clean_blocks(payload.blocks), "updated_at": now_iso()}
+    await db.journal_entries.update_one({"id": eid}, {"$set": patch})
+    doc = await db.journal_entries.find_one({"id": eid}, {"_id": 0})
+    if doc.get("published") and not old.get("published"):
+        background_tasks.add_task(_journal_push, doc)
+    return JournalEntry(**doc)
+
+
+@api_router.delete("/journal/{eid}")
+async def journal_delete(eid: str, _admin=Depends(require_admin)):
+    res = await db.journal_entries.delete_one({"id": eid})
+    if not res.deleted_count:
+        raise HTTPException(404, "Entrée introuvable")
+    return {"ok": True}
+
+
+@api_router.post("/journal-files")
+async def journal_upload(file: UploadFile = File(...), _admin=Depends(require_admin)):
+    data = await file.read()
+    if len(data) > 15 * 1024 * 1024:
+        raise HTTPException(413, "Image trop lourde (max 15 Mo)")
+    ct = file.content_type or "image/jpeg"
+    if not ct.startswith("image/"):
+        raise HTTPException(400, "Seules les images sont acceptées")
+    fid = str(uuid.uuid4())
+    ext = (file.filename or "img.jpg").rsplit(".", 1)[-1].lower()[:5]
+    path = f"{OBJ_APP_NAME}/journal/{fid}.{ext}"
+    await _storage_put(path, data, ct)
+    await db.journal_files.insert_one({"id": fid, "path": path, "content_type": ct, "size": len(data), "created_at": now_iso()})
+    return {"id": fid, "url": f"/api/journal-files/{fid}"}
+
+
+@api_router.get("/journal-files/{fid}")
+async def journal_file(fid: str):
+    f = await db.journal_files.find_one({"id": fid}, {"_id": 0})
+    if not f:
+        raise HTTPException(404, "Fichier introuvable")
+    data, ct = await _storage_get(f["path"])
+    return Response(content=data, media_type=f.get("content_type") or ct, headers={"Cache-Control": "public, max-age=31536000, immutable"})
+
+
+async def _migrate_announcements_to_journal():
+    if await db.journal_entries.count_documents({}) or not await db.announcements.count_documents({}):
+        return
+    await journal_categories()
+    cat = await db.journal_categories.find_one({"name": "Annonces"}, {"_id": 0})
+    async for a in db.announcements.find({}, {"_id": 0}):
+        e = JournalEntry(title=a.get("title") or "Annonce", category_id=(cat or {}).get("id", ""), creation_id=a.get("creation_id") or "",
+                         date=(a.get("created_at") or now_iso())[:10], blocks=[{"type": "text", "text": a.get("text", "")}],
+                         published=bool(a.get("active", True)), created_at=a.get("created_at") or now_iso())
+        await db.journal_entries.insert_one(e.model_dump())
+    logger.info("Annonces migrées vers le journal")
+
+
 app.include_router(api_router)
 app.add_middleware(CORSMiddleware, allow_credentials=True,
                    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
@@ -2389,6 +2586,10 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup():
     await ensure_seed()
+    try:
+        await _migrate_announcements_to_journal()
+    except Exception as e:  # noqa: BLE001
+        logger.error("journal migration failed: %s", e)
     try:
         await _storage_init()
         logger.info("Object storage initialized")

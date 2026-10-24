@@ -18,6 +18,7 @@ import CosmicBunnyGame from "@/components/CosmicBunnyGame";
 import CinemaPlayer from "@/components/CinemaPlayer";
 import ShareMenu from "@/components/ShareMenu";
 import MobileMenu from "@/components/MobileMenu";
+import CreationJournal from "@/components/journal/CreationJournal";
 
 export default function Detail() {
   const { id } = useParams();
@@ -482,6 +483,8 @@ export default function Detail() {
                 )}
               </div>
             )}
+
+            <CreationJournal creationId={item.id} />
 
             <FicheSupport membershipActive={membershipActive} />
 

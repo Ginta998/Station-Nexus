@@ -8,6 +8,7 @@ import { useChat } from "@/context/ChatContext";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { listAnnouncements, listAmbiences } from "@/lib/api";
 import { getCover, registerAmbiences } from "@/lib/covers";
+import { listJournal } from "@/lib/api";
 
 const btn = { borderColor: "rgba(255,255,255,0.25)", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "rgba(0,0,0,0.25)" };
 
@@ -115,13 +116,13 @@ export default function StationMenu({ onAdd, onProfile }) {
   const { unread: chatUnreadCount } = useChat() || { unread: { total: 0 } };
   const salonUnread = chatUnreadCount?.total || 0;
   const [menuOpen, setMenuOpen] = useState(false);
-  const { data: announcements = [] } = useQuery({ queryKey: ["announcements"], queryFn: listAnnouncements });
-  const unread = announcements.filter((a) => !seenAnnouncements.includes(a.id)).length;
+  const { data: journalAll = [] } = useQuery({ queryKey: ["journal", isAdmin], queryFn: () => listJournal() });
+  const unread = journalAll.filter((e) => e.published).filter((a) => !seenAnnouncements.includes(a.id)).length;
   const go = (p) => { sfx("select"); setMenuOpen(false); nav(p); };
   const openProfile = () => { setMenuOpen(false); if (onProfile) onProfile(); else nav("/parametres"); };
 
   const menuItems = [
-    { label: "Journal de bord", sub: "COULISSES & NOUVEAUTÉS", icon: <IoMegaphone size={18} />, badge: unread, onClick: () => go("/nouveautes") },
+    { label: "Journal de bord", sub: "COULISSES & NOUVEAUTÉS", icon: <IoMegaphone size={18} />, badge: unread, onClick: () => go("/journal") },
     { label: "Planning de sortie", sub: "UNE SORTIE CHAQUE DIMANCHE", icon: <IoCalendarOutline size={18} />, onClick: () => go("/planning") },
     { label: "Salon", sub: "DISCUTE EN DIRECT", icon: <IoChatbubbles size={18} />, badge: salonUnread, onClick: () => go("/salon") },
     { label: "Membres", sub: "LA COMMUNAUTÉ", icon: <IoPeople size={18} />, onClick: () => go("/membres") },
