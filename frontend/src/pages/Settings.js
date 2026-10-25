@@ -43,6 +43,33 @@ const Cat = ({ children }) => (
 
 const AMBIENCE_ICONS = ["🎵","🌙","🌧️","🔥","🌊","🍃","🎐","🏯","⛩️","🌸","❄️","☕","📖","🕯️","🌌","🎹","🐉","🦊","💮","🎏","🌿","⚡","🫧","🪷"];
 
+const PLAY_MODES = [["loop", "En boucle", "une seule piste répétée"], ["sequence", "Jukebox à la suite", "toutes les pistes dans l'ordre, puis on recommence"], ["shuffle", "Jukebox aléatoire", "toutes les pistes au hasard, sans répétition avant la fin du tour"]];
+
+function PlayModePicker({ settings, onSaved }) {
+  const { isAdmin, playMode, setPlayMode, sfx } = useApp();
+  const setDefault = async (m) => { await updateSettings({ ...settings, default_play_mode: m }); toast.success("Mode par défaut des visiteurs enregistré"); onSaved(); };
+  return (
+    <div className="mb-5" data-testid="play-mode-picker">
+      <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Mode de lecture</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        {PLAY_MODES.map(([k, l, d]) => (
+          <div key={k} className="p-3 border" style={{ ...fs, background: "var(--bg-secondary)", outline: playMode === k ? "2px solid var(--brand)" : "none" }}>
+            <button data-testid={`play-mode-${k}`} onClick={() => { sfx("select"); setPlayMode(k); }} className="text-left w-full">
+              <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{l}</p>
+              <p className="text-[11px]" style={{ color: "var(--text-secondary)" }}>{d}</p>
+            </button>
+            {isAdmin && settings && (
+              <button data-testid={`play-mode-default-${k}`} onClick={() => setDefault(k)} className="mt-2 flex items-center gap-1 text-[11px]" style={{ color: (settings.default_play_mode || "loop") === k ? "var(--brand)" : "var(--text-secondary)" }}>
+                {(settings.default_play_mode || "loop") === k ? <IoStar size={11} /> : <IoStarOutline size={11} />} {(settings.default_play_mode || "loop") === k ? "Défaut des visiteurs" : "Définir par défaut"}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function AmbienceManager() {
   const { isAdmin, ambienceId, selectAmbience, sfx } = useApp();
   const { data: list = [], refetch } = useQuery({ queryKey: ["ambiences"], queryFn: listAmbiences });
@@ -74,6 +101,7 @@ function AmbienceManager() {
 
   return (
     <div>
+      <PlayModePicker settings={settings} onSaved={refetchSettings} />
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4" data-testid="ambience-list">
         <button onClick={() => { sfx("nav"); selectAmbience(""); }} data-testid="ambience-none"
           className="p-4 border text-left" style={{ ...fs, background: "var(--bg-secondary)", outline: !ambienceId ? "2px solid var(--brand)" : "none" }}>
@@ -154,7 +182,14 @@ function CategoryManager() {
   const add = async () => { if (!label.trim()) return toast.error("Nom requis"); await createCategory({ label: label.trim(), kanji, order: list.length + 1 }); toast.success("Catégorie créée"); setLabel(""); setKanji(""); refetch(); };
   const save = async (c, patch) => { await updateCategory(c.id, { label: patch.label ?? c.label, kanji: patch.kanji ?? c.kanji, order: patch.order ?? c.order }); refetch(); };
   const del = async (c) => { if (!window.confirm(`Supprimer la catégorie « ${c.label} » ? Les créations resteront mais sans catégorie visible.`)) return; await deleteCategory(c.id); refetch(); };
-  const move = async (c, dir) => { await save(c, { order: (c.order || 0) + dir }); };
+  // échange avec la voisine puis renumérote 1..n pour un ordre toujours net
+  const move = async (c, dir) => {
+    const arr = [...list]; const i = arr.findIndex((x) => x.id === c.id); const j = i + dir;
+    if (j < 0 || j >= arr.length) return;
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    await Promise.all(arr.map((x, k) => (x.order !== k + 1 ? updateCategory(x.id, { label: x.label, kanji: x.kanji, order: k + 1 }) : null)));
+    refetch();
+  };
 
   return (
     <div data-testid="category-manager">

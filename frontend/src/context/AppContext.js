@@ -1,7 +1,7 @@
 import { THEMES } from "@/lib/themes";
 import { useAuth } from "@/context/AuthContext";
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
-import { audioUrl, ambienceUrl, readingAudioUrl, getSettings, upsertProfile } from "@/lib/api";
+import { audioUrl, ambienceUrl, readingAudioUrl, getSettings, upsertProfile, listAmbiences } from "@/lib/api";
 import { configureSound, playUiSound, primeAudioCtx, isValidPack } from "@/lib/sound";
 
 const AppContext = createContext(null);
@@ -9,7 +9,7 @@ export const useApp = () => useContext(AppContext);
 
 const LS = {
   theme: "sx_theme", pin: "sx_pin", admin: "sx_admin", music: "sx_musicvolume", ui: "sx_uivolume",
-  mute: "sx_mute", pack: "sx_soundpack", custom: "sx_customsounds", ambience: "sx_ambience",
+  mute: "sx_mute", playMode: "sx_playmode", pack: "sx_soundpack", custom: "sx_customsounds", ambience: "sx_ambience",
   accent: "sx_accent", radius: "sx_radius", posterSize: "sx_postersize", motion: "sx_motion", cardTagline: "sx_cardtagline", textScale: "sx_textscale", layout: "sx_layout",
   rFont: "sx_reader_font", rSize: "sx_reader_size", rLine: "sx_reader_line", rWidth: "sx_reader_width", rDrop: "sx_reader_dropcap",
 };
@@ -59,6 +59,8 @@ export function AppProvider({ children }) {
   });
   const storedAmbience = localStorage.getItem(LS.ambience);
   const [ambienceId, setAmbienceId] = useState(storedAmbience || "");
+  const storedMode = localStorage.getItem(LS.playMode);
+  const [playMode, setPlayModeState] = useState(["loop", "sequence", "shuffle"].includes(storedMode) ? storedMode : "loop");
 
   // ---- visitor social profile ----
   const [profile, setProfileState] = useState(() => {
@@ -220,8 +222,10 @@ export function AppProvider({ children }) {
     const needPosterM = !(localStorage.getItem(posterKey(true)) || legacyPoster);
     const needAmb = storedAmbience === null;
     const needTheme = storedTheme === null;
-    if (!needAmb && !needTheme && !needPosterD && !needPosterM) return;
+    const needMode = storedMode === null;
+    if (!needAmb && !needTheme && !needPosterD && !needPosterM && !needMode) return;
     getSettings().then((s) => {
+      if (needMode && ["loop", "sequence", "shuffle"].includes(s?.default_play_mode)) setPlayModeState(s.default_play_mode);
       if (needAmb && s?.default_ambience_id) setAmbienceId(s.default_ambience_id);
       if (needTheme && THEMES.some((t) => t.key === s?.default_theme)) setThemeState(s.default_theme);
       if (needPosterD && s?.default_poster_desktop) { setPosterDesktopState(s.default_poster_desktop); if (!isPhoneNow()) setPosterSizeState(s.default_poster_desktop); }
@@ -253,6 +257,37 @@ export function AppProvider({ children }) {
     if (!ambienceId || muted) { stopAppAmbience(true); return; }
     if (!cardActiveRef.current) startAppAmbience();
   }, [ambienceId, muted, startAppAmbience, stopAppAmbience]);
+
+  // Jukebox : boucle sur une piste, enchaînement dans l'ordre, ou aléatoire sans répétition avant la fin du cycle
+  const jbRef = useRef({ id: ambienceId, mode: playMode, bag: [], errors: 0 });
+  jbRef.current.id = ambienceId; jbRef.current.mode = playMode;
+  useEffect(() => { if (appAudio.current) appAudio.current.loop = playMode === "loop"; jbRef.current.bag = []; }, [playMode]);
+  const nextAmbience = useCallback(async () => {
+    const j = jbRef.current;
+    let ids = [];
+    try { ids = (await listAmbiences()).map((x) => x.id); } catch (_) { return; }
+    if (!ids.length) return;
+    let next;
+    if (j.mode === "shuffle") {
+      j.bag = j.bag.filter((x) => ids.includes(x) && x !== j.id);
+      if (!j.bag.length) j.bag = ids.filter((x) => x !== j.id).sort(() => Math.random() - 0.5);
+      next = j.bag.shift() || j.id;
+    } else {
+      next = ids[(ids.indexOf(j.id) + 1) % ids.length];
+    }
+    const a = appAudio.current;
+    if (next === j.id && a) { a.currentTime = 0; a.play().catch(() => {}); return; }
+    setAmbienceId(next); localStorage.setItem(LS.ambience, next);
+  }, []);
+  useEffect(() => {
+    const a = appAudio.current; if (!a) return;
+    const onEnded = () => { if (jbRef.current.mode !== "loop") { jbRef.current.errors = 0; nextAmbience(); } };
+    const onError = () => { if (jbRef.current.mode !== "loop" && a.src && jbRef.current.errors++ < 5) nextAmbience(); };
+    const onPlaying = () => { jbRef.current.errors = 0; };
+    a.addEventListener("ended", onEnded); a.addEventListener("error", onError); a.addEventListener("playing", onPlaying);
+    return () => { a.removeEventListener("ended", onEnded); a.removeEventListener("error", onError); a.removeEventListener("playing", onPlaying); };
+  }, [nextAmbience]);
+  const setPlayMode = (m) => { setPlayModeState(m); localStorage.setItem(LS.playMode, m); };
 
   const startRef = useRef(startAppAmbience);
   startRef.current = startAppAmbience;
@@ -426,7 +461,7 @@ export function AppProvider({ children }) {
     theme, setTheme, isAdmin,
     musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
     soundPack, setPack, customSounds, setCustom, sfx,
-    ambienceId, selectAmbience, appPlaying,
+    ambienceId, selectAmbience, appPlaying, playMode, setPlayMode, nextAmbience,
     profile, saveProfile, clearProfile,
     favorites, toggleFavorite, isFavorite,
     seenAnnouncements, markAnnouncementsSeen,

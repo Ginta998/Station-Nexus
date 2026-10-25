@@ -25,6 +25,7 @@ import { ChatProvider } from "@/context/ChatContext";
 import PaymentResult from "@/pages/PaymentResult";
 import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
+import GlobalSound from "@/components/GlobalSound";
 import CyberOverlay from "@/components/CyberOverlay";
 import CosmicBackground from "@/components/CosmicBackground";
 import SiteMeta from "@/components/SiteMeta";
@@ -125,6 +126,7 @@ function App() {
             <Route path="/payment/cancel" element={<PaymentResult mode="cancel" />} />
           </Routes>
           <CosmicBunny />
+          <GlobalSound />
           <PushClickNav />
           <GuidedTour />
         </BrowserRouter>

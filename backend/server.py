@@ -339,6 +339,7 @@ class SiteSettings(BaseModel):
     instagram: str = "Brichel_louzala"
     youtube: str = "Brichel Louzala"
     default_ambience_id: Optional[str] = ""
+    default_play_mode: str = "loop"           # loop | sequence | shuffle (jukebox)
     default_theme: str = "abysse"
     default_poster_desktop: str = "compact"   # taille des affiches par défaut sur PC
     default_poster_mobile: str = "compact"    # taille des affiches par défaut sur mobile

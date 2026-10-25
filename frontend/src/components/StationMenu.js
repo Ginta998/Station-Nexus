@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoCashOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoCashOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
@@ -22,9 +22,11 @@ function Cov({ id, playing, small }) {
   return <span className="ic" style={box}>{playing ? <span className="sx-eq" style={{ width: 14, height: 14 }}><i /><i /><i /><i /></span> : <IoMusicalNote size={15} />}</span>;
 }
 
-export function SoundBtn({ btn: bstyle = btn }) {
+const MODES = [["loop", "En boucle", IoRepeat], ["sequence", "À la suite", IoListOutline], ["shuffle", "Aléatoire", IoShuffle]];
+
+export function SoundBtn({ btn: bstyle = btn, up = false }) {
   const nav = useNavigate();
-  const { muted, toggleMute, ambienceId, selectAmbience, appPlaying, sfx } = useApp();
+  const { muted, toggleMute, ambienceId, selectAmbience, appPlaying, sfx, playMode, setPlayMode, nextAmbience } = useApp();
   const [open, setOpen] = useState(false);
   const [, setTick] = useState(0);
   useEffect(() => { const h = () => setTick((t) => t + 1); window.addEventListener("sx-covers", h); return () => window.removeEventListener("sx-covers", h); }, []);
@@ -41,7 +43,7 @@ export function SoundBtn({ btn: bstyle = btn }) {
       </button>
       {open && (<>
         <div className="fixed inset-0 z-[60]" onClick={() => setOpen(false)} />
-        <div className="sx-sound-menu">
+        <div className={"sx-sound-menu" + (up ? " up" : "")} data-testid="sound-menu">
           {/* En-tête lecteur : couverture + piste en cours */}
           {current && !muted && (
             <div className="ssm-now" style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 6px 10px", borderBottom: "1px solid var(--border-c)", marginBottom: 6 }}>
@@ -52,12 +54,22 @@ export function SoundBtn({ btn: bstyle = btn }) {
               </span>
             </div>
           )}
+          <div className="ssm-modes" data-testid="sound-modes">
+            {MODES.map(([k, l, Ic]) => (
+              <button key={k} data-testid={`sound-mode-${k}`} className={playMode === k ? "on" : ""} onClick={() => { sfx("select"); setPlayMode(k); }} title={l}><Ic size={15} /> {l}</button>
+            ))}
+          </div>
+          {playMode !== "loop" && !muted && ambienceId && (
+            <button className="ssm-row" data-testid="sound-next" onClick={() => { sfx("nav"); nextAmbience(); }}>
+              <span className="ic"><IoPlaySkipForward size={16} /></span> Piste suivante
+            </button>
+          )}
           <div className="ssm-h">AMBIANCE SONORE</div>
-          <button className={"ssm-row" + (muted ? " on" : "")} onClick={() => { if (!muted) toggleMute(); setOpen(false); }}>
+          <button data-testid="sound-mute" className={"ssm-row" + (muted ? " on" : "")} onClick={() => { if (!muted) toggleMute(); setOpen(false); }}>
             <span className="ic"><IoVolumeMute size={16} /></span> Couper le son
           </button>
           {ambiences.map((a) => (
-            <button key={a.id} className={"ssm-row" + (a.id === ambienceId && !muted ? " on" : "")} onClick={() => pick(a.id)} style={{ alignItems: "center" }}>
+            <button key={a.id} data-testid={`sound-track-${a.id}`} className={"ssm-row" + (a.id === ambienceId && !muted ? " on" : "")} onClick={() => pick(a.id)} style={{ alignItems: "center" }}>
               <Cov id={a.id} small playing={a.id === ambienceId && !muted} />
               <span style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.name || a.title || "Piste"}</span>
             </button>

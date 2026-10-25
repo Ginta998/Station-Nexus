@@ -138,12 +138,10 @@ export default function Home() {
     return list;
   }, [all, query]);
 
-  // rails groupés par catégorie, dans l'ordre de l'artefact
+  // rails groupés par catégorie, dans l'ordre choisi dans les paramètres
   const rails = useMemo(() => {
-    const RAIL_ORDER = ["films", "livres", "series", "avenir", "dojo"];
-    const ord = (k) => { const i = RAIL_ORDER.indexOf(k); return i < 0 ? 99 : i; };
     return [...cats]
-      .sort((a, b) => ord(a.key) - ord(b.key))
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
       .map((c) => ({ ...c, items: filtered.filter((x) => x.category === c.key) }))
       .filter((r) => r.items.length);
   }, [cats, filtered]);

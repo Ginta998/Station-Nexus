@@ -1505,3 +1505,10 @@ figcaption{margin-top:10px;font-size:13px;color:var(--text-secondary);text-align
 .rte-area--page h2{font-size:1.7em;line-height:1.2;margin:1.4em 0 .5em}
 .rte-area--page h3{font-size:1.3em;line-height:1.25;margin:1.2em 0 .4em;color:var(--brand);opacity:1}
 .rte-area--page .sx-rich-img{max-height:none;width:100%}
+.sx-sound-menu{max-height:min(70vh,520px);overflow-y:auto}
+.sx-sound-menu.up{top:auto;bottom:calc(100% + 8px);left:0;right:auto}
+.sx-sound-menu .ssm-modes{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px;border-bottom:1px solid var(--border-c)}
+.sx-sound-menu .ssm-modes button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;font-size:10px;border:1px solid var(--border-c);border-radius:var(--radius-base);color:var(--text-secondary);transition:color .15s,border-color .15s,background-color .15s}
+.sx-sound-menu .ssm-modes button:hover{color:var(--text-primary)}
+.sx-sound-menu .ssm-modes button.on{color:var(--brand);border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,transparent)}
+.sx-global-sound{position:fixed;left:16px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:45}
