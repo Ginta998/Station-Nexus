@@ -6,7 +6,7 @@ import { useApp } from "@/context/AppContext";
 
 const MICRO = {
   abysse: "淵深海零水静気泡界", neptune: "海界水波深潮静気泡", yorha: "2B9S7GーA2式零壱弐参",
-  akira: "ネオ東京紅電力第区", supernova: "火燃焰爆熱光", helios: "陽光金輝熱焔",
+  akira: "ネオ東京紅電力第区", tengoku: "天国桜花散紅刃夢都", supernova: "火燃焰爆熱光", helios: "陽光金輝熱焔",
   biome: "生葉木根芽緑", monolithe: "鋼機械金属零壱", singularite: "空無黒洞引力",
   glacier: "氷雪結晶冷凍寒", megapole: "都市煙霧電力夜", aurum: "金輝黄金純度",
   blackhole: "虚無暗闇重力無", albatre: "石灰白月静寂", bunny: "兎桃柔光夢",
@@ -17,6 +17,7 @@ const READOUT = {
   neptune: ["IMMERSION <b>−42 M</b>", "COURANT 1,8 NŒUD", "NEPTUNE"],
   yorha: ["UNITÉ <b>2B · 9S</b>", "AVANT-POSTE 7G", "DÉSERT"],
   akira: ["NEO-TOKYO <b>第3区</b>", "ÉNERGIE 89%", "紅"],
+  tengoku: ["SECTEUR <b>天国-07</b>", "PÉTALES 2 417/s", "桜"],
   supernova: ["TEMPÉRATURE <b>8600 K</b>", "EXPANSION +12%", "BRASIER"],
   biome: ["BIOMASSE <b>+3.1%</b>", "O₂ 98%", "CANOPÉE"],
   monolithe: ["SYSTÈME <b>M-07</b>", "INTÉGRITÉ 100%", "ACIER"],

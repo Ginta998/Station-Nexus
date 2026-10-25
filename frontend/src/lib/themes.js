@@ -7,6 +7,7 @@ export const THEMES = [
   { key: "supernova", name: "Supernova", kanji: "爆", tagline: "Tout brûle, tout renaît", swatch: ["#0a0503", "#ff5a1a", "#ffab4a"] },
   { key: "helios", name: "Hélios", kanji: "陽", tagline: "L'or au cœur de la nuit", swatch: ["#0a0806", "#d9a62e", "#e8524a"] },
   { key: "akira", name: "Akira", kanji: "赤", tagline: "Néo-Tokyo ne pardonne pas", swatch: ["#0b0809", "#e5241f", "#ff5a46"] },
+  { key: "tengoku", name: "TENGOKU", kanji: "天国", tagline: "Les pétales tombent sur la cité céleste", swatch: ["#0a0609", "#ff2f5f", "#ffc4d4"] },
   { key: "aurum", name: "Aurum", kanji: "金", tagline: "La lumière forgée", swatch: ["#040404", "#e6be6e", "#f5d98a"] },
   { key: "megapole", name: "Mégapole", kanji: "都", tagline: "La cité ne dort jamais", swatch: ["#0a0c10", "#ffa94d", "#5fd0d0"] },
   { key: "biome", name: "Biome", kanji: "森", tagline: "La vie reprend le contrôle", swatch: ["#030906", "#4fb87a", "#8fd9a8"] },

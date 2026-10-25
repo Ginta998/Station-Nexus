@@ -181,6 +181,16 @@ const PACKS = {
       if (ev === "back") tone(c, d, { type: "sawtooth", f: 660, f2: 330, dur: 0.1, gain: 0.02, lp: 1400 });
     },
   },
+  tengoku: {
+    label: "Tengoku", hint: "Koto cyber · lame de cerisier",
+    play(c, ev) {
+      const d = out(c, { time: 0.19, fb: 0.3, tone: 2800 });
+      if (ev === "hover") tone(c, d, { type: "triangle", f: 1760, dur: 0.05, gain: 0.008, attack: 0.002, lp: 3000 });
+      if (ev === "nav") { tone(c, d, { type: "triangle", f: 880, dur: 0.16, gain: 0.024, attack: 0.002, lp: 2600 }); tone(c, d, { type: "triangle", f: 1175, at: 0.06, dur: 0.14, gain: 0.016, attack: 0.002, lp: 2600 }); }
+      if (ev === "select") { [587, 698, 880, 1047].forEach((f, i) => tone(c, d, { type: "triangle", f, at: i * 0.045, dur: 0.42, gain: 0.02, attack: 0.002, lp: 2400 })); noise(c, d, { dur: 0.06, gain: 0.018, f: 5200, q: 4 }); tone(c, d, { type: "sawtooth", f: 73, dur: 0.22, gain: 0.025, lp: 500 }); }
+      if (ev === "back") tone(c, d, { type: "triangle", f: 1047, f2: 698, dur: 0.2, gain: 0.02, attack: 0.002, lp: 2400 });
+    },
+  },
   aurum: {
     label: "Aurum", hint: "Or forgé · résonance",
     play(c, ev) {
@@ -244,7 +254,7 @@ const PACKS = {
 };
 
 // thème -> pack (les thèmes sans pack dédié prennent Abysse)
-export const THEME_SOUND = { monolithe: "monolithe", abysse: "abysse", olympe: "elysium", olympia: "elysium", neant: "neant", glacier: "glacier", neptune: "neptune", singularite: "singularite", blackhole: "blackhole", supernova: "supernova", helios: "helios", akira: "akira", aurum: "aurum", megapole: "megapole", biome: "biome", bunny: "bunny", albatre: "albatre", yorha: "yorha" };
+export const THEME_SOUND = { tengoku: "tengoku", monolithe: "monolithe", abysse: "abysse", olympe: "elysium", olympia: "elysium", neant: "neant", glacier: "glacier", neptune: "neptune", singularite: "singularite", blackhole: "blackhole", supernova: "supernova", helios: "helios", akira: "akira", aurum: "aurum", megapole: "megapole", biome: "biome", bunny: "bunny", albatre: "albatre", yorha: "yorha" };
 export const packForTheme = (theme) => THEME_SOUND[theme] || "abysse";
 export const SOUND_PACKS = Object.entries(PACKS).map(([key, v]) => ({ key, label: v.label, hint: v.hint }));
 export const isValidPack = (p) => p === "auto" || p === "silence" || !!PACKS[p];

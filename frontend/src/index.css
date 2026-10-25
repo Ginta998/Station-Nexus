@@ -1525,3 +1525,51 @@ figcaption{margin-top:10px;font-size:13px;color:var(--text-secondary);text-align
 .sx-sound-menu .ssm-modes button:hover{color:var(--text-primary)}
 .sx-sound-menu .ssm-modes button.on{color:var(--brand);border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,transparent)}
 .sx-global-sound{position:fixed;left:16px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:45}
+
+/* ================= TENGOKU — sakura cyberpunk (inspiration Stellar Blade) ================= */
+[data-theme="tengoku"] {
+  --bg-primary:#0a0609; --bg-secondary:#150a10; --brand:#ff2f5f; --brand-2:#ffc4d4;
+  --border-c:rgba(255,90,135,.22); --text-primary:#fff3f6; --text-secondary:#cfa3b2; --on-media:#ffffff; --on-media-2:rgba(255,255,255,.74);
+  --radius-base:3px; --border-width:1px; --shadow-1:0 0 26px rgba(255,47,95,.3); --scrim:rgba(10,6,9,.64);
+  --font-display:"Chakra Petch",sans-serif; --font-body:"Space Grotesk",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:.06em;
+}
+html[data-theme="tengoku"] .s-tengoku{display:block}
+html[data-theme="tengoku"] .comets{display:none}
+html[data-theme="tengoku"] .cb-motes span{--mote:color-mix(in srgb,var(--brand-2) 70%,transparent)}
+html[data-theme="tengoku"] .cb-halo{opacity:.22;background:radial-gradient(120% 80% at 50% -10%,#ff2f5f 0%,rgba(255,196,212,.25) 26%,transparent 50%)}
+html[data-theme="tengoku"] .cb-stars{opacity:.4}
+.cosmic-bg .s-tengoku .sun{position:absolute;top:7%;left:50%;transform:translateX(-50%);width:min(46vw,440px);aspect-ratio:1;border-radius:50%;
+  background:linear-gradient(180deg,#ffe1e9 0%,#ff8fab 38%,#ff2f5f 72%,#a3002c 100%);box-shadow:0 0 120px rgba(255,47,95,.45),0 0 260px rgba(255,140,170,.2);opacity:.55;
+  -webkit-mask:linear-gradient(#000 0 52%,transparent 52% 56%,#000 56% 64%,transparent 64% 69%,#000 69% 76%,transparent 76% 83%,#000 83% 88%,transparent 88%);
+  mask:linear-gradient(#000 0 52%,transparent 52% 56%,#000 56% 64%,transparent 64% 69%,#000 69% 76%,transparent 76% 83%,#000 83% 88%,transparent 88%);animation:tgSun 9s ease-in-out infinite alternate}
+@keyframes tgSun{to{opacity:.7;box-shadow:0 0 160px rgba(255,47,95,.55),0 0 300px rgba(255,140,170,.25)}}
+.cosmic-bg .s-tengoku .city{position:absolute;left:0;right:0;bottom:22%;height:34%;opacity:.85;background:
+  linear-gradient(#12070c,#12070c) 4% 100%/5% 62% no-repeat,linear-gradient(#170910,#170910) 10% 100%/7% 44% no-repeat,
+  linear-gradient(#12070c,#12070c) 19% 100%/4% 78% no-repeat,linear-gradient(#1a0a12,#1a0a12) 25% 100%/8% 36% no-repeat,
+  linear-gradient(#12070c,#12070c) 36% 100%/5% 58% no-repeat,linear-gradient(#170910,#170910) 62% 100%/6% 52% no-repeat,
+  linear-gradient(#12070c,#12070c) 70% 100%/4% 84% no-repeat,linear-gradient(#1a0a12,#1a0a12) 77% 100%/8% 40% no-repeat,
+  linear-gradient(#12070c,#12070c) 88% 100%/5% 66% no-repeat,linear-gradient(#170910,#170910) 96% 100%/6% 46% no-repeat}
+.cosmic-bg .s-tengoku .tower{position:absolute;bottom:22%;width:2.2%;background:linear-gradient(#ff2f5f,#2a0a14 30%,#12070c);box-shadow:0 0 18px rgba(255,47,95,.35)}
+.cosmic-bg .s-tengoku .tower.t1{left:15%;height:48%}
+.cosmic-bg .s-tengoku .tower.t2{right:20%;height:56%}
+.cosmic-bg .s-tengoku .tower::after{content:"";position:absolute;top:8%;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#ff2f5f;box-shadow:0 0 10px 3px #ff2f5f;animation:tgBlink 2.4s steps(2) infinite}
+@keyframes tgBlink{50%{opacity:.15}}
+.cosmic-bg .s-tengoku .torii{position:absolute;left:50%;bottom:22%;transform:translateX(-50%);width:min(30vw,280px);height:min(20vw,190px);opacity:.9;
+  background:linear-gradient(#ff2f5f,#ff2f5f) 0 0/100% 9% no-repeat,linear-gradient(#c3002f,#c3002f) 8% 22%/84% 6% no-repeat,
+  linear-gradient(#b0002a,#b0002a) 18% 100%/7% 100% no-repeat,linear-gradient(#b0002a,#b0002a) 82% 100%/7% 100% no-repeat;
+  filter:drop-shadow(0 0 14px rgba(255,47,95,.55))}
+.cosmic-bg .s-tengoku .g{position:absolute;left:-50%;right:-50%;bottom:0;height:24%;background-image:linear-gradient(rgba(255,70,120,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(255,70,120,.55) 1px,transparent 1px);
+  background-size:46px 46px;opacity:.28;transform:perspective(300px) rotateX(72deg);transform-origin:bottom;-webkit-mask:linear-gradient(transparent,#000 60%);mask:linear-gradient(transparent,#000 60%)}
+.cosmic-bg .s-tengoku .sign{position:absolute;right:5%;top:16%;writing-mode:vertical-rl;font-family:"Chakra Petch",sans-serif;font-size:clamp(28px,4vw,56px);font-weight:700;letter-spacing:.2em;
+  color:#ffc4d4;text-shadow:0 0 8px #ff2f5f,0 0 24px #ff2f5f,0 0 48px rgba(255,47,95,.6);opacity:.55;animation:tgNeon 6s linear infinite}
+@keyframes tgNeon{0%,18%,22%,60%,100%{opacity:.55}20%,61%{opacity:.15}}
+.cosmic-bg .s-tengoku::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,60,110,.05) 0 1px,transparent 1px 3px)}
+.cosmic-bg .petals{display:none;position:absolute;inset:0;overflow:hidden;pointer-events:none}
+html[data-theme="tengoku"] .petals{display:block}
+.cosmic-bg .petals i{position:absolute;top:-6vh;border-radius:150% 0 150% 0;background:linear-gradient(135deg,#ffe3ea,#ffb3c6 70%);box-shadow:0 0 6px rgba(255,180,200,.45);opacity:.85;animation:tgPetal linear infinite}
+.cosmic-bg .petals i.r{background:linear-gradient(135deg,#ff6d8f,#e3103f 75%);box-shadow:0 0 8px rgba(255,47,95,.55)}
+@keyframes tgPetal{0%{transform:translate(0,0) rotate(0deg) rotateY(0deg)}25%{transform:translate(calc(var(--drift) * .4),28vh) rotate(110deg) rotateY(160deg)}
+  50%{transform:translate(calc(var(--drift) * -.2),56vh) rotate(210deg) rotateY(320deg)}100%{transform:translate(var(--drift),112vh) rotate(420deg) rotateY(640deg)}}
+.cosmic-bg[data-reduced] .petals,html[data-motion="reduced"] .cosmic-bg .petals i{animation:none;display:none}
+html[data-theme="tengoku"]{--card-r:3px;--card-sh:0 0 0 1px rgba(255,47,95,.55),0 0 18px -4px rgba(255,47,95,.6)}
+html[data-theme="tengoku"] .sx-exp .poster:hover .art{box-shadow:-3px 0 0 rgba(255,47,95,.65),3px 0 0 rgba(255,196,212,.45),0 0 22px -4px rgba(255,47,95,.75)}
