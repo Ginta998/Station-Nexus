@@ -3,7 +3,7 @@ import VersionHistory from "@/components/VersionHistory";
 import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoExpandOutline, IoContractOutline, IoCreateOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset } from "@/lib/api";
-import RichTextEditor from "@/components/RichTextEditor";
+import BlockRichEditor from "@/components/BlockRichEditor";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
@@ -381,7 +381,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
                       <IoCreateOutline /> {openCh[i] ? "Masquer la rédaction" : (ch.content ? "Modifier le chapitre" : "Rédiger le chapitre")}
                     </button>
                     {openCh[i] && (
-                      <RichTextEditor creationId={isEdit ? initial.id : form.id} value={ch.rich ? (ch.content || "") : (ch.content ? ch.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : "")}
+                      <BlockRichEditor creationId={isEdit ? initial.id : form.id} value={ch.rich ? (ch.content || "") : (ch.content ? ch.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : "")}
                         onChange={(html) => setForm((f) => ({ ...f, chapters: f.chapters.map((c, x) => (x === i ? { ...c, content: html, rich: true } : c)) }))} />
                     )}
                     {/* per-chapter music */}

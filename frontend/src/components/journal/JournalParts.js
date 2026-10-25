@@ -1,4 +1,6 @@
 import { mediaUrl } from "@/lib/api";
+import { inlineMd } from "@/lib/blocks";
+import { IoMusicalNotes, IoPause } from "react-icons/io5";
 
 export const MOIS_LONG = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 export const fmtDate = (d) => {
@@ -37,19 +39,22 @@ export function JournalCard({ e, cat, creation, onOpen, idx = 0 }) {
 
 function Paragraphs({ text, first }) {
   return String(text || "").split(/\n{2,}/).map((p, i) => (
-    <p key={i} className={first && i === 0 ? "jr-p jr-drop" : "jr-p"}>{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>
+    <p key={i} className={first && i === 0 ? "jr-p jr-drop" : "jr-p"} dangerouslySetInnerHTML={{ __html: inlineMd(p) }} />
   ));
 }
 
 // rendu des blocs d'une entrée
-export function JournalBlocks({ blocks = [], onImage }) {
+export function JournalBlocks({ blocks = [], onImage, onMusic, playingUrl }) {
   let firstText = true;
   return blocks.map((b, i) => {
     const cap = b.caption ? <figcaption>{b.caption}</figcaption> : null;
     switch (b.type) {
       case "heading": return <h2 key={i} className="jr-h2">{b.text}</h2>;
       case "text": { const f = firstText; firstText = false; return <div key={i} className="jr-text"><Paragraphs text={b.text} first={f} /></div>; }
-      case "quote": return <blockquote key={i} className="jr-quote"><p>{b.text}</p>{b.author && <cite>— {b.author}</cite>}</blockquote>;
+      case "music": { const on = playingUrl === mediaUrl(b.url); return b.url ? (
+        <p key={i} className="jr-music-p"><button type="button" className="sx-music-cue" data-active={on ? "1" : "0"} onClick={() => onMusic?.(mediaUrl(b.url), b.caption)} data-testid={`journal-music-${i}`}>{on ? <IoPause /> : <IoMusicalNotes />} {b.caption || "Musique"}</button></p>
+      ) : null; }
+      case "quote": return <blockquote key={i} className="jr-quote"><p dangerouslySetInnerHTML={{ __html: inlineMd(b.text) }} />{b.author && <cite>— {b.author}</cite>}</blockquote>;
       case "image": return b.url ? <figure key={i} className={"jr-fig" + (b.wide ? " wide" : "")}><img src={mediaUrl(b.url)} alt={b.caption || ""} loading="lazy" onClick={() => onImage?.(mediaUrl(b.url))} />{cap}</figure> : null;
       case "sketch": return b.url ? <figure key={i} className="jr-sketch" style={{ "--rot": `${i % 2 ? 1.2 : -1.4}deg` }}><span className="tape" /><img src={mediaUrl(b.url)} alt={b.caption || "Croquis"} loading="lazy" onClick={() => onImage?.(mediaUrl(b.url))} />{cap}</figure> : null;
       case "gallery": return (b.urls || []).length ? (

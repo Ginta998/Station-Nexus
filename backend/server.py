@@ -2421,7 +2421,7 @@ async def push_test(user=Depends(get_current_user)):
 
 # ---------------- Journal de bord ----------------
 DEFAULT_JOURNAL_CATEGORIES = [("Nouveautés", "#3f86ff"), ("Coulisses", "#e8524a"), ("Making-of", "#d9a62e"), ("Croquis", "#8fd9a8"), ("Annonces", "#c4b5fd")]
-JOURNAL_BLOCK_TYPES = {"text", "heading", "image", "gallery", "sketch", "youtube", "quote"}
+JOURNAL_BLOCK_TYPES = {"text", "heading", "image", "gallery", "sketch", "youtube", "quote", "music"}
 
 
 class JournalCategory(BaseModel):
@@ -2583,11 +2583,11 @@ async def journal_delete(eid: str, _admin=Depends(require_admin)):
 @api_router.post("/journal-files")
 async def journal_upload(file: UploadFile = File(...), _admin=Depends(require_admin)):
     data = await file.read()
-    if len(data) > 15 * 1024 * 1024:
-        raise HTTPException(413, "Image trop lourde (max 15 Mo)")
+    if len(data) > 25 * 1024 * 1024:
+        raise HTTPException(413, "Fichier trop lourd (max 25 Mo)")
     ct = file.content_type or "image/jpeg"
-    if not ct.startswith("image/"):
-        raise HTTPException(400, "Seules les images sont acceptées")
+    if not (ct.startswith("image/") or ct.startswith("audio/")):
+        raise HTTPException(400, "Seules les images et les musiques sont acceptées")
     fid = str(uuid.uuid4())
     ext = (file.filename or "img.jpg").rsplit(".", 1)[-1].lower()[:5]
     path = f"{OBJ_APP_NAME}/journal/{fid}.{ext}"

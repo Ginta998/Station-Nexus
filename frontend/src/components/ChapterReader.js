@@ -3,7 +3,7 @@ import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown,
 import { useQueryClient } from "@tanstack/react-query";
 import { useApp } from "@/context/AppContext";
 import { chapterAudioUrl, readingAudioUrl, getCreationFull, updateCreation } from "@/lib/api";
-import RichTextEditor from "@/components/RichTextEditor";
+import BlockRichEditor from "@/components/BlockRichEditor";
 import { toast } from "sonner";
 
 function useReveal(deps) {
@@ -350,7 +350,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
           </div>
           <div className="flex-1 overflow-y-auto px-4 md:px-8 py-5">
             <div className="max-w-2xl mx-auto">
-              <RichTextEditor value={editHtml} onChange={setEditHtml} creationId={item.id} placeholder="Écris ou modifie ton chapitre…" />
+              <BlockRichEditor value={editHtml} onChange={setEditHtml} creationId={item.id} />
             </div>
           </div>
         </div>

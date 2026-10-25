@@ -12,7 +12,9 @@ export default function JournalEntry() {
   const { id } = useParams();
   const nav = useNavigate();
   const qc = useQueryClient();
-  const { sfx, isAdmin } = useApp();
+  const { sfx, isAdmin, toggleReadingUrl, playingId, isPlaying } = useApp();
+  const onMusic = (url) => { sfx("select"); toggleReadingUrl(url, "cue:" + url, { loop: false }); };
+  const playingUrl = isPlaying && playingId?.startsWith("cue:") ? playingId.slice(4) : "";
   const [lightbox, setLightbox] = useState("");
   const { data: e, isError } = useQuery({ queryKey: ["journal-entry", id], queryFn: () => getJournalEntry(id) });
   const { data: all = [] } = useQuery({ queryKey: ["journal", isAdmin], queryFn: () => listJournal() });
@@ -54,7 +56,7 @@ export default function JournalEntry() {
           </button>
         )}
         <div className="jr-rule" />
-        <div className="jr-body"><JournalBlocks blocks={e.blocks} onImage={setLightbox} /></div>
+        <div className="jr-body"><JournalBlocks blocks={e.blocks} onImage={setLightbox} onMusic={onMusic} playingUrl={playingUrl} /></div>
 
         <nav className="jr-pn">
           {prev ? <button onClick={() => nav(`/journal/${prev.id}`)} data-testid="journal-prev"><small className="mono">← ENTRÉE PRÉCÉDENTE</small>{prev.title}</button> : <span />}

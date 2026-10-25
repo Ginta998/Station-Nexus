@@ -799,3 +799,11 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Correctifs : éditeur bloque l enregistrement tant que la version complète n est pas chargée (erreur visible), délai 120 s ; PUT /creations garde episodes/chapters/gallery/poster/bg_image/intention_* existants si le payload est vide, sauf ?allow_clear=1 (envoyé seulement par l éditeur complet). Vérifié par curl.
 - Récupération : sauvegarde à un instant précis (PITR, 7 jours) par le support Emergent (support@emergent.sh) : base tengoku-launcher-test_database, collection creations, id 8c46e698-97aa-4974-a196-9c2aedfa060d, état juste avant 2026-10-24T14:05:05Z.
 - Historique des versions : collection creation_versions (10 dernières, snapshot avant chaque PUT et avant restauration), GET /creations/{cid}/versions, POST /creations/{cid}/versions/{vid}/restore (admin). Bouton Historique dans EditorDialog (VersionHistory.js). Vérifié par curl. Redéploiement lancé avec les correctifs.
+
+## 2026-10-25 — Éditeur unique (journal + chapitres) avec musique
+- Support : épisodes USF non récupérés.
+- lib/blocks.js : blocksToHtml / htmlToBlocks (gras **, italique *, repères musicaux sx-music-cue, images, galerie, croquis, YouTube, citations). Conversion vérifiée dans un navigateur.
+- BlockRichEditor remplace RichTextEditor (EditorDialog chapitres + ChapterReader) : édition en blocs, enregistre le HTML lu par le lecteur (compatible anciens chapitres).
+- Bloc « Musique » (import d'un fichier ou musique de la station) dans le journal et les chapitres ; lecture via toggleReadingUrl. /api/journal-files accepte l'audio (25 Mo).
+- Épisodes : seulement un résumé court (textarea), non converti.
+
