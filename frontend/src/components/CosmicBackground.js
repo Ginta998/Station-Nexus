@@ -201,7 +201,7 @@ export default function CosmicBackground() {
       snow: Array.from({ length: 40 }, () => ({ x: rnd(0, 100), s: rnd(2, 6), dur: rnd(5, 12), delay: rnd(0, 7) })),
       dust: Array.from({ length: 46 }, () => ({ x: rnd(0, 100), y: rnd(0, 100), dur: rnd(9, 19), delay: rnd(0, 10) })),
       comets: Array.from({ length: 4 }, (_, i) => ({ top: rnd(2, 40), dur: rnd(7, 12), delay: -i * rnd(5, 9) - rnd(0, 4) })),
-      petals: Array.from({ length: 30 }, (_, i) => ({ x: rnd(-5, 100), s: rnd(9, 17), dur: rnd(10, 19), delay: rnd(0, 18), drift: rnd(-22, 22), red: i % 3 === 0 })),
+      petals: Array.from({ length: 22 }, (_, i) => ({ x: rnd(-5, 100), s: rnd(9, 17), dur: rnd(10, 19), delay: rnd(0, 18), drift: rnd(-22, 22), red: i % 3 === 0 })),
     };
   }, []);
 
@@ -278,7 +278,7 @@ export default function CosmicBackground() {
         <div className="sc s-aurora2" />
         <div className="sc s-blackhole"><div className="disk" /><div className="core" /></div>
         <div className="sc s-akira"><div className="moon" /><div className="g" /></div>
-        <div className="sc s-tengoku"><div className="sun" /><div className="tower t1" /><div className="tower t2" /><div className="torii" /><div className="city" /><div className="g" /><div className="sign">天国</div></div>
+        <div className="sc s-tengoku"><div className="art" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/themes/tengoku.webp)` }} /><div className="glow" /><div className="rays" /><div className="vig" /></div>
         <div className="sc s-neptune"><div className="body" /><div className="cur" /></div>
         <div className="sc s-yorha"><div className="yg" /><div className="emblem"><span /><span /><span /></div><div className="sun" /><div className="hz" /></div>
         <div className="sc s-megapole"><div className="sky" /><div className="city" /></div>

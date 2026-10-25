@@ -13,7 +13,6 @@ export const THEMES = [
   { key: "biome", name: "Biome", kanji: "森", tagline: "La vie reprend le contrôle", swatch: ["#030906", "#4fb87a", "#8fd9a8"] },
   { key: "monolithe", name: "Monolithe", kanji: "石", tagline: "L'acier ne dort jamais", swatch: ["#060608", "#e2e7ef", "#9fb2cc"] },
   { key: "neant", name: "Néant", kanji: "無", tagline: "Quelque chose respire dans le noir", swatch: ["#000000", "#ffffff", "#aaaaaa"] },
-  { key: "bunny", name: "Bunny", kanji: "兎", tagline: "Tout en douceur", swatch: ["#ebe2e5", "#f4a9c0", "#9fe0dc"] },
   { key: "albatre", name: "Albâtre", kanji: "白", tagline: "La pierre se souvient", swatch: ["#e7e1d2", "#1a1611", "#8c7a46"] },
   { key: "olympe", name: "Elysium", kanji: "雲", tagline: "Le marbre des dieux", swatch: ["#040405", "#dfe4ec", "#9aa3b1"] },
   { key: "olympia", name: "Olympe", kanji: "神", tagline: "La lumière des cimes", swatch: ["#eef0f3", "#7d8592", "#c6ccd5"] },

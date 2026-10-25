@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoClose, IoLogoGoogle, IoMailOutline, IoHeart, IoNotifications } from "react-icons/io5";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 
 export default function AuthDialog() {
-  const { authOpen, closeAuth, register, login, startGoogle } = useAuth();
+  const { authOpen, authMode, closeAuth, register, login, startGoogle } = useAuth();
   const [mode, setMode] = useState("login");
+  useEffect(() => { if (authOpen) setMode(authMode || "login"); }, [authOpen, authMode]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");

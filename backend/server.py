@@ -383,6 +383,11 @@ class SiteSettings(BaseModel):
         "Choisis le palier qui te ressemble. Tu peux résilier à tout moment."
     )
     about_title: str = "À propos de Station Nexus"
+    home_vision_title: str = "Un univers créatif, une seule station"
+    home_vision_text: str = (
+        "Station Nexus réunit livres, films et séries dans un seul endroit vivant — un lanceur pensé comme un vaisseau.\n\n"
+        "Chaque création y a sa place, chaque visiteur devient voyageur. Œuvre après œuvre, on construit ensemble un univers connecté."
+    )
     about_body: str = (
         "Station Nexus est né d'une envie simple : réunir tout mon univers créatif — livres, films et séries — dans un seul endroit vivant, à mon image.\n\n"
         "Ma vision : offrir une expérience immersive, cinématographique et personnelle, où chaque création a sa place et où les lecteurs deviennent des voyageurs.\n\n"

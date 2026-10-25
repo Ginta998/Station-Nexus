@@ -125,7 +125,7 @@ function App() {
             <Route path="/payment/success" element={<PaymentResult mode="success" />} />
             <Route path="/payment/cancel" element={<PaymentResult mode="cancel" />} />
           </Routes>
-          <CosmicBunny />
+          {/*CB*/}
           <GlobalSound />
           <PushClickNav />
           <GuidedTour />

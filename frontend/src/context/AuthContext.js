@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
   const lastSync = useRef("");
 
   const setToken = (t) => { if (t) localStorage.setItem("sx_token", t); else localStorage.removeItem("sx_token"); };
@@ -171,7 +172,7 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, ready, authOpen, openAuth: () => setAuthOpen(true), closeAuth: () => setAuthOpen(false), register, login, startGoogle, logout, claimAdmin }}>
+    <AuthContext.Provider value={{ user, ready, authOpen, authMode, openAuth: (m) => { setAuthMode(m === "register" ? "register" : "login"); setAuthOpen(true); }, closeAuth: () => setAuthOpen(false), register, login, startGoogle, logout, claimAdmin }}>
       {children}
     </AuthContext.Provider>
   );

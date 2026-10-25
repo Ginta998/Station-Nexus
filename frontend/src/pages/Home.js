@@ -5,6 +5,7 @@ import { IoPlay, IoSearch, IoCreateOutline, IoTrashOutline, IoStar, IoStarOutlin
 import { toast } from "sonner";
 import { listCreations, listCategories, deleteCreation, getMembershipPlan, getSettings, updateSettings, posterUrl, bgUrl, listAnnouncements, listJournal, listJournalCategories, mediaUrl } from "@/lib/api";
 import { fmtDate as fmtJournalDate } from "@/components/journal/JournalParts";
+import HomeVision from "@/components/HomeVision";
 import { THEMES } from "@/lib/themes";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -498,10 +499,12 @@ export default function Home() {
           </div>
         </section>
 
+        <HomeVision />
+
         {/* ---------- CARTE D'EMBARQUEMENT ---------- */}
         <section className="sx-pass-wrap">
           <div className="seclabel"><div className="lt"><h2>Carte d'embarquement</h2><span className="kj">搭乗</span></div></div>
-          <div className="boarding" onClick={() => { sfx("select"); nav("/soutien"); }}>
+          <div className="boarding" data-testid="home-boarding-pass" onClick={() => { sfx("select"); if (!user) openAuth("register"); else setProfileOpen(true); }}>
             <div className="bp-main">
               <div className="bp-k mono">STATION NEXUS · EMBARQUEMENT</div>
               <div className="bp-name">{membershipActive ? "Membre à bord" : "Explorateur libre"}</div>
@@ -515,7 +518,7 @@ export default function Home() {
             <div className="bp-stub">
               <div className="bp-k mono">PORTE</div>
               <div className="bp-gate">{membershipActive ? "A1" : "—"}</div>
-              <span className="bp-cta">{membershipActive ? "Mon accès" : "Embarquer"} <IoArrowForward size={14} /></span>
+              <span className="bp-cta">{!user ? "Créer mon compte" : "Mon profil"} <IoArrowForward size={14} /></span>
             </div>
           </div>
         </section>
