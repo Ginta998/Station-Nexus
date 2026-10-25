@@ -793,3 +793,8 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Pages /journal (filtres catégorie/mois/création), /journal/:id (lecture éditoriale, lightbox), /journal/nouveau et /journal/:id/modifier (éditeur à blocs : texte, titre, image, galerie, croquis, YouTube, citation). /nouveautes redirige vers /journal. Accueil : entrées show_home (sinon cartes d exemple). Fiche création : section Journal de bord.
 - Non testé (utilisateur a demandé de limiter les tests).
 - Incident : épisodes USF disparus en production -> diagnostic deployer lancé (USF absent de la base preview).
+
+## 2026-10-24 — Incident USF (perte d épisodes en production)
+- Cause : EditorDialog s initialisait avec la version allégée (episodes/chapters vides) et chargeait la version complète en silence (.catch vide, timeout 20 s). Enregistrer avant/sans ce chargement écrasait episodes=[] (PUT remplace tous les champs). USF vidé le 2026-10-24T14:05:05Z.
+- Correctifs : éditeur bloque l enregistrement tant que la version complète n est pas chargée (erreur visible), délai 120 s ; PUT /creations garde episodes/chapters/gallery/poster/bg_image/intention_* existants si le payload est vide, sauf ?allow_clear=1 (envoyé seulement par l éditeur complet). Vérifié par curl.
+- Récupération : sauvegarde à un instant précis (PITR, 7 jours) par le support Emergent (support@emergent.sh) : base tengoku-launcher-test_database, collection creations, id 8c46e698-97aa-4974-a196-9c2aedfa060d, état juste avant 2026-10-24T14:05:05Z.

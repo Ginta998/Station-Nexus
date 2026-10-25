@@ -648,11 +648,20 @@ async def create_creation(payload: CreationInput, _admin=Depends(require_admin))
     return obj
 
 
+PROTECTED_CONTENT_FIELDS = ("episodes", "chapters", "gallery", "poster", "bg_image", "intention_images", "intention_text")
+
+
 @api_router.put("/creations/{cid}", response_model=Creation)
-async def update_creation(cid: str, payload: CreationInput, _admin=Depends(require_admin)):
-    if not await db.creations.find_one({"id": cid}):
+async def update_creation(cid: str, payload: CreationInput, allow_clear: int = 0, _admin=Depends(require_admin)):
+    old = await db.creations.find_one({"id": cid}, {"_id": 0})
+    if not old:
         raise HTTPException(404, "Création introuvable")
     data = payload.model_dump()
+    # garde-fou : un enregistrement ne vide jamais épisodes/chapitres/images existants sans demande explicite
+    if not allow_clear:
+        for k in PROTECTED_CONTENT_FIELDS:
+            if not data.get(k) and old.get(k):
+                data[k] = old[k]
     data["updated_at"] = now_iso()
     await db.creations.update_one({"id": cid}, {"$set": data})
     doc = await db.creations.find_one({"id": cid}, {"_id": 0})

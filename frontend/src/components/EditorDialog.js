@@ -24,6 +24,7 @@ const readFile = (file, cb, max = 3) => {
 
 export default function EditorDialog({ open, onClose, initial, categories = [], onSaved }) {
   const [form, setForm] = useState(empty);
+  const [fullState, setFullState] = useState("ok"); // ok | loading | error — on n'enregistre jamais une version incomplète
   const [saving, setSaving] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [audioFile, setAudioFile] = useState(null);
@@ -39,10 +40,13 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   useEffect(() => {
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
+      setFullState("ok");
       setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFilmFile(null); setTrailerFile(null); setIntentionFile(null); setVideoProg({ film: 0, trailer: 0 }); setFullscreen(false);
       // fetch full item (with base64 images) so editing preserves poster/bg/gallery/chapters
       if (initial && initial.id) {
-        getCreationFull(initial.id).then((full) => setForm((f) => ({ ...empty, ...full }))).catch(() => {});
+        setFullState("loading");
+        getCreationFull(initial.id).then((full) => { setForm({ ...empty, ...full }); setFullState("ok"); })
+          .catch(() => { setFullState("error"); toast.error("Impossible de charger la création complète — enregistrement bloqué pour protéger tes épisodes"); });
       }
     }
   }, [open, initial]); // eslint-disable-line
@@ -88,10 +92,11 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
 
   const save = async () => {
     if (!form.title.trim()) return toast.error("Le titre est requis");
+    if (isEdit && fullState !== "ok") return toast.error(fullState === "loading" ? "Chargement de la création en cours… réessaie dans un instant" : "La création complète n'a pas pu être chargée : ferme et rouvre l'éditeur");
     setSaving(true);
     try {
       const payload = { ...form, order: Number(form.order) || 0 };
-      const saved = isEdit ? await updateCreation(initial.id, payload) : await createCreation(payload);
+      const saved = isEdit ? await updateCreation(initial.id, payload, true) : await createCreation(payload);
       if (audioFile) await uploadAudio(saved.id, audioFile);
       if (readingFile) await uploadReadingAudio(saved.id, readingFile);
       if (filmFile) await uploadVideo(saved.id, "film", filmFile, (p) => setVideoProg((s) => ({ ...s, film: p })));
@@ -100,7 +105,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
       if (intentionFile) {
         try {
           const a = await uploadAsset(saved.id, intentionFile, "file", intentionFile.name);
-          await updateCreation(saved.id, { ...payload, intention_file_id: a.id, intention_file_name: a.name });
+          await updateCreation(saved.id, { ...payload, intention_file_id: a.id, intention_file_name: a.name }, true);
         } catch { toast.error("Dossier trop lourd (max 12 Mo) ?"); }
       }
       // per-chapter music (chapters keep order → match by index to saved.chapters)

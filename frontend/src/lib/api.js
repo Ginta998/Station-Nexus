@@ -23,11 +23,12 @@ export const authClaimAdmin = (pin) => api.post("/auth/claim-admin", { pin }).th
 export const listCreations = (category) =>
   api.get("/creations", { params: category ? { category } : {} }).then((r) => r.data);
 export const getCreation = (id) => api.get(`/creations/${id}`).then((r) => r.data);
-export const getCreationFull = (id) => api.get(`/creations/${id}`, { params: { media: 1 } }).then((r) => r.data);
+export const getCreationFull = (id) => api.get(`/creations/${id}`, { params: { media: 1 }, timeout: 120000 }).then((r) => r.data);
 export const posterUrl = (id, v, w) => `${API}/creations/${id}/poster?${v ? `v=${encodeURIComponent(v)}` : ""}${w ? `&w=${w}` : ""}`;
 export const bgUrl = (id, v) => `${API}/creations/${id}/bg${v ? `?v=${encodeURIComponent(v)}` : ""}`;
 export const createCreation = (p) => api.post("/creations", p).then((r) => r.data);
-export const updateCreation = (id, p) => api.put(`/creations/${id}`, p).then((r) => r.data);
+// allowClear : uniquement quand l'éditeur a chargé la version complète (on peut alors vraiment vider une liste)
+export const updateCreation = (id, p, allowClear = false) => api.put(`/creations/${id}`, p, { params: allowClear ? { allow_clear: 1 } : {}, timeout: 120000 }).then((r) => r.data);
 export const deleteCreation = (id) => api.delete(`/creations/${id}`).then((r) => r.data);
 export const uploadAudio = (id, file) => {
   const fd = new FormData(); fd.append("file", file);
