@@ -786,3 +786,10 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Identité : favicon/manifeste dynamiques (/api/site/icon, /api/site/manifest.json), nouvelle icône backend/assets/default_icon.png, description site_description ; réglages dans Paramètres > Admin. Anciens favicon/icônes/manifest supprimés.
 - Paramètres > Son : musique avant sons d interface.
 - Utilisateur : ne plus lancer de tests inutiles sauf nécessité/demande.
+
+## 2026-10-24 — Admin sécurisé + Journal de bord
+- require_admin sur 35+ routes d écriture (+ GET /subscribers). Route /auth/claim-admin (PIN 1234) supprimée. Front : isAdmin = user.is_admin uniquement, PIN retiré des Paramètres.
+- Journal : collections journal_entries / journal_categories / journal_files (images en object storage). Routes /api/journal*, /api/journal-files*. Push à chaque publication. Migration auto des annonces si journal vide.
+- Pages /journal (filtres catégorie/mois/création), /journal/:id (lecture éditoriale, lightbox), /journal/nouveau et /journal/:id/modifier (éditeur à blocs : texte, titre, image, galerie, croquis, YouTube, citation). /nouveautes redirige vers /journal. Accueil : entrées show_home (sinon cartes d exemple). Fiche création : section Journal de bord.
+- Non testé (utilisateur a demandé de limiter les tests).
+- Incident : épisodes USF disparus en production -> diagnostic deployer lancé (USF absent de la base preview).
