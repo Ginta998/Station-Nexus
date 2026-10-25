@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import VersionHistory from "@/components/VersionHistory";
 import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoExpandOutline, IoContractOutline, IoCreateOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset } from "@/lib/api";
@@ -24,6 +25,7 @@ const readFile = (file, cb, max = 3) => {
 
 export default function EditorDialog({ open, onClose, initial, categories = [], onSaved }) {
   const [form, setForm] = useState(empty);
+  const [showHistory, setShowHistory] = useState(false);
   const [fullState, setFullState] = useState("ok"); // ok | loading | error — on n'enregistre jamais une version incomplète
   const [saving, setSaving] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
@@ -136,12 +138,14 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
         <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: "var(--border-c)" }}>
           <h2 className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{isEdit ? "Modifier la création" : "Nouvelle création"}</h2>
           <div className="flex items-center gap-1">
+            {isEdit && <button data-testid="editor-history" onClick={() => setShowHistory((v) => !v)} className="px-3 py-1 text-xs border mr-1" style={{ borderColor: "var(--border-c)", color: showHistory ? "var(--brand)" : "var(--text-secondary)", borderRadius: "var(--radius-base)" }}>Historique</button>}
             <button data-testid="editor-fullscreen" onClick={() => setFullscreen((v) => !v)} className="p-1" style={{ color: "var(--text-secondary)" }} title={fullscreen ? "Taille normale" : "Plein écran"}>
               {fullscreen ? <IoContractOutline size={20} /> : <IoExpandOutline size={20} />}
             </button>
             <button data-testid="editor-close" onClick={onClose} className="p-1" style={{ color: "var(--text-secondary)" }}><IoClose size={22} /></button>
           </div>
         </div>
+        {isEdit && showHistory && <VersionHistory creationId={initial.id} onRestored={(full) => { setForm({ ...empty, ...full }); setFullState("ok"); onSaved?.(full); }} />}
 
         <div className={`p-5 space-y-4 overflow-y-auto ${fullscreen ? "flex-1" : "max-h-[70vh]"}`}>
           <div className="flex gap-4">

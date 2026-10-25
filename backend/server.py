@@ -651,11 +651,45 @@ async def create_creation(payload: CreationInput, _admin=Depends(require_admin))
 PROTECTED_CONTENT_FIELDS = ("episodes", "chapters", "gallery", "poster", "bg_image", "intention_images", "intention_text")
 
 
+MAX_VERSIONS = 10
+
+
+async def _snapshot_creation(doc: dict):
+    """Garde une copie de la création avant chaque modification (10 dernières)."""
+    cid = doc["id"]
+    await db.creation_versions.insert_one({
+        "id": str(uuid.uuid4()), "creation_id": cid, "saved_at": now_iso(), "title": doc.get("title", ""),
+        "episodes_count": len(doc.get("episodes") or []), "chapters_count": len(doc.get("chapters") or []), "snapshot": doc,
+    })
+    old_ids = [v["id"] async for v in db.creation_versions.find({"creation_id": cid}, {"_id": 0, "id": 1}).sort("saved_at", -1).skip(MAX_VERSIONS)]
+    if old_ids:
+        await db.creation_versions.delete_many({"id": {"$in": old_ids}})
+
+
+@api_router.get("/creations/{cid}/versions")
+async def list_creation_versions(cid: str, _admin=Depends(require_admin)):
+    return await db.creation_versions.find({"creation_id": cid}, {"_id": 0, "snapshot": 0}).sort("saved_at", -1).to_list(MAX_VERSIONS)
+
+
+@api_router.post("/creations/{cid}/versions/{vid}/restore", response_model=Creation)
+async def restore_creation_version(cid: str, vid: str, _admin=Depends(require_admin)):
+    v = await db.creation_versions.find_one({"id": vid, "creation_id": cid}, {"_id": 0})
+    cur = await db.creations.find_one({"id": cid}, {"_id": 0})
+    if not v or not cur:
+        raise HTTPException(404, "Version introuvable")
+    await _snapshot_creation(cur)  # la version actuelle reste récupérable
+    snap = {k: val for k, val in v["snapshot"].items() if k != "id"}
+    snap["updated_at"] = now_iso()
+    await db.creations.update_one({"id": cid}, {"$set": snap})
+    return Creation(**await db.creations.find_one({"id": cid}, {"_id": 0}))
+
+
 @api_router.put("/creations/{cid}", response_model=Creation)
 async def update_creation(cid: str, payload: CreationInput, allow_clear: int = 0, _admin=Depends(require_admin)):
     old = await db.creations.find_one({"id": cid}, {"_id": 0})
     if not old:
         raise HTTPException(404, "Création introuvable")
+    await _snapshot_creation(old)
     data = payload.model_dump()
     # garde-fou : un enregistrement ne vide jamais épisodes/chapitres/images existants sans demande explicite
     if not allow_clear:
