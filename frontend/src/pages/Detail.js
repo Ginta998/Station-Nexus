@@ -39,6 +39,7 @@ export default function Detail() {
   const [gameOpen, setGameOpen] = useState(false);
   const [cinemaKind, setCinemaKind] = useState(null); // "film" | "trailer" | null
   const [readerStart, setReaderStart] = useState(null);
+  const [readerUnit, setReaderUnit] = useState("chapters");
   const [showEpisodes, setShowEpisodes] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [lightbox, setLightbox] = useState(null);
@@ -153,7 +154,7 @@ export default function Detail() {
       document.querySelector('[data-testid="detail-paywall"]')?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    if (item.launch_type === "chapters") { setReaderStart(null); setChaptersOpen(true); }
+    if (item.launch_type === "chapters") { setReaderUnit("chapters"); setReaderStart(null); setChaptersOpen(true); }
     else if (item.launch_type === "game") setGameOpen(true);
     else if (item.launch_type === "reader") setReaderOpen(true);
     else if (item.launch_type === "episodes") setShowEpisodes(true);
@@ -179,14 +180,15 @@ export default function Detail() {
       document.querySelector('[data-testid="detail-paywall"]')?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    sfx("select"); setReaderStart(i); setChaptersOpen(true);
+    sfx("select"); setReaderUnit("chapters"); setReaderStart(i); setChaptersOpen(true);
   };
 
   const openEpisode = (i) => {
     const ep = item.episodes?.[i];
     if (!ep) return;
     try { localStorage.setItem("sx_eplast_" + item.id, String(i)); } catch (_) {}
-    if (ep.url) { sfx("select"); window.open(ep.url, "_blank", "noopener,noreferrer"); }
+    if (ep.content) { sfx("select"); setReaderUnit("episodes"); setReaderStart(i); setChaptersOpen(true); }
+    else if (ep.url) { sfx("select"); window.open(ep.url, "_blank", "noopener,noreferrer"); }
     else { toast.info("Aucun lien pour cet épisode."); }
   };
 
@@ -539,7 +541,7 @@ export default function Detail() {
         </div>
       )}
 
-      {chaptersOpen && <ChapterReader item={item} startChapter={readerStart} onClose={() => setChaptersOpen(false)} onComment={goToComments} />}
+      {chaptersOpen && <ChapterReader key={readerUnit} item={item} unitKey={readerUnit} startChapter={readerStart} onClose={() => setChaptersOpen(false)} onComment={goToComments} />}
 
       {cinemaKind && <CinemaPlayer item={item} kind={cinemaKind} onClose={() => setCinemaKind(null)} />}
 

@@ -107,6 +107,8 @@ class Episode(BaseModel):
     description: Optional[str] = ""
     url: Optional[str] = ""
     image: Optional[str] = ""  # data uri / url — vignette de l'épisode (style Canal+)
+    content: Optional[str] = ""  # texte rédigé de l'épisode (HTML du lecteur)
+    rich: bool = False
 
 
 class Chapter(BaseModel):

@@ -3,7 +3,7 @@ import VersionHistory from "@/components/VersionHistory";
 import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoExpandOutline, IoContractOutline, IoCreateOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset } from "@/lib/api";
-import BlockRichEditor from "@/components/BlockRichEditor";
+import PageWriter from "@/components/PageWriter";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
@@ -17,6 +17,8 @@ const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet"
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const Label = ({ children }) => <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--text-secondary)" }}>{children}</label>;
+
+const unitHtml = (u) => (u.rich ? (u.content || "") : (u.content ? u.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : ""));
 
 const readFile = (file, cb, max = 3) => {
   if (file.size > max * 1024 * 1024) return toast.error(`Fichier trop lourd (max ${max} Mo)`);
@@ -36,14 +38,14 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const [trailerFile, setTrailerFile] = useState(null);
   const [intentionFile, setIntentionFile] = useState(null);
   const [videoProg, setVideoProg] = useState({ film: 0, trailer: 0 });
-  const [openCh, setOpenCh] = useState({});
+  const [writing, setWriting] = useState(null); // { key: "chapters" | "episodes", i }
   const posterInput = useRef(null);
 
   useEffect(() => {
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
       setFullState("ok");
-      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFilmFile(null); setTrailerFile(null); setIntentionFile(null); setVideoProg({ film: 0, trailer: 0 }); setFullscreen(false);
+      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFilmFile(null); setTrailerFile(null); setIntentionFile(null); setVideoProg({ film: 0, trailer: 0 }); setFullscreen(false); setWriting(null);
       // fetch full item (with base64 images) so editing preserves poster/bg/gallery/chapters
       if (initial && initial.id) {
         setFullState("loading");
@@ -130,6 +132,9 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   };
   const removeFilm = async () => { if (!isEdit) return; await deleteVideo(initial.id, "film"); set("has_film", false); setFilmFile(null); toast.success("Film supprimé"); };
   const removeTrailer = async () => { if (!isEdit) return; await deleteVideo(initial.id, "trailer"); set("has_trailer", false); setTrailerFile(null); toast.success("Bande-annonce supprimée"); };
+
+  const wUnit = writing && form[writing.key]?.[writing.i];
+  const updUnit = (patch) => setForm((f) => ({ ...f, [writing.key]: f[writing.key].map((u, x) => (x === writing.i ? { ...u, ...patch } : u)) }));
 
   return (
     <div className={`fixed inset-0 z-50 flex justify-center overflow-y-auto ${fullscreen ? "items-stretch p-0" : "items-start sm:items-center p-0 sm:p-6"}`}
@@ -376,14 +381,10 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
                       <button onClick={() => delCh(i)} style={{ color: "var(--brand)" }} data-testid={`editor-chapter-delete-${i}`}><IoTrashOutline /></button>
                     </div>
                     <textarea value={ch.description || ""} onChange={(e) => updCh(i, "description", e.target.value)} placeholder="Description (résumé affiché sur la carte)" rows={2} data-testid={`editor-chapter-desc-${i}`} className="w-full px-2 py-1.5 border outline-none text-sm resize-none" style={fs} />
-                    <button onClick={() => setOpenCh((o) => ({ ...o, [i]: !o[i] }))} data-testid={`editor-chapter-write-${i}`}
+                    <button onClick={() => setWriting({ key: "chapters", i })} data-testid={`editor-chapter-write-${i}`}
                       className="flex items-center gap-2 px-3 py-2 border text-sm font-semibold w-full justify-center" style={{ ...fs, color: "var(--brand)", borderColor: "var(--brand)" }}>
-                      <IoCreateOutline /> {openCh[i] ? "Masquer la rédaction" : (ch.content ? "Modifier le chapitre" : "Rédiger le chapitre")}
+                      <IoCreateOutline /> {ch.content ? "Modifier le chapitre" : "Rédiger le chapitre"}
                     </button>
-                    {openCh[i] && (
-                      <BlockRichEditor creationId={isEdit ? initial.id : form.id} value={ch.rich ? (ch.content || "") : (ch.content ? ch.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : "")}
-                        onChange={(html) => setForm((f) => ({ ...f, chapters: f.chapters.map((c, x) => (x === i ? { ...c, content: html, rich: true } : c)) }))} />
-                    )}
                     {/* per-chapter music */}
                     <div className="flex items-center gap-2 flex-wrap pt-1">
                       <label className="flex items-center gap-2 px-3 py-1.5 border cursor-pointer text-xs" style={fs} data-testid={`editor-chapter-music-${i}`}>
@@ -414,6 +415,10 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
                       <input value={ep.title} onChange={(e) => updEp(i, "title", e.target.value)} placeholder={`Titre épisode ${i + 1}`} className="w-full px-2 py-1.5 border outline-none text-sm" style={fs} />
                       <textarea value={ep.description} onChange={(e) => updEp(i, "description", e.target.value)} placeholder="Description (résumé de l'épisode)" rows={2} className="w-full px-2 py-1.5 border outline-none text-sm resize-none" style={fs} />
                       <input value={ep.url} onChange={(e) => updEp(i, "url", e.target.value)} placeholder="Lien (optionnel)" className="w-full px-2 py-1.5 border outline-none text-sm" style={fs} />
+                      <button onClick={() => setWriting({ key: "episodes", i })} data-testid={`editor-episode-write-${i}`}
+                        className="flex items-center gap-2 px-3 py-1.5 border text-xs font-semibold w-full justify-center" style={{ ...fs, color: "var(--brand)", borderColor: "var(--brand)" }}>
+                        <IoCreateOutline /> {ep.content ? "Modifier le texte de l'épisode" : "Rédiger l'épisode"}
+                      </button>
                     </div>
                     <button onClick={() => delEp(i)} className="flex-shrink-0" style={{ color: "var(--brand)" }}><IoTrashOutline /></button>
                   </div>
@@ -511,4 +516,12 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
       </div>
     </div>
   );
+      {wUnit && (
+        <PageWriter kicker={`${form.title || "Création"} · ${writing.key === "episodes" ? "Épisode" : "Chapitre"} ${writing.i + 1}`}
+          title={wUnit.title} onTitle={(v) => updUnit({ title: v })}
+          html={unitHtml(wUnit)} onHtml={(v) => updUnit({ content: v, rich: true })} image={wUnit.image}
+          creationId={isEdit ? initial.id : form.id} onClose={() => setWriting(null)} onSave={save} saving={saving} saveLabel="Enregistrer la création"
+          note="« Retour » garde ton texte dans le formulaire ; « Enregistrer la création » le sauvegarde définitivement." />
+      )}
+
 }

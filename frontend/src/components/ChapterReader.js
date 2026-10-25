@@ -3,7 +3,7 @@ import { IoClose, IoListOutline, IoChevronBack, IoChevronForward, IoChevronDown,
 import { useQueryClient } from "@tanstack/react-query";
 import { useApp } from "@/context/AppContext";
 import { chapterAudioUrl, readingAudioUrl, getCreationFull, updateCreation } from "@/lib/api";
-import BlockRichEditor from "@/components/BlockRichEditor";
+import PageWriter, { FONTS, WIDTHS } from "@/components/PageWriter";
 import { toast } from "sonner";
 
 function useReveal(deps) {
@@ -20,14 +20,7 @@ function useReveal(deps) {
   return ref;
 }
 
-const FONTS = {
-  serif: 'Georgia, "Times New Roman", serif',
-  sans: "var(--font-body)",
-  display: "var(--font-display)",
-  mono: 'ui-monospace, "SFMono-Regular", Menlo, monospace',
-};
 const FONT_LABELS = [["serif", "Serif"], ["sans", "Sans"], ["display", "Display"], ["mono", "Mono"]];
-const WIDTHS = { narrow: "max-w-xl", normal: "max-w-2xl", wide: "max-w-4xl" };
 
 const fmtTime = (s) => { s = Math.max(0, Math.floor(s || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
 
@@ -86,7 +79,7 @@ function ReadingPlayer({ getAudio, title, isPlaying, onToggle }) {
   );
 }
 
-export default function ChapterReader({ item, onClose, startChapter = null, onComment }) {
+export default function ChapterReader({ item, onClose, startChapter = null, onComment, unitKey = "chapters" }) {
   const {
     playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio, endReading, isPlaying, playingId, sfx,
     muted, toggleMute, isAdmin,
@@ -94,8 +87,10 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
     readerWidth, setReaderWidth, readerDropcap, setReaderDropcap,
   } = useApp();
   const qc = useQueryClient();
-  const [chapters, setChapters] = useState(item.chapters || []);
-  const progressKey = "sx_progress_" + item.id;
+  const [chapters, setChapters] = useState(item[unitKey] || []);
+  const unitName = unitKey === "episodes" ? "Épisode" : "Chapitre";
+  const thisUnit = unitKey === "episodes" ? "cet épisode" : "ce chapitre";
+  const progressKey = "sx_progress_" + item.id + (unitKey === "episodes" ? "_ep" : "");
   const saved = (() => { try { return JSON.parse(localStorage.getItem(progressKey) || "null"); } catch (_) { return null; } })();
   const useStart = Number.isInteger(startChapter);
   const [idx, setIdx] = useState(() => {
@@ -112,6 +107,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   const [isFs, setIsFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
   const [editing, setEditing] = useState(false);
   const [editHtml, setEditHtml] = useState("");
+  const [editTitle, setEditTitle] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
   const lastY = useRef(0);
   const headerRef = useRef(null);
@@ -130,7 +126,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   useEffect(() => { if (anyMusicOn) setShowPlayer(true); }, [anyMusicOn]);
 
   const trackFor = useCallback((c) => {
-    if (c?.has_music && c?.id) return chapterAudioUrl(item.id, c.id);
+    if (unitKey === "chapters" && c?.has_music && c?.id) return chapterAudioUrl(item.id, c.id);
     if (item.has_reading_audio) return readingAudioUrl(item.id);
     return null;
   }, [item]);
@@ -152,7 +148,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
   }, []);
   useEffect(() => {
     if (!useStart && saved && ((saved.chapter || 0) > 0 || (saved.ratio || 0) > 0.02)) {
-      toast.success(`Reprise au chapitre ${(saved.chapter || 0) + 1}`, { duration: 2500 });
+      toast.success(`Reprise : ${unitName.toLowerCase()} ${(saved.chapter || 0) + 1}`, { duration: 2500 });
     }
   }, []); // eslint-disable-line
 
@@ -214,6 +210,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
     sfx("nav");
     const html = chap?.rich ? (chap.content || "") : ((chap?.content || "").split(/\n{2,}/).filter(Boolean).map((p) => `<p>${escapeHtml(p)}</p>`).join("") || "");
     setEditHtml(html);
+    setEditTitle(chap?.title || "");
     setEditing(true);
     setToc(false); setPrefs(false);
   };
@@ -223,16 +220,18 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
     try {
       const full = await getCreationFull(item.id); // version complète (images préservées)
       const chid = chap.id;
-      const chs = (full.chapters || []).map((c) => (c.id === chid ? { ...c, content: editHtml, rich: true } : c));
-      await updateCreation(item.id, { ...full, chapters: chs });
-      setChapters((prev) => prev.map((c, i) => (i === idx ? { ...c, content: editHtml, rich: true } : c)));
-      if (item.chapters && item.chapters[idx]) { item.chapters[idx].content = editHtml; item.chapters[idx].rich = true; }
+      const patch = { content: editHtml, rich: true, title: editTitle.trim() || chap.title };
+      const list = full[unitKey] || [];
+      if (!list.some((c) => c.id === chid)) throw new Error("introuvable");
+      await updateCreation(item.id, { ...full, [unitKey]: list.map((c) => (c.id === chid ? { ...c, ...patch } : c)) });
+      setChapters((prev) => prev.map((c, i) => (i === idx ? { ...c, ...patch } : c)));
+      if (item[unitKey] && item[unitKey][idx]) Object.assign(item[unitKey][idx], patch);
       qc.invalidateQueries({ queryKey: ["creation", item.id] });
       qc.invalidateQueries({ queryKey: ["creations"] });
       setEditing(false);
-      toast.success("Chapitre enregistré ✓");
+      toast.success(`${unitName} enregistré ✓`);
     } catch (e) {
-      toast.error(e?.response?.data?.detail || "Erreur d'enregistrement");
+      toast.error(e?.response?.data?.detail || (e?.message === "introuvable" ? `${unitName} introuvable — recharge la page` : "Erreur d'enregistrement"));
     } finally { setSavingEdit(false); }
   };
 
@@ -288,7 +287,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
             <IoText size={22} />
           </button>
           {isAdmin && !chap?.locked && (
-            <button data-testid="reader-edit" onClick={openEdit} className="p-2.5 border flex items-center" style={{ color: editing ? "var(--brand)" : "var(--text-primary)", borderColor: editing ? "var(--brand)" : "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title="Modifier ce chapitre">
+            <button data-testid="reader-edit" onClick={openEdit} className="p-2.5 border flex items-center" style={{ color: editing ? "var(--brand)" : "var(--text-primary)", borderColor: editing ? "var(--brand)" : "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }} title={`Modifier ${thisUnit}`}>
               <IoCreateOutline size={22} />
             </button>
           )}
@@ -333,33 +332,15 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
         </div>
       )}
 
-      {/* panneau d'édition du chapitre (admin) */}
       {editing && (
-        <div className="absolute inset-0 z-40 flex flex-col" style={{ background: "var(--bg-primary)" }} data-testid="reader-editor">
-          <div className="sx-reader-header flex items-center justify-between gap-2 px-4 md:px-8 py-3 border-b" style={{ borderColor: "var(--border-c)", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(12px)" }}>
-            <div className="min-w-0">
-              <p className="text-[11px] uppercase tracking-widest" style={{ color: "var(--brand)" }}>Modifier · Chapitre {idx + 1}</p>
-              <p className="font-display text-base truncate" style={{ color: "var(--text-primary)" }}>{chap?.title}</p>
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button data-testid="reader-edit-cancel" onClick={() => setEditing(false)} disabled={savingEdit} className="px-3 py-2 border text-sm" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" }}>Annuler</button>
-              <button data-testid="reader-edit-save" onClick={saveEdit} disabled={savingEdit} className="flex items-center gap-1.5 px-4 py-2 font-semibold text-sm disabled:opacity-50" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-                <IoSaveOutline size={16} /> {savingEdit ? "Enregistrement…" : "Enregistrer"}
-              </button>
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto px-4 md:px-8 py-5">
-            <div className="max-w-2xl mx-auto">
-              <BlockRichEditor value={editHtml} onChange={setEditHtml} creationId={item.id} />
-            </div>
-          </div>
-        </div>
+        <PageWriter kicker={`Modifier · ${unitName} ${idx + 1}`} title={editTitle} onTitle={setEditTitle} html={editHtml} onHtml={setEditHtml}
+          image={chap?.image} creationId={item.id} onClose={() => setEditing(false)} onSave={saveEdit} saving={savingEdit} />
       )}
 
       <div className="relative z-10 flex-1 flex overflow-hidden">
         {toc && (
           <div className="absolute md:relative z-10 w-72 max-w-[80%] h-full overflow-y-auto border-r p-4 fade-up" style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(10px)", borderColor: "var(--border-c)", paddingTop: headerH + 12 }} data-testid="reader-toc">
-            <p className="text-xs uppercase tracking-widest mb-3" style={{ color: "var(--text-secondary)" }}>Chapitres</p>
+            <p className="text-xs uppercase tracking-widest mb-3" style={{ color: "var(--text-secondary)" }}>{unitName}s</p>
             {chapters.map((c, i) => (
               <button key={c.id || i} onClick={() => { sfx("select"); setIdx(i); setToc(false); }}
                 className="flex items-center justify-between w-full text-left px-3 py-2 mb-1 text-sm transition-colors" style={{ background: i === idx ? "var(--brand)" : "transparent", color: i === idx ? "var(--bg-primary)" : "var(--text-primary)", borderRadius: "var(--radius-base)" }}>
@@ -372,7 +353,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
 
         <div ref={scrollRef} onScroll={onScroll} className="flex-1 overflow-y-auto" data-testid="reader-pane">
           <article key={idx} ref={contentRef} className={`chapter-in ${WIDTHS[readerWidth] || WIDTHS.normal} mx-auto px-5 md:px-8 pb-10 md:pb-16`} style={{ ...articleStyle, paddingTop: headerH + 16, paddingBottom: showPlayer ? 104 : undefined }}>
-            <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "var(--brand)" }}>Chapitre {idx + 1} · {chapters.length}</p>
+            <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "var(--brand)" }}>{unitName} {idx + 1} · {chapters.length}</p>
             <h1 data-reveal className="reveal font-display leading-tight mb-8" style={{ fontSize: "1.9em", color: "var(--text-primary)" }}>{chap?.title}</h1>
             {chap?.image ? (
               <div data-reveal className="reveal reader-kenburns mb-10 overflow-hidden border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
@@ -395,7 +376,7 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
                 {paras.map((p, i) => (
                   <p key={i} data-reveal className={`reveal mb-6 ${i === 0 && readerDropcap ? "reader-dropcap" : ""}`} style={{ opacity: 0.94 }}>{p}</p>
                 ))}
-                {paras.length === 0 && <p className="reveal" style={{ color: "var(--text-secondary)" }}>Chapitre à venir.</p>}
+                {paras.length === 0 && <p className="reveal" style={{ color: "var(--text-secondary)" }}>{unitName} à venir.</p>}
               </>
             )}
 
@@ -407,10 +388,10 @@ export default function ChapterReader({ item, onClose, startChapter = null, onCo
             <div data-reveal className="reveal text-center px-4 py-8 mb-4" data-testid="reader-engagement"
               style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-c)", borderRadius: "var(--radius-base)" }}>
               <p className="font-display mb-1" style={{ fontSize: "1.35em", color: "var(--text-primary)" }}>
-                {idx >= chapters.length - 1 ? "Fin du chapitre — et fin pour l'instant !" : "Fin de ce chapitre"}
+                {idx >= chapters.length - 1 ? `Fin ${unitKey === "episodes" ? "de l'épisode" : "du chapitre"} — et fin pour l'instant !` : `Fin de ${thisUnit}`}
               </p>
               <p className="text-sm mb-5 max-w-md mx-auto" style={{ color: "var(--text-secondary)" }}>
-                Ce chapitre t'a plu ? Laisse un petit commentaire ou partage « {item.title} » — ça aide énormément la création à vivre. ✨
+                {thisUnit[0].toUpperCase() + thisUnit.slice(1)} t'a plu ? Laisse un petit commentaire ou partage « {item.title} » — ça aide énormément la création à vivre. ✨
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <button data-testid="reader-comment" onClick={wantComment}
