@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoCashOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
@@ -154,7 +155,7 @@ export default function StationMenu({ onAdd, onProfile }) {
         {(unread > 0 || salonUnread > 0) && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{(unread + salonUnread) > 9 ? "9+" : (unread + salonUnread)}</span>}
       </button>
 
-      {menuOpen && (
+      {menuOpen && createPortal(
         <div className="sx-menu-scrim" onClick={() => setMenuOpen(false)} data-testid="mobile-menu">
           <aside className="sx-menu" onClick={(e) => e.stopPropagation()}>
             {/* HUD : balayage scanline + coins d'encadrement */}
@@ -204,7 +205,8 @@ export default function StationMenu({ onAdd, onProfile }) {
               </div>
             </div>
           </aside>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

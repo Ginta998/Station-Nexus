@@ -198,8 +198,8 @@ function CategoryManager() {
           <div key={c.id} data-testid={`cat-row-${c.key}`} className="flex items-center gap-2 p-2 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
             <input defaultValue={c.kanji} onBlur={(e) => e.target.value !== c.kanji && save(c, { kanji: e.target.value })} className="w-14 px-2 py-1.5 border outline-none text-center" style={fs} />
             <input defaultValue={c.label} onBlur={(e) => e.target.value !== c.label && save(c, { label: e.target.value })} className="flex-1 px-2 py-1.5 border outline-none" style={fs} />
-            <button onClick={() => move(c, -1)} className="px-2" style={{ color: "var(--text-secondary)" }}>↑</button>
-            <button onClick={() => move(c, 1)} className="px-2" style={{ color: "var(--text-secondary)" }}>↓</button>
+            <button data-testid={`cat-up-${c.key}`} onClick={() => move(c, -1)} className="px-2" style={{ color: "var(--text-secondary)" }}>↑</button>
+            <button data-testid={`cat-down-${c.key}`} onClick={() => move(c, 1)} className="px-2" style={{ color: "var(--text-secondary)" }}>↓</button>
             <button onClick={() => del(c)} className="px-2" style={{ color: "var(--brand)" }}><IoTrashOutline /></button>
           </div>
         ))}

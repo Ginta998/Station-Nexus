@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="11" time="4.209" timestamp="2026-10-25T20:13:06.356091+00:00" hostname="agent-env-d94718ec-0cf5-4392-9b48-743b1939885f"><testcase classname="tests.test_iteration31_jukebox_categories" name="test_default_play_mode_roundtrip" time="0.705" /><testcase classname="tests.test_iteration31_jukebox_categories" name="test_settings_put_requires_admin" time="0.114" /><testcase classname="tests.test_iteration31_jukebox_categories" name="test_invalid_play_mode_rejected" time="0.192"><failure message="AssertionError: invalid default_play_mode accepted: 200&#10;assert 200 in (400, 422)&#10; +  where 200 = &lt;Response [200]&gt;.status_code">admin = &lt;requests.sessions.Session object at 0xf83dcfc17890&gt;
+
+    def test_invalid_play_mode_rejected(admin):
+        orig = requests.get(f"{API}/settings").json()
+        try:
+            r = admin.put(f"{API}/settings", json={**orig, "default_play_mode": "bogus"})
+&gt;           assert r.status_code in (400, 422), f"invalid default_play_mode accepted: {r.status_code}"
+E           AssertionError: invalid default_play_mode accepted: 200
+E           assert 200 in (400, 422)
+E            +  where 200 = &lt;Response [200]&gt;.status_code
+
+backend/tests/test_iteration31_jukebox_categories.py:49: AssertionError</failure></testcase><testcase classname="tests.test_iteration31_jukebox_categories" name="test_category_reorder_and_restore" time="0.970" /><testcase classname="tests.test_iteration31_jukebox_categories" name="test_category_put_requires_admin" time="0.185" /><testcase classname="tests.test_iteration31_jukebox_categories" name="test_episode_content_in_list_payload" time="0.341"><failure message="AssertionError: assert ([{'id': 'decc03ec-6502-42b5-a2f6-1eb7b4762e90', 'title': 'TEST_EPLIST', 'kanji': '', 'category': 'series', ...}] and 0 == 1)&#10; +  where 0 = len([])">admin = &lt;requests.sessions.Session object at 0xf83dcfc17890&gt;
+
+    def test_episode_content_in_list_payload(admin):
+        r = admin.post(f"{API}/creations", json={"title": "TEST_EPLIST", "category": "series", "launch_type": "episodes",
+                                                 "episodes": [{"title": "E1", "content": "&lt;p&gt;&lt;b&gt;Hello&lt;/b&gt;&lt;/p&gt;", "rich": True}]})
+        assert r.status_code == 201
+        cid = r.json()["id"]
+        try:
+            g = requests.get(f"{API}/creations/{cid}").json()
+            assert g["episodes"][0]["content"] == "&lt;p&gt;&lt;b&gt;Hello&lt;/b&gt;&lt;/p&gt;"
+            lst = requests.get(f"{API}/creations").json()
+            mine = [x for x in lst if x["id"] == cid]
+&gt;           assert mine and len(mine[0]["episodes"]) == 1
+E           AssertionError: assert ([{'id': 'decc03ec-6502-42b5-a2f6-1eb7b4762e90', 'title': 'TEST_EPLIST', 'kanji': '', 'category': 'series', ...}] and 0 == 1)
+E            +  where 0 = len([])
+
+backend/tests/test_iteration31_jukebox_categories.py:93: AssertionError</failure></testcase><testcase classname="tests.test_iteration30_page_writer" name="test_episode_content_persist" time="0.310" /><testcase classname="tests.test_iteration30_page_writer" name="test_reader_edit_flow_keeps_other_chapters" time="0.265" /><testcase classname="tests.test_iteration30_page_writer" name="test_paid_admin_edit_does_not_wipe_locked" time="0.344" /><testcase classname="tests.test_iteration30_page_writer" name="test_paid_episode_content_gated_anonymous" time="0.191"><failure message="AssertionError: paid episode content leaked to anonymous users&#10;assert '&lt;p&gt;SECRET ep&lt;/p&gt;' == ''&#10;  &#10;  + &lt;p&gt;SECRET ep&lt;/p&gt;">admin = &lt;requests.sessions.Session object at 0xf83dcf281d10&gt;
+created = ['1fb5e9aa-8b69-4319-8f2b-7a42829c6a08', '6cd7fd0a-b6dd-470e-8779-31816e3802a0', '4d5d6007-d20d-44ea-ac59-3326ea9519bb', 'cd21d755-6ecf-4c6c-b1ea-3e88fb251cbc']
+
+    def test_paid_episode_content_gated_anonymous(admin, created):
+        c = _mk(admin, created, suffix="PAIDEP", launch_type="episodes", is_paid=True, price_eur=2, episodes=[
+            {"title": "E1", "content": "&lt;p&gt;SECRET ep&lt;/p&gt;", "rich": True}])
+        g = requests.get(f"{API}/creations/{c['id']}").json()
+&gt;       assert g["episodes"][0].get("content", "") == "", "paid episode content leaked to anonymous users"
+E       AssertionError: paid episode content leaked to anonymous users
+E       assert '&lt;p&gt;SECRET ep&lt;/p&gt;' == ''
+E         
+E         + &lt;p&gt;SECRET ep&lt;/p&gt;
+
+backend/tests/test_iteration30_page_writer.py:90: AssertionError</failure></testcase><testcase classname="tests.test_iteration30_page_writer" name="test_put_requires_admin" time="0.501" /></testsuite></testsuites>

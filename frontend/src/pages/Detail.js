@@ -243,6 +243,7 @@ export default function Detail() {
         <div className="max-w-7xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
           <div ref={cardRef} className="group flex-shrink-0 w-72 sm:w-96 md:w-[28rem] lg:w-[34rem] aspect-[2/3] overflow-hidden border relative poster-in sx-fxcard"
             style={{ borderColor: "var(--card-bd, color-mix(in srgb, var(--brand) 40%, var(--border-c)))", borderRadius: "var(--card-r, calc(var(--radius-base)*1.3))", boxShadow: "0 30px 80px rgba(0,0,0,0.6), var(--card-sh, 0 0 60px -14px color-mix(in srgb, var(--brand) 55%, transparent))" }} data-testid="detail-poster">
+            <span className="poster-scan" aria-hidden="true" />
             {hasImg ? (
               <img src={posterSrc} alt={item.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             ) : (
