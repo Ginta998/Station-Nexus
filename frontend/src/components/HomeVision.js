@@ -1,25 +1,35 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { IoArrowForward, IoCreateOutline, IoCheckmark, IoClose } from "react-icons/io5";
+import { IoArrowForward, IoCreateOutline, IoCheckmark, IoClose, IoImageOutline, IoTrashOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { getSettings, updateSettings } from "@/lib/api";
+import { getSettings, updateSettings, uploadJournalImage, mediaUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 
-// Section « Vision » de l'accueil, texte éditable par l'admin, mène à la page À propos
+// Section « Vision » de l'accueil : texte + image éditables par l'admin, mène à la page À propos
 export default function HomeVision() {
   const nav = useNavigate();
   const qc = useQueryClient();
   const { isAdmin, sfx } = useApp();
   const { data: s } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const [edit, setEdit] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const fileRef = useRef(null);
   if (!s) return null;
   const title = s.home_vision_title || "La vision de la station";
   const text = s.home_vision_text || "";
+  const image = edit ? edit.image : s.home_vision_image || "";
 
+  const onFile = async (f) => {
+    if (!f) return;
+    setBusy(true);
+    try { const r = await uploadJournalImage(f); setEdit((e) => ({ ...e, image: r.url })); }
+    catch { toast.error("Image invalide ou trop lourde"); }
+    finally { setBusy(false); }
+  };
   const save = async () => {
     try {
-      await updateSettings({ ...s, home_vision_title: edit.title, home_vision_text: edit.text });
+      await updateSettings({ ...s, home_vision_title: edit.title, home_vision_text: edit.text, home_vision_image: edit.image || "" });
       qc.invalidateQueries({ queryKey: ["settings"] });
       toast.success("Section Vision enregistrée");
       setEdit(null);
@@ -29,27 +39,35 @@ export default function HomeVision() {
   return (
     <section className="sx-vision" data-testid="home-vision">
       <div className="seclabel"><div className="lt"><h2>Vision</h2><span className="kj">志</span></div>
-        {isAdmin && !edit && <span className="all mono" data-testid="home-vision-edit" onClick={() => setEdit({ title, text })}><IoCreateOutline size={12} /> MODIFIER</span>}
+        {isAdmin && !edit && <span className="all mono" data-testid="home-vision-edit" onClick={() => setEdit({ title, text, image: s.home_vision_image || "" })}><IoCreateOutline size={12} /> MODIFIER</span>}
       </div>
-      <div className="vz-card">
+      <div className={"vz-card" + (image ? " has-img" : "")}>
         <span className="vz-k" aria-hidden="true">天</span>
-        <div className="vz-eyebrow mono">// STATION NEXUS · MANIFESTE</div>
-        {edit ? (
-          <div className="vz-edit">
-            <input data-testid="home-vision-title-input" value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })} placeholder="Titre" />
-            <textarea data-testid="home-vision-text-input" rows={6} value={edit.text} onChange={(e) => setEdit({ ...edit, text: e.target.value })} placeholder="Ta vision de la station… (ligne vide = nouveau paragraphe)" />
-            <div className="vz-actions">
-              <button data-testid="home-vision-save" onClick={save}><IoCheckmark size={15} /> Enregistrer</button>
-              <button data-testid="home-vision-cancel" className="ghost" onClick={() => setEdit(null)}><IoClose size={15} /> Annuler</button>
+        {image && <div className="vz-media" data-testid="home-vision-image"><img src={mediaUrl(image)} alt="" loading="lazy" /></div>}
+        <div className="vz-body">
+          <div className="vz-eyebrow mono">// STATION NEXUS · MANIFESTE</div>
+          {edit ? (
+            <div className="vz-edit">
+              <input data-testid="home-vision-title-input" value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })} placeholder="Titre" />
+              <textarea data-testid="home-vision-text-input" rows={6} value={edit.text} onChange={(e) => setEdit({ ...edit, text: e.target.value })} placeholder="Ta vision de la station… (ligne vide = nouveau paragraphe)" />
+              <div className="vz-actions">
+                <button data-testid="home-vision-image-btn" className="ghost" disabled={busy} onClick={() => fileRef.current?.click()}><IoImageOutline size={15} /> {busy ? "Envoi…" : image ? "Changer l'image" : "Ajouter une image"}</button>
+                {image && <button data-testid="home-vision-image-remove" className="ghost" onClick={() => setEdit({ ...edit, image: "" })} aria-label="Retirer l'image"><IoTrashOutline size={15} /></button>}
+                <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; onFile(f); }} />
+              </div>
+              <div className="vz-actions">
+                <button data-testid="home-vision-save" onClick={save} disabled={busy}><IoCheckmark size={15} /> Enregistrer</button>
+                <button data-testid="home-vision-cancel" className="ghost" onClick={() => setEdit(null)}><IoClose size={15} /> Annuler</button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <>
-            <h3 className="vz-title" data-testid="home-vision-title">{title}</h3>
-            <div className="vz-text" data-testid="home-vision-text">{text.split(/\n{2,}/).filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}</div>
-          </>
-        )}
-        <span className="vz-cta" data-testid="home-vision-about" onClick={() => { sfx("select"); nav("/a-propos"); }}>Découvrir la station <IoArrowForward size={15} /></span>
+          ) : (
+            <>
+              <h3 className="vz-title" data-testid="home-vision-title">{title}</h3>
+              <div className="vz-text" data-testid="home-vision-text">{text.split(/\n{2,}/).filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}</div>
+            </>
+          )}
+          <span className="vz-cta" data-testid="home-vision-about" onClick={() => { sfx("select"); nav("/a-propos"); }}>Découvrir la station <IoArrowForward size={15} /></span>
+        </div>
       </div>
     </section>
   );

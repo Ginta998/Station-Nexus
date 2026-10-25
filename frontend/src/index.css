@@ -1582,3 +1582,65 @@ html[data-motion="reduced"] .cosmic-bg .s-tengoku .art,html[data-motion="reduced
 .sx-exp .vz-actions button{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;background:var(--accent);color:var(--bg-primary);font-weight:600;font-size:13px}
 .sx-exp .vz-actions button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
 @media(min-width:768px){.sx-exp .vz-card{padding:52px 48px 44px}}
+
+/* ================= Splashs premium (HUD · Hyperespace · Éclipse) ================= */
+.pi-root{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(80% 70% at 50% 50%,color-mix(in srgb,var(--brand) 14%,#02040a),#010207 70%)}
+.pi-root::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
+.pi-stack{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:5vmin}
+.pi-emblem{position:relative;display:grid;place-items:center}
+.pi-kanji{position:absolute;font-family:var(--font-display);font-size:15vmin;line-height:1;color:#fff;opacity:0;text-shadow:0 0 18px var(--brand),0 0 46px var(--brand);animation:piKanji 1s cubic-bezier(.2,.8,.2,1) 1.35s forwards,piGlitch .3s steps(2) 1.45s 2}
+@keyframes piKanji{0%{opacity:0;transform:scale(1.35);filter:blur(10px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:scale(1)}}
+@keyframes piGlitch{0%{transform:translate(2px,-1px);text-shadow:-3px 0 #ff2f5f,3px 0 #3ff0ff}100%{transform:none}}
+.pi-reticle{overflow:visible;filter:drop-shadow(0 0 6px var(--brand)) drop-shadow(0 0 22px color-mix(in srgb,var(--brand) 60%,transparent))}
+.pi-reticle circle,.pi-reticle line{fill:none;stroke:var(--brand);vector-effect:non-scaling-stroke}
+.pi-reticle .r1{stroke-width:1.5;stroke-dasharray:578;stroke-dashoffset:578;animation:piDraw 1.3s cubic-bezier(.6,0,.2,1) calc(var(--d,0s) + .1s) forwards}
+.pi-reticle .r2{stroke-width:1;stroke-dasharray:4 7;opacity:0;transform-origin:100px 100px;animation:piFade .5s ease calc(var(--d,0s) + .5s) forwards,piSpin 9s linear infinite}
+.pi-reticle .r3{stroke-width:2.2;stroke:#bff6ff;stroke-dasharray:390;stroke-dashoffset:390;animation:piDraw 1.1s cubic-bezier(.6,0,.2,1) calc(var(--d,0s) + .45s) forwards}
+.pi-reticle .r4{stroke-width:.8;stroke-dasharray:1 5;opacity:0;transform-origin:100px 100px;animation:piFade .5s ease calc(var(--d,0s) + .8s) forwards,piSpin 6s linear infinite reverse}
+.pi-reticle .ticks line{stroke-width:1;opacity:0;animation:piFade .6s ease calc(var(--d,0s) + .9s) forwards}
+.pi-reticle .cross line{stroke-width:1.4;stroke-dasharray:30;stroke-dashoffset:30;animation:piDraw .6s ease calc(var(--d,0s) + 1s) forwards}
+.pi-reticle .dot{fill:#bff6ff;stroke:none;opacity:0;transform-origin:100px 100px;animation:piFade .3s ease calc(var(--d,0s) + 1.1s) forwards,piSpin 3.2s linear calc(var(--d,0s) + 1.1s) infinite}
+@keyframes piDraw{to{stroke-dashoffset:0}}
+@keyframes piFade{to{opacity:1}}
+@keyframes piSpin{to{transform:rotate(360deg)}}
+.pi-brand{display:flex;flex-direction:column;align-items:center;gap:1.4vmin;opacity:0;animation:piBrand 1s cubic-bezier(.2,.8,.2,1) forwards}
+.pi-brand-w{font-family:var(--font-display);font-size:clamp(26px,5.4vmin,58px);color:#fff;letter-spacing:.32em;padding-left:.32em;text-shadow:0 0 28px color-mix(in srgb,var(--brand) 60%,transparent)}
+.pi-brand-w b{color:var(--brand);font-weight:inherit}
+.pi-brand-s{font-family:"Space Mono",monospace;font-size:clamp(9px,1.3vmin,12px);letter-spacing:.42em;color:color-mix(in srgb,var(--brand) 70%,#fff)}
+@keyframes piBrand{0%{opacity:0;letter-spacing:.9em;filter:blur(8px)}100%{opacity:1;filter:none}}
+.pi-corners i{position:absolute;width:6vmin;height:6vmin;border:1px solid color-mix(in srgb,var(--brand) 70%,transparent);opacity:0;animation:piFade .6s ease .3s forwards}
+.pi-corners i:nth-child(1){top:5vmin;left:5vmin;border-right:0;border-bottom:0}
+.pi-corners i:nth-child(2){top:5vmin;right:5vmin;border-left:0;border-bottom:0}
+.pi-corners i:nth-child(3){bottom:5vmin;left:5vmin;border-right:0;border-top:0}
+.pi-corners i:nth-child(4){bottom:5vmin;right:5vmin;border-left:0;border-top:0}
+.pi-scan{position:absolute;left:0;right:0;height:22vh;top:-22vh;background:linear-gradient(transparent,color-mix(in srgb,var(--brand) 18%,transparent),transparent);animation:piScan 2.6s cubic-bezier(.5,0,.5,1) .2s 2}
+@keyframes piScan{to{top:100vh}}
+.pi-read{position:absolute;left:7vmin;bottom:8vmin;display:flex;flex-direction:column;gap:4px;font-size:10px;letter-spacing:.24em;color:color-mix(in srgb,var(--brand) 75%,#fff);opacity:0;animation:piFade .5s ease 1.2s forwards}
+.pi-read span:nth-child(2){animation:tgBlink 1s steps(2) 1.6s 3}
+/* Hyperespace */
+.pi-streaks{position:absolute;left:50%;top:50%;width:0;height:0}
+.pi-streaks i{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0}
+.pi-streaks b{position:absolute;left:0;top:-1px;width:var(--len);height:2px;transform-origin:0 50%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--brand) 80%,#fff) 70%,#fff);opacity:0;animation:piStreak 1.25s cubic-bezier(.7,0,.9,.4) forwards}
+@keyframes piStreak{0%{opacity:0;transform:translateX(4vmin) scaleX(.05)}30%{opacity:1}100%{opacity:0;transform:translateX(38vmax) scaleX(1)}}
+.pi-flash{position:absolute;inset:0;background:radial-gradient(circle,#fff,color-mix(in srgb,var(--brand) 60%,transparent) 30%,transparent 65%);opacity:0;animation:piFlash 1s ease 1.05s forwards}
+@keyframes piFlash{0%{opacity:0;transform:scale(.4)}25%{opacity:1}100%{opacity:0;transform:scale(1.8)}}
+.pi-emblem.late .pi-kanji{animation-delay:1.7s,1.8s}
+/* Éclipse */
+.pi-planet{position:relative;width:42vmin;height:42vmin;display:grid;place-items:center;opacity:0;animation:piFade .8s ease .1s forwards}
+.pi-planet .disk{position:relative;z-index:2;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#10131f,#020308 70%);box-shadow:inset 0 0 40px rgba(0,0,0,.9);display:grid;place-items:center}
+.pi-planet .disk .pi-kanji{position:static;animation-delay:1.6s,1.7s}
+.pi-planet .corona{position:absolute;inset:-9%;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 60%,color-mix(in srgb,var(--brand) 90%,#fff) 78%,#fff 82%,color-mix(in srgb,var(--brand) 70%,transparent) 88%,transparent 100%);filter:blur(10px);opacity:0;animation:piCorona 1.6s cubic-bezier(.4,0,.2,1) .4s forwards,piSpin 7s linear 2s infinite}
+@keyframes piCorona{0%{opacity:0;transform:rotate(-140deg)}100%{opacity:1;transform:rotate(0)}}
+.pi-planet .diamond{position:absolute;z-index:3;top:4%;right:16%;width:2.4vmin;height:2.4vmin;border-radius:50%;background:#fff;box-shadow:0 0 18px 6px #fff,0 0 60px 18px var(--brand),-30vmin 0 40px -6px transparent;opacity:0;animation:piDiamond 1.2s ease 1.5s forwards}
+.pi-planet .diamond::before,.pi-planet .diamond::after{content:"";position:absolute;left:50%;top:50%;width:46vmin;height:1px;background:linear-gradient(90deg,transparent,#fff,transparent);transform:translate(-50%,-50%)}
+.pi-planet .diamond::after{transform:translate(-50%,-50%) rotate(90deg);width:20vmin}
+@keyframes piDiamond{0%{opacity:0;transform:scale(.2)}40%{opacity:1;transform:scale(1.3)}100%{opacity:.85;transform:scale(1)}}
+.pi-horizon{position:absolute;left:-10%;right:-10%;bottom:-62vh;height:80vh;border-radius:50%;border-top:1px solid color-mix(in srgb,var(--brand) 70%,transparent);box-shadow:0 -20px 80px -30px var(--brand);opacity:0;animation:piFade 1.2s ease .6s forwards}
+.sx-exp .vz-body{position:relative;z-index:1}
+.sx-exp .vz-card.has-img{display:grid;gap:26px}
+.sx-exp .vz-media{position:relative;z-index:1;border-radius:var(--radius-base);overflow:hidden;border:1px solid var(--line);aspect-ratio:16/10;box-shadow:0 24px 60px -28px #000,0 0 40px -18px var(--accent)}
+.sx-exp .vz-media img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.sx-exp .vz-card:hover .vz-media img{transform:scale(1.04)}
+.sx-exp .vz-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.45))}
+.sx-exp .vz-actions{flex-wrap:wrap}
+@media(min-width:900px){.sx-exp .vz-card.has-img{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center}.sx-exp .vz-card.has-img .vz-media{order:2}}

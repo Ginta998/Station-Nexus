@@ -1,5 +1,8 @@
 // Boot intro definitions + synthesized boot sounds (Web Audio, no files needed).
 export const INTROS = [
+  { key: "hud", label: "Réticule HUD", kanji: "天", tagline: "Le réticule du favicon s'assemble (premium)", duration: 3600 },
+  { key: "warp", label: "Hyperespace", kanji: "翔", tagline: "Saut en vitesse lumière vers la station (premium)", duration: 3600 },
+  { key: "eclipse", label: "Éclipse", kanji: "蝕", tagline: "Couronne solaire et anneau de diamant (premium)", duration: 3800 },
   { key: "tengoku", label: "Tengoku", kanji: "天", tagline: "Soleil levant", duration: 3200 },
   { key: "kanji", label: "Kanji Storm", kanji: "嵐", tagline: "Tempête d'idéogrammes", duration: 3200 },
   { key: "pulse", label: "Pulse", kanji: "波", tagline: "Onde lumineuse (façon Steam)", duration: 3200 },
@@ -39,6 +42,30 @@ export function playBoot(type, { muted = false, volume = 0.8 } = {}) {
   const c = getCtx();
   if (!c) return;
   const v = volume;
+  if (type === "hud") {
+    // HUD : bips de verrouillage, balayage montant, accord d'arrivée
+    [0.15, 0.5, 0.85].forEach((d, i) => note(c, { type: "square", freq: 1760 + i * 220, dur: 0.05, gain: 0.03, delay: d, vol: v }));
+    note(c, { type: "sawtooth", freq: 110, glide: 440, dur: 1.2, gain: 0.05, delay: 0.2, vol: v });
+    note(c, { type: "sine", freq: 55, dur: 0.7, gain: 0.25, delay: 1.35, vol: v });
+    [392, 587, 784, 1175].forEach((f, i) => note(c, { type: "triangle", freq: f, dur: 1.8, gain: 0.06, delay: 1.4 + i * 0.05, vol: v }));
+    return;
+  }
+  if (type === "warp") {
+    // hyperespace : montée tendue puis impact et nappe lumineuse
+    note(c, { type: "sawtooth", freq: 60, glide: 1400, dur: 1.1, gain: 0.07, vol: v });
+    note(c, { type: "sine", freq: 220, glide: 1760, dur: 1.05, gain: 0.06, vol: v });
+    note(c, { type: "sine", freq: 48, dur: 0.9, gain: 0.32, delay: 1.05, vol: v });
+    [330, 494, 659, 988].forEach((f, i) => note(c, { type: "triangle", freq: f, dur: 2, gain: 0.06, delay: 1.1 + i * 0.07, vol: v }));
+    return;
+  }
+  if (type === "eclipse") {
+    // éclipse : nappe grave qui s'ouvre, scintillement du diamant
+    note(c, { type: "sine", freq: 65, glide: 98, dur: 2.2, gain: 0.16, vol: v });
+    note(c, { type: "triangle", freq: 196, glide: 294, dur: 1.8, gain: 0.06, delay: 0.3, vol: v });
+    [2093, 2637, 3136].forEach((f, i) => note(c, { type: "sine", freq: f, dur: 0.6, gain: 0.03, delay: 1.5 + i * 0.08, vol: v }));
+    [262, 392, 523, 784].forEach((f, i) => note(c, { type: "sine", freq: f, dur: 2, gain: 0.06, delay: 1.7 + i * 0.06, vol: v }));
+    return;
+  }
   if (type === "tengoku") {
     // deep taiko impact + rising hopeful swell
     note(c, { type: "sine", freq: 90, glide: 55, dur: 0.5, gain: 0.28, vol: v });

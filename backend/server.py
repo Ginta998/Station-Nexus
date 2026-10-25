@@ -384,6 +384,7 @@ class SiteSettings(BaseModel):
     )
     about_title: str = "À propos de Station Nexus"
     home_vision_title: str = "Un univers créatif, une seule station"
+    home_vision_image: str = ""
     home_vision_text: str = (
         "Station Nexus réunit livres, films et séries dans un seul endroit vivant — un lanceur pensé comme un vaisseau.\n\n"
         "Chaque création y a sa place, chaque visiteur devient voyageur. Œuvre après œuvre, on construit ensemble un univers connecté."

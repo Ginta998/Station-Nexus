@@ -3,6 +3,7 @@ import { useApp } from "@/context/AppContext";
 import { INTROS, playBoot } from "@/lib/intro";
 import { introVideoUrl } from "@/lib/api";
 import { pickWelcome } from "@/lib/social";
+import { HudAnim, WarpAnim, EclipseAnim } from "@/components/intros/PremiumIntros";
 
 function Logo({ delay = 1.4 }) {
   return (
@@ -131,7 +132,7 @@ function HanabiAnim() {
   );
 }
 
-const ANIMS = { tengoku: TengokuAnim, kanji: KanjiAnim, pulse: PulseAnim, towers: TowersAnim, slash: SlashAnim, hanabi: HanabiAnim };
+const ANIMS = { hud: HudAnim, warp: WarpAnim, eclipse: EclipseAnim, tengoku: TengokuAnim, kanji: KanjiAnim, pulse: PulseAnim, towers: TowersAnim, slash: SlashAnim, hanabi: HanabiAnim };
 
 export default function BootIntro({ type, hasVideo, onDone, welcomeMessages }) {
   const { muted, uiVolume, primeAudio, profile } = useApp();
