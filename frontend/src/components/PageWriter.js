@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { IoArrowBack, IoSaveOutline, IoEyeOutline, IoCreateOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
-import BlockRichEditor from "@/components/BlockRichEditor";
+import RichTextEditor from "@/components/RichTextEditor";
 
 export const FONTS = {
   serif: 'Georgia, "Times New Roman", serif',
@@ -39,7 +39,7 @@ export default function PageWriter({ kicker, title, onTitle, html, onHtml, image
       </div>
 
       <div className="relative z-10 flex-1 overflow-y-auto" data-testid="page-writer-pane">
-        <article className={`${WIDTHS[readerWidth] || WIDTHS.normal} mx-auto px-5 md:px-8 pt-8 pb-24`} style={article}>
+        <article className={`${WIDTHS[readerWidth] || WIDTHS.normal} mx-auto px-5 md:px-8 pt-6 pb-24`} style={article}>
           <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "var(--brand)", fontFamily: "var(--font-body)" }}>{kicker}</p>
           {preview ? (
             <h1 className="font-display leading-tight mb-8" style={{ fontSize: "1.9em" }}>{title || "Sans titre"}</h1>
@@ -52,7 +52,7 @@ export default function PageWriter({ kicker, title, onTitle, html, onHtml, image
             html ? <div className="reader-rich" data-testid="page-writer-preview" dangerouslySetInnerHTML={{ __html: html }} />
               : <p style={{ color: "var(--text-secondary)" }}>Rien d'écrit pour l'instant.</p>
           ) : (
-            <BlockRichEditor value={html} onChange={onHtml} creationId={creationId} page />
+            <RichTextEditor value={html} onChange={onHtml} creationId={creationId} page placeholder="Écris ou colle ton texte ici (la mise en forme de Google Docs / Word est conservée)…" />
           )}
           {note && <p className="text-xs mt-10" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-body)" }}>{note}</p>}
         </article>

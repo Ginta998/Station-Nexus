@@ -137,6 +137,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const updUnit = (patch) => setForm((f) => ({ ...f, [writing.key]: f[writing.key].map((u, x) => (x === writing.i ? { ...u, ...patch } : u)) }));
 
   return (
+    <>
     <div className={`fixed inset-0 z-50 flex justify-center overflow-y-auto ${fullscreen ? "items-stretch p-0" : "items-start sm:items-center p-0 sm:p-6"}`}
       style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} data-testid="editor-dialog">
       <div className={`w-full border ${fullscreen ? "max-w-none min-h-full flex flex-col" : "max-w-2xl my-auto"}`} style={{ ...fs, background: "var(--bg-secondary)" }}>
@@ -515,7 +516,6 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
         </div>
       </div>
     </div>
-  );
       {wUnit && (
         <PageWriter kicker={`${form.title || "Création"} · ${writing.key === "episodes" ? "Épisode" : "Chapitre"} ${writing.i + 1}`}
           title={wUnit.title} onTitle={(v) => updUnit({ title: v })}
@@ -523,5 +523,6 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           creationId={isEdit ? initial.id : form.id} onClose={() => setWriting(null)} onSave={save} saving={saving} saveLabel="Enregistrer la création"
           note="« Retour » garde ton texte dans le formulaire ; « Enregistrer la création » le sauvegarde définitivement." />
       )}
-
+    </>
+  );
 }

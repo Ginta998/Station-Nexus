@@ -584,6 +584,10 @@ async def get_creation(cid: str, media: bool = False, authorization: Optional[st
     # Resolve viewer entitlement (optional auth) for paywall gating
     uid = await _optional_uid(authorization)
     has_access = await _user_has_access(uid, doc)
+    if not has_access and uid:
+        # admin must always receive full content, otherwise saving the editor would wipe locked chapters
+        u = await db.users.find_one({"id": uid}, {"_id": 0, "is_admin": 1})
+        has_access = bool(u and u.get("is_admin"))
     owned = await _user_owns(uid, cid)
     if media:
         doc["has_poster"] = bool(doc.get("poster"))
