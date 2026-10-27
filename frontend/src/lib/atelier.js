@@ -10,7 +10,10 @@ const pollJob = async (start) => {
   const { job_id: id } = await start;
   for (let i = 0; i < 150; i++) {
     await new Promise((r) => setTimeout(r, 1600));
-    const j = await get(`/atelier/bunny/jobs/${id}`);
+    const j = await get(`/atelier/bunny/jobs/${id}`).catch((e) => {
+      if (e?.response?.status === 404) return { status: "error", error: "Bunny a été interrompue par un redémarrage de la station. Réessaie !" };
+      throw e;
+    });
     if (j.status === "done") return j.result;
     if (j.status === "error") throw Object.assign(new Error(j.error), { response: { data: { detail: j.error } } });
   }
@@ -44,6 +47,11 @@ export const atelierApi = {
   orderBrains: (ids) => send("put", "/atelier/bunny/brains/order", ids),
   deleteBrain: (id) => send("delete", `/atelier/bunny/brains/${id}`),
   testBrain: (id) => api.post(`/atelier/bunny/brains/${id}/test`, {}, { timeout: 60000 }).then((r) => r.data),
+  driveStatus: () => get("/atelier/drive/status"),
+  driveConnect: () => get(`/atelier/drive/connect?origin=${encodeURIComponent(window.location.origin)}`),
+  driveDisconnect: () => send("delete", "/atelier/drive/connect"),
+  driveFiles: (p) => api.get("/atelier/drive/files", { params: p }).then((r) => r.data),
+  driveFile: (id) => get(`/atelier/drive/files/${id}`),
   bunnyMind: () => get("/atelier/bunny/mind"),
   saveProfile: (profile) => send("put", "/atelier/bunny/mind/profile", { profile }),
   addMemory: (text) => send("post", "/atelier/bunny/mind/memories", { text }),
@@ -85,6 +93,22 @@ export const KINDS = {
   event: { label: "Événement", plural: "Chronologie", kanji: "時" },
   document: { label: "Document", plural: "Documents", kanji: "書" },
   inspiration: { label: "Inspiration", plural: "Inspirations", kanji: "想" },
+  file: { label: "Fichier", plural: "Fichiers", kanji: "档" },
+};
+
+// Type d'aperçu d'un fichier déposé (image, pdf, office, vidéo, audio, texte, lien, drive)
+export const fileType = (m) => {
+  if (!m) return "none";
+  if (m.type === "drive") return "drive";
+  if (m.type === "link" || m.type === "youtube") return "link";
+  const n = (m.name || m.url || "").toLowerCase(); const mt = m.mime || "";
+  if (m.type === "image" || mt.startsWith("image/")) return "image";
+  if (m.type === "pdf" || mt === "application/pdf" || n.endsWith(".pdf")) return "pdf";
+  if (m.type === "video" || mt.startsWith("video/")) return "video";
+  if (m.type === "audio" || mt.startsWith("audio/")) return "audio";
+  if (/\.(docx?|xlsx?|pptx?|odt|ods|odp)$/.test(n)) return "office";
+  if (/\.(txt|md|csv|json|srt)$/.test(n) || mt.startsWith("text/")) return "text";
+  return "other";
 };
 
 export const KIND_FIELDS = {

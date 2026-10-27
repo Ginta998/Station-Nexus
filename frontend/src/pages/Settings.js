@@ -23,6 +23,7 @@ import {
 import { pushSupported, getPermission, getNotifPref, getSoundPref, setSoundPref, enablePush, updatePref, disablePush, isSubscribed } from "@/lib/push";
 import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles } from "react-icons/io5";
 import Celebration from "@/components/Celebration";
+import { StartupSetting } from "@/components/Startup";
 import { TOUR_STEPS } from "@/lib/tourSteps";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
@@ -271,6 +272,12 @@ function IntroManager() {
 
   return (
     <div data-testid="intro-manager">
+      {isAdmin && (
+        <div className="mb-5">
+          <p className="text-sm mb-2" style={{ color: "var(--text-primary)" }}>Au démarrage de l'app, ouvrir (sur cet appareil) :</p>
+          <StartupSetting />
+        </div>
+      )}
       <label className="flex items-center gap-2 text-sm cursor-pointer mb-4" style={{ color: "var(--text-primary)" }}>
         <input type="checkbox" data-testid="intro-enabled" checked={!off} onChange={toggleOff} /> Afficher l'écran de démarrage (une fois par session)
       </label>

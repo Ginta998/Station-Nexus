@@ -10,7 +10,7 @@ export default function DropDialog({ at, drop, defaults = {}, onClose, open }) {
   const docs = files.filter(isImportable);
   const [uid, setUid] = useState(defaults.universe_id || "");
   const [kind, setKind] = useState(docs.length ? "document" : files.length || link ? "inspiration" : "note");
-  const [mode, setMode] = useState(docs.length && docs.length === files.length ? "import" : "new");
+  const [mode, setMode] = useState("direct");
   const [target, setTarget] = useState("");
   const [title, setTitle] = useState(files[0]?.name.replace(/\.[^.]+$/, "") || link?.name || "");
   const [prog, setProg] = useState(null);
@@ -18,6 +18,18 @@ export default function DropDialog({ at, drop, defaults = {}, onClose, open }) {
 
   const run = async () => {
     try {
+      if (mode === "direct") {
+        const made = [];
+        for (let i = 0; i < files.length; i++) {
+          setProg(`Envoi ${i + 1}/${files.length} · ${files[i].name}`);
+          const md = mediaFromUpload(await atelierApi.upload(files[i], (p) => setProg(`Envoi ${i + 1}/${files.length} · ${Math.round(p * 100)}%`)));
+          made.push(await at.createItem({ kind: "file", title: files.length === 1 && title.trim() ? title.trim() : files[i].name.replace(/\.[^.]+$/, ""), universe_id: uid || null, media: [md] }));
+        }
+        if (link) made.push(await at.createItem({ kind: "file", title: title.trim() || link.name, universe_id: uid || null, media: [link] }));
+        toast.success(`${made.length} fichier${made.length > 1 ? "s" : ""} déposé${made.length > 1 ? "s" : ""}`);
+        onClose(); if (made.length === 1) open(made[0].id, "file");
+        return;
+      }
       if (mode === "import") {
         let all = [];
         for (let i = 0; i < docs.length; i++) {
@@ -62,14 +74,16 @@ export default function DropDialog({ at, drop, defaults = {}, onClose, open }) {
             <option value="">Inbox (sans univers)</option>{at.universes.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
           </select></label>
           <div className="at-chips">
+            <button className={mode === "direct" ? "on" : ""} onClick={() => setMode("direct")} data-testid="atelier-drop-mode-direct">Déposer tel quel (accès direct)</button>
             {docs.length > 0 && <button className={mode === "import" ? "on" : ""} onClick={() => setMode("import")} data-testid="atelier-drop-mode-import">Importer le texte (découpé par titres)</button>}
             <button className={mode === "new" ? "on" : ""} onClick={() => setMode("new")} data-testid="atelier-drop-mode-new">Nouvel élément avec ces médias</button>
             <button className={mode === "attach" ? "on" : ""} onClick={() => setMode("attach")} data-testid="atelier-drop-mode-attach">Ajouter à un élément existant</button>
           </div>
-          {mode !== "attach" && (
+          {mode === "direct" && <p className="at-hint">Chaque fichier est rangé tel quel : un clic l’ouvre directement (image, PDF, Excel, Word, vidéo, lien…). Tu peux y ajouter des notes si tu veux.</p>}
+          {(mode === "import" || mode === "new") && (
             <label>Type<select value={kind} onChange={(e) => setKind(e.target.value)} data-testid="atelier-drop-kind">{Object.entries(KINDS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></label>
           )}
-          {mode === "new" && <label>Titre<input value={title} onChange={(e) => setTitle(e.target.value)} data-testid="atelier-drop-title" /></label>}
+          {(mode === "new" || (mode === "direct" && files.length + (link ? 1 : 0) === 1)) && <label>Titre<input value={title} onChange={(e) => setTitle(e.target.value)} data-testid="atelier-drop-title" /></label>}
           {mode === "attach" && (
             <label>Élément<select value={target} onChange={(e) => setTarget(e.target.value)} data-testid="atelier-drop-target">
               <option value="">Choisir…</option>{targets.map((i) => <option key={i.id} value={i.id}>{KINDS[i.kind]?.label} · {i.title || "Sans titre"}</option>)}

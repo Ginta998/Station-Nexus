@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
-KINDS = {"note", "scene", "character", "place", "lore", "event", "document", "inspiration"}
+KINDS = {"note", "scene", "character", "place", "lore", "event", "document", "inspiration", "file"}
 MAX_FILE = 250 * 1024 * 1024
 
 

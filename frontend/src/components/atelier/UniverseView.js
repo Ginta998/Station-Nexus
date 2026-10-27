@@ -7,7 +7,7 @@ import { listCreations, posterUrl } from "@/lib/api";
 import ItemsGrid from "@/components/atelier/ItemsGrid";
 import ItemCard from "@/components/atelier/ItemCard";
 
-const TABS = [["all", "Tout"], ["character", "Personnages"], ["place", "Lieux"], ["scene", "Scènes"], ["note", "Notes"], ["lore", "Lore"], ["document", "Documents"], ["inspiration", "Inspirations"], ["timeline", "Chronologie"]];
+const TABS = [["all", "Tout"], ["character", "Personnages"], ["place", "Lieux"], ["scene", "Scènes"], ["note", "Notes"], ["lore", "Lore"], ["document", "Documents"], ["inspiration", "Inspirations"], ["file", "Fichiers"], ["timeline", "Chronologie"]];
 
 function Timeline({ items, at, open }) {
   const dated = items.filter((i) => i.date).sort((a, b) => a.date.localeCompare(b.date, "fr", { numeric: true }));

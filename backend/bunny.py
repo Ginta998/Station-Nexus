@@ -229,9 +229,10 @@ def build_bunny_router(db, require_admin) -> APIRouter:
         if ME_WORDS.search(user) and not interview:
             user += MEMORY_HINT
         system = f"{PERSONA}\n\n{ctx}"
+        stop = interview and len(body.message) < 70 and bool(re.search(r"\bstop\b|on s'arr[êe]te l[àa]", body.message, re.I))
         if interview:
             mind = await get_mind(db)
-            step, next_key = interview_step(s.get("asked", []), mind["profile"], bool(re.search(r"\bstop\b|arr[êe]t", body.message, re.I)))
+            step, next_key = interview_step(s.get("asked", []), mind["profile"], stop)
             system += f"\n\n{step}"
         msgs = [{"role": "system", "content": system}, *history, {"role": "user", "content": user}]
         raw, via = await ask_llm(db, msgs)
@@ -242,7 +243,7 @@ def build_bunny_router(db, require_admin) -> APIRouter:
         if interview:
             proposals = []
             prev = (s.get("asked") or [None])[-1]
-            if prev and prev not in learned and len(body.message.strip()) > 3:
+            if prev and not stop and prev not in learned and len(body.message.strip()) > 3:
                 await db.atelier_bunny_mind.update_one({"id": "mind"}, {"$set": {f"profile.{prev}": body.message.strip()[:1500]}})
                 learned.append(prev)
             if next_key:

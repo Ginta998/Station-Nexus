@@ -34,6 +34,7 @@ import SiteMeta from "@/components/SiteMeta";
 import GuidedTour from "@/components/GuidedTour";
 import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
 import { INTROS } from "@/lib/intro";
+import { StartupRedirect, startTarget } from "@/components/Startup";
 import { useQueryClient } from "@tanstack/react-query";
 
 const markEntered = () => { sessionStorage.setItem("sx_entered", "1"); window.dispatchEvent(new Event("sx-entered")); };
@@ -62,6 +63,7 @@ function IntroGate() {
   useEffect(() => {
     if (sessionStorage.getItem("sx_intro_shown") === "1") { markEntered(); return; }
     if (localStorage.getItem("sx_intro_off") === "1") { markEntered(); return; }
+    if (startTarget() === "atelier" && window.location.pathname === "/" && !sessionStorage.getItem("sx_start_done")) { markEntered(); return; }
 
     // Prefetch the Home data + warm poster images while the intro animation plays,
     // so the launcher appears instantly (no loading spinner) once the intro ends.
@@ -108,6 +110,7 @@ function App() {
         <BrowserRouter>
           <CosmicBackground />
           <SiteMeta />
+          <StartupRedirect />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/oeuvre/:id" element={<Detail />} />

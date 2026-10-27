@@ -5,7 +5,7 @@ import { DEFAULT_APPS, toEmbed, popOut } from "@/lib/embed";
 import { atelierApi } from "@/lib/atelier";
 
 // Le Bureau : tes applications et un lanceur universel — tout s'ouvre dans la Station quand c'est possible
-export function BureauView({ at, launch }) {
+export function BureauView({ at, launch, go }) {
   const [q, setQ] = useState("");
   const [form, setForm] = useState(null);
   const custom = at.links.filter((l) => l.kind === "app");
@@ -13,18 +13,18 @@ export function BureauView({ at, launch }) {
   const add = async () => { if (!form.title.trim() || !/^https?:\/\//.test(form.url)) return toast.error("Nom et lien https:// requis"); await at.saveLink({ ...form, kind: "app" }); setForm(null); };
   return (
     <section className="at-view" data-testid="atelier-bureau">
-      <header className="at-head"><p className="at-eyebrow mono">// BUREAU NUMÉRIQUE</p><h1>Tes outils, à bord</h1><p className="at-sub">Colle n'importe quel lien : YouTube, Spotify, Canva, Google Docs/Drive, Twitch, Telegram… Il s'ouvre ici quand le service l'autorise, sinon dans une fenêtre à côté.</p></header>
+      <header className="at-head"><p className="at-eyebrow mono">// BUREAU NUMÉRIQUE</p><h1>Tes outils, à bord</h1><p className="at-sub">Colle n'importe quel lien : YouTube, Spotify, Canva, Google Docs/Drive, Twitch, Telegram… Un contenu précis (vidéo, playlist, doc partagé) s'ouvre ici ; les applications s'ouvrent dans leur propre fenêtre, la Station reste ouverte.</p></header>
       <form className="at-capture" onSubmit={(e) => { e.preventDefault(); if (q.trim()) { run("Lien", q.trim()); setQ(""); } }}>
         <textarea rows={1} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.form.requestSubmit(); } }} placeholder="Colle un lien à ouvrir dans la Station…" data-testid="atelier-bureau-launch" />
         <button className="at-btn" type="submit"><IoPlay size={14} /> Ouvrir</button>
       </form>
       <div className="at-apps">
         {[...DEFAULT_APPS, ...custom.map((l) => ({ key: l.id, title: l.title, url: l.url, color: l.color || "var(--brand)", k: l.title[0], custom: l }))].map((a) => {
-          const blocked = toEmbed(a.url)?.blocked;
+          const openTile = () => (a.view ? go({ name: a.view }) : popOut(a.url, "nexus-" + a.key));
           return (
-            <div key={a.key} className="at-app-tile" style={{ "--c": a.color }} role="button" tabIndex={0} onClick={() => run(a.title, a.url)} onKeyDown={(e) => e.key === "Enter" && run(a.title, a.url)} data-testid={`atelier-app-${a.key}`}>
+            <div key={a.key} className="at-app-tile" style={{ "--c": a.color }} role="button" tabIndex={0} onClick={openTile} onKeyDown={(e) => e.key === "Enter" && openTile()} data-testid={`atelier-app-${a.key}`}>
               <span className="ico">{a.k}</span><b>{a.title}</b>
-              <small className="mono">{blocked ? "FENÊTRE À CÔTÉ ↗" : "INTÉGRÉ"}</small>
+              <small className="mono">{a.view ? "DANS L'ATELIER" : "FENÊTRE D'APP ↗"}</small>
               {a.tip && <em>{a.tip}</em>}
               {a.custom && <button className="rm" onClick={(e) => { e.stopPropagation(); at.removeLink(a.custom.id); }} aria-label="Retirer"><IoTrashOutline size={13} /></button>}
             </div>

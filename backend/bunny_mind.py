@@ -108,8 +108,8 @@ def add_mind_routes(r, db):
     async def save_profile(body: ProfileIn):
         keys = {k for k, _ in PROFILE_FIELDS}
         prof = {k: str(v).strip()[:1500] for k, v in body.profile.items() if k in keys}
-        await get_mind(db)
-        await db.atelier_bunny_mind.update_one({"id": "mind"}, {"$set": {"profile": prof, "updated_at": now_iso()}})
+        cur = (await get_mind(db))["profile"]
+        await db.atelier_bunny_mind.update_one({"id": "mind"}, {"$set": {"profile": {**cur, **prof}, "updated_at": now_iso()}})
         return await mind()
 
     @r.post("/mind/memories")

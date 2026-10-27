@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
+import { toast } from "sonner";
 import { useAtelier } from "@/lib/atelier";
 import { SoundBtn } from "@/components/StationMenu";
 import QuartierView from "@/components/atelier/QuartierView";
@@ -17,6 +18,8 @@ import { AppWindow, MiniPlayer } from "@/components/atelier/AppScreens";
 import { BureauView, SalonView } from "@/components/atelier/BureauSalon";
 import { IoAppsOutline, IoFilmOutline } from "react-icons/io5";
 import BunnyPanel from "@/components/atelier/BunnyPanel";
+import FileViewer from "@/components/atelier/FileViewer";
+import DriveView from "@/components/atelier/DriveView";
 import BunnyBrains from "@/components/atelier/BunnyBrains";
 import BunnySprite from "@/components/atelier/BunnySprite";
 
@@ -37,8 +40,15 @@ function ShipClock() {
 export default function AtelierApp({ onLeave }) {
   const { sfx } = useApp();
   const at = useAtelier();
-  const [view, setView] = useState({ name: "home" });
+  const [view, setView] = useState(() => (new URLSearchParams(window.location.search).get("drive") ? { name: "drive" } : { name: "home" }));
+  useEffect(() => {
+    const d = new URLSearchParams(window.location.search).get("drive");
+    if (!d) return;
+    window.history.replaceState(null, "", "/atelier");
+    if (d === "ok") toast.success("Google Drive connecté !"); else toast.error(d === "scope" ? "Autorise l'accès au Drive pour le connecter." : "Connexion Google annulée ou refusée.");
+  }, []);
   const [editing, setEditing] = useState(null);
+  const [viewing, setViewing] = useState(null);
   const [uForm, setUForm] = useState(null);
   const [palette, setPalette] = useState(false);
   const [drop, setDrop] = useState(null);
@@ -52,7 +62,7 @@ export default function AtelierApp({ onLeave }) {
   const pick = useRef(null);
   const pickDefaults = useRef({});
   const go = (v) => { sfx("nav"); setView(v); setPalette(false); };
-  const open = (id) => { sfx("select"); setPalette(false); setEditing(id); };
+  const open = (id, kind) => { sfx("select"); setPalette(false); if ((kind || at.items.find((x) => x.id === id)?.kind) === "file") setViewing(id); else setEditing(id); };
   const inbox = at.items.filter((i) => !i.universe_id);
   const pinned = at.universes.filter((u) => u.pinned);
   const cur = view.name === "universe" ? at.universes.find((u) => u.id === view.id) : null;
@@ -62,7 +72,7 @@ export default function AtelierApp({ onLeave }) {
   useEffect(() => {
     let depth = 0;
     const has = (e) => [...(e.dataTransfer?.types || [])].some((t) => t === "Files" || t === "text/uri-list");
-    const enter = (e) => { if (editing || !has(e)) return; depth++; setDragging(true); };
+    const enter = (e) => { if (editing || viewing || !has(e)) return; depth++; setDragging(true); };
     const leave = () => { depth = Math.max(0, depth - 1); if (!depth) setDragging(false); };
     const over = (e) => { if (!editing && has(e)) e.preventDefault(); };
     const dropIt = (e) => {
@@ -74,14 +84,14 @@ export default function AtelierApp({ onLeave }) {
     };
     window.addEventListener("dragenter", enter); window.addEventListener("dragleave", leave); window.addEventListener("dragover", over); window.addEventListener("drop", dropIt);
     return () => { window.removeEventListener("dragenter", enter); window.removeEventListener("dragleave", leave); window.removeEventListener("dragover", over); window.removeEventListener("drop", dropIt); };
-  }, [editing, view]);
+  }, [editing, viewing, view]);
 
   useEffect(() => { if (view.name === "universe" && !cur) setView({ name: "universes" }); }, [cur, view.name]);
   useEffect(() => {
     const onKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON" }[view.name] || (cur?.name || "").toUpperCase();
+  const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", drive: "GOOGLE DRIVE" }[view.name] || (cur?.name || "").toUpperCase();
 
   return (
     <div className="at-app" data-testid="atelier-app">
@@ -131,12 +141,13 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "tasks" && <CockpitView {...ctx} />}
           {view.name === "settings" && <AtelierSettings {...ctx} />}
           {view.name === "bureau" && <BureauView {...ctx} launch={launch} />}
+          {view.name === "drive" && <DriveView {...ctx} />}
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
         </main>
       </div>
 
-      <input ref={pick} type="file" multiple hidden accept=".pdf,.docx,.txt,.md,image/*,audio/*,video/*" onChange={(e) => { const files = [...e.target.files]; e.target.value = ""; if (files.length) setDrop({ files, text: "", defaults: pickDefaults.current }); }} data-testid="atelier-import-input" />
-      {dragging && <div className="at-dropzone" data-testid="atelier-dropzone"><div><b>工</b><p>Dépose ici — tu choisiras où le ranger</p><small className="mono">PDF · WORD · IMAGES · MUSIQUES · VIDÉOS · LIENS</small></div></div>}
+      <input ref={pick} type="file" multiple hidden onChange={(e) => { const files = [...e.target.files]; e.target.value = ""; if (files.length) setDrop({ files, text: "", defaults: pickDefaults.current }); }} data-testid="atelier-import-input" />
+      {dragging && <div className="at-dropzone" data-testid="atelier-dropzone"><div><b>工</b><p>Dépose ici — tu choisiras où le ranger</p><small className="mono">PDF · WORD · EXCEL · IMAGES · MUSIQUES · VIDÉOS · LIENS · TOUT FICHIER</small></div></div>}
       {drop && <DropDialog at={at} drop={drop} defaults={drop.defaults} open={open} onClose={() => setDrop(null)} />}
       {screen && <AppWindow screen={screen} onClose={() => setScreen(null)} onMini={toMini} onNavigate={setScreen} />}
       {mini && <MiniPlayer mini={mini} onClose={() => setMini(null)} onExpand={(s) => { setMini(null); setScreen(s); }} />}
@@ -144,6 +155,7 @@ export default function AtelierApp({ onLeave }) {
       {!bunny && <div className="bn-fab"><BunnySprite pose="neutral" size={74} className="cb-bounce" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" testid="bunny-open" /></div>}
       {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} openBrains={() => setBrains(true)} />}
       {brains && <BunnyBrains onClose={() => setBrains(false)} />}
+      {viewing && <FileViewer at={at} id={viewing} onClose={() => setViewing(null)} edit={(id) => { setViewing(null); setEditing(id); }} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}
     </div>

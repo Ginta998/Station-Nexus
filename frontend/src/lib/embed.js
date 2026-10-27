@@ -32,12 +32,17 @@ export function toEmbed(raw) {
   if ((m = url.match(/t\.me\/s?\/?([\w]+)\/?$/))) return { provider: "Telegram", src: `https://t.me/s/${m[1]}`, ratio: "page", note: "Aperçu public de la chaîne." };
   if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url) || url.includes("/api/atelier-files/")) return { provider: "Vidéo", video: url, ratio: "video" };
   if (/\.(mp3|ogg|wav|m4a|flac)(\?|$)/i.test(url)) return { provider: "Audio", audio: url, ratio: "audio" };
-  const BLOCKED = ["netflix.com", "crunchyroll.com", "primevideo.com", "disneyplus.com", "web.telegram.org", "telegram.org", "chatgpt.com", "chat.openai.com", "canva.com", "notion.so", "instagram.com", "facebook.com", "x.com", "twitter.com", "adn.fr", "animationdigitalnetwork.com", "mail.google.com", "claude.ai", "gemini.google.com"];
+  if (["drive.google.com", "docs.google.com", "music.youtube.com"].includes(h)) return { provider: h, blocked: true };
+  const BLOCKED = ["discord.com", "discord.gg", "steampowered.com", "steamcommunity.com", "swisstransfer.com", "emergent.sh", "emergentagent.com", "amazon.com", "amazon.fr", "netflix.com", "crunchyroll.com", "primevideo.com", "disneyplus.com", "web.telegram.org", "telegram.org", "chatgpt.com", "chat.openai.com", "canva.com", "notion.so", "instagram.com", "facebook.com", "x.com", "twitter.com", "adn.fr", "animationdigitalnetwork.com", "mail.google.com", "claude.ai", "gemini.google.com"];
   if (BLOCKED.some((b) => h === b || h.endsWith("." + b))) return { provider: h, blocked: true };
   return { provider: h, src: url, ratio: "page", maybe: true };
 }
 
-export const popOut = (url, name = "nexus-app") => window.open(url, name, "popup=yes,width=1280,height=820,left=80,top=60");
+export const popOut = (url, name) => {
+  const n = name || "nexus-" + ((url.match(/^https?:\/\/(?:www\.)?([^/]+)/) || [])[1] || "app").replace(/\W/g, "");
+  const w = window.open(url, n, "popup=yes,width=1320,height=860,left=70,top=50");
+  if (!w) window.open(url, "_blank", "noopener");
+};
 
 // Applications du bureau (intégrables quand le service l'autorise, sinon fenêtre à côté)
 export const DEFAULT_APPS = [
@@ -45,10 +50,18 @@ export const DEFAULT_APPS = [
   { key: "spotify", title: "Spotify", url: "https://open.spotify.com", color: "#1ed760", k: "♫", tip: "Colle un lien de playlist ou d'album pour l'écouter ici." },
   { key: "canva", title: "Canva", url: "https://www.canva.com", color: "#7d2ae8", k: "C", tip: "Colle le lien d'un design pour l'aperçu intégré." },
   { key: "telegram", title: "Telegram", url: "https://web.telegram.org", color: "#29a9eb", k: "✈" },
-  { key: "chatgpt", title: "ChatGPT", url: "https://chatgpt.com", color: "#10a37f", k: "◎" },
-  { key: "drive", title: "Google Drive", url: "https://drive.google.com", color: "#1fa463", k: "△", tip: "Colle un lien de fichier ou de dossier partagé pour l'ouvrir ici." },
+  { key: "chatgpt", title: "ChatGPT", url: "https://chatgpt.com", color: "#10a37f", k: "◍" },
+  { key: "drive", title: "Google Drive", url: "https://drive.google.com", color: "#1fa463", k: "△", tip: "Parcours ton Drive connecté et ouvre tes fichiers ici.", view: "drive" },
   { key: "docs", title: "Google Docs", url: "https://docs.google.com", color: "#4285f4", k: "≡" },
   { key: "crunchyroll", title: "Crunchyroll", url: "https://www.crunchyroll.com", color: "#f47521", k: "◐" },
   { key: "netflix", title: "Netflix", url: "https://www.netflix.com", color: "#e50914", k: "N" },
   { key: "twitch", title: "Twitch", url: "https://www.twitch.tv", color: "#9146ff", k: "◈" },
+  { key: "claude", title: "Claude", url: "https://claude.ai", color: "#d97757", k: "✳" },
+  { key: "emergent", title: "Emergent", url: "https://app.emergent.sh", color: "#f2f2f2", k: "E" },
+  { key: "swisstransfer", title: "SwissTransfer", url: "https://www.swisstransfer.com", color: "#e2001a", k: "⇪" },
+  { key: "discord", title: "Discord", url: "https://discord.com/app", color: "#5865f2", k: "◉" },
+  { key: "instagram", title: "Instagram", url: "https://www.instagram.com", color: "#e1306c", k: "◎" },
+  { key: "steam", title: "Steam", url: "https://store.steampowered.com", color: "#66c0f4", k: "♨" },
+  { key: "ytmusic", title: "YouTube Music", url: "https://music.youtube.com", color: "#ff0000", k: "♪" },
+  { key: "primevideo", title: "Prime Video", url: "https://www.primevideo.com", color: "#00a8e1", k: "▷" },
 ];
