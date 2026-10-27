@@ -1,0 +1,44 @@
+{
+  "summary": "Tested Cosmic Bunny (Atelier AI assistant) end to end. Backend (pytest, 10 tests): admin guard, 422 validation, chat, multi-turn recall, listing/getting/deleting sessions, and creating a task then marking it done. Everything passed. Task creation was flaky: in 1 of 2 runs the model copied the example title from TASK_HINT ('Relire le chapitre 3') instead of the title I asked for. UI (local Playwright script, about 6 LLM calls): FAB/dock open, close, the hello screen and its quick buttons, typing indicator, AI reply, the scene card with 'Insérer comme scène' (creates a scene item), session select/reload, new conversation, delete, focus select + Résumer, and the Bunny task showing in the Cockpit without reload (badge 3->4, listed under Tâches). Everything passed AFTER I fixed one critical bug: the frontend's 20s axios timeout aborted most Bunny replies.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/atelier/bunny/chat", "issue": "The example in TASK_HINT (title 'Relire le chapitre 3', due '2026-11-07') leaks into real tasks: in 1 of 2 runs the model created 'Relire le chapitre 3' instead of the title I asked for. The DB already had 2 such tasks from earlier runs. Use a neutral placeholder like {\"op\":\"create\",\"title\":\"<titre demandé>\"...}."},
+      {"endpoint": "POST /api/atelier/bunny/chat", "issue": "ask_llm tries providers one after another with a 45s timeout each (4 providers = up to 180s). This is longer than the usual ingress/proxy timeout (~60s). LLM7 never answered in about 9 calls (every reply was 'via OVHcloud · GPT-OSS 120B'), so each request first spends time on 2 failing LLM7 calls. Suggest a lower per-provider timeout (~20s), skipping LLM7 for a while after a 429, or calling providers in parallel."},
+      {"endpoint": "POST /api/atelier/bunny/chat", "issue": "When the client aborts, the backend still finishes and saves the session. The UI never learns about it and puts the text back in the input, so a retry creates duplicate orphan sessions (seen: 2x 'Écris une très courte scène…' and a 'Résume-moi…' session left over after the UI timeouts)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "lib/atelier.js bunnyChat", "issue": "FIXED BY TESTER: bunnyChat used the shared axios instance's 20s timeout. Free LLM replies take 10-60s, so the scene request and the summary both showed 'Bunny n'a pas pu répondre. Réessaie !' even though the backend answered. Changed to api.post(..., { timeout: 180000 }).", "selector": "[data-testid=bunny-error]", "priority": "HIGH"},
+      {"component": "BunnyMessage SceneCard", "issue": "After inserting, the button says 'Ajoutée à l'univers' even when there is no current universe (panel opened from Pont, so universe_id=null and the scene goes to Inbox). The label should match where the scene actually went.", "selector": "[data-testid^=bunny-scene-insert-]", "priority": "LOW"},
+      {"component": "BunnyPanel", "issue": "openSession and remove have no try/catch. A failing GET or DELETE gives an unhandled rejection and no error shown. Delete also has no confirmation.", "selector": "[data-testid=bunny-delete]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Bunny panel (1280x800)", "issues": ["The panel covers the top bar's right-hand controls (music/settings/logout); the panel's close X sits right where the logout icon is.", "The focus-document select and the send button run almost to the right edge of the panel (the select looks clipped).", "The panel background is see-through, so page content (e.g. the 'Capturer' button, the Univers cards) shows behind the hello text."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_iteration37_bunny.py", "/app/backend/tests/pw_bunny_ui.py", "/app/test_reports/pytest/pytest_bunny.xml"],
+  "action_items": [
+    "Keep (or move into a dedicated bunny client) the 180s timeout on bunnyChat in frontend/src/lib/atelier.js.",
+    "Replace the concrete example in TASK_HINT with a neutral placeholder so the model stops creating 'Relire le chapitre 3'. Delete the leftover 'Relire le chapitre 3' tasks created by Bunny.",
+    "Lower the per-provider timeout in ask_llm and/or skip LLM7 for a while after a 429 so the whole call stays under the ingress timeout.",
+    "Fix the scene-insert label when universe_id is null ('Ajoutée à l'Inbox').",
+    "Add try/catch and error display to openSession and remove in BunnyPanel.",
+    "Adjust the Bunny panel layout: don't cover the top-bar controls, keep the focus select within the panel padding, and make the panel background less transparent."
+  ],
+  "critical_code_review_comments": [
+    "bunny.py: messages grow without limit in Mongo (only the last 16 are sent to the LLM); consider capping them.",
+    "bunny.py apply_actions: a JSON parse failure is silently ignored, and the reply says nothing to the user about the failed action.",
+    "bunny.py: the session list is limited to 100 and has no pagination; fine for a single admin.",
+    "BunnyPanel: the session list is not re-sorted when an existing conversation gets a new message."
+  ],
+  "updated_files": ["/app/frontend/src/lib/atelier.js (bunnyChat timeout 180000)", "/app/backend/tests/test_iteration37_bunny.py", "/app/backend/tests/pw_bunny_ui.py"],
+  "success_rate": {"backend": "100% (10/10; task creation 1/2 flaky because of the leaking example)", "frontend": "100% after the timeout fix (before it, 2 of 3 LLM flows failed)"},
+  "seed_data_creation": "None kept. All TEST_ sessions, tasks and the TEST_Yuba scene were deleted. Note: a pre-existing 'TEST_UI_Task' task was deleted too, along with 1 Bunny-created 'Relire le chapitre 3' task (mine).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Browser-tool / headless Chromium renderer CRASH RCA: /app/frontend/public/sw.js applyBadge calls navigator.setAppBadge from the service worker. Headless Chromium has no BadgeService mojo binder ('Terminating render process for bad Mojo message: No binder found for interface blink.mojom.BadgeService for the service worker scope'), so the renderer is killed on any logged-in page. Workaround: create the browser context with service_workers='block' (see /app/backend/tests/pw_bunny_ui.py, run as `REACT_APP_BACKEND_URL=... python backend/tests/pw_bunny_ui.py load|scene|full`, executable /usr/local/bin/browser-use-chromium). This probably also explains the past 'Target crashed' reports. Login: put sx_token in localStorage from the /api/... origin, then go to /atelier. Use pytest -n0 for the bunny tests (xdist splits the shared STATE between workers).",
+  "rca of the issue": "1) 'Bunny n'a pas pu répondre' on scenes/summaries: atelierApi.bunnyChat used the shared axios instance (timeout 20000ms in lib/api.js), while free LLM replies take 10-60s. Mitigated with a 180s per-request timeout. 2) Headless crashes: the service-worker badge API is not available in headless Chromium (see context)."
+}

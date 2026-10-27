@@ -820,3 +820,11 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
   - Import PDF/DOCX/TXT : POST /api/atelier/import (mammoth / pymupdf, découpage par titres, images Word en object storage, fichier source joint). Fichiers : POST /api/atelier/files, GET public /api/atelier-files/{uuid}. Glisser-déposer partout (DropDialog : importer / nouvel élément / ajouter à un existant).
 - Note env : le navigateur headless local plante sans `--single-process` (problème d'environnement, pas du code).
 - Prochain : Phase 2 Bunny IA dans l'Atelier ; Phase 3 cockpit carrière (objectifs, budget, agenda) + bureau numérique ; retrait LaunchGate (P1, reporté par l'utilisateur).
+
+## 2026-10-27 — Cosmic Bunny (Atelier Phase 2) ✅
+- Assistante IA 100 % gratuite, sans crédits Emergent : LLM7 (gpt-oss:20b, mistral-Nemo) en priorité → Gemini 2.5 Flash (si GEMINI_API_KEY) → OVHcloud gpt-oss-120b → Kilo kilo-auto/free. Pause de 10 min d'un service après un 429. Clé optionnelle LLM7_API_KEY (jeton gratuit = plus de quota).
+- Backend `/app/backend/bunny.py` : /api/atelier/bunny/chat, /sessions (GET/DELETE). Contexte = tout le lore (univers, fiches, scènes, tâches, ~18k caractères, univers courant en priorité) + document en focus.
+- Actions Cockpit via le bloc <actions> (créer/cocher/décocher/supprimer). Scènes dans <scene titre> → carte « Insérer comme scène ».
+- Frontend : BunnyPanel.js, BunnyMessage.js, bouton flottant (orbe CSS aux oreilles animées) + entrée du dock « Bunny ». Conversations sauvegardées.
+- Testé : iteration_28 (back 10/10, front OK après correctif du délai de 20 s d'axios).
+- Backlog : bug du menu haut/bas visible seulement au survol (reporté par l'utilisateur), suppression de la LaunchGate (plus tard), Stripe en live, migration Tengoku Dōjō.

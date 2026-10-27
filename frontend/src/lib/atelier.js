@@ -25,7 +25,7 @@ export const atelierApi = {
   bunnySessions: () => get("/atelier/bunny/sessions"),
   bunnySession: (id) => get(`/atelier/bunny/sessions/${id}`),
   bunnyDelete: (id) => send("delete", `/atelier/bunny/sessions/${id}`),
-  bunnyChat: (b) => send("post", "/atelier/bunny/chat", b),
+  bunnyChat: (b) => api.post("/atelier/bunny/chat", b, { timeout: 180000 }).then((r) => r.data),
   createLink: (b) => send("post", "/atelier/links", b),
   updateLink: (id, b) => send("put", `/atelier/links/${id}`, b),
   deleteLink: (id) => send("delete", `/atelier/links/${id}`),

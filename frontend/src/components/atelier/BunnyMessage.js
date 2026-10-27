@@ -8,7 +8,7 @@ const Prose = ({ text }) => text.split(/\n{2,}/).filter((b) => b.trim()).map((b,
   return <p key={i}>{lines.map((l, j) => <Fragment key={j}>{j > 0 && <br />}{inline(l.replace(/^#+\s*/, ""))}</Fragment>)}</p>;
 });
 
-function SceneCard({ title, body, onInsert, idx }) {
+function SceneCard({ title, body, onInsert, idx, dest }) {
   const [state, setState] = useState("");
   const copy = () => { navigator.clipboard?.writeText(body.trim()); setState("copied"); };
   const insert = async () => { setState("busy"); await onInsert(title, body); setState("inserted"); };
@@ -19,7 +19,7 @@ function SceneCard({ title, body, onInsert, idx }) {
       <div className="bn-scene-a">
         <button onClick={copy} data-testid={`bunny-scene-copy-${idx}`}><IoCopyOutline size={14} />{state === "copied" ? "Copié" : "Copier"}</button>
         <button className="pri" onClick={insert} disabled={state === "busy" || state === "inserted"} data-testid={`bunny-scene-insert-${idx}`}>
-          {state === "inserted" ? <><IoCheckmarkDone size={14} />Ajoutée à l'univers</> : <><IoAddCircleOutline size={14} />Insérer comme scène</>}
+          {state === "inserted" ? <><IoCheckmarkDone size={14} />Ajoutée à {dest}</> : <><IoAddCircleOutline size={14} />Insérer comme scène</>}
         </button>
       </div>
     </div>
@@ -27,7 +27,7 @@ function SceneCard({ title, body, onInsert, idx }) {
 }
 
 // Bulle de message : texte poétique + cartes de scènes insérables + tâches modifiées
-export default function BunnyMessage({ m, idx, onInsertScene }) {
+export default function BunnyMessage({ m, idx, onInsertScene, dest }) {
   if (m.role === "user") return <div className="bn-msg me" data-testid={`bunny-msg-${idx}`}><p>{m.content}</p></div>;
   const parts = m.content.split(/(<scene[^>]*>[\s\S]*?<\/scene>)/g);
   return (
@@ -36,7 +36,7 @@ export default function BunnyMessage({ m, idx, onInsertScene }) {
       <div className="bn-txt">
         {parts.map((p, i) => {
           const sc = p.match(/^<scene(?:\s+titre="([^"]*)")?[^>]*>([\s\S]*?)<\/scene>$/);
-          return sc ? <SceneCard key={i} idx={`${idx}-${i}`} title={sc[1] || "Nouvelle scène"} body={sc[2]} onInsert={onInsertScene} /> : <Prose key={i} text={p} />;
+          return sc ? <SceneCard key={i} idx={`${idx}-${i}`} title={sc[1] || "Nouvelle scène"} body={sc[2]} onInsert={onInsertScene} dest={dest} /> : <Prose key={i} text={p} />;
         })}
         {m.tasks?.length > 0 && (
           <div className="bn-tasks mono" data-testid={`bunny-tasks-${idx}`}>{m.tasks.map((t, i) => <span key={i}>{t.done ? "✓" : "＋"} {t.title}</span>)}</div>

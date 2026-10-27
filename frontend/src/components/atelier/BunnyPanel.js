@@ -25,19 +25,27 @@ export default function BunnyPanel({ at, universeId, onClose }) {
   useEffect(() => { atelierApi.bunnySessions().then(setSessions).catch(() => {}); }, []);
   useEffect(() => { list.current?.scrollTo({ top: list.current.scrollHeight, behavior: "smooth" }); }, [msgs, busy]);
 
-  const openSession = async (id) => { setErr(""); if (!id) { setSid(null); setMsgs([]); return; } const s = await atelierApi.bunnySession(id); setSid(s.id); setMsgs(s.messages); };
-  const remove = async () => { if (!sid) return; await atelierApi.bunnyDelete(sid); setSessions((l) => l.filter((s) => s.id !== sid)); openSession(null); };
+  const openSession = async (id) => {
+    setErr(""); if (!id) { setSid(null); setMsgs([]); return; }
+    try { const s = await atelierApi.bunnySession(id); setSid(s.id); setMsgs(s.messages); } catch { setErr("Impossible d'ouvrir cette conversation."); }
+  };
+  const remove = async () => {
+    if (!sid || !window.confirm("Supprimer cette conversation avec Bunny ?")) return;
+    try { await atelierApi.bunnyDelete(sid); setSessions((l) => l.filter((s) => s.id !== sid)); openSession(null); } catch { setErr("Suppression impossible, réessaie."); }
+  };
   const send = async (msg) => {
     const m = (msg ?? text).trim(); if (!m || busy) return;
+    const id = sid || crypto.randomUUID();
     setText(""); setErr(""); setBusy(true); setMsgs((l) => [...l, { role: "user", content: m }]);
     try {
-      const r = await atelierApi.bunnyChat({ message: m, session_id: sid, universe_id: universeId || null, focus_item_id: focus || null });
+      const r = await atelierApi.bunnyChat({ message: m, session_id: id, universe_id: universeId || null, focus_item_id: focus || null });
       setMsgs((l) => [...l, r.reply]);
-      if (!sid) { setSid(r.session_id); setSessions((l) => [{ id: r.session_id, title: r.title }, ...l]); }
+      if (!sessions.some((x) => x.id === r.session_id)) setSessions((l) => [{ id: r.session_id, title: r.title }, ...l]);
+      setSid(r.session_id);
       if (r.tasks_changed.length || r.tasks_deleted.length) at.applyTasks(r.tasks_changed, r.tasks_deleted);
     } catch (e) {
       setErr(e?.response?.data?.detail || "Bunny n'a pas pu répondre. Réessaie !");
-      setMsgs((l) => l.slice(0, -1)); setText(m);
+      setMsgs((l) => l.slice(0, -1)); setText(m); setSid(id);
     } finally { setBusy(false); }
   };
   const insertScene = (title, body) => at.createItem({ kind: "scene", title, universe_id: universeId || null, tags: ["bunny"], content: body.trim().split(/\n{2,}/).map((p) => `<p>${p.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br/>")}</p>`).join("") });
@@ -65,7 +73,7 @@ export default function BunnyPanel({ at, universeId, onClose }) {
             <div className="bn-quick">{QUICK.map(([l, q], i) => <button key={l} onClick={() => send(q)} data-testid={`bunny-quick-${i}`}>{l}</button>)}</div>
           </div>
         )}
-        {msgs.map((m, i) => <BunnyMessage key={i} m={m} idx={i} onInsertScene={insertScene} />)}
+        {msgs.map((m, i) => <BunnyMessage key={i} m={m} idx={i} onInsertScene={insertScene} dest={uni ? uni.name : "l'Inbox"} />)}
         {busy && <div className="bn-msg ai" data-testid="bunny-typing"><span className="bn-av">兎</span><div className="bn-dots"><i /><i /><i /></div></div>}
         {err && <p className="bn-err" data-testid="bunny-error">{err}</p>}
       </div>

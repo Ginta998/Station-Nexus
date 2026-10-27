@@ -4,6 +4,7 @@ import re
 import json
 import uuid
 import logging
+import time
 from datetime import datetime, timezone
 from typing import Optional
 import httpx
@@ -12,6 +13,8 @@ from pydantic import BaseModel, Field
 
 log = logging.getLogger("bunny")
 CTX_BUDGET = 18000
+COOLDOWN = 600
+_resting = {}
 
 
 def now_iso() -> str:
@@ -49,7 +52,7 @@ TASK_WORDS = re.compile(r"t[âa]che|todo|to-do|cockpit|coche|d[ée]coche|rappel"
 TASK_HINT = """
 
 [Consigne système invisible : si je te demande de créer, cocher, décocher ou supprimer des tâches, réponds d'abord en une ou deux phrases, puis termine OBLIGATOIREMENT par le bloc exact, sans bloc de code markdown :
-<actions>[{"op":"create","title":"Relire le chapitre 3","due":"2026-11-07","priority":"normal"}]</actions>
+<actions>[{"op":"create","title":"<le titre exact que je demande>","due":"<AAAA-MM-JJ ou vide>","priority":"normal"}]</actions>
 Ce bloc est la seule façon de modifier le Cockpit ; n'invente jamais d'id.]"""
 
 
@@ -87,11 +90,15 @@ async def build_context(db, universe_id: Optional[str], focus_id: Optional[str])
 
 async def ask_llm(messages):
     errors = []
-    async with httpx.AsyncClient(timeout=httpx.Timeout(45, connect=8)) as c:
+    async with httpx.AsyncClient(timeout=httpx.Timeout(28, connect=6)) as c:
         for name, base, model, key in providers():
+            if _resting.get(base, 0) > time.time():
+                continue
             try:
                 h = {"Content-Type": "application/json", **({"Authorization": f"Bearer {key}"} if key else {})}
                 r = await c.post(f"{base}/chat/completions", headers=h, json={"model": model, "messages": messages, "max_tokens": 3500, "temperature": 0.8})
+                if r.status_code == 429:
+                    _resting[base] = time.time() + COOLDOWN
                 if r.status_code != 200:
                     errors.append(f"{name}: HTTP {r.status_code}")
                     continue
@@ -164,7 +171,7 @@ def build_bunny_router(db, require_admin) -> APIRouter:
     async def chat(body: ChatIn):
         s = await db.atelier_bunny.find_one({"id": body.session_id}, {"_id": 0}) if body.session_id else None
         if not s:
-            s = {"id": str(uuid.uuid4()), "title": body.message.strip()[:60], "messages": [], "created_at": now_iso()}
+            s = {"id": body.session_id or str(uuid.uuid4()), "title": body.message.strip()[:60], "messages": [], "created_at": now_iso()}
         ctx = await build_context(db, body.universe_id, body.focus_item_id)
         history = [{"role": m["role"], "content": m["content"]} for m in s["messages"][-16:]]
         user = body.message

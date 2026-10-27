@@ -2139,7 +2139,7 @@ body:has(.at-root) .cb-root,body:has(.at-root) .sx-global-sound{display:none!imp
 @keyframes bnEarR{0%,60%,100%{transform:rotate(14deg)}64%{transform:rotate(30deg)}68%{transform:rotate(10deg)}}
 .bn-fab{position:fixed;right:26px;bottom:26px;z-index:25;padding:18px 6px 6px;border-radius:50%;transition:transform .25s}
 .bn-fab:hover{transform:scale(1.08) rotate(-4deg)}
-.bn-panel{position:fixed;top:0;right:0;bottom:0;z-index:28;width:min(460px,100vw);display:flex;flex-direction:column;background:color-mix(in srgb,var(--bg-primary) 88%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-left:1px solid color-mix(in srgb,var(--brand) 50%,transparent);box-shadow:-30px 0 80px -30px var(--brand);animation:bnIn .35s cubic-bezier(.2,.9,.3,1.2) both}
+.bn-panel{position:fixed;top:66px;right:0;bottom:0;z-index:28;width:min(460px,100vw);display:flex;flex-direction:column;background:color-mix(in srgb,var(--bg-primary) 97%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-left:1px solid color-mix(in srgb,var(--brand) 50%,transparent);box-shadow:-30px 0 80px -30px var(--brand);animation:bnIn .35s cubic-bezier(.2,.9,.3,1.2) both}
 @keyframes bnIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
 .bn-head{display:flex;align-items:center;gap:12px;padding:22px 18px 12px}
 .bn-title{flex:1;display:flex;flex-direction:column}.bn-title b{font-family:var(--font-display);font-size:17px;letter-spacing:.04em}.bn-title small{font-size:9.5px;letter-spacing:.18em;opacity:.55}
@@ -2184,3 +2184,4 @@ body:has(.at-root) .cb-root,body:has(.at-root) .sx-global-sound{display:none!imp
 .bn-input button{width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:var(--brand);color:#fff;transition:transform .2s,opacity .2s}
 .bn-input button:hover:not(:disabled){transform:scale(1.08)}
 .bn-input button:disabled{opacity:.4}
+.bn-panel *{box-sizing:border-box}.bn-focus select{max-width:100%}
