@@ -6,6 +6,8 @@ import { KINDS, imgSrc } from "@/lib/atelier";
 import { listCreations, posterUrl } from "@/lib/api";
 import ItemsGrid from "@/components/atelier/ItemsGrid";
 import ItemCard from "@/components/atelier/ItemCard";
+import { itemDrop } from "@/components/atelier/ContextMenu";
+import { dropToKind } from "@/components/atelier/itemActions";
 
 const TABS = [["all", "Tout"], ["character", "Personnages"], ["place", "Lieux"], ["scene", "Scènes"], ["note", "Notes"], ["lore", "Lore"], ["document", "Documents"], ["inspiration", "Inspirations"], ["file", "Fichiers"], ["timeline", "Chronologie"]];
 
@@ -49,7 +51,7 @@ export default function UniverseView({ at, open, universe: u, editUniverse, impo
         )}
       </header>
       <nav className="at-tabs" data-testid="atelier-universe-tabs">
-        {TABS.map(([k, l]) => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)} data-testid={`atelier-tab-${k}`}>{l}<small>{count(k)}</small></button>)}
+        {TABS.map(([k, l]) => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)} data-testid={`atelier-tab-${k}`} {...(KINDS[k] ? itemDrop(dropToKind(at, k)) : {})}>{l}<small>{count(k)}</small></button>)}
       </nav>
       {tab === "timeline" ? <Timeline items={items} at={at} open={open} /> : (
         <ItemsGrid at={at} open={open} importDocs={importDocs} items={shown} newDefaults={{ universe_id: u.id }} kinds={tab === "all" ? Object.keys(KINDS) : [tab]}

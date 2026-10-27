@@ -1,5 +1,7 @@
 import { IoPin } from "react-icons/io5";
 import { KINDS, imgSrc, stripHtml, fileType } from "@/lib/atelier";
+import { pressMenu, ITEM_MIME } from "@/components/atelier/ContextMenu";
+import { itemMenu } from "@/components/atelier/itemActions";
 
 const FT = { image: "IMAGE", pdf: "PDF", office: "OFFICE", video: "VIDÉO", audio: "AUDIO", text: "TEXTE", link: "LIEN", drive: "DRIVE", other: "FICHIER", none: "" };
 
@@ -18,8 +20,10 @@ export default function ItemCard({ it, at, open }) {
   const ft = m ? fileType(m) : "";
   const thumb = it.image || (ft === "image" ? m.url : "");
   return (
-    <button className={`at-card k-${it.kind}`} onClick={() => open(it.id)} data-testid={`atelier-item-${it.id}`} style={{ "--u": u?.color || "var(--brand)" }}>
-      {thumb ? <div className="at-card-img"><img src={imgSrc(thumb)} alt="" loading="lazy" /></div> : m ? <div className="at-card-file mono"><span>{ft === "link" || ft === "drive" ? FT[ft] : (m.name || "").split(".").pop().slice(0, 5).toUpperCase() || FT[ft]}</span><small>{FT[ft]} · OUVRIR</small></div> : null}
+    <button className={`at-card k-${it.kind}`} onClick={() => open(it.id)} data-testid={`atelier-item-${it.id}`} style={{ "--u": u?.color || "var(--brand)" }}
+      draggable onDragStart={(e) => { e.dataTransfer.setData(ITEM_MIME, it.id); e.dataTransfer.effectAllowed = "move"; e.currentTarget.classList.add("at-dragging"); document.body.classList.add("at-item-drag"); }}
+      onDragEnd={(e) => { e.currentTarget.classList.remove("at-dragging"); document.body.classList.remove("at-item-drag"); }} {...pressMenu(() => itemMenu(it, at, open))}>
+      {thumb ? <div className="at-card-img"><img src={imgSrc(thumb)} alt="" loading="lazy" draggable="false" /></div> : m ? <div className="at-card-file mono"><span>{ft === "link" || ft === "drive" ? FT[ft] : (m.name || "").split(".").pop().slice(0, 5).toUpperCase() || FT[ft]}</span><small>{FT[ft]} · OUVRIR</small></div> : null}
       <div className="at-card-b">
         <p className="at-card-k mono"><span className="kj">{k.kanji}</span> {k.label.toUpperCase()}{u ? ` · ${u.name}` : " · INBOX"}{it.pinned && <IoPin size={11} />}</p>
         <h3>{it.title || "Sans titre"}</h3>

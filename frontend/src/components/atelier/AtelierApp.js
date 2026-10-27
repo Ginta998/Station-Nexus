@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
-import { toast } from "sonner";
 import { useAtelier } from "@/lib/atelier";
 import { SoundBtn } from "@/components/StationMenu";
 import QuartierView from "@/components/atelier/QuartierView";
@@ -19,12 +18,13 @@ import { BureauView, SalonView } from "@/components/atelier/BureauSalon";
 import { IoAppsOutline, IoFilmOutline } from "react-icons/io5";
 import BunnyPanel from "@/components/atelier/BunnyPanel";
 import FileViewer from "@/components/atelier/FileViewer";
-import DriveView from "@/components/atelier/DriveView";
+import { ContextMenuHost, itemDrop } from "@/components/atelier/ContextMenu";
+import { dropToUniverse } from "@/components/atelier/itemActions";
 import BunnyBrains from "@/components/atelier/BunnyBrains";
 import BunnySprite from "@/components/atelier/BunnySprite";
 
-const Dock = ({ icon, label, on, onClick, testid, color, kanji, badge }) => (
-  <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label}>
+const Dock = ({ icon, label, on, onClick, testid, color, kanji, badge, drop }) => (
+  <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label} {...(drop ? itemDrop(drop) : {})}>
     <span className="ic" style={color ? { color } : undefined}>{kanji ? <b>{kanji}</b> : icon}</span>
     <span className="lb">{label}</span>{badge > 0 && <span className="bd">{badge}</span>}
   </button>
@@ -40,13 +40,7 @@ function ShipClock() {
 export default function AtelierApp({ onLeave }) {
   const { sfx } = useApp();
   const at = useAtelier();
-  const [view, setView] = useState(() => (new URLSearchParams(window.location.search).get("drive") ? { name: "drive" } : { name: "home" }));
-  useEffect(() => {
-    const d = new URLSearchParams(window.location.search).get("drive");
-    if (!d) return;
-    window.history.replaceState(null, "", "/atelier");
-    if (d === "ok") toast.success("Google Drive connecté !"); else toast.error(d === "scope" ? "Autorise l'accès au Drive pour le connecter." : "Connexion Google annulée ou refusée.");
-  }, []);
+  const [view, setView] = useState({ name: "home" });
   const [editing, setEditing] = useState(null);
   const [viewing, setViewing] = useState(null);
   const [uForm, setUForm] = useState(null);
@@ -91,7 +85,7 @@ export default function AtelierApp({ onLeave }) {
     const onKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", drive: "GOOGLE DRIVE" }[view.name] || (cur?.name || "").toUpperCase();
+  const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON" }[view.name] || (cur?.name || "").toUpperCase();
 
   return (
     <div className="at-app" data-testid="atelier-app">
@@ -112,14 +106,14 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoPlanetOutline size={18} />} label="Pont" on={view.name === "home"} onClick={() => go({ name: "home" })} testid="atelier-nav-home" />
           <Dock icon={<IoGridOutline size={18} />} label="Univers" badge={0} on={view.name === "universes" || view.name === "universe"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
           <Dock icon={<IoSearch size={18} />} label="Recherche" onClick={() => setPalette(true)} testid="atelier-nav-search" />
-          <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" />
+          <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" drop={dropToUniverse(at, null)} />
           <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
           <Dock kanji="兎" label="Bunny" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
           <div className="at-dock-unis">
-            {pinned.map((u) => <Dock key={u.id} kanji={u.kanji || u.name[0]} color={u.color} label={u.name} on={view.id === u.id} onClick={() => go({ name: "universe", id: u.id })} testid={`atelier-nav-universe-${u.id}`} />)}
+            {pinned.map((u) => <Dock key={u.id} kanji={u.kanji || u.name[0]} color={u.color} label={u.name} on={view.id === u.id} onClick={() => go({ name: "universe", id: u.id })} testid={`atelier-nav-universe-${u.id}`} drop={dropToUniverse(at, u.id)} />)}
           </div>
           <div className="at-dock-foot">
             <Dock icon={<IoSettingsOutline size={18} />} label="Réglages" on={view.name === "settings"} onClick={() => go({ name: "settings" })} testid="atelier-nav-settings" />
@@ -141,7 +135,6 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "tasks" && <CockpitView {...ctx} />}
           {view.name === "settings" && <AtelierSettings {...ctx} />}
           {view.name === "bureau" && <BureauView {...ctx} launch={launch} />}
-          {view.name === "drive" && <DriveView {...ctx} />}
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
         </main>
       </div>
@@ -155,6 +148,7 @@ export default function AtelierApp({ onLeave }) {
       {!bunny && <div className="bn-fab"><BunnySprite pose="neutral" size={74} className="cb-bounce" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" testid="bunny-open" /></div>}
       {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} openBrains={() => setBrains(true)} />}
       {brains && <BunnyBrains onClose={() => setBrains(false)} />}
+      <ContextMenuHost />
       {viewing && <FileViewer at={at} id={viewing} onClose={() => setViewing(null)} edit={(id) => { setViewing(null); setEditing(id); }} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}

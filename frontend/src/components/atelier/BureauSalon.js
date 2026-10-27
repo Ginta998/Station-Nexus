@@ -3,12 +3,19 @@ import { IoAdd, IoTrashOutline, IoPlay, IoContractOutline, IoCloudUploadOutline,
 import { toast } from "sonner";
 import { DEFAULT_APPS, toEmbed, popOut } from "@/lib/embed";
 import { atelierApi } from "@/lib/atelier";
+import { pressMenu } from "@/components/atelier/ContextMenu";
 
 // Le Bureau : tes applications et un lanceur universel — tout s'ouvre dans la Station quand c'est possible
-export function BureauView({ at, launch, go }) {
+export function BureauView({ at, launch }) {
   const [q, setQ] = useState("");
   const [form, setForm] = useState(null);
   const custom = at.links.filter((l) => l.kind === "app");
+  const hidden = at.config.hidden_apps || [];
+  const removeApp = async (a) => {
+    if (!window.confirm(`Retirer « ${a.title} » du bureau ?`)) return;
+    if (a.custom) await at.removeLink(a.custom.id); else await at.saveConfig({ hidden_apps: [...hidden, a.key] });
+    toast.success(`${a.title} retiré du bureau`);
+  };
   const run = (title, url) => { const e = toEmbed(url); if (e?.blocked) popOut(url); else launch({ title, url }); };
   const add = async () => { if (!form.title.trim() || !/^https?:\/\//.test(form.url)) return toast.error("Nom et lien https:// requis"); await at.saveLink({ ...form, kind: "app" }); setForm(null); };
   return (
@@ -19,19 +26,26 @@ export function BureauView({ at, launch, go }) {
         <button className="at-btn" type="submit"><IoPlay size={14} /> Ouvrir</button>
       </form>
       <div className="at-apps">
-        {[...DEFAULT_APPS, ...custom.map((l) => ({ key: l.id, title: l.title, url: l.url, color: l.color || "var(--brand)", k: l.title[0], custom: l }))].map((a) => {
-          const openTile = () => (a.view ? go({ name: a.view }) : popOut(a.url, "nexus-" + a.key));
+        {[...DEFAULT_APPS.filter((a) => !hidden.includes(a.key)), ...custom.map((l) => ({ key: l.id, title: l.title, url: l.url, color: l.color || "var(--brand)", k: l.title[0], custom: l }))].map((a) => {
+          const openTile = () => popOut(a.url, "nexus-" + a.key);
+          const menu = () => ({ title: a.title, entries: [
+            { id: "open", label: "Ouvrir la fenêtre d'app", onClick: openTile },
+            { id: "tab", label: "Ouvrir dans un onglet", onClick: () => window.open(a.url, "_blank", "noopener") },
+            "-",
+            { id: "remove", label: "Retirer du bureau", danger: true, onClick: () => removeApp(a) },
+          ] });
           return (
-            <div key={a.key} className="at-app-tile" style={{ "--c": a.color }} role="button" tabIndex={0} onClick={openTile} onKeyDown={(e) => e.key === "Enter" && openTile()} data-testid={`atelier-app-${a.key}`}>
+            <div key={a.key} className="at-app-tile" style={{ "--c": a.color }} role="button" tabIndex={0} onClick={openTile} onKeyDown={(e) => e.key === "Enter" && openTile()} data-testid={`atelier-app-${a.key}`} {...pressMenu(menu)}>
               <span className="ico">{a.k}</span><b>{a.title}</b>
-              <small className="mono">{a.view ? "DANS L'ATELIER" : "FENÊTRE D'APP ↗"}</small>
+              <small className="mono">FENÊTRE D'APP ↗</small>
               {a.tip && <em>{a.tip}</em>}
-              {a.custom && <button className="rm" onClick={(e) => { e.stopPropagation(); at.removeLink(a.custom.id); }} aria-label="Retirer"><IoTrashOutline size={13} /></button>}
+              <button className="rm" onClick={(e) => { e.stopPropagation(); removeApp(a); }} aria-label="Retirer" title="Retirer du bureau" data-testid={`atelier-app-remove-${a.key}`}><IoTrashOutline size={13} /></button>
             </div>
           );
         })}
         <button className="at-app-tile add" onClick={() => setForm({ title: "", url: "", color: "#ffb340" })} data-testid="atelier-app-add"><span className="ico"><IoAdd size={22} /></span><b>Ajouter une app</b></button>
       </div>
+      {hidden.length > 0 && <button className="at-btn ghost at-restore" onClick={() => at.saveConfig({ hidden_apps: [] })} data-testid="atelier-apps-restore">Réafficher les {hidden.length} app{hidden.length > 1 ? "s" : ""} retirée{hidden.length > 1 ? "s" : ""}</button>}
       {form && (
         <div className="at-panel at-inline" data-testid="atelier-app-form">
           <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Nom" />

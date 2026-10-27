@@ -51,7 +51,7 @@ export const DEFAULT_APPS = [
   { key: "canva", title: "Canva", url: "https://www.canva.com", color: "#7d2ae8", k: "C", tip: "Colle le lien d'un design pour l'aperçu intégré." },
   { key: "telegram", title: "Telegram", url: "https://web.telegram.org", color: "#29a9eb", k: "✈" },
   { key: "chatgpt", title: "ChatGPT", url: "https://chatgpt.com", color: "#10a37f", k: "◍" },
-  { key: "drive", title: "Google Drive", url: "https://drive.google.com", color: "#1fa463", k: "△", tip: "Parcours ton Drive connecté et ouvre tes fichiers ici.", view: "drive" },
+  { key: "drive", title: "Google Drive", url: "https://drive.google.com", color: "#1fa463", k: "△" },
   { key: "docs", title: "Google Docs", url: "https://docs.google.com", color: "#4285f4", k: "≡" },
   { key: "crunchyroll", title: "Crunchyroll", url: "https://www.crunchyroll.com", color: "#f47521", k: "◐" },
   { key: "netflix", title: "Netflix", url: "https://www.netflix.com", color: "#e50914", k: "N" },

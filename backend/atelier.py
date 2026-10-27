@@ -67,6 +67,7 @@ class ConfigIn(BaseModel):
     code: Optional[str] = None
     music_url: Optional[str] = None
     music_title: Optional[str] = None
+    hidden_apps: Optional[List[str]] = None
 
 
 def _esc(t: str) -> str:

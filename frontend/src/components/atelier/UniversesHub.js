@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { pressMenu, itemDrop } from "@/components/atelier/ContextMenu";
+import { dropToUniverse } from "@/components/atelier/itemActions";
 import { IoAdd, IoSearch, IoStar, IoStarOutline, IoListOutline, IoGridOutline } from "react-icons/io5";
 import { imgSrc } from "@/lib/atelier";
 
@@ -6,6 +8,13 @@ const SORTS = [["recent", "Récents"], ["az", "A → Z"], ["size", "Les plus ric
 
 // Archives : tous les univers, recherche instantanée, constellations (groupes), épinglage, vue grille ou liste
 export default function UniversesHub({ at, go, editUniverse }) {
+  const uMenu = (u) => ({ title: u.name, entries: [
+    { id: "open", label: "Ouvrir", onClick: () => go({ name: "universe", id: u.id }) },
+    { id: "pin", label: u.pinned ? "Retirer des épinglés" : "Épingler dans la barre", onClick: () => at.saveUniverse({ ...u, pinned: !u.pinned }) },
+    { id: "edit", label: "Modifier", onClick: () => editUniverse(u) },
+    "-",
+    { id: "delete", label: "Supprimer l'univers", danger: true, onClick: () => window.confirm(`Supprimer « ${u.name} » ? Ses éléments iront dans l'Inbox.`) && at.removeUniverse(u.id) },
+  ] });
   const [q, setQ] = useState("");
   const [sort, setSort] = useState("recent");
   const [group, setGroup] = useState("");
@@ -46,7 +55,7 @@ export default function UniversesHub({ at, go, editUniverse }) {
           {g && <p className="at-hub-g mono">✦ {g.toUpperCase()} <small>{l.length}</small></p>}
           <div className={list ? "at-ulist" : "at-ugrid"}>
             {l.map((u) => (
-              <div key={u.id} role="button" tabIndex={0} className="at-ucard" style={{ "--u": u.color || "var(--brand)" }} onClick={() => go({ name: "universe", id: u.id })} onKeyDown={(e) => e.key === "Enter" && go({ name: "universe", id: u.id })} data-testid={`atelier-hub-universe-${u.id}`}>
+              <div key={u.id} role="button" tabIndex={0} className="at-ucard" style={{ "--u": u.color || "var(--brand)" }} onClick={() => go({ name: "universe", id: u.id })} onKeyDown={(e) => e.key === "Enter" && go({ name: "universe", id: u.id })} data-testid={`atelier-hub-universe-${u.id}`} {...pressMenu(() => uMenu(u))} {...itemDrop(dropToUniverse(at, u.id))}>
                 <div className="vis">{u.cover ? <img src={imgSrc(u.cover)} alt="" loading="lazy" /> : <span className="k">{u.kanji || u.name[0]}</span>}</div>
                 <div className="tx"><b>{u.name}</b><small className="mono">{counts[u.id]} ÉLÉMENT{counts[u.id] > 1 ? "S" : ""}{u.group ? ` · ${u.group.toUpperCase()}` : ""}</small>{!list && u.description && <p>{u.description}</p>}</div>
                 <button className={"pin" + (u.pinned ? " on" : "")} onClick={(e) => pin(e, u)} title={u.pinned ? "Retirer des épinglés" : "Épingler dans la barre"} data-testid={`atelier-hub-pin-${u.id}`}>{u.pinned ? <IoStar size={15} /> : <IoStarOutline size={15} />}</button>
