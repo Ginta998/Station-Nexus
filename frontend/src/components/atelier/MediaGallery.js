@@ -1,15 +1,20 @@
 import { useRef, useState } from "react";
 import { IoAttach, IoLinkOutline, IoClose, IoDocumentOutline, IoOpenOutline, IoDownloadOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { atelierApi, imgSrc, mediaFromUpload, mediaFromText } from "@/lib/atelier";
+import { atelierApi, imgSrc, mediaFromUpload, mediaFromText, useMediaClaim } from "@/lib/atelier";
 
 function MediaTile({ m, onRemove }) {
   const src = imgSrc(m.url);
+  const [playing, setPlaying] = useState(false);
+  useMediaClaim(playing);
+  const evs = { onPlay: () => setPlaying(true), onPause: () => setPlaying(false), onEnded: () => setPlaying(false) };
   let body;
   if (m.type === "image") body = <a href={src} target="_blank" rel="noreferrer"><img src={src} alt={m.name} loading="lazy" /></a>;
-  else if (m.type === "audio") body = <div className="au"><span className="nm">♪ {m.name}</span><audio controls preload="none" src={src} /></div>;
-  else if (m.type === "video") body = <video controls preload="metadata" src={src} />;
-  else if (m.type === "youtube") body = <iframe title={m.name} src={`https://www.youtube-nocookie.com/embed/${m.yt}`} allow="encrypted-media; picture-in-picture" allowFullScreen loading="lazy" />;
+  else if (m.type === "audio") body = <div className="au"><span className="nm">♪ {m.name}</span><audio controls preload="none" src={src} {...evs} /></div>;
+  else if (m.type === "video") body = <video controls preload="metadata" src={src} {...evs} />;
+  else if (m.type === "youtube") body = playing
+    ? <iframe title={m.name} src={`https://www.youtube-nocookie.com/embed/${m.yt}?autoplay=1`} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+    : <button className="yt" onClick={() => setPlaying(true)} data-testid={`atelier-media-yt-${m.id}`}><img src={`https://i.ytimg.com/vi/${m.yt}/hqdefault.jpg`} alt="" loading="lazy" /><span>▶</span></button>;
   else if (m.type === "pdf") body = <div className="doc"><IoDocumentOutline size={22} /><span className="nm">{m.name}</span><a href={src} target="_blank" rel="noreferrer" title="Ouvrir"><IoOpenOutline size={16} /></a></div>;
   else if (m.type === "link") body = <a className="doc" href={m.url} target="_blank" rel="noreferrer"><IoLinkOutline size={20} /><span className="nm">{m.name}<small>{m.url}</small></span><IoOpenOutline size={15} /></a>;
   else body = <a className="doc" href={src} download={m.name}><IoDocumentOutline size={22} /><span className="nm">{m.name}</span><IoDownloadOutline size={16} /></a>;

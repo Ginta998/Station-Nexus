@@ -7,7 +7,7 @@ import QuartierView from "@/components/atelier/QuartierView";
 import UniverseView from "@/components/atelier/UniverseView";
 import UniversesHub from "@/components/atelier/UniversesHub";
 import ItemsGrid from "@/components/atelier/ItemsGrid";
-import TasksView from "@/components/atelier/TasksView";
+import CockpitView from "@/components/atelier/CockpitView";
 import AtelierSettings from "@/components/atelier/AtelierSettings";
 import ItemEditor from "@/components/atelier/ItemEditor";
 import UniverseForm from "@/components/atelier/UniverseForm";
@@ -98,7 +98,7 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoGridOutline size={18} />} label="Univers" badge={0} on={view.name === "universes" || view.name === "universe"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
           <Dock icon={<IoSearch size={18} />} label="Recherche" onClick={() => setPalette(true)} testid="atelier-nav-search" />
           <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" />
-          <Dock icon={<IoCheckboxOutline size={18} />} label="Tâches" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
+          <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
@@ -122,7 +122,7 @@ export default function AtelierApp({ onLeave }) {
               <ItemsGrid {...ctx} items={inbox} newDefaults={{ universe_id: null }} empty="Rien en attente — l'esprit est clair." />
             </section>
           )}
-          {view.name === "tasks" && <TasksView {...ctx} />}
+          {view.name === "tasks" && <CockpitView {...ctx} />}
           {view.name === "settings" && <AtelierSettings {...ctx} />}
           {view.name === "bureau" && <BureauView {...ctx} launch={launch} />}
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}

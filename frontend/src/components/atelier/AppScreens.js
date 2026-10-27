@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
 import { IoClose, IoOpenOutline, IoContractOutline, IoExpandOutline } from "react-icons/io5";
 import { toEmbed, popOut } from "@/lib/embed";
-import { imgSrc } from "@/lib/atelier";
+import { imgSrc, useMediaClaim } from "@/lib/atelier";
 
 export function EmbedFrame({ url }) {
   const e = toEmbed(url);
+  useMediaClaim(!!e && !e.blocked && (e.ratio === "video" || e.ratio === "audio"));
   if (!e) return <div className="at-embed-msg"><p>Lien invalide.</p></div>;
   if (e.blocked) return (
     <div className="at-embed-msg" data-testid="atelier-embed-blocked">

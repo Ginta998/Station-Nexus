@@ -265,7 +265,33 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
         items = await db.atelier_items.find({}, {"_id": 0}).sort("updated_at", -1).to_list(5000)
         tasks = await db.atelier_tasks.find({}, {"_id": 0}).sort("created_at", -1).to_list(5000)
         links = await db.atelier_links.find({}, {"_id": 0}).sort("order", 1).to_list(2000)
-        return {"universes": universes, "items": items, "tasks": tasks, "links": links, "config": await get_config()}
+        records = await db.atelier_records.find({}, {"_id": 0}).to_list(10000)
+        return {"universes": universes, "items": items, "tasks": tasks, "links": links, "records": records, "config": await get_config()}
+
+    # ---- cockpit carrière : objectifs, agenda, budget, collaborations
+    REC_KINDS = {"goals", "events", "budget", "contacts"}
+
+    @r.post("/records/{rk}")
+    async def create_record(rk: str, body: Dict[str, Any]):
+        if rk not in REC_KINDS:
+            raise HTTPException(400, "Type inconnu")
+        doc = {**{k: v for k, v in body.items() if k not in ("id", "_id", "rk")}, "id": str(uuid.uuid4()), "rk": rk, "created_at": now_iso()}
+        await db.atelier_records.insert_one(dict(doc))
+        doc.pop("_id", None)
+        return doc
+
+    @r.put("/records/{rk}/{rid}")
+    async def update_record(rk: str, rid: str, body: Dict[str, Any]):
+        patch = {k: v for k, v in body.items() if k not in ("id", "_id", "rk", "created_at")}
+        res = await db.atelier_records.update_one({"id": rid, "rk": rk}, {"$set": patch})
+        if not res.matched_count:
+            raise HTTPException(404, "Introuvable")
+        return await db.atelier_records.find_one({"id": rid}, {"_id": 0})
+
+    @r.delete("/records/{rk}/{rid}")
+    async def delete_record(rk: str, rid: str):
+        await db.atelier_records.delete_one({"id": rid, "rk": rk})
+        return {"ok": True}
 
     # ---- bureau & salon : apps, vidéos, musiques, liens
     @r.post("/links")

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, mediaUrl } from "@/lib/api";
+import { useApp } from "@/context/AppContext";
 
 const get = (u) => api.get(u).then((r) => r.data);
 const send = (m, u, b) => api[m](u, b).then((r) => r.data);
@@ -104,6 +105,13 @@ export function useAtelier() {
     },
     addItems(docs) { patch((d) => ({ ...d, items: [...docs, ...d.items] })); },
     links: data?.links || [],
+    records: data?.records || [],
+    async saveRecord(rk, rec) {
+      const doc = rec.id ? await send("put", `/atelier/records/${rk}/${rec.id}`, rec) : await send("post", `/atelier/records/${rk}`, rec);
+      patch((d) => ({ ...d, records: up(d.records || [], doc) }));
+      return doc;
+    },
+    async removeRecord(rk, id) { await send("delete", `/atelier/records/${rk}/${id}`); patch((d) => ({ ...d, records: (d.records || []).filter((x) => x.id !== id) })); },
     async saveLink(l) {
       const body = { kind: "watch", color: "", cover: "", universe_id: null, order: 0, ...l };
       const fields = ["title", "url", "kind", "color", "cover", "universe_id", "order"];
@@ -158,4 +166,15 @@ export function usePortalCode(enabled, onMatch) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [enabled, cfg?.code, onMatch]);
+}
+
+// Une seule musique à la fois : tant qu'un média de l'Atelier joue, l'ambiance de la Station s'estompe
+let mediaClaims = 0;
+export function useMediaClaim(active) {
+  const { enterMediaMode, exitMediaMode } = useApp();
+  useEffect(() => {
+    if (!active) return;
+    if (mediaClaims++ === 0) enterMediaMode();
+    return () => { if (--mediaClaims === 0) exitMediaMode(); };
+  }, [active]); // eslint-disable-line
 }
