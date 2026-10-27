@@ -10,7 +10,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 KINDS = {"note", "scene", "character", "place", "lore", "event", "document", "inspiration"}
-MAX_FILE = 60 * 1024 * 1024
+MAX_FILE = 250 * 1024 * 1024
 
 
 def now_iso() -> str:
@@ -51,6 +51,16 @@ class TaskIn(BaseModel):
     priority: str = "normal"
     done: bool = False
     notes: str = ""
+
+
+class LinkIn(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+    url: str = Field(min_length=1, max_length=2000)
+    kind: str = "watch"   # watch | listen | app | video
+    color: str = ""
+    cover: str = ""
+    universe_id: Optional[str] = None
+    order: int = 0
 
 
 class ConfigIn(BaseModel):
@@ -162,7 +172,7 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
     async def upload_file(file: UploadFile = File(...)):
         data = await file.read()
         if len(data) > MAX_FILE:
-            raise HTTPException(413, "Fichier trop lourd (max 60 Mo)")
+            raise HTTPException(413, "Fichier trop lourd (max 250 Mo)")
         return await store(data, file.content_type or "application/octet-stream", file.filename or "fichier")
 
     @r.post("/import")
@@ -171,7 +181,7 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
             raise HTTPException(400, "Type d'élément inconnu")
         data = await file.read()
         if len(data) > MAX_FILE:
-            raise HTTPException(413, "Fichier trop lourd (max 60 Mo)")
+            raise HTTPException(413, "Fichier trop lourd (max 250 Mo)")
         name = file.filename or "document"
         base = name.rsplit(".", 1)[0]
         low = name.lower()
@@ -254,7 +264,27 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
         universes = await db.atelier_universes.find({}, {"_id": 0}).sort("order", 1).to_list(500)
         items = await db.atelier_items.find({}, {"_id": 0}).sort("updated_at", -1).to_list(5000)
         tasks = await db.atelier_tasks.find({}, {"_id": 0}).sort("created_at", -1).to_list(5000)
-        return {"universes": universes, "items": items, "tasks": tasks, "config": await get_config()}
+        links = await db.atelier_links.find({}, {"_id": 0}).sort("order", 1).to_list(2000)
+        return {"universes": universes, "items": items, "tasks": tasks, "links": links, "config": await get_config()}
+
+    # ---- bureau & salon : apps, vidéos, musiques, liens
+    @r.post("/links")
+    async def create_link(body: LinkIn):
+        doc = {"id": str(uuid.uuid4()), **body.model_dump(), "created_at": now_iso()}
+        await db.atelier_links.insert_one(dict(doc))
+        return doc
+
+    @r.put("/links/{lid}")
+    async def update_link(lid: str, body: LinkIn):
+        res = await db.atelier_links.update_one({"id": lid}, {"$set": body.model_dump()})
+        if not res.matched_count:
+            raise HTTPException(404, "Lien introuvable")
+        return await db.atelier_links.find_one({"id": lid}, {"_id": 0})
+
+    @r.delete("/links/{lid}")
+    async def delete_link(lid: str):
+        await db.atelier_links.delete_one({"id": lid})
+        return {"ok": True}
 
     # ---- univers
     @r.post("/universes")

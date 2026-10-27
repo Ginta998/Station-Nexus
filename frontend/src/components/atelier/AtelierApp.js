@@ -13,6 +13,9 @@ import ItemEditor from "@/components/atelier/ItemEditor";
 import UniverseForm from "@/components/atelier/UniverseForm";
 import CommandPalette from "@/components/atelier/CommandPalette";
 import DropDialog from "@/components/atelier/DropDialog";
+import { AppWindow, MiniPlayer } from "@/components/atelier/AppScreens";
+import { BureauView, SalonView } from "@/components/atelier/BureauSalon";
+import { IoAppsOutline, IoFilmOutline } from "react-icons/io5";
 
 const Dock = ({ icon, label, on, onClick, testid, color, kanji, badge }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label}>
@@ -36,6 +39,10 @@ export default function AtelierApp({ onLeave }) {
   const [uForm, setUForm] = useState(null);
   const [palette, setPalette] = useState(false);
   const [drop, setDrop] = useState(null);
+  const [screen, setScreen] = useState(null);
+  const [mini, setMini] = useState(null);
+  const launch = (s) => { sfx("select"); setScreen(s); };
+  const toMini = (s) => { setScreen(null); setMini(s); };
   const [dragging, setDragging] = useState(false);
   const pick = useRef(null);
   const pickDefaults = useRef({});
@@ -69,7 +76,7 @@ export default function AtelierApp({ onLeave }) {
     const onKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES" }[view.name] || (cur?.name || "").toUpperCase();
+  const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON" }[view.name] || (cur?.name || "").toUpperCase();
 
   return (
     <div className="at-app" data-testid="atelier-app">
@@ -92,6 +99,8 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoSearch size={18} />} label="Recherche" onClick={() => setPalette(true)} testid="atelier-nav-search" />
           <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" />
           <Dock icon={<IoCheckboxOutline size={18} />} label="Tâches" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
+          <Dock icon={<IoAppsOutline size={18} />} label="Bureau" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
+          <Dock icon={<IoFilmOutline size={18} />} label="Salon" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
           <div className="at-dock-unis">
             {pinned.map((u) => <Dock key={u.id} kanji={u.kanji || u.name[0]} color={u.color} label={u.name} on={view.id === u.id} onClick={() => go({ name: "universe", id: u.id })} testid={`atelier-nav-universe-${u.id}`} />)}
@@ -115,12 +124,16 @@ export default function AtelierApp({ onLeave }) {
           )}
           {view.name === "tasks" && <TasksView {...ctx} />}
           {view.name === "settings" && <AtelierSettings {...ctx} />}
+          {view.name === "bureau" && <BureauView {...ctx} launch={launch} />}
+          {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
         </main>
       </div>
 
       <input ref={pick} type="file" multiple hidden accept=".pdf,.docx,.txt,.md,image/*,audio/*,video/*" onChange={(e) => { const files = [...e.target.files]; e.target.value = ""; if (files.length) setDrop({ files, text: "", defaults: pickDefaults.current }); }} data-testid="atelier-import-input" />
       {dragging && <div className="at-dropzone" data-testid="atelier-dropzone"><div><b>工</b><p>Dépose ici — tu choisiras où le ranger</p><small className="mono">PDF · WORD · IMAGES · MUSIQUES · VIDÉOS · LIENS</small></div></div>}
       {drop && <DropDialog at={at} drop={drop} defaults={drop.defaults} open={open} onClose={() => setDrop(null)} />}
+      {screen && <AppWindow screen={screen} onClose={() => setScreen(null)} onMini={toMini} onNavigate={setScreen} />}
+      {mini && <MiniPlayer mini={mini} onClose={() => setMini(null)} onExpand={(s) => { setMini(null); setScreen(s); }} />}
       {palette && <CommandPalette {...ctx} onClose={() => setPalette(false)} newUniverse={() => { setPalette(false); setUForm({}); }} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}

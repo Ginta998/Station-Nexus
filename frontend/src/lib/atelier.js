@@ -21,6 +21,9 @@ export const atelierApi = {
   updateTask: (id, b) => send("put", `/atelier/tasks/${id}`, b),
   deleteTask: (id) => send("delete", `/atelier/tasks/${id}`),
   exportAll: () => get("/atelier/export"),
+  createLink: (b) => send("post", "/atelier/links", b),
+  updateLink: (id, b) => send("put", `/atelier/links/${id}`, b),
+  deleteLink: (id) => send("delete", `/atelier/links/${id}`),
   upload: (file, onProgress) => { const fd = new FormData(); fd.append("file", file); return api.post("/atelier/files", fd, { onUploadProgress: (e) => onProgress?.(e.total ? e.loaded / e.total : 0) }).then((r) => r.data); },
   importDoc: (file, { universe_id, kind }, onProgress) => {
     const fd = new FormData(); fd.append("file", file); fd.append("universe_id", universe_id || ""); fd.append("kind", kind); fd.append("split", "1");
@@ -100,6 +103,16 @@ export function useAtelier() {
       return doc;
     },
     addItems(docs) { patch((d) => ({ ...d, items: [...docs, ...d.items] })); },
+    links: data?.links || [],
+    async saveLink(l) {
+      const body = { kind: "watch", color: "", cover: "", universe_id: null, order: 0, ...l };
+      const fields = ["title", "url", "kind", "color", "cover", "universe_id", "order"];
+      const b = Object.fromEntries(fields.map((k) => [k, body[k]]));
+      const doc = l.id ? await atelierApi.updateLink(l.id, b) : await atelierApi.createLink(b);
+      patch((d) => ({ ...d, links: up(d.links || [], doc) }));
+      return doc;
+    },
+    async removeLink(id) { await atelierApi.deleteLink(id); patch((d) => ({ ...d, links: (d.links || []).filter((x) => x.id !== id) })); },
     async saveItem(it) {
       const doc = await atelierApi.updateItem(it.id, pickItem({ media: [], ...it }));
       patch((d) => ({ ...d, items: [doc, ...d.items.filter((x) => x.id !== doc.id)] }));
