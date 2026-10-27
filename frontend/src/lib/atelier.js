@@ -5,6 +5,17 @@ import { useApp } from "@/context/AppContext";
 
 const get = (u) => api.get(u).then((r) => r.data);
 const send = (m, u, b) => api[m](u, b).then((r) => r.data);
+// Bunny répond en tâche de fond : on interroge le serveur jusqu'à ce que la réponse soit prête
+const pollJob = async (start) => {
+  const { job_id: id } = await start;
+  for (let i = 0; i < 150; i++) {
+    await new Promise((r) => setTimeout(r, 1600));
+    const j = await get(`/atelier/bunny/jobs/${id}`);
+    if (j.status === "done") return j.result;
+    if (j.status === "error") throw Object.assign(new Error(j.error), { response: { data: { detail: j.error } } });
+  }
+  throw Object.assign(new Error("timeout"), { response: { data: { detail: "Bunny met trop de temps à répondre, réessaie dans un instant." } } });
+};
 
 export const atelierApi = {
   bootstrap: () => get("/atelier/bootstrap"),
@@ -26,14 +37,19 @@ export const atelierApi = {
   bunnySession: (id) => get(`/atelier/bunny/sessions/${id}`),
   bunnyDelete: (id) => send("delete", `/atelier/bunny/sessions/${id}`),
   bunnyBriefing: () => get("/atelier/bunny/briefing"),
-  bunnyMakeBriefing: () => api.post("/atelier/bunny/briefing", {}, { timeout: 180000 }).then((r) => r.data),
+  bunnyMakeBriefing: () => pollJob(send("post", "/atelier/bunny/briefing", {})),
   brains: () => get("/atelier/bunny/brains"),
   addBrain: (b) => send("post", "/atelier/bunny/brains", b),
   patchBrain: (id, b) => send("put", `/atelier/bunny/brains/${id}`, b),
   orderBrains: (ids) => send("put", "/atelier/bunny/brains/order", ids),
   deleteBrain: (id) => send("delete", `/atelier/bunny/brains/${id}`),
   testBrain: (id) => api.post(`/atelier/bunny/brains/${id}/test`, {}, { timeout: 60000 }).then((r) => r.data),
-  bunnyChat: (b) => api.post("/atelier/bunny/chat", b, { timeout: 180000 }).then((r) => r.data),
+  bunnyMind: () => get("/atelier/bunny/mind"),
+  saveProfile: (profile) => send("put", "/atelier/bunny/mind/profile", { profile }),
+  addMemory: (text) => send("post", "/atelier/bunny/mind/memories", { text }),
+  deleteMemory: (id) => send("delete", `/atelier/bunny/mind/memories/${id}`),
+  resolveProposal: (b) => send("post", "/atelier/bunny/mind/proposal", b),
+  bunnyChat: (b) => pollJob(send("post", "/atelier/bunny/chat", b)),
   createLink: (b) => send("post", "/atelier/links", b),
   updateLink: (id, b) => send("put", `/atelier/links/${id}`, b),
   deleteLink: (id) => send("delete", `/atelier/links/${id}`),

@@ -22,8 +22,11 @@ export default function BunnyPanel({ at, universeId, onClose, openBrains }) {
   const [focus, setFocus] = useState("");
   const [pose, setPose] = useState("wave");
   const [hop, setHop] = useState(0);
+  const [mode, setMode] = useState("chat");
+  const [known, setKnown] = useState(true);
   const react = (p, sound) => { setPose(p); setHop((h) => h + 1); playUiSound(sound, "bunny"); };
   useEffect(() => { const t = setTimeout(() => setPose("neutral"), 2600); return () => clearTimeout(t); }, [pose]);
+  useEffect(() => { atelierApi.bunnyMind().then((d) => setKnown(d.interview_done)).catch(() => {}); }, []);
   const list = useRef(null);
   const uni = at.universes.find((u) => u.id === universeId);
   const docs = at.items.filter((i) => !universeId || i.universe_id === universeId).slice(0, 200);
@@ -32,21 +35,23 @@ export default function BunnyPanel({ at, universeId, onClose, openBrains }) {
   useEffect(() => { list.current?.scrollTo({ top: list.current.scrollHeight, behavior: "smooth" }); }, [msgs, busy]);
 
   const openSession = async (id) => {
-    setErr(""); if (!id) { setSid(null); setMsgs([]); return; }
-    try { const s = await atelierApi.bunnySession(id); setSid(s.id); setMsgs(s.messages); } catch { setErr("Impossible d'ouvrir cette conversation."); }
+    setErr(""); if (!id) { setSid(null); setMsgs([]); setMode("chat"); return; }
+    try { const s = await atelierApi.bunnySession(id); setSid(s.id); setMsgs(s.messages); setMode(s.mode || "chat"); } catch { setErr("Impossible d'ouvrir cette conversation."); }
   };
   const remove = async () => {
     if (!sid || !window.confirm("Supprimer cette conversation avec Bunny ?")) return;
     try { await atelierApi.bunnyDelete(sid); setSessions((l) => l.filter((s) => s.id !== sid)); openSession(null); } catch { setErr("Suppression impossible, réessaie."); }
   };
-  const send = async (msg) => {
+  const send = async (msg, fresh) => {
     const m = (msg ?? text).trim(); if (!m || busy) return;
-    const id = sid || crypto.randomUUID();
-    setText(""); setErr(""); setBusy(true); setMsgs((l) => [...l, { role: "user", content: m }]);
+    const id = (!fresh && sid) || crypto.randomUUID();
+    if (fresh) { setMsgs([]); setMode(fresh); }
+    setText(""); setErr(""); setBusy(true); setMsgs((l) => [...(fresh ? [] : l), { role: "user", content: m }]);
     try {
-      const r = await atelierApi.bunnyChat({ message: m, session_id: id, universe_id: universeId || null, focus_item_id: focus || null });
-      setMsgs((l) => [...l, r.reply]);
-      react(/<scene/.test(r.reply.content) || r.reply.tasks?.length ? "excited" : "thumbs", "chirp");
+      const r = await atelierApi.bunnyChat({ message: m, session_id: id, mode: fresh || mode, universe_id: universeId || null, focus_item_id: focus || null });
+      setMsgs((l) => [...l, r.reply]); setMode(r.mode);
+      if (r.reply.profile_saved) setKnown(true);
+      react(/<scene/.test(r.reply.content) || r.reply.tasks?.length || r.reply.profile_saved ? "excited" : "thumbs", "chirp");
       if (!sessions.some((x) => x.id === r.session_id)) setSessions((l) => [{ id: r.session_id, title: r.title }, ...l]);
       setSid(r.session_id);
       if (r.tasks_changed.length || r.tasks_deleted.length) at.applyTasks(r.tasks_changed, r.tasks_deleted);
@@ -54,6 +59,13 @@ export default function BunnyPanel({ at, universeId, onClose, openBrains }) {
       setErr(e?.response?.data?.detail || "Bunny n'a pas pu répondre. Réessaie !"); react("sad", "oops");
       setMsgs((l) => l.slice(0, -1)); setText(m); setSid(id);
     } finally { setBusy(false); }
+  };
+  const resolve = async (index, txt, accept) => {
+    try {
+      await atelierApi.resolveProposal({ session_id: sid, index, text: txt, accept });
+      setMsgs((l) => l.map((x, i) => (i === index ? { ...x, proposals: (x.proposals || []).filter((p) => p !== txt) } : x)));
+      if (accept) react("excited", "chirp");
+    } catch { setErr("Bunny n'a pas pu ranger ce souvenir."); }
   };
   const insertScene = (title, body) => at.createItem({ kind: "scene", title, universe_id: universeId || null, tags: ["bunny"], content: body.trim().split(/\n{2,}/).map((p) => `<p>${p.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br/>")}</p>`).join("") });
 
@@ -77,11 +89,15 @@ export default function BunnyPanel({ at, universeId, onClose, openBrains }) {
         {!msgs.length && (
           <div className="bn-hello" data-testid="bunny-hello">
             <BunnySprite pose={pose} hop={hop} size={110} />
-            <p>Coucou ! C'est Bunny. J'ai lu tout ton lore — enfin, j'ai essayé de ne rien faire tomber en route. On écrit quoi aujourd'hui ?</p>
+            <p>{known ? "Coucou Capitaine ! J'ai relu ton profil et tout ton lore — enfin, j'ai essayé de ne rien faire tomber en route. On écrit quoi aujourd'hui ?" : "Coucou Capitaine ! Je connais ton lore… mais pas encore vraiment toi. On fait connaissance ? Une dizaine de questions, promis je ne renverse rien."}</p>
+            <button className={"bn-meet" + (known ? " soft" : "")} onClick={() => send("Faisons connaissance !", "interview")} data-testid="bunny-interview-start">{known ? "Refaire connaissance" : "Faisons connaissance"}</button>
             <div className="bn-quick">{QUICK.map(([l, q], i) => <button key={l} onClick={() => send(q)} data-testid={`bunny-quick-${i}`}>{l}</button>)}</div>
           </div>
         )}
-        {msgs.map((m, i) => <BunnyMessage key={i} m={m} idx={i} onInsertScene={insertScene} dest={uni ? uni.name : "l'Inbox"} />)}
+        {mode === "interview" && msgs.length > 0 && (
+          <div className="bn-interview mono" data-testid="bunny-interview-banner"><span>// INTERVIEW · FAISONS CONNAISSANCE</span><button onClick={() => send("On s'arrête là pour aujourd'hui, stop.")} disabled={busy} data-testid="bunny-interview-stop">Terminer</button></div>
+        )}
+        {msgs.map((m, i) => <BunnyMessage key={i} m={m} idx={i} onInsertScene={insertScene} onProposal={resolve} dest={uni ? uni.name : "l'Inbox"} />)}
         {busy && <div className="bn-msg ai" data-testid="bunny-typing"><span className="bn-av">兎</span><div className="bn-dots"><i /><i /><i /></div></div>}
         {err && <p className="bn-err" data-testid="bunny-error">{err}</p>}
       </div>

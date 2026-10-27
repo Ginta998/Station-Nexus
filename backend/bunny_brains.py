@@ -70,8 +70,8 @@ async def call_brain(c, b, messages, max_tokens=3500):
     return text
 
 
-async def ask_llm(db, messages, max_tokens=3500):
-    async with httpx.AsyncClient(timeout=httpx.Timeout(28, connect=6)) as c:
+async def ask_llm(db, messages, max_tokens=3000):
+    async with httpx.AsyncClient(timeout=httpx.Timeout(55, connect=6)) as c:
         for b in await list_brains(db):
             if not b.get("enabled") or _resting.get(b["base"], 0) > time.time():
                 continue

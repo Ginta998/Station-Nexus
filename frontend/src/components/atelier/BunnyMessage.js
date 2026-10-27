@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import { IoCopyOutline, IoAddCircleOutline, IoCheckmarkDone } from "react-icons/io5";
 
+const LABELS = { appel: "surnom", identite: "identité", genre: "genre", vision: "vision", univers: "univers", influences: "influences", objectifs: "objectifs", style_ton: "ton", style_longueur: "longueur", aime: "ce que tu aimes", evite: "à éviter", mots_interdits: "mots interdits" };
 const inline = (t) => t.split(/(\*\*[^*]+\*\*)/g).map((p, i) => (p.startsWith("**") && p.endsWith("**") ? <b key={i}>{p.slice(2, -2)}</b> : <Fragment key={i}>{p}</Fragment>));
 const Prose = ({ text }) => text.split(/\n{2,}/).filter((b) => b.trim()).map((b, i) => {
   const lines = b.split("\n");
@@ -27,7 +28,7 @@ function SceneCard({ title, body, onInsert, idx, dest }) {
 }
 
 // Bulle de message : texte poétique + cartes de scènes insérables + tâches modifiées
-export default function BunnyMessage({ m, idx, onInsertScene, dest }) {
+export default function BunnyMessage({ m, idx, onInsertScene, onProposal, dest }) {
   if (m.role === "user") return <div className="bn-msg me" data-testid={`bunny-msg-${idx}`}><p>{m.content}</p></div>;
   const parts = m.content.split(/(<scene[^>]*>[\s\S]*?<\/scene>)/g);
   return (
@@ -42,6 +43,13 @@ export default function BunnyMessage({ m, idx, onInsertScene, dest }) {
           <div className="bn-tasks mono" data-testid={`bunny-tasks-${idx}`}>{m.tasks.map((t, i) => <span key={i}>{t.done ? "✓" : "＋"} {t.title}</span>)}</div>
         )}
         {m.deleted > 0 && <div className="bn-tasks mono"><span>✕ {m.deleted} tâche(s) supprimée(s)</span></div>}
+        {m.learned?.length > 0 && <div className="bn-tasks mono" data-testid={`bunny-learned-${idx}`}><span>✦ PROFIL MIS À JOUR : {m.learned.map((k) => LABELS[k] || k).join(", ").toUpperCase()}</span></div>}
+        {m.proposals?.map((p) => (
+          <div key={p} className="bn-prop" data-testid={`bunny-proposal-${idx}`}>
+            <small className="mono">JE RETIENS ÇA ?</small><p>{p}</p>
+            <div><button className="pri" onClick={() => onProposal(idx, p, true)} data-testid={`bunny-proposal-yes-${idx}`}>Oui, retiens</button><button onClick={() => onProposal(idx, p, false)} data-testid={`bunny-proposal-no-${idx}`}>Non merci</button></div>
+          </div>
+        ))}
         {m.via && <small className="bn-via mono">via {m.via}</small>}
       </div>
     </div>

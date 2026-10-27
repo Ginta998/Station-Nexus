@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { IoClose, IoArrowUp, IoArrowDown, IoTrashOutline, IoFlashOutline, IoKeyOutline, IoAdd } from "react-icons/io5";
 import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
+import BunnyMind from "@/components/atelier/BunnyMind";
 
 const ago = (iso) => (iso ? new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "");
 function status(b) {
@@ -84,9 +85,10 @@ export default function BunnyBrains({ onClose }) {
               <h3 className="mono">// SA PERSONNALITÉ</h3><p className="bn-persona">{c.persona}</p>
               <div className="bn-skills">{c.skills.map((s) => <span key={s}>{s}</span>)}</div>
               <div className="bn-comp mono" data-testid="bunny-composition">
-                <span><b>{c.universes}</b>UNIVERS</span><span><b>{c.items_read}/{c.items}</b>FICHES LUES</span><span><b>{c.tasks}</b>TÂCHES</span><span><b>{Math.round((c.context_chars / c.context_budget) * 100)}%</b>MÉMOIRE UTILISÉE</span><span><b>{c.sessions}</b>CONVERSATIONS</span>
+                <span><b>{c.universes}</b>UNIVERS</span><span><b>{c.items_read}/{c.items}</b>FICHES LUES</span><span><b>{c.tasks}</b>TÂCHES</span><span><b>{c.creations}</b>ŒUVRES PUBLIÉES</span><span><b>{c.profile_filled}/{c.profile_total}</b>PROFIL</span><span><b>{c.memories}</b>SOUVENIRS</span><span><b>{Math.round((c.context_chars / c.context_budget) * 100)}%</b>MÉMOIRE UTILISÉE</span><span><b>{c.sessions}</b>CONVERSATIONS</span>
               </div>
             </section>
+            <BunnyMind />
             <section>
               <h3 className="mono">// SES CERVEAUX · ESSAYÉS DANS CET ORDRE</h3>
               <p className="at-sub">Si un cerveau est saturé ou en panne, Bunny passe au suivant. Un cerveau saturé se repose 10 minutes.</p>

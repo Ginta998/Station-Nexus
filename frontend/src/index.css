@@ -2245,3 +2245,24 @@ button.bn-sprite{cursor:pointer}
 .bn-presets button{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);transition:background-color .2s,border-color .2s}
 .bn-presets button:hover,.bn-presets button.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 16%,transparent)}
 .bn-add-form{display:flex;flex-direction:column;gap:8px;margin-top:12px;padding:12px;border:1px dashed var(--line)}
+.bn-meet{padding:10px 22px;border-radius:999px;background:var(--brand);color:#fff;font-weight:600;font-size:14px;box-shadow:0 0 26px -6px var(--brand);transition:transform .2s}
+.bn-meet:hover{transform:translateY(-2px) scale(1.03)}
+.bn-meet.soft{background:transparent;color:var(--text-primary);border:1px solid var(--brand);box-shadow:none;font-weight:500;font-size:12.5px;padding:7px 16px}
+.bn-interview{position:sticky;top:-10px;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;font-size:9.5px;letter-spacing:.16em;color:var(--warm);background:color-mix(in srgb,var(--bg-primary) 92%,transparent);border:1px solid color-mix(in srgb,var(--warm) 40%,transparent)}
+.bn-interview button{font-size:11px;letter-spacing:.08em;padding:4px 10px;border:1px solid var(--warm);border-radius:999px}
+.bn-prop{margin:6px 0 8px;padding:10px 12px;border:1px dashed color-mix(in srgb,var(--brand) 60%,transparent);background:color-mix(in srgb,var(--brand) 8%,transparent);animation:atView .35s both}
+.bn-prop small{font-size:9px;letter-spacing:.18em;color:var(--warm)}
+.bn-prop p{margin:4px 0 8px;font-size:13.5px}
+.bn-prop div{display:flex;gap:6px}
+.bn-prop button{font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);transition:background-color .2s}
+.bn-prop button.pri{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 25%,transparent)}
+.bn-prof{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-bottom:12px}
+.bn-prof label{display:flex;flex-direction:column;gap:4px}
+.bn-prof small{font-size:9px;letter-spacing:.16em;opacity:.55}
+.bn-prof textarea,.bn-mem-add input{background:transparent;border:1px solid var(--line);color:var(--text-primary);padding:8px 10px;font-size:13px;resize:vertical;outline:none;transition:border-color .2s}
+.bn-prof textarea:focus,.bn-mem-add input:focus{border-color:var(--brand)}
+.bn-mem-add input{flex:1;min-width:0}
+.bn-mems{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.bn-mem{display:flex;align-items:center;gap:10px;padding:8px 10px;border-left:2px solid var(--brand);background:color-mix(in srgb,var(--brand) 6%,transparent)}
+.bn-mem span{flex:1;font-size:13px}
+.bn-mem small{font-size:8.5px;letter-spacing:.14em;opacity:.45;white-space:nowrap}

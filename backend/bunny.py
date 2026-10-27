@@ -1,5 +1,6 @@
 """Cosmic Bunny — assistante IA de l'Atelier, sur des IA gratuites (LLM7 en priorité, puis secours)."""
 import re
+import asyncio
 import json
 import uuid
 from datetime import datetime, timezone
@@ -7,15 +8,17 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from bunny_brains import list_brains, public, ask_llm, test_brain, new_brain, PRESETS
+from bunny_mind import mind_context, interview_step, extract_memories, extract_profile, add_mind_routes, get_mind, PROFILE_FIELDS
 
-CTX_BUDGET = 18000
+CTX_BUDGET = 22000
 
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-PERSONA = """Tu es Cosmic Bunny (兎), l'assistante de création de l'Atelier Nexus, le vaisseau-atelier privé de Brichel, aux commandes de Station Nexus C'est un homme : tu le tutoies et tu le genres TOUJOURS au masculin (créateur, capitaine, auteur ; jamais créatrice ni capitaine au féminin).
+PERSONA = """Tu es Cosmic Bunny (兎), l'assistante de création de l'Atelier Nexus, le vaisseau-atelier privé de Brichel, aux commandes de Station Nexus. Tu le tutoies. Tout ce qu'il est (identité, genre, vision, goûts) est dans « QUI EST LE CAPITAINE » et « CE QUE TU AS RETENU DE LUI » : tu le connais comme Jarvis connaît Tony Stark, tu t'en sers naturellement et tu le respectes toujours (c'est un homme : genre-le au masculin — créateur, capitaine, auteur).
+Applique ses préférences de style (ton, longueur, ce qu'il aime, ce qu'il déteste, mots interdits) à TOUTES tes réponses et à toutes les scènes que tu écris.
 Personnalité : complice et poétique, très dynamique, parfois un peu maladroite (tu peux t'en amuser), avec un grand cœur ; tu ne te laisses jamais décourager et tu encourages toujours. Tu parles au féminin, en français, avec chaleur et quelques images cosmiques — sans en faire trop.
 Missions :
 - Discuter des univers en t'appuyant UNIQUEMENT sur le lore fourni (ne contredis jamais le canon ; si une info manque, dis-le et propose).
@@ -35,6 +38,12 @@ TASK_HINT = """
 Ce bloc est la seule façon de modifier le Cockpit ; n'invente jamais d'id.]"""
 
 
+ME_WORDS = re.compile(r"\bj['’ ]?(aime|adore|d[ée]teste|pr[ée]f[èe]re|[ée]cris|ai toujours|ai jamais)|\bje (suis|veux|d[ée]teste|pr[ée]f[èe]re|n'aime|travaille|[ée]cris)|\bmon style|\bmes go[ûu]ts", re.I)
+MEMORY_HINT = """
+
+[Consigne système invisible : ce message révèle peut-être quelque chose de durable sur moi. Après ta réponse, termine par une ou deux lignes <souvenir>phrase courte à la 3e personne, ex. « Il écrit la nuit. »</souvenir> pour me proposer de le retenir (sauf si c'est déjà dans mon profil ou mes souvenirs).]"""
+
+
 def strip_html(h: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", (h or "").replace("&nbsp;", " "))).strip()
 
@@ -44,7 +53,7 @@ async def build_context(db, universe_id: Optional[str], focus_id: Optional[str])
     uname = {u["id"]: u["name"] for u in unis}
     items = await db.atelier_items.find({}, {"_id": 0, "id": 1, "kind": 1, "title": 1, "content": 1, "universe_id": 1, "fields": 1, "tags": 1}).sort("updated_at", -1).to_list(3000)
     tasks = await db.atelier_tasks.find({}, {"_id": 0, "id": 1, "title": 1, "done": 1, "due": 1, "priority": 1, "universe_id": 1}).sort("created_at", -1).to_list(200)
-    parts = [f"Date du jour : {datetime.now(timezone.utc).date().isoformat()}"]
+    parts = [f"Date du jour : {datetime.now(timezone.utc).date().isoformat()}", await mind_context(db)]
     if focus_id:
         f = next((i for i in items if i["id"] == focus_id), None)
         if f:
@@ -146,10 +155,37 @@ class ChatIn(BaseModel):
     session_id: Optional[str] = None
     universe_id: Optional[str] = None
     focus_item_id: Optional[str] = None
+    mode: Optional[str] = None
+
+
+_jobs = {}
+_tasks = set()
+
+
+def start_job(coro):
+    jid = str(uuid.uuid4())
+    _jobs[jid] = {"id": jid, "status": "pending"}
+
+    async def run():
+        try:
+            _jobs[jid] = {"id": jid, "status": "done", "result": await coro}
+        except HTTPException as e:
+            _jobs[jid] = {"id": jid, "status": "error", "error": e.detail}
+        except Exception as e:  # erreur inattendue : remontée au panneau
+            _jobs[jid] = {"id": jid, "status": "error", "error": f"Bunny s'est emmêlé les oreilles ({type(e).__name__})."}
+        if len(_jobs) > 200:
+            for k in list(_jobs)[:100]:
+                _jobs.pop(k, None)
+
+    t = asyncio.create_task(run())
+    _tasks.add(t)
+    t.add_done_callback(_tasks.discard)
+    return {"job_id": jid}
 
 
 def build_bunny_router(db, require_admin) -> APIRouter:
     r = APIRouter(prefix="/atelier/bunny", dependencies=[Depends(require_admin)])
+    add_mind_routes(r, db)
 
     @r.get("/sessions")
     async def sessions():
@@ -169,23 +205,58 @@ def build_bunny_router(db, require_admin) -> APIRouter:
 
     @r.post("/chat")
     async def chat(body: ChatIn):
+        return start_job(do_chat(body))
+
+    @r.get("/jobs/{jid}")
+    async def job(jid: str):
+        j = _jobs.get(jid)
+        if not j:
+            raise HTTPException(404, "Tâche introuvable")
+        return j
+
+    async def do_chat(body: ChatIn):
         s = await db.atelier_bunny.find_one({"id": body.session_id}, {"_id": 0}) if body.session_id else None
         if not s:
-            s = {"id": body.session_id or str(uuid.uuid4()), "title": body.message.strip()[:60], "messages": [], "created_at": now_iso()}
+            interview = body.mode == "interview"
+            s = {"id": body.session_id or str(uuid.uuid4()), "title": "Faisons connaissance" if interview else body.message.strip()[:60],
+                 "messages": [], "created_at": now_iso(), "mode": "interview" if interview else "chat"}
+        interview = s.get("mode") == "interview"
         ctx = await build_context(db, body.universe_id, body.focus_item_id)
-        history = [{"role": m["role"], "content": m["content"]} for m in s["messages"][-16:]]
+        history = [{"role": m["role"], "content": m["content"]} for m in s["messages"][-24:]]
         user = body.message
-        if TASK_WORDS.search(user):
+        if TASK_WORDS.search(user) and not interview:
             user += TASK_HINT
-        msgs = [{"role": "system", "content": f"{PERSONA}\n\n{ctx}"}, *history, {"role": "user", "content": user}]
+        if ME_WORDS.search(user) and not interview:
+            user += MEMORY_HINT
+        system = f"{PERSONA}\n\n{ctx}"
+        if interview:
+            mind = await get_mind(db)
+            step, next_key = interview_step(s.get("asked", []), mind["profile"], bool(re.search(r"\bstop\b|arr[êe]t", body.message, re.I)))
+            system += f"\n\n{step}"
+        msgs = [{"role": "system", "content": system}, *history, {"role": "user", "content": user}]
         raw, via = await ask_llm(db, msgs)
         text, changed, deleted = await apply_actions(db, raw, body.universe_id)
-        reply = {"role": "assistant", "content": text or "C'est fait !", "at": now_iso(), "via": via,
+        text, proposals = extract_memories(text)
+        text, learned = await extract_profile(db, text) if interview else (text, [])
+        profile_saved = False
+        if interview:
+            proposals = []
+            prev = (s.get("asked") or [None])[-1]
+            if prev and prev not in learned and len(body.message.strip()) > 3:
+                await db.atelier_bunny_mind.update_one({"id": "mind"}, {"$set": {f"profile.{prev}": body.message.strip()[:1500]}})
+                learned.append(prev)
+            if next_key:
+                s["asked"] = [*s.get("asked", []), next_key]
+            else:
+                s["mode"], profile_saved = "chat", True
+                await db.atelier_bunny_mind.update_one({"id": "mind"}, {"$set": {"interview_done": True}})
+        reply = {"role": "assistant", "content": text or "C'est fait !", "at": now_iso(), "via": via, "proposals": proposals, "profile_saved": profile_saved, "learned": learned,
                  "tasks": [{"title": t["title"], "done": t["done"]} for t in changed], "deleted": len(deleted)}
         s["messages"] += [{"role": "user", "content": body.message, "at": now_iso(), "focus_item_id": body.focus_item_id}, reply]
         s["updated_at"] = now_iso()
         await db.atelier_bunny.update_one({"id": s["id"]}, {"$set": s}, upsert=True)
-        return {"session_id": s["id"], "title": s["title"], "reply": reply, "tasks_changed": changed, "tasks_deleted": deleted}
+        return {"session_id": s["id"], "title": s["title"], "reply": reply, "reply_index": len(s["messages"]) - 1, "mode": s["mode"],
+                "tasks_changed": changed, "tasks_deleted": deleted}
 
     @r.get("/briefing")
     async def last_briefing():
@@ -193,6 +264,9 @@ def build_bunny_router(db, require_admin) -> APIRouter:
 
     @r.post("/briefing")
     async def make_briefing():
+        return start_job(do_briefing())
+
+    async def do_briefing():
         facts, meta = await briefing_facts(db)
         ctx = await build_context(db, None, None)
         raw, via = await ask_llm(db, [{"role": "system", "content": f"{PERSONA}\n\n{ctx}"}, {"role": "user", "content": f"FAITS DU JOUR :\n{facts}\n\n{BRIEF_PROMPT}"}], 2500)
@@ -216,15 +290,19 @@ def build_bunny_router(db, require_admin) -> APIRouter:
     @r.get("/brains")
     async def brains():
         ctx = await build_context(db, None, None)
+        mind = await get_mind(db)
         return {
             "brains": [public(b) for b in await list_brains(db)], "presets": PRESETS,
             "composition": {
                 "persona": PERSONA_ABOUT,
-                "skills": ["Discute en lisant tout ton lore", "Écrit et réécrit des scènes", "Gère les tâches du Cockpit", "Résume les documents", "Prépare le briefing du matin"],
+                "skills": ["Discute en lisant tout ton lore", "Écrit et réécrit des scènes", "Gère les tâches du Cockpit", "Résume les documents", "Prépare le briefing du matin", "Se souvient de qui tu es"],
                 "context_chars": len(ctx), "context_budget": CTX_BUDGET,
                 "universes": await db.atelier_universes.count_documents({}), "items": await db.atelier_items.count_documents({}),
                 "items_read": ctx.split("=== LORE")[-1].count("\n- "), "tasks": await db.atelier_tasks.count_documents({}),
                 "sessions": await db.atelier_bunny.count_documents({}),
+                "memories": len(mind.get("memories", [])), "profile_filled": sum(1 for k, _ in PROFILE_FIELDS if mind["profile"].get(k)),
+                "profile_total": len(PROFILE_FIELDS), "interview_done": mind.get("interview_done", False),
+                "creations": await db.creations.count_documents({}),
             },
         }
 
