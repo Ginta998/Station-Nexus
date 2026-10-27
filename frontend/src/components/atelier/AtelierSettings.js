@@ -6,7 +6,7 @@ import { atelierApi } from "@/lib/atelier";
 import { THEMES } from "@/lib/themes";
 import { useApp } from "@/context/AppContext";
 
-export default function AtelierSettings({ at }) {
+export default function AtelierSettings({ at, openBrains }) {
   const { theme, setTheme, sfx } = useApp();
   const [code, setCode] = useState(at.config.code || "");
   const [busy, setBusy] = useState(false);
@@ -64,6 +64,11 @@ export default function AtelierSettings({ at }) {
           {at.config.music_url && <button className="at-btn ghost" onClick={() => at.saveConfig({ music_url: "", music_title: "" })} aria-label="Retirer"><IoTrashOutline size={15} /></button>}
           <input ref={file} hidden type="file" accept="audio/*" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; uploadMusic(f); }} />
         </div>
+      </div>
+      <div className="at-panel">
+        <div className="at-panel-h"><h2>兎 Cerveaux de Bunny</h2></div>
+        <p className="at-sub">Vois sur quelles IA Bunny tourne, ce qu'elle lit de ton lore, et ajoute des clés ou de nouveaux cerveaux quand tu veux.</p>
+        <button className="at-btn" onClick={openBrains} data-testid="atelier-settings-brains">Ouvrir les cerveaux de Bunny</button>
       </div>
       <div className="at-panel">
         <div className="at-panel-h"><h2><IoDownloadOutline size={16} /> Sauvegarde complète</h2></div>

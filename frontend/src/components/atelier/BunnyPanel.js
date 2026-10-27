@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { IoClose, IoSend, IoAdd, IoTrashOutline, IoDocumentTextOutline } from "react-icons/io5";
+import { IoClose, IoSend, IoAdd, IoTrashOutline, IoDocumentTextOutline, IoHardwareChipOutline } from "react-icons/io5";
+import { playUiSound } from "@/lib/sound";
+import BunnySprite from "@/components/atelier/BunnySprite";
 import { atelierApi, KINDS } from "@/lib/atelier";
 import BunnyMessage from "@/components/atelier/BunnyMessage";
 
@@ -10,7 +12,7 @@ const QUICK = [
 ];
 
 // Panneau de Cosmic Bunny : conversations sauvegardées, lore lu automatiquement, scènes insérables, tâches gérées
-export default function BunnyPanel({ at, universeId, onClose }) {
+export default function BunnyPanel({ at, universeId, onClose, openBrains }) {
   const [sessions, setSessions] = useState([]);
   const [sid, setSid] = useState(null);
   const [msgs, setMsgs] = useState([]);
@@ -18,6 +20,10 @@ export default function BunnyPanel({ at, universeId, onClose }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [focus, setFocus] = useState("");
+  const [pose, setPose] = useState("wave");
+  const [hop, setHop] = useState(0);
+  const react = (p, sound) => { setPose(p); setHop((h) => h + 1); playUiSound(sound, "bunny"); };
+  useEffect(() => { const t = setTimeout(() => setPose("neutral"), 2600); return () => clearTimeout(t); }, [pose]);
   const list = useRef(null);
   const uni = at.universes.find((u) => u.id === universeId);
   const docs = at.items.filter((i) => !universeId || i.universe_id === universeId).slice(0, 200);
@@ -40,11 +46,12 @@ export default function BunnyPanel({ at, universeId, onClose }) {
     try {
       const r = await atelierApi.bunnyChat({ message: m, session_id: id, universe_id: universeId || null, focus_item_id: focus || null });
       setMsgs((l) => [...l, r.reply]);
+      react(/<scene/.test(r.reply.content) || r.reply.tasks?.length ? "excited" : "thumbs", "chirp");
       if (!sessions.some((x) => x.id === r.session_id)) setSessions((l) => [{ id: r.session_id, title: r.title }, ...l]);
       setSid(r.session_id);
       if (r.tasks_changed.length || r.tasks_deleted.length) at.applyTasks(r.tasks_changed, r.tasks_deleted);
     } catch (e) {
-      setErr(e?.response?.data?.detail || "Bunny n'a pas pu répondre. Réessaie !");
+      setErr(e?.response?.data?.detail || "Bunny n'a pas pu répondre. Réessaie !"); react("sad", "oops");
       setMsgs((l) => l.slice(0, -1)); setText(m); setSid(id);
     } finally { setBusy(false); }
   };
@@ -53,8 +60,9 @@ export default function BunnyPanel({ at, universeId, onClose }) {
   return (
     <aside className="bn-panel" data-testid="bunny-panel">
       <header className="bn-head">
-        <span className="bn-orb sm" aria-hidden="true"><i /><i /><b>兎</b></span>
+        <BunnySprite pose={busy ? "thumbs" : pose} hop={hop} size={52} className={busy ? "bn-think" : ""} testid="bunny-avatar" />
         <div className="bn-title"><b>Cosmic Bunny</b><small className="mono">{uni ? `// ${uni.name.toUpperCase()}` : "// TOUS TES UNIVERS"}</small></div>
+        <button className="at-icon" onClick={openBrains} title="Cerveaux de Bunny" data-testid="bunny-brains-open"><IoHardwareChipOutline size={17} /></button>
         <button className="at-icon" onClick={onClose} title="Fermer" data-testid="bunny-close"><IoClose size={18} /></button>
       </header>
       <div className="bn-bar">
@@ -68,7 +76,7 @@ export default function BunnyPanel({ at, universeId, onClose }) {
       <div className="bn-list" ref={list} data-testid="bunny-messages">
         {!msgs.length && (
           <div className="bn-hello" data-testid="bunny-hello">
-            <span className="bn-orb" aria-hidden="true"><i /><i /><b>兎</b></span>
+            <BunnySprite pose={pose} hop={hop} size={110} />
             <p>Coucou ! C'est Bunny. J'ai lu tout ton lore — enfin, j'ai essayé de ne rien faire tomber en route. On écrit quoi aujourd'hui ?</p>
             <div className="bn-quick">{QUICK.map(([l, q], i) => <button key={l} onClick={() => send(q)} data-testid={`bunny-quick-${i}`}>{l}</button>)}</div>
           </div>

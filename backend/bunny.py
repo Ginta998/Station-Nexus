@@ -1,42 +1,21 @@
 """Cosmic Bunny — assistante IA de l'Atelier, sur des IA gratuites (LLM7 en priorité, puis secours)."""
-import os
 import re
 import json
 import uuid
-import logging
-import time
 from datetime import datetime, timezone
 from typing import Optional
-import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+from bunny_brains import list_brains, public, ask_llm, test_brain, new_brain, PRESETS
 
-log = logging.getLogger("bunny")
 CTX_BUDGET = 18000
-COOLDOWN = 600
-_resting = {}
 
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def providers():
-    llm7 = os.environ.get("LLM7_API_KEY", "")
-    out = [
-        ("LLM7 · GPT-OSS 20B", "https://api.llm7.io/v1", "gpt-oss:20b", llm7),
-        ("LLM7 · Mistral Nemo", "https://api.llm7.io/v1", "mistral-Nemo-Instruct-2407", llm7),
-    ]
-    if os.environ.get("GEMINI_API_KEY"):
-        out.append(("Gemini 2.5 Flash", "https://generativelanguage.googleapis.com/v1beta/openai", "gemini-2.5-flash", os.environ["GEMINI_API_KEY"]))
-    out += [
-        ("OVHcloud · GPT-OSS 120B", "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1", "gpt-oss-120b", ""),
-        ("Kilo · auto gratuit", "https://api.kilo.ai/api/gateway", "kilo-auto/free", ""),
-    ]
-    return out
-
-
-PERSONA = """Tu es Cosmic Bunny (兎), l'assistante de création de l'Atelier Nexus, le vaisseau-atelier privé d'une autrice/créatrice.
+PERSONA = """Tu es Cosmic Bunny (兎), l'assistante de création de l'Atelier Nexus, le vaisseau-atelier privé de Brichel, aux commandes de Station Nexus (tu le/la tutoies, sans présumer de son genre).
 Personnalité : complice et poétique, très dynamique, parfois un peu maladroite (tu peux t'en amuser), avec un grand cœur ; tu ne te laisses jamais décourager et tu encourages toujours. Tu parles au féminin, en français, avec chaleur et quelques images cosmiques — sans en faire trop.
 Missions :
 - Discuter des univers en t'appuyant UNIQUEMENT sur le lore fourni (ne contredis jamais le canon ; si une info manque, dis-le et propose).
@@ -88,31 +67,6 @@ async def build_context(db, universe_id: Optional[str], focus_id: Optional[str])
     return "\n\n".join(parts)
 
 
-async def ask_llm(messages):
-    errors = []
-    async with httpx.AsyncClient(timeout=httpx.Timeout(28, connect=6)) as c:
-        for name, base, model, key in providers():
-            if _resting.get(base, 0) > time.time():
-                continue
-            try:
-                h = {"Content-Type": "application/json", **({"Authorization": f"Bearer {key}"} if key else {})}
-                r = await c.post(f"{base}/chat/completions", headers=h, json={"model": model, "messages": messages, "max_tokens": 3500, "temperature": 0.8})
-                if r.status_code == 429:
-                    _resting[base] = time.time() + COOLDOWN
-                if r.status_code != 200:
-                    errors.append(f"{name}: HTTP {r.status_code}")
-                    continue
-                text = (r.json()["choices"][0]["message"].get("content") or "").strip()
-                text = re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
-                if text:
-                    return text, name
-                errors.append(f"{name}: réponse vide")
-            except Exception as e:  # passe au service suivant
-                errors.append(f"{name}: {type(e).__name__}")
-    log.warning("Bunny: tous les services ont échoué %s", errors)
-    raise HTTPException(503, "Bunny a trébuché sur une comète : aucun service IA gratuit n'a répondu. Réessaie dans un instant !")
-
-
 async def apply_actions(db, text: str, universe_id: Optional[str]):
     m = re.search(r"<actions>(.*?)</actions>", text, flags=re.S)
     if not m:
@@ -139,6 +93,52 @@ async def apply_actions(db, text: str, universe_id: Optional[str]):
             if (await db.atelier_tasks.delete_one({"id": a["id"]})).deleted_count:
                 deleted.append(a["id"])
     return clean, changed, deleted
+
+
+PERSONA_ABOUT = "Cosmic Bunny (兎), ta copilote de création : complice et poétique, très dynamique, parfois un peu maladroite, avec un grand cœur — elle ne se laisse jamais décourager. Elle parle français, te tutoie et s'appuie uniquement sur ton lore pour ne jamais trahir ton canon."
+
+BRIEF_PROMPT = """Prépare mon « Briefing du matin » à partir des FAITS ci-dessous et du lore. Sois concrète, chaleureuse, courte (1 à 3 phrases par rubrique), avec ta personnalité.
+Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour ni bloc de code, avec exactement ces clés :
+{"salut":"une phrase d'accueil pétillante","avance":"ce qui avance aujourd'hui","bloque":"ce qui bloque ou risque de bloquer (retards, tâches qui traînent)","echeance":"la prochaine échéance et quoi faire pour elle","idee":"une idée créative liée à mes univers","conseil":"un conseil pratique pour la journée","mot":"un mot d'encouragement final"}"""
+
+
+async def briefing_facts(db):
+    today = datetime.now(timezone.utc).date().isoformat()
+    tasks = await db.atelier_tasks.find({}, {"_id": 0}).to_list(2000)
+    recs = await db.atelier_records.find({"rk": {"$in": ["goals", "events"]}}, {"_id": 0}).to_list(2000)
+    items = await db.atelier_items.find({}, {"_id": 0, "title": 1, "kind": 1, "updated_at": 1}).sort("updated_at", -1).to_list(8)
+    open_t = [t for t in tasks if not t.get("done")]
+    overdue = sorted([t for t in open_t if t.get("due") and t["due"] < today], key=lambda t: t["due"])
+    due_today = [t for t in open_t if t.get("due") == today]
+    done_recent = sorted([t for t in tasks if t.get("done") and t.get("done_at")], key=lambda t: t["done_at"], reverse=True)[:5]
+    upcoming = [{"title": t["title"], "date": t["due"], "type": "tâche"} for t in open_t if t.get("due") and t["due"] >= today]
+    upcoming += [{"title": r.get("title", ""), "date": r.get("date", ""), "type": "événement"} for r in recs if r["rk"] == "events" and (r.get("date") or "") >= today]
+    upcoming += [{"title": r.get("title", ""), "date": r.get("due", ""), "type": "objectif"} for r in recs if r["rk"] == "goals" and (r.get("due") or "") >= today and r.get("status") != "done"]
+    nxt = min(upcoming, key=lambda x: x["date"], default=None)
+    goals = [f"{r.get('title')} ({r.get('progress', 0)}%)" for r in recs if r["rk"] == "goals" and r.get("status") != "done"][:6]
+    facts = (f"Aujourd'hui : {today}\nTâches ouvertes : {len(open_t)} · en retard : {len(overdue)} · prévues aujourd'hui : {len(due_today)}\n"
+             f"En retard : {'; '.join(t['title'] + ' (' + t['due'] + ')' for t in overdue[:8]) or 'aucune'}\n"
+             f"Aujourd'hui : {'; '.join(t['title'] for t in due_today) or 'rien de daté'}\n"
+             f"Terminé récemment : {'; '.join(t['title'] for t in done_recent) or 'rien'}\n"
+             f"Prochaine échéance : {(nxt['type'] + ' « ' + nxt['title'] + ' » le ' + nxt['date']) if nxt else 'aucune'}\n"
+             f"Objectifs en cours : {'; '.join(goals) or 'aucun'}\n"
+             f"Derniers éléments travaillés : {'; '.join((i.get('title') or 'Sans titre') + ' [' + i.get('kind', '') + ']' for i in items) or 'aucun'}")
+    return facts, {"overdue": len(overdue), "today": len(due_today), "open": len(open_t), "next": nxt}
+
+
+class BrainIn(BaseModel):
+    name: str = Field(min_length=1, max_length=80)
+    base: str = Field(min_length=8, max_length=300)
+    model: str = Field(min_length=1, max_length=200)
+    key: str = ""
+    note: str = ""
+
+
+class BrainPatch(BaseModel):
+    name: Optional[str] = None
+    model: Optional[str] = None
+    key: Optional[str] = None
+    enabled: Optional[bool] = None
 
 
 class ChatIn(BaseModel):
@@ -178,7 +178,7 @@ def build_bunny_router(db, require_admin) -> APIRouter:
         if TASK_WORDS.search(user):
             user += TASK_HINT
         msgs = [{"role": "system", "content": f"{PERSONA}\n\n{ctx}"}, *history, {"role": "user", "content": user}]
-        raw, via = await ask_llm(msgs)
+        raw, via = await ask_llm(db, msgs)
         text, changed, deleted = await apply_actions(db, raw, body.universe_id)
         reply = {"role": "assistant", "content": text or "C'est fait !", "at": now_iso(), "via": via,
                  "tasks": [{"title": t["title"], "done": t["done"]} for t in changed], "deleted": len(deleted)}
@@ -186,5 +186,84 @@ def build_bunny_router(db, require_admin) -> APIRouter:
         s["updated_at"] = now_iso()
         await db.atelier_bunny.update_one({"id": s["id"]}, {"$set": s}, upsert=True)
         return {"session_id": s["id"], "title": s["title"], "reply": reply, "tasks_changed": changed, "tasks_deleted": deleted}
+
+    @r.get("/briefing")
+    async def last_briefing():
+        return await db.atelier_bunny_briefings.find_one({}, {"_id": 0}, sort=[("at", -1)]) or {}
+
+    @r.post("/briefing")
+    async def make_briefing():
+        facts, meta = await briefing_facts(db)
+        ctx = await build_context(db, None, None)
+        raw, via = await ask_llm(db, [{"role": "system", "content": f"{PERSONA}\n\n{ctx}"}, {"role": "user", "content": f"FAITS DU JOUR :\n{facts}\n\n{BRIEF_PROMPT}"}], 2500)
+        m = re.search(r"\{.*\}", raw, flags=re.S)
+        try:
+            data = json.loads(m.group(0)) if m else {}
+        except Exception:
+            data = {}
+        keys = ("salut", "avance", "bloque", "echeance", "idee", "conseil", "mot")
+        sections = {k: str(data.get(k) or "").strip() for k in keys}
+        if not any(sections.values()):
+            sections["mot"] = raw.strip()[:1500]
+        doc = {"id": str(uuid.uuid4()), "at": now_iso(), "via": via, "sections": sections, "meta": meta}
+        await db.atelier_bunny_briefings.insert_one(dict(doc))
+        ids = [x["id"] async for x in db.atelier_bunny_briefings.find({}, {"id": 1}).sort("at", -1).skip(30)]
+        if ids:
+            await db.atelier_bunny_briefings.delete_many({"id": {"$in": ids}})
+        return doc
+
+    # ---- cerveaux & composition
+    @r.get("/brains")
+    async def brains():
+        ctx = await build_context(db, None, None)
+        return {
+            "brains": [public(b) for b in await list_brains(db)], "presets": PRESETS,
+            "composition": {
+                "persona": PERSONA_ABOUT,
+                "skills": ["Discute en lisant tout ton lore", "Écrit et réécrit des scènes", "Gère les tâches du Cockpit", "Résume les documents", "Prépare le briefing du matin"],
+                "context_chars": len(ctx), "context_budget": CTX_BUDGET,
+                "universes": await db.atelier_universes.count_documents({}), "items": await db.atelier_items.count_documents({}),
+                "items_read": ctx.split("=== LORE")[-1].count("\n- "), "tasks": await db.atelier_tasks.count_documents({}),
+                "sessions": await db.atelier_bunny.count_documents({}),
+            },
+        }
+
+    @r.post("/brains")
+    async def add_brain(body: BrainIn):
+        if not body.base.startswith("https://"):
+            raise HTTPException(400, "L'adresse doit commencer par https://")
+        doc = new_brain(body.model_dump(), await db.atelier_brains.count_documents({}))
+        await db.atelier_brains.insert_one(dict(doc))
+        return public(doc)
+
+    @r.put("/brains/order")
+    async def order_brains(ids: list[str]):
+        for i, bid in enumerate(ids):
+            await db.atelier_brains.update_one({"id": bid}, {"$set": {"order": i}})
+        return [public(b) for b in await list_brains(db)]
+
+    @r.put("/brains/{bid}")
+    async def patch_brain(bid: str, body: BrainPatch):
+        patch = {k: (v.strip() if isinstance(v, str) else v) for k, v in body.model_dump().items() if v is not None}
+        if not patch:
+            raise HTTPException(400, "Rien à modifier")
+        res = await db.atelier_brains.update_one({"id": bid}, {"$set": patch})
+        if not res.matched_count:
+            raise HTTPException(404, "Cerveau introuvable")
+        return public(await db.atelier_brains.find_one({"id": bid}, {"_id": 0}))
+
+    @r.delete("/brains/{bid}")
+    async def delete_brain(bid: str):
+        b = await db.atelier_brains.find_one({"id": bid}, {"_id": 0, "builtin": 1})
+        if not b:
+            raise HTTPException(404, "Cerveau introuvable")
+        if b.get("builtin"):
+            raise HTTPException(400, "Les cerveaux de base se désactivent mais ne se suppriment pas")
+        await db.atelier_brains.delete_one({"id": bid})
+        return {"ok": True}
+
+    @r.post("/brains/{bid}/test")
+    async def test(bid: str):
+        return await test_brain(db, bid)
 
     return r

@@ -229,6 +229,8 @@ const PACKS = {
       if (ev === "nav") tone(c, d, { f: 784, f2: 1047, dur: 0.1, gain: 0.025, attack: 0.008, lp: 2600 });
       if (ev === "select") { tone(c, d, { f: 784, dur: 0.1, gain: 0.022, lp: 2600 }); tone(c, d, { f: 1047, at: 0.08, dur: 0.1, gain: 0.02, lp: 2600 }); tone(c, d, { f: 1319, at: 0.16, dur: 0.16, gain: 0.016, lp: 2800 }); }
       if (ev === "back") tone(c, d, { f: 1047, f2: 784, dur: 0.12, gain: 0.02, lp: 2400 });
+      if (ev === "chirp") { [1047, 1319, 1568, 2093].forEach((f, i) => tone(c, d, { f, f2: f * 1.02, at: i * 0.06, dur: 0.14, gain: 0.018 - i * 0.003, attack: 0.006, lp: 3400 })); tone(c, d, { f: 523, f2: 784, at: 0.02, dur: 0.32, gain: 0.012, attack: 0.02, lp: 1800 }); }
+      if (ev === "oops") { tone(c, d, { f: 784, f2: 523, dur: 0.18, gain: 0.02, lp: 2200 }); tone(c, d, { f: 622, f2: 466, at: 0.14, dur: 0.22, gain: 0.016, lp: 2000 }); }
     },
   },
   albatre: {

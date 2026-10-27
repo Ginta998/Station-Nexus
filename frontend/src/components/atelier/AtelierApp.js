@@ -17,6 +17,8 @@ import { AppWindow, MiniPlayer } from "@/components/atelier/AppScreens";
 import { BureauView, SalonView } from "@/components/atelier/BureauSalon";
 import { IoAppsOutline, IoFilmOutline } from "react-icons/io5";
 import BunnyPanel from "@/components/atelier/BunnyPanel";
+import BunnyBrains from "@/components/atelier/BunnyBrains";
+import BunnySprite from "@/components/atelier/BunnySprite";
 
 const Dock = ({ icon, label, on, onClick, testid, color, kanji, badge }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label}>
@@ -43,6 +45,7 @@ export default function AtelierApp({ onLeave }) {
   const [screen, setScreen] = useState(null);
   const [mini, setMini] = useState(null);
   const [bunny, setBunny] = useState(false);
+  const [brains, setBrains] = useState(false);
   const launch = (s) => { sfx("select"); setScreen(s); };
   const toMini = (s) => { setScreen(null); setMini(s); };
   const [dragging, setDragging] = useState(false);
@@ -54,7 +57,7 @@ export default function AtelierApp({ onLeave }) {
   const pinned = at.universes.filter((u) => u.pinned);
   const cur = view.name === "universe" ? at.universes.find((u) => u.id === view.id) : null;
   const importDocs = (defaults = {}) => { pickDefaults.current = defaults; pick.current?.click(); };
-  const ctx = { at, go, open, editUniverse: setUForm, importDocs };
+  const ctx = { at, go, open, editUniverse: setUForm, importDocs, openBrains: () => setBrains(true) };
 
   useEffect(() => {
     let depth = 0;
@@ -138,8 +141,9 @@ export default function AtelierApp({ onLeave }) {
       {screen && <AppWindow screen={screen} onClose={() => setScreen(null)} onMini={toMini} onNavigate={setScreen} />}
       {mini && <MiniPlayer mini={mini} onClose={() => setMini(null)} onExpand={(s) => { setMini(null); setScreen(s); }} />}
       {palette && <CommandPalette {...ctx} onClose={() => setPalette(false)} newUniverse={() => { setPalette(false); setUForm({}); }} />}
-      {!bunny && <button className="bn-fab" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" data-testid="bunny-open"><span className="bn-orb" aria-hidden="true"><i /><i /><b>兎</b></span></button>}
-      {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} />}
+      {!bunny && <div className="bn-fab"><BunnySprite pose="neutral" size={74} className="cb-bounce" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" testid="bunny-open" /></div>}
+      {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} openBrains={() => setBrains(true)} />}
+      {brains && <BunnyBrains onClose={() => setBrains(false)} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}
     </div>

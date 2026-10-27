@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { KINDS, imgSrc, todayStr, stripHtml } from "@/lib/atelier";
 import ItemCard from "@/components/atelier/ItemCard";
 import { TaskRow } from "@/components/atelier/TasksView";
+import BunnyBriefing from "@/components/atelier/BunnyBriefing";
 
 const greet = (h) => (h < 5 ? "Bonne nuit" : h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir");
 
@@ -43,6 +44,8 @@ export default function QuartierView({ at, go, open }) {
           <div className="at-stats">{stats.map(([l, v]) => <div key={l}><b>{v}</b><small className="mono">{l}</small></div>)}</div>
         </div>
       </header>
+
+      <BunnyBriefing />
 
       <form className="at-capture" onSubmit={capture} data-testid="atelier-capture">
         <textarea rows={1} value={idea} onChange={(e) => setIdea(e.target.value)} placeholder="Une idée traverse le pont ? Capture-la…"
