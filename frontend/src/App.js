@@ -26,6 +26,8 @@ import PaymentResult from "@/pages/PaymentResult";
 import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
 import GlobalSound from "@/components/GlobalSound";
+import PortalListener from "@/components/atelier/PortalListener";
+import Atelier from "@/pages/Atelier";
 import CyberOverlay from "@/components/CyberOverlay";
 import CosmicBackground from "@/components/CosmicBackground";
 import SiteMeta from "@/components/SiteMeta";
@@ -120,13 +122,15 @@ function App() {
             <Route path="/planning" element={<Planning />} />
             <Route path="/soutien" element={<SupportPage />} />
             <Route path="/a-propos" element={<About />} />
+            <Route path="/atelier" element={<Atelier />} />
             <Route path="/revenus" element={<Revenue />} />
             <Route path="/salon" element={<Chat />} />
             <Route path="/payment/success" element={<PaymentResult mode="success" />} />
             <Route path="/payment/cancel" element={<PaymentResult mode="cancel" />} />
           </Routes>
-          {/*CB*/}
+          <CosmicBunny />
           <GlobalSound />
+          <PortalListener />
           <PushClickNav />
           <GuidedTour />
         </BrowserRouter>

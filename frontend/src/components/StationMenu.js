@@ -144,6 +144,7 @@ export default function StationMenu({ onAdd, onProfile }) {
     { label: "Paramètres", sub: "COMPTE · THÈME · AMBIANCE", icon: <IoSettingsOutline size={18} />, onClick: () => go("/parametres") },
     ...(isAdmin && onAdd ? [{ label: "Créer une création", sub: "MODE CRÉATION", icon: <IoAddOutline size={18} />, onClick: () => { setMenuOpen(false); onAdd(); } }] : []),
     ...(isAdmin ? [{ label: "Mes revenus", sub: "TABLEAU DE BORD", icon: <IoCashOutline size={18} />, onClick: () => go("/revenus") }] : []),
+    ...(isAdmin ? [{ label: "Portail · Atelier", sub: "TON ESPACE DE CRÉATION", icon: <IoPlanetOutline size={18} />, onClick: () => go("/atelier") }] : []),
   ];
 
   return (

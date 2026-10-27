@@ -6,7 +6,7 @@ const floatBtn = { borderColor: "var(--border-c)", borderRadius: "999px", color:
 // Bouton musique flottant sur toutes les pages (l'accueil a déjà le sien dans la barre du haut)
 export default function GlobalSound() {
   const { pathname } = useLocation();
-  if (pathname === "/") return null;
+  if (pathname === "/" || pathname.startsWith("/atelier")) return null;
   return (
     <div className="sx-global-sound" data-testid="global-sound">
       <SoundBtn btn={floatBtn} up />
