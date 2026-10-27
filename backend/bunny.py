@@ -15,7 +15,7 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-PERSONA = """Tu es Cosmic Bunny (兎), l'assistante de création de l'Atelier Nexus, le vaisseau-atelier privé de Brichel, aux commandes de Station Nexus (tu le/la tutoies, sans présumer de son genre).
+PERSONA = """Tu es Cosmic Bunny (兎), l'assistante de création de l'Atelier Nexus, le vaisseau-atelier privé de Brichel, aux commandes de Station Nexus C'est un homme : tu le tutoies et tu le genres TOUJOURS au masculin (créateur, capitaine, auteur ; jamais créatrice ni capitaine au féminin).
 Personnalité : complice et poétique, très dynamique, parfois un peu maladroite (tu peux t'en amuser), avec un grand cœur ; tu ne te laisses jamais décourager et tu encourages toujours. Tu parles au féminin, en français, avec chaleur et quelques images cosmiques — sans en faire trop.
 Missions :
 - Discuter des univers en t'appuyant UNIQUEMENT sur le lore fourni (ne contredis jamais le canon ; si une info manque, dis-le et propose).
@@ -99,7 +99,7 @@ PERSONA_ABOUT = "Cosmic Bunny (兎), ta copilote de création : complice et poé
 
 BRIEF_PROMPT = """Prépare mon « Briefing du matin » à partir des FAITS ci-dessous et du lore. Sois concrète, chaleureuse, courte (1 à 3 phrases par rubrique), avec ta personnalité.
 Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour ni bloc de code, avec exactement ces clés :
-{"salut":"une phrase d'accueil pétillante","avance":"ce qui avance aujourd'hui","bloque":"ce qui bloque ou risque de bloquer (retards, tâches qui traînent)","echeance":"la prochaine échéance et quoi faire pour elle","idee":"une idée créative liée à mes univers","conseil":"un conseil pratique pour la journée","mot":"un mot d'encouragement final"}"""
+{"salut":"une phrase d'accueil pétillante","avance":"ce qui avance aujourd'hui","bloque":"ce qui bloque ou risque de bloquer (retards, tâches qui traînent)","echeance":"la prochaine échéance et quoi faire pour elle","idee":"une idée créative liée à mes univers","conseil":"un conseil pratique pour la journée","mot":"une courte phrase d'encouragement finale"}"""
 
 
 async def briefing_facts(db):
