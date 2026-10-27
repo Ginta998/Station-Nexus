@@ -22,6 +22,10 @@ export const atelierApi = {
   updateTask: (id, b) => send("put", `/atelier/tasks/${id}`, b),
   deleteTask: (id) => send("delete", `/atelier/tasks/${id}`),
   exportAll: () => get("/atelier/export"),
+  bunnySessions: () => get("/atelier/bunny/sessions"),
+  bunnySession: (id) => get(`/atelier/bunny/sessions/${id}`),
+  bunnyDelete: (id) => send("delete", `/atelier/bunny/sessions/${id}`),
+  bunnyChat: (b) => send("post", "/atelier/bunny/chat", b),
   createLink: (b) => send("post", "/atelier/links", b),
   updateLink: (id, b) => send("put", `/atelier/links/${id}`, b),
   deleteLink: (id) => send("delete", `/atelier/links/${id}`),
@@ -136,6 +140,7 @@ export function useAtelier() {
       patch((d) => ({ ...d, tasks: up(d.tasks, doc) }));
       return doc;
     },
+    applyTasks(docs, deleted = []) { patch((d) => ({ ...d, tasks: docs.reduce((l, t) => up(l, t), d.tasks).filter((t) => !deleted.includes(t.id)) })); },
     async removeTask(id) {
       await atelierApi.deleteTask(id);
       patch((d) => ({ ...d, tasks: d.tasks.filter((x) => x.id !== id) }));

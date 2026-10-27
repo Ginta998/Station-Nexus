@@ -16,6 +16,7 @@ import DropDialog from "@/components/atelier/DropDialog";
 import { AppWindow, MiniPlayer } from "@/components/atelier/AppScreens";
 import { BureauView, SalonView } from "@/components/atelier/BureauSalon";
 import { IoAppsOutline, IoFilmOutline } from "react-icons/io5";
+import BunnyPanel from "@/components/atelier/BunnyPanel";
 
 const Dock = ({ icon, label, on, onClick, testid, color, kanji, badge }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label}>
@@ -41,6 +42,7 @@ export default function AtelierApp({ onLeave }) {
   const [drop, setDrop] = useState(null);
   const [screen, setScreen] = useState(null);
   const [mini, setMini] = useState(null);
+  const [bunny, setBunny] = useState(false);
   const launch = (s) => { sfx("select"); setScreen(s); };
   const toMini = (s) => { setScreen(null); setMini(s); };
   const [dragging, setDragging] = useState(false);
@@ -100,6 +102,7 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" />
           <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
+          <Dock kanji="兎" label="Bunny" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
           <div className="at-dock-unis">
@@ -135,6 +138,8 @@ export default function AtelierApp({ onLeave }) {
       {screen && <AppWindow screen={screen} onClose={() => setScreen(null)} onMini={toMini} onNavigate={setScreen} />}
       {mini && <MiniPlayer mini={mini} onClose={() => setMini(null)} onExpand={(s) => { setMini(null); setScreen(s); }} />}
       {palette && <CommandPalette {...ctx} onClose={() => setPalette(false)} newUniverse={() => { setPalette(false); setUForm({}); }} />}
+      {!bunny && <button className="bn-fab" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" data-testid="bunny-open"><span className="bn-orb" aria-hidden="true"><i /><i /><b>兎</b></span></button>}
+      {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}
     </div>
