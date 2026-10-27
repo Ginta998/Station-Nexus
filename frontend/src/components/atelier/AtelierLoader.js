@@ -13,7 +13,7 @@ const LINES = [
 export default function AtelierLoader({ progress, label, error, leaving, onLeave }) {
   const [line, setLine] = useState(() => Math.floor(Math.random() * LINES.length));
   useEffect(() => { const t = setInterval(() => setLine((l) => (l + 1) % LINES.length), 4200); return () => clearInterval(t); }, []);
-  const stars = useMemo(() => Array.from({ length: 90 }, (_, i) => ({ a: Math.random() * 360, d: Math.random() * 3.2, s: 0.6 + Math.random() * 1.8, l: 30 + Math.random() * 60, k: i })), []);
+  const stars = useMemo(() => Array.from({ length: 48 }, (_, i) => ({ a: Math.random() * 360, d: Math.random() * 3.2, s: 0.6 + Math.random() * 1.8, l: 30 + Math.random() * 60, k: i })), []);
 
   return (
     <div className={"atl" + (leaving ? " leaving" : "")} data-testid="atelier-loader">

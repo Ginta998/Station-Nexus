@@ -1,11 +1,16 @@
 """Atelier Nexus — espace de création privé (admin uniquement)."""
+import io
+import re
 import uuid
+import statistics
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
-KINDS = {"note", "scene", "character", "place", "lore", "event", "document"}
+KINDS = {"note", "scene", "character", "place", "lore", "event", "document", "inspiration"}
+MAX_FILE = 60 * 1024 * 1024
 
 
 def now_iso() -> str:
@@ -35,6 +40,7 @@ class ItemIn(BaseModel):
     image: str = ""
     date: str = ""
     pinned: bool = False
+    media: List[Dict[str, Any]] = []
 
 
 class TaskIn(BaseModel):
@@ -53,8 +59,179 @@ class ConfigIn(BaseModel):
     music_title: Optional[str] = None
 
 
-def build_atelier_router(db, require_admin) -> APIRouter:
+def _esc(t: str) -> str:
+    return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def pdf_to_html(data: bytes) -> str:
+    """PDF -> HTML : titres détectés par la taille de police, gras/italique conservés."""
+    import pymupdf
+    doc = pymupdf.open(stream=data, filetype="pdf")
+    blocks, sizes = [], []
+    for page in doc:
+        for b in page.get_text("dict")["blocks"]:
+            if b.get("type") != 0:
+                continue
+            spans = [sp for ln in b["lines"] for sp in ln["spans"] if sp["text"].strip()]
+            if not spans:
+                continue
+            sizes += [round(sp["size"], 1) for sp in spans]
+            blocks.append(b)
+    if not blocks:
+        return ""
+    body = statistics.median(sizes)
+    out = []
+    for b in blocks:
+        lines, top = [], 0
+        for ln in b["lines"]:
+            parts = []
+            for sp in ln["spans"]:
+                t = _esc(sp["text"])
+                if not t.strip():
+                    parts.append(t)
+                    continue
+                top = max(top, sp["size"])
+                if sp["flags"] & 16:
+                    t = f"<b>{t}</b>"
+                if sp["flags"] & 2:
+                    t = f"<i>{t}</i>"
+                parts.append(t)
+            lines.append("".join(parts).strip())
+        text = " ".join(x for x in lines if x)
+        text = re.sub(r"</b>\s*<b>", " ", text)
+        if not text:
+            continue
+        plain = re.sub(r"<[^>]+>", "", text)
+        if top >= body * 1.45 and len(plain) < 140:
+            out.append(f"<h2>{plain}</h2>")
+        elif top >= body * 1.18 and len(plain) < 140:
+            out.append(f"<h3>{plain}</h3>")
+        else:
+            out.append(f"<p>{text}</p>")
+    return "".join(out)
+
+
+def split_by_headings(html: str, fallback_title: str):
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(html, "html.parser")
+    nodes = list(soup.children)
+    level = next((lv for lv in ("h1", "h2", "h3") if soup.find(lv)), None)
+    if not level:
+        return [(fallback_title, html)]
+    sections, title, buf = [], None, []
+    for n in nodes:
+        if getattr(n, "name", None) == level:
+            if buf and "".join(map(str, buf)).strip():
+                sections.append((title or fallback_title, "".join(map(str, buf))))
+            title, buf = n.get_text(" ", strip=True)[:200] or fallback_title, []
+        else:
+            buf.append(n)
+    if buf or title:
+        sections.append((title or fallback_title, "".join(map(str, buf))))
+    return sections
+
+
+def build_public_files_router(db, storage_get) -> APIRouter:
+    r = APIRouter(prefix="/atelier-files")
+
+    @r.get("/{fid}")
+    async def get_file(fid: str):
+        f = await db.atelier_files.find_one({"id": fid}, {"_id": 0})
+        if not f:
+            raise HTTPException(404, "Fichier introuvable")
+        data, ct = await storage_get(f["path"])
+        disp = "inline" if (f.get("content_type") or "").split("/")[0] in ("image", "audio", "video") or f.get("content_type") == "application/pdf" else "attachment"
+        name = re.sub(r'[^\w.\- ]', "_", f.get("name") or "fichier")
+        return Response(content=data, media_type=f.get("content_type") or ct, headers={"Cache-Control": "private, max-age=31536000, immutable", "Content-Disposition": f'{disp}; filename="{name}"'})
+
+    return r
+
+
+def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
     r = APIRouter(prefix="/atelier", dependencies=[Depends(require_admin)])
+
+    async def store(data: bytes, ct: str, name: str) -> dict:
+        fid = str(uuid.uuid4())
+        ext = (name.rsplit(".", 1)[-1].lower()[:6] if "." in name else "bin")
+        path = f"{app_name}/atelier/{fid}.{ext}"
+        await storage_put(path, data, ct)
+        await db.atelier_files.insert_one({"id": fid, "path": path, "content_type": ct, "size": len(data), "name": name, "created_at": now_iso()})
+        return {"id": fid, "url": f"/api/atelier-files/{fid}", "name": name, "mime": ct, "size": len(data)}
+
+    @r.post("/files")
+    async def upload_file(file: UploadFile = File(...)):
+        data = await file.read()
+        if len(data) > MAX_FILE:
+            raise HTTPException(413, "Fichier trop lourd (max 60 Mo)")
+        return await store(data, file.content_type or "application/octet-stream", file.filename or "fichier")
+
+    @r.post("/import")
+    async def import_doc(file: UploadFile = File(...), universe_id: str = Form(""), kind: str = Form("document"), split: str = Form("1")):
+        if kind not in KINDS:
+            raise HTTPException(400, "Type d'élément inconnu")
+        data = await file.read()
+        if len(data) > MAX_FILE:
+            raise HTTPException(413, "Fichier trop lourd (max 60 Mo)")
+        name = file.filename or "document"
+        base = name.rsplit(".", 1)[0]
+        low = name.lower()
+        try:
+            if low.endswith(".docx"):
+                import mammoth
+                imgs = []
+
+                def grab(image):
+                    with image.open() as f:
+                        imgs.append((f.read(), image.content_type or "image/png"))
+                    return {"src": f"atimg:{len(imgs) - 1}"}
+                html = mammoth.convert_to_html(io.BytesIO(data), convert_image=mammoth.images.img_element(grab)).value
+                for i, (b, ct) in enumerate(imgs):
+                    up = await store(b, ct, f"{base}-image-{i + 1}.{ct.split('/')[-1]}")
+                    html = html.replace(f'src="atimg:{i}"', f'src="{up["url"]}" class="sx-rich-img"')
+            elif low.endswith(".pdf"):
+                html = pdf_to_html(data)
+            elif low.endswith((".txt", ".md")):
+                txt = data.decode("utf-8", errors="replace")
+                html = "".join(f"<h2>{_esc(p.lstrip('# ').strip())}</h2>" if p.startswith("#") else f"<p>{_esc(p).replace(chr(10), '<br/>')}</p>" for p in re.split(r"\n{2,}", txt) if p.strip())
+            else:
+                raise HTTPException(400, "Formats acceptés : PDF, Word (.docx), texte")
+        except HTTPException:
+            raise
+        except Exception:
+            raise HTTPException(422, "Impossible de lire ce document")
+        if not html.strip():
+            raise HTTPException(422, "Aucun texte trouvé (PDF scanné en image ?)")
+        source = await store(data, file.content_type or "application/octet-stream", name)
+        sections = split_by_headings(html, base) if split == "1" else [(base, html)]
+        created = []
+        for title, content in sections:
+            doc = {"id": str(uuid.uuid4()), **ItemIn(kind=kind, title=title, content=content, universe_id=universe_id or None,
+                   tags=["import"], media=[{"id": source["id"], "type": "file", "url": source["url"], "name": name, "mime": source["mime"]}]).model_dump(),
+                   "created_at": now_iso(), "updated_at": now_iso()}
+            await db.atelier_items.insert_one(dict(doc))
+            created.append(doc)
+        return {"items": created}
+
+    @r.get("/items/{iid}/docx")
+    async def export_docx(iid: str):
+        it = await db.atelier_items.find_one({"id": iid}, {"_id": 0})
+        if not it:
+            raise HTTPException(404, "Élément introuvable")
+        from docx import Document
+        from htmldocx import HtmlToDocx
+        d = Document()
+        d.add_heading(it.get("title") or "Sans titre", 0)
+        html = re.sub(r"<img[^>]*>", "", it.get("content") or "")
+        html = re.sub(r'<span class="sx-music-cue"[^>]*>.*?</span>', "", html)
+        try:
+            HtmlToDocx().add_html_to_document(html or "<p></p>", d)
+        except Exception:
+            d.add_paragraph(re.sub(r"<[^>]+>", " ", html))
+        buf = io.BytesIO()
+        d.save(buf)
+        fname = re.sub(r"[^\w\- ]", "_", it.get("title") or "document")[:80]
+        return Response(content=buf.getvalue(), media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        headers={"Content-Disposition": f'attachment; filename="{fname}.docx"'})
 
     async def get_config():
         c = await db.atelier_config.find_one({"_id": "main"}, {"_id": 0})

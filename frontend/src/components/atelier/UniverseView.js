@@ -7,7 +7,7 @@ import { listCreations, posterUrl } from "@/lib/api";
 import ItemsGrid from "@/components/atelier/ItemsGrid";
 import ItemCard from "@/components/atelier/ItemCard";
 
-const TABS = [["all", "Tout"], ["character", "Personnages"], ["place", "Lieux"], ["scene", "Scènes"], ["note", "Notes"], ["lore", "Lore"], ["document", "Documents"], ["timeline", "Chronologie"]];
+const TABS = [["all", "Tout"], ["character", "Personnages"], ["place", "Lieux"], ["scene", "Scènes"], ["note", "Notes"], ["lore", "Lore"], ["document", "Documents"], ["inspiration", "Inspirations"], ["timeline", "Chronologie"]];
 
 function Timeline({ items, at, open }) {
   const dated = items.filter((i) => i.date).sort((a, b) => a.date.localeCompare(b.date, "fr", { numeric: true }));
@@ -19,7 +19,7 @@ function Timeline({ items, at, open }) {
   );
 }
 
-export default function UniverseView({ at, open, universe: u, editUniverse }) {
+export default function UniverseView({ at, open, universe: u, editUniverse, importDocs }) {
   const nav = useNavigate();
   const [tab, setTab] = useState("all");
   const { data: creations = [] } = useQuery({ queryKey: ["creations", "all"], queryFn: () => listCreations() });
@@ -52,7 +52,7 @@ export default function UniverseView({ at, open, universe: u, editUniverse }) {
         {TABS.map(([k, l]) => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)} data-testid={`atelier-tab-${k}`}>{l}<small>{count(k)}</small></button>)}
       </nav>
       {tab === "timeline" ? <Timeline items={items} at={at} open={open} /> : (
-        <ItemsGrid at={at} open={open} items={shown} newDefaults={{ universe_id: u.id }} kinds={tab === "all" ? Object.keys(KINDS) : [tab]}
+        <ItemsGrid at={at} open={open} importDocs={importDocs} items={shown} newDefaults={{ universe_id: u.id }} kinds={tab === "all" ? Object.keys(KINDS) : [tab]}
           empty={tab === "all" ? "Cet univers attend sa première trace. Une fiche, une scène, une note…" : `Aucun élément « ${KINDS[tab]?.plural || ""} » pour l'instant.`} />
       )}
     </section>

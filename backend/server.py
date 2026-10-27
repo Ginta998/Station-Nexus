@@ -2631,8 +2631,9 @@ async def _migrate_announcements_to_journal():
     logger.info("Annonces migrées vers le journal")
 
 
-from atelier import build_atelier_router  # noqa: E402
-api_router.include_router(build_atelier_router(db, require_admin))
+from atelier import build_atelier_router, build_public_files_router  # noqa: E402
+api_router.include_router(build_atelier_router(db, require_admin, _storage_put, OBJ_APP_NAME))
+api_router.include_router(build_public_files_router(db, _storage_get))
 app.include_router(api_router)
 app.add_middleware(CORSMiddleware, allow_credentials=True,
                    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),

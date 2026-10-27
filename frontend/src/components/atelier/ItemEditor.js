@@ -5,6 +5,8 @@ import RichTextEditor from "@/components/RichTextEditor";
 import { uploadJournalImage } from "@/lib/api";
 import { KINDS, KIND_FIELDS, atelierApi, imgSrc } from "@/lib/atelier";
 import { TaskRow, TaskQuickAdd } from "@/components/atelier/TasksView";
+import MediaGallery from "@/components/atelier/MediaGallery";
+import { mediaFromUpload, mediaFromText } from "@/lib/atelier";
 
 const esc = (s) => (s || "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 function printItem(it, uname) {
@@ -83,9 +85,21 @@ export default function ItemEditor({ at, id, open, onClose }) {
     toast.success("Version restaurée (la précédente a été gardée)");
   };
   const statusLabel = { saved: "Enregistré", dirty: "Modifié…", saving: "Enregistrement…", error: "Erreur — non enregistré" }[status];
+  const onDrop = async (e) => {
+    const files = [...(e.dataTransfer?.files || [])];
+    const text = e.dataTransfer?.getData("text/uri-list") || "";
+    if (!files.length && !text) return;
+    if (e.target.closest?.(".rte-area") && !files.length) return;
+    e.preventDefault();
+    const added = [];
+    if (files.length) toast(`Envoi de ${files.length} fichier${files.length > 1 ? "s" : ""}…`);
+    for (const f of files) { try { added.push(mediaFromUpload(await atelierApi.upload(f))); } catch { toast.error(`${f.name} : envoi impossible`); } }
+    const l = !files.length && mediaFromText(text); if (l) added.push(l);
+    if (added.length) { change({ media: [...(latest.current.media || []), ...added] }); toast.success("Ajouté aux médias"); }
+  };
 
   return (
-    <div className="at-editor" data-testid="atelier-editor" style={{ "--u": at.universes.find((u) => u.id === it.universe_id)?.color || "var(--brand)" }}>
+    <div className="at-editor" data-testid="atelier-editor" onDragOver={(e) => e.preventDefault()} onDrop={onDrop} style={{ "--u": at.universes.find((u) => u.id === it.universe_id)?.color || "var(--brand)" }}>
       <div className="at-ed-bar">
         <button className="at-btn ghost" onClick={close} data-testid="atelier-editor-close"><IoArrowBack size={16} /> <span className="hide-sm">Retour</span></button>
         <select value={it.kind} onChange={(e) => change({ kind: e.target.value })} data-testid="atelier-editor-kind">{Object.entries(KINDS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select>
@@ -97,6 +111,7 @@ export default function ItemEditor({ at, id, open, onClose }) {
         <button className="at-icon" onClick={() => change({ pinned: !it.pinned })} title="Épingler" data-testid="atelier-editor-pin">{it.pinned ? <IoPin size={17} /> : <IoPinOutline size={17} />}</button>
         <button className="at-icon" onClick={() => setPanel(panel === "versions" ? null : "versions")} title="Versions" data-testid="atelier-editor-versions"><IoTimeOutline size={17} /></button>
         <button className="at-icon" onClick={() => printItem(it, uname)} title="Exporter en PDF" data-testid="atelier-editor-pdf"><IoPrintOutline size={17} /></button>
+        <button className="at-icon txt" onClick={async () => { await flush(); try { await atelierApi.downloadDocx(it.id, it.title); } catch { toast.error("Export Word impossible"); } }} title="Exporter en Word (.docx)" data-testid="atelier-editor-docx">W</button>
         <button className="at-icon danger" onClick={remove} title="Supprimer" data-testid="atelier-editor-delete"><IoTrashOutline size={17} /></button>
       </div>
 
@@ -135,6 +150,10 @@ export default function ItemEditor({ at, id, open, onClose }) {
                 {others.map((o) => <option key={o.id} value={o.id}>{KINDS[o.kind]?.label} · {o.title || "Sans titre"}</option>)}
               </select>
             )}
+          </div>
+          <div className="at-ed-sec">
+            <h3>Médias & références</h3>
+            <MediaGallery media={it.media || []} onChange={(media) => change({ media })} />
           </div>
           <div className="at-ed-sec">
             <h3>Tâches liées</h3>

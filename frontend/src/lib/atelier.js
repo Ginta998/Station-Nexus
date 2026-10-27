@@ -21,6 +21,27 @@ export const atelierApi = {
   updateTask: (id, b) => send("put", `/atelier/tasks/${id}`, b),
   deleteTask: (id) => send("delete", `/atelier/tasks/${id}`),
   exportAll: () => get("/atelier/export"),
+  upload: (file, onProgress) => { const fd = new FormData(); fd.append("file", file); return api.post("/atelier/files", fd, { onUploadProgress: (e) => onProgress?.(e.total ? e.loaded / e.total : 0) }).then((r) => r.data); },
+  importDoc: (file, { universe_id, kind }, onProgress) => {
+    const fd = new FormData(); fd.append("file", file); fd.append("universe_id", universe_id || ""); fd.append("kind", kind); fd.append("split", "1");
+    return api.post("/atelier/import", fd, { onUploadProgress: (e) => onProgress?.(e.total ? e.loaded / e.total : 0) }).then((r) => r.data.items);
+  },
+  downloadDocx: async (id, title) => {
+    const r = await api.get(`/atelier/items/${id}/docx`, { responseType: "blob" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(r.data); a.download = `${(title || "document").replace(/[^\w\- ]/g, "_")}.docx`; a.click();
+  },
+};
+
+export const isImportable = (f) => /\.(pdf|docx|txt|md)$/i.test(f.name);
+export const ytId = (u) => (u.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/) || [])[1];
+export const mediaFromUpload = (up) => {
+  const m = up.mime || ""; const type = m.startsWith("image/") ? "image" : m.startsWith("audio/") ? "audio" : m.startsWith("video/") ? "video" : m === "application/pdf" ? "pdf" : "file";
+  return { id: up.id, type, url: up.url, name: up.name, mime: m };
+};
+export const mediaFromText = (text) => {
+  const t = (text || "").trim(); if (!/^https?:\/\//i.test(t)) return null;
+  const y = ytId(t);
+  return y ? { id: "yt-" + y + Date.now(), type: "youtube", url: t, yt: y, name: "YouTube" } : { id: "ln-" + Date.now(), type: "link", url: t, name: t.replace(/^https?:\/\/(www\.)?/, "").split("/")[0] };
 };
 
 export const KINDS = {
@@ -31,6 +52,7 @@ export const KINDS = {
   lore: { label: "Lore", plural: "Lore", kanji: "伝" },
   event: { label: "Événement", plural: "Chronologie", kanji: "時" },
   document: { label: "Document", plural: "Documents", kanji: "書" },
+  inspiration: { label: "Inspiration", plural: "Inspirations", kanji: "想" },
 };
 
 export const KIND_FIELDS = {
@@ -40,7 +62,7 @@ export const KIND_FIELDS = {
   scene: [["pov", "Point de vue"], ["status", "Statut"]],
 };
 
-export const ITEM_FIELDS = ["kind", "title", "content", "universe_id", "fields", "tags", "links", "image", "date", "pinned"];
+export const ITEM_FIELDS = ["kind", "title", "content", "universe_id", "fields", "tags", "links", "image", "date", "pinned", "media"];
 export const pickItem = (it) => Object.fromEntries(ITEM_FIELDS.map((k) => [k, it[k]]));
 export const UNIVERSE_FIELDS = ["name", "kanji", "color", "cover", "description", "creation_ids", "order", "group", "pinned"];
 export const TASK_FIELDS = ["title", "universe_id", "item_id", "due", "priority", "done", "notes"];
@@ -73,12 +95,13 @@ export function useAtelier() {
       patch((d) => ({ ...d, universes: d.universes.filter((x) => x.id !== id), items: d.items.map((i) => (i.universe_id === id ? { ...i, universe_id: null } : i)), tasks: d.tasks.map((t) => (t.universe_id === id ? { ...t, universe_id: null } : t)) }));
     },
     async createItem(b) {
-      const doc = await atelierApi.createItem({ kind: "note", title: "", content: "", universe_id: null, fields: {}, tags: [], links: [], image: "", date: "", pinned: false, ...b });
+      const doc = await atelierApi.createItem({ kind: "note", title: "", content: "", universe_id: null, fields: {}, tags: [], links: [], image: "", date: "", pinned: false, media: [], ...b });
       patch((d) => ({ ...d, items: [doc, ...d.items] }));
       return doc;
     },
+    addItems(docs) { patch((d) => ({ ...d, items: [...docs, ...d.items] })); },
     async saveItem(it) {
-      const doc = await atelierApi.updateItem(it.id, pickItem(it));
+      const doc = await atelierApi.updateItem(it.id, pickItem({ media: [], ...it }));
       patch((d) => ({ ...d, items: [doc, ...d.items.filter((x) => x.id !== doc.id)] }));
       return doc;
     },

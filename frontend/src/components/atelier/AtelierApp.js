@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAtelier } from "@/lib/atelier";
@@ -12,6 +12,7 @@ import AtelierSettings from "@/components/atelier/AtelierSettings";
 import ItemEditor from "@/components/atelier/ItemEditor";
 import UniverseForm from "@/components/atelier/UniverseForm";
 import CommandPalette from "@/components/atelier/CommandPalette";
+import DropDialog from "@/components/atelier/DropDialog";
 
 const Dock = ({ icon, label, on, onClick, testid, color, kanji, badge }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label}>
@@ -34,12 +35,34 @@ export default function AtelierApp({ onLeave }) {
   const [editing, setEditing] = useState(null);
   const [uForm, setUForm] = useState(null);
   const [palette, setPalette] = useState(false);
+  const [drop, setDrop] = useState(null);
+  const [dragging, setDragging] = useState(false);
+  const pick = useRef(null);
+  const pickDefaults = useRef({});
   const go = (v) => { sfx("nav"); setView(v); setPalette(false); };
   const open = (id) => { sfx("select"); setPalette(false); setEditing(id); };
   const inbox = at.items.filter((i) => !i.universe_id);
   const pinned = at.universes.filter((u) => u.pinned);
   const cur = view.name === "universe" ? at.universes.find((u) => u.id === view.id) : null;
-  const ctx = { at, go, open, editUniverse: setUForm };
+  const importDocs = (defaults = {}) => { pickDefaults.current = defaults; pick.current?.click(); };
+  const ctx = { at, go, open, editUniverse: setUForm, importDocs };
+
+  useEffect(() => {
+    let depth = 0;
+    const has = (e) => [...(e.dataTransfer?.types || [])].some((t) => t === "Files" || t === "text/uri-list");
+    const enter = (e) => { if (editing || !has(e)) return; depth++; setDragging(true); };
+    const leave = () => { depth = Math.max(0, depth - 1); if (!depth) setDragging(false); };
+    const over = (e) => { if (!editing && has(e)) e.preventDefault(); };
+    const dropIt = (e) => {
+      if (editing) return;
+      e.preventDefault(); depth = 0; setDragging(false);
+      const files = [...(e.dataTransfer?.files || [])];
+      const text = e.dataTransfer?.getData("text/uri-list") || e.dataTransfer?.getData("text/plain") || "";
+      if (files.length || /^https?:/i.test(text)) setDrop({ files, text: files.length ? "" : text, defaults: view.name === "universe" ? { universe_id: view.id } : {} });
+    };
+    window.addEventListener("dragenter", enter); window.addEventListener("dragleave", leave); window.addEventListener("dragover", over); window.addEventListener("drop", dropIt);
+    return () => { window.removeEventListener("dragenter", enter); window.removeEventListener("dragleave", leave); window.removeEventListener("dragover", over); window.removeEventListener("drop", dropIt); };
+  }, [editing, view]);
 
   useEffect(() => { if (view.name === "universe" && !cur) setView({ name: "universes" }); }, [cur, view.name]);
   useEffect(() => {
@@ -95,6 +118,9 @@ export default function AtelierApp({ onLeave }) {
         </main>
       </div>
 
+      <input ref={pick} type="file" multiple hidden accept=".pdf,.docx,.txt,.md,image/*,audio/*,video/*" onChange={(e) => { const files = [...e.target.files]; e.target.value = ""; if (files.length) setDrop({ files, text: "", defaults: pickDefaults.current }); }} data-testid="atelier-import-input" />
+      {dragging && <div className="at-dropzone" data-testid="atelier-dropzone"><div><b>工</b><p>Dépose ici — tu choisiras où le ranger</p><small className="mono">PDF · WORD · IMAGES · MUSIQUES · VIDÉOS · LIENS</small></div></div>}
+      {drop && <DropDialog at={at} drop={drop} defaults={drop.defaults} open={open} onClose={() => setDrop(null)} />}
       {palette && <CommandPalette {...ctx} onClose={() => setPalette(false)} newUniverse={() => { setPalette(false); setUForm({}); }} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}

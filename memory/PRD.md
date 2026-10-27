@@ -807,3 +807,16 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Bloc « Musique » (import d'un fichier ou musique de la station) dans le journal et les chapitres ; lecture via toggleReadingUrl. /api/journal-files accepte l'audio (25 Mo).
 - Épisodes : seulement un résumé court (textarea), non converti.
 
+
+## 2026-10-26 — Session : éditeur complet, jukebox, TENGOKU, Atelier Nexus (Phase 1)
+- Rédaction chapitres/épisodes : PageWriter plein écran (mise en page du lecteur) + RichTextEditor complet (gras/italique/souligné/barré, tailles, couleurs, surligneur, alignements + justifier, listes, retraits, séparateur, liens, annuler/rétablir, images, repères musique). Collage Google Docs/Word conserve la mise en forme (déballage <b font-weight:normal>, couleurs noires supprimées). Épisodes : champs content/rich ajoutés (backend Episode) + lecture via ChapterReader(unitKey="episodes").
+- Accueil : rails suivent l'ordre des catégories (Paramètres, flèches = échange + renumérotation) ; section Vision (home_vision_title/text/image éditables admin, bouton vers /a-propos) ; carte d'embarquement -> AuthDialog mode "register" (openAuth("register")) ou profil.
+- Musique : modes boucle / jukebox à la suite / jukebox aléatoire (sx_playmode, défaut admin default_play_mode), piste suivante ; bouton son flottant (GlobalSound) sur toutes les pages sauf / et /atelier.
+- Menu Station en portail (z-index journal corrigé). Affiches détail : arrivée holographique. 3 splashs premium : hud, warp, eclipse.
+- Thème TENGOKU (sakura cyberpunk, scène 100% CSS animée, pétales, or/orange), thème Bunny retiré, pack son tengoku.
+- ATELIER NEXUS (/atelier, admin only, backend/atelier.py) : portail via menu « Portail · Atelier » ou code clavier (défaut 0874, modifiable) ; chargement réel façon voyage (données + modules + images), musique du voyage (importée dans Réglages) qui s'estompe à l'arrivée ; ambiance = lecteur/musiques et thèmes de la Station.
+  - Collections : atelier_config, atelier_universes (group=constellation, pinned), atelier_items (kinds note/scene/character/place/lore/event/document/inspiration, fields, links, media, date, tags), atelier_tasks, atelier_versions (snapshot ≤ 5 min, 40 max), atelier_trash, atelier_files.
+  - UI : pont HUD (barre haute + recherche Ctrl K, dock, épinglés), Archives des univers (recherche, tri, constellations, grille/liste), vue univers (onglets, chronologie, œuvres publiques liées), éditeur d'élément (autosave, versions, liens + rétroliens, médias, tâches liées, export PDF (impression) + Word .docx), Inbox, cockpit tâches, réglages (thème, code, musique, sauvegarde JSON).
+  - Import PDF/DOCX/TXT : POST /api/atelier/import (mammoth / pymupdf, découpage par titres, images Word en object storage, fichier source joint). Fichiers : POST /api/atelier/files, GET public /api/atelier-files/{uuid}. Glisser-déposer partout (DropDialog : importer / nouvel élément / ajouter à un existant).
+- Note env : le navigateur headless local plante sans `--single-process` (problème d'environnement, pas du code).
+- Prochain : Phase 2 Bunny IA dans l'Atelier ; Phase 3 cockpit carrière (objectifs, budget, agenda) + bureau numérique ; retrait LaunchGate (P1, reporté par l'utilisateur).
