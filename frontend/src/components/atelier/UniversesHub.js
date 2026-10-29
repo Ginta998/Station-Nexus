@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { pressMenu, itemDrop } from "@/components/atelier/ContextMenu";
 import { dropToUniverse } from "@/components/atelier/itemActions";
+import { addShortcut } from "@/components/atelier/Shortcuts";
 import { IoAdd, IoSearch, IoStar, IoStarOutline, IoListOutline, IoGridOutline, IoEnterOutline, IoSparklesOutline } from "react-icons/io5";
 import { imgSrc } from "@/lib/atelier";
 import ImportBase from "@/components/atelier/ImportBase";
@@ -53,6 +54,7 @@ export default function UniversesHub({ at, go, editUniverse }) {
     { id: "open", label: "Ouvrir", onClick: () => go({ name: "universe", id: u.id }) },
     { id: "pin", label: u.pinned ? "Retirer des épinglés" : "Épingler dans la barre", onClick: () => at.saveUniverse({ ...u, pinned: !u.pinned }) },
     { id: "edit", label: "Modifier", onClick: () => editUniverse(u) },
+    { id: "shortcut", label: "Ajouter aux raccourcis", onClick: () => addShortcut(at, { t: "universe", id: u.id }) },
     "-",
     { id: "delete", label: "Supprimer l'univers", danger: true, onClick: () => window.confirm(`Supprimer « ${u.name} » ? Ses éléments iront dans l'Inbox.`) && at.removeUniverse(u.id) },
   ] });

@@ -1,0 +1,119 @@
+/* ===================== 4 thèmes : Aincrad, Aincrad Nocturne, Frontière, Terra 4099 ===================== */
+[data-theme="aincrad"] {
+  --bg-primary:#eaf2fa; --bg-secondary:#f6f9fd; --brand:#f08a1c; --brand-2:#2f9be8;
+  --border-c:rgba(47,155,232,.28); --text-primary:#18293a; --text-secondary:#56708a; --on-media:#18293a; --on-media-2:rgba(24,41,58,.72);
+  --radius-base:10px; --border-width:1px; --shadow-1:0 10px 30px rgba(47,155,232,.18); --scrim:rgba(234,242,250,.55);
+  --font-display:"Outfit",sans-serif; --font-body:"Outfit",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:.08em;
+}
+[data-theme="aincradnight"] {
+  --bg-primary:#050a16; --bg-secondary:#0a1222; --brand:#39a8ff; --brand-2:#ff9a3c;
+  --border-c:rgba(57,168,255,.24); --text-primary:#e8f3ff; --text-secondary:#8aa4c4; --on-media:#ffffff; --on-media-2:rgba(255,255,255,.74);
+  --radius-base:10px; --border-width:1px; --shadow-1:0 0 26px rgba(57,168,255,.28); --scrim:rgba(5,10,22,.62);
+  --font-display:"Outfit",sans-serif; --font-body:"Outfit",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:.08em;
+}
+[data-theme="frontiere"] {
+  --bg-primary:#0d0806; --bg-secondary:#170e0a; --brand:#e8692a; --brand-2:#4fd6c6;
+  --border-c:rgba(232,140,80,.22); --text-primary:#fbeee2; --text-secondary:#c19e86; --on-media:#ffffff; --on-media-2:rgba(255,255,255,.74);
+  --radius-base:4px; --border-width:1px; --shadow-1:0 10px 34px rgba(232,105,42,.25); --scrim:rgba(13,8,6,.62);
+  --font-display:"Spectral",serif; --font-body:"Manrope",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:.06em;
+}
+[data-theme="terra"] {
+  --bg-primary:#0a0f0b; --bg-secondary:#111812; --brand:#9cc46c; --brand-2:#e0d3ac;
+  --border-c:rgba(160,196,120,.2); --text-primary:#ebe7d6; --text-secondary:#9ba58e; --on-media:#ffffff; --on-media-2:rgba(255,255,255,.72);
+  --radius-base:2px; --border-width:1px; --shadow-1:0 10px 30px rgba(0,0,0,.45); --scrim:rgba(10,15,11,.62);
+  --font-display:"Cormorant Garamond",serif; --font-body:"Work Sans",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:.12em;
+}
+html[data-theme="aincrad"] .s-aincrad,html[data-theme="aincradnight"] .s-aincrad,html[data-theme="frontiere"] .s-frontiere,html[data-theme="terra"] .s-terra{display:block}
+html[data-theme="aincrad"] .comets,html[data-theme="frontiere"] .comets,html[data-theme="terra"] .comets{display:none}
+html[data-theme="aincrad"] .cb-stars,html[data-theme="aincrad"] .cb-nebula,html[data-theme="frontiere"] .cb-stars,html[data-theme="terra"] .cb-stars{opacity:0}
+html[data-theme="aincrad"] .cb-halo{opacity:.12}
+html[data-theme="frontiere"] .cb-nebula,html[data-theme="terra"] .cb-nebula{opacity:.15}
+
+/* --- Aincrad : ciel, nuages, château flottant, anneaux de menu --- */
+.s-aincrad .sky{position:absolute;inset:0;background:linear-gradient(180deg,#8ec9f5 0%,#c3e3fb 42%,#eef6fd 70%,#f6f0e4 100%)}
+html[data-theme="aincradnight"] .s-aincrad .sky{background:radial-gradient(60% 45% at 72% 22%,rgba(57,168,255,.18),transparent 70%),linear-gradient(180deg,#02050d 0%,#071428 55%,#0c1c33 100%)}
+.s-aincrad .moon{display:none;position:absolute;top:12%;left:9%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 40% 38%,#fffaf0,#dce8f5 60%,#a9bfd8);box-shadow:0 0 80px 20px rgba(190,220,255,.25)}
+html[data-theme="aincradnight"] .s-aincrad .moon{display:block}
+.s-aincrad .cloud{position:absolute;height:90px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0));filter:blur(6px);animation:aiCloud linear infinite}
+html[data-theme="aincradnight"] .s-aincrad .cloud{background:radial-gradient(closest-side,rgba(90,130,190,.32),transparent);filter:blur(10px)}
+@keyframes aiCloud{from{transform:translateX(-30vw)}to{transform:translateX(130vw)}}
+.s-aincrad .castle{position:absolute;left:82%;top:14%;width:min(46vw,560px);aspect-ratio:1/1.05;transform:translateX(-50%);animation:aiFloat 9s ease-in-out infinite}
+@keyframes aiFloat{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-14px)}}
+.s-aincrad .castle i{position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;background:linear-gradient(180deg,#b8c6d6,#6e7f94 60%,#4a586a);box-shadow:inset 0 -6px 12px rgba(0,0,0,.25),0 2px 0 rgba(255,255,255,.4)}
+html[data-theme="aincradnight"] .s-aincrad .castle i{background:linear-gradient(180deg,#25344d,#121c2e 70%);box-shadow:inset 0 2px 0 rgba(120,190,255,.35),0 0 18px rgba(57,168,255,.15)}
+.s-aincrad .castle i::after{content:"";position:absolute;inset:30% 8% 30%;border-radius:50%;background:repeating-linear-gradient(90deg,transparent 0 9px,rgba(255,214,150,.0) 9px 11px)}
+html[data-theme="aincradnight"] .s-aincrad .castle i::after{background:repeating-linear-gradient(90deg,transparent 0 10px,rgba(255,190,110,.75) 10px 12px);animation:aiWin 4s ease-in-out infinite}
+@keyframes aiWin{0%,100%{opacity:.5}50%{opacity:1}}
+.s-aincrad .castle .spire{position:absolute;left:50%;top:-4%;width:4%;height:18%;transform:translateX(-50%);background:linear-gradient(180deg,#f2f6fb,#8fa1b6);clip-path:polygon(50% 0,100% 100%,0 100%)}
+html[data-theme="aincradnight"] .s-aincrad .castle .spire{background:linear-gradient(180deg,#ffb56b,#2a3a55);filter:drop-shadow(0 0 8px #ff9a3c)}
+.s-aincrad .castle .root{position:absolute;left:50%;bottom:-6%;width:30%;height:16%;transform:translateX(-50%);background:linear-gradient(180deg,#5d6d82,transparent);clip-path:polygon(0 0,100% 0,60% 100%,40% 100%)}
+.s-aincrad .rings{position:absolute;inset:0;pointer-events:none}
+.s-aincrad .rings b{position:absolute;border-radius:50%;border:1.5px solid rgba(255,255,255,.75);box-shadow:0 0 14px rgba(47,155,232,.35),inset 0 0 14px rgba(47,155,232,.25);animation:aiRing ease-in-out infinite}
+html[data-theme="aincradnight"] .s-aincrad .rings b{border-color:rgba(57,168,255,.6);box-shadow:0 0 16px rgba(57,168,255,.5)}
+.s-aincrad .rings b::before{content:"";position:absolute;inset:22%;border-radius:50%;border:1px dashed rgba(240,138,28,.6);animation:cbxSpin 18s linear infinite}
+@keyframes aiRing{0%,100%{transform:scale(.92);opacity:.35}50%{transform:scale(1.05);opacity:.85}}
+.s-aincrad .hud{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.55)),repeating-linear-gradient(90deg,rgba(47,155,232,.08) 0 1px,transparent 1px 60px)}
+html[data-theme="aincradnight"] .s-aincrad .hud{background:linear-gradient(180deg,transparent,rgba(5,10,22,.85)),repeating-linear-gradient(90deg,rgba(57,168,255,.08) 0 1px,transparent 1px 60px)}
+
+/* --- Frontière : crépuscule, crêtes, machine colossale au long cou, braises --- */
+.s-frontiere .sky{position:absolute;inset:0;background:radial-gradient(50% 40% at 30% 62%,rgba(255,170,80,.55),transparent 70%),linear-gradient(180deg,#1a0b10 0%,#5a1a16 34%,#c2471d 58%,#f39a3d 70%,#2a120c 100%)}
+.s-frontiere .sun{position:absolute;left:24%;top:52%;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#ffe3a6,#ffae4a 55%,rgba(255,120,40,0) 72%);filter:blur(1px);animation:frSun 14s ease-in-out infinite}
+@keyframes frSun{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.s-frontiere .ridge{position:absolute;left:-5%;right:-5%;bottom:0}
+.s-frontiere .r1{height:44%;background:linear-gradient(180deg,#6a2a1e,#3a1610);clip-path:polygon(0 60%,8% 38%,16% 50%,26% 22%,34% 44%,45% 30%,55% 52%,66% 18%,76% 40%,86% 28%,100% 48%,100% 100%,0 100%);opacity:.8}
+.s-frontiere .r2{height:32%;background:linear-gradient(180deg,#3a1610,#1c0b08);clip-path:polygon(0 50%,12% 30%,22% 46%,36% 26%,48% 50%,60% 34%,72% 52%,84% 30%,100% 44%,100% 100%,0 100%)}
+.s-frontiere .r3{height:18%;background:#0e0605;clip-path:polygon(0 40%,10% 55%,22% 35%,35% 60%,50% 40%,63% 58%,78% 36%,90% 52%,100% 40%,100% 100%,0 100%)}
+.s-frontiere .neck{position:absolute;right:20%;bottom:26%;width:14px;height:42%;background:linear-gradient(90deg,#1a0c08,#3b2118 50%,#1a0c08);box-shadow:0 0 0 1px rgba(0,0,0,.4);transform-origin:bottom center;animation:frSway 12s ease-in-out infinite}
+@keyframes frSway{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+.s-frontiere .neck::before{content:"";position:absolute;left:-46px;top:-26px;width:106px;height:30px;border-radius:50%;background:linear-gradient(180deg,#3b2118,#140906);box-shadow:0 0 22px rgba(79,214,198,.35)}
+.s-frontiere .neck::after{content:"";position:absolute;left:-58px;top:-36px;width:130px;height:50px;border-radius:50%;border:2px solid rgba(79,214,198,.85);box-shadow:0 0 18px rgba(79,214,198,.8),inset 0 0 12px rgba(79,214,198,.5);animation:frRing 6s linear infinite}
+@keyframes frRing{0%{transform:rotateX(70deg) rotateZ(0)}100%{transform:rotateX(70deg) rotateZ(360deg)}}
+.s-frontiere .legs{position:absolute;right:calc(20% - 40px);bottom:18%;width:94px;height:12%;background:linear-gradient(90deg,transparent 0 10%,#1a0c08 10% 22%,transparent 22% 78%,#1a0c08 78% 90%,transparent 90%)}
+.s-frontiere .embers{position:absolute;inset:0;overflow:hidden}
+.s-frontiere .embers i{position:absolute;bottom:-4vh;width:4px;height:4px;border-radius:50%;background:#ffb56a;box-shadow:0 0 8px 2px rgba(255,130,40,.8);animation:frEmber linear infinite}
+.s-frontiere .embers i.c{background:#8ff2e6;box-shadow:0 0 8px 2px rgba(79,214,198,.8)}
+@keyframes frEmber{0%{transform:translate(0,0);opacity:0}10%{opacity:1}100%{transform:translate(var(--drift),-105vh);opacity:0}}
+.s-frontiere .haze{position:absolute;left:0;right:0;bottom:12%;height:22%;background:linear-gradient(180deg,transparent,rgba(255,150,80,.18),transparent);animation:frHaze 16s ease-in-out infinite}
+@keyframes frHaze{0%,100%{transform:translateX(-4%)}50%{transform:translateX(4%)}}
+
+/* --- Terra 4099 : ruines envahies, robot mort, spores, rayons --- */
+.s-terra .sky{position:absolute;inset:0;background:radial-gradient(70% 50% at 60% 8%,rgba(230,226,190,.35),transparent 70%),linear-gradient(180deg,#9aa48e 0%,#5d6a58 32%,#2a352b 62%,#0b100c 100%)}
+.s-terra .rays{position:absolute;inset:-10% 0 0;background:repeating-linear-gradient(105deg,rgba(255,250,215,.10) 0 40px,transparent 40px 120px);mask-image:linear-gradient(180deg,#000,transparent 75%);-webkit-mask-image:linear-gradient(180deg,#000,transparent 75%);animation:trRays 18s ease-in-out infinite}
+@keyframes trRays{0%,100%{opacity:.5;transform:translateX(0)}50%{opacity:1;transform:translateX(30px)}}
+.s-terra .tower{position:absolute;bottom:14%;background:linear-gradient(180deg,#3a4436,#1c241d);box-shadow:inset -8px 0 0 rgba(0,0,0,.2)}
+.s-terra .tower::before{content:"";position:absolute;inset:8% 14%;background:repeating-linear-gradient(180deg,transparent 0 14px,rgba(10,15,11,.55) 14px 22px),repeating-linear-gradient(90deg,transparent 0 12px,rgba(10,15,11,.35) 12px 16px)}
+.s-terra .tower::after{content:"";position:absolute;left:-6%;right:-6%;top:0;height:70%;background:linear-gradient(180deg,rgba(62,92,44,.8),rgba(44,70,34,.45) 45%,transparent);opacity:.75;clip-path:polygon(0 0,100% 0,100% 30%,92% 55%,84% 40%,74% 80%,64% 50%,52% 95%,44% 45%,32% 70%,22% 40%,12% 85%,0 50%)}
+.s-terra .t1{left:6%;width:11%;height:52%;clip-path:polygon(0 8%,40% 0,62% 10%,100% 4%,100% 100%,0 100%)}
+.s-terra .t2{left:21%;width:8%;height:38%;clip-path:polygon(0 0,70% 12%,100% 0,100% 100%,0 100%);opacity:.8}
+.s-terra .t3{right:8%;width:13%;height:60%;clip-path:polygon(0 14%,30% 4%,58% 18%,100% 0,100% 100%,0 100%)}
+.s-terra .t4{right:25%;width:7%;height:32%;transform:rotate(-6deg);opacity:.75}
+.s-terra .ground{position:absolute;left:0;right:0;bottom:0;height:18%;background:radial-gradient(60% 120% at 50% 100%,#2f3f28,#141c14 70%);box-shadow:0 -10px 30px rgba(20,28,20,.6)}
+.s-terra .ground::before{content:"";position:absolute;left:0;right:0;top:-30px;height:40px;background:radial-gradient(40px 26px at 8% 100%,#2f4624 98%,transparent),radial-gradient(70px 34px at 22% 100%,#27401f 98%,transparent),radial-gradient(60px 30px at 47% 100%,#2f4624 98%,transparent),radial-gradient(90px 36px at 71% 100%,#27401f 98%,transparent),radial-gradient(50px 28px at 92% 100%,#2f4624 98%,transparent)}
+.s-terra .bot{position:absolute;left:3%;bottom:10%;width:150px;height:110px}
+.s-terra .bot .head{position:absolute;left:10px;top:0;width:110px;height:84px;border-radius:46% 46% 18% 18%;background:linear-gradient(160deg,#cfc8b0,#8c8774 55%,#4a4a3e);transform:rotate(-16deg);box-shadow:inset -10px -10px 0 rgba(0,0,0,.18)}
+.s-terra .bot .head::before{content:"";position:absolute;left:22px;top:30px;width:26px;height:26px;border-radius:50%;background:#14130f;box-shadow:42px 0 0 -4px #14130f}
+.s-terra .bot .eye{position:absolute;left:42px;top:38px;width:10px;height:10px;border-radius:50%;background:#ff4a3a;box-shadow:0 0 12px 4px rgba(255,74,58,.7);transform:rotate(-16deg);animation:trEye 9s steps(1) infinite}
+@keyframes trEye{0%,86%,92%,100%{opacity:0}88%,90%{opacity:1}}
+.s-terra .bot .vine{position:absolute;left:0;top:-10px;width:150px;height:120px;background:radial-gradient(circle at 20% 20%,#6f9a44 0 9px,transparent 10px),radial-gradient(circle at 70% 10%,#5c8a3a 0 12px,transparent 13px),radial-gradient(circle at 85% 60%,#4d7a31 0 10px,transparent 11px),radial-gradient(circle at 10% 80%,#5c8a3a 0 14px,transparent 15px);filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+.s-terra .bot .arm{position:absolute;left:118px;top:58px;width:70px;height:12px;background:linear-gradient(90deg,#7a7564,#3d3c33);transform:rotate(24deg);transform-origin:left center}
+.s-terra .spores{position:absolute;inset:0;overflow:hidden}
+.s-terra .spores i{position:absolute;top:-4vh;width:5px;height:5px;border-radius:50%;background:rgba(240,236,200,.85);box-shadow:0 0 6px rgba(240,236,200,.7);animation:trSpore linear infinite}
+.s-terra .spores i.l{width:10px;height:6px;border-radius:70% 0;background:#7fa64e;box-shadow:none}
+@keyframes trSpore{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--drift),55vh) rotate(160deg)}100%{transform:translate(calc(var(--drift) * -.5),110vh) rotate(340deg)}}
+.s-terra .mist{position:absolute;left:-10%;right:-10%;bottom:10%;height:30%;background:linear-gradient(180deg,transparent,rgba(200,210,180,.18),transparent);filter:blur(8px);animation:frHaze 20s ease-in-out infinite}
+.cosmic-bg[data-reduced] .s-aincrad *,.cosmic-bg[data-reduced] .s-frontiere *,.cosmic-bg[data-reduced] .s-terra *,html[data-motion="reduced"] .s-aincrad *,html[data-motion="reduced"] .s-frontiere *,html[data-motion="reduced"] .s-terra *{animation:none !important}
+
+/* Cartes et accents propres à chaque thème */
+html[data-theme="aincrad"]{--card-r:10px;--card-sh:0 0 0 1px rgba(47,155,232,.35),0 10px 24px -10px rgba(47,155,232,.45)}
+html[data-theme="aincradnight"]{--card-r:10px;--card-sh:0 0 0 1px rgba(57,168,255,.45),0 0 22px -6px rgba(57,168,255,.6)}
+html[data-theme="frontiere"]{--card-r:4px;--card-sh:0 0 0 1px rgba(232,105,42,.45),0 14px 30px -12px rgba(232,105,42,.55)}
+html[data-theme="terra"]{--card-r:2px;--card-sh:0 0 0 1px rgba(156,196,108,.35),0 14px 30px -14px rgba(0,0,0,.8)}
+[data-theme="aincrad"] .at-root{--warm:color-mix(in srgb,var(--brand) 70%,#a04f00);--glass:rgba(255,255,255,.72);--line:rgba(47,155,232,.3)}
+[data-theme="aincrad"] .at-sub{color:var(--text-secondary)}
+[data-theme="aincrad"] .at-root .at-dock-b{color:var(--text-primary);background:rgba(255,255,255,.6)}
+[data-theme="aincrad"] .at-root .at-dock-b .ic{color:var(--brand-2)}
+[data-theme="aincrad"] .at-root .at-dock-b.on .ic{color:#fff}
+[data-theme="aincrad"] .at-view h1,[data-theme="aincrad"] .at-hero-mid h1{text-shadow:none}
+[data-theme="aincrad"] .sx-playbtn{background:var(--brand);color:#fff}
+[data-theme="frontiere"] .at-root{--warm:#ffb06a}
+[data-theme="terra"] .at-root{--warm:#e0d3ac}

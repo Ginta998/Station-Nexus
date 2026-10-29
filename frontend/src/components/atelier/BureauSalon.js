@@ -5,6 +5,7 @@ import { DEFAULT_APPS, toEmbed, popOut } from "@/lib/embed";
 import { atelierApi } from "@/lib/atelier";
 import { EmbedFrame } from "@/components/atelier/AppScreens";
 import { pressMenu } from "@/components/atelier/ContextMenu";
+import { addShortcut, appShortcut } from "@/components/atelier/Shortcuts";
 
 // Mode d'ouverture choisi par app (intégré / fenêtre / onglet), mémorisé en local — tu choisis, et tu changes quand tu veux.
 const AMODE_KEY = "nexus-app-mode";
@@ -54,6 +55,7 @@ export function BureauView({ at, launch }) {
             { id: "tab", label: "Onglet ⤢" + (m === "tab" ? "  ✓" : ""), onClick: () => { setMode(a.key, "tab"); openWith(a, "tab"); } },
             "-",
             ...(a.custom ? [{ id: "edit", label: "Modifier (titre, lien…)", onClick: editApp }] : []),
+            { id: "shortcut", label: "Ajouter aux raccourcis", onClick: () => addShortcut(at, appShortcut(a)) },
             { id: "remove", label: "Retirer du bureau", danger: true, onClick: () => removeApp(a) },
           ] });
           return (

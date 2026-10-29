@@ -203,6 +203,10 @@ export default function CosmicBackground() {
       comets: Array.from({ length: 4 }, (_, i) => ({ top: rnd(2, 40), dur: rnd(7, 12), delay: -i * rnd(5, 9) - rnd(0, 4) })),
       petals: Array.from({ length: 22 }, (_, i) => ({ x: rnd(-5, 100), s: rnd(9, 17), dur: rnd(10, 19), delay: rnd(0, 18), drift: rnd(-22, 22), red: i % 3 === 0 })),
       tgWins: Array.from({ length: 26 }, () => ({ x: rnd(2, 98), y: rnd(36, 62), d: rnd(0, 6), t: rnd(2.5, 6) })),
+      clouds: Array.from({ length: 7 }, () => ({ y: rnd(4, 70), w: rnd(220, 520), dur: rnd(60, 120), delay: -rnd(0, 120) })),
+      rings: [[14, 30, 120, 7], [80, 62, 90, 9], [70, 18, 60, 6], [24, 72, 70, 8]],
+      embers: Array.from({ length: 26 }, (_, i) => ({ x: rnd(0, 100), dur: rnd(8, 16), delay: rnd(0, 14), drift: rnd(-12, 12) + "vw", c: i % 5 === 0 })),
+      spores: Array.from({ length: 26 }, (_, i) => ({ x: rnd(0, 100), dur: rnd(14, 26), delay: rnd(0, 20), drift: rnd(-14, 14) + "vw", l: i % 3 === 0 })),
     };
   }, []);
 
@@ -290,6 +294,26 @@ export default function CosmicBackground() {
             {["", " refl"].map((r) => <div key={r} className={"torii" + r}><span className="kasagi" /><span className="nuki" /><span className="gaku" /><span className="hashira l" /><span className="hashira r" /></div>)}
           </div>
           <div className="vig" />
+        </div>
+        <div className="sc s-aincrad">
+          <div className="sky" /><div className="moon" />
+          {F.clouds.map((c, i) => <span key={i} className="cloud" style={{ top: `${c.y}%`, width: c.w, animationDuration: `${c.dur}s`, animationDelay: `${c.delay}s` }} />)}
+          <div className="castle"><span className="spire" />{[[2, 16, 9], [12, 30, 10], [24, 46, 11], [38, 62, 12], [54, 78, 12], [70, 92, 11]].map(([t, w, h], i) => <i key={i} style={{ top: `${t}%`, width: `${w}%`, height: `${h}%` }} />)}<span className="root" /></div>
+          <div className="rings">{F.rings.map(([x, y, s, d], i) => <b key={i} style={{ left: `${x}%`, top: `${y}%`, width: s, height: s, animationDuration: `${d}s` }} />)}</div>
+          <div className="hud" />
+        </div>
+        <div className="sc s-frontiere">
+          <div className="sky" /><div className="sun" />
+          <div className="ridge r1" /><div className="haze" /><div className="ridge r2" />
+          <div className="legs" /><div className="neck" /><div className="ridge r3" />
+          <div className="embers">{F.embers.map((e, i) => <i key={i} className={e.c ? "c" : ""} style={{ left: `${e.x}%`, animationDuration: `${e.dur}s`, animationDelay: `${e.delay}s`, "--drift": e.drift }} />)}</div>
+        </div>
+        <div className="sc s-terra">
+          <div className="sky" /><div className="rays" />
+          <div className="tower t2" /><div className="tower t4" /><div className="tower t1" /><div className="tower t3" />
+          <div className="mist" /><div className="ground" />
+          <div className="bot"><div className="arm" /><div className="head" /><div className="eye" /><div className="vine" /></div>
+          <div className="spores">{F.spores.map((e, i) => <i key={i} className={e.l ? "l" : ""} style={{ left: `${e.x}%`, animationDuration: `${e.dur}s`, animationDelay: `${e.delay}s`, "--drift": e.drift }} />)}</div>
         </div>
         <div className="sc s-neptune"><div className="body" /><div className="cur" /></div>
         <div className="sc s-yorha"><div className="yg" /><div className="emblem"><span /><span /><span /></div><div className="sun" /><div className="hz" /></div>

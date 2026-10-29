@@ -133,7 +133,7 @@ class TestChatProposal:
         rep = res["reply"]
         print("via:", rep["via"], "proposals:", rep["proposals"], "\n", rep["content"][:500])
         assert "<souvenir>" not in rep["content"]
-        if not FEM.search(rep["content"]) is None:
+        if FEM.search(rep["content"]) is not None:
             print("WARN feminine words:", FEM.findall(rep["content"]))
         if rep["proposals"]:
             text = rep["proposals"][0]

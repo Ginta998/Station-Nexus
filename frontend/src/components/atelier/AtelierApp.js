@@ -20,6 +20,7 @@ import BunnyPanel from "@/components/atelier/BunnyPanel";
 import FileViewer from "@/components/atelier/FileViewer";
 import { ContextMenuHost, itemDrop } from "@/components/atelier/ContextMenu";
 import { dropToUniverse } from "@/components/atelier/itemActions";
+import { ShortcutBar, runShortcut } from "@/components/atelier/Shortcuts";
 import BunnyBrains from "@/components/atelier/BunnyBrains";
 import BunnySprite from "@/components/atelier/BunnySprite";
 import FocusView from "@/components/atelier/FocusView";
@@ -64,14 +65,13 @@ export default function AtelierApp({ onLeave }) {
   const [focusMode, setFocusMode] = useState(false);
   const [dockOpen, setDockOpen] = useState(() => { try { return localStorage.getItem("nexus-dock") !== "0"; } catch (_) { return true; } });
   const toggleDock = () => setDockOpen((o) => { const n = !o; try { localStorage.setItem("nexus-dock", n ? "1" : "0"); } catch (_) {} return n; });
-  const [dockSide, setDockSide] = useState(() => { try { return localStorage.getItem("nexus-dock-mobile") === "1"; } catch (_) { return false; } });
-  const toggleDockSide = () => setDockSide((o) => { const n = !o; try { localStorage.setItem("nexus-dock-mobile", n ? "1" : "0"); } catch (_) {} return n; });
+  const [menuOpen, setMenuOpen] = useState(false);
   const launch = (s) => { sfx("select"); setScreen(s); };
   const toMini = (s) => { setScreen(null); setMini(s); };
   const [dragging, setDragging] = useState(false);
   const pick = useRef(null);
   const pickDefaults = useRef({});
-  const go = (v) => { sfx("nav"); setView(v); setPalette(false); };
+  const go = (v) => { sfx("nav"); setView(v); setPalette(false); setMenuOpen(false); };
   const open = (id, kind) => { sfx("select"); setPalette(false); if ((kind || at.items.find((x) => x.id === id)?.kind) === "file") setViewing(id); else setEditing(id); };
   const inbox = at.items.filter((i) => !i.universe_id);
   const pinned = at.universes.filter((u) => u.pinned);
@@ -104,23 +104,24 @@ export default function AtelierApp({ onLeave }) {
   const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", oeuvre: "ŒUVRE" }[view.name] || (cur?.name || "").toUpperCase();
 
   return (
-    <div className={"at-app" + (dockSide ? " dock-side" : "")} data-testid="atelier-app">
+    <div className={"at-app" + (menuOpen ? " menu-open" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
       <header className="at-top">
         <div className="at-brand"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
         <button className="at-search" onClick={() => { sfx("nav"); setPalette(true); }} data-testid="atelier-search-open"><IoSearch size={15} /><span>Rechercher un univers, une fiche, une scène…</span><kbd className="mono">Ctrl K</kbd></button>
         <div className="at-top-r">
           <ShipClock />
-          <button className="at-icon at-dockmode" onClick={toggleDockSide} title={dockSide ? "Menu en bas" : "Menu latéral"} data-testid="atelier-dockmode"><IoReorderThreeOutline size={18} /></button>
           <SoundBtn btn={soundBtn} />
           <FsBtn />
           <button className="at-icon" onClick={() => go({ name: "settings" })} title="Réglages de l'Atelier" data-testid="atelier-settings-top"><IoSettingsOutline size={17} /></button>
           <button className="at-icon" onClick={() => { sfx("back"); onLeave(); }} title="Retour à la Station" data-testid="atelier-leave-top"><IoExitOutline size={17} /></button>
+          <button className="at-icon at-burger" onClick={() => { sfx("nav"); setMenuOpen((o) => !o); }} title="Menu" data-testid="atelier-menu-toggle"><IoReorderThreeOutline size={20} /></button>
         </div>
       </header>
 
       <div className="at-body">
-        <aside className={"at-dock" + (dockOpen ? "" : " collapsed")} data-testid="atelier-dock">
+        {menuOpen && <div className="at-drawer-scrim" onClick={() => setMenuOpen(false)} data-testid="atelier-menu-scrim" />}
+        <aside className={"at-dock" + (dockOpen ? "" : " collapsed")} data-testid="atelier-dock" onClick={(e) => e.target.closest(".at-dock-b") && setMenuOpen(false)}>
           <div className="at-dock-head">
             <button className="at-dock-toggle" onClick={toggleDock} title={dockOpen ? "Replier le menu" : "Déployer le menu"} aria-label="Replier ou déployer le menu" data-testid="atelier-dock-toggle">{dockOpen ? "‹‹" : "››"}</button>
           </div>
@@ -162,6 +163,7 @@ export default function AtelierApp({ onLeave }) {
         </main>
       </div>
 
+      <ShortcutBar at={at} onAdd={() => go({ name: "settings" })} run={(s) => runShortcut(s, { at, go, open, launch, action: (v) => (v === "search" ? setPalette(true) : v === "bunny" ? setBunny(true) : setFocusMode(true)) })} />
       <input ref={pick} type="file" multiple hidden onChange={(e) => { const files = [...e.target.files]; e.target.value = ""; if (files.length) setDrop({ files, text: "", defaults: pickDefaults.current }); }} data-testid="atelier-import-input" />
       {dragging && <div className="at-dropzone" data-testid="atelier-dropzone"><div><b>工</b><p>Dépose ici — tu choisiras où le ranger</p><small className="mono">PDF · WORD · EXCEL · IMAGES · MUSIQUES · VIDÉOS · LIENS · TOUT FICHIER</small></div></div>}
       {drop && <DropDialog at={at} drop={drop} defaults={drop.defaults} open={open} onClose={() => setDrop(null)} />}

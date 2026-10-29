@@ -6,6 +6,7 @@ import { atelierApi } from "@/lib/atelier";
 import { THEMES } from "@/lib/themes";
 import { useApp } from "@/context/AppContext";
 import { StartupSetting } from "@/components/Startup";
+import ShortcutsManager from "@/components/atelier/ShortcutsManager";
 
 export default function AtelierSettings({ at, openBrains }) {
   const { theme, setTheme, sfx } = useApp();
@@ -65,6 +66,11 @@ export default function AtelierSettings({ at, openBrains }) {
           {at.config.music_url && <button className="at-btn ghost" onClick={() => at.saveConfig({ music_url: "", music_title: "" })} aria-label="Retirer"><IoTrashOutline size={15} /></button>}
           <input ref={file} hidden type="file" accept="audio/*" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; uploadMusic(f); }} />
         </div>
+      </div>
+      <div className="at-panel" data-testid="atelier-settings-shortcuts">
+        <div className="at-panel-h"><h2>捷 Raccourcis du téléphone</h2></div>
+        <p className="at-sub">La barre du bas sur téléphone n'affiche que ces raccourcis (elle défile, se déploie ou se range en bas).</p>
+        <ShortcutsManager at={at} />
       </div>
       <div className="at-panel">
         <div className="at-panel-h"><h2>起 Démarrage</h2></div>

@@ -11,6 +11,7 @@ const MICRO = {
   glacier: "氷雪結晶冷凍寒", megapole: "都市煙霧電力夜", aurum: "金輝黄金純度",
   blackhole: "虚無暗闇重力無", albatre: "石灰白月静寂", bunny: "兎桃柔光夢",
   olympe: "聖神殿大理石光", olympia: "神山白銀光雲", neant: "無空虚零",
+  aincrad: "浮城剣界層空雲", aincradnight: "夜城剣月層星", frontiere: "辺境機獣火砂風", terra: "緑廃苔機骸森滅",
 };
 const READOUT = {
   abysse: ["PROFONDEUR <b>−3214 M</b>", "PRESSION 318 BAR", "ABYSSE"],
@@ -31,6 +32,10 @@ const READOUT = {
   olympe: ["ORACLE <b>ΔXII</b>", "MARBRE 100%", "ELYSIUM"],
   olympia: ["SOMMET <b>2917 M</b>", "LUMIÈRE 100%", "OLYMPE"],
   neant: ["<b>NÉANT</b>", "PRÉSENCE ?", "VIDE"],
+  aincrad: ["ÉTAGE <b>01 / 100</b>", "HP 100%", "LINK START"],
+  aincradnight: ["ÉTAGE <b>74 / 100</b>", "ZONE SÛRE", "AINCRAD"],
+  frontiere: ["MACHINE <b>DÉTECTÉE</b>", "VENT 34 KM/H", "FRONTIÈRE"],
+  terra: ["AN <b>4099</b>", "HUMAINS 0", "VERDURE 100%"],
 };
 
 function microFor(t) {

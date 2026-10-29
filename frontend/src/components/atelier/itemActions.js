@@ -2,6 +2,7 @@ import { IoOpenOutline, IoPin, IoTrashOutline, IoSwapHorizontal, IoPricetagOutli
 import { toast } from "sonner";
 import { KINDS } from "@/lib/atelier";
 import { exportItem } from "@/lib/exportPdf";
+import { addShortcut } from "@/components/atelier/Shortcuts";
 
 // Entrées du menu contextuel d'un élément (ouvrir, épingler, déplacer, catégorie, dupliquer, supprimer)
 export function itemMenu(it, at, open) {
@@ -18,6 +19,7 @@ export function itemMenu(it, at, open) {
       ] },
       { id: "kind", label: "Changer de catégorie", icon: <IoPricetagOutline size={14} />, sub: Object.entries(KINDS).map(([k, v]) => ({ id: `kind-${k}`, label: `${v.kanji}  ${v.label}`, on: it.kind === k, onClick: () => at.saveItem({ ...it, kind: k }).then(() => toast.success(`Rangé dans ${v.plural}`)) })) },
       { id: "dup", label: "Dupliquer", icon: <IoCopyOutline size={14} />, onClick: () => { const { id, created_at, updated_at, ...rest } = it; at.createItem({ ...rest, title: `${it.title || "Sans titre"} (copie)` }); } },
+      { id: "shortcut", label: "Ajouter aux raccourcis", icon: <IoPin size={14} />, onClick: () => addShortcut(at, { t: "item", id: it.id }) },
       { id: "pdf", label: "Exporter en PDF", icon: <IoPrintOutline size={14} />, onClick: () => exportItem(it, at.universes) },
       "-",
       { id: "delete", label: "Supprimer", danger: true, icon: <IoTrashOutline size={14} />, onClick: () => window.confirm(`Supprimer « ${it.title || "Sans titre"} » ?`) && at.removeItem(it.id).then(() => toast.success("Supprimé")) },

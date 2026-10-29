@@ -17,6 +17,10 @@ export const THEMES = [
   { key: "olympe", name: "Elysium", kanji: "雲", tagline: "Le marbre des dieux", swatch: ["#040405", "#dfe4ec", "#9aa3b1"] },
   { key: "olympia", name: "Olympe", kanji: "神", tagline: "La lumière des cimes", swatch: ["#eef0f3", "#7d8592", "#c6ccd5"] },
   { key: "yorha", name: "YoRHa", kanji: "機", tagline: "Le repos à l'humanité", swatch: ["#d9d2c0", "#1a1712", "#4a4436"] },
+  { key: "aincrad", name: "Aincrad", kanji: "浮城", tagline: "Link Start — le château flotte dans le ciel", swatch: ["#eaf2fa", "#f08a1c", "#2f9be8"] },
+  { key: "aincradnight", name: "Aincrad Nocturne", kanji: "夜城", tagline: "Les étages veillent sous la lune", swatch: ["#050a16", "#39a8ff", "#ff9a3c"] },
+  { key: "frontiere", name: "Frontière", kanji: "辺境", tagline: "Les machines rôdent au crépuscule", swatch: ["#0d0806", "#e8692a", "#4fd6c6"] },
+  { key: "terra", name: "Terra 4099", kanji: "緑廃", tagline: "La nature a repris le monde", swatch: ["#0a0f0b", "#9cc46c", "#e0d3ac"] },
 ];
 
 export const CATEGORIES = [

@@ -256,7 +256,7 @@ const PACKS = {
 };
 
 // thème -> pack (les thèmes sans pack dédié prennent Abysse)
-export const THEME_SOUND = { tengoku: "tengoku", monolithe: "monolithe", abysse: "abysse", olympe: "elysium", olympia: "elysium", neant: "neant", glacier: "glacier", neptune: "neptune", singularite: "singularite", blackhole: "blackhole", supernova: "supernova", helios: "helios", akira: "akira", aurum: "aurum", megapole: "megapole", biome: "biome", albatre: "albatre", yorha: "yorha" };
+export const THEME_SOUND = { tengoku: "tengoku", monolithe: "monolithe", abysse: "abysse", olympe: "elysium", olympia: "elysium", neant: "neant", glacier: "glacier", neptune: "neptune", singularite: "singularite", blackhole: "blackhole", supernova: "supernova", helios: "helios", akira: "akira", aurum: "aurum", megapole: "megapole", biome: "biome", albatre: "albatre", yorha: "yorha", aincrad: "elysium", aincradnight: "glacier", frontiere: "supernova", terra: "biome" };
 export const packForTheme = (theme) => THEME_SOUND[theme] || "abysse";
 export const SOUND_PACKS = Object.entries(PACKS).map(([key, v]) => ({ key, label: v.label, hint: v.hint }));
 export const isValidPack = (p) => p === "auto" || p === "silence" || !!PACKS[p];

@@ -68,6 +68,7 @@ class ConfigIn(BaseModel):
     music_url: Optional[str] = None
     music_title: Optional[str] = None
     hidden_apps: Optional[List[str]] = None
+    shortcuts: Optional[List[Dict[str, Any]]] = None
     playlists: Optional[List[dict]] = None
 
 

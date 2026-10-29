@@ -2810,3 +2810,44 @@ html[data-theme="abysse"] .cb-halo{opacity:.2}
 .at-imp-prog .bar span{display:block;height:100%;background:var(--warm);box-shadow:0 0 12px -2px var(--warm);transition:width .2s}
 .at-imp-prog small{display:block;margin-top:5px;opacity:.6}
 .at-imp-done p{margin:0 0 8px}
+
+
+/* ===== Téléphone : menu latéral à droite (comme la Station) + barre de raccourcis ===== */
+.at-burger,.at-scbar{display:none}
+@media(max-width:860px){
+  .at-app{flex-direction:column}
+  .at-burger{display:inline-flex}
+  .at-dock{position:fixed;top:62px;right:0;bottom:0;left:auto;width:min(300px,84vw);margin:0;flex-direction:column;flex-wrap:nowrap;overflow-y:auto;overflow-x:hidden;padding:14px 10px calc(18px + env(safe-area-inset-bottom));gap:4px;border-radius:18px 0 0 0;z-index:46;transform:translateX(105%);transition:transform .35s cubic-bezier(.2,.9,.3,1),box-shadow .35s;background:color-mix(in srgb,var(--bg-primary) 92%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-left:1px solid var(--line)}
+  .at-app.menu-open .at-dock{transform:none;box-shadow:-30px 0 60px rgba(0,0,0,.5)}
+  .at-dock-unis,.at-dock-foot{flex-direction:column;gap:4px}
+  .at-dock-foot{margin-top:auto;padding-top:10px;border-top:1px solid var(--line)}
+  .at-dock-sep{display:block}
+  .at-dock .at-dock-b{flex-direction:row;justify-content:flex-start;width:100%;min-width:0;min-height:0;height:auto;padding:7px 10px;gap:12px;border-radius:10px;flex-shrink:0}
+  .at-dock .at-dock-b .ic{width:32px;height:32px;flex-shrink:0}
+  .at-dock-b .tx{align-items:flex-start}
+  .at-dock-b .lb{max-width:none;font-size:14px}
+  .at-dock-b .sb{display:block}
+  .at-dock-b.on{box-shadow:inset 3px 0 0 var(--warm)}
+  .at-drawer-scrim{position:fixed;inset:62px 0 0 0;z-index:45;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);animation:atView .25s both}
+  .at-main{padding-bottom:110px}
+  .at-scbar{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:30;display:flex;align-items:center;gap:6px;padding:6px;border-radius:18px;background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.35);transition:max-height .3s}
+  .at-sc-toggle{flex-shrink:0;width:30px;height:46px;display:grid;place-items:center;border-radius:10px;color:var(--text-secondary)}
+  .at-sc-list{flex:1;min-width:0;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .at-sc-list::-webkit-scrollbar{display:none}
+  .at-sc{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:62px;padding:5px 6px;border-radius:12px;color:var(--text-primary);transition:background-color .2s}
+  .at-sc:active{background:color-mix(in srgb,var(--brand) 18%,transparent)}
+  .at-sc .kj{width:32px;height:32px;display:grid;place-items:center;font-family:var(--font-display);font-size:15px;border:1px solid color-mix(in srgb,var(--u,var(--brand)) 60%,transparent);border-radius:10px;color:var(--u,var(--brand));background:color-mix(in srgb,var(--u,var(--brand)) 10%,transparent)}
+  .at-sc .lb{font-size:10px;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .at-sc.add .kj{border-style:dashed;color:var(--text-secondary)}
+  .at-scbar.open{flex-direction:column;align-items:stretch;max-height:64vh}
+  .at-scbar.open .at-sc-toggle{width:100%;height:26px}
+  .at-scbar.open .at-sc-list{flex-wrap:wrap;overflow-x:hidden;overflow-y:auto}
+  .at-scbar.open .at-sc{width:calc(25% - 3px);min-width:0}
+  .at-scbar~.bn-fab,.at-app:has(.at-scbar) .bn-fab{bottom:96px}
+}
+.sc-mg-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.sc-mg-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line)}
+.sc-mg-row .kj{width:28px;height:28px;display:grid;place-items:center;font-family:var(--font-display);color:var(--warm);border:1px solid var(--line)}
+.sc-mg-row b{flex:1;min-width:0;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-mg-add select{flex:1;min-width:0;background:transparent;border:1px solid var(--line);color:var(--text-primary);padding:8px 10px;font-size:13px}
+.sc-mg-add select option,.sc-mg-add select optgroup{background:var(--bg-primary)}
