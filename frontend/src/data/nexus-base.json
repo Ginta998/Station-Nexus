@@ -1,0 +1,1639 @@
+{
+ "version": 1,
+ "universes": [
+  {
+   "tmp": "u1",
+   "name": "Les Fonctionnaires de la Mort",
+   "kanji": "死",
+   "color": "#7c5cff",
+   "description": "C'est le plus vaste des univers : une cosmologie partagée qui court sous plusieurs œuvres distinctes. Au centre, une figure, Azael, et une loi commune : la frontière entre les vivants et les morts, entre le monde physique et le monde astral.",
+   "elements": [
+    {
+     "tmp": "e2",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>La grande cosmologie de la Mort</p><p>L'univers — concept &amp; règles</p><p>C'est le plus vaste des univers : une cosmologie partagée qui court sous plusieurs œuvres distinctes. Au centre, une figure, Azael, et une loi commune : la frontière entre les vivants et les morts, entre le monde physique et le monde astral. Les pouvoirs y naissent de la douleur, les administrateurs de la mort portent des masques ou des titres, et une même question traverse tout : qui a le droit de décider du passage entre les mondes ?</p><p>Le fil rouge est Azael, Fonctionnaire de la Mort et porteur de niveau divin. C'est lui qui ressuscite Mika dans Service Après-Mort ; c'est lui qui dort, scellé, sous l'île de Skyren dans United Sanctum Forces ; c'est son ordre que prolongent les Régulateurs. D'une œuvre à l'autre, il change d'échelle mais reste le même centre de gravité.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e3",
+     "kind": "lore",
+     "title": "Règles communes de l'univers",
+     "content": "<ul><li>Deux mondes coexistent : le monde physique et le monde astral (le royaume des morts).</li><li>Le passage entre les mondes est régi par une hiérarchie : Ramasseurs → Régulateurs → Fonctionnaires de la Mort (invincibles, au sommet) ; au-delà, Shinigami et Purgateurs.</li><li>Les pouvoirs naissent de la douleur et consument leur porteur : rien n'est gratuit.</li><li>La Guerre des Dieux, vingt ans plus tôt, a laissé le monde brisé et obsédé par le contrôle du surnaturel.</li><li>L'extinction du Feu Astral (Born X Burn II) a bouleversé l'équilibre des mondes et donné naissance à l'ordre des Régulateurs.</li><li>Les œuvres de l'univers</li><li>Œuvre I — Born X Burn (Tomes I &amp; II). le roman d'origine, dans le Monde Astral.</li><li>Œuvre II — Service Après-Mort (S.A.M). la série courte verticale, au guichet de l'au-delà.</li><li>Œuvre III — United Sanctum Forces (USF). le shōnen post-apocalyptique, sur Skyren au-dessus d'Azael.</li><li>Œuvre IV — Les Fonctionnaires de la Mort / Les Régulateurs. la saga centrale du Bureau et des masques.</li><li>Œuvre V — Le Premier Régulateur. le préquel historique, 1957, du Congo pré-indépendance à Paris.</li><li>Univers ouvert. Cet univers peut encore accueillir d'autres œuvres (spin-off d'un Fonctionnaire, arc d'un Ramasseur, récit d'une entité), sans contradiction interne.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o4",
+     "title": "Born X Burn",
+     "format": "livre",
+     "status": "en cours",
+     "pitch": "Mort à dix-sept ans, il n'a qu'une étincelle et la volonté de revivre.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e5",
+       "kind": "character",
+       "title": "Léo",
+       "fields": {
+        "role": "protagoniste · Voie du Feu (Livre Rouge)"
+       },
+       "content": "<p><strong>protagoniste · Voie du Feu (Livre Rouge)</strong></p><p>humain mort et amnésique de dix-sept ans. D'abord lâche, fragile, terrifié par un monde qui le dépasse, il découvre qu'il est mort et que seule la victoire au Born X Burn peut le ramener à la vie. Son arc est celui d'une bravoure gagnée dans la brûlure : il apprend les Chaînes de Miséricorde et incarne la résilience, la renaissance et le pardon. C'est le feu qui se rallume.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e6",
+       "kind": "character",
+       "title": "Dash / Mira",
+       "fields": {
+        "role": "double protagoniste · Voie de la Lune (Livre Bleu)"
+       },
+       "content": "<p><strong>double protagoniste · Voie de la Lune (Livre Bleu)</strong></p><p>une seule âme divisée en deux personnes. Mira est née dans un monde dominé par les femmes et façonnée en arme par son père ; Dash est la persona qui sourit et encaisse quand Mira souffre, une dissociation née de la douleur. Le duo cherche à ramener une sœur perdue et porte la face lunaire, mélancolique et stratège, du diptyque.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e7",
+       "kind": "character",
+       "title": "Hypatie",
+       "fields": {
+        "role": "narratrice"
+       },
+       "content": "<p><strong>narratrice</strong></p><p>narratrice éternelle et omnisciente du Monde Astral. Elle voit tout, sauf le cœur des personnages : sa lucidité distante structure le récit et en dit la limite, car l'intériorité lui échappe toujours.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e8",
+       "kind": "character",
+       "title": "Alexander",
+       "fields": {
+        "role": "antagoniste majeur"
+       },
+       "content": "<p><strong>antagoniste majeur</strong></p><p>fils de l'ancienne déesse Neliel, qu'il a lui-même renversée. Idéaliste devenu tyran, il veut détruire les faux dieux pour atteindre les vrais. Il a créé Ludwig et des copies d'Anima : sa quête de justice cosmique le fait basculer dans la démesure.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e9",
+       "kind": "character",
+       "title": "Neliel",
+       "fields": {
+        "role": "ancienne déesse"
+       },
+       "content": "<p><strong>ancienne déesse</strong></p><p>déesse déchue, renversée par son propre fils Alexander. Ses partisans continuent la guerre en son nom, entretenant la fracture entre administrateurs et vrais dieux.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e10",
+       "kind": "character",
+       "title": "Nerodus",
+       "fields": {
+        "role": "Shinigami"
+       },
+       "content": "<p><strong>Shinigami</strong></p><p>Shinigami qui brise la loi par compassion. C'est lui qui offre une réincarnation à Dash et Léo, introduisant dans un univers de règles implacables la possibilité de la miséricorde.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e11",
+       "kind": "lore",
+       "title": "Le monde astral",
+       "content": "<p>Le monde astral — règles propres</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e12",
+       "kind": "lore",
+       "title": "Le Born X Burn",
+       "content": "<p>Le Born X Burn : tournoi sacré, douze champions, sept stations du Train Astral, un vœu à la clé.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e13",
+       "kind": "lore",
+       "title": "Les Anima",
+       "content": "<p>Les Anima : la forme profonde et vraie d'un être, qui ne ment jamais.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e14",
+       "kind": "lore",
+       "title": "Les Rejetons",
+       "content": "<p>Les Rejetons : enfants du déséquilibre astral, à la fois monstres et victimes.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e15",
+       "kind": "lore",
+       "title": "Faux dieux (administrateurs) contre vrais dieux,",
+       "content": "<p>Faux dieux (administrateurs) contre vrais dieux, presque jamais vus, au-dessus de tout.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e16",
+       "kind": "lore",
+       "title": "Les Chaînes de Miséricorde, et le prix payé par ",
+       "content": "<p>Les Chaînes de Miséricorde, et le prix payé par tout Shinigami qui brise la loi.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e17",
+       "kind": "note",
+       "title": "Thèmes & direction artistique",
+       "content": "<ul><li>Renaissance, identité, résilience, pardon. La dualité partout : feu et lune, rouge et bleu, sourire et douleur.</li><li>Palette  Feu et or (Livre Rouge) · astral et lune, bleu profond (Livre Bleu) · néant.</li><li>Ambiance  Drame psychologique, shōnen. Références : Dark Souls, Elden Ring.</li></ul>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e18",
+       "kind": "note",
+       "title": "Édition & crédits",
+       "content": "<p>Auteur : Brichel Louzala. Illustration : Camila Ramos (Vei). Relecture et textes d'introduction : Sarah Khalifa. Tome I paru (~350 pages, format 6×9), en auto-édition et visant un éditeur. Public : jeunes adultes, 16–30 ans.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e19",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<ul><li>Développer les sept stations et les douze champions, un par un.</li><li>Mener à terme le diptyque Rouge / Bleu de Born X Burn II et sa structure « fin au milieu ».</li><li>Assurer la transition narrative explicite vers la saga des Régulateurs.</li><li>Stratégie d'auto-édition (plateformes, librairies, conventions) visant un éditeur.</li></ul>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e20",
+       "kind": "lore",
+       "title": "Lien avec l'univers",
+       "content": "<p>Origine absolue : l'extinction du Feu Astral à la fin de Born X Burn II crée les Régulateurs, et donc tout le reste de l'univers des Fonctionnaires de la Mort.</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": [
+      "o21",
+      "o41",
+      "o46"
+     ]
+    },
+    {
+     "tmp": "o21",
+     "title": "Service Après-Mort",
+     "format": "court",
+     "status": "en cours",
+     "pitch": "Elle sert les morts, sans leur avouer qu'elle est encore vivante.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e22",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Mika n'est pas morte. Ressuscitée par Azael, Fonctionnaire de la Mort, elle doit sa seconde vie à un contrat de service, et travaille au guichet de l'au-delà. Grâce à la densification d'esprit du bâtiment, elle est rendue assez matérielle pour côtoyer les défunts, et ment sur sa propre condition pour tenir son poste. Sa réplique à Tony, à l'épisode 4, « je suis morte aussi », est un mensonge délibéré.</p><p>La cohérence du lore est porteuse de toute l'histoire : une vivante ne peut pas entrer dans les paradis des morts, et l'interdiction de Clarisse de dériver vers ces paradis est un tabou fondamental, pas une règle administrative. Au terme de la saison 1, « Le Terrain » (épisode 12), Mika ne peut donc pas suivre Kim ; Clarisse lui offre à la place une promotion de ramasseuse. La saison 2 la suivra sur le terrain, poursuivant Kim, avec l'ambition plus lointaine de devenir régulatrice.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e23",
+       "kind": "character",
+       "title": "Mika",
+       "fields": {
+        "role": "protagoniste"
+       },
+       "content": "<p><strong>protagoniste</strong></p><p>une vivante au service des morts, ressuscitée et densifiée juste assez pour côtoyer les défunts. Elle ment en permanence sur sa vraie nature pour tenir son poste, et aime Kim, qu'elle ne pourra jamais suivre dans les paradis. Son moteur est ce mensonge et ce deuil impossible ; son arc la mène du guichet au terrain, avec l'ambition de devenir régulatrice.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e24",
+       "kind": "character",
+       "title": "Azael",
+       "fields": {
+        "role": "Fonctionnaire de la Mort"
+       },
+       "content": "<p><strong>Fonctionnaire de la Mort</strong></p><p>la figure centrale de tout l'univers. C'est lui qui a ressuscité Mika en échange d'un service. Tutélaire, énigmatique et quasi tout-puissant, il incarne le pouvoir de décider du passage entre les mondes.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e25",
+       "kind": "character",
+       "title": "Clarisse",
+       "fields": {
+        "role": "supérieure hiérarchique"
+       },
+       "content": "<p><strong>supérieure hiérarchique</strong></p><p>gardienne du tabou des paradis. Sévère et inflexible sur la règle, c'est pourtant elle qui, à la fin de la saison 1, offre à Mika la promotion de ramasseuse : une figure d'autorité qui protège à sa manière.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e26",
+       "kind": "character",
+       "title": "Kim",
+       "fields": {
+        "role": "enjeu émotionnel"
+       },
+       "content": "<p><strong>enjeu émotionnel</strong></p><p>l'âme que Mika ne peut pas suivre au-delà de la frontière. Kim cristallise l'impossible du récit : le lien qui ne peut pas franchir la limite entre vivants et morts.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e27",
+       "kind": "character",
+       "title": "Tony",
+       "fields": {
+        "role": "défunt"
+       },
+       "content": "<p><strong>défunt</strong></p><p>l'un des morts du service, à qui Mika ment sur sa propre mort (« je suis morte aussi »). Il met à l'épreuve, par sa simple présence, le secret de l'héroïne.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e28",
+       "kind": "lore",
+       "title": "Règles du monde",
+       "content": "<ul><li>Hiérarchie du service : agents de guichet → ramasseurs → régulateurs → Fonctionnaires de la Mort.</li><li>La densification d'esprit du bâtiment rend le personnel assez matériel pour interagir avec les morts.</li><li>Dériver vers les paradis est un interdit absolu ; une vivante ne peut y entrer.</li><li>Un vivant peut être ressuscité par un Fonctionnaire en échange d'un service : c'est le statut rare et secret de Mika.</li></ul>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e29",
+       "kind": "scene",
+       "title": "Mise en scène",
+       "content": "<ul><li>Découpages techniques finalisés pour les épisodes 2 à 9 ; modèle par axes numérotés, reprises en lettres (2.A, 2.B).</li><li>Cadrage neutre : une personne par plan en champ / contre-champ, jamais de two-shot.</li><li>Cadrage duel : une personne par plan, de profil, caméra latérale.</li><li>Ton : surface burlesque, deuil au fond (structure tonale de K-drama).</li></ul>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e30",
+       "kind": "note",
+       "title": "Direction artistique",
+       "content": "<p>Palette  Vert service · ivoire et os · bleu administratif.</p><p>Ambiance  Bureaucratie de l'au-delà, verticale nerveuse, comédie qui recouvre un chagrin.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e31",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<ul><li>Saison 1 prête : découpages 2–9 faits, plan de tournage sur 5 jours, conflits de casting à verrouiller.</li><li>Saison 2 : Mika ramasseuse sur le terrain, poursuivant Kim, ambition régulatrice.</li><li>Capitaliser sur la sortie du 30 octobre pour viser Canal+ et Clermont-Ferrand.</li></ul>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e32",
+       "kind": "lore",
+       "title": "Lien avec l'univers",
+       "content": "<p>Azael, qui ressuscite Mika, est la même figure qui dort sous Skyren dans USF et dont l'ordre prolonge les Régulateurs. La hiérarchie du service est la colonne vertébrale partagée de l'univers.</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": [
+      "o4",
+      "o41",
+      "o46"
+     ]
+    },
+    {
+     "tmp": "o41",
+     "title": "Les Fonctionnaires de la Mort / Les Régulateurs",
+     "format": "autre",
+     "status": "en cours",
+     "pitch": "Derrière le visible, des masques veillent sur la frontière des morts.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e42",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Un monde bicéphale, à cheval entre le monde physique et le monde astral. Les Ramasseurs guident les âmes ; les Régulateurs traquent, contiennent et neutralisent les anomalies venues de l'astral, derrière des masques qui offrent un pouvoir au prix du corps. Au-dessus veillent les Shinigami et les Purgateurs. Les Régulateurs ignorent la vérité : ces entités viennent du monde des morts, un secret gardé par le Bureau, organe anonyme rongé par sa propre soif de contrôle. Chaque mission peut être la dernière ; beaucoup ne survivent pas à leur première année.</p><p>Personnages — les Régulateurs</p><p>Malik « Spectre » Diop  ·  éclaireur  —  franco-sénégalais, il traverse les murs et la matière. Le pouvoir se paie en douleurs aiguës et en saignements : plus il s'efface, plus son corps proteste. Figure de l'infiltration et du sacrifice discret.</p><p>Amélie « Oracle » Dupont  ·  voyante  —  ancienne ingénieure ; elle perçoit des fragments du futur proche, cryptiques et épuisants. Chaque vision la vide, et l'ambiguïté de ce qu'elle voit en fait autant une arme qu'un fardeau.</p><p>Olivier « Ironclad » Lefevre  ·  vétéran  —  force surhumaine qui fissure ses propres os à chaque usage. Rongé par la culpabilité d'un passé qu'il traîne, il est le mur de la brigade, celui qui encaisse pour les autres.</p><p>Mika « Shades » Lin  ·  détective  —  elle infiltre les esprits au risque d'y perdre le sien : chaque intrusion brouille un peu plus la frontière entre ses pensées et celles des autres.</p><p>Alex « Red » Fortier  ·  porteur de Spector  —  ancien combattant de MMA, il porte Spector, le seul masque qui parle, trouvé au milieu d'un carnage. Sa relation avec ce masque bavard et manipulateur est le cœur de son arc.</p><p>Haru « Phoenix » Sato  ·  régénératrice  —  elle renaît de ses blessures, mais chaque résurrection la rapproche de la perte de son humanité : à force de revenir, que reste-t-il de la personne ?</p><p>Ayana « Cross » Ramos  ·  tireuse d'élite  —  sa perception du temps ralenti en fait une sniper redoutable ; la contrepartie se paie sur ses nerfs et sa perception du réel.</p><p>Louis « Echo » Mercier  ·  hacker, le plus jeune  —  il projette des hologrammes, au prix d'une confusion grandissante entre le réel et le virtuel. Benjamin de la brigade, il incarne la génération née dans l'écran.</p><p>Le Bureau — hiérarchie</p><p>L'Architecte, figure fondatrice presque mythique, autorité absolue.</p><p>Le Bureau → Directeurs de Secteur → Chefs de Division → Capitaines → Agents.</p><p>Divisions : Combattants, Enquêteurs, Analystes, Scientifiques, Opérations Spéciales.</p><p>Novices recrutés parmi les prisonniers, les migrants et les jeunes des quartiers, avec un plafond de verre.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e43",
+       "kind": "lore",
+       "title": "Masques & entités",
+       "content": "<ul><li>Le masque choisit son porteur ; un porteur incompatible est rejeté, parfois mortellement. Chaque pouvoir a sa contrepartie ; à la mort du porteur, le masque devient instable.</li><li>Niveau 1 : Échos, Lueurs. Niveau 2 : Marcheurs, Simulacres.</li><li>Niveau 3 : Dévoreurs, Moires Astrales. Niveau 4 : entités conscientes.</li><li>Niveau 5 : Varja, cataclysmiques, confondues avec des catastrophes naturelles.</li></ul>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e44",
+       "kind": "note",
+       "title": "Direction artistique",
+       "content": "<p>Palette  Noir costume · néon urbain · rune rouge.</p><p>Ambiance  Psycho-Pass, Gantz, Jujutsu Kaisen, SCP et Backrooms ; terreur surnaturelle et thriller d'enquête.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e45",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<p>Format film ou mini-série (6 épisodes) ; arcs anthologiques : Affaires surnaturelles, L'Énigme du Masque Brisé, Les Ombres du Bureau.</p><p>Relier explicitement la saga à Born X Burn II, dont elle est l'aboutissement, et au préquel.</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": [
+      "o4",
+      "o21",
+      "o46"
+     ]
+    },
+    {
+     "tmp": "o46",
+     "title": "Le Premier Régulateur",
+     "format": "autre",
+     "status": "en cours",
+     "pitch": "Pour arrêter un mal né du colonialisme, un inspecteur devient le premier homme à porter un masque.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e47",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>1957, Congo pré-indépendance. L'inspecteur Basile M'Boko enquête sur des enfants « sorciers » retrouvés vidés de leurs organes, et remonte la piste d'une entité née du refoulé colonial, de la violence et du silence d'une époque. De Brazzaville à Paris, la traque le mène au contact direct de l'entité. En y survivant, il devient le premier humain à porter un masque ancestral : le premier Régulateur. En 2025, son héritier Yao reprend la traque, tandis que sa sœur Naya reste piégée dans l'entité.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e48",
+       "kind": "character",
+       "title": "Basile M'Boko",
+       "fields": {
+        "role": "protagoniste · 1957"
+       },
+       "content": "<p><strong>protagoniste · 1957</strong></p><p>inspecteur congolais humilié par l'ordre colonial, tenace et lucide. Son enquête sur les enfants vidés de leurs organes le confronte à un mal que la raison refuse. En survivant au contact de l'entité, il devient le premier réceptacle d'un masque : la pierre fondatrice de tout l'ordre des Régulateurs.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e49",
+       "kind": "character",
+       "title": "Yao",
+       "fields": {
+        "role": "héritier · 2025"
+       },
+       "content": "<p><strong>héritier · 2025</strong></p><p>enfant sauvé par Basile, devenu adulte, il reprend la traque des décennies plus tard. Il porte l'héritage du premier Régulateur et le poids d'une sœur qu'il n'a pas pu libérer.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e50",
+       "kind": "character",
+       "title": "Naya",
+       "fields": {
+        "role": "sœur de Yao"
+       },
+       "content": "<p><strong>sœur de Yao</strong></p><p>piégée dans l'entité, elle est à la fois victime et menace, le nœud intime qui relie le passé de 1957 au présent de 2025.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e51",
+       "kind": "note",
+       "title": "Ton & références",
+       "content": "<p>Fresque mémorielle et postcoloniale, entre True Detective, Devilman Crybaby et Les Misérables. Le surnaturel y est le langage d'une mémoire enfouie, coloniale et familiale.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e52",
+       "kind": "lore",
+       "title": "Lien avec l'univers",
+       "content": "<p>Pierre fondatrice historique de l'ordre des Régulateurs : Le Premier Régulateur donne son origine humaine à la saga centrale, et s'inscrit dans la lignée ouverte par Born X Burn II.</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": [
+      "o4",
+      "o21",
+      "o41"
+     ]
+    }
+   ]
+  },
+  {
+   "tmp": "u172",
+   "name": "United Sanctum Forces",
+   "kanji": "聖",
+   "color": "#4da6ff",
+   "description": "Un pouvoir qui est une blessure, et une blessure qui ne cicatrise jamais.",
+   "elements": [
+    {
+     "tmp": "e35",
+     "kind": "place",
+     "title": "Skyren & le commandement",
+     "content": "<p>La République libre de Skyren est une île pauvre et dense, ancien projet d'accueil devenu terre des rejetés. Son modèle, jugé dangereux, stabilise le pouvoir par la vie et le lien humain, sans gilets réglementaires à trois injecteurs ni centre de commandement : ses porteurs opèrent sans killswitch, sur la seule confiance. Le commandement y est un combat à part entière : le porteur frappe, le commandant décide qui frappe, quand et à quel prix, sur un échiquier où chaque pièce est vitale. Et sous l'île dort un secret : Azael.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e36",
+     "kind": "lore",
+     "title": "Les forces en présence",
+     "content": "<p>Ceux qui dirigent. cinq dirigeants (Europe, Amérique, Afrique, Asie, Océanie), l'ONU du surnaturel ; aucun n'a le droit de posséder un Sanctum.</p><p>L'ISS. International Sanctum Security, force d'intervention ultime, capable de neutraliser une brigade entière.</p><p>Ceux qui résistent. renégats, criminels opportunistes, nations extrémistes qui fabriquent des enfants-soldats Sanctum.</p><p>Les opprimés. les porteurs eux-mêmes, surveillés, enrôlés dès leur éveil, qui ont le pouvoir mais jamais la liberté.</p><p>Personnages — la brigade de Skyren</p><p>Aiden Cross  ·  22 ans · commandant · sans pouvoir  —  major de sa promotion, sans aucun Sanctum ni Minimi, et c'est cette absence qui le qualifie au commandement depuis la Guerre des Dieux. Lecteur d'hommes hors pair, il devine l'intention derrière un regard et joue l'échiquier des corps et des coûts. Mais il n'a que deux porteurs et demi : chaque ordre est une amputation possible. Sous la rigueur, un garçon qui craque ; dans son dos, l'ombre de son père, le général Cross. Étranger à Skyren, il doit apprendre à se faire obéir sans pouvoir, et à tenir une famille que la guerre a nouée puis déchirée.</p><p>Elior Vance  ·  président-maire de Skyren  —  ancien commandant du M11 avant la guerre, chaleureux et bonimenteur, il porte la philosophie humaniste de l'île chevillée au corps. Il a vu mourir la moitié de sa brigade et en a tiré une obstination douce : refuser de retirer leur humanité à ceux que le destin a déjà brisés. C'est lui qui a réclamé le dossier d'Aiden, et qui, quand le jeune commandant veut renoncer, ne lui demande pas d'être prêt, seulement de rester.</p><p>Selene Veyra  ·  vice-présidente de Skyren  —  cheveux blancs, long manteau rouge, gants noirs : la précision et le contrôle là où Elior est la chaleur. Elle parle peu, mais sa seule présence pèse. Ancienne du M11, elle y fut la sœur d'âme d'Ezra, qui l'avait formée au combat ; ce passé commun, elle ne l'évoque jamais, et il la place devant l'impossible le jour où les deux femmes se feront face.</p><p>Kael  ·  capitaine · Voie démoniaque  —  homme immense et solide qui se tient légèrement voûté, comme pour adoucir sa présence. Lorsqu'il ouvre sa Porte, une corne perce son front et une gueule d'ombre se dresse derrière lui. Il a un jour perdu le contrôle : sur un rayon d'un kilomètre, tout a disparu, vingt-cinq morts. Depuis, il ne touche presque plus à son Sanctum ; sa terreur n'est pas de mourir, mais de céder de nouveau.</p><p>Elizabeth Wolf  ·  Voie de la Bête  —  la trentaine, cheveux rouges, lunettes noires, au volant d'une muscle car qu'elle mène comme une tempête. Sauvage, directe, elle agit avant de réfléchir. Sa Voie matérialise une meute de loups spirituels qui la dévorent de l'intérieur : plus elle les déploie, plus elle doit manger pour ne pas être consumée, d'où un appétit énorme. Fille d'un membre du M11, elle a grandi avec Kael.</p><p>Ayanna Hawk  ·  23 ans · Enfante Maudite  —  née dans l'Empire Kongo, voleuse insaisissable qui cache son passé derrière ses rires. Enfant, par la fente d'une armoire et d'un seul œil, elle a vu Ezra carboniser sa famille ; la douleur a éveillé un Sanctum permanent, l'Infinite Eye, une vision quasi absolue. Elle s'est brûlé les yeux pour sauver la ville, et traque le M11 et ses commanditaires. Sous l'insolence, une survivante qui sait déjà presque tout.</p><p>Hiro  ·  17 ans · électricité (Kirameki)  —  né à Hollow City, orphelin, illettré. Sous sa forme déployée, une aura électrique l'entoure et ses coups transmettent des décharges. Recueilli par une amie dont la mort l'a jeté dans une quête de puissance sans fin, il veut devenir le plus fort du monde pour protéger, avec une seule règle : ne jamais tuer. Trop jeune pour doser, il se brûle à chaque excès.</p><p>Norah Ramos « Justice Phoenix »  ·  18 ans · Voie du Feu  —  serveuse maladroite au Burger World le jour, justicière la nuit. Elle a grandi à Hollow City, illettrée, dans un monde qui ne lui a montré aucune justice, et en a fait une mission. Sa variation du Feu, le Cœur Ardent, projette un air surchauffé qui la propulse, mais consume son propre cœur : candide et incapable de renoncer, elle incarne la frontière entre le courage, le don de soi et l'effacement.</p><p>DJ  ·  24 ans · Sanctum sonore  —  silencieux, un casque en permanence, il semble presque absent du groupe et n'intervient que dans les situations extrêmes. Sa voix et son cri portent un potentiel destructeur instable ; le casque sert autant à isoler les autres de ce qu'il pourrait déclencher. Il incarne la forme la plus brutale de l'instrumentalisation d'un porteur : l'arme d'urgence qu'on ressort quand tout a échoué.</p><p>Personnages — l'autre versant</p><p>Ezra  ·  antagoniste central · ex-M11 · Voie du Feu  —  vétérane de la Guerre des Dieux dont le corps entier porte la trace : cheveux ras, cicatrice en travers du visage, un bras en moins, un revolver à la main. Sa branche Brasero inocule, par ses balles, une lave corrosive qui ne s'éteint jamais ; sa branche El Diablo embrase son corps pour frapper. Elle ne cherche pas le chaos mais réparation pour le M11 broyé et oublié. Parmi les villages qu'elle a réduits en cendres se trouvait celui d'Ayanna, qu'elle ne reconnaît pas : elle se sert aujourd'hui des yeux de l'enfant dont elle a brûlé la famille.</p><p>Vera Nyx  ·  antagoniste · Enfante Maudite  —  26 ans, survivante dont le corps a été si détruit qu'elle ne l'habite plus naturellement. Sa branche Veil lui donne une présence, un corps acceptable emprunté au réel ; sa branche Gravewitch fait surgir des membres osseux. Calme, distante, presque spectrale, elle vit dans l'esquive permanente de son vrai corps, insoutenable à montrer : son déchirement, peut-on encore être aimé quand on ne peut plus se montrer, en fait une bascule possible vers la brigade.</p><p>Milo Cress, dit Pink  ·  antagoniste · Sanctum osseux  —  adolescent de dix-sept ans, chétif, presque trop léger pour être pris au sérieux, et c'est précisément ce qui le rend terrifiant. Sa branche Breakline lui permet, d'un simple contact, de provoquer une fracture interne quelle que soit sa force réelle. Son corps reste fragile, comme fait d'os de verre ; il compense par une cruauté nerveuse, préférant briser avant qu'on ait le temps de le plaindre.</p><p>Azael  ·  menace ultime · La Main de Dieu  —  le nom qui dort derrière tous les autres. Porteur le plus puissant depuis des siècles, c'est lui qui a initié la Guerre des Dieux ; son Sanctum est si écrasant qu'il a suffi, à lui seul, à faire basculer le monde. Il repose dans un sommeil-prison scellé sous Skyren. Moins un ennemi final qu'une idée enfouie et un jugement suspendu au-dessus du monde.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e37",
+     "kind": "lore",
+     "title": "La toile des liens",
+     "content": "<p>Tout remonte à une racine : le M11, la brigade d'assaut de Skyren pendant la Guerre des Dieux. Elior la commandait, Selene en était, Ezra aussi ; les parents d'Elizabeth et de Kael y servaient. De cette génération découlent les loyautés, les secrets et les vengeances d'aujourd'hui. Aiden, seul, n'a aucun fil dans ce nœud : un étranger parachuté commandant sur une île dont le passé lui échappe.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e40",
+     "kind": "lore",
+     "title": "Lien avec l'univers",
+     "content": "<p>Azael, scellé sous Skyren, est la même figure qui ressuscite Mika dans S.A.M. La Guerre des Dieux et la logique du passage entre les mondes relient USF au mythe des Fonctionnaires de la Mort et à l'origine posée par Born X Burn.</p>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o173",
+     "title": "Tome 1",
+     "format": "livre",
+     "status": "en cours",
+     "pitch": "Un pouvoir qui est une blessure, et une blessure qui ne cicatrise jamais.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e34",
+       "kind": "scene",
+       "title": "Architecture du pouvoir",
+       "content": "<p>Le contrecoup. un pouvoir n'est jamais gratuit ; l'utiliser, c'est toujours perdre quelque chose.</p><p>La Porte de l'Âme. structure intérieure née de la Triple Douleur, branche principale et embranchements débloqués un à un ; deux porteurs d'une même Voie ne développent jamais le même pouvoir.</p><p>L'économie de la douleur. la maîtrise se mesure à la capacité à déployer le moins possible ; la retenue est plus terrifiante que la force.</p><p>Les paliers. déploiement léger → déploiement complet → Éveil (puissance arrachée, contrecoup d'horreur).</p><p>Le Sanctum X. la maîtrise par la paix intérieure et l'acceptation de la blessure ; contrecoup paradoxalement plus faible. Presque personne n'y parvient.</p><p>La Résurrection. entrer dans sa Porte pour toujours : elle ne se paie pas en vitalité, mais en mort.</p><p>L'Enfant Maudit. porteur dont la Porte ne se referme jamais ; il paie sans répit, toute sa vie.</p><p>La Voie familiale. héritage traumatique transmis (la Bête, le Feu, le démoniaque) qui dicte d'abord le prix à payer.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e38",
+       "kind": "note",
+       "title": "Direction artistique",
+       "content": "<p>Palette  Rouge braise · soleil et palmiers (golden hour) · noir brûlé.</p><p>Ambiance  Anime cinématographique chaud, chemises à fleurs sur gilets tactiques, ruines, Otomo.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e39",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<ul><li>Déjà produit : chapitre 4 corrigé, document système des pouvoirs, Bible de l'univers (Tome I).</li><li>Écrire le Tome II ; développer l'arc Ezra et l'Armageddon ; installer le Burger World comme refuge.</li><li>Ouvrir la géopolitique : le Japon tout proche, l'ISS, les cinq dirigeants.</li><li>Montrer la ville et ses habitants avant la frappe, pour le poids émotionnel.</li></ul>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": []
+    }
+   ]
+  },
+  {
+   "tmp": "u53",
+   "name": "La Cité des Cieux",
+   "kanji": "天",
+   "color": "#3ff0ff",
+   "description": ". On y suit Jonah, enfant surdoué d'une cité, à travers les âges de sa vie.",
+   "elements": [
+    {
+     "tmp": "e54",
+     "kind": "place",
+     "title": "Une enfance en cité",
+     "content": "<p>L'univers — concept &amp; règles</p><p>Un univers ancré dans la banlieue, nourri par les origines de l'auteur, et porté par une lucidité enfantine qui regarde le monde des adultes avec l'esprit d'un Charlie Brown. On y suit Jonah, enfant surdoué d'une cité, à travers les âges de sa vie. Le réel social y est le décor et la matière ; le merveilleux n'existe pas, seulement l'acuité d'un regard d'enfant.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e55",
+     "kind": "lore",
+     "title": "Règles de l'univers",
+     "content": "<ul><li>Pas de surnaturel : une chronique sociale, à hauteur d'enfant puis d'adolescent.</li><li>Les enfants y sont plus lucides que les adultes ; fossé générationnel assumé.</li><li>La cité est un personnage : ses figures (gangs, rappeurs, profs, anciens) forment le tissu.</li><li>Le temps structure l'univers : chaque œuvre correspond à un âge de Jonah.</li><li>Les œuvres de l'univers</li><li>Œuvre I — La Cité des Cieux (récit écrit, saison 1). Jonah enfant, un été de bascule.</li><li>Œuvre II — La série live-action (saison 2). Jonah au collège, conseiller malgré lui de la cité.</li><li>Univers ouvert. L'univers peut accueillir d'autres œuvres : saisons suivantes, spin-off sur une figure de la cité, ou récit d'une autre génération.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o56",
+     "title": "La Cité des Cieux",
+     "format": "autre",
+     "status": "en cours",
+     "pitch": "Des enfants plus lucides que les adultes, cherchant le sens dans un monde qui n'en offre aucun.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e57",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Jonah, jeune garçon surdoué d'une cité, pose sur le monde un regard scénique et désintéressé. L'été rime pour lui avec ennui, solitude et chaleur écrasante. Mais cette année, tout bascule : un faux prophète qui annonce la fin du monde, des matchs de foot survoltés, une émeute, et des rencontres qui pourraient tout changer. Et si cet été lui révélait enfin ce que veut dire être heureux ? Raconté à la première personne, le récit est le préquel de la série.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e58",
+       "kind": "character",
+       "title": "Jonah (enfant)",
+       "fields": {
+        "role": "protagoniste & narrateur"
+       },
+       "content": "<p><strong>protagoniste &amp; narrateur</strong></p><p>garçon surdoué d'une cité, maître des arts martiaux, sans amis par choix. Il observe le monde avec un détachement scénique, plus mûr que les adultes qui l'entourent. Sa quête de l'été : comprendre ce que veut dire être heureux.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e59",
+       "kind": "character",
+       "title": "Le Sensei / le SDF sage",
+       "fields": {
+        "role": "mentor"
+       },
+       "content": "<p><strong>mentor</strong></p><p>figure de sagesse du ghetto, père de substitution qui a tout appris à Jonah. Derrière l'allure de clochard, un maître.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e60",
+       "kind": "character",
+       "title": "Lizzie",
+       "fields": {
+        "role": "camarade"
+       },
+       "content": "<p><strong>camarade</strong></p><p>pragmatique, débrouillarde, l'entrepreneuse du groupe ; une vision du monde opposée à celle de Petit Moineau.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e61",
+       "kind": "character",
+       "title": "Petit Moineau",
+       "fields": {
+        "role": "camarade"
+       },
+       "content": "<p><strong>camarade</strong></p><p>idéaliste et rêveur, le contrepoint lumineux de Lizzie.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e62",
+       "kind": "character",
+       "title": "L'oncle, Louis, Mia",
+       "fields": {
+        "role": "la famille"
+       },
+       "content": "<p><strong>la famille</strong></p><p>la famille bancale qui héberge Jonah ; l'oncle, surtout, garde le silence sur le passé de ses parents.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e63",
+       "kind": "note",
+       "title": "Thèmes, ton & DA",
+       "content": "<p>Lucidité enfantine, humour et sarcasme, réflexion philosophique, quête de sens et des origines. Palette : ocre d'été, soleil, béton. Ambiance : banlieue, chaleur, chronique tendre et lucide.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e64",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<p>Finaliser le récit écrit comme préquel, posant Jonah enfant et l'univers de la cité.</p><p>Préparer le passage de relais vers la saison 2 (la série live-action).</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": [
+      "o65"
+     ]
+    },
+    {
+     "tmp": "o65",
+     "title": "La Cité des Cieux",
+     "format": "serie",
+     "status": "en cours",
+     "pitch": "Devenu le conseiller malgré lui de toute une cité, un enfant surdoué enquête sur ses propres parents.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e66",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Quelques années après le récit, Jonah est au collège. Dans la série en prises de vues réelles, il devient malgré lui le conseiller et le psychologue de toute la cité : il aide des gangs à s'entendre, des rappeurs, des professeurs qui dépriment. Chaque épisode s'ouvre sur une voix off accompagnée d'images d'archives, grandes figures et rap. En toile de fond, il enquête seul sur ses parents disparus, dont son oncle refuse de parler.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e67",
+       "kind": "character",
+       "title": "Jonah (adolescent)",
+       "fields": {
+        "role": "protagoniste"
+       },
+       "content": "<p><strong>protagoniste</strong></p><p>au collège, devenu conseiller malgré lui de toute la cité. Toujours lucide et détaché, il met son intelligence au service des autres tout en menant en secret l'enquête sur la disparition de ses parents.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e68",
+       "kind": "character",
+       "title": "L'oncle",
+       "fields": {
+        "role": "tuteur"
+       },
+       "content": "<p><strong>tuteur</strong></p><p>celui qui héberge Jonah et refuse obstinément de parler du passé de ses parents ; le gardien du secret familial.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e69",
+       "kind": "character",
+       "title": "Les figures de la cité",
+       "fields": {
+        "role": "galerie"
+       },
+       "content": "<p><strong>galerie</strong></p><p>gangs, rappeurs, professeurs à bout : les « patients » que Jonah aide, un par épisode, et qui dressent le portrait choral du quartier.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e70",
+       "kind": "lore",
+       "title": "Forme sérielle & pistes",
+       "content": "<p>Forme sérielle &amp; pistes</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e71",
+       "kind": "lore",
+       "title": "Ouverture d'épisode",
+       "content": "<p>Ouverture d'épisode : voix off et images d'archives (grandes figures, rap).</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e72",
+       "kind": "lore",
+       "title": "Structure par cas",
+       "content": "<p>Structure par cas : chaque épisode, une personne de la cité à aider.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e73",
+       "kind": "lore",
+       "title": "Fil rouge saisonnier",
+       "content": "<p>Fil rouge saisonnier : l'enquête de Jonah sur la disparition de ses parents.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e74",
+       "kind": "lore",
+       "title": "À produire",
+       "content": "<p>À produire : bible et pilote de la série live-action, en continuité avec la saison 1.</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": [
+      "o56"
+     ]
+    }
+   ]
+  },
+  {
+   "tmp": "u75",
+   "name": "Katana Kid",
+   "kanji": "刀",
+   "color": "#ff2f5f",
+   "description": "Un futur proche où le meurtre a été ubérisé : une application, UBERKILL, met en relation commanditaires et tueurs, et transforme l'assassinat en service à la demande.",
+   "elements": [
+    {
+     "tmp": "e76",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>Tuer à l'ère de l'application</p><p>L'univers — concept &amp; règles</p><p>Un futur proche où le meurtre a été ubérisé : une application, UBERKILL, met en relation commanditaires et tueurs, et transforme l'assassinat en service à la demande. Le monde de Katana Kid est froid, interfacé, et pose une question philosophique précise : que devient l'humanité quand on découple le choix de sa conséquence ?</p><p>La colonne vertébrale est sartrienne : « l'existence précède l'essence ». Deux figures opposées, l'une déterministe, l'autre libre, vivent chacune l'inverse de ce qu'elle prêche. Réassumer en même temps le choix et sa conséquence, c'est redevenir humain — c'est le cœur de cette fable pinocchienne.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e77",
+     "kind": "lore",
+     "title": "Règles de l'univers",
+     "content": "<ul><li>Le meurtre est légal et ubérisé via l'application UBERKILL.</li><li>L'application découple le choix de la conséquence : mécanisme de la déshumanisation.</li><li>Esthétique de l'interface : notifications, contrats, froideur du système.</li><li>Dispositif sakuga : lieu confiné, deux personnages, objectif physique, pour un tournage à petit budget.</li></ul>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e78",
+     "kind": "note",
+     "title": "Direction artistique",
+     "content": "<ul><li>Palette  Magenta UBERKILL · vert acide · noir néon.</li><li>Ambiance  Interface froide, dilemme moral, sakuga nerveux.</li><li>Univers ouvert. Première œuvre : le court métrage. L'univers peut ensuite se décliner en série (plusieurs contrats, plusieurs tueurs) ou en long métrage.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o79",
+     "title": "Katana Kid",
+     "format": "court",
+     "status": "en cours",
+     "pitch": "Quand tuer devient une application, redevenir humain est le vrai défi.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e80",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Gaki, 17 ans, ne sait ni lire ni lire l'heure. Aria, au regard létal, est exploitée par sa famille. Lui incarne le déterminisme, elle le libre arbitre, et chacun vit pourtant l'inverse de ce qu'il prêche. Le public, en venant à souhaiter que Gaki tue, reproduit la structure morale du film ; son refus final est un double refus : du système, et du désir du spectateur.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e81",
+       "kind": "character",
+       "title": "Gaki",
+       "fields": {
+        "role": "protagoniste · le déterminisme"
+       },
+       "content": "<p><strong>protagoniste · le déterminisme</strong></p><p>tueur de dix-sept ans, illettré, incapable de lire l'heure. Conditionné par l'application et par sa vie, il semble n'être que ce que le système a fait de lui — jusqu'au refus qui le rend libre. Sa maîtrise du katana est impossible ; son humanité, elle, est à conquérir.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e82",
+       "kind": "character",
+       "title": "Aria",
+       "fields": {
+        "role": "deutéragoniste · le libre arbitre"
+       },
+       "content": "<p><strong>deutéragoniste · le libre arbitre</strong></p><p>au regard létal, exploitée par sa propre famille qui se sert de son pouvoir. Elle prêche la liberté mais vit la servitude : le miroir inversé de Gaki.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e83",
+       "kind": "character",
+       "title": "William",
+       "fields": {
+        "role": "figure-miroir"
+       },
+       "content": "<p><strong>figure-miroir</strong></p><p>double de Gaki, il reflète le chemin que le jeune tueur pourrait prendre, ou refuser.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e84",
+       "kind": "lore",
+       "title": "Colonne vertébrale & pistes",
+       "content": "<p>Colonne vertébrale &amp; pistes</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e85",
+       "kind": "lore",
+       "title": "Sartre, « l'existence précède l'essence » ; myth",
+       "content": "<p>Sartre, « l'existence précède l'essence » ; mythe de Pinocchio ; scène d'arcade / Tekken comme pivot.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e86",
+       "kind": "lore",
+       "title": "Déjà produit",
+       "content": "<p>Déjà produit : scénario complet, pitch deck, kit narratif, note d'intention, pitch jury de 4 minutes.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e87",
+       "kind": "lore",
+       "title": "Tourner en auto-production sur un an ; présenter",
+       "content": "<p>Tourner en auto-production sur un an ; présenter à Clermont-Ferrand, viser Canal+.</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": []
+    }
+   ]
+  },
+  {
+   "tmp": "u88",
+   "name": "Requiem District",
+   "kanji": "音",
+   "color": "#ffb340",
+   "description": "Une ville de transit des morts, faite de couleur et de son, où personne n'arrive en silence.",
+   "elements": [
+    {
+     "tmp": "e89",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>Apaiser les morts par la musique</p><p>L'univers — concept &amp; règles</p><p>Une ville de transit des morts, faite de couleur et de son, où personne n'arrive en silence. Les nouvelles âmes débarquent avec ce qu'elles tenaient en tombant — peur, colère, regret — et ces émotions, trop fortes, les transforment en Aberrations capables de ravager la cité.</p><p>Un district les accueille et les apaise par la musique. C'est un conte métaphysique où l'art n'est pas un ornement mais un soin : la voix et les instruments calment ce que les mots ne peuvent plus atteindre.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e90",
+     "kind": "lore",
+     "title": "Règles de l'univers",
+     "content": "<ul><li>Les émotions non apaisées transforment les morts en Aberrations, puis en déformations.</li><li>La musique, interprétée par les Veilleurs Harmoniques, calme les nouveaux arrivants.</li><li>Géographie : le Quartier des Cuivres, le Pont des Échos, le Pont des Derniers Souffles.</li><li>Perdre sa voix face à une Aberration, c'est perdre sa seule arme.</li></ul>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e91",
+     "kind": "note",
+     "title": "Direction artistique",
+     "content": "<ul><li>Palette  Bleu nuit · violet · or chaud · blanc lunaire.</li><li>Ambiance  Lanternes, opéra dans une gare. Références : Coco, Soul, Spirited Away.</li><li>Univers ouvert. Première œuvre : une BD / court format. L'univers peut devenir série animée ou long métrage musical.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o92",
+     "title": "Requiem District",
+     "format": "bd",
+     "status": "en cours",
+     "pitch": "Elle chante pour apaiser les morts, jusqu'au jour où le monstre a le visage de son père.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e93",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Alina, chanteuse des Veilleurs Harmoniques, a la voix qui calme les plus tourmentés. Quand un arrivant déchaîné lui fait perdre sa voix pour la première fois, elle reconnaît son propre père. Le monstre s'échappe par le Pont des Échos ; pour l'apaiser, elle devra chanter les yeux bandés, guidée par un souvenir d'enfance : son père, une guitare, et la chanson de sa mère.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e94",
+       "kind": "character",
+       "title": "Alina Vesper",
+       "fields": {
+        "role": "protagoniste"
+       },
+       "content": "<p><strong>protagoniste</strong></p><p>18 ans, la voix qui apaise les morts. Douée et dévouée, elle est pourtant incapable d'affronter son propre passé — jusqu'à ce que ce passé revienne sous la forme d'une Aberration au visage de son père.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e95",
+       "kind": "character",
+       "title": "Noé",
+       "fields": {
+        "role": "pianiste & soutien"
+       },
+       "content": "<p><strong>pianiste &amp; soutien</strong></p><p>celui qui tient le rythme et prend la relève quand Alina flanche. Son ancrage et sa fidélité sont le filet de sécurité de l'héroïne.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e96",
+       "kind": "character",
+       "title": "Victor Vesper",
+       "fields": {
+        "role": "antagoniste tragique"
+       },
+       "content": "<p><strong>antagoniste tragique</strong></p><p>le père d'Alina, 45 ans, devenu monstre. Il n'est pas un méchant mais une douleur non résolue : l'épreuve du pardon impossible.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e97",
+       "kind": "character",
+       "title": "Icare",
+       "fields": {
+        "role": "chef de salle"
+       },
+       "content": "<p><strong>chef de salle</strong></p><p>il orchestre les arrivées du district (« trois simples, une compliquée, une très compliquée ») et veille sur la troupe.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e98",
+       "kind": "character",
+       "title": "Miro & Sefa",
+       "fields": {
+        "role": "la troupe"
+       },
+       "content": "<p><strong>la troupe</strong></p><p>violoncelle et percussions des Veilleurs Harmoniques ; la musique est littéralement collective.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e99",
+       "kind": "note",
+       "title": "Thèmes & pistes",
+       "content": "<ul><li>Le pardon impossible, les relations parent-enfant brisées, l'art comme guérison.</li><li>Kit narratif complet déjà écrit ; développer les autres arrivées et la cartographie du District.</li><li>Pilote animé ou Reels possibles, la musique comme personnage central.</li></ul>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": []
+    }
+   ]
+  },
+  {
+   "tmp": "u100",
+   "name": "Soulfreed",
+   "kanji": "魂",
+   "color": "#ff7ad9",
+   "description": "Un monde afrofuturiste rongé par les vampires — non des morts, mais des possédés dont l'âme est écrasée par un parasite. On ne les tue pas : on les libère par la musique.",
+   "elements": [
+    {
+     "tmp": "e101",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>L'exorcisme par la musique</p><p>L'univers — concept &amp; règles</p><p>Un monde afrofuturiste rongé par les vampires — non des morts, mais des possédés dont l'âme est écrasée par un parasite. On ne les tue pas : on les libère par la musique. Le funk contre le silence, le blues contre l'oubli, le gospel contre l'abandon.</p><p>La musique y est arme, mémoire, rite et guérison. Vaincre un Grand Vampire libère en cascade tout son réseau de possédés ; les âmes libérées sont déposées à la Banque des Âmes.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e102",
+     "kind": "lore",
+     "title": "Règles de l'univers",
+     "content": "<ul><li>Les vampires sont des possédés ; les libérer, c'est jouer, pas tuer.</li><li>Les Armes Vivantes : YUBA la guitare, RIDER la platine, ORPHEUS le saxophone.</li><li>L'Ordre des Libérateurs : Initiés, Solistes, Conservateurs, le Grand Accordeur ; la Banque des Âmes.</li><li>Couvre-feu, lumière obligatoire la nuit, impôt spirituel versé à l'Ordre.</li><li>Antagonistes : les Disciples du Silencium, en quête du silence absolu.</li></ul>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e103",
+     "kind": "note",
+     "title": "Direction artistique",
+     "content": "<ul><li>Palette  Feu · pourpre · or poussière.</li><li>Ambiance  Soul psychédélique, rétro-futur. Cowboy Bebop, Afro Samurai, Devilman Crybaby.</li><li>Univers ouvert. Première œuvre : série animée / roman graphique. L'univers peut se décliner en album musical, concert narratif ou jeu.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o104",
+     "title": "Soulfreed",
+     "format": "autre",
+     "status": "en cours",
+     "pitch": "Il ne tue pas les vampires. Il joue pour libérer les âmes qu'ils retiennent.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e105",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Solon, 15 ans et aveugle, se repère par le son, un casque relié en jack à YUBA, sa guitare vivante qui n'est autre que sa grand-mère. Ensemble, ils improvisent des exorcismes. Après chaque combat, Solon écarte les cordes de YUBA : la rosace devient un portail qui aspire et protège l'âme libérée. Sa quête : retrouver et libérer l'âme de sa mère, enfermée par un Grand Vampire.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e106",
+       "kind": "character",
+       "title": "Solon",
+       "fields": {
+        "role": "protagoniste"
+       },
+       "content": "<p><strong>protagoniste</strong></p><p>15 ans, aveugle, il entend l'invisible et se repère par le son. Sensible et déterminé, il cherche la voix de sa mère à travers la musique. Son handicap est sa force : il perçoit ce que les voyants ne voient pas.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e107",
+       "kind": "character",
+       "title": "YUBA",
+       "fields": {
+        "role": "arme vivante & guide"
+       },
+       "content": "<p><strong>arme vivante &amp; guide</strong></p><p>guitare vivante et bavarde qui n'est autre que la grand-mère de Solon. Seule Arme Vivante qui parle, elle est à la fois arme, bouclier, mémoire et conscience : le lien de Solon avec sa lignée.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e108",
+       "kind": "character",
+       "title": "La DJ chasseuse",
+       "fields": {
+        "role": "alliée"
+       },
+       "content": "<p><strong>alliée</strong></p><p>sur rollers, platines au poing, elle convoque des spectres à partir de samples d'archives : la mémoire sonore faite arme.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e109",
+       "kind": "character",
+       "title": "Le Saxophoniste (Orpheus)",
+       "fields": {
+        "role": "allié"
+       },
+       "content": "<p><strong>allié</strong></p><p>il libère les âmes en soufflant, jouant la nuit dans les lieux abandonnés ; une figure orphique, solitaire et mélancolique.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e110",
+       "kind": "character",
+       "title": "Les Disciples du Silencium",
+       "fields": {
+        "role": "antagonistes"
+       },
+       "content": "<p><strong>antagonistes</strong></p><p>anciens génies musicaux devenus Grands Vampires, en quête du silence absolu : Brother Cain (manipule le temps par le rythme), Adélys la Virtuose (la voix-lame), la Reine Mute (la diva du néant).</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e111",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<p>Un morceau = un épisode, une âme à libérer ; Reels musicaux comme teasers.</p><p>Décliner les Grands Vampires et leurs morceaux-exorcismes signatures.</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": []
+    }
+   ]
+  },
+  {
+   "tmp": "u112",
+   "name": "Proof of the Wild",
+   "kanji": "獣",
+   "color": "#00e5a0",
+   "description": "Un monde rétrofuturiste, inspiré du Japon des années 80, où une secte tient son pouvoir d'un pacte démoniaque. Au centre, une mécanique : la boucle.",
+   "elements": [
+    {
+     "tmp": "e113",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>La vengeance en boucle</p><p>L'univers — concept &amp; règles</p><p>Un monde rétrofuturiste, inspiré du Japon des années 80, où une secte tient son pouvoir d'un pacte démoniaque. Au centre, une mécanique : la boucle. Mourir, c'est revenir au point de départ, plus fort, mais en oubliant un peu plus qui l'on est — et le monde entier oublie celle qui recommence.</p><p>C'est un univers rogue-lite fait pour le format vertical et sériel : chaque antagoniste est un boss, chaque échec une leçon payée en fragments d'âme.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e114",
+     "kind": "lore",
+     "title": "Règles de l'univers",
+     "content": "<ul><li>La boucle : mort → renaissance au départ, plus fort, mémoire conservée, identité érodée.</li><li>Chaque général est un boss : enquête, préparation, combat, parfois un no hit obligatoire.</li><li>Le Pacte des Cinq : immortalité contre un sacrifice familial tous les cinquante ans.</li><li>Mochi absorbe les âmes vaincues, renforce la porteuse et révèle les souvenirs.</li></ul>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e115",
+     "kind": "note",
+     "title": "Direction artistique",
+     "content": "<ul><li>Palette  Rouge sang · néon ambre · ombre 35 mm.</li><li>Ambiance  Rétrofuturisme 80s Japan, Otomo, soul jazz (Yuji Ohno). Sekiro, Hades, Chainsaw Man.</li><li>Univers ouvert. Première œuvre : série / BD verticale. L'univers peut devenir jeu vidéo (sa mécanique s'y prête) ou long métrage.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o116",
+     "title": "Proof of the Wild",
+     "format": "autre",
+     "status": "en cours",
+     "pitch": "Chaque mort la ramène au départ, et lui coûte un fragment de son âme.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e117",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Brûlée au milieu du massacre de sa famille, Aki pactise avec Mochi, un démon niché dans la peluche de son petit frère. Pour briser la boucle, elle doit tuer les cinq généraux de la secte en une seule tentative. Peu à peu se dessine le Pacte des Cinq ; la vérité finale : le cinquième général est son propre père, Kenji. Épuisée, Aki refuse l'immortalité, choisit la mort et la paix, et s'éteint dans un champ de fleurs ; Mochi, lui, renaît dans une vie nouvelle.</p><p>Personnages — le duo</p><p>Aki Hayakawa  ·  protagoniste  —  20 ans, brûlée et bandée, formée au kendo, seule survivante du massacre des siens. Sa vengeance est son moteur ; sa malédiction, d'oublier un peu plus qui elle est à chaque retour. Son arc va de la rage pure au choix final de la paix, contre l'immortalité.</p><p>Mochi  ·  démon &amp; arme  —  démon niché dans la peluche rafistolée du frère cadet ; il se change en katana de sang et de feu, offre le Reboot et absorbe les âmes vaincues. Fils caché du Dr Evelyn Ross, il est l'allié ambigu dont les intérêts ne sont pas toujours ceux d'Aki.</p><p>Irina  ·  gardienne de mémoire  —  cyborg à mémoire quantique, elle se souvient des boucles que tous oublient, et s'humanise peu à peu au contact d'Aki : la seule témoin de ce qui se répète.</p><p>Personnages — les cinq généraux</p><p>Père Laurent  ·  général  —  cardinal fanatique, il commande ses fidèles et se bat à la sulfateuse : la foi dévoyée en arme.</p><p>Dr Evelyn Ross  ·  général · mère de Mochi  —  biochimiste maîtresse des illusions d'ombre ; son lien avec Mochi tord la boucle de l'intérieur.</p><p>Marcus Reinhardt  ·  général  —  homme politique qui projette des ondes de force : le pouvoir institutionnel fait puissance brute.</p><p>Dario « The Wolf » Genovese  ·  général  —  chef de gang qui absorbe la force vitale de ses victimes.</p><p>Kenji Hayakawa  ·  général final · le père  —  maître de kendo capable de ralentir le temps ; le père d'Aki, et le cœur du Pacte des Cinq.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e118",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<ul><li>Script d'ouverture et scènes écrits ; prompts visuels rétro 80s définis.</li><li>Format vertical 9:16 pour Instagram ; structure en épisodes / boss.</li><li>Décliner les quatre premiers généraux avant le duel final avec le père.</li><li>« Au cœur des flammes, certains brûlent. D'autres renaissent. »</li></ul>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": []
+    }
+   ]
+  },
+  {
+   "tmp": "u119",
+   "name": "Kings of Artists",
+   "kanji": "王",
+   "color": "#f5d98a",
+   "description": "En 2035, après que l'art a failli disparaître sous les fausses émotions, un système radical régit la création : sans Licence d'Artiste, il est interdit de diffuser, de projeter ou de vivre de son art. L'Académie des Rois en est le sommet impitoyable.",
+   "elements": [
+    {
+     "tmp": "e120",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>L'art comme combat</p><p>L'univers — concept &amp; règles</p><p>En 2035, après que l'art a failli disparaître sous les fausses émotions, un système radical régit la création : sans Licence d'Artiste, il est interdit de diffuser, de projeter ou de vivre de son art. L'Académie des Rois en est le sommet impitoyable.</p><p>L'univers filme l'art comme un sport de combat : duels filmés comme des matchs, entraînements comme des préparations d'athlètes. La question centrale : qui décide de la valeur d'une œuvre ?</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e121",
+     "kind": "lore",
+     "title": "Règles de l'univers",
+     "content": "<ul><li>La Licence d'Artiste, obligatoire pour diffuser ou vivre de son art.</li><li>L'Académie des Rois sélectionne qui mérite encore le public.</li><li>La Mort Subite : une seule chance ; réussir, ou renoncer à l'art pour toujours.</li><li>Narration externe au présent, mise en scène sensorielle.</li></ul>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e122",
+     "kind": "note",
+     "title": "Direction artistique",
+     "content": "<ul><li>Palette  Rouge Dojo · bleu moodboard · beige.</li><li>Ambiance  Dark et intense, shōnen narratif.</li><li>Univers ouvert. Première œuvre : la série (saison 1). L'univers peut s'étendre sur plusieurs saisons et personnages d'artistes.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o123",
+     "title": "Kings of Artists",
+     "format": "serie",
+     "status": "en cours",
+     "pitch": "Dans un monde où créer exige une licence, elle joue toute sa vie d'artiste sur un seul pari.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e124",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Robin, 17 ans, travaille dans un cinéma et filme en secret. Quand elle découvre la Mort Subite, une voie d'accès express à l'Académie qui condamne tout espoir futur en cas d'échec, elle a vingt-quatre heures pour créer une œuvre. Mineure, il lui faut la signature de son père Saul, ancien artiste déchu qui vit sous un pont. Sa dernière arme : son film, dont la musique, un air chanté par sa mère, ouvre un champ de cerisiers qui désarme Saul. Il signe. La Mort Subite commence.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e125",
+       "kind": "character",
+       "title": "Robin",
+       "fields": {
+        "role": "protagoniste"
+       },
+       "content": "<p><strong>protagoniste</strong></p><p>17 ans, créatrice sans réseau ni ressources, employée d'un cinéma, au talent brut et instinctif mais invisible aux yeux du monde. Elle risque tout, en vingt-quatre heures, sur la Mort Subite : son arc est celui de la créatrice qui refuse l'invisibilité.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e126",
+       "kind": "character",
+       "title": "Saul",
+       "fields": {
+        "role": "père & antagoniste intime"
+       },
+       "content": "<p><strong>père &amp; antagoniste intime</strong></p><p>ancien artiste reconnu devenu déchu, il vit sous un pont avec son chat. Brisé par le système qui a fait sa gloire puis sa chute, il est l'envers du rêve de sa fille ; sa signature, et son pardon, sont l'enjeu du pilote.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e127",
+       "kind": "lore",
+       "title": "Intention & pistes",
+       "content": "<p>Intention &amp; pistes</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e128",
+       "kind": "lore",
+       "title": "Montrer que « créer a un prix », et questionner ",
+       "content": "<p>Montrer que « créer a un prix », et questionner qui décide de la valeur d'une œuvre.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e129",
+       "kind": "lore",
+       "title": "Kit narratif complet (pitch, synopsis, note d'in",
+       "content": "<p>Kit narratif complet (pitch, synopsis, note d'intention, moodboard).</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e130",
+       "kind": "lore",
+       "title": "Saison 1",
+       "content": "<p>Saison 1 : la course à la Mort Subite ; Saison 2 : l'épreuve de l'Académie des Rois.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e131",
+       "kind": "lore",
+       "title": "« Créer a un prix, et ce prix est trop souvent i",
+       "content": "<p>« Créer a un prix, et ce prix est trop souvent invisibilisé. »</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": []
+    }
+   ]
+  },
+  {
+   "tmp": "u132",
+   "name": "Striker Génération",
+   "kanji": "闘",
+   "color": "#ff5a46",
+   "description": "Un monde où le combat en équipe est devenu un sport mondial, suivi comme un esport. Des jeunes, en équipes de cinq, gravissent le classement du Pantheon pour viser les Five Gods, l'élite absolue de chaque génération.",
+   "elements": [
+    {
+     "tmp": "e133",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>Le combat en équipe, sport mondial</p><p>L'univers — concept &amp; règles</p><p>Un monde où le combat en équipe est devenu un sport mondial, suivi comme un esport. Des jeunes, en équipes de cinq, gravissent le classement du Pantheon pour viser les Five Gods, l'élite absolue de chaque génération. Tout commence dans la rue, filtre impitoyable avant les grandes arènes.</p><p>C'est un shōnen de combat et de compétition, aux couleurs éclatantes, où la rue est le berceau des légendes et le capitaine le cœur de l'équipe.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e134",
+     "kind": "lore",
+     "title": "Règles de l'univers",
+     "content": "<ul><li>Formats de combat : 1v1, 2v2, 5v5 (mêlée), Roi de la colline ; les duels de capitaines rapportent le double.</li><li>Le Pantheon : classement mondial ; seules 50 équipes y entrent ; les Five Gods au sommet.</li><li>La WCF : fédération toute-puissante qui manipule parfois l'ordre établi.</li><li>Le Red Dragon : combats clandestins, sans règles ni limites.</li></ul>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e135",
+     "kind": "note",
+     "title": "Direction artistique",
+     "content": "<ul><li>Palette  Bleu arène · or et foudre · rouge combat.</li><li>Ambiance  Couleurs éclatantes, hype esport. Street Fighter, Tekken, KOF, Def Jam, Crow Zero.</li><li>Univers ouvert. Première œuvre : le shōnen (série). L'univers peut accueillir des arcs de tournoi, des spin-off d'équipes rivales, un jeu.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o136",
+     "title": "Striker Génération",
+     "format": "autre",
+     "status": "en cours",
+     "pitch": "Pour un outsider sans mentor, atteindre le sommet est une preuve en soi.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e137",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Liore, outsider au grand cœur, a grandi dans les bas-fonds auprès de son grand-père Honoken, ancien champion déchu, dont il porte le gantelet et la technique inachevée, le Poing de Feu. Il rencontre Isaac, le Loup Sauvage, stratège solitaire hanté par la mort de son frère, puis Nisa, acrobate orpheline qui se bat pour son orphelinat. Ensemble, ils fondent l'équipe Sakuga et partent de tout en bas du classement mondial.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e138",
+       "kind": "character",
+       "title": "Liore",
+       "fields": {
+        "role": "17 ans · capitaine de l'équipe Sakuga"
+       },
+       "content": "<p><strong>17 ans · capitaine de l'équipe Sakuga</strong></p><p>outsider idéaliste au crâne d'acier et à l'appétit gargantuesque, petit et léger mais increvable, surnommé le dragon à la tête dure. Il porte le gantelet et le Poing de Feu inachevé de son grand-père Honoken, ancien champion déchu : son arc est d'achever cette technique et de prouver qu'un outsider sans mentor peut atteindre le sommet.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e139",
+       "kind": "character",
+       "title": "Isaac « Loup Sauvage »",
+       "fields": {
+        "role": "17 ans · stratège"
+       },
+       "content": "<p><strong>17 ans · stratège</strong></p><p>combattant froid des contre-attaques, solitaire, qui a fui sa famille bourgeoise et les comparaisons incessantes à son frère mort. Son calcul et sa retenue équilibrent l'impulsivité de Liore.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e140",
+       "kind": "character",
+       "title": "Nisa",
+       "fields": {
+        "role": "19 ans · acrobate"
+       },
+       "content": "<p><strong>19 ans · acrobate</strong></p><p>grande gueule marquée par l'abandon, elle se bat pour l'argent et pour son orphelinat. Elle développe le Blitz Style, changeant de tempo pour cueillir ses adversaires ; sous la bravade, une blessure d'enfance.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e141",
+       "kind": "character",
+       "title": "Riley Sparks « Tigresse Jaune »",
+       "fields": {
+        "role": "22 ans · capitaine des Rox (Top 20)"
+       },
+       "content": "<p><strong>22 ans · capitaine des Rox (Top 20)</strong></p><p>foudre jaune et Mode Tigre, elle est à la fois mentore et rivale de Nisa : la figure de ce que l'équipe Sakuga pourrait devenir.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e142",
+       "kind": "character",
+       "title": "Honoken",
+       "fields": {
+        "role": "grand-père de Liore"
+       },
+       "content": "<p><strong>grand-père de Liore</strong></p><p>ancien champion déchu, il a légué à Liore son gantelet et le Poing de Feu inachevé : la dette et l'héritage du héros.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e143",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<p>Arc de montée du Pantheon vers les Five Gods ; développer les équipes rivales, les sponsors et la face cachée de la WCF.</p><p>Set-pieces de combat chorégraphiés en logique sakuga.</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": []
+    }
+   ]
+  },
+  {
+   "tmp": "u144",
+   "name": "Welcome to Haven",
+   "kanji": "宿",
+   "color": "#4fd6ff",
+   "description": "Une société où les parents, dépassés, abandonnent leurs adolescents jugés ingérables. The Haven leur promet autonomie et liberté ; derrière les privilèges se cache une prison psychologique sophistiquée, dont nul ne connaît la sortie.",
+   "elements": [
+    {
+     "tmp": "e145",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>La prison qui se croit un paradis</p><p>L'univers — concept &amp; règles</p><p>Une société où les parents, dépassés, abandonnent leurs adolescents jugés ingérables. The Haven leur promet autonomie et liberté ; derrière les privilèges se cache une prison psychologique sophistiquée, dont nul ne connaît la sortie.</p><p>L'univers est une dystopie adolescente et un thriller psychologique : les vrais murs sont mentaux, et la seule évasion possible est une révolution intérieure. Titre alternatif : Perfect Sky.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e146",
+     "kind": "lore",
+     "title": "Règles de l'univers",
+     "content": "<ul><li>Liberté illusoire : chaque choix est orchestré pour épuiser la volonté.</li><li>Dôme de Silence, zones d'architecture modulable, androïdes-professeurs évolutifs.</li><li>Renégats chargés d'espionner ; IA simulant des familles rassurantes.</li><li>Les souvenirs eux-mêmes sont manipulés en temps réel ; secret final : un laboratoire de contrôle social.</li></ul>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e147",
+     "kind": "note",
+     "title": "Direction artistique",
+     "content": "<ul><li>Palette  Blanc clinique · bleu ciel · nuit du dôme.</li><li>Ambiance  Promised Neverland, Deadman Wonderland, Gurren Lagann ; « 93 » de Victor Hugo. Le ciel = liberté.</li><li>Univers ouvert. Première œuvre : film ou mini-série. L'univers peut s'étendre en saisons ou suivre d'autres pensionnaires.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o148",
+     "title": "Welcome to Haven",
+     "format": "autre",
+     "status": "en cours",
+     "pitch": "La liberté qu'on leur promet est une prison dont personne ne connaît la sortie.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e149",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Adam arrive à The Haven sans aucun souvenir de son arrivée, et comprend vite que personne ne sait où se trouve la sortie. La vraie prison est mentale : l'évasion ne sera pas seulement physique, mais une révolution intérieure — briser le conditionnement, croire en son propre potentiel, et libérer le ciel. Adam, simple suiveur, en deviendra le moteur, aux côtés de Travis et Keisha.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e150",
+       "kind": "character",
+       "title": "Adam L.",
+       "fields": {
+        "role": "protagoniste · 14 ans"
+       },
+       "content": "<p><strong>protagoniste · 14 ans</strong></p><p>introverti réfugié derrière son écran, le suiveur par excellence. Son arc est la révélation d'un potentiel de meneur : de celui qui subit à celui qui entraîne la rébellion intérieure.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e151",
+       "kind": "character",
+       "title": "Travis G.",
+       "fields": {
+        "role": "17 ans"
+       },
+       "content": "<p><strong>17 ans</strong></p><p>issu des quartiers, leader protecteur à la rage refoulée, persuadé d'être un raté. Sa force brute cache une blessure de légitimité.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e152",
+       "kind": "character",
+       "title": "Keisha",
+       "fields": {
+        "role": "17 ans"
+       },
+       "content": "<p><strong>17 ans</strong></p><p>détachée et cynique, marquée par un passé familial violent ; elle veut un jour affronter son père. Son armure d'ironie protège une volonté intacte.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e153",
+       "kind": "character",
+       "title": "La Directrice",
+       "fields": {
+        "role": "antagoniste · 48 ans"
+       },
+       "content": "<p><strong>antagoniste · 48 ans</strong></p><p>elle croit avoir conçu un système infaillible et sous-estime la capacité des adolescents à évoluer. Sa foi dans le contrôle est sa faille.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e154",
+       "kind": "character",
+       "title": "NOVA",
+       "fields": {
+        "role": "androïde"
+       },
+       "content": "<p><strong>androïde</strong></p><p>à l'image de l'enfant disparu de la Directrice, programmé pour espionner, il devient protecteur, jusqu'au sacrifice : le cœur émotionnel du récit.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e155",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<p>Développer la révélation du conditionnement et l'évasion finale, « libérer le ciel ».</p><p>Approfondir NOVA et la Directrice ; décider du format définitif (film ou mini-série).</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": []
+    }
+   ]
+  },
+  {
+   "tmp": "u156",
+   "name": "Cosmic Bunny",
+   "kanji": "兎",
+   "color": "#ff8fd0",
+   "description": "Terra V2, planète terraformée par des IA devenues folles de prompts : les biomes buggent, jungles à gravité inversée, déserts liquides, océans suspendus.",
+   "elements": [
+    {
+     "tmp": "e157",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>City pop et IA devenues folles</p><p>L'univers — concept &amp; règles</p><p>Terra V2, planète terraformée par des IA devenues folles de prompts : les biomes buggent, jungles à gravité inversée, déserts liquides, océans suspendus. Les humains vivent sous des cités-dômes, chacune avec sa culture et sa musique, et la City Pop règne, bande-son nostalgique d'une Terre disparue.</p><p>C'est une comédie mélancolique de SF-aventure, rétro-futur et vaporwave, portée par une héroïne qui fuit la vraie vie derrière une image cool.</p>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e158",
+     "kind": "lore",
+     "title": "Règles de l'univers",
+     "content": "<ul><li>Planète « promptée » par des IA ayant pris les consignes trop au mot.</li><li>Écosystèmes fusionnés, gravité variable, boucles temporelles locales.</li><li>Cités-dômes, chacune sa culture et sa musique ; la City Pop comme mémoire.</li><li>Structure en trois actes : livraison impossible → bug originel → Cosmic Reboot.</li></ul>",
+     "tags": [],
+     "links": []
+    },
+    {
+     "tmp": "e159",
+     "kind": "note",
+     "title": "Direction artistique",
+     "content": "<ul><li>Palette  Rose · turquoise · chrome · orange rouille · vert néon.</li><li>Ambiance  Néons, vaporwave, future funk. Cowboy Bebop, Space Dandy, Interstella 5555, Nausicaä.</li><li>Univers ouvert. Première œuvre : série / film City Pop. L'univers peut porter des clips, un album, des formats courts.</li></ul>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o160",
+     "title": "Cosmic Bunny",
+     "format": "serie",
+     "status": "en cours",
+     "pitch": "Elle livre dans les zones où personne n'ose aller, pour éviter de vivre vraiment.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e161",
+       "kind": "scene",
+       "title": "Synopsis",
+       "content": "<p>Bunny, livreuse mi-humaine mi-lapin, gère seule Cosmic Bunny Express et rêve d'être une grande aventurière, tout en cachant une peur panique de vivre pour de vrai. En enquêtant sur un colis contenant un artefact des anciennes IA, elle découvre qu'elle est elle-même un « patch vivant », créé pour réparer les erreurs du monde. Pour tout sauver, elle devra livrer le dernier colis : elle-même.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e162",
+       "kind": "character",
+       "title": "Cosmic Bunny",
+       "fields": {
+        "role": "protagoniste · 26 ans"
+       },
+       "content": "<p><strong>protagoniste · 26 ans</strong></p><p>livreuse cascadeuse, enthousiaste et maladroite, qui s'invente une vie cool à coups de reels kitsch et d'un jingle qui colle. Derrière l'énergie, une peur panique de tout ce qui devient trop émotionnel ; son arc la mène d'une fuite permanente à l'acceptation d'exister pour de vrai — jusqu'à se livrer elle-même.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e163",
+       "kind": "character",
+       "title": "Le frère-bot",
+       "fields": {
+        "role": "compagnon"
+       },
+       "content": "<p><strong>compagnon</strong></p><p>petit robot bavard et protecteur, dernier vestige de sa famille de scientifiques ; connecté à l'une des anciennes IA, il est le lien de Bunny avec ses origines.</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e164",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<ul><li>Reels publicitaires kitsch et jingle « Cosmic Bunny, wow! » comme teasers.</li><li>Développer les biomes-dômes et leurs musiques propres ; format série ou film.</li><li>« Bunny!... Cosmic Bunny, wow! »</li></ul>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": []
+    }
+   ]
+  },
+  {
+   "tmp": "u165",
+   "name": "Liberty's Chroma",
+   "kanji": "色",
+   "color": "#e8e1cf",
+   "description": "Le seul monde réel du répertoire. Liberty's Chroma est un univers documentaire consacré à des femmes ayant traversé des violences : pas de créatures ni de dieux, des visages, des voix, et la couleur qui revient après l'ombre.",
+   "elements": [
+    {
+     "tmp": "e166",
+     "kind": "lore",
+     "title": "Concept & règles",
+     "content": "<p>Le socle réel</p><p>L'univers — concept</p><p>Le seul monde réel du répertoire. Liberty's Chroma est un univers documentaire consacré à des femmes ayant traversé des violences : pas de créatures ni de dieux, des visages, des voix, et la couleur qui revient après l'ombre. La « chroma », c'est précisément cette couleur et cette parole retrouvées après le gris.</p><p>C'est la racine éthique de toute l'œuvre : la preuve que l'image peut être mise au service de l'humain, dans le prolongement du projet Dreamer (l'image au service de l'humain et du service public). Un film déjà porté jusqu'à l'Assemblée nationale.</p><p>Les œuvres de l'univers</p><p>Œuvre I — Liberty's Chroma I. le premier volet des portraits.</p><p>Œuvre II — Liberty's Chroma II : Andgi. le second volet, qui prolonge et approfondit le concept.</p><p>Univers ouvert. Univers documentaire ouvert : il peut accueillir d'autres volets, portraits ou formats (exposition, série de capsules).</p>",
+     "tags": [],
+     "links": []
+    }
+   ],
+   "oeuvres": [
+    {
+     "tmp": "o167",
+     "title": "Liberty's Chroma I",
+     "format": "autre",
+     "status": "en cours",
+     "pitch": "Rendre la couleur, et la parole, à des femmes que l'ombre avait recouvertes.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e168",
+       "kind": "document",
+       "title": "Présentation",
+       "content": "<p>Premier volet des portraits de femmes ayant traversé des violences. Parole donnée, dignité, reconstruction : le film installe le concept et la démarche, et c'est lui qui a été porté jusqu'à l'Assemblée nationale.</p><p>Repères</p><p>Forme — documentaire de portraits, non-fiction.</p><p>Sujet — des femmes ayant traversé des violences ; la couleur et la voix retrouvées.</p><p>Portée — projeté à l'Assemblée nationale ; ancrage dans l'engagement et le service public.</p>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": [
+      "o169"
+     ]
+    },
+    {
+     "tmp": "o169",
+     "title": "Liberty's Chroma II : Andgi",
+     "format": "autre",
+     "status": "en cours",
+     "pitch": "Prolonger la démarche : une nouvelle voix, une nouvelle couleur rendue à l'ombre.",
+     "image": "",
+     "elements": [
+      {
+       "tmp": "e170",
+       "kind": "document",
+       "title": "Présentation",
+       "content": "<p>Deuxième volet de Liberty's Chroma, sous-titré Andgi, qui prolonge et approfondit le concept du premier film. Même geste documentaire : donner la parole, rendre la dignité et la couleur. (Les détails propres à ce volet — angle, protagoniste, durée — restent à compléter dans ce document selon ta version de référence.)</p>",
+       "tags": [],
+       "links": []
+      },
+      {
+       "tmp": "e171",
+       "kind": "note",
+       "title": "Pistes de développement",
+       "content": "<ul><li>Réunir les deux volets en un concept cohérent, diffusion élargie.</li><li>Prolongement vers le projet Dreamer (image &amp; service public).</li><li>Compléter la fiche du volet Andgi (synopsis, intervenantes, format) à partir de tes notes.</li><li>Annexe — Cartographie des univers</li></ul>",
+       "tags": [],
+       "links": []
+      }
+     ],
+     "links": [
+      "o167"
+     ]
+    }
+   ]
+  }
+ ]
+}

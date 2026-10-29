@@ -3,12 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { IoClose, IoImageOutline, IoTrashOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { listCreations, uploadJournalImage } from "@/lib/api";
-import { imgSrc } from "@/lib/atelier";
+import { imgSrc, getUniPlaylist, setUniPlaylist } from "@/lib/atelier";
 
 const COLORS = ["#ff2f5f", "#ffb340", "#3ff0ff", "#7c5cff", "#00e5a0", "#ff7ad9", "#e8e1cf"];
 
 export default function UniverseForm({ at, universe, onClose }) {
   const [u, setU] = useState({ name: "", kanji: "", color: COLORS[0], cover: "", description: "", creation_ids: [], group: "", pinned: false, ...universe });
+  const [playlist, setPlaylist] = useState(() => getUniPlaylist(universe?.id));
   const groups = [...new Set(at.universes.map((x) => x.group).filter(Boolean))];
   const [busy, setBusy] = useState(false);
   const file = useRef(null);
@@ -20,7 +21,7 @@ export default function UniverseForm({ at, universe, onClose }) {
   const save = async () => {
     if (!u.name.trim()) return toast.error("Donne un nom à l'univers");
     setBusy(true);
-    try { const doc = await at.saveUniverse({ ...u, name: u.name.trim() }); toast.success("Univers enregistré"); onClose(doc); }
+    try { const doc = await at.saveUniverse({ ...u, name: u.name.trim() }); setUniPlaylist(doc.id, playlist); toast.success("Univers enregistré"); onClose(doc); }
     catch { toast.error("Enregistrement impossible"); setBusy(false); }
   };
   const remove = async () => {
@@ -43,6 +44,7 @@ export default function UniverseForm({ at, universe, onClose }) {
           </div>
           <datalist id="at-groups">{groups.map((g) => <option key={g} value={g} />)}</datalist>
           <label>Description<textarea rows={3} value={u.description} onChange={(e) => set("description", e.target.value)} placeholder="Le pitch de cet univers…" data-testid="atelier-uf-desc" /></label>
+          <label>Playlist (lien YouTube, Spotify…)<input value={playlist} onChange={(e) => setPlaylist(e.target.value)} placeholder="https://youtube.com/playlist?list=…" data-testid="atelier-uf-playlist" /></label>
           <div className="lbl">Couleur</div>
           <div className="at-colors">{COLORS.map((c) => <button key={c} className={u.color === c ? "on" : ""} style={{ background: c }} onClick={() => set("color", c)} aria-label={c} />)}</div>
           <div className="lbl">Image de couverture</div>

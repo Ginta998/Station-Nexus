@@ -91,6 +91,25 @@ export const KINDS = {
   file: { label: "Fichier", plural: "Fichiers", kanji: "档" },
 };
 
+// Œuvres : une création concrète développée dans un univers (série, film, livre…), avec son propre espace.
+// Modélisé sur un élément porteur (fields.oeuvre = true) ; ses éléments pointent vers lui via fields.oeuvre_id.
+export const OEUVRE_FORMATS = {
+  serie: { label: "Série", kanji: "連", unit: "Épisode", units: "Épisodes" },
+  film: { label: "Film", kanji: "映", unit: "Séquence", units: "Séquences" },
+  court: { label: "Court-métrage", kanji: "短", unit: "Séquence", units: "Séquences" },
+  livre: { label: "Livre", kanji: "書", unit: "Chapitre", units: "Chapitres" },
+  bd: { label: "BD / Manga", kanji: "画", unit: "Planche", units: "Planches" },
+  autre: { label: "Œuvre", kanji: "作", unit: "Partie", units: "Parties" },
+};
+export const isOeuvre = (it) => !!(it && it.fields && it.fields.oeuvre);
+export const oeuvreFmt = (it) => OEUVRE_FORMATS[it?.fields?.format] || OEUVRE_FORMATS.autre;
+
+// Playlist (YouTube ou autre) par univers — stockée en local (le modèle univers du backend est figé).
+// Pour une œuvre, la playlist vit dans fields.playlist (persisté côté serveur).
+export const getUniPlaylists = () => { try { return JSON.parse(localStorage.getItem("nexus-uni-pl") || "{}"); } catch { return {}; } };
+export const getUniPlaylist = (id) => (id ? getUniPlaylists()[id] || "" : "");
+export const setUniPlaylist = (id, url) => { if (!id) return; const m = getUniPlaylists(); if (url && url.trim()) m[id] = url.trim(); else delete m[id]; try { localStorage.setItem("nexus-uni-pl", JSON.stringify(m)); } catch (_) {} };
+
 // Type d'aperçu d'un fichier déposé (image, pdf, office, vidéo, audio, texte, lien, drive)
 export const fileType = (m) => {
   if (!m) return "none";
@@ -104,6 +123,29 @@ export const fileType = (m) => {
   if (/\.(docx?|xlsx?|pptx?|odt|ods|odp)$/.test(n)) return "office";
   if (/\.(txt|md|csv|json|srt)$/.test(n) || mt.startsWith("text/")) return "text";
   return "other";
+};
+
+// Libellé lisible de la NATURE d'un fichier, pour l'identifier d'un coup d'œil (badge).
+// (Distinct de fileType, qui sert au RENDU dans la visionneuse.)
+export const fileNature = (m) => {
+  if (!m) return "";
+  const n = (m.name || m.url || "").toLowerCase();
+  const mt = m.mime || "";
+  if (m.type === "youtube" || /(?:youtube\.com|youtu\.be)/.test(n)) return "YOUTUBE";
+  if (m.type === "drive" || /drive\.google\.com/.test(n)) return "DRIVE";
+  if (/docs\.google\.com\/document/.test(n)) return "GOOGLE DOC";
+  if (/docs\.google\.com\/spreadsheets/.test(n)) return "GOOGLE SHEET";
+  if (/docs\.google\.com\/presentation/.test(n)) return "GOOGLE SLIDES";
+  if (m.type === "image" || mt.startsWith("image/") || /\.(png|jpe?g|gif|webp|avif|svg|bmp)$/.test(n)) return "IMAGE";
+  if (m.type === "video" || mt.startsWith("video/") || /\.(mp4|webm|mov|m4v|avi|mkv)$/.test(n)) return "VIDÉO";
+  if (m.type === "audio" || mt.startsWith("audio/") || /\.(mp3|wav|ogg|flac|m4a)$/.test(n)) return "AUDIO";
+  if (m.type === "pdf" || mt === "application/pdf" || n.endsWith(".pdf")) return "PDF";
+  if (/\.(xlsx?|ods|csv)$/.test(n) || mt.includes("spreadsheet")) return "EXCEL";
+  if (/\.(docx?|odt|rtf)$/.test(n) || mt.includes("word")) return "WORD";
+  if (/\.(pptx?|odp)$/.test(n) || mt.includes("presentation")) return "POWERPOINT";
+  if (/\.(txt|md|json|srt)$/.test(n) || mt.startsWith("text/")) return "TEXTE";
+  if (m.type === "link" || /^https?:/i.test(n)) { try { return new URL(m.url).hostname.replace(/^www\./, "").toUpperCase(); } catch { return "LIEN"; } }
+  return "FICHIER";
 };
 
 export const KIND_FIELDS = {

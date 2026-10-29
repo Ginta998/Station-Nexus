@@ -23,8 +23,15 @@ root.render(
   </QueryClientProvider>
 );
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js").catch(() => {});
-  });
+if (process.env.NODE_ENV === "production") {
+  // Production uniquement : on active le service worker (mode hors-ligne / cache)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/service-worker.js").catch(() => {});
+    });
+  }
+} else if ("serviceWorker" in navigator) {
+  // Développement : on purge tout service worker + cache pour toujours voir les derniers changements
+  navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
+  if (window.caches) caches.keys().then((ks) => ks.forEach((k) => caches.delete(k))).catch(() => {});
 }

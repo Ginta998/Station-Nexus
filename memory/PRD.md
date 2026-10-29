@@ -828,3 +828,9 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Frontend : BunnyPanel.js, BunnyMessage.js, bouton flottant (orbe CSS aux oreilles animées) + entrée du dock « Bunny ». Conversations sauvegardées.
 - Testé : iteration_28 (back 10/10, front OK après correctif du délai de 20 s d'axios).
 - Backlog : bug du menu haut/bas visible seulement au survol (reporté par l'utilisateur), suppression de la LaunchGate (plus tard), Stripe en live, migration Tengoku Dōjō.
+
+## 2026-10-29 — Synchro du dépôt GitHub de l'utilisateur (Ginta998/Station-Nexus)
+- Le dépôt partait exactement de notre commit 96e813c : patch 96e813c→e7132a5 appliqué tel quel (24 fichiers, sans conflit).
+- Ajouts venus de Claude : Œuvres (OeuvreView/OeuvreForm), mode Focus (FocusView), Roadmap/rétroplanning (RoadmapView), import de base (ImportBase + data/nexus-base.json + tools/build_base.py), export PDF (lib/exportPdf.js), mode d'ouverture par app dans le Bureau (intégré / fenêtre / onglet), Pont v3, menu latéral PC, jobs Bunny stockés dans Mongo.
+- Avant la synchro (même jour) : fichiers en accès direct (kind "file", FileViewer), menu contextuel clic droit / appui long, glisser-déposer des éléments vers une catégorie ou un univers, suppression de n'importe quelle app du Bureau (config.hidden_apps), réglage de démarrage Station/Atelier (localStorage sx_start). Google Drive connecté retiré : l'utilisateur a choisi une simple fenêtre d'app.
+- Tests : compilation OK, /api/atelier/bootstrap OK, capture de l'Atelier OK. Pas encore de test E2E complet depuis la synchro.

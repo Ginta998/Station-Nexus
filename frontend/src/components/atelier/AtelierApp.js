@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline } from "react-icons/io5";
+import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoReorderThreeOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAtelier } from "@/lib/atelier";
 import { SoundBtn } from "@/components/StationMenu";
@@ -22,14 +22,24 @@ import { ContextMenuHost, itemDrop } from "@/components/atelier/ContextMenu";
 import { dropToUniverse } from "@/components/atelier/itemActions";
 import BunnyBrains from "@/components/atelier/BunnyBrains";
 import BunnySprite from "@/components/atelier/BunnySprite";
+import FocusView from "@/components/atelier/FocusView";
+import OeuvreView from "@/components/atelier/OeuvreView";
+import OeuvreForm from "@/components/atelier/OeuvreForm";
 
-const Dock = ({ icon, label, on, onClick, testid, color, kanji, badge, drop }) => (
+const Dock = ({ icon, label, sub, on, onClick, testid, color, kanji, badge, drop }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label} {...(drop ? itemDrop(drop) : {})}>
     <span className="ic" style={color ? { color } : undefined}>{kanji ? <b>{kanji}</b> : icon}</span>
-    <span className="lb">{label}</span>{badge > 0 && <span className="bd">{badge}</span>}
+    <span className="tx"><span className="lb">{label}{badge > 0 && <span className="bd">{badge}</span>}</span>{sub && <span className="sb mono">// {sub}</span>}</span>
   </button>
 );
 const soundBtn = { borderColor: "var(--line)", borderRadius: "10px", color: "var(--text-primary)", background: "transparent" };
+
+function FsBtn() {
+  const [fs, setFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
+  useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener("fullscreenchange", h); return () => document.removeEventListener("fullscreenchange", h); }, []);
+  const toggle = () => { try { if (document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen)?.call(document); else { const el = document.documentElement; (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el); } } catch (_) {} };
+  return <button className="at-icon" onClick={toggle} title={fs ? "Quitter le plein écran" : "Plein écran"} data-testid="atelier-fullscreen">{fs ? <IoContractOutline size={17} /> : <IoExpandOutline size={17} />}</button>;
+}
 
 function ShipClock() {
   const [t, setT] = useState(new Date());
@@ -44,12 +54,18 @@ export default function AtelierApp({ onLeave }) {
   const [editing, setEditing] = useState(null);
   const [viewing, setViewing] = useState(null);
   const [uForm, setUForm] = useState(null);
+  const [oForm, setOForm] = useState(null);
   const [palette, setPalette] = useState(false);
   const [drop, setDrop] = useState(null);
   const [screen, setScreen] = useState(null);
   const [mini, setMini] = useState(null);
   const [bunny, setBunny] = useState(false);
   const [brains, setBrains] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
+  const [dockOpen, setDockOpen] = useState(() => { try { return localStorage.getItem("nexus-dock") !== "0"; } catch (_) { return true; } });
+  const toggleDock = () => setDockOpen((o) => { const n = !o; try { localStorage.setItem("nexus-dock", n ? "1" : "0"); } catch (_) {} return n; });
+  const [dockSide, setDockSide] = useState(() => { try { return localStorage.getItem("nexus-dock-mobile") === "1"; } catch (_) { return false; } });
+  const toggleDockSide = () => setDockSide((o) => { const n = !o; try { localStorage.setItem("nexus-dock-mobile", n ? "1" : "0"); } catch (_) {} return n; });
   const launch = (s) => { sfx("select"); setScreen(s); };
   const toMini = (s) => { setScreen(null); setMini(s); };
   const [dragging, setDragging] = useState(false);
@@ -61,7 +77,7 @@ export default function AtelierApp({ onLeave }) {
   const pinned = at.universes.filter((u) => u.pinned);
   const cur = view.name === "universe" ? at.universes.find((u) => u.id === view.id) : null;
   const importDocs = (defaults = {}) => { pickDefaults.current = defaults; pick.current?.click(); };
-  const ctx = { at, go, open, editUniverse: setUForm, importDocs, openBrains: () => setBrains(true) };
+  const ctx = { at, go, open, launch, mini: (s) => setMini(s), editUniverse: setUForm, editOeuvre: setOForm, importDocs, openBrains: () => setBrains(true) };
 
   useEffect(() => {
     let depth = 0;
@@ -85,39 +101,45 @@ export default function AtelierApp({ onLeave }) {
     const onKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON" }[view.name] || (cur?.name || "").toUpperCase();
+  const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", oeuvre: "ŒUVRE" }[view.name] || (cur?.name || "").toUpperCase();
 
   return (
-    <div className="at-app" data-testid="atelier-app">
+    <div className={"at-app" + (dockSide ? " dock-side" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
       <header className="at-top">
         <div className="at-brand"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
         <button className="at-search" onClick={() => { sfx("nav"); setPalette(true); }} data-testid="atelier-search-open"><IoSearch size={15} /><span>Rechercher un univers, une fiche, une scène…</span><kbd className="mono">Ctrl K</kbd></button>
         <div className="at-top-r">
           <ShipClock />
+          <button className="at-icon at-dockmode" onClick={toggleDockSide} title={dockSide ? "Menu en bas" : "Menu latéral"} data-testid="atelier-dockmode"><IoReorderThreeOutline size={18} /></button>
           <SoundBtn btn={soundBtn} />
+          <FsBtn />
           <button className="at-icon" onClick={() => go({ name: "settings" })} title="Réglages de l'Atelier" data-testid="atelier-settings-top"><IoSettingsOutline size={17} /></button>
           <button className="at-icon" onClick={() => { sfx("back"); onLeave(); }} title="Retour à la Station" data-testid="atelier-leave-top"><IoExitOutline size={17} /></button>
         </div>
       </header>
 
       <div className="at-body">
-        <aside className="at-dock" data-testid="atelier-dock">
-          <Dock icon={<IoPlanetOutline size={18} />} label="Pont" on={view.name === "home"} onClick={() => go({ name: "home" })} testid="atelier-nav-home" />
-          <Dock icon={<IoGridOutline size={18} />} label="Univers" badge={0} on={view.name === "universes" || view.name === "universe"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
-          <Dock icon={<IoSearch size={18} />} label="Recherche" onClick={() => setPalette(true)} testid="atelier-nav-search" />
-          <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" drop={dropToUniverse(at, null)} />
-          <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
-          <Dock icon={<IoAppsOutline size={18} />} label="Bureau" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
-          <Dock kanji="兎" label="Bunny" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
-          <Dock icon={<IoFilmOutline size={18} />} label="Salon" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
+        <aside className={"at-dock" + (dockOpen ? "" : " collapsed")} data-testid="atelier-dock">
+          <div className="at-dock-head">
+            <button className="at-dock-toggle" onClick={toggleDock} title={dockOpen ? "Replier le menu" : "Déployer le menu"} aria-label="Replier ou déployer le menu" data-testid="atelier-dock-toggle">{dockOpen ? "‹‹" : "››"}</button>
+          </div>
+          <Dock icon={<IoPlanetOutline size={18} />} label="Pont" sub="POSTE DE COMMANDEMENT" on={view.name === "home"} onClick={() => go({ name: "home" })} testid="atelier-nav-home" />
+          <Dock icon={<IoGridOutline size={18} />} label="Univers" sub="TES MONDES & ŒUVRES" on={view.name === "universes" || view.name === "universe" || view.name === "oeuvre"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
+          <Dock icon={<IoSearch size={18} />} label="Recherche" sub="TROUVE TOUT · CTRL K" onClick={() => setPalette(true)} testid="atelier-nav-search" />
+          <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" sub="IDÉES EN VRAC" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" drop={dropToUniverse(at, null)} />
+          <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" sub="TES TÂCHES" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
+          <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="TES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
+          <Dock kanji="兎" label="Bunny" sub="TON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
+          <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="TON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
+          <Dock kanji="禅" label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
           <div className="at-dock-unis">
             {pinned.map((u) => <Dock key={u.id} kanji={u.kanji || u.name[0]} color={u.color} label={u.name} on={view.id === u.id} onClick={() => go({ name: "universe", id: u.id })} testid={`atelier-nav-universe-${u.id}`} drop={dropToUniverse(at, u.id)} />)}
           </div>
           <div className="at-dock-foot">
-            <Dock icon={<IoSettingsOutline size={18} />} label="Réglages" on={view.name === "settings"} onClick={() => go({ name: "settings" })} testid="atelier-nav-settings" />
-            <Dock icon={<IoExitOutline size={18} />} label="Station" onClick={() => { sfx("back"); onLeave(); }} testid="atelier-leave" />
+            <Dock icon={<IoSettingsOutline size={18} />} label="Réglages" sub="COMPTE · THÈME" on={view.name === "settings"} onClick={() => go({ name: "settings" })} testid="atelier-nav-settings" />
+            <Dock icon={<IoExitOutline size={18} />} label="Station" sub="RETOUR PUBLIC" onClick={() => { sfx("back"); onLeave(); }} testid="atelier-leave" />
           </div>
         </aside>
 
@@ -126,6 +148,7 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "home" && <QuartierView {...ctx} />}
           {view.name === "universes" && <UniversesHub {...ctx} />}
           {view.name === "universe" && cur && <UniverseView {...ctx} universe={cur} />}
+          {view.name === "oeuvre" && <OeuvreView {...ctx} id={view.id} />}
           {view.name === "inbox" && (
             <section className="at-view">
               <header className="at-head"><p className="at-eyebrow mono">// IDÉES EN VRAC</p><h1>Inbox</h1><p className="at-sub">Tout ce que tu notes sans univers atterrit ici. Range-le quand tu veux.</p></header>
@@ -148,10 +171,12 @@ export default function AtelierApp({ onLeave }) {
       {!bunny && <div className="bn-fab"><BunnySprite pose="neutral" size={74} className="cb-bounce" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" testid="bunny-open" /></div>}
       {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} openBrains={() => setBrains(true)} />}
       {brains && <BunnyBrains onClose={() => setBrains(false)} />}
+      {focusMode && <FocusView at={at} onClose={() => setFocusMode(false)} />}
       <ContextMenuHost />
       {viewing && <FileViewer at={at} id={viewing} onClose={() => setViewing(null)} edit={(id) => { setViewing(null); setEditing(id); }} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}
+      {oForm && <OeuvreForm {...ctx} oeuvre={oForm} onClose={(o) => { setOForm(null); if (o?.id) setView({ name: "oeuvre", id: o.id }); }} />}
     </div>
   );
 }

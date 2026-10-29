@@ -3,7 +3,7 @@ import re
 import asyncio
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -158,24 +158,35 @@ class ChatIn(BaseModel):
     mode: Optional[str] = None
 
 
-_jobs = {}
 _tasks = set()
 
 
-def start_job(coro):
+# Les jobs Bunny sont stockés en base (Mongo) et non en mémoire : ainsi ils
+# survivent aux redémarrages et sont visibles par TOUS les workers du backend.
+# (Avant, un dict mémoire provoquait un 404 « interrompue par un redémarrage »
+#  dès que la relecture du job tombait sur un autre worker que celui qui l'a lancé.)
+async def start_job(db, coro):
     jid = str(uuid.uuid4())
-    _jobs[jid] = {"id": jid, "status": "pending"}
+    await db.atelier_bunny_jobs.insert_one({"id": jid, "status": "pending", "created_at": now_iso()})
+    # purge des vieux jobs (> 2 h) pour ne pas laisser la collection grossir
+    try:
+        cutoff = (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()
+        await db.atelier_bunny_jobs.delete_many({"created_at": {"$lt": cutoff}})
+    except Exception:
+        pass
 
     async def run():
         try:
-            _jobs[jid] = {"id": jid, "status": "done", "result": await coro}
+            upd = {"status": "done", "result": await coro}
         except HTTPException as e:
-            _jobs[jid] = {"id": jid, "status": "error", "error": e.detail}
+            upd = {"status": "error", "error": e.detail}
         except Exception as e:  # erreur inattendue : remontée au panneau
-            _jobs[jid] = {"id": jid, "status": "error", "error": f"Bunny s'est emmêlé les oreilles ({type(e).__name__})."}
-        if len(_jobs) > 200:
-            for k in list(_jobs)[:100]:
-                _jobs.pop(k, None)
+            upd = {"status": "error", "error": f"Bunny s'est emmêlé les oreilles ({type(e).__name__})."}
+        upd["updated_at"] = now_iso()
+        try:
+            await db.atelier_bunny_jobs.update_one({"id": jid}, {"$set": upd})
+        except Exception:
+            pass
 
     t = asyncio.create_task(run())
     _tasks.add(t)
@@ -205,11 +216,11 @@ def build_bunny_router(db, require_admin) -> APIRouter:
 
     @r.post("/chat")
     async def chat(body: ChatIn):
-        return start_job(do_chat(body))
+        return await start_job(db, do_chat(body))
 
     @r.get("/jobs/{jid}")
     async def job(jid: str):
-        j = _jobs.get(jid)
+        j = await db.atelier_bunny_jobs.find_one({"id": jid}, {"_id": 0})
         if not j:
             raise HTTPException(404, "Tâche introuvable")
         return j
@@ -265,7 +276,7 @@ def build_bunny_router(db, require_admin) -> APIRouter:
 
     @r.post("/briefing")
     async def make_briefing():
-        return start_job(do_briefing())
+        return await start_job(db, do_briefing())
 
     async def do_briefing():
         facts, meta = await briefing_facts(db)

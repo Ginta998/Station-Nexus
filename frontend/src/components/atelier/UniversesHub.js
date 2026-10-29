@@ -1,10 +1,51 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { pressMenu, itemDrop } from "@/components/atelier/ContextMenu";
 import { dropToUniverse } from "@/components/atelier/itemActions";
-import { IoAdd, IoSearch, IoStar, IoStarOutline, IoListOutline, IoGridOutline } from "react-icons/io5";
+import { IoAdd, IoSearch, IoStar, IoStarOutline, IoListOutline, IoGridOutline, IoEnterOutline, IoSparklesOutline } from "react-icons/io5";
 import { imgSrc } from "@/lib/atelier";
+import ImportBase from "@/components/atelier/ImportBase";
 
 const SORTS = [["recent", "Récents"], ["az", "A → Z"], ["size", "Les plus riches"]];
+
+// Hero cinématique rotatif — même langage que le carrousel du Pont (ne laisse plus une grande image vide)
+function HubHero({ universes, count, go, onNew, onImport }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (universes.length < 2) return;
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = setInterval(() => setI((x) => (x + 1) % universes.length), 7000);
+    return () => clearInterval(t);
+  }, [universes.length]);
+  const feat = universes[i] || null;
+  return (
+    <header className="at-hero" style={{ "--u": feat?.color || "var(--brand)" }} data-testid="atelier-universes-hero">
+      <div className="at-hero-bg" key={feat?.id || "none"}>
+        {feat?.cover ? <img src={imgSrc(feat.cover)} alt="" /> : <span className="at-hero-glow"><b>{feat?.kanji || "天"}</b></span>}
+      </div>
+      <span className="at-hero-grain" aria-hidden="true" />
+      <div className="at-hero-content">
+        <div className="at-hero-top"><p className="at-eyebrow mono">// ARCHIVES · {count} UNIVERS</p></div>
+        <div className="at-hero-mid">
+          <h1>{feat ? feat.name : "Tes univers"}</h1>
+          <p className="at-sub">{feat?.description || "Chaque monde que tu construis vit ici. Entre, développe, relie."}</p>
+          <div className="at-hero-cta">
+            {feat && <button className="at-btn big" onClick={() => go({ name: "universe", id: feat.id })} data-testid="atelier-universes-hero-enter"><IoEnterOutline size={16} /> Entrer dans {feat.name}</button>}
+            <button className="at-btn ghost" onClick={onNew} data-testid="atelier-new-universe"><IoAdd size={16} /> Nouvel univers</button>
+            <button className="at-btn ghost" onClick={onImport} data-testid="atelier-import-open"><IoSparklesOutline size={16} /> Importer ma base</button>
+          </div>
+        </div>
+        <div className="at-hero-foot">
+          <span />
+          {universes.length > 1 && (
+            <div className="at-hero-dots">
+              {universes.map((u, j) => <button key={u.id} className={j === i ? "on" : ""} style={{ "--u": u.color || "var(--brand)" }} onClick={() => setI(j)} aria-label={u.name} />)}
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
 
 // Archives : tous les univers, recherche instantanée, constellations (groupes), épinglage, vue grille ou liste
 export default function UniversesHub({ at, go, editUniverse }) {
@@ -19,6 +60,7 @@ export default function UniversesHub({ at, go, editUniverse }) {
   const [sort, setSort] = useState("recent");
   const [group, setGroup] = useState("");
   const [list, setList] = useState(() => localStorage.getItem("at_hub_list") === "1");
+  const [imp, setImp] = useState(false);
   const counts = useMemo(() => Object.fromEntries(at.universes.map((u) => [u.id, at.items.filter((i) => i.universe_id === u.id).length])), [at.universes, at.items]);
   const lastTouch = useMemo(() => {
     const m = {}; at.items.forEach((i) => { if (i.universe_id && (!m[i.universe_id] || i.updated_at > m[i.universe_id])) m[i.universe_id] = i.updated_at; }); return m;
@@ -34,10 +76,8 @@ export default function UniversesHub({ at, go, editUniverse }) {
 
   return (
     <section className="at-view" data-testid="atelier-universes">
-      <header className="at-hero">
-        <div><p className="at-eyebrow mono">// ARCHIVES · {at.universes.length} UNIVERS</p><h1>Tes univers</h1></div>
-        <button className="at-btn" onClick={() => editUniverse({})} data-testid="atelier-new-universe"><IoAdd size={16} /> Nouvel univers</button>
-      </header>
+      <HubHero universes={at.universes} count={at.universes.length} go={go} onNew={() => editUniverse({})} onImport={() => setImp(true)} />
+      {imp && <ImportBase at={at} go={go} onClose={() => setImp(false)} />}
       <div className="at-hub-bar">
         <label className="at-hub-q"><IoSearch size={15} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filtrer les univers…" data-testid="atelier-hub-search" /></label>
         <div className="at-seg">{SORTS.map(([k, l]) => <button key={k} className={sort === k ? "on" : ""} onClick={() => setSort(k)} data-testid={`atelier-hub-sort-${k}`}>{l}</button>)}</div>

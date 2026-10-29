@@ -3,6 +3,7 @@ import { IoAdd, IoTrashOutline, IoCreateOutline, IoCheckmark, IoMailOutline, IoC
 import { toast } from "sonner";
 import { todayStr } from "@/lib/atelier";
 import TasksView from "@/components/atelier/TasksView";
+import RoadmapView from "@/components/atelier/RoadmapView";
 
 const STATUS = [["active", "En cours"], ["done", "Atteint"], ["pause", "En pause"]];
 const SPEC = {
@@ -60,7 +61,7 @@ function Row({ rk, r, at, onEdit }) {
 function RecordTab({ rk, at }) {
   const [edit, setEdit] = useState(null);
   const today = todayStr();
-  let list = at.records.filter((r) => r.rk === rk);
+  let list = at.records.filter((r) => r.rk === rk && !(rk === "goals" && r.road));
   if (rk === "events") list = list.sort((a, b) => (a.date || "9").localeCompare(b.date || "9"));
   if (rk === "budget") list = list.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
   if (rk === "contacts") list = list.sort((a, b) => (a.name || "").localeCompare(b.name || "", "fr"));
@@ -86,7 +87,7 @@ function RecordTab({ rk, at }) {
 function Overview({ at, setTab }) {
   const today = todayStr();
   const ev = at.records.filter((r) => r.rk === "events" && r.date >= today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
-  const goals = at.records.filter((r) => r.rk === "goals" && r.status !== "done").slice(0, 5);
+  const goals = at.records.filter((r) => r.rk === "goals" && !r.road && r.status !== "done").slice(0, 5);
   const late = at.tasks.filter((t) => !t.done && t.due && t.due < today).length;
   const month = today.slice(0, 7);
   const bm = at.records.filter((r) => r.rk === "budget" && (r.date || "").startsWith(month));
@@ -107,7 +108,7 @@ function Overview({ at, setTab }) {
   );
 }
 
-const TABS = [["overview", "Vue d'ensemble"], ["tasks", "Tâches"], ["goals", "Objectifs"], ["events", "Agenda"], ["budget", "Budget"], ["contacts", "Collaborations"]];
+const TABS = [["overview", "Vue d'ensemble"], ["tasks", "Tâches"], ["roadmap", "Roadmap"], ["goals", "Objectifs"], ["events", "Agenda"], ["budget", "Budget"], ["contacts", "Collaborations"]];
 
 // Cockpit de carrière : savoir ce qui avance, ce qui bloque, ce qui approche
 export default function CockpitView(props) {
@@ -118,6 +119,7 @@ export default function CockpitView(props) {
       <nav className="at-tabs">{TABS.map(([k, l]) => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)} data-testid={`cockpit-tab-${k}`}>{l}</button>)}</nav>
       {tab === "overview" && <Overview at={props.at} setTab={setTab} />}
       {tab === "tasks" && <TasksView {...props} />}
+      {tab === "roadmap" && <RoadmapView at={props.at} />}
       {["goals", "events", "budget", "contacts"].includes(tab) && <RecordTab key={tab} rk={tab} at={props.at} />}
     </section>
   );

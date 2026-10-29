@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoClose, IoCloudUploadOutline, IoDocumentTextOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { KINDS, atelierApi, isImportable, mediaFromUpload, mediaFromText } from "@/lib/atelier";
@@ -15,6 +15,19 @@ export default function DropDialog({ at, drop, defaults = {}, onClose, open }) {
   const [title, setTitle] = useState(files[0]?.name.replace(/\.[^.]+$/, "") || link?.name || "");
   const [prog, setProg] = useState(null);
   const targets = at.items.filter((i) => (uid ? i.universe_id === uid : !i.universe_id));
+
+  // Lien YouTube : on récupère le vrai titre de la vidéo (oEmbed) au lieu du générique « YouTube »
+  useEffect(() => {
+    const y = link && (link.yt || (link.url && (link.url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1]));
+    if (!y || files.length) return;
+    let alive = true;
+    fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${y}&format=json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (alive && d?.title) setTitle((prev) => (prev === link.name || !prev ? d.title : prev)); })
+      .catch(() => {});
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const run = async () => {
     try {
