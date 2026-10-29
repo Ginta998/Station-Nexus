@@ -1,4 +1,5 @@
 import { useMemo, useRef, useEffect } from "react";
+import { FrontiereRidges, TerraFlora } from "@/components/ThemeScenes";
 import { useApp } from "@/context/AppContext";
 
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -303,14 +304,13 @@ export default function CosmicBackground() {
         </div>
         <div className="sc s-frontiere">
           <div className="sky" /><div className="sun" />
-          <div className="ridge r1" /><div className="haze" /><div className="ridge r2" />
-          <div className="ridge r3" />
+          <FrontiereRidges /><div className="haze" />
           <div className="embers">{F.embers.map((e, i) => <i key={i} className={e.c ? "c" : ""} style={{ left: `${e.x}%`, animationDuration: `${e.dur}s`, animationDelay: `${e.delay}s`, "--drift": e.drift }} />)}</div>
         </div>
         <div className="sc s-terra">
           <div className="sky" /><div className="rays" />
           <div className="tower t2" /><div className="tower t4" /><div className="tower t1" /><div className="tower t3" />
-          <div className="mist" /><div className="ground" />
+          <div className="mist" /><TerraFlora />
           <div className="spores">{F.spores.map((e, i) => <i key={i} className={e.l ? "l" : ""} style={{ left: `${e.x}%`, animationDuration: `${e.dur}s`, animationDelay: `${e.delay}s`, "--drift": e.drift }} />)}</div>
         </div>
         <div className="sc s-neptune"><div className="body" /><div className="cur" /></div>
