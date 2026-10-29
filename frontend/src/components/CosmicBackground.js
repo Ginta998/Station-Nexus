@@ -298,21 +298,19 @@ export default function CosmicBackground() {
         <div className="sc s-aincrad">
           <div className="sky" /><div className="moon" />
           {F.clouds.map((c, i) => <span key={i} className="cloud" style={{ top: `${c.y}%`, width: c.w, animationDuration: `${c.dur}s`, animationDelay: `${c.delay}s` }} />)}
-          <div className="castle"><span className="spire" />{[[2, 16, 9], [12, 30, 10], [24, 46, 11], [38, 62, 12], [54, 78, 12], [70, 92, 11]].map(([t, w, h], i) => <i key={i} style={{ top: `${t}%`, width: `${w}%`, height: `${h}%` }} />)}<span className="root" /></div>
           <div className="rings">{F.rings.map(([x, y, s, d], i) => <b key={i} style={{ left: `${x}%`, top: `${y}%`, width: s, height: s, animationDuration: `${d}s` }} />)}</div>
           <div className="hud" />
         </div>
         <div className="sc s-frontiere">
           <div className="sky" /><div className="sun" />
           <div className="ridge r1" /><div className="haze" /><div className="ridge r2" />
-          <div className="legs" /><div className="neck" /><div className="ridge r3" />
+          <div className="ridge r3" />
           <div className="embers">{F.embers.map((e, i) => <i key={i} className={e.c ? "c" : ""} style={{ left: `${e.x}%`, animationDuration: `${e.dur}s`, animationDelay: `${e.delay}s`, "--drift": e.drift }} />)}</div>
         </div>
         <div className="sc s-terra">
           <div className="sky" /><div className="rays" />
           <div className="tower t2" /><div className="tower t4" /><div className="tower t1" /><div className="tower t3" />
           <div className="mist" /><div className="ground" />
-          <div className="bot"><div className="arm" /><div className="head" /><div className="eye" /><div className="vine" /></div>
           <div className="spores">{F.spores.map((e, i) => <i key={i} className={e.l ? "l" : ""} style={{ left: `${e.x}%`, animationDuration: `${e.dur}s`, animationDelay: `${e.delay}s`, "--drift": e.drift }} />)}</div>
         </div>
         <div className="sc s-neptune"><div className="body" /><div className="cur" /></div>
