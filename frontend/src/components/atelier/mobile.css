@@ -1,0 +1,37 @@
+/* ===== Téléphone : ergonomie, empilement propre des barres, défilement fluide ===== */
+.at-burger{display:none}
+@media(max-width:860px){
+  .at-burger{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;width:42px;height:42px;border-radius:14px;border:1px solid var(--line,var(--border-c));background:color-mix(in srgb,var(--bg-primary) 60%,transparent);cursor:pointer;padding:0;transition:background-color .2s,border-color .2s}
+  .at-burger i{display:block;width:18px;height:2px;border-radius:2px;background:var(--text-primary);transition:transform .3s cubic-bezier(.2,.9,.3,1),opacity .2s,width .3s}
+  .at-burger i:nth-child(2){width:12px;margin-left:6px}
+  .at-burger.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 16%,transparent)}
+  .at-burger.on i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  .at-burger.on i:nth-child(2){opacity:0}
+  .at-burger.on i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+  /* défilement : pas de flou ni d'animation lourde dans le contenu */
+  .at-main{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;scroll-behavior:auto;padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+  .at-main :is(.at-panel,.at-card,.at-uni-big,.at-ucard,.rd-card,.rd-add,.at-resume,section *){-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  .at-main .at-panel,.at-main .rd-grid,.at-main .at-grid{content-visibility:auto;contain-intrinsic-size:auto 420px}
+  .at-view{animation-duration:.2s}
+  .at-head{margin-bottom:22px}
+  .at-panel{padding:18px 16px;margin-bottom:16px}
+
+  /* pile du bas : raccourcis → radio → Bunny, sans chevauchement */
+  .at-scbar{left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));padding:6px 8px;border-radius:20px}
+  .at-sc{min-width:58px}
+  .at-sc.bunny .kj{border-color:var(--brand);color:var(--brand);background:color-mix(in srgb,var(--brand) 18%,transparent)}
+  .at-app .rd-bar{left:10px;right:10px;width:auto;transform:none;bottom:calc(84px + env(safe-area-inset-bottom));padding:6px 8px;border-radius:16px;animation:none}
+  .at-app:not(:has(.at-scbar)) .rd-bar{bottom:calc(12px + env(safe-area-inset-bottom))}
+  .at-app .rd-bar-art{width:40px;height:40px}
+  .has-radio .at-main{padding-bottom:calc(190px + env(safe-area-inset-bottom))}
+  .at-app .rd-qpop{left:0;right:0;width:auto}
+
+  .bnm-bar .bn-fab{display:none}
+  .menu-open .rd-bar,.menu-open .at-scbar,.menu-open .bn-fab,.menu-open .at-sc-tab{opacity:0;pointer-events:none;transition:opacity .2s}
+  .bn-fab{right:14px;transition:transform .35s cubic-bezier(.2,.9,.3,1),opacity .3s}
+  .at-app:has(.at-scbar) .bn-fab{bottom:calc(92px + env(safe-area-inset-bottom))}
+  .has-radio .bn-fab,.at-app.has-radio:has(.at-scbar) .bn-fab{bottom:calc(150px + env(safe-area-inset-bottom))}
+  .bnm-hide .bn-fab .bn-sprite{width:52px!important;height:52px!important}
+  .bnm-hide.is-scrolling .bn-fab{transform:translateX(140%);opacity:0}
+}

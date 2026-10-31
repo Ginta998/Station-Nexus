@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
+import AmbientMixer from "@/components/AmbientMixer";
 import { useQuery } from "@tanstack/react-query";
 import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoCashOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
@@ -60,6 +61,7 @@ export function SoundBtn({ btn: bstyle = btn, up = false }) {
               <button key={k} data-testid={`sound-mode-${k}`} className={playMode === k ? "on" : ""} onClick={() => { sfx("select"); setPlayMode(k); }} title={l}><Ic size={15} /> {l}</button>
             ))}
           </div>
+          <AmbientMixer />
           {playMode !== "loop" && !muted && ambienceId && (
             <button className="ssm-row" data-testid="sound-next" onClick={() => { sfx("nav"); nextAmbience(); }}>
               <span className="ic"><IoPlaySkipForward size={16} /></span> Piste suivante

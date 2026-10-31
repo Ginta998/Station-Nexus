@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoReorderThreeOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
+import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAtelier } from "@/lib/atelier";
 import { SoundBtn } from "@/components/StationMenu";
@@ -14,6 +14,7 @@ import UniverseForm from "@/components/atelier/UniverseForm";
 import CommandPalette from "@/components/atelier/CommandPalette";
 import DropDialog from "@/components/atelier/DropDialog";
 import { Player } from "@/components/atelier/AppScreens";
+import "@/components/atelier/mobile.css";
 import { BureauView, SalonView } from "@/components/atelier/BureauSalon";
 import { IoAppsOutline, IoFilmOutline } from "react-icons/io5";
 import BunnyPanel from "@/components/atelier/BunnyPanel";
@@ -62,6 +63,14 @@ export default function AtelierApp({ onLeave }) {
   const [drop, setDrop] = useState(null);
   const [screen, setScreen] = useState(null);
   const [bunny, setBunny] = useState(false);
+  const [bnMode, setBnMode] = useState(() => localStorage.getItem("nexus-bunny-m") || "bar");
+  const [scrolling, setScrolling] = useState(false);
+  useEffect(() => { const on = () => setBnMode(localStorage.getItem("nexus-bunny-m") || "bar"); window.addEventListener("nexus-bunny-m", on); return () => window.removeEventListener("nexus-bunny-m", on); }, []);
+  useEffect(() => {
+    if (bnMode !== "hide") return;
+    let t; const on = () => { setScrolling(true); clearTimeout(t); t = setTimeout(() => setScrolling(false), 900); };
+    document.addEventListener("scroll", on, { capture: true, passive: true }); return () => document.removeEventListener("scroll", on, { capture: true });
+  }, [bnMode]);
   const [brains, setBrains] = useState(false);
   const [focusMode, setFocusMode] = useState(() => window.location.hash === "#focus");
   const radio = useRadio(at);
@@ -112,7 +121,7 @@ export default function AtelierApp({ onLeave }) {
   const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", oeuvre: "ŒUVRE" }[view.name] || (cur?.name || "").toUpperCase();
 
   return (
-    <div className={"at-app cov-" + (at.config.cover_ratio || "std") + (menuOpen ? " menu-open" : "")} data-testid="atelier-app">
+    <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl ? " has-radio" : "") + (menuOpen ? " menu-open" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
       <header className="at-top">
         <div className="at-brand"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
@@ -123,7 +132,7 @@ export default function AtelierApp({ onLeave }) {
           <FsBtn />
           <button className="at-icon" onClick={() => go({ name: "settings" })} title="Réglages de l'Atelier" data-testid="atelier-settings-top"><IoSettingsOutline size={17} /></button>
           <button className="at-icon" onClick={() => { sfx("back"); onLeave(); }} title="Retour à la Station" data-testid="atelier-leave-top"><IoExitOutline size={17} /></button>
-          <button className="at-icon at-burger" onClick={() => { sfx("nav"); setMenuOpen((o) => !o); }} title="Menu" data-testid="atelier-menu-toggle"><IoReorderThreeOutline size={20} /></button>
+          <button className={"at-burger" + (menuOpen ? " on" : "")} onClick={() => { sfx("nav"); setMenuOpen((o) => !o); }} title="Menu" aria-label="Menu" data-testid="atelier-menu-toggle"><i /><i /><i /></button>
         </div>
       </header>
 
@@ -173,7 +182,7 @@ export default function AtelierApp({ onLeave }) {
         </main>
       </div>
 
-      <ShortcutBar at={at} onAdd={() => go({ name: "settings" })} run={(s) => runShortcut(s, { at, go, open, launch, action: (v) => (v === "search" ? setPalette(true) : v === "bunny" ? setBunny(true) : setFocusMode(true)) })} />
+      <ShortcutBar onBunny={bnMode === "bar" ? () => { sfx("select"); setBunny(true); } : null} at={at} onAdd={() => go({ name: "settings" })} run={(s) => runShortcut(s, { at, go, open, launch, action: (v) => (v === "search" ? setPalette(true) : v === "bunny" ? setBunny(true) : setFocusMode(true)) })} />
       <input ref={pick} type="file" multiple hidden onChange={(e) => { const files = [...e.target.files]; e.target.value = ""; if (files.length) setDrop({ files, text: "", defaults: pickDefaults.current }); }} data-testid="atelier-import-input" />
       {dragging && <div className="at-dropzone" data-testid="atelier-dropzone"><div><b>工</b><p>Dépose ici — tu choisiras où le ranger</p><small className="mono">PDF · WORD · EXCEL · IMAGES · MUSIQUES · VIDÉOS · LIENS · TOUT FICHIER</small></div></div>}
       {drop && <DropDialog at={at} drop={drop} defaults={drop.defaults} open={open} onClose={() => setDrop(null)} />}

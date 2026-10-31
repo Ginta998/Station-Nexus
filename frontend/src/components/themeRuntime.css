@@ -8,3 +8,12 @@
 @keyframes nxFog{to{transform:translateX(12%) translateY(-4%)}}
 html[data-tblur] :is(.at-panel,.at-top,.at-dock,.fx-bottom,.rd-bar,.rd-qpop,header,[class*="glass"]){-webkit-backdrop-filter:blur(var(--nx-blur)) saturate(1.3);backdrop-filter:blur(var(--nx-blur)) saturate(1.3)}
 html[data-motion="reduced"] .nx-fog i{animation:none}
+.amb-mix{margin:6px 0 8px;padding:10px;border-radius:12px;background:color-mix(in srgb,var(--brand) 8%,transparent);border:1px solid var(--border-c)}
+.amb-h{display:flex;align-items:center;justify-content:space-between;font-size:10px;letter-spacing:.16em;opacity:.85}
+.amb-h span{display:flex;align-items:center;gap:6px}
+.amb-h button{font-size:11px;letter-spacing:0;padding:4px 10px;border-radius:999px;border:1px solid var(--border-c);background:transparent;color:inherit;display:flex;align-items:center;gap:4px;cursor:pointer}
+.amb-h button.on{border-color:var(--brand);color:var(--brand)}
+.amb-mix input[type=range]{width:100%;margin:10px 0 6px;accent-color:var(--brand)}
+.amb-chips{display:flex;flex-wrap:wrap;gap:5px}
+.amb-chips button{font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid var(--border-c);background:transparent;color:inherit;opacity:.5;cursor:pointer;transition:opacity .2s,border-color .2s}
+.amb-chips button.on{opacity:1;border-color:var(--brand)}

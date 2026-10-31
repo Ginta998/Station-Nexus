@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useApp } from "@/context/AppContext";
 import { useThemeState, themeDef, cssVars, fontHref, keySound } from "@/lib/themeStore";
 import { imgSrc } from "@/lib/atelier";
+import { setAmbientLayers } from "@/lib/ambient";
 import "@/components/themeRuntime.css";
 
 const ytId = (u) => (u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
@@ -27,6 +28,7 @@ export default function ThemeRuntime() {
     }
   }, [d]);
 
+  useEffect(() => { setAmbientLayers(d?.ambient || []); }, [JSON.stringify(d?.ambient || [])]); // eslint-disable-line
   useEffect(() => { if (d?.ambience_id) selectAmbience(d.ambience_id); }, [theme, d?.ambience_id]); // eslint-disable-line
 
   useEffect(() => {

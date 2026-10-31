@@ -45,11 +45,11 @@ export const addShortcut = async (at, s) => {
 export const appShortcut = (a) => ({ t: "app", key: a.key, title: a.title, url: a.url, color: a.color, k: a.k });
 export const allApps = (at) => [...DEFAULT_APPS, ...at.links.filter((l) => l.kind === "app").map((l) => ({ key: l.id, title: l.title, url: l.url, color: l.color, k: l.title[0] }))];
 
-export function ShortcutBar({ at, run, onAdd }) {
+export function ShortcutBar({ at, run, onAdd, onBunny }) {
   const list = (at.config.shortcuts || []).map((s) => ({ s, i: scInfo(s, at) })).filter((x) => x.i);
   const [open, setOpen] = useState(() => localStorage.getItem("nexus-sc-open") === "1");
   const [hidden, setHidden] = useState(() => localStorage.getItem("nexus-sc-hidden") === "1");
-  if (!list.length) return null;
+  if (!list.length && !onBunny) return null;
   const hide = (h) => { localStorage.setItem("nexus-sc-hidden", h ? "1" : "0"); setHidden(h); };
   if (hidden) return <button className="at-sc-tab" onClick={() => hide(false)} aria-label="Afficher les raccourcis" data-testid="atelier-shortcuts-show"><IoChevronUp size={16} /></button>;
   const toggle = () => setOpen((o) => { localStorage.setItem("nexus-sc-open", o ? "0" : "1"); return !o; });
@@ -57,6 +57,7 @@ export function ShortcutBar({ at, run, onAdd }) {
     <nav className={"at-scbar" + (open ? " open" : "")} data-testid="atelier-shortcuts">
       <button className="at-sc-toggle" onClick={toggle} aria-label={open ? "Remettre en bas" : "Déployer"} data-testid="atelier-shortcuts-toggle">{open ? <IoChevronDown size={16} /> : <IoChevronUp size={16} />}</button>
       <div className="at-sc-list">
+        {onBunny && <button className="at-sc bunny" onClick={() => { if (open) toggle(); onBunny(); }} data-testid="atelier-shortcut-bunny"><span className="kj">兎</span><span className="lb">Bunny</span></button>}
         {list.map(({ s, i }) => (
           <button key={scKey(s)} className="at-sc" style={{ "--u": i.color || "var(--brand)" }} onClick={() => { if (open) toggle(); run(s); }} data-testid={`atelier-shortcut-${scKey(s).replace(/[^\w-]/g, "-")}`}>
             <span className="kj">{i.kanji}</span><span className="lb">{i.label}</span>

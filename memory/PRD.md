@@ -851,3 +851,7 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Fix radio coupée chaque seconde : src iframe figé au lancement (pl.src) au lieu de recalculé depuis localStorage. Recherche dans la file + recherche globale (GET /api/atelier/yt-playlist, cache titres nx-yt-titles)
 - Radio : onReady + retry listening, aléatoire maison (playVideoAt aléatoire), plus de setShuffle YouTube
 - Atelier de thèmes (Réglages Atelier) : collection themes, /api/themes public, /api/admin/themes CRUD ; lib/themeStore.js, ThemeRuntime (vars CSS, fond, effets canvas, sons clavier synthés), ThemeStudio/ThemeEditor ; clés perso "c-*", retouches des thèmes d origine = doc avec la même clé
+- Sons d ambiance superposés (lib/ambient.js : 11 sons synthés + fichiers ; canal séparé, mute/volume/par couche dans le menu ♪ via AmbientMixer ; theme.ambient)
+- Atelier de thèmes pleine page + miniature cliquable (aperçu réel + bouton retour)
+- Mobile : mobile.css (burger animé, pile raccourcis/radio/Bunny, défilement allégé), réglage Bunny téléphone (barre/cache au défilement/classique, localStorage nexus-bunny-m)
+- NEXT : Gamma (documents mis en forme)

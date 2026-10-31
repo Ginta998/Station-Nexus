@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { IoArrowBack, IoCloudUploadOutline, IoPlay } from "react-icons/io5";
+import { IoArrowBack, IoCloudUploadOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
+import { imgSrc } from "@/lib/atelier";
 import { toast } from "sonner";
 import { THEMES } from "@/lib/themes";
 import { uploadJournalImage, listAmbiences } from "@/lib/api";
 import { SOUND_PACKS, playUiSound } from "@/lib/sound";
+import { AMBIENTS } from "@/lib/ambient";
 import { setDraft, FONTS, FX, KEY_SOUNDS, PALETTES, GRADIENTS, keySound, fontHref } from "@/lib/themeStore";
 
 // Lit les valeurs réelles d'un thème d'origine pour pouvoir le retoucher
@@ -28,14 +30,19 @@ export default function ThemeEditor({ initial, onCancel, onSaved }) {
   useEffect(() => { setDraft(t); }, [t]);
   const set = (patch) => setT((o) => ({ ...o, ...patch }));
   const sub = (k, patch) => setT((o) => ({ ...o, [k]: { ...(o[k] || {}), ...patch } }));
+  const [full, setFull] = useState(false);
+  const [peek, setPeek] = useState(false);
+  if (peek) return <button className="ts-back" onClick={() => setPeek(false)} data-testid="theme-peek-back"><IoArrowBack size={16} /> Retour à l'atelier de thèmes</button>;
   return (
-    <aside className="ts-panel" data-testid="theme-editor">
+    <aside className={"ts-panel" + (full ? " full" : "")} data-testid="theme-editor">
+      <div className="ts-col">
       <header className="ts-head">
         <button className="ts-x" onClick={onCancel} title="Annuler" data-testid="theme-editor-cancel"><IoArrowBack size={18} /></button>
         <div className="ts-title">
           <input className="ts-kanji" value={t.kanji || ""} onChange={(e) => set({ kanji: e.target.value.slice(0, 3) })} />
           <input className="ts-name" value={t.name || ""} onChange={(e) => set({ name: e.target.value })} data-testid="theme-editor-name" />
         </div>
+        <button className="ts-x" onClick={() => setFull(!full)} title={full ? "Réduire" : "Pleine page"} data-testid="theme-editor-full">{full ? <IoContractOutline size={17} /> : <IoExpandOutline size={17} />}</button>
         <button className="ts-btn" onClick={() => onSaved(t)} data-testid="theme-editor-save">Enregistrer</button>
       </header>
       <p className="ts-live mono">● APERÇU EN DIRECT SUR TOUTE L'APP</p>
@@ -49,7 +56,29 @@ export default function ThemeEditor({ initial, onCancel, onSaved }) {
         {tab === "sound" && <SoundTab t={t} set={set} />}
         {tab === "info" && <InfoTab t={t} set={set} />}
       </div>
+      </div>
+      {full && <ThemePreview t={t} onOpen={() => setPeek(true)} />}
     </aside>
+  );
+}
+
+// Miniature d'exemple : la Station habillée du thème, cliquable pour voir l'app en vrai
+function ThemePreview({ t, onOpen }) {
+  const b = t.bg || {};
+  const bg = b.type === "gradient" ? `linear-gradient(${b.angle ?? 160}deg,${(b.g || []).join(",")})` : b.type === "image" && b.url ? `url(${imgSrc(b.url)}) center/cover` : "radial-gradient(120% 80% at 70% 0%,color-mix(in srgb,var(--brand) 30%,var(--bg-primary)),var(--bg-primary))";
+  return (
+    <div className="ts-prev-wrap">
+      <p className="mono ts-eye">// MINIATURE D'EXEMPLE</p>
+      <button className="ts-prev" onClick={onOpen} style={{ background: bg }} data-testid="theme-preview-open">
+        {b.type === "video" && b.url && !/youtu/.test(b.url) && <video src={imgSrc(b.url)} autoPlay muted loop playsInline />}
+        <span className="ts-prev-dim" style={{ opacity: b.type && b.type !== "scene" ? (b.dim ?? 30) / 100 : 0 }} />
+        <span className="ts-prev-top"><b>{t.kanji} STATION NEXUS</b><i>Accueil</i><i>Univers</i><i>Salon</i></span>
+        <span className="ts-prev-hero"><small>// {t.tagline || "NOUVELLE SAISON"}</small><strong>{t.name || "Ton thème"}</strong><em>Une histoire commence ici, habillée par ton thème.</em><span className="ts-prev-btns"><u>Commencer</u><s>Découvrir</s></span></span>
+        <span className="ts-prev-cards">{[0, 1, 2].map((i) => <span key={i}><span /><b>Œuvre {i + 1}</b><small>Chapitre {i + 3}</small></span>)}</span>
+        <span className="ts-prev-cta">Ouvrir l'aperçu en grand</span>
+      </button>
+      <p className="ts-hint">Clique sur la miniature pour voir toute l'app avec ce thème, puis reviens ici.</p>
+    </div>
   );
 }
 
@@ -135,12 +164,34 @@ function SoundTab({ t, set }) {
     <h4>Bruitages de l'interface</h4>
     <div className="ts-keys">{[{ key: "auto", label: "Selon la scène" }, ...SOUND_PACKS].map((p) => <button key={p.key} className={(t.sfx_pack || "auto") === p.key ? "on" : ""} onClick={() => { set({ sfx_pack: p.key }); try { playUiSound("select", p.key === "auto" ? undefined : p.key); } catch (_) {} }} title={p.hint}>{p.label}</button>)}</div>
     <Field label="Son de clic perso (remplace au clic)"><div className="ts-inline"><Upload accept="audio/*" onDone={(u) => set({ click_url: u })} label={t.click_url ? "Changer" : "Importer"} />{t.click_url && <button className="ts-btn ghost sm" onClick={() => set({ click_url: "" })}>Retirer</button>}</div></Field>
+    <h4>Sons d'ambiance superposés</h4>
+    <p className="ts-hint">Mélangés sous la musique. Ils se coupent à part dans le menu ♪.</p>
+    <AmbientLayers t={t} set={set} />
     <h4>Musique d'ambiance</h4>
     <select value={t.ambience_id || ""} onChange={(e) => set({ ambience_id: e.target.value })} data-testid="theme-ambience">
       <option value="">Garder celle choisie par le visiteur</option>
       {ambs.map((a) => <option key={a.id} value={a.id}>{a.title || a.name || a.id}</option>)}
     </select>
     <p className="ts-hint">Les ambiances se gèrent dans Réglages › Musique de la Station.</p>
+  </>);
+}
+
+function AmbientLayers({ t, set }) {
+  const L = t.ambient || [];
+  const same = (a, b) => a.id === b.id && (a.url || "") === (b.url || "");
+  const has = (id) => L.find((l) => l.id === id);
+  const put = (l) => set({ ambient: L.some((x) => same(x, l)) ? L.map((x) => (same(x, l) ? l : x)) : [...L, l] });
+  const drop = (l) => set({ ambient: L.filter((x) => !same(x, l)) });
+  return (<>
+    <div className="ts-keys">{AMBIENTS.map(([id, label]) => <button key={id} className={has(id) ? "on" : ""} onClick={() => (has(id) ? drop(has(id)) : put({ id, vol: 0.7 }))} data-testid={`theme-amb-${id}`}>{label}</button>)}</div>
+    {L.map((l) => (
+      <div key={l.id + (l.url || "")} className="ts-amb-row">
+        <span>{l.name || AMBIENTS.find((a) => a[0] === l.id)?.[1]}</span>
+        <input type="range" min="0" max="1" step="0.01" value={l.vol ?? 0.7} onChange={(e) => put({ ...l, vol: +e.target.value })} />
+        <button onClick={() => drop(l)} title="Retirer">×</button>
+      </div>
+    ))}
+    <Upload accept="audio/*" onDone={(url) => put({ id: "file", url, name: "Mon son", vol: 0.7 })} label="Ajouter ton propre son d'ambiance" />
   </>);
 }
 

@@ -87,6 +87,11 @@ export default function AtelierSettings({ at, openBrains }) {
         <ShortcutsManager at={at} />
       </div>
       <div className="at-panel">
+        <div className="at-panel-h"><h2>兎 Bunny sur téléphone</h2></div>
+        <p className="at-sub">Où Bunny se place sur cet appareil.</p>
+        <BunnyMobileSetting />
+      </div>
+      <div className="at-panel">
         <div className="at-panel-h"><h2>起 Démarrage</h2></div>
         <p className="at-sub">Choisis ce qui s'ouvre quand tu lances l'app sur cet appareil.</p>
         <StartupSetting />
@@ -102,5 +107,17 @@ export default function AtelierSettings({ at, openBrains }) {
         <button className="at-btn" onClick={backup} data-testid="atelier-backup">Télécharger la sauvegarde</button>
       </div>
     </section>
+  );
+}
+
+function BunnyMobileSetting() {
+  const [v, setV] = useState(() => localStorage.getItem("nexus-bunny-m") || "bar");
+  const pick = (x) => { localStorage.setItem("nexus-bunny-m", x); setV(x); window.dispatchEvent(new Event("nexus-bunny-m")); };
+  return (
+    <div className="at-inline" data-testid="bunny-mobile-setting">
+      {[["bar", "Dans la barre du bas"], ["hide", "Bulle qui se cache au défilement"], ["float", "Bulle classique"]].map(([k, l]) => (
+        <button key={k} className={"at-btn" + (v === k ? "" : " ghost")} onClick={() => pick(k)} data-testid={`bunny-mobile-${k}`}>{l}</button>
+      ))}
+    </div>
   );
 }
