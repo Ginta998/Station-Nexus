@@ -72,6 +72,7 @@ class ConfigIn(BaseModel):
     focus_vids: Optional[List[Dict[str, Any]]] = None
     playlists: Optional[List[dict]] = None
     cover_ratio: Optional[str] = None
+    radio: Optional[List[Dict[str, Any]]] = None
 
 
 def _esc(t: str) -> str:

@@ -845,3 +845,5 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Format couvertures PC au choix (Actuel / +30% / 2:3) dans Réglages (config.cover_ratio)
 - Lecteur unique plein/mini (pas de rechargement), reprise de position YouTube/vidéo (localStorage nx-pos:)
 - Focus : l oeil remplacé par une languette centrée qui replie seulement le menu du bas
+- Radio Nexus (vue "radio", config.radio) : lecteur YouTube caché persistant, barre fixe, mode Station, aléatoire, reprise, couvertures
+- Deux écrans : bouton "Envoyer sur l autre écran" (lecteur + Focus via /atelier#focus), toScreen() dans lib/embed.js

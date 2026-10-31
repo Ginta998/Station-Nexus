@@ -65,3 +65,18 @@ export const DEFAULT_APPS = [
   { key: "ytmusic", title: "YouTube Music", url: "https://music.youtube.com", color: "#ff0000", k: "♪" },
   { key: "primevideo", title: "Prime Video", url: "https://www.primevideo.com", color: "#00a8e1", k: "▷" },
 ];
+
+// Ouvre sur l'autre écran (Chrome/Edge : placement auto), sinon une grande fenêtre à glisser
+export async function toScreen(url) {
+  let f = `popup=yes,width=${window.screen.availWidth},height=${window.screen.availHeight},left=0,top=0`;
+  try {
+    if ("getScreenDetails" in window) {
+      const d = await window.getScreenDetails();
+      const s = d.screens.find((x) => x !== d.currentScreen);
+      if (s) f = `popup=yes,left=${s.availLeft},top=${s.availTop},width=${s.availWidth},height=${s.availHeight}`;
+    }
+  } catch (_) {}
+  const w = window.open(url, "nexus-screen2", f);
+  if (!w) window.open(url, "_blank", "noopener");
+  return w;
+}

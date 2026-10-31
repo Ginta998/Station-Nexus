@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IoClose, IoPlay, IoPause, IoStop, IoExpand, IoVideocamOutline, IoVolumeHigh, IoVolumeMute, IoMusicalNotes, IoChevronDown, IoChevronUp, IoAdd, IoTrashOutline, IoPlayBack, IoPlayForward } from "react-icons/io5";
+import { IoClose, IoPlay, IoPause, IoStop, IoExpand, IoVideocamOutline, IoVolumeHigh, IoVolumeMute, IoMusicalNotes, IoChevronDown, IoChevronUp, IoAdd, IoTrashOutline, IoPlayBack, IoPlayForward, IoDesktopOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
 import { THEMES } from "@/lib/themes";
 import { getUniPlaylist } from "@/lib/atelier";
-import { toEmbed } from "@/lib/embed";
+import { toEmbed, toScreen } from "@/lib/embed";
 import CosmicBackground from "@/components/CosmicBackground";
 import { SoundBtn } from "@/components/StationMenu";
 
@@ -147,6 +147,7 @@ export default function FocusView({ at, onClose }) {
           <button className={mode === "repos" ? "on" : ""} onClick={() => setMode("repos")}>憩 Repos</button>
           <button className={mode === "immersion" ? "on" : ""} onClick={() => setMode("immersion")}>没 Immersion</button>
         </div>
+        <button className="fx-icon" onClick={() => { toScreen(window.location.origin + "/atelier#focus"); close(); }} title="Ouvrir le Focus sur l'autre écran" data-testid="atelier-focus-screen2"><IoDesktopOutline size={16} /></button>
         <button className="fx-icon" onClick={toggleFull} title="Plein écran"><IoExpand size={16} /></button>
       </div>
 

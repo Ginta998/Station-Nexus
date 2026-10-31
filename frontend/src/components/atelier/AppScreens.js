@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import { IoClose, IoOpenOutline, IoContractOutline, IoExpandOutline, IoPlayForward, IoPlayBack } from "react-icons/io5";
-import { toEmbed, popOut } from "@/lib/embed";
+import { IoClose, IoOpenOutline, IoContractOutline, IoExpandOutline, IoPlayForward, IoPlayBack, IoDesktopOutline } from "react-icons/io5";
+import { toEmbed, popOut, toScreen } from "@/lib/embed";
 import { imgSrc, useMediaClaim } from "@/lib/atelier";
 
 const POS = "nx-pos:";
@@ -70,6 +70,7 @@ function AppBar({ cur, queue, qi, goTo, onMini, onClose, onNavigate }) {
       <form onSubmit={(e) => { e.preventDefault(); onNavigate({ title: cur.title, url: q.trim() }); }}><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Colle un lien…" data-testid="atelier-appwin-url" /></form>
       {hasQ && <button className="at-icon" onClick={() => goTo(qi + 1)} title="Vidéo suivante" data-testid="atelier-appwin-next"><IoPlayForward size={16} /></button>}
       <button className="at-icon" onClick={onMini} title="Mini-lecteur" data-testid="atelier-appwin-mini"><IoContractOutline size={16} /></button>
+      <button className="at-icon" onClick={() => { const e = toEmbed(cur.url); toScreen(e?.video ? imgSrc(e.video) : e?.src ? (e.provider === "YouTube" ? `${e.src}&start=${getPos(cur.url)}` : e.src) : cur.url); onClose(); }} title="Envoyer sur l'autre écran" data-testid="atelier-appwin-screen2"><IoDesktopOutline size={16} /></button>
       <button className="at-icon" onClick={() => popOut(cur.url)} title="Ouvrir à côté"><IoOpenOutline size={16} /></button>
       <button className="at-icon" onClick={onClose} title="Fermer" data-testid="atelier-appwin-close"><IoClose size={18} /></button>
     </div>
