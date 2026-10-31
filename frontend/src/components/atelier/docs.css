@@ -1,0 +1,39 @@
+.dz-edit{padding:clamp(20px,4vw,56px)!important;border-radius:14px;transition:background-color .3s}
+.dz-edit [contenteditable],.dz-edit .ProseMirror{color:var(--dz-ink);font-family:var(--dz-fb)}
+.dz-edit .at-ed-title{background:transparent!important;font-size:clamp(30px,4vw,52px)!important}
+.dsp{position:fixed;top:70px;right:16px;z-index:90;width:min(420px,calc(100vw - 24px));max-height:calc(100vh - 90px);overflow-y:auto;padding:18px;border-radius:18px;background:color-mix(in srgb,var(--bg-primary) 94%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--border-c);box-shadow:0 30px 80px -30px #000;animation:atView .25s both}
+.dsp-h{display:flex;justify-content:space-between;align-items:center}.dsp-h h3{margin:0;font-family:var(--font-display);font-size:20px}
+.dsp-h button{background:none;border:0;color:inherit;cursor:pointer}
+.dsp-l{font-size:10px;letter-spacing:.2em;opacity:.6;margin:16px 0 8px}
+.dsp-fmt{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.dsp-fmt button{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1px solid var(--border-c);background:transparent;color:inherit;cursor:pointer;font-size:13px;transition:border-color .2s,background-color .2s}
+.dsp-fmt button.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 14%,transparent)}
+.dsp-fmt i{display:block;border:1.5px solid currentColor;border-radius:3px;opacity:.7}
+.ic-a4{width:14px;height:19px}.ic-slides{width:22px;height:13px}.ic-web{width:18px;height:18px;border-top-width:4px!important}.ic-mood{width:18px;height:18px;border-style:dashed!important}
+.dsp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dsp-card{display:flex;flex-direction:column;gap:6px;padding:0;border:0;background:none;color:inherit;cursor:pointer;text-align:left}
+.dsp-mini{position:relative;display:flex;flex-direction:column;gap:4px;aspect-ratio:3/4;padding:12px 10px;border-radius:10px;border:1px solid var(--border-c);overflow:hidden;transition:transform .2s,box-shadow .2s}
+.dsp-card:hover .dsp-mini{transform:translateY(-3px);box-shadow:0 12px 26px -12px #000}
+.dsp-card.on .dsp-mini{outline:2px solid var(--brand);outline-offset:2px}
+.dsp-mini .dz-eye{font-size:6px}
+.dsp-mini b{font-size:26px;line-height:1}
+.dsp-mini i{display:block;height:3px;border-radius:2px;background:var(--dz-ink);opacity:.25}.dsp-mini i.s{width:60%;background:var(--dz-ac);opacity:1}
+.dsp-n{font-size:12px}
+.dsp-view{width:100%;justify-content:center;margin-top:16px}
+.dv-root{position:fixed;inset:0;z-index:95;display:flex;flex-direction:column;background:#07070a;animation:atView .25s both}
+.dv-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.08);background:#0c0c11;color:#eee}
+.dv-bar .grow{flex:1}
+.dv-seg{display:flex;gap:4px;overflow-x:auto}
+.dv-seg button{padding:8px 12px;border-radius:999px;border:0;background:transparent;color:rgba(255,255,255,.65);cursor:pointer;white-space:nowrap}
+.dv-seg button.on{background:rgba(255,255,255,.12);color:#fff}
+.dv-scroll{flex:1;overflow:auto;padding:clamp(12px,3vw,40px)}
+.dv-scroll>.dz.f-slides,.dv-scroll>.dz.f-mood{background:transparent;max-width:1100px;margin:0 auto}
+.dv-scroll>.dz.f-slides .dz-slide{background:var(--dz-bg)}
+.dv-scroll>.dz.f-mood{background:var(--dz-bg);border-radius:14px}
+.dv-present{position:fixed;inset:0;z-index:100;background:#000;display:grid;place-items:center;cursor:pointer}
+.dv-present>.dz{width:min(100vw,177.78vh);background:transparent}
+.dv-present .dz-slide{border-radius:0;box-shadow:none;background:var(--dz-bg);font-size:clamp(12px,1.6vw,26px)}
+.dv-pnav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;opacity:.3;transition:opacity .2s;cursor:default}
+.dv-pnav:hover{opacity:1}.dv-pnav button{background:none;border:0;color:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center}
+body:has(.dv-root) .bn-fab,body:has(.dv-root) .rd-bar,body:has(.dsp) .bn-fab{display:none}
+@media(max-width:767px){.dsp-grid{grid-template-columns:repeat(2,1fr)}.dz-slide{font-size:9px}}

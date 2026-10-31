@@ -249,6 +249,62 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
         return Response(content=buf.getvalue(), media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                         headers={"Content-Disposition": f'attachment; filename="{fname}.docx"'})
 
+    @r.get("/items/{iid}/pptx")
+    async def export_pptx(iid: str, bg: str = "#0b0b12", ink: str = "#f1f1f4", ac: str = "#3f86ff", ft: str = "Calibri", fb: str = "Calibri"):
+        it = await db.atelier_items.find_one({"id": iid}, {"_id": 0})
+        if not it:
+            raise HTTPException(404, "Élément introuvable")
+        from pptx import Presentation
+        from pptx.util import Inches, Pt
+        from pptx.dml.color import RGBColor
+        rgb = lambda h: RGBColor.from_string((h.lstrip("#") + "000000")[:6]) if re.fullmatch(r"#?[0-9a-fA-F]{6}", h) else RGBColor(0x11, 0x11, 0x11)  # noqa: E731
+        p = Presentation()
+        p.slide_width, p.slide_height = Inches(13.333), Inches(7.5)
+        html = re.sub(r'<span class="sx-music-cue"[^>]*>.*?</span>', "", it.get("content") or "")
+        parts = re.split(r"<h[12][^>]*>(.*?)</h[12]>|<hr[^>]*>", html)
+        secs, title = [], None
+        for i, chunk in enumerate(parts):
+            if i % 2 == 1:
+                title = re.sub(r"<[^>]+>", "", chunk or "")
+                continue
+            paras = [re.sub(r"<[^>]+>", "", x).strip() for x in re.split(r"</p>|<br\s*/?>|</li>", chunk or "")]
+            paras = [x for x in paras if x]
+            if title or paras:
+                secs.append((title or "", paras))
+            title = None
+
+        def slide(head, lines, big=False):
+            s = p.slides.add_slide(p.slide_layouts[6])
+            s.background.fill.solid()
+            s.background.fill.fore_color.rgb = rgb(bg)
+            bar = s.shapes.add_shape(1, Inches(0.8), Inches(1.0 if not big else 4.2), Inches(0.9), Inches(0.08))
+            bar.fill.solid()
+            bar.fill.fore_color.rgb = rgb(ac)
+            bar.line.fill.background()
+            tb = s.shapes.add_textbox(Inches(0.8), Inches(1.2 if not big else 4.4), Inches(11.7), Inches(1.4))
+            r = tb.text_frame.paragraphs[0].add_run()
+            r.text = head
+            r.font.size, r.font.bold, r.font.name = Pt(54 if big else 36), True, ft
+            r.font.color.rgb = rgb(ink)
+            if lines:
+                body = s.shapes.add_textbox(Inches(0.8), Inches(2.7), Inches(11.7), Inches(4.3)).text_frame
+                body.word_wrap = True
+                for j, line in enumerate(lines[:9]):
+                    para = body.paragraphs[0] if j == 0 else body.add_paragraph()
+                    run = para.add_run()
+                    run.text = line[:400]
+                    run.font.size, run.font.name = Pt(18), fb
+                    run.font.color.rgb = rgb(ink)
+
+        slide(it.get("title") or "Sans titre", [], big=True)
+        for head, lines in secs:
+            slide(head, lines)
+        buf = io.BytesIO()
+        p.save(buf)
+        fname = re.sub(r"[^\w\- ]", "_", it.get("title") or "presentation")[:80]
+        return Response(content=buf.getvalue(), media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                        headers={"Content-Disposition": f'attachment; filename="{fname}.pptx"'})
+
     async def get_config():
         c = await db.atelier_config.find_one({"_id": "main"}, {"_id": 0})
         return c or {"code": "0874", "music_url": "", "music_title": ""}

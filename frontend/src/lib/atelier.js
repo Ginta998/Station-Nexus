@@ -63,6 +63,10 @@ export const atelierApi = {
     const fd = new FormData(); fd.append("file", file); fd.append("universe_id", universe_id || ""); fd.append("kind", kind); fd.append("split", "1");
     return api.post("/atelier/import", fd, { onUploadProgress: (e) => onProgress?.(e.total ? e.loaded / e.total : 0) }).then((r) => r.data.items);
   },
+  downloadPptx: async (id, title, s) => {
+    const r = await api.get(`/atelier/items/${id}/pptx`, { responseType: "blob", params: { bg: s.bg || "#0b0b12", ink: s.ink || "#f1f1f4", ac: s.ac || "#3f86ff", ft: s.ft || "Calibri", fb: s.fb || "Calibri" } });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(r.data); a.download = `${(title || "presentation").replace(/[^\w\- ]/g, "_")}.pptx`; a.click();
+  },
   downloadDocx: async (id, title) => {
     const r = await api.get(`/atelier/items/${id}/docx`, { responseType: "blob" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(r.data); a.download = `${(title || "document").replace(/[^\w\- ]/g, "_")}.docx`; a.click();

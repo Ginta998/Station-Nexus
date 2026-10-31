@@ -124,7 +124,7 @@ export default function AtelierApp({ onLeave }) {
     <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl ? " has-radio" : "") + (menuOpen ? " menu-open" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
       <header className="at-top">
-        <div className="at-brand"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
+        <div className="at-brand" onClick={() => go({ name: "home" })} role="button" style={{ cursor: "pointer" }} data-testid="atelier-logo-home"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
         <button className="at-search" onClick={() => { sfx("nav"); setPalette(true); }} data-testid="atelier-search-open"><IoSearch size={15} /><span>Rechercher un univers, une fiche, une scène…</span><kbd className="mono">Ctrl K</kbd></button>
         <div className="at-top-r">
           <ShipClock />

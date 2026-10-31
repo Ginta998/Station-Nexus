@@ -1,18 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import { IoArrowBack, IoTimeOutline, IoPrintOutline, IoTrashOutline, IoPin, IoPinOutline, IoImageOutline, IoClose, IoLinkOutline } from "react-icons/io5";
+import { IoArrowBack, IoColorPaletteOutline, IoEyeOutline, IoTimeOutline, IoPrintOutline, IoTrashOutline, IoPin, IoPinOutline, IoImageOutline, IoClose, IoLinkOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import RichTextEditor from "@/components/RichTextEditor";
 import { uploadJournalImage } from "@/lib/api";
 import { KINDS, KIND_FIELDS, atelierApi, imgSrc } from "@/lib/atelier";
 import { TaskRow, TaskQuickAdd } from "@/components/atelier/TasksView";
 import MediaGallery from "@/components/atelier/MediaGallery";
+import DocView from "@/components/atelier/DocView";
+import DocStylePanel from "@/components/atelier/DocStylePanel";
+import { styleOf, styleVars, DOC_CSS, docFonts } from "@/lib/docStyles";
+import "@/components/atelier/docs.css";
 import { mediaFromUpload, mediaFromText } from "@/lib/atelier";
 
 const esc = (s) => (s || "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 function printItem(it, uname) {
   const w = window.open("", "_blank");
   if (!w) return toast.error("Autorise les fenêtres pour exporter en PDF");
-  const fields = Object.entries(it.fields || {}).filter(([, v]) => v).map(([k, v]) => `<p><b>${esc((KIND_FIELDS[it.kind] || []).find((f) => f[0] === k)?.[1] || k)} :</b> ${esc(v)}</p>`).join("");
+  const fields = Object.entries(it.fields || {}).filter(([k, v]) => v && k !== "doc").map(([k, v]) => `<p><b>${esc((KIND_FIELDS[it.kind] || []).find((f) => f[0] === k)?.[1] || k)} :</b> ${esc(v)}</p>`).join("");
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(it.title)}</title><style>body{font-family:Georgia,serif;max-width:720px;margin:48px auto;padding:0 24px;line-height:1.7;color:#111}h1{font-size:30px;margin:0 0 4px}small{color:#777;letter-spacing:.2em;text-transform:uppercase;font:11px sans-serif}img{max-width:100%}hr{border:0;border-top:1px solid #ccc}.sx-music-cue{display:none}</style></head><body><small>${esc(KINDS[it.kind]?.label)}${uname ? " · " + esc(uname) : ""}</small><h1>${esc(it.title || "Sans titre")}</h1>${fields}${it.image ? `<img src="${imgSrc(it.image)}"/>` : ""}${it.content || ""}</body></html>`);
   w.document.close(); setTimeout(() => w.print(), 400);
 }
@@ -52,6 +56,7 @@ export default function ItemEditor({ at, id, open, onClose }) {
     if (status === "saved" || !latest.current) return;
     try { await at.saveItem(latest.current); setStatus("saved"); } catch { setStatus("error"); toast.error("Sauvegarde impossible — ton texte reste ici, réessaie"); }
   };
+  const dst = styleOf(it?.fields?.doc?.style);
   const change = (patch) => {
     setIt((x) => ({ ...x, ...patch })); setStatus("dirty");
     clearTimeout(timer.current);
@@ -110,13 +115,16 @@ export default function ItemEditor({ at, id, open, onClose }) {
         <span className="grow" />
         <button className="at-icon" onClick={() => change({ pinned: !it.pinned })} title="Épingler" data-testid="atelier-editor-pin">{it.pinned ? <IoPin size={17} /> : <IoPinOutline size={17} />}</button>
         <button className="at-icon" onClick={() => setPanel(panel === "versions" ? null : "versions")} title="Versions" data-testid="atelier-editor-versions"><IoTimeOutline size={17} /></button>
+        <button className="at-icon" onClick={() => setPanel(panel === "style" ? null : "style")} title="Mise en forme" data-testid="atelier-editor-style"><IoColorPaletteOutline size={17} /></button>
+        <button className="at-icon" onClick={async () => { await flush(); setPanel("view"); }} title="Visualiser" data-testid="atelier-editor-view"><IoEyeOutline size={17} /></button>
         <button className="at-icon" onClick={() => printItem(it, uname)} title="Exporter en PDF" data-testid="atelier-editor-pdf"><IoPrintOutline size={17} /></button>
         <button className="at-icon txt" onClick={async () => { await flush(); try { await atelierApi.downloadDocx(it.id, it.title); } catch { toast.error("Export Word impossible"); } }} title="Exporter en Word (.docx)" data-testid="atelier-editor-docx">W</button>
         <button className="at-icon danger" onClick={remove} title="Supprimer" data-testid="atelier-editor-delete"><IoTrashOutline size={17} /></button>
       </div>
 
       <div className="at-ed-body">
-        <article className="at-ed-main">
+        {dst.bg && <><link rel="stylesheet" href={docFonts()} /><style>{DOC_CSS}</style></>}
+        <article className={"at-ed-main" + (dst.bg ? " dz dz-edit" : "")} data-deco={dst.deco || undefined} style={styleVars(dst)}>
           <p className="at-eyebrow mono">{KINDS[it.kind]?.kanji} {KINDS[it.kind]?.label.toUpperCase()}{uname ? ` · ${uname.toUpperCase()}` : " · INBOX"}</p>
           <input className="at-ed-title" value={it.title} onChange={(e) => change({ title: e.target.value })} placeholder="Titre…" data-testid="atelier-editor-title" />
           <RichTextEditor key={it.id + ":" + rev} value={it.content} onChange={(html) => change({ content: html })} page placeholder="Écris, colle depuis Google Docs, développe ton idée…" />
@@ -162,6 +170,8 @@ export default function ItemEditor({ at, id, open, onClose }) {
           </div>
         </aside>
       </div>
+      {panel === "style" && <DocStylePanel doc={it.fields?.doc || {}} onChange={(d) => change({ fields: { ...(it.fields || {}), doc: { ...(it.fields?.doc || {}), ...d } } })} onView={() => setPanel("view")} onClose={() => setPanel(null)} />}
+      {panel === "view" && <DocView it={it} eyebrow={`${KINDS[it.kind]?.label || ""}${uname ? " · " + uname : ""}`} onClose={() => setPanel(null)} />}
       {panel === "versions" && <Versions id={it.id} onRestore={restore} onClose={() => setPanel(null)} />}
     </div>
   );

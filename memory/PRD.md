@@ -855,3 +855,5 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Atelier de thèmes pleine page + miniature cliquable (aperçu réel + bouton retour)
 - Mobile : mobile.css (burger animé, pile raccourcis/radio/Bunny, défilement allégé), réglage Bunny téléphone (barre/cache au défilement/classique, localStorage nexus-bunny-m)
 - NEXT : Gamma (documents mis en forme)
+- Documents façon Gamma : bouton Mise en forme (13 styles dont Actuel par défaut, 4 formats A4/Diaporama/Page web/Moodboard, stocké dans item.fields.doc), Visualiser (mode Présenter), export PDF stylé, PPTX (GET /api/atelier/items/{id}/pptx, python-pptx), DOCX existant
+- Logo Atelier -> Pont
