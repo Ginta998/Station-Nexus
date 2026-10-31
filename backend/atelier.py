@@ -228,6 +228,20 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
             created.append(doc)
         return {"items": created}
 
+    @r.post("/items/{iid}/share")
+    async def share_item(iid: str):
+        it = await db.atelier_items.find_one({"id": iid}, {"_id": 0, "share_token": 1})
+        if it is None:
+            raise HTTPException(404, "Élément introuvable")
+        tok = it.get("share_token") or uuid.uuid4().hex[:16]
+        await db.atelier_items.update_one({"id": iid}, {"$set": {"share_token": tok}})
+        return {"token": tok}
+
+    @r.delete("/items/{iid}/share")
+    async def unshare_item(iid: str):
+        await db.atelier_items.update_one({"id": iid}, {"$unset": {"share_token": ""}})
+        return {"ok": True}
+
     @r.get("/items/{iid}/docx")
     async def export_docx(iid: str):
         it = await db.atelier_items.find_one({"id": iid}, {"_id": 0})
@@ -269,25 +283,57 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
                 continue
             paras = [re.sub(r"<[^>]+>", "", x).strip() for x in re.split(r"</p>|<br\s*/?>|</li>", chunk or "")]
             paras = [x for x in paras if x]
-            if title or paras:
-                secs.append((title or "", paras))
+            imgs = re.findall(r'<img[^>]+src="([^"]+)"', chunk or "")
+            if title or paras or imgs:
+                secs.append((title or "", paras, imgs))
             title = None
 
-        def slide(head, lines, big=False):
+        import httpx
+        async def grab(src):
+            try:
+                url = f"http://localhost:8001{src}" if src.startswith("/") else src
+                if not url.startswith("http"):
+                    return None
+                async with httpx.AsyncClient(timeout=15, follow_redirects=True) as c:
+                    res = await c.get(url)
+                return io.BytesIO(res.content) if res.status_code == 200 and res.headers.get("content-type", "").startswith("image") else None
+            except Exception:
+                return None
+
+        W, H = p.slide_width, p.slide_height
+
+        def slide(head, lines, big=False, pic=None):
             s = p.slides.add_slide(p.slide_layouts[6])
             s.background.fill.solid()
             s.background.fill.fore_color.rgb = rgb(bg)
+            tw = Inches(11.7)
+            if pic and big:
+                try:
+                    s.shapes.add_picture(pic, 0, 0, width=W, height=H)
+                    veil = s.shapes.add_shape(1, 0, Inches(3.4), W, Inches(4.1))
+                    veil.fill.solid()
+                    veil.fill.fore_color.rgb = rgb(bg)
+                    veil.line.fill.background()
+                except Exception:
+                    pass
+            elif pic:
+                try:
+                    s.shapes.add_picture(pic, Inches(7.1), Inches(0.9), width=Inches(5.6))
+                    tw = Inches(6.0)
+                except Exception:
+                    pass
             bar = s.shapes.add_shape(1, Inches(0.8), Inches(1.0 if not big else 4.2), Inches(0.9), Inches(0.08))
             bar.fill.solid()
             bar.fill.fore_color.rgb = rgb(ac)
             bar.line.fill.background()
-            tb = s.shapes.add_textbox(Inches(0.8), Inches(1.2 if not big else 4.4), Inches(11.7), Inches(1.4))
+            tb = s.shapes.add_textbox(Inches(0.8), Inches(1.2 if not big else 4.4), tw, Inches(1.4))
+            tb.text_frame.word_wrap = True
             r = tb.text_frame.paragraphs[0].add_run()
             r.text = head
             r.font.size, r.font.bold, r.font.name = Pt(54 if big else 36), True, ft
             r.font.color.rgb = rgb(ink)
             if lines:
-                body = s.shapes.add_textbox(Inches(0.8), Inches(2.7), Inches(11.7), Inches(4.3)).text_frame
+                body = s.shapes.add_textbox(Inches(0.8), Inches(2.7), tw, Inches(4.3)).text_frame
                 body.word_wrap = True
                 for j, line in enumerate(lines[:9]):
                     para = body.paragraphs[0] if j == 0 else body.add_paragraph()
@@ -296,9 +342,11 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
                     run.font.size, run.font.name = Pt(18), fb
                     run.font.color.rgb = rgb(ink)
 
-        slide(it.get("title") or "Sans titre", [], big=True)
-        for head, lines in secs:
-            slide(head, lines)
+        slide(it.get("title") or "Sans titre", [], big=True, pic=await grab(it["image"]) if it.get("image") else None)
+        for head, lines, imgs in secs:
+            slide(head, lines, pic=await grab(imgs[0]) if imgs else None)
+            for extra in imgs[1:4]:
+                slide("", [], big=True, pic=await grab(extra))
         buf = io.BytesIO()
         p.save(buf)
         fname = re.sub(r"[^\w\- ]", "_", it.get("title") or "presentation")[:80]

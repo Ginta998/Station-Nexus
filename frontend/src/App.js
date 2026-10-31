@@ -28,6 +28,7 @@ import CosmicBunny from "@/components/CosmicBunny";
 import GlobalSound from "@/components/GlobalSound";
 import PortalListener from "@/components/atelier/PortalListener";
 import Atelier from "@/pages/Atelier";
+import SharedDoc from "@/pages/SharedDoc";
 import CyberOverlay from "@/components/CyberOverlay";
 import CosmicBackground from "@/components/CosmicBackground";
 import ThemeRuntime from "@/components/ThemeRuntime";
@@ -130,6 +131,7 @@ function App() {
             <Route path="/soutien" element={<SupportPage />} />
             <Route path="/a-propos" element={<About />} />
             <Route path="/atelier" element={<Atelier />} />
+            <Route path="/d/:token" element={<SharedDoc />} />
             <Route path="/revenus" element={<Revenue />} />
             <Route path="/salon" element={<Chat />} />
             <Route path="/payment/success" element={<PaymentResult mode="success" />} />

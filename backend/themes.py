@@ -33,4 +33,11 @@ def build_themes_router(db, require_admin) -> APIRouter:
         await col.delete_one({"key": key})
         return {"ok": True}
 
+    @r.get("/share/{token}")
+    async def shared_doc(token: str):
+        it = await db.atelier_items.find_one({"share_token": token}, {"_id": 0, "title": 1, "content": 1, "image": 1, "kind": 1, "fields": 1})
+        if not it:
+            raise HTTPException(404, "Ce lien n'est plus actif")
+        return it
+
     return r

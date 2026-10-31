@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { IoClose, IoOpenOutline, IoContractOutline, IoExpandOutline, IoPlayForward, IoPlayBack, IoDesktopOutline } from "react-icons/io5";
 import { toEmbed, popOut, toScreen } from "@/lib/embed";
 import { imgSrc, useMediaClaim } from "@/lib/atelier";
+import Cinema, { isYouTube } from "@/components/atelier/Cinema";
 
 const POS = "nx-pos:";
 const getPos = (url) => { try { return Math.floor(+localStorage.getItem(POS + url) || 0); } catch (_) { return 0; } };
@@ -50,11 +51,14 @@ export function Player({ screen, onClose, onNavigate }) {
   const cur = queue ? queue[qi] : { title: screen.title, url: screen.url };
   const goTo = (i) => { if (!queue) return; const n = (i + queue.length) % queue.length; onNavigate({ ...screen, queue, qi: n, title: queue[n].title, url: queue[n].url }); };
   const next = queue && queue.length > 1 ? () => goTo(qi + 1) : undefined;
+  const yt = isYouTube(cur.url);
   return (
-    <div className={mini ? "at-mini" : "at-appwin"} ref={box} data-testid={mini ? "atelier-mini" : "atelier-appwin"}>
+    <div className={mini ? "at-mini" : "at-appwin" + (yt ? " cine-win" : "")} ref={box} data-testid={mini ? "atelier-mini" : "atelier-appwin"}>
       {mini ? <MiniBar box={box} title={cur.title} onExpand={() => onNavigate({ ...screen, mini: false })} onClose={onClose} />
-        : <AppBar screen={screen} cur={cur} queue={queue} qi={qi} goTo={goTo} onMini={() => onNavigate({ ...screen, mini: true })} onClose={onClose} onNavigate={onNavigate} />}
-      <div className={mini ? "at-mini-body" : "at-appwin-body"}><EmbedFrame key={cur.url} url={cur.url} onEnded={next} /></div>
+        : yt ? null : <AppBar screen={screen} cur={cur} queue={queue} qi={qi} goTo={goTo} onMini={() => onNavigate({ ...screen, mini: true })} onClose={onClose} onNavigate={onNavigate} />}
+      <div className={mini ? "at-mini-body" : "at-appwin-body"}>{yt
+        ? <Cinema key={cur.url} url={cur.url} title={cur.title} queue={queue} qi={qi} goTo={goTo} mini={mini} onMini={() => onNavigate({ ...screen, mini: true })} onClose={onClose} />
+        : <EmbedFrame key={cur.url} url={cur.url} onEnded={next} />}</div>
     </div>
   );
 }

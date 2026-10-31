@@ -857,3 +857,6 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - NEXT : Gamma (documents mis en forme)
 - Documents façon Gamma : bouton Mise en forme (13 styles dont Actuel par défaut, 4 formats A4/Diaporama/Page web/Moodboard, stocké dans item.fields.doc), Visualiser (mode Présenter), export PDF stylé, PPTX (GET /api/atelier/items/{id}/pptx, python-pptx), DOCX existant
 - Logo Atelier -> Pont
+- PPTX avec couverture + images (backend grab via localhost)
+- Partage lecture seule : POST/DELETE /api/atelier/items/{id}/share, GET /api/share/{token}, page /d/:token (SharedDoc)
+- Salon : lecteur cinéma Cinema.js (YouTube controls=0 masqué + crop, contrôles Nexus, À suivre, compte à rebours, vitesse, CC, plein écran, clavier, mini continu)

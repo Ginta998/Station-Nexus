@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { IoClose, IoPrintOutline, IoPlay, IoChevronBack, IoChevronForward, IoDownloadOutline } from "react-icons/io5";
+import { IoClose, IoPrintOutline, IoPlay, IoChevronBack, IoChevronForward, IoDownloadOutline, IoLinkOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { imgSrc, atelierApi } from "@/lib/atelier";
 import { styleOf, styleVars, varsCss, sections, DOC_CSS, DOC_FORMATS, docFonts } from "@/lib/docStyles";
@@ -36,8 +36,12 @@ export function printStyled(it, eyebrow, styleKey, format) {
   w.document.close(); setTimeout(() => w.print(), 1200);
 }
 
-export default function DocView({ it, eyebrow, onClose }) {
+export default function DocView({ it, eyebrow, onClose, shared }) {
   const doc = it.fields?.doc || {};
+  const [link, setLink] = useState(it.share_token || "");
+  const url = link && `${window.location.origin}/d/${link}`;
+  const share = async () => { try { const { token } = await atelierApi.share(it.id); setLink(token); await navigator.clipboard?.writeText(`${window.location.origin}/d/${token}`).catch(() => {}); toast.success("Lien copié : toute personne qui l'a peut lire ce document"); } catch (_) { toast.error("Partage impossible"); } };
+  const unshare = async () => { await atelierApi.unshare(it.id).catch(() => {}); setLink(""); toast("Lien coupé"); };
   const [format, setFormat] = useState(doc.format || "a4");
   const [show, setShow] = useState(-1);
   const s = styleOf(doc.style);
@@ -57,9 +61,15 @@ export default function DocView({ it, eyebrow, onClose }) {
         <span className="grow" />
         {format === "slides" && <button className="at-btn" onClick={() => { setShow(0); document.documentElement.requestFullscreen?.().catch(() => {}); }} data-testid="doc-view-present"><IoPlay size={15} /> Présenter</button>}
         <button className="at-btn ghost" onClick={() => printStyled(it, eyebrow, doc.style, format)} data-testid="doc-view-pdf"><IoPrintOutline size={15} /> PDF</button>
-        <button className="at-btn ghost" onClick={pptx} data-testid="doc-view-pptx"><IoDownloadOutline size={15} /> PPTX</button>
-        <button className="at-btn ghost" onClick={() => atelierApi.downloadDocx(it.id, it.title).catch(() => toast.error("Export Word impossible"))} data-testid="doc-view-docx">W</button>
-        <button className="at-icon" onClick={onClose} data-testid="doc-view-close"><IoClose size={20} /></button>
+        {!shared && <>
+          <button className="at-btn ghost" onClick={pptx} data-testid="doc-view-pptx"><IoDownloadOutline size={15} /> PPTX</button>
+          <button className="at-btn ghost" onClick={() => atelierApi.downloadDocx(it.id, it.title).catch(() => toast.error("Export Word impossible"))} data-testid="doc-view-docx">W</button>
+          {link ? <>
+            <button className="at-btn" onClick={() => { navigator.clipboard?.writeText(url); toast.success("Lien copié"); }} title={url} data-testid="doc-view-copy-link"><IoLinkOutline size={15} /> Copier le lien</button>
+            <button className="at-btn ghost" onClick={unshare} data-testid="doc-view-unshare">Couper le lien</button>
+          </> : <button className="at-btn ghost" onClick={share} data-testid="doc-view-share"><IoLinkOutline size={15} /> Partager</button>}
+        </>}
+        {onClose && <button className="at-icon" onClick={onClose} data-testid="doc-view-close"><IoClose size={20} /></button>}
       </div>
       <div className="dv-scroll"><div className={"dz f-" + format} data-deco={s.deco || ""} style={styleVars(s)} dangerouslySetInnerHTML={{ __html: html }} /></div>
       {show >= 0 && slides[show] && (
