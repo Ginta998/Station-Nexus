@@ -23,6 +23,7 @@ const pollJob = async (start) => {
 export const atelierApi = {
   bootstrap: () => get("/atelier/bootstrap"),
   config: () => get("/atelier/config"),
+  ytTitles: (ids) => get(`/atelier/yt-titles?ids=${ids}`),
   setConfig: (b) => send("put", "/atelier/config", b),
   createUniverse: (b) => send("post", "/atelier/universes", b),
   updateUniverse: (id, b) => send("put", `/atelier/universes/${id}`, b),

@@ -257,6 +257,20 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
     async def config():
         return await get_config()
 
+    @r.get("/yt-titles")
+    async def yt_titles(ids: str):
+        import asyncio
+        import httpx
+        vids = [v for v in ids.split(",") if re.fullmatch(r"[\w-]{11}", v)][:60]
+        async with httpx.AsyncClient(timeout=8) as c:
+            async def one(v):
+                try:
+                    j = (await c.get("https://www.youtube.com/oembed", params={"url": f"https://www.youtube.com/watch?v={v}", "format": "json"})).json()
+                    return v, {"title": j.get("title", ""), "author": j.get("author_name", "")}
+                except Exception:
+                    return v, {"title": "", "author": ""}
+            return dict(await asyncio.gather(*[one(v) for v in vids]))
+
     @r.put("/config")
     async def set_config(body: ConfigIn):
         patch = {k: v for k, v in body.model_dump().items() if v is not None}

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { IoPlay, IoPause, IoPlaySkipForward, IoPlaySkipBack, IoShuffle, IoRadioOutline, IoVolumeHigh, IoVolumeMute, IoClose, IoAdd, IoTrashOutline, IoImageOutline, IoInfinite } from "react-icons/io5";
+import { IoPlay, IoPause, IoPlaySkipForward, IoPlaySkipBack, IoShuffle, IoRadioOutline, IoVolumeHigh, IoVolumeMute, IoClose, IoAdd, IoTrashOutline, IoImageOutline, IoInfinite, IoListOutline, IoPencil } from "react-icons/io5";
 import { toast } from "sonner";
 import { uploadJournalImage } from "@/lib/api";
-import { imgSrc, useMediaClaim } from "@/lib/atelier";
+import { imgSrc, useMediaClaim, atelierApi } from "@/lib/atelier";
 import "@/components/atelier/radio.css";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "";
@@ -37,6 +37,7 @@ export function useRadio(at) {
     toggle: () => cmd(info.state === 1 ? "pauseVideo" : "playVideo"),
     pause: () => pl && cmd("pauseVideo"),
     next: () => cmd("nextVideo"), prev: () => (info.t > 4 ? cmd("seekTo", [0, true]) : cmd("previousVideo")),
+    jump: (k) => cmd("playVideoAt", [k]),
     seek: (t) => cmd("seekTo", [t, true]),
     setShuffle: (s) => { setShuffle(s); cmd("setShuffle", [s]); },
     setVol: (v) => { setVol(v); setMuted(false); cmd("setVolume", [v]); cmd("unMute"); },
@@ -57,7 +58,7 @@ export function useRadio(at) {
         if (x.duration) n.d = x.duration;
         if (x.videoData?.video_id) { n.vid = x.videoData.video_id; n.title = x.videoData.title; n.author = x.videoData.author; }
         if (x.playlistIndex != null) n.i = x.playlistIndex;
-        if (Array.isArray(x.playlist)) n.n = x.playlist.length;
+        if (Array.isArray(x.playlist)) { n.n = x.playlist.length; n.ids = x.playlist; }
         return n;
       });
       const c = live.current;
@@ -73,7 +74,7 @@ export function useRadio(at) {
 }
 
 export function RadioEngine({ radio: r }) {
-  useMediaClaim(r.playing);
+  useMediaClaim(!!r.pl && r.info.state !== 2 && r.info.state !== 0);
   const pid = r.pl?.id;
   if (!r.pl) return null;
   return <iframe key={pid} ref={r.fr} className="rd-engine" src={srcFor(r.pl)} title="Radio Nexus" allow="autoplay; encrypted-media" onLoad={() => { try { r.fr.current.contentWindow.postMessage(JSON.stringify({ event: "listening", id: "rd" }), "*"); } catch (_) {} r.cmd("setVolume", [r.vol]); }} />;
@@ -81,9 +82,11 @@ export function RadioEngine({ radio: r }) {
 
 export function RadioBar({ radio: r, onOpen }) {
   const i = r.info;
+  const [q, setQ] = useState(false);
   if (!r.pl) return null;
   return (
-    <div className="rd-bar" data-testid="radio-bar">
+    <div className="rd-bar" style={{ "--rc": r.pl.color || "var(--brand)" }} data-testid="radio-bar">
+      {q && <div className="rd-qpop" data-testid="radio-queue-pop"><Queue r={r} /></div>}
       <button className="rd-bar-now" onClick={onOpen} data-testid="radio-bar-open">
         <span className="rd-bar-art" style={{ backgroundImage: `url(${thumb(i.vid) || coverOf(r.pl)})` }} />
         <span className="rd-bar-txt"><b>{i.title || r.pl.title}</b><small>{i.author ? `${i.author} · ` : ""}{r.pl.title}</small></span>
@@ -93,6 +96,7 @@ export function RadioBar({ radio: r, onOpen }) {
         <Progress r={r} />
       </div>
       <div className="rd-bar-r">
+        <button className={"rd-ic" + (q ? " on" : "")} onClick={() => setQ(!q)} title="File d'attente" data-testid="radio-queue-toggle"><IoListOutline size={18} /></button>
         <button className="rd-ic" onClick={r.mute} data-testid="radio-mute">{r.muted ? <IoVolumeMute size={17} /> : <IoVolumeHigh size={17} />}</button>
         <input className="rd-vol" type="range" min="0" max="100" value={r.muted ? 0 : r.vol} onChange={(e) => r.setVol(+e.target.value)} style={{ "--p": (r.muted ? 0 : r.vol) + "%" }} data-testid="radio-volume" />
         <button className="rd-ic" onClick={r.stop} title="Couper la radio" data-testid="radio-stop"><IoClose size={18} /></button>
@@ -127,10 +131,11 @@ function Progress({ r }) {
 
 export default function RadioView({ radio: r }) {
   const [adding, setAdding] = useState(false);
+  const [edit, setEdit] = useState(null);
   const cur = r.pl; const i = r.info;
-  const hero = cur ? thumb(i.vid, "maxresdefault") || coverOf(cur) : coverOf(r.list[0]);
+  const hero = cur ? thumb(i.vid) || coverOf(cur) : coverOf(r.list[0]);
   return (
-    <section className="at-view rd-view" data-testid="radio-view">
+    <section className="at-view rd-view" style={{ "--rc": cur?.color || r.list[0]?.color || "var(--brand)" }} data-testid="radio-view">
       <div className="rd-hero" style={{ "--art": hero ? `url(${hero})` : "none" }}>
         <div className="rd-hero-bg" />
         <div className="rd-hero-in">
@@ -153,9 +158,60 @@ export default function RadioView({ radio: r }) {
       {adding && <AddForm r={r} onDone={() => setAdding(false)} />}
       {!r.list.length && !adding && <p className="rd-empty">Colle le lien d'une playlist YouTube (ou d'une vidéo) pour créer ta première station.</p>}
       <div className="rd-grid">
-        {r.list.map((p, k) => <PlCard key={p.id} p={p} k={k} r={r} on={cur?.id === p.id} />)}
+        {r.list.map((p, k) => <PlCard key={p.id} p={p} k={k} r={r} on={cur?.id === p.id} onEdit={() => setEdit(p)} />)}
       </div>
+      {cur && i.ids?.length > 1 && <><div className="rd-sec-h"><h2>À suivre</h2></div><Queue r={r} /></>}
+      {edit && <PlEditor p={edit} r={r} onClose={() => setEdit(null)} />}
     </section>
+  );
+}
+
+const titles = {};
+function Queue({ r }) {
+  const { ids = [], i = 0, vid } = r.info;
+  const [, tick] = useState(0);
+  const box = useRef(null);
+  useEffect(() => {
+    const miss = ids.filter((v) => !titles[v]).slice(0, 60);
+    if (miss.length) atelierApi.ytTitles(miss.join(",")).then((d) => { Object.assign(titles, d); tick((x) => x + 1); }).catch(() => {});
+  }, [ids.join(",")]); // eslint-disable-line
+  useEffect(() => { box.current?.querySelector(".on")?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [i]);
+  if (!ids.length) return <p className="rd-empty">La file apparaît dès que la playlist joue.</p>;
+  return (
+    <ol className="rd-queue" ref={box} data-testid="radio-queue">
+      {ids.map((v, k) => (
+        <li key={v + k} className={(v === vid ? "on" : "") + (k < i ? " past" : "")} onClick={() => r.jump(k)} data-testid={`radio-queue-item-${k}`}>
+          <span className="n mono">{v === vid && r.playing ? <span className="rd-eq"><i /><i /><i /></span> : k + 1}</span>
+          <img src={thumb(v, "default")} alt="" loading="lazy" />
+          <span className="t"><b>{titles[v]?.title || "…"}</b><small>{titles[v]?.author || ""}</small></span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function PlEditor({ p, r, onClose }) {
+  const [title, setTitle] = useState(p.title); const [color, setColor] = useState(p.color || "#3f86ff"); const [cover, setCover] = useState(p.cover || "");
+  const file = useRef(null);
+  const up = async (f) => { if (!f) return; try { setCover((await uploadJournalImage(f)).url); } catch (_) { toast.error("Envoi impossible"); } };
+  const save = () => { r.save(r.list.map((x) => (x.id === p.id ? { ...x, title: title.trim() || x.title, color, cover } : x))); onClose(); };
+  const c = cover ? imgSrc(cover) : p.thumb || thumb(vidOf(p.url));
+  return (
+    <div className="rd-modal" onClick={onClose} data-testid="radio-editor">
+      <div className="rd-modal-in" onClick={(e) => e.stopPropagation()} style={{ "--rc": color }}>
+        <div className="rd-cov" style={c ? { backgroundImage: `url(${c})` } : undefined} onClick={() => file.current?.click()}>
+          {!c && <span className="rd-cov-k">{title.slice(0, 2)}</span>}
+          <span className="rd-cov-edit"><IoImageOutline size={20} /> Changer</span>
+        </div>
+        <div className="rd-modal-f">
+          <label>Nom<input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={(e) => e.key === "Enter" && save()} data-testid="radio-editor-title" /></label>
+          <label>Couleur d'ambiance<span className="rd-colors">{["#3f86ff", "#ff3b5c", "#ffb020", "#2ecc8f", "#a35cff", "#ff6a3c", "#e2e7ef"].map((x) => <i key={x} className={x === color ? "on" : ""} style={{ background: x }} onClick={() => setColor(x)} />)}<input type="color" value={color} onChange={(e) => setColor(e.target.value)} data-testid="radio-editor-color" /></span></label>
+          {cover && <button className="rd-btn ghost sm" onClick={() => setCover("")}>Retirer la couverture</button>}
+          <div className="rd-modal-a"><button className="rd-btn ghost sm" onClick={onClose}>Annuler</button><button className="rd-btn sm" onClick={save} data-testid="radio-editor-save">Enregistrer</button></div>
+        </div>
+        <input ref={file} hidden type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; up(f); }} />
+      </div>
+    </div>
   );
 }
 
@@ -176,24 +232,20 @@ function AddForm({ r, onDone }) {
   );
 }
 
-function PlCard({ p, k, r, on }) {
-  const file = useRef(null);
+function PlCard({ p, k, r, on, onEdit }) {
   const c = coverOf(p);
-  const upd = (patch) => r.save(r.list.map((x) => (x.id === p.id ? { ...x, ...patch } : x)));
-  const setCover = async (f) => { if (!f) return; try { const u = await uploadJournalImage(f); upd({ cover: u.url }); toast.success("Couverture mise à jour"); } catch (_) { toast.error("Envoi impossible"); } };
   return (
-    <div className={"rd-card" + (on ? " on" : "")} style={{ animationDelay: `${k * 40}ms` }} data-testid={`radio-pl-${p.id}`}>
+    <div className={"rd-card" + (on ? " on" : "")} style={{ animationDelay: `${k * 40}ms`, "--rc": p.color || "var(--brand)" }} onContextMenu={(e) => { e.preventDefault(); onEdit(); }} data-testid={`radio-pl-${p.id}`}>
       <div className="rd-cov" style={c ? { backgroundImage: `url(${c})` } : undefined} onClick={() => (on ? r.toggle() : r.play(p))}>
         {!c && <span className="rd-cov-k">{p.title.slice(0, 2)}</span>}
         <button className="rd-cov-play" data-testid={`radio-pl-play-${p.id}`}>{on && r.playing ? <IoPause size={22} /> : <IoPlay size={22} />}</button>
         {on && r.playing && <span className="rd-eq"><i /><i /><i /></span>}
       </div>
-      <input className="rd-card-t" defaultValue={p.title} onBlur={(e) => e.target.value.trim() && e.target.value !== p.title && upd({ title: e.target.value.trim() })} data-testid={`radio-pl-title-${p.id}`} />
+      <div className="rd-card-t" onDoubleClick={onEdit}>{p.title}</div>
       <div className="rd-card-a">
-        <button className="rd-ic" onClick={() => file.current?.click()} title="Changer la couverture" data-testid={`radio-pl-cover-${p.id}`}><IoImageOutline size={15} /></button>
+        <button className="rd-ic" onClick={onEdit} title="Modifier (ou clic droit)" data-testid={`radio-pl-edit-${p.id}`}><IoPencil size={14} /></button>
         <button className="rd-ic" onClick={() => { if (on) r.stop(); r.save(r.list.filter((x) => x.id !== p.id)); }} title="Supprimer" data-testid={`radio-pl-del-${p.id}`}><IoTrashOutline size={15} /></button>
       </div>
-      <input ref={file} hidden type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; setCover(f); }} />
     </div>
   );
 }
