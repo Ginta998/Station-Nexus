@@ -261,15 +261,27 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
     async def yt_titles(ids: str):
         import asyncio
         import httpx
-        vids = [v for v in ids.split(",") if re.fullmatch(r"[\w-]{11}", v)][:60]
+        vids = [v for v in ids.split(",") if re.fullmatch(r"[\w-]{11}", v)][:100]
+        sem = asyncio.Semaphore(20)
         async with httpx.AsyncClient(timeout=8) as c:
             async def one(v):
                 try:
-                    j = (await c.get("https://www.youtube.com/oembed", params={"url": f"https://www.youtube.com/watch?v={v}", "format": "json"})).json()
+                    async with sem:
+                        j = (await c.get("https://www.youtube.com/oembed", params={"url": f"https://www.youtube.com/watch?v={v}", "format": "json"})).json()
                     return v, {"title": j.get("title", ""), "author": j.get("author_name", "")}
                 except Exception:
                     return v, {"title": "", "author": ""}
             return dict(await asyncio.gather(*[one(v) for v in vids]))
+
+    @r.get("/yt-playlist")
+    async def yt_playlist(list: str):
+        import httpx
+        if not re.fullmatch(r"[\w-]{10,64}", list):
+            raise HTTPException(400, "Playlist invalide")
+        async with httpx.AsyncClient(timeout=10, headers={"Accept-Language": "fr-FR,fr;q=0.9", "User-Agent": "Mozilla/5.0"}) as c:
+            html = (await c.get("https://www.youtube.com/playlist", params={"list": list})).text
+        found = re.findall(r'"playlistVideoRenderer":\{"videoId":"([\w-]{11})"|"contentId":"([\w-]{11})","contentType":"LOCKUP_CONTENT_TYPE_VIDEO"', html)
+        return [*dict.fromkeys(a or b for a, b in found)]
 
     @r.put("/config")
     async def set_config(body: ConfigIn):

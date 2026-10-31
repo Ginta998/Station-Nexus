@@ -848,3 +848,4 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Radio Nexus (vue "radio", config.radio) : lecteur YouTube caché persistant, barre fixe, mode Station, aléatoire, reprise, couvertures
 - Deux écrans : bouton "Envoyer sur l autre écran" (lecteur + Focus via /atelier#focus), toScreen() dans lib/embed.js
 - Radio fix : claim média tant que la radio est active (plus de relance de l ambiance pendant les buffers). File d attente (GET /api/atelier/yt-titles), éditeur playlist (crayon / clic droit : nom, couverture, couleur --rc)
+- Fix radio coupée chaque seconde : src iframe figé au lancement (pl.src) au lieu de recalculé depuis localStorage. Recherche dans la file + recherche globale (GET /api/atelier/yt-playlist, cache titres nx-yt-titles)

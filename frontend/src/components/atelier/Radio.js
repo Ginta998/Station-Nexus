@@ -30,9 +30,10 @@ export function useRadio(at) {
   const [vol, setVol] = useState(80);
   const [muted, setMuted] = useState(false);
   const cmd = (func, args = []) => { try { fr.current.contentWindow.postMessage(JSON.stringify({ event: "command", func, args }), "*"); } catch (_) {} };
-  const play = (p) => { if (!srcFor(p)) return toast.error("Lien YouTube invalide"); setInfo({}); setPl(p); };
+  const play = (p) => { const src = srcFor(p); if (!src) return toast.error("Lien YouTube invalide"); setInfo({}); setPl({ ...p, src }); };
+  const playAt = (p, k) => { if (pl?.id === p.id) return cmd("playVideoAt", [k]); try { localStorage.setItem("nx-radio:" + p.id, JSON.stringify({ i: k, t: 0 })); } catch (_) {} play(p); };
   const nextPl = () => { if (!list.length) return; const i = list.findIndex((x) => x.id === pl?.id); play(list[shuffle ? Math.floor(Math.random() * list.length) : (i + 1) % list.length]); };
-  const r = { list, pl, info, station, shuffle, vol, muted, fr, cmd, play, nextPl, setStation,
+  const r = { list, pl, info, station, shuffle, vol, muted, fr, cmd, play, playAt, nextPl, setStation,
     playing: info.state === 1,
     toggle: () => cmd(info.state === 1 ? "pauseVideo" : "playVideo"),
     pause: () => pl && cmd("pauseVideo"),
@@ -70,14 +71,14 @@ export function useRadio(at) {
   useEffect(() => {
     if (pl && !pl.cover && !pl.thumb && info.vid) at.saveConfig({ radio: list.map((x) => (x.id === pl.id ? { ...x, thumb: thumb(info.vid) } : x)) });
   }, [info.vid]); // eslint-disable-line
+  useEffect(() => { if (pl && info.ids?.length) { try { localStorage.setItem("nx-radio-ids:" + pl.id, JSON.stringify(info.ids)); } catch (_) {} } }, [pl?.id, info.ids?.length]); // eslint-disable-line
   return r;
 }
 
 export function RadioEngine({ radio: r }) {
   useMediaClaim(!!r.pl && r.info.state !== 2 && r.info.state !== 0);
-  const pid = r.pl?.id;
   if (!r.pl) return null;
-  return <iframe key={pid} ref={r.fr} className="rd-engine" src={srcFor(r.pl)} title="Radio Nexus" allow="autoplay; encrypted-media" onLoad={() => { try { r.fr.current.contentWindow.postMessage(JSON.stringify({ event: "listening", id: "rd" }), "*"); } catch (_) {} r.cmd("setVolume", [r.vol]); }} />;
+  return <iframe key={r.pl.src} ref={r.fr} className="rd-engine" src={r.pl.src} title="Radio Nexus" allow="autoplay; encrypted-media" onLoad={() => { try { r.fr.current.contentWindow.postMessage(JSON.stringify({ event: "listening", id: "rd" }), "*"); } catch (_) {} r.cmd("setVolume", [r.vol]); }} />;
 }
 
 export function RadioBar({ radio: r, onOpen }) {
@@ -155,6 +156,7 @@ export default function RadioView({ radio: r }) {
       </div>
 
       <div className="rd-sec-h"><h2>Tes playlists</h2><button className="rd-btn sm" onClick={() => setAdding(true)} data-testid="radio-add"><IoAdd size={16} /> Ajouter</button></div>
+      {r.list.length > 0 && <SearchAll r={r} />}
       {adding && <AddForm r={r} onDone={() => setAdding(false)} />}
       {!r.list.length && !adding && <p className="rd-empty">Colle le lien d'une playlist YouTube (ou d'une vidéo) pour créer ta première station.</p>}
       <div className="rd-grid">
@@ -166,27 +168,65 @@ export default function RadioView({ radio: r }) {
   );
 }
 
-const titles = {};
+const titles = (() => { try { return JSON.parse(localStorage.getItem("nx-yt-titles")) || {}; } catch (_) { return {}; } })();
+const loadTitles = async (ids) => {
+  const miss = [...new Set(ids.filter((v) => !titles[v]?.title))];
+  for (let k = 0; k < miss.length; k += 100) {
+    try { Object.assign(titles, await atelierApi.ytTitles(miss.slice(k, k + 100).join(","))); } catch (_) {}
+  }
+  try { localStorage.setItem("nx-yt-titles", JSON.stringify(titles)); } catch (_) {}
+};
+const norm = (s = "") => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const match = (v, q) => norm(`${titles[v]?.title} ${titles[v]?.author}`).includes(norm(q));
+
+function SearchAll({ r }) {
+  const [q, setQ] = useState(""); const [idx, setIdx] = useState(null); const [busy, setBusy] = useState(false);
+  const prep = async () => {
+    if (idx || busy) return; setBusy(true);
+    const out = await Promise.all(r.list.map(async (p) => {
+      let ids; try { ids = JSON.parse(localStorage.getItem("nx-radio-ids:" + p.id)); } catch (_) {}
+      if (!ids?.length) { const l = listOf(p.url); ids = l ? await atelierApi.ytPlaylist(l).catch(() => []) : [vidOf(p.url)].filter(Boolean); }
+      return { p, ids };
+    }));
+    await loadTitles(out.flatMap((x) => x.ids)); setIdx(out); setBusy(false);
+  };
+  const res = idx && q.trim().length > 1 ? idx.flatMap(({ p, ids }) => ids.map((v, k) => ({ p, v, k })).filter(({ v }) => match(v, q))).slice(0, 40) : [];
+  return (
+    <div className="rd-search">
+      <input value={q} onFocus={prep} onChange={(e) => setQ(e.target.value)} placeholder="Rechercher un morceau dans toutes tes playlists…" data-testid="radio-search-all" />
+      {busy && <p className="rd-empty">Indexation de tes playlists…</p>}
+      {res.length > 0 && <ol className="rd-queue" data-testid="radio-search-results">{res.map(({ p, v, k }) => (
+        <li key={p.id + v + k} onClick={() => r.playAt(p, k)}>
+          <span className="n mono">{k + 1}</span><img src={thumb(v, "default")} alt="" loading="lazy" />
+          <span className="t"><b>{titles[v]?.title}</b><small>{titles[v]?.author} · {p.title}</small></span>
+        </li>))}</ol>}
+      {idx && q.trim().length > 1 && !res.length && <p className="rd-empty">Aucun morceau trouvé.</p>}
+    </div>
+  );
+}
+
 function Queue({ r }) {
   const { ids = [], i = 0, vid } = r.info;
   const [, tick] = useState(0);
+  const [q, setQ] = useState("");
   const box = useRef(null);
-  useEffect(() => {
-    const miss = ids.filter((v) => !titles[v]).slice(0, 60);
-    if (miss.length) atelierApi.ytTitles(miss.join(",")).then((d) => { Object.assign(titles, d); tick((x) => x + 1); }).catch(() => {});
-  }, [ids.join(",")]); // eslint-disable-line
-  useEffect(() => { box.current?.querySelector(".on")?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [i]);
+  useEffect(() => { loadTitles(ids).then(() => tick((x) => x + 1)); }, [ids.join(",")]); // eslint-disable-line
+  useEffect(() => { if (!q) box.current?.querySelector(".on")?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [i, q]);
   if (!ids.length) return <p className="rd-empty">La file apparaît dès que la playlist joue.</p>;
+  const rows = ids.map((v, k) => ({ v, k })).filter(({ v }) => !q.trim() || match(v, q));
   return (
-    <ol className="rd-queue" ref={box} data-testid="radio-queue">
-      {ids.map((v, k) => (
-        <li key={v + k} className={(v === vid ? "on" : "") + (k < i ? " past" : "")} onClick={() => r.jump(k)} data-testid={`radio-queue-item-${k}`}>
-          <span className="n mono">{v === vid && r.playing ? <span className="rd-eq"><i /><i /><i /></span> : k + 1}</span>
-          <img src={thumb(v, "default")} alt="" loading="lazy" />
-          <span className="t"><b>{titles[v]?.title || "…"}</b><small>{titles[v]?.author || ""}</small></span>
-        </li>
-      ))}
-    </ol>
+    <>
+      <input className="rd-qsearch" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher dans la file…" data-testid="radio-queue-search" />
+      <ol className="rd-queue" ref={box} data-testid="radio-queue">
+        {rows.map(({ v, k }) => (
+          <li key={v + k} className={(v === vid ? "on" : "") + (k < i ? " past" : "")} onClick={() => r.jump(k)} data-testid={`radio-queue-item-${k}`}>
+            <span className="n mono">{v === vid && r.playing ? <span className="rd-eq"><i /><i /><i /></span> : k + 1}</span>
+            <img src={thumb(v, "default")} alt="" loading="lazy" />
+            <span className="t"><b>{titles[v]?.title || "…"}</b><small>{titles[v]?.author || ""}</small></span>
+          </li>
+        ))}
+      </ol>
+    </>
   );
 }
 
