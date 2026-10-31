@@ -13,7 +13,7 @@ import ItemEditor from "@/components/atelier/ItemEditor";
 import UniverseForm from "@/components/atelier/UniverseForm";
 import CommandPalette from "@/components/atelier/CommandPalette";
 import DropDialog from "@/components/atelier/DropDialog";
-import { AppWindow, MiniPlayer } from "@/components/atelier/AppScreens";
+import { Player } from "@/components/atelier/AppScreens";
 import { BureauView, SalonView } from "@/components/atelier/BureauSalon";
 import { IoAppsOutline, IoFilmOutline } from "react-icons/io5";
 import BunnyPanel from "@/components/atelier/BunnyPanel";
@@ -59,7 +59,6 @@ export default function AtelierApp({ onLeave }) {
   const [palette, setPalette] = useState(false);
   const [drop, setDrop] = useState(null);
   const [screen, setScreen] = useState(null);
-  const [mini, setMini] = useState(null);
   const [bunny, setBunny] = useState(false);
   const [brains, setBrains] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
@@ -67,7 +66,7 @@ export default function AtelierApp({ onLeave }) {
   const toggleDock = () => setDockOpen((o) => { const n = !o; try { localStorage.setItem("nexus-dock", n ? "1" : "0"); } catch (_) {} return n; });
   const [menuOpen, setMenuOpen] = useState(false);
   const launch = (s) => { sfx("select"); setScreen(s); };
-  const toMini = (s) => { setScreen(null); setMini(s); };
+  const setMini = (s) => setScreen(s && { ...s, mini: true });
   const [dragging, setDragging] = useState(false);
   const pick = useRef(null);
   const pickDefaults = useRef({});
@@ -109,7 +108,7 @@ export default function AtelierApp({ onLeave }) {
   const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", oeuvre: "ŒUVRE" }[view.name] || (cur?.name || "").toUpperCase();
 
   return (
-    <div className={"at-app" + (menuOpen ? " menu-open" : "")} data-testid="atelier-app">
+    <div className={"at-app cov-" + (at.config.cover_ratio || "std") + (menuOpen ? " menu-open" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
       <header className="at-top">
         <div className="at-brand"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
@@ -172,8 +171,7 @@ export default function AtelierApp({ onLeave }) {
       <input ref={pick} type="file" multiple hidden onChange={(e) => { const files = [...e.target.files]; e.target.value = ""; if (files.length) setDrop({ files, text: "", defaults: pickDefaults.current }); }} data-testid="atelier-import-input" />
       {dragging && <div className="at-dropzone" data-testid="atelier-dropzone"><div><b>工</b><p>Dépose ici — tu choisiras où le ranger</p><small className="mono">PDF · WORD · EXCEL · IMAGES · MUSIQUES · VIDÉOS · LIENS · TOUT FICHIER</small></div></div>}
       {drop && <DropDialog at={at} drop={drop} defaults={drop.defaults} open={open} onClose={() => setDrop(null)} />}
-      {screen && <AppWindow screen={screen} onClose={() => setScreen(null)} onMini={toMini} onNavigate={setScreen} />}
-      {mini && <MiniPlayer mini={mini} onClose={() => setMini(null)} onExpand={(s) => { setMini(null); setScreen(s); }} />}
+      {screen && <Player screen={screen} onClose={() => setScreen(null)} onNavigate={setScreen} />}
       {palette && <CommandPalette {...ctx} onClose={() => setPalette(false)} newUniverse={() => { setPalette(false); setUForm({}); }} />}
       {!bunny && <div className="bn-fab"><BunnySprite pose="neutral" size={74} className="cb-bounce" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" testid="bunny-open" /></div>}
       {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} openBrains={() => setBrains(true)} />}

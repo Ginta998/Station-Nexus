@@ -71,6 +71,7 @@ class ConfigIn(BaseModel):
     shortcuts: Optional[List[Dict[str, Any]]] = None
     focus_vids: Optional[List[Dict[str, Any]]] = None
     playlists: Optional[List[dict]] = None
+    cover_ratio: Optional[str] = None
 
 
 def _esc(t: str) -> str:

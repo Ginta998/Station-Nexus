@@ -840,3 +840,8 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Thèmes : aincrad (clair SAO), aincradnight, frontiere (crêtes SVG, braises, poussière sur cartes), terra (végétation SVG, mousse/rouille sur cartes). Fichiers : themes-new.css, components/ThemeScenes.js.
 - Consigne utilisateur : YAGNI, économie maximale de tokens/crédits.
 - 2026-10-29 : mousse Terra retirée ; vidéos Focus + playlists Salon synchronisées (config) ; bouton retour = historique Atelier ; pas de splash en entrée directe ; Focus : masquer menu, ±10 s, musique coupée quand vidéo sonore joue ; session conservée sauf 401 ; images univers/œuvres plus hautes ; barre raccourcis masquable (onglet). Non testé E2E.
+
+## 2026-06 — Fork suivant
+- Format couvertures PC au choix (Actuel / +30% / 2:3) dans Réglages (config.cover_ratio)
+- Lecteur unique plein/mini (pas de rechargement), reprise de position YouTube/vidéo (localStorage nx-pos:)
+- Focus : l oeil remplacé par une languette centrée qui replie seulement le menu du bas

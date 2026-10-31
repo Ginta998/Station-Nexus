@@ -50,6 +50,15 @@ export default function AtelierSettings({ at, openBrains }) {
         </div>
       </div>
       <div className="at-panel">
+        <div className="at-panel-h"><h2>Format des couvertures (PC)</h2></div>
+        <p className="at-sub">Hauteur des images d'Univers et d'Œuvres sur grand écran.</p>
+        <div className="at-inline" data-testid="atelier-cover-ratio">
+          {[["std", "Actuel"], ["tall", "+30 %"], ["poster", "Affiche 2:3"]].map(([k, l]) => (
+            <button key={k} className={"at-btn" + ((at.config.cover_ratio || "std") === k ? "" : " ghost")} onClick={() => at.saveConfig({ cover_ratio: k })} data-testid={`atelier-cover-${k}`}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <div className="at-panel">
         <div className="at-panel-h"><h2><IoKeypadOutline size={16} /> Code du portail</h2></div>
         <p className="at-sub">Tape ce code n'importe où dans la Station (connecté en admin) pour ouvrir le portail.</p>
         <div className="at-inline">

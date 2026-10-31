@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IoClose, IoPlay, IoPause, IoStop, IoExpand, IoVideocamOutline, IoVolumeHigh, IoVolumeMute, IoMusicalNotes, IoChevronDown, IoChevronUp, IoAdd, IoTrashOutline, IoEyeOutline, IoEyeOffOutline, IoPlayBack, IoPlayForward } from "react-icons/io5";
+import { IoClose, IoPlay, IoPause, IoStop, IoExpand, IoVideocamOutline, IoVolumeHigh, IoVolumeMute, IoMusicalNotes, IoChevronDown, IoChevronUp, IoAdd, IoTrashOutline, IoPlayBack, IoPlayForward } from "react-icons/io5";
 import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
 import { THEMES } from "@/lib/themes";
@@ -140,7 +140,6 @@ export default function FocusView({ at, onClose }) {
       </div>
       <div className="fx-veil" aria-hidden="true" />
 
-      <button className="fx-icon fx-uitoggle" onClick={() => setHideUi((h) => !h)} title={hideUi ? "Afficher le menu" : "Masquer le menu"} data-testid="atelier-focus-hideui">{hideUi ? <IoEyeOutline size={16} /> : <IoEyeOffOutline size={16} />}</button>
       <div className="fx-top">
         <button className="fx-icon" onClick={close} data-testid="atelier-focus-close"><IoClose size={18} /> Quitter</button>
         <div className="fx-modes">
@@ -175,6 +174,7 @@ export default function FocusView({ at, onClose }) {
           )}
         </div>
 
+      <button className="fx-tab" onClick={() => setHideUi((h) => !h)} title={hideUi ? "Déplier le menu" : "Replier le menu"} data-testid="atelier-focus-hideui">{hideUi ? <IoChevronUp size={16} /> : <IoChevronDown size={16} />}</button>
       <div className="fx-bottom">
         <div className="fx-row">
           <span className="fx-lbl mono">CIBLE</span>
