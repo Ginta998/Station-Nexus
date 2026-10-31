@@ -106,7 +106,7 @@ export function SalonView({ at, launch, mini }) {
   const [busy, setBusy] = useState(null);
   const [addTo, setAddTo] = useState(null);
   const [openPl, setOpenPl] = useState(null);
-  const [playlists, setPlaylists] = useState(() => loadPls(at.config?.playlists));
+  const [playlists, setPlaylists] = useState(() => (Array.isArray(at.config?.playlists) && at.config.playlists.length ? at.config.playlists : loadPls(at.config?.playlists)));
   const [order, setOrder] = useState(loadOrder);
   const file = useRef(null);
   const links = at.links.filter((l) => l.kind !== "app");
@@ -149,7 +149,7 @@ export function SalonView({ at, launch, mini }) {
     const u = window.prompt("Lien (au cas où il ne fonctionne plus)", l.url || ""); if (u === null) return;
     at.saveLink({ ...l, title: t.trim() || l.title, url: u.trim() || l.url }).then(() => toast.success("Modifié"));
   };
-  const savePl = (pl) => { setPlaylists(pl); try { localStorage.setItem(PL_KEY, JSON.stringify(pl)); } catch (_) {} };
+  const savePl = (pl) => { setPlaylists(pl); at.saveConfig({ playlists: pl }); try { localStorage.setItem(PL_KEY, JSON.stringify(pl)); } catch (_) {} };
   const newPlaylist = () => { const name = window.prompt("Nom de la playlist (ex. One Piece)"); if (name && name.trim()) savePl([...playlists, { id: "pl-" + Date.now(), name: name.trim(), ids: [] }]); };
   const renamePl = (p) => { const n = window.prompt("Nom de la playlist", p.name); if (n && n.trim()) savePl(playlists.map((x) => x.id === p.id ? { ...x, name: n.trim() } : x)); };
   const addToPlaylist = (plId, linkId) => { savePl(playlists.map((p) => p.id === plId ? { ...p, ids: p.ids.includes(linkId) ? p.ids : [...p.ids, linkId] } : p)); setAddTo(null); toast.success("Ajouté à la playlist"); };

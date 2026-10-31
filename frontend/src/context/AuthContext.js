@@ -131,7 +131,7 @@ export function AuthProvider({ children }) {
       if (sessionStorage.getItem("sx_auth_applied")) sessionStorage.removeItem("sx_auth_applied");
       if (localStorage.getItem("sx_token")) {
         try { const d = await authMe(); setUser(d.user); lastSync.current = snapshot();  }
-        catch { setToken(null); }
+        catch (e) { if (e?.response?.status === 401) setToken(null); }
       }
       setReady(true);
     })();

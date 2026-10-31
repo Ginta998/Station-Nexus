@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IoClose, IoPlay, IoPause, IoStop, IoExpand, IoVideocamOutline, IoVolumeHigh, IoVolumeMute, IoMusicalNotes, IoChevronDown, IoChevronUp, IoAdd, IoTrashOutline } from "react-icons/io5";
+import { IoClose, IoPlay, IoPause, IoStop, IoExpand, IoVideocamOutline, IoVolumeHigh, IoVolumeMute, IoMusicalNotes, IoChevronDown, IoChevronUp, IoAdd, IoTrashOutline, IoEyeOutline, IoEyeOffOutline, IoPlayBack, IoPlayForward } from "react-icons/io5";
 import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
 import { THEMES } from "@/lib/themes";
@@ -36,7 +36,7 @@ const sbtn = { borderColor: "var(--line)", borderRadius: "999px", color: "var(--
 
 // Mode Focus — un lieu immersif : concentration, repos, ou immersion totale. Pas un pomodoro, une respiration.
 export default function FocusView({ at, onClose }) {
-  const { sfx, theme, setTheme } = useApp();
+  const { sfx, theme, setTheme, enterMediaMode, exitMediaMode } = useApp();
   const [mode, setMode] = useState("focus"); // focus | repos | immersion
   const [dur, setDur] = useState(25);
   const [left, setLeft] = useState(25 * 60);
@@ -47,7 +47,12 @@ export default function FocusView({ at, onClose }) {
   const [vidUrl, setVidUrl] = useState("");
   const [vidSound, setVidSound] = useState(false);
   const [ambOpen, setAmbOpen] = useState(false);
-  const [vids, setVids] = useState(loadVids);
+  const vids = at.config.focus_vids || loadVids();
+  const setVids = (v) => at.saveConfig({ focus_vids: v });
+  const [hideUi, setHideUi] = useState(false);
+  const [vPlaying, setVPlaying] = useState(false);
+  const vRef = useRef(null);
+  const tRef = useRef(0);
   const [adding, setAdding] = useState(false);
   const themeAtOpen = useRef(theme);
   const ytRef = useRef(null);
@@ -56,7 +61,22 @@ export default function FocusView({ at, onClose }) {
   const target = targets.find((t) => t.id === targetId) || null;
   const vid = useMemo(() => bgVideo(vidUrl), [vidUrl]);
 
-  const setVideo = (url) => { setVidUrl(url); setVidSound(false); };
+  const setVideo = (url) => { setVidUrl(url); setVidSound(false); setVPlaying(false); };
+  const ytCmd = (func, args = []) => { try { ytRef.current.contentWindow.postMessage(JSON.stringify({ event: "command", func, args }), "*"); } catch (_) {} };
+  const seek = (d) => { if (vid?.yt) ytCmd("seekTo", [Math.max(0, tRef.current + d), true]); else if (vRef.current) vRef.current.currentTime = Math.max(0, vRef.current.currentTime + d); };
+  // Jamais deux sons : la musique se coupe dès qu'une vidéo joue avec le son, et revient en pause / à la sortie
+  useEffect(() => { if (vid && vidSound && vPlaying) { enterMediaMode(); return () => exitMediaMode(); } }, [vid, vidSound, vPlaying, enterMediaMode, exitMediaMode]);
+  useEffect(() => {
+    const on = (e) => {
+      if (!ytRef.current || e.source !== ytRef.current.contentWindow) return;
+      let d; try { d = JSON.parse(e.data); } catch { return; }
+      const i = d?.info || {};
+      if (typeof i.currentTime === "number") tRef.current = i.currentTime;
+      if (typeof i.playerState === "number") setVPlaying(i.playerState === 1);
+    };
+    window.addEventListener("message", on); return () => window.removeEventListener("message", on);
+  }, []);
+  const ytLoad = () => { try { ytRef.current.contentWindow.postMessage(JSON.stringify({ event: "listening", id: "fx" }), "*"); } catch (_) {} };
   const close = () => { try { if (themeAtOpen.current && themeAtOpen.current !== theme) setTheme(themeAtOpen.current); } catch (_) {} onClose(); };
 
   useEffect(() => { try { const r = JSON.parse(localStorage.getItem("nexus-focus") || "{}"); if (r.week === weekKey()) setStreak({ sessions: r.sessions || 0, seconds: r.seconds || 0 }); } catch (_) {} }, []);
@@ -98,28 +118,29 @@ export default function FocusView({ at, onClose }) {
     if (!bgVideo(u)) return toast.error("Lien non lisible en fond");
     const t = (title || "").trim() || (u.match(/[?&]list=([\w-]+)/) ? "Playlist" : "Vidéo");
     const next = [{ id: "v-" + Date.now(), title: t, url: u }, ...vids].slice(0, 24);
-    setVids(next); saveVids(next); setVideo(u); setAdding(false);
+    setVids(next); setVideo(u); setAdding(false);
   };
-  const removeVid = (id) => { const next = vids.filter((v) => v.id !== id); setVids(next); saveVids(next); };
+  const removeVid = (id) => setVids(vids.filter((v) => v.id !== id));
 
   const toggleFull = () => { const el = document.querySelector(".fx-root"); if (!document.fullscreenElement) el?.requestFullscreen?.().catch(() => {}); else document.exitFullscreen?.().catch(() => {}); };
   const display = dur > 0 ? fmt(left) : fmt(elapsed);
   const prog = dur > 0 ? 1 - left / (dur * 60) : (elapsed % 60) / 60;
 
   return (
-    <div className={"fx-root mode-" + mode} style={{ "--u": target?.color || "var(--brand)" }} data-testid="atelier-focus">
+    <div className={"fx-root mode-" + mode + (hideUi ? " fx-hideui" : "")} style={{ "--u": target?.color || "var(--brand)" }} data-testid="atelier-focus">
       <div className="fx-canvas" aria-hidden="true">
         <div className="fx-cosmic"><CosmicBackground /></div>
         {vid && (
           <div className="fx-video">
-            {vid.yt ? <iframe ref={ytRef} src={vid.yt} title="Ambiance" frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen />
-              : vid.video ? <video src={vid.video} autoPlay muted={!vidSound} loop playsInline />
+            {vid.yt ? <iframe ref={ytRef} src={vid.yt} onLoad={ytLoad} title="Ambiance" frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen />
+              : vid.video ? <video ref={vRef} src={vid.video} autoPlay muted={!vidSound} loop playsInline onPlay={() => setVPlaying(true)} onPause={() => setVPlaying(false)} />
               : <iframe src={vid.src} title="Ambiance" frameBorder="0" allow="autoplay; encrypted-media" />}
           </div>
         )}
       </div>
       <div className="fx-veil" aria-hidden="true" />
 
+      <button className="fx-icon fx-uitoggle" onClick={() => setHideUi((h) => !h)} title={hideUi ? "Afficher le menu" : "Masquer le menu"} data-testid="atelier-focus-hideui">{hideUi ? <IoEyeOutline size={16} /> : <IoEyeOffOutline size={16} />}</button>
       <div className="fx-top">
         <button className="fx-icon" onClick={close} data-testid="atelier-focus-close"><IoClose size={18} /> Quitter</button>
         <div className="fx-modes">
@@ -185,6 +206,7 @@ export default function FocusView({ at, onClose }) {
           ) : (
             <button className="fx-chip" onClick={() => setAdding(true)} data-testid="atelier-focus-vidadd"><IoAdd size={14} /> Lien</button>
           )}
+          {vid && (vid.yt || vid.video) && <><button className="fx-chip" onClick={() => seek(-10)} title="Reculer de 10 s" data-testid="atelier-focus-back"><IoPlayBack size={14} /> 10 s</button><button className="fx-chip" onClick={() => seek(10)} title="Avancer de 10 s" data-testid="atelier-focus-fwd">10 s <IoPlayForward size={14} /></button></>}
           {vid && <button className="fx-chip" onClick={() => setVideo("")} title="Couper la vidéo de fond"><IoClose size={14} /> Stop</button>}
         </div>
         <div className="fx-row fx-ambrow">

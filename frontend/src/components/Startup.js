@@ -15,7 +15,7 @@ export function StartupRedirect() {
   useEffect(() => {
     if (!ready || sessionStorage.getItem("sx_start_done")) return;
     sessionStorage.setItem("sx_start_done", "1");
-    if (startTarget() === "atelier" && isAdmin && loc.pathname === "/") nav("/atelier", { replace: true });
+    if (startTarget() === "atelier" && isAdmin && loc.pathname === "/") nav("/atelier", { replace: true, state: { direct: true } });
     // eslint-disable-next-line
   }, [ready, isAdmin]);
   return null;

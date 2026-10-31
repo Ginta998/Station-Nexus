@@ -48,7 +48,10 @@ export const allApps = (at) => [...DEFAULT_APPS, ...at.links.filter((l) => l.kin
 export function ShortcutBar({ at, run, onAdd }) {
   const list = (at.config.shortcuts || []).map((s) => ({ s, i: scInfo(s, at) })).filter((x) => x.i);
   const [open, setOpen] = useState(() => localStorage.getItem("nexus-sc-open") === "1");
+  const [hidden, setHidden] = useState(() => localStorage.getItem("nexus-sc-hidden") === "1");
   if (!list.length) return null;
+  const hide = (h) => { localStorage.setItem("nexus-sc-hidden", h ? "1" : "0"); setHidden(h); };
+  if (hidden) return <button className="at-sc-tab" onClick={() => hide(false)} aria-label="Afficher les raccourcis" data-testid="atelier-shortcuts-show"><IoChevronUp size={16} /></button>;
   const toggle = () => setOpen((o) => { localStorage.setItem("nexus-sc-open", o ? "0" : "1"); return !o; });
   return (
     <nav className={"at-scbar" + (open ? " open" : "")} data-testid="atelier-shortcuts">
@@ -59,6 +62,7 @@ export function ShortcutBar({ at, run, onAdd }) {
             <span className="kj">{i.kanji}</span><span className="lb">{i.label}</span>
           </button>
         ))}
+        <button className="at-sc" onClick={() => hide(true)} data-testid="atelier-shortcuts-hide"><span className="kj"><IoChevronDown size={16} /></span><span className="lb">Masquer</span></button>
         <button className="at-sc add" onClick={onAdd} data-testid="atelier-shortcuts-manage"><span className="kj"><IoAdd size={16} /></span><span className="lb">Gérer</span></button>
       </div>
     </nav>

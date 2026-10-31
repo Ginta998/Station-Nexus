@@ -71,7 +71,12 @@ export default function AtelierApp({ onLeave }) {
   const [dragging, setDragging] = useState(false);
   const pick = useRef(null);
   const pickDefaults = useRef({});
-  const go = (v) => { sfx("nav"); setView(v); setPalette(false); setMenuOpen(false); };
+  const go = (v) => { sfx("nav"); setView(v); setPalette(false); setMenuOpen(false); window.history.pushState({ ...window.history.state, atView: v }, ""); };
+  // Bouton retour (téléphone / navigateur) : revient à l'écran précédent de l'Atelier au lieu de quitter
+  useEffect(() => {
+    const on = (e) => { setMenuOpen(false); setView(e.state?.atView || { name: "home" }); };
+    window.addEventListener("popstate", on); return () => window.removeEventListener("popstate", on);
+  }, []);
   const open = (id, kind) => { sfx("select"); setPalette(false); if ((kind || at.items.find((x) => x.id === id)?.kind) === "file") setViewing(id); else setEditing(id); };
   const inbox = at.items.filter((i) => !i.universe_id);
   const pinned = at.universes.filter((u) => u.pinned);

@@ -30,6 +30,7 @@ export default function Atelier() {
   const audio = useRef(null);
   const inMedia = useRef(false);
   const real = useRef(0);
+  const direct = useRef(new URLSearchParams(window.location.search).has("direct") || !!window.history.state?.usr?.direct).current;
   const setReal = (v) => { real.current = Math.max(real.current, v); };
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export default function Atelier() {
         setStep(1);
         const data = cached || await qc.fetchQuery({ queryKey: ["atelier"], queryFn: atelierApi.bootstrap, staleTime: Infinity });
         if (!alive) return;
+        if (direct) { await loadApp(); if (alive) setPhase("ready"); return; }
         const cfg = data.config || {};
         if (cfg.music_url && !muted) {
           enterMediaMode(); inMedia.current = true;
