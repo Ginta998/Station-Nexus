@@ -1,4 +1,5 @@
 import { THEMES } from "@/lib/themes";
+import { useThemeState, baseOf, themeDef, isCustomKey } from "@/lib/themeStore";
 import { useAuth } from "@/context/AuthContext";
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { audioUrl, ambienceUrl, readingAudioUrl, getSettings, upsertProfile, listAmbiences } from "@/lib/api";
@@ -40,7 +41,7 @@ function fadeTo(audio, target, ms, onDone) {
 
 export function AppProvider({ children }) {
   const rawTheme = localStorage.getItem(LS.theme);
-  const storedTheme = THEMES.some((t) => t.key === rawTheme) ? rawTheme : null;
+  const storedTheme = THEMES.some((t) => t.key === rawTheme) || isCustomKey(rawTheme) ? rawTheme : null;
   const [theme, setThemeState] = useState(() => storedTheme || "abysse");
   // admin = uniquement le compte administrateur connecté
   const { user: authUser } = useAuth();
@@ -172,7 +173,8 @@ export function AppProvider({ children }) {
   if (!appAudio.current && typeof Audio !== "undefined") { appAudio.current = new Audio(); appAudio.current.loop = true; }
 
   useEffect(() => { localStorage.removeItem(LS.pin); }, []);
-  useEffect(() => { document.documentElement.setAttribute("data-theme", theme); }, [theme]);
+  const tstate = useThemeState();
+  useEffect(() => { document.documentElement.setAttribute("data-theme", baseOf(theme)); }, [theme, tstate]);
   // non-looping reading tracks (music cues) reset the UI when they finish
   useEffect(() => {
     const a = cardAudio.current; if (!a) return;
@@ -185,12 +187,12 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const el = document.documentElement;
     if (accent) { el.style.setProperty("--brand", accent); el.style.setProperty("--brand-2", accent); }
-    else { el.style.removeProperty("--brand"); el.style.removeProperty("--brand-2"); }
+    else if (!themeDef(theme)?.colors) { el.style.removeProperty("--brand"); el.style.removeProperty("--brand-2"); }
   }, [accent, theme]);
   useEffect(() => {
     const el = document.documentElement;
     if (radius) el.style.setProperty("--radius-base", radius);
-    else el.style.removeProperty("--radius-base");
+    else if (themeDef(theme)?.radius == null) el.style.removeProperty("--radius-base");
   }, [radius, theme]);
   useEffect(() => { document.documentElement.setAttribute("data-poster", posterSize); }, [posterSize]);
   useEffect(() => { document.documentElement.setAttribute("data-motion", reduceMotion ? "reduced" : "full"); }, [reduceMotion]);
@@ -206,7 +208,7 @@ export function AppProvider({ children }) {
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => { configureSound({ pack: soundPack, theme, muted, volume: uiVolume }); }, [soundPack, theme, muted, uiVolume]);
+  useEffect(() => { const tp = themeDef(theme, tstate)?.sfx_pack; configureSound({ pack: soundPack === "auto" && tp && tp !== "auto" ? tp : soundPack, theme: baseOf(theme), muted, volume: uiVolume }); }, [soundPack, theme, muted, uiVolume, tstate]);
   useEffect(() => {
     const v = muted ? 0 : musicVolume;
     if (cardAudio.current) cardAudio.current.volume = v;
@@ -227,7 +229,7 @@ export function AppProvider({ children }) {
     getSettings().then((s) => {
       if (needMode && ["loop", "sequence", "shuffle"].includes(s?.default_play_mode)) setPlayModeState(s.default_play_mode);
       if (needAmb && s?.default_ambience_id) setAmbienceId(s.default_ambience_id);
-      if (needTheme && THEMES.some((t) => t.key === s?.default_theme)) setThemeState(s.default_theme);
+      if (needTheme && (THEMES.some((t) => t.key === s?.default_theme) || isCustomKey(s?.default_theme))) setThemeState(s.default_theme);
       if (needPosterD && s?.default_poster_desktop) { setPosterDesktopState(s.default_poster_desktop); if (!isPhoneNow()) setPosterSizeState(s.default_poster_desktop); }
       if (needPosterM && s?.default_poster_mobile) { setPosterMobileState(s.default_poster_mobile); if (isPhoneNow()) setPosterSizeState(s.default_poster_mobile); }
     }).catch(() => {});

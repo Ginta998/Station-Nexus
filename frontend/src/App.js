@@ -30,6 +30,8 @@ import PortalListener from "@/components/atelier/PortalListener";
 import Atelier from "@/pages/Atelier";
 import CyberOverlay from "@/components/CyberOverlay";
 import CosmicBackground from "@/components/CosmicBackground";
+import ThemeRuntime from "@/components/ThemeRuntime";
+import { ThemeLoader } from "@/components/ThemeStudio";
 import SiteMeta from "@/components/SiteMeta";
 import GuidedTour from "@/components/GuidedTour";
 import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
@@ -109,6 +111,8 @@ function App() {
         <ChatProvider>
         <BrowserRouter>
           <CosmicBackground />
+          <ThemeRuntime />
+          <ThemeLoader />
           <SiteMeta />
           <StartupRedirect />
           <Routes>

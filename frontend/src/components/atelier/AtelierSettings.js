@@ -1,14 +1,18 @@
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { IoMusicalNotes, IoKeypadOutline, IoDownloadOutline, IoTrashOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { uploadJournalImage } from "@/lib/api";
 import { atelierApi } from "@/lib/atelier";
-import { THEMES } from "@/lib/themes";
+import { useThemeList } from "@/lib/themeStore";
 import { useApp } from "@/context/AppContext";
 import { StartupSetting } from "@/components/Startup";
 import ShortcutsManager from "@/components/atelier/ShortcutsManager";
+import ThemeStudio from "@/components/ThemeStudio";
 
 export default function AtelierSettings({ at, openBrains }) {
+  const THEMES = useThemeList();
+  const [studio, setStudio] = useState(false);
   const { theme, setTheme, sfx } = useApp();
   const [code, setCode] = useState(at.config.code || "");
   const [busy, setBusy] = useState(false);
@@ -37,8 +41,9 @@ export default function AtelierSettings({ at, openBrains }) {
   return (
     <section className="at-view" data-testid="atelier-settings">
       <header className="at-head"><p className="at-eyebrow mono">// RÉGLAGES</p><h1>Réglages de l'Atelier</h1></header>
+      {studio && createPortal(<ThemeStudio onClose={() => setStudio(false)} />, document.body)}
       <div className="at-panel">
-        <div className="at-panel-h"><h2>Thème du pont</h2></div>
+        <div className="at-panel-h"><h2>Thème du pont</h2><button className="at-btn" onClick={() => setStudio(true)} data-testid="open-theme-studio">Atelier de thèmes</button></div>
         <p className="at-sub">Les thèmes de la Station habillent aussi l'Atelier. La musique d'ambiance se règle avec le bouton ♪ en haut (lecteur et musiques de la Station).</p>
         <div className="at-themes" data-testid="atelier-themes">
           {THEMES.map((t) => (

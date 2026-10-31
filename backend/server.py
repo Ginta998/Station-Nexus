@@ -2636,6 +2636,8 @@ api_router.include_router(build_atelier_router(db, require_admin, _storage_put, 
 api_router.include_router(build_public_files_router(db, _storage_get))
 from bunny import build_bunny_router  # noqa: E402
 api_router.include_router(build_bunny_router(db, require_admin))
+from themes import build_themes_router  # noqa: E402
+api_router.include_router(build_themes_router(db, require_admin))
 app.include_router(api_router)
 app.add_middleware(CORSMiddleware, allow_credentials=True,
                    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),

@@ -1,0 +1,70 @@
+.ts-panel{position:fixed;top:0;right:0;bottom:0;z-index:120;width:min(440px,100vw);display:flex;flex-direction:column;background:rgba(10,10,14,.9);-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);border-left:1px solid color-mix(in srgb,var(--brand) 35%,transparent);box-shadow:-30px 0 80px -30px #000;color:#f1f1f4;font-family:"Space Grotesk",system-ui,sans-serif;animation:tsIn .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes tsIn{from{transform:translateX(40px);opacity:0}}
+.ts-head{display:flex;align-items:center;gap:12px;padding:18px 18px 12px}
+.ts-head h2{margin:2px 0 0;font-size:22px;font-weight:700}
+.ts-head>div:first-child{flex:1}
+.ts-eye{font-size:10px;letter-spacing:.22em;color:var(--brand);margin:0}
+.ts-x{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:inherit;cursor:pointer;transition:background-color .2s}
+.ts-x:hover{background:rgba(255,255,255,.1)}
+.ts-title{flex:1;display:flex;gap:8px;min-width:0}
+.ts-title input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:inherit;padding:8px 10px;font-size:15px;font-weight:600;min-width:0}
+.ts-kanji{width:52px;text-align:center}.ts-name{flex:1}
+.ts-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;border:0;background:var(--brand);color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;transition:transform .2s,filter .2s}
+.ts-btn:hover{transform:translateY(-1px);filter:brightness(1.1)}
+.ts-btn.ghost{background:rgba(255,255,255,.07);color:inherit;border:1px solid rgba(255,255,255,.1)}
+.ts-btn.sm{padding:7px 12px;font-size:12px}
+.ts-actions{display:flex;gap:8px;padding:0 18px 12px}
+.ts-live{margin:0 18px 8px;font-size:10px;letter-spacing:.18em;color:#3ddc84}
+.ts-tabs{display:flex;gap:4px;padding:0 14px 10px;overflow-x:auto;scrollbar-width:none}
+.ts-tabs button{flex:0 0 auto;padding:8px 12px;border-radius:999px;border:0;background:transparent;color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;transition:background-color .2s,color .2s}
+.ts-tabs button.on{background:rgba(255,255,255,.1);color:#fff}
+.ts-scroll{flex:1;overflow-y:auto;padding:4px 18px 40px;display:flex;flex-direction:column;gap:10px}
+.ts-scroll h3{font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin:16px 0 4px;color:rgba(255,255,255,.75)}
+.ts-scroll h3 small{opacity:.5;margin-left:6px;letter-spacing:.05em;text-transform:none}
+.ts-scroll h4{font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin:10px 0 0;color:var(--brand)}
+.ts-empty,.ts-hint{font-size:12px;opacity:.55;margin:0}
+.ts-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid transparent;transition:background-color .2s,border-color .2s}
+.ts-row:hover{background:rgba(255,255,255,.04)}
+.ts-row.on{border-color:color-mix(in srgb,var(--brand) 50%,transparent);background:color-mix(in srgb,var(--brand) 10%,transparent)}
+.ts-row.off{opacity:.45}
+.ts-sw{display:flex;border:0;padding:0;background:none;cursor:pointer;flex:0 0 auto}
+.ts-sw i{width:14px;height:30px;display:block}.ts-sw i:first-child{border-radius:6px 0 0 6px}.ts-sw i:last-child{border-radius:0 6px 6px 0}
+.ts-info{flex:1;min-width:0;cursor:pointer}
+.ts-info b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ts-info b span{opacity:.5;font-weight:400;margin-left:4px}
+.ts-info small{font-size:11px;opacity:.55}
+.ts-info em{font-style:normal;color:var(--brand);margin-right:6px}
+.ts-ra{display:flex;gap:2px;opacity:.35;transition:opacity .2s}
+.ts-row:hover .ts-ra{opacity:1}
+.ts-ra button{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;border:0;background:transparent;color:inherit;cursor:pointer}
+.ts-ra button:hover{background:rgba(255,255,255,.1)}
+.ts-presets{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.ts-preset{position:relative;height:74px;border-radius:12px;border:1px solid rgba(255,255,255,.1);color:#fff;cursor:pointer;text-align:left;padding:10px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .2s}
+.ts-preset:hover{transform:translateY(-2px) scale(1.02)}
+.ts-preset b{position:absolute;right:10px;top:6px;font-size:26px;opacity:.85}
+.ts-preset span{font-size:12px;font-weight:700;text-shadow:0 1px 6px #000}
+.ts-field{display:flex;flex-direction:column;gap:6px;font-size:12px}
+.ts-field>span{display:flex;justify-content:space-between;opacity:.8}
+.ts-field em{font-style:normal;opacity:.6}
+.ts-field input:not([type=range]),.ts-scroll select,.ts-try{width:100%;padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.3);color:inherit;font-size:13px}
+.ts-scroll select option{background:#111}
+.ts-field input[type=range]{accent-color:var(--brand)}
+.ts-color{display:grid;grid-template-columns:34px 1fr 120px;align-items:center;gap:10px;font-size:13px}
+.ts-color input[type=color]{width:34px;height:34px;border:0;padding:0;background:none;cursor:pointer;border-radius:8px}
+.ts-color input.mono{padding:7px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.3);color:inherit;font-size:11px}
+.ts-pals{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.ts-pals button{display:flex;align-items:center;gap:0;padding:6px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:inherit;cursor:pointer;font-size:11px;transition:border-color .2s}
+.ts-pals button:hover{border-color:var(--brand)}
+.ts-pals i{width:12px;height:22px}.ts-pals span{margin-left:8px}
+.ts-fonts{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;max-height:240px;overflow-y:auto}
+.ts-fonts button,.ts-keys button,.ts-seg button{padding:9px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:inherit;cursor:pointer;font-size:13px;text-align:left;transition:border-color .2s,background-color .2s}
+.ts-fonts button.on,.ts-keys button.on,.ts-seg button.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 18%,transparent)}
+.ts-keys{display:flex;flex-wrap:wrap;gap:6px}
+.ts-keys button{font-size:12px;padding:7px 10px}
+.ts-seg{display:flex;gap:6px}.ts-seg button{flex:1;text-align:center}
+.ts-grads{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.ts-grads button{height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.1);cursor:pointer}
+.ts-inline{display:flex;gap:8px}
+.ts-demo{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--radius-base);background:var(--bg-primary);border:var(--border-width) solid var(--border-c)}
+.ts-demo-card{flex:1;padding:14px;border-radius:var(--radius-base);background:var(--bg-secondary);border:var(--border-width) solid var(--border-c);box-shadow:var(--shadow-1);color:var(--text-primary);font-family:var(--font-display)}
+@media(max-width:767px){.ts-panel{width:100vw;top:auto;height:72vh;border-left:0;border-top:1px solid color-mix(in srgb,var(--brand) 35%,transparent);border-radius:18px 18px 0 0}}

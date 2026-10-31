@@ -1,0 +1,10 @@
+.nx-tlayer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.nx-tbg{position:absolute;inset:0;width:100%;height:100%;background-size:cover;background-position:center;object-fit:cover;border:0}
+.nx-tyt{width:177.78vh;min-width:100%;height:56.25vw;min-height:100%;left:50%;top:50%;transform:translate(-50%,-50%);inset:auto}
+.nx-tdim{position:absolute;inset:0;background:var(--bg-primary)}
+.nx-tfx{position:absolute;inset:0;width:100%;height:100%}
+.nx-fog i{position:absolute;inset:-20%;background:radial-gradient(ellipse 40% 25% at 30% 60%,color-mix(in srgb,var(--fc) 35%,transparent),transparent 70%),radial-gradient(ellipse 35% 22% at 75% 40%,color-mix(in srgb,var(--fc) 28%,transparent),transparent 70%);filter:blur(30px);animation:nxFog 38s linear infinite alternate}
+.nx-fog i+i{animation-duration:55s;animation-direction:alternate-reverse;opacity:.7}
+@keyframes nxFog{to{transform:translateX(12%) translateY(-4%)}}
+html[data-tblur] :is(.at-panel,.at-top,.at-dock,.fx-bottom,.rd-bar,.rd-qpop,header,[class*="glass"]){-webkit-backdrop-filter:blur(var(--nx-blur)) saturate(1.3);backdrop-filter:blur(var(--nx-blur)) saturate(1.3)}
+html[data-motion="reduced"] .nx-fog i{animation:none}

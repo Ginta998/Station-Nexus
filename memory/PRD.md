@@ -849,3 +849,5 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Deux écrans : bouton "Envoyer sur l autre écran" (lecteur + Focus via /atelier#focus), toScreen() dans lib/embed.js
 - Radio fix : claim média tant que la radio est active (plus de relance de l ambiance pendant les buffers). File d attente (GET /api/atelier/yt-titles), éditeur playlist (crayon / clic droit : nom, couverture, couleur --rc)
 - Fix radio coupée chaque seconde : src iframe figé au lancement (pl.src) au lieu de recalculé depuis localStorage. Recherche dans la file + recherche globale (GET /api/atelier/yt-playlist, cache titres nx-yt-titles)
+- Radio : onReady + retry listening, aléatoire maison (playVideoAt aléatoire), plus de setShuffle YouTube
+- Atelier de thèmes (Réglages Atelier) : collection themes, /api/themes public, /api/admin/themes CRUD ; lib/themeStore.js, ThemeRuntime (vars CSS, fond, effets canvas, sons clavier synthés), ThemeStudio/ThemeEditor ; clés perso "c-*", retouches des thèmes d origine = doc avec la même clé

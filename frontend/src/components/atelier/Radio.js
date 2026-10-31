@@ -31,27 +31,31 @@ export function useRadio(at) {
   const [muted, setMuted] = useState(false);
   const cmd = (func, args = []) => { try { fr.current.contentWindow.postMessage(JSON.stringify({ event: "command", func, args }), "*"); } catch (_) {} };
   const play = (p) => { const src = srcFor(p); if (!src) return toast.error("Lien YouTube invalide"); setInfo({}); setPl({ ...p, src }); };
-  const playAt = (p, k) => { if (pl?.id === p.id) return cmd("playVideoAt", [k]); try { localStorage.setItem("nx-radio:" + p.id, JSON.stringify({ i: k, t: 0 })); } catch (_) {} play(p); };
+  const playAt = (p, k) => { if (pl?.id === p.id) return cmd("playVideoAt", [k]); live.current.skipRand = true; try { localStorage.setItem("nx-radio:" + p.id, JSON.stringify({ i: k, t: 0 })); } catch (_) {} play(p); };
   const nextPl = () => { if (!list.length) return; const i = list.findIndex((x) => x.id === pl?.id); play(list[shuffle ? Math.floor(Math.random() * list.length) : (i + 1) % list.length]); };
-  const r = { list, pl, info, station, shuffle, vol, muted, fr, cmd, play, playAt, nextPl, setStation,
+  const live = useRef({});
+  const r = { live: live.current, list, pl, info, station, shuffle, vol, muted, fr, cmd, play, playAt, nextPl, setStation,
     playing: info.state === 1,
     toggle: () => cmd(info.state === 1 ? "pauseVideo" : "playVideo"),
     pause: () => pl && cmd("pauseVideo"),
-    next: () => cmd("nextVideo"), prev: () => (info.t > 4 ? cmd("seekTo", [0, true]) : cmd("previousVideo")),
+    next: () => (shuffle && info.n > 1 ? cmd("playVideoAt", [Math.floor(Math.random() * info.n)]) : cmd("nextVideo")),
+    prev: () => (info.t > 4 ? cmd("seekTo", [0, true]) : cmd("previousVideo")),
     jump: (k) => cmd("playVideoAt", [k]),
     seek: (t) => cmd("seekTo", [t, true]),
-    setShuffle: (s) => { setShuffle(s); cmd("setShuffle", [s]); },
+    setShuffle,
     setVol: (v) => { setVol(v); setMuted(false); cmd("setVolume", [v]); cmd("unMute"); },
     mute: () => { cmd(muted ? "unMute" : "mute"); setMuted(!muted); },
     stop: () => { setPl(null); setInfo({}); },
     save: (l) => at.saveConfig({ radio: l }),
   };
-  const live = useRef(r); live.current = r;
+  Object.assign(live.current, r);
   useEffect(() => {
     const on = (m) => {
       if (!fr.current || m.source !== fr.current.contentWindow) return;
-      let x; try { x = JSON.parse(m.data).info; } catch (_) { return; }
-      if (!x) return;
+      let d; try { d = JSON.parse(m.data); } catch (_) { return; }
+      const c = live.current;
+      if (d.event === "onReady") { c.ready = true; c.cmd("setVolume", [c.vol]); c.cmd("playVideo"); return; }
+      const x = d.info; if (!x) return;
       setInfo((o) => {
         const n = { ...o };
         if (x.playerState != null) n.state = x.playerState;
@@ -62,8 +66,9 @@ export function useRadio(at) {
         if (Array.isArray(x.playlist)) { n.n = x.playlist.length; n.ids = x.playlist; }
         return n;
       });
-      const c = live.current;
       if (c.pl && x.currentTime > 5) { try { localStorage.setItem("nx-radio:" + c.pl.id, JSON.stringify({ i: c.info.i || 0, t: x.currentTime })); } catch (_) {} }
+      if (Array.isArray(x.playlist) && c.shuffle && c.randOnce !== c.pl?.src && x.playlist.length > 1) { c.randOnce = c.pl.src; if (c.skipRand) c.skipRand = false; else c.cmd("playVideoAt", [Math.floor(Math.random() * x.playlist.length)]); }
+      if (x.playerState === 0 && c.shuffle && !c.station && (c.info.n || 0) > 1) { c.cmd("playVideoAt", [Math.floor(Math.random() * c.info.n)]); return; }
       if (x.playerState === 0 && c.station && (c.info.i == null || c.info.i >= (c.info.n || 1) - 1)) { try { localStorage.removeItem("nx-radio:" + c.pl.id); } catch (_) {} c.nextPl(); }
     };
     window.addEventListener("message", on); return () => window.removeEventListener("message", on);
@@ -75,10 +80,17 @@ export function useRadio(at) {
   return r;
 }
 
+// L'API YouTube ne répond qu'après "listening" : on insiste jusqu'à onReady, sinon les clics sont perdus
+const hello = (r) => {
+  const live = r.live; live.ready = false; let n = 0;
+  const go = () => { if (live.ready || n++ > 40 || !r.fr.current) return; try { r.fr.current.contentWindow.postMessage(JSON.stringify({ event: "listening", id: "rd" }), "*"); } catch (_) {} setTimeout(go, 250); };
+  go();
+};
+
 export function RadioEngine({ radio: r }) {
   useMediaClaim(!!r.pl && r.info.state !== 2 && r.info.state !== 0);
   if (!r.pl) return null;
-  return <iframe key={r.pl.src} ref={r.fr} className="rd-engine" src={r.pl.src} title="Radio Nexus" allow="autoplay; encrypted-media" onLoad={() => { try { r.fr.current.contentWindow.postMessage(JSON.stringify({ event: "listening", id: "rd" }), "*"); } catch (_) {} r.cmd("setVolume", [r.vol]); }} />;
+  return <iframe key={r.pl.src} ref={r.fr} className="rd-engine" src={r.pl.src} title="Radio Nexus" allow="autoplay; encrypted-media" onLoad={() => hello(r)} />;
 }
 
 export function RadioBar({ radio: r, onOpen }) {

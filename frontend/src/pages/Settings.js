@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoAlbumsOutline, IoGridOutline, IoListOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { THEMES } from "@/lib/themes";
+import { useThemeList } from "@/lib/themeStore";
 import { getCover, setCover, fileToCover, registerAmbiences } from "@/lib/covers";
 import { SOUND_PACKS, packForTheme, playUiSound } from "@/lib/sound";
 import { INTROS } from "@/lib/intro";
@@ -880,6 +880,7 @@ function TourTextsManager({ settings, refetch }) {
 }
 
 export default function Settings() {
+  const THEMES = useThemeList();
   const nav = useNavigate();
   const { theme, setTheme, isAdmin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, sfx,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,

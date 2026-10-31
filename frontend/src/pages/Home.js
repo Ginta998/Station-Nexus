@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { listCreations, listCategories, deleteCreation, getMembershipPlan, getSettings, updateSettings, posterUrl, bgUrl, listAnnouncements, listJournal, listJournalCategories, mediaUrl } from "@/lib/api";
 import { fmtDate as fmtJournalDate } from "@/components/journal/JournalParts";
 import HomeVision from "@/components/HomeVision";
-import { THEMES } from "@/lib/themes";
+import { useThemeList } from "@/lib/themeStore";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
@@ -88,6 +88,7 @@ function Poster({ it, idx, catLabel, soon, isAdmin, featured, onOpen, onEdit, on
 }
 
 export default function Home() {
+  const THEMES = useThemeList();
   const nav = useNavigate();
   const { isAdmin, sfx, theme, setTheme, playAmbient } = useApp();
   const { user, openAuth } = useAuth();

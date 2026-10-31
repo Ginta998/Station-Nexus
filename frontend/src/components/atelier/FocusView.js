@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { IoClose, IoPlay, IoPause, IoStop, IoExpand, IoVideocamOutline, IoVolumeHigh, IoVolumeMute, IoMusicalNotes, IoChevronDown, IoChevronUp, IoAdd, IoTrashOutline, IoPlayBack, IoPlayForward, IoDesktopOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
-import { THEMES } from "@/lib/themes";
+import { useThemeList } from "@/lib/themeStore";
 import { getUniPlaylist } from "@/lib/atelier";
 import { toEmbed, toScreen } from "@/lib/embed";
 import CosmicBackground from "@/components/CosmicBackground";
@@ -36,6 +36,7 @@ const sbtn = { borderColor: "var(--line)", borderRadius: "999px", color: "var(--
 
 // Mode Focus — un lieu immersif : concentration, repos, ou immersion totale. Pas un pomodoro, une respiration.
 export default function FocusView({ at, onClose }) {
+  const THEMES = useThemeList();
   const { sfx, theme, setTheme, enterMediaMode, exitMediaMode } = useApp();
   const [mode, setMode] = useState("focus"); // focus | repos | immersion
   const [dur, setDur] = useState(25);
