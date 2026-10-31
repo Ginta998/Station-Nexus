@@ -834,3 +834,8 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Ajouts venus de Claude : Œuvres (OeuvreView/OeuvreForm), mode Focus (FocusView), Roadmap/rétroplanning (RoadmapView), import de base (ImportBase + data/nexus-base.json + tools/build_base.py), export PDF (lib/exportPdf.js), mode d'ouverture par app dans le Bureau (intégré / fenêtre / onglet), Pont v3, menu latéral PC, jobs Bunny stockés dans Mongo.
 - Avant la synchro (même jour) : fichiers en accès direct (kind "file", FileViewer), menu contextuel clic droit / appui long, glisser-déposer des éléments vers une catégorie ou un univers, suppression de n'importe quelle app du Bureau (config.hidden_apps), réglage de démarrage Station/Atelier (localStorage sx_start). Google Drive connecté retiré : l'utilisateur a choisi une simple fenêtre d'app.
 - Tests : compilation OK, /api/atelier/bootstrap OK, capture de l'Atelier OK. Pas encore de test E2E complet depuis la synchro.
+
+## 2026-10-29 — Mobile + 4 thèmes
+- Mobile Atelier : menu latéral à droite (bouton ☰), barre du bas = raccourcis paramétrables (config.shortcuts, vide par défaut, défilante, déployable). Gestion : Réglages Atelier + menu contextuel « Ajouter aux raccourcis » (fiches, univers, apps).
+- Thèmes : aincrad (clair SAO), aincradnight, frontiere (crêtes SVG, braises, poussière sur cartes), terra (végétation SVG, mousse/rouille sur cartes). Fichiers : themes-new.css, components/ThemeScenes.js.
+- Consigne utilisateur : YAGNI, économie maximale de tokens/crédits.
