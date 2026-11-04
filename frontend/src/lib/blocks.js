@@ -18,7 +18,7 @@ export function blocksToHtml(blocks = []) {
       case "image": return b.url ? `<figure class="jr-fig${b.wide ? " wide" : ""}"><img src="${esc(mediaUrl(b.url))}" class="sx-rich-img" alt=""/>${cap(b.caption)}</figure>` : "";
       case "sketch": return b.url ? `<figure class="jr-sketch"><span class="tape"></span><img src="${esc(mediaUrl(b.url))}" alt=""/>${cap(b.caption)}</figure>` : "";
       case "gallery": return (b.urls || []).length ? `<figure class="jr-gal"><div class="g">${b.urls.map((u) => `<img src="${esc(mediaUrl(u))}" alt=""/>`).join("")}</div>${cap(b.caption)}</figure>` : "";
-      case "youtube": { const id = ytId(b.url); return id ? `<figure class="jr-yt"><div class="r"><iframe src="https://www.youtube-nocookie.com/embed/${id}" allowfullscreen loading="lazy"></iframe></div>${cap(b.caption)}</figure>` : ""; }
+      case "youtube": { const id = ytId(b.url); return id ? `<figure class="jr-yt"><div class="r"><iframe src="https://www.youtube.com/embed/${id}" allowfullscreen loading="lazy"></iframe></div>${cap(b.caption)}</figure>` : ""; }
       case "music": { const t = esc(b.caption || "Musique"); return b.url ? `<p class="jr-music-p"><span class="sx-music-cue" contenteditable="false" data-track="${esc(mediaUrl(b.url))}" data-title="${t}">${t}</span></p>` : ""; }
       default: return "";
     }

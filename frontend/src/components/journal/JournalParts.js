@@ -61,7 +61,7 @@ export function JournalBlocks({ blocks = [], onImage, onMusic, playingUrl }) {
         <figure key={i} className="jr-gal"><div className="g">{b.urls.map((u, k) => <img key={k} src={mediaUrl(u)} alt="" loading="lazy" onClick={() => onImage?.(mediaUrl(u))} />)}</div>{cap}</figure>
       ) : null;
       case "youtube": { const id = youtubeId(b.url); return id ? (
-        <figure key={i} className="jr-yt"><div className="r"><iframe src={`https://www.youtube-nocookie.com/embed/${id}`} title={b.caption || "Vidéo"} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen loading="lazy" /></div>{cap}</figure>
+        <figure key={i} className="jr-yt"><div className="r"><iframe src={`https://www.youtube.com/embed/${id}`} title={b.caption || "Vidéo"} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen loading="lazy" /></div>{cap}</figure>
       ) : null; }
       default: return null;
     }

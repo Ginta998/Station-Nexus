@@ -16,8 +16,8 @@ const saved = (id) => { try { return JSON.parse(localStorage.getItem("nx-radio:"
 function srcFor(p) {
   const l = listOf(p.url); const v = vidOf(p.url); const s = saved(p.id);
   const q = `autoplay=1&enablejsapi=1&playsinline=1&rel=0&origin=${encodeURIComponent(ORIGIN)}${s.t > 5 ? `&start=${Math.floor(s.t)}` : ""}`;
-  if (l) return `https://www.youtube-nocookie.com/embed/${v && !s.i ? v : "videoseries"}?list=${l}${s.i ? `&index=${s.i}` : ""}&${q}`;
-  return v ? `https://www.youtube-nocookie.com/embed/${v}?${q}` : "";
+  if (l) return `https://www.youtube.com/embed/${v && !s.i ? v : "videoseries"}?list=${l}${s.i ? `&index=${s.i}` : ""}&${q}`;
+  return v ? `https://www.youtube.com/embed/${v}?${q}` : "";
 }
 
 export function useRadio(at) {
@@ -90,7 +90,7 @@ const hello = (r) => {
 export function RadioEngine({ radio: r }) {
   useMediaClaim(!!r.pl && r.info.state !== 2 && r.info.state !== 0);
   if (!r.pl) return null;
-  return <iframe key={r.pl.src} ref={r.fr} className="rd-engine" src={r.pl.src} title="Radio Nexus" allow="autoplay; encrypted-media" onLoad={() => hello(r)} />;
+  return <iframe key={r.pl.src} ref={r.fr} className="rd-engine" src={r.pl.src} title="Radio Nexus" allow="autoplay; encrypted-media" referrerPolicy="strict-origin-when-cross-origin" onLoad={() => hello(r)} />;
 }
 
 export function RadioBar({ radio: r, onOpen }) {

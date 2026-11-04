@@ -63,7 +63,9 @@ export const atelierApi = {
     const fd = new FormData(); fd.append("file", file); fd.append("universe_id", universe_id || ""); fd.append("kind", kind); fd.append("split", "1");
     return api.post("/atelier/import", fd, { onUploadProgress: (e) => onProgress?.(e.total ? e.loaded / e.total : 0) }).then((r) => r.data.items);
   },
-  share: (id) => send("post", `/atelier/items/${id}/share`),
+  share: (id, mode) => send("post", `/atelier/items/${id}/share`, { mode }),
+  delComment: (id, cid) => send("delete", `/atelier/items/${id}/comments/${cid}`),
+  ytSearch: (q) => get(`/atelier/yt-search?q=${encodeURIComponent(q)}`),
   unshare: (id) => send("delete", `/atelier/items/${id}/share`),
   downloadPptx: async (id, title, s) => {
     const r = await api.get(`/atelier/items/${id}/pptx`, { responseType: "blob", params: { bg: s.bg || "#0b0b12", ink: s.ink || "#f1f1f4", ac: s.ac || "#3f86ff", ft: s.ft || "Calibri", fb: s.fb || "Calibri" } });

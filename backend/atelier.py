@@ -229,13 +229,44 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
         return {"items": created}
 
     @r.post("/items/{iid}/share")
-    async def share_item(iid: str):
+    async def share_item(iid: str, body: Dict[str, Any] = None):
         it = await db.atelier_items.find_one({"id": iid}, {"_id": 0, "share_token": 1})
         if it is None:
             raise HTTPException(404, "Élément introuvable")
         tok = it.get("share_token") or uuid.uuid4().hex[:16]
-        await db.atelier_items.update_one({"id": iid}, {"$set": {"share_token": tok}})
-        return {"token": tok}
+        mode = (body or {}).get("mode", "read")
+        mode = mode if mode in ("read", "comment", "edit") else "read"
+        await db.atelier_items.update_one({"id": iid}, {"$set": {"share_token": tok, "share_mode": mode}})
+        return {"token": tok, "mode": mode}
+
+    @r.delete("/items/{iid}/comments/{cid}")
+    async def del_comment(iid: str, cid: str):
+        await db.atelier_items.update_one({"id": iid}, {"$pull": {"share_comments": {"id": cid}}})
+        return {"ok": True}
+
+    @r.get("/yt-search")
+    async def yt_search(q: str):
+        import httpx
+        import json as _json
+        async with httpx.AsyncClient(timeout=10, headers={"Accept-Language": "fr-FR,fr;q=0.9", "User-Agent": "Mozilla/5.0"}) as c:
+            html = (await c.get("https://www.youtube.com/results", params={"search_query": q[:120]})).text
+        m = re.search(r"var ytInitialData = (\{.*?\});</script>", html)
+        out = []
+        if m:
+            def walk(o):
+                if isinstance(o, dict):
+                    v = o.get("videoRenderer")
+                    if v and v.get("videoId"):
+                        out.append({"id": v["videoId"], "title": "".join(x.get("text", "") for x in v.get("title", {}).get("runs", [])),
+                                    "author": "".join(x.get("text", "") for x in v.get("ownerText", {}).get("runs", [])),
+                                    "length": v.get("lengthText", {}).get("simpleText", ""), "views": v.get("shortViewCountText", {}).get("simpleText", "")})
+                    for x in o.values():
+                        walk(x)
+                elif isinstance(o, list):
+                    for x in o:
+                        walk(x)
+            walk(_json.loads(m.group(1)))
+        return out[:24]
 
     @r.delete("/items/{iid}/share")
     async def unshare_item(iid: str):

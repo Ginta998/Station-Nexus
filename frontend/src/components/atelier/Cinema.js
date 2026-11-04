@@ -15,18 +15,29 @@ const RATES = [0.5, 0.75, 1, 1.25, 1.5, 2];
 const titles = {};
 
 // Lecteur cinéma : interface YouTube masquée, contrôles Nexus
-export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, onClose }) {
-  const box = useRef(null); const fr = useRef(null); const ready = useRef(false); const idle = useRef(null);
+export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, onClose, fileSrc }) {
+  const box = useRef(null); const fr = useRef(null); const vr = useRef(null); const ready = useRef(false); const idle = useRef(null);
   const [src] = useState(() => {
     const v = vidOf(url); const l = listOf(url); const st = getPos(url);
     const q = `autoplay=1&controls=0&disablekb=1&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1&fs=0&enablejsapi=1&cc_load_policy=0&origin=${encodeURIComponent(window.location.origin)}${st > 5 ? `&start=${st}` : ""}`;
-    return `https://www.youtube-nocookie.com/embed/${v || "videoseries"}?${l ? `list=${l}&` : ""}${q}`;
+    return `https://www.youtube.com/embed/${v || "videoseries"}?${l ? `list=${l}&` : ""}${q}`;
   });
   const [s, setS] = useState({ state: -1, t: 0, d: 0, vol: 100, muted: false, rate: 1, buf: 0 });
   const [ui, setUi] = useState(true); const [panel, setPanel] = useState(false); const [rates, setRates] = useState(false);
   const [cc, setCc] = useState(false); const [full, setFull] = useState(false); const [count, setCount] = useState(null); const [, tick] = useState(0);
   useMediaClaim(true);
-  const cmd = (func, args = []) => { try { fr.current.contentWindow.postMessage(JSON.stringify({ event: "command", func, args }), "*"); } catch (_) {} };
+  const cmd = (func, args = []) => {
+    const v = vr.current;
+    if (v) { const a = args[0]; ({ playVideo: () => v.play().catch(() => {}), pauseVideo: () => v.pause(), seekTo: () => { v.currentTime = a; }, setVolume: () => { v.volume = a / 100; }, mute: () => { v.muted = true; }, unMute: () => { v.muted = false; }, setPlaybackRate: () => { v.playbackRate = a; } }[func] || (() => {}))(); return; }
+    try { fr.current.contentWindow.postMessage(JSON.stringify({ event: "command", func, args }), "*"); } catch (_) {}
+  };
+  const onV = (e) => {
+    const v = e.target; const st = { playing: 1, pause: 2, waiting: 3, ended: 0 }[e.type];
+    setS((o) => ({ ...o, t: v.currentTime, d: v.duration || o.d, vol: Math.round(v.volume * 100), muted: v.muted, rate: v.playbackRate, buf: v.buffered.length && v.duration ? v.buffered.end(v.buffered.length - 1) / v.duration : o.buf, ...(st != null && { state: st }) }));
+    if (e.type === "loadedmetadata") { const p = getPos(url); if (p > 5 && p < v.duration - 5) v.currentTime = p; }
+    if (e.type === "timeupdate" && v.currentTime > 5) try { localStorage.setItem(POS + url, String(Math.floor(v.currentTime))); localStorage.setItem("nx-dur:" + url, String(Math.floor(v.duration || 0))); } catch (_) {}
+    if (e.type === "ended") { try { localStorage.removeItem(POS + url); } catch (_) {} setCount(5); }
+  };
   const hasQ = queue && queue.length > 1;
   const items = hasQ ? queue.map((x, k) => { const v = vidOf(x.url); return { v, title: titles[v]?.title || x.title, k }; }) : (s.ids || []).map((v, k) => ({ v, title: titles[v]?.title, k }));
   const qids = hasQ ? queue.map((x) => vidOf(x.url)).filter(Boolean) : s.ids || [];
@@ -42,7 +53,7 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
       if (d.event === "onReady") { ready.current = true; cmd("playVideo"); return; }
       const x = d.info; if (!x) return;
       setS((o) => ({ ...o, ...(x.playerState != null && { state: x.playerState }), ...(x.currentTime != null && { t: x.currentTime }), ...(x.duration && { d: x.duration }), ...(x.volume != null && { vol: x.volume }), ...(x.muted != null && { muted: x.muted }), ...(x.playbackRate && { rate: x.playbackRate }), ...(x.videoLoadedFraction != null && { buf: x.videoLoadedFraction }), ...(x.videoData?.title && { vt: x.videoData.title, va: x.videoData.author }), ...(Array.isArray(x.playlist) && { ids: x.playlist }), ...(x.playlistIndex != null && { i: x.playlistIndex }) }));
-      if (x.currentTime > 5) try { localStorage.setItem(POS + url, String(Math.floor(x.currentTime))); } catch (_) {}
+      if (x.currentTime > 5) try { localStorage.setItem(POS + url, String(Math.floor(x.currentTime))); if (x.duration || s.d) localStorage.setItem("nx-dur:" + url, String(Math.floor(x.duration || s.d))); } catch (_) {}
       if (x.playerState === 0) { try { localStorage.removeItem(POS + url); } catch (_) {} setCount(5); }
     };
     window.addEventListener("message", on); return () => window.removeEventListener("message", on);
@@ -74,7 +85,9 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
   const name = s.vt || title;
   return (
     <div ref={box} className={"cine" + (mini ? " mini" : "") + (show ? " ui" : "")} onMouseMove={poke} onTouchStart={poke} data-testid="cinema-player">
-      <iframe ref={fr} src={src} title={title || "Vidéo"} allow="autoplay; encrypted-media; picture-in-picture" onLoad={hello} />
+      {fileSrc
+        ? <video ref={vr} src={fileSrc} autoPlay playsInline onPlaying={onV} onPause={onV} onWaiting={onV} onEnded={onV} onTimeUpdate={onV} onLoadedMetadata={onV} onProgress={onV} onVolumeChange={onV} onRateChange={onV} />
+        : <iframe ref={fr} src={src} title={title || "Vidéo"} allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" onLoad={hello} />}
       {!mini && <>
         <div className="cine-hit" onClick={() => { toggle(); poke(); }} onDoubleClick={fs} />
         {!playing && s.state !== -1 && <button className="cine-big" onClick={toggle} data-testid="cinema-big-play"><IoPlay size={40} /></button>}
@@ -83,7 +96,7 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
           <button className="cine-ic" onClick={onClose} title="Fermer" data-testid="cinema-close"><IoChevronBack size={22} /></button>
           <div className="cine-tt"><small className="mono">{hasQ || items.length ? `${curK + 1} / ${items.length}` : "SALON"}{s.va ? ` · ${s.va}` : ""}</small><b>{name}</b></div>
           <button className="cine-ic" onClick={onMini} title="Mini-lecteur" data-testid="cinema-mini"><IoContractOutline size={19} /></button>
-          <button className="cine-ic" onClick={() => { toScreen(`https://www.youtube-nocookie.com/embed/${vidOf(url) || "videoseries"}?autoplay=1${listOf(url) ? `&list=${listOf(url)}` : ""}&start=${Math.floor(s.t)}`); onClose(); }} title="Envoyer sur l'autre écran" data-testid="cinema-screen2"><IoDesktopOutline size={19} /></button>
+          <button className="cine-ic" onClick={() => { toScreen(`https://www.youtube.com/embed/${vidOf(url) || "videoseries"}?autoplay=1${listOf(url) ? `&list=${listOf(url)}` : ""}&start=${Math.floor(s.t)}`); onClose(); }} title="Envoyer sur l'autre écran" data-testid="cinema-screen2"><IoDesktopOutline size={19} /></button>
         </div>
         <div className="cine-bot">
           <Bar s={s} seek={seek} />
@@ -98,7 +111,7 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
             <span className="grow" />
             <div className="cine-rate"><button className="cine-ic" onClick={() => setRates(!rates)} data-testid="cinema-rate"><b className="cine-n">{s.rate}×</b></button>
               {rates && <div className="cine-menu">{RATES.map((r) => <button key={r} className={r === s.rate ? "on" : ""} onClick={() => { cmd("setPlaybackRate", [r]); setS((o) => ({ ...o, rate: r })); setRates(false); }}>{r === 1 ? "Normale" : r + "×"}</button>)}</div>}</div>
-            <button className={"cine-ic" + (cc ? " on" : "")} onClick={toggleCc} title="Sous-titres" data-testid="cinema-cc"><b className="cine-n cc">CC</b></button>
+            {!fileSrc && <button className={"cine-ic" + (cc ? " on" : "")} onClick={toggleCc} title="Sous-titres" data-testid="cinema-cc"><b className="cine-n cc">CC</b></button>}
             {items.length > 1 && <button className={"cine-ic" + (panel ? " on" : "")} onClick={() => setPanel(!panel)} title="À suivre" data-testid="cinema-queue"><IoListOutline size={21} /></button>}
             <button className="cine-ic" onClick={fs} title="Plein écran" data-testid="cinema-fullscreen">{full ? <IoContract size={20} /> : <IoExpand size={20} />}</button>
           </div>

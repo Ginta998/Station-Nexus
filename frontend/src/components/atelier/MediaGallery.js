@@ -13,7 +13,7 @@ function MediaTile({ m, onRemove }) {
   else if (m.type === "audio") body = <div className="au"><span className="nm">♪ {m.name}</span><audio controls preload="none" src={src} {...evs} /></div>;
   else if (m.type === "video") body = <video controls preload="metadata" src={src} {...evs} />;
   else if (m.type === "youtube") body = playing
-    ? <iframe title={m.name} src={`https://www.youtube-nocookie.com/embed/${m.yt}?autoplay=1`} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+    ? <iframe title={m.name} src={`https://www.youtube.com/embed/${m.yt}?autoplay=1`} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
     : <button className="yt" onClick={() => setPlaying(true)} data-testid={`atelier-media-yt-${m.id}`}><img src={`https://i.ytimg.com/vi/${m.yt}/hqdefault.jpg`} alt="" loading="lazy" /><span>▶</span></button>;
   else if (m.type === "pdf") body = <div className="doc"><IoDocumentOutline size={22} /><span className="nm">{m.name}</span><a href={src} target="_blank" rel="noreferrer" title="Ouvrir"><IoOpenOutline size={16} /></a></div>;
   else if (m.type === "link") body = <a className="doc" href={m.url} target="_blank" rel="noreferrer"><IoLinkOutline size={20} /><span className="nm">{m.name}<small>{m.url}</small></span><IoOpenOutline size={15} /></a>;

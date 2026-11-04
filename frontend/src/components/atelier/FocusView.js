@@ -25,8 +25,8 @@ const bgVideo = (raw) => {
   const common = `&enablejsapi=1&origin=${encodeURIComponent(ORIGIN)}&modestbranding=1&playsinline=1&rel=0`;
   const listId = (url.match(/[?&]list=([\w-]+)/) || [])[1];
   const y = (url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/) || [])[1];
-  if (listId && !y) return { yt: `https://www.youtube-nocookie.com/embed/videoseries?list=${listId}&autoplay=1&mute=1&loop=1${common}`, canSound: true };
-  if (y) return { yt: `https://www.youtube-nocookie.com/embed/${y}?autoplay=1&mute=1&controls=0&loop=1&playlist=${listId || y}${common}&iv_load_policy=3`, canSound: true };
+  if (listId && !y) return { yt: `https://www.youtube.com/embed/videoseries?list=${listId}&autoplay=1&mute=1&loop=1${common}`, canSound: true };
+  if (y) return { yt: `https://www.youtube.com/embed/${y}?autoplay=1&mute=1&controls=0&loop=1&playlist=${listId || y}${common}&iv_load_policy=3`, canSound: true };
   const em = toEmbed(url);
   if (em?.video) return { video: em.video, canSound: true };
   if (em?.src && !em.blocked) return { src: em.src, canSound: false };

@@ -8,9 +8,9 @@ export function toEmbed(raw) {
   if (!h) return null;
   if ((m = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/))) {
     const list = (url.match(/[?&]list=([\w-]+)/) || [])[1];
-    return { provider: "YouTube", src: `https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1${list ? `&list=${list}` : ""}`, ratio: "video" };
+    return { provider: "YouTube", src: `https://www.youtube.com/embed/${m[1]}?autoplay=1${list ? `&list=${list}` : ""}`, ratio: "video" };
   }
-  if ((m = url.match(/youtube\.com\/playlist\?list=([\w-]+)/))) return { provider: "YouTube", src: `https://www.youtube-nocookie.com/embed/videoseries?list=${m[1]}`, ratio: "video" };
+  if ((m = url.match(/youtube\.com\/playlist\?list=([\w-]+)/))) return { provider: "YouTube", src: `https://www.youtube.com/embed/videoseries?list=${m[1]}`, ratio: "video" };
   if (h === "youtube.com" || h === "m.youtube.com") return { provider: "YouTube", blocked: true };
   if ((m = url.match(/open\.spotify\.com\/(?:intl-\w+\/)?(track|album|playlist|artist|episode|show)\/(\w+)/))) return { provider: "Spotify", src: `https://open.spotify.com/embed/${m[1]}/${m[2]}`, ratio: "audio" };
   if ((m = url.match(/deezer\.com\/(?:\w{2}\/)?(track|album|playlist)\/(\d+)/))) return { provider: "Deezer", src: `https://widget.deezer.com/widget/dark/${m[1]}/${m[2]}`, ratio: "audio" };

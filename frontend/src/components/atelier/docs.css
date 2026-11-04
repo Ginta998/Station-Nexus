@@ -36,4 +36,17 @@
 .dv-pnav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;opacity:.3;transition:opacity .2s;cursor:default}
 .dv-pnav:hover{opacity:1}.dv-pnav button{background:none;border:0;color:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center}
 body:has(.dv-root) .bn-fab,body:has(.dv-root) .rd-bar,body:has(.dsp) .bn-fab{display:none}
+.dv-mode{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.15);background:#15151b;color:#eee}
+.dv-talk{position:fixed;right:16px;top:70px;bottom:16px;z-index:96;width:min(360px,calc(100vw - 32px));display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:16px;background:rgba(16,16,22,.96);border:1px solid rgba(255,255,255,.1);color:#eee;box-shadow:0 30px 80px -30px #000;animation:atView .25s both}
+.dv-talk h4{margin:0;font-size:16px}
+.dv-talk ol{list-style:none;margin:0;padding:0;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.dv-talk li{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.05)}
+.dv-talk li b{font-size:13px}.dv-talk li small{margin-left:8px;font-size:11px;opacity:.5}.dv-talk li p{margin:6px 0 0;font-size:14px;white-space:pre-wrap}
+.dv-talk li button{margin-top:6px;border:0;background:none;color:#ff7a7a;font-size:11px;cursor:pointer;padding:0}
+.dv-talk form{display:flex;flex-direction:column;gap:8px}
+.dv-talk input,.dv-talk textarea{padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.35);color:#eee;font:inherit}
+.dv-talk textarea{min-height:80px;resize:vertical}
+.dv-empty{opacity:.5;font-size:13px;margin:0}
+.dv-edit{outline:none;min-height:50vh}
+.dv-edit:focus{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--dz-ac) 40%,transparent)}
 @media(max-width:767px){.dsp-grid{grid-template-columns:repeat(2,1fr)}.dz-slide{font-size:9px}}

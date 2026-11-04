@@ -50,7 +50,7 @@ export default function ThemeRuntime() {
       {b.type === "gradient" && <div className="nx-tbg" style={{ background: `linear-gradient(${b.angle ?? 160}deg,${(b.g || []).join(",")})` }} />}
       {b.type === "image" && b.url && <div className="nx-tbg" style={{ backgroundImage: `url(${imgSrc(b.url)})`, filter: b.blur ? `blur(${b.blur}px)` : undefined }} />}
       {b.type === "video" && b.url && (yt
-        ? <iframe className="nx-tbg nx-tyt" src={`https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&mute=1&controls=0&loop=1&playlist=${yt}&playsinline=1&rel=0`} title="fond" allow="autoplay" />
+        ? <iframe className="nx-tbg nx-tyt" src={`https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&controls=0&loop=1&playlist=${yt}&playsinline=1&rel=0`} title="fond" allow="autoplay" referrerPolicy="strict-origin-when-cross-origin" />
         : <video className="nx-tbg" src={imgSrc(b.url)} autoPlay muted loop playsInline />)}
       {b.type && b.type !== "scene" && <div className="nx-tdim" style={{ opacity: (b.dim ?? 30) / 100 }} />}
       {d.fx?.fog > 0 && <div className="nx-fog" style={{ opacity: d.fx.fog / 100, "--fc": d.fx_color || "#fff" }}><i /><i /></div>}

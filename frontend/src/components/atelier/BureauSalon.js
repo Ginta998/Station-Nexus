@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { DEFAULT_APPS, toEmbed, popOut } from "@/lib/embed";
 import { atelierApi } from "@/lib/atelier";
 import { EmbedFrame } from "@/components/atelier/AppScreens";
+import { YtSearch, ContinueRow } from "@/components/atelier/SalonExtras";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import { addShortcut, appShortcut } from "@/components/atelier/Shortcuts";
 
@@ -289,6 +290,8 @@ export function SalonView({ at, launch, mini }) {
 
       {links.length === 0 && playlists.length === 0 && <p className="at-empty big">Ajoute un premier lien ou importe une vidéo. Crée des playlists (ex. les épisodes d'un anime), intègre des sites web à parcourir, et réorganise tes rubriques avec les flèches.</p>}
 
+      <YtSearch at={at} launch={launch} />
+      <ContinueRow links={links} launch={launch} />
       {order.map((k) => {
         if (k === "playlists") return <PlaylistsSec key={k} />;
         if (k === "integrations") return <IntegrationsSec key={k} />;

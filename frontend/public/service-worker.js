@@ -16,7 +16,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {  const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-
+  if (url.origin !== self.location.origin) return;
   // Never intercept API or media streams — always hit the network fresh.
   if (url.pathname.startsWith("/api")) return;
 

@@ -143,14 +143,14 @@ export default function AtelierApp({ onLeave }) {
             <button className="at-dock-toggle" onClick={toggleDock} title={dockOpen ? "Replier le menu" : "Déployer le menu"} aria-label="Replier ou déployer le menu" data-testid="atelier-dock-toggle">{dockOpen ? "‹‹" : "››"}</button>
           </div>
           <Dock icon={<IoPlanetOutline size={18} />} label="Pont" sub="POSTE DE COMMANDEMENT" on={view.name === "home"} onClick={() => go({ name: "home" })} testid="atelier-nav-home" />
-          <Dock icon={<IoGridOutline size={18} />} label="Univers" sub="TES MONDES & ŒUVRES" on={view.name === "universes" || view.name === "universe" || view.name === "oeuvre"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
-          <Dock icon={<IoSearch size={18} />} label="Recherche" sub="TROUVE TOUT · CTRL K" onClick={() => setPalette(true)} testid="atelier-nav-search" />
+          <Dock icon={<IoGridOutline size={18} />} label="Univers" sub="MES MONDES & ŒUVRES" on={view.name === "universes" || view.name === "universe" || view.name === "oeuvre"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
+          <Dock icon={<IoSearch size={18} />} label="Recherche" sub="JE TROUVE TOUT · CTRL K" onClick={() => setPalette(true)} testid="atelier-nav-search" />
           <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" sub="IDÉES EN VRAC" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" drop={dropToUniverse(at, null)} />
-          <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" sub="TES TÂCHES" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
-          <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="TES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
-          <Dock kanji="兎" label="Bunny" sub="TON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
-          <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="TON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
-          <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="TA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
+          <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" sub="MES TÂCHES" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
+          <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
+          <Dock kanji="兎" label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
+          <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
+          <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
           <Dock kanji="禅" label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
           <div className="at-dock-unis">

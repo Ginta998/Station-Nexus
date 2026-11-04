@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { IoClose, IoPrintOutline, IoPlay, IoChevronBack, IoChevronForward, IoDownloadOutline, IoLinkOutline } from "react-icons/io5";
+import { IoClose, IoPrintOutline, IoPlay, IoChevronBack, IoChevronForward, IoDownloadOutline, IoLinkOutline, IoChatbubbleOutline } from "react-icons/io5";
+import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { imgSrc, atelierApi } from "@/lib/atelier";
 import { styleOf, styleVars, varsCss, sections, DOC_CSS, DOC_FORMATS, docFonts } from "@/lib/docStyles";
@@ -36,11 +37,34 @@ export function printStyled(it, eyebrow, styleKey, format) {
   w.document.close(); setTimeout(() => w.print(), 1200);
 }
 
-export default function DocView({ it, eyebrow, onClose, shared }) {
+const MODES = { read: "Lecture seule", comment: "Commentaires", edit: "Modification" };
+
+function Comments({ it, shared, token }) {
+  const [list, setList] = useState(it.share_comments || []);
+  const [name, setName] = useState(() => localStorage.getItem("nx-guest") || "");
+  const [text, setText] = useState("");
+  const send = async (e) => {
+    e.preventDefault(); if (!text.trim()) return;
+    try { localStorage.setItem("nx-guest", name); const c = (await api.post(`/share/${token}/comments`, { name, text })).data; setList((l) => [...l, c]); setText(""); } catch (_) { toast.error("Envoi impossible"); }
+  };
+  const del = async (c) => { await atelierApi.delComment(it.id, c.id).catch(() => {}); setList((l) => l.filter((x) => x.id !== c.id)); };
+  return (
+    <aside className="dv-talk" data-testid="doc-comments">
+      <h4>Commentaires</h4>
+      <ol>{list.map((c) => <li key={c.id}><b>{c.name}</b><small>{new Date(c.at).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}</small><p>{c.text}</p>{!shared && <button onClick={() => del(c)}>Supprimer</button>}</li>)}</ol>
+      {!list.length && <p className="dv-empty">Aucun commentaire.</p>}
+      {shared && <form onSubmit={send}><input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ton prénom" data-testid="doc-comment-name" /><textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Ton commentaire…" data-testid="doc-comment-text" /><button className="at-btn" type="submit" data-testid="doc-comment-send">Envoyer</button></form>}
+    </aside>
+  );
+}
+
+export default function DocView({ it, eyebrow, onClose, shared, token, onEdit }) {
   const doc = it.fields?.doc || {};
   const [link, setLink] = useState(it.share_token || "");
+  const [mode, setMode] = useState(it.share_mode || "read");
+  const [talk, setTalk] = useState(false);
   const url = link && `${window.location.origin}/d/${link}`;
-  const share = async () => { try { const { token } = await atelierApi.share(it.id); setLink(token); await navigator.clipboard?.writeText(`${window.location.origin}/d/${token}`).catch(() => {}); toast.success("Lien copié : toute personne qui l'a peut lire ce document"); } catch (_) { toast.error("Partage impossible"); } };
+  const share = async (m = mode) => { try { const { token: t } = await atelierApi.share(it.id, m); setLink(t); setMode(m); await navigator.clipboard?.writeText(`${window.location.origin}/d/${t}`).catch(() => {}); toast.success(`Lien copié · ${MODES[m]}`); } catch (_) { toast.error("Partage impossible"); } };
   const unshare = async () => { await atelierApi.unshare(it.id).catch(() => {}); setLink(""); toast("Lien coupé"); };
   const [format, setFormat] = useState(doc.format || "a4");
   const [show, setShow] = useState(-1);
@@ -65,13 +89,17 @@ export default function DocView({ it, eyebrow, onClose, shared }) {
           <button className="at-btn ghost" onClick={pptx} data-testid="doc-view-pptx"><IoDownloadOutline size={15} /> PPTX</button>
           <button className="at-btn ghost" onClick={() => atelierApi.downloadDocx(it.id, it.title).catch(() => toast.error("Export Word impossible"))} data-testid="doc-view-docx">W</button>
           {link ? <>
+            <select className="dv-mode" value={mode} onChange={(e) => share(e.target.value)} data-testid="doc-view-share-mode">{Object.entries(MODES).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
             <button className="at-btn" onClick={() => { navigator.clipboard?.writeText(url); toast.success("Lien copié"); }} title={url} data-testid="doc-view-copy-link"><IoLinkOutline size={15} /> Copier le lien</button>
             <button className="at-btn ghost" onClick={unshare} data-testid="doc-view-unshare">Couper le lien</button>
-          </> : <button className="at-btn ghost" onClick={share} data-testid="doc-view-share"><IoLinkOutline size={15} /> Partager</button>}
+          </> : <button className="at-btn ghost" onClick={() => share()} data-testid="doc-view-share"><IoLinkOutline size={15} /> Partager</button>}
         </>}
+        {shared && mode === "edit" && onEdit && <button className="at-btn" onClick={onEdit} data-testid="shared-doc-edit">Modifier</button>}
+        {(shared ? mode !== "read" : (it.share_comments || []).length > 0) && <button className={"at-btn ghost" + (talk ? " on" : "")} onClick={() => setTalk(!talk)} data-testid="doc-view-comments"><IoChatbubbleOutline size={15} /> {(it.share_comments || []).length || ""}</button>}
         {onClose && <button className="at-icon" onClick={onClose} data-testid="doc-view-close"><IoClose size={20} /></button>}
       </div>
       <div className="dv-scroll"><div className={"dz f-" + format} data-deco={s.deco || ""} style={styleVars(s)} dangerouslySetInnerHTML={{ __html: html }} /></div>
+      {talk && <Comments it={it} shared={shared} token={token} />}
       {show >= 0 && slides[show] && (
         <div className="dv-present" onClick={() => setShow((i) => Math.min(slides.length - 1, i + 1))}>
           <div className={"dz f-slides"} data-deco={s.deco || ""} style={styleVars(s)} dangerouslySetInnerHTML={{ __html: slides[show] }} />
