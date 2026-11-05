@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   IoText, IoRemoveOutline, IoColorPaletteOutline, IoImageOutline, IoMusicalNotes, IoCloudUploadOutline,
-  IoArrowUndo, IoArrowRedo, IoListOutline, IoLinkOutline, IoBrushOutline,
+  IoArrowUndo, IoArrowRedo, IoListOutline, IoLinkOutline, IoBrushOutline, IoChevronDown, IoMenuOutline, IoClose,
 } from "react-icons/io5";
 import { MdFormatAlignLeft, MdFormatAlignCenter, MdFormatAlignRight, MdFormatAlignJustify, MdFormatListNumbered, MdFormatIndentIncrease, MdFormatIndentDecrease, MdFormatClear, MdStrikethroughS } from "react-icons/md";
 import { uploadAsset, listAssets, assetUrl, listAmbiences, ambienceUrl } from "@/lib/api";
@@ -115,19 +115,38 @@ function MusicMenu({ creationId, onInsert }) {
 }
 
 // Éditeur complet façon traitement de texte. `page` : écriture directement dans la mise en page du lecteur.
-export default function RichTextEditor({ value, onChange, placeholder = "Écris ton chapitre…", creationId, page = false }) {
+export default function RichTextEditor({ value, onChange, placeholder = "Écris ton chapitre…", creationId, page = false, title, eyebrow, onTitle }) {
   const ref = useRef(null);
   const [menu, setMenu] = useState(null); // color | hilite | music
   const [busy, setBusy] = useState(false);
   const savedRange = useRef(null);
   const imgInput = useRef(null);
+  // Barre d'outils repliable (gagne de l'espace entre le titre et le corps). Par défaut repliée sur mobile.
+  const [tools, setTools] = useState(() => { try { const v = localStorage.getItem("nx-rte-tools"); if (v !== null) return v === "1"; return window.innerWidth >= 768; } catch (_) { return true; } });
+  const toggleTools = () => setTools((t) => { const nv = !t; try { localStorage.setItem("nx-rte-tools", nv ? "1" : "0"); } catch (_) {} return nv; });
+  // Sommaire en édition : navigation rapide par chapitres (construit depuis les titres/sous-titres).
+  const [outline, setOutline] = useState(false);
+  const [heads, setHeads] = useState([]);
+  const refreshHeads = () => {
+    const root = ref.current; if (!root) return setHeads([]);
+    const hs = [...root.querySelectorAll("h1,h2,h3")].filter((h) => (h.textContent || "").trim());
+    hs.forEach((h, i) => { h.dataset.oi = i; });
+    setHeads(hs.map((h) => ({ i: h.dataset.oi, text: h.textContent.trim(), lvl: +h.tagName[1] })));
+  };
+  useEffect(() => { if (outline) refreshHeads(); /* eslint-disable-next-line */ }, [outline, value]);
+  const jumpTo = (i) => {
+    const el = ref.current?.querySelector(`[data-oi="${i}"]`); if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    try { const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (_) {}
+    if (window.innerWidth < 760) setOutline(false);
+  };
 
   useEffect(() => {
     if (ref.current && ref.current.innerHTML !== (value || "")) ref.current.innerHTML = value || "";
     // eslint-disable-next-line
   }, []);
 
-  const emit = () => { if (ref.current) onChange(sanitize(ref.current.innerHTML)); };
+  const emit = () => { if (ref.current) onChange(sanitize(ref.current.innerHTML.replace(/ data-(?:sec|head|oi)="[^"]*"/g, ""))); };
   const saveSel = () => {
     const sel = window.getSelection();
     if (sel && sel.rangeCount && ref.current && ref.current.contains(sel.anchorNode)) savedRange.current = sel.getRangeAt(0).cloneRange();
@@ -173,7 +192,10 @@ export default function RichTextEditor({ value, onChange, placeholder = "Écris 
   };
 
   const toolbar = (
-    <div className={`rte-toolbar flex flex-wrap items-center gap-1 p-2 border-b ${page ? "rte-toolbar--page" : ""}`} data-testid="rte-toolbar" style={{ borderColor: "var(--border-c)", fontFamily: "var(--font-body)" }}>
+    <div className={`rte-toolbar flex flex-wrap items-center gap-1 p-2 border-b ${page ? "rte-toolbar--page" : ""}${tools ? "" : " rte-toolbar--collapsed"}`} data-testid="rte-toolbar" style={{ borderColor: "var(--border-c)", fontFamily: "var(--font-body)" }}>
+      <button type="button" className="rte-tool-toggle rte-btn h-[34px] px-2 text-sm border flex items-center justify-center gap-1" style={fs} onMouseDown={(e) => e.preventDefault()} onClick={toggleTools} title={tools ? "Réduire les outils" : "Afficher les outils de mise en forme"} data-testid="rte-tools-toggle"><b style={{ fontSize: 13 }}>Aa</b><IoChevronDown size={13} style={{ transform: tools ? "none" : "rotate(-90deg)", transition: "transform .2s" }} /></button>
+      {page && <button type="button" className={"rte-tool-keep rte-btn h-[34px] px-2 text-sm border flex items-center gap-1" + (outline ? " on" : "")} style={fs} onMouseDown={(e) => e.preventDefault()} onClick={() => setOutline((o) => !o)} title="Sommaire (chapitres)" data-testid="rte-outline-toggle"><IoMenuOutline size={15} /><span className="hide-sm" style={{ fontSize: 12 }}>Sommaire</span></button>}
+      {!tools && <span className="rte-tool-hint">Mise en forme</span>}
       <Btn testid="rte-undo" title="Annuler (Ctrl+Z)" onClick={() => exec("undo")}><IoArrowUndo size={15} /></Btn>
       <Btn testid="rte-redo" title="Rétablir (Ctrl+Y)" onClick={() => exec("redo")}><IoArrowRedo size={15} /></Btn>
       <Sep />
@@ -233,7 +255,27 @@ export default function RichTextEditor({ value, onChange, placeholder = "Écris 
       style={{ color: "var(--text-primary)" }} />
   );
 
-  if (page) return <div data-testid="rte">{toolbar}{area}</div>;
+  if (page) return (
+    <div data-testid="rte">
+      {toolbar}
+      {(eyebrow != null || onTitle) && (
+        <div className="rte-head">
+          {eyebrow != null && <p className="at-eyebrow mono">{eyebrow}</p>}
+          {onTitle && <input className="at-ed-title" value={title || ""} onChange={(e) => onTitle(e.target.value)} placeholder="Titre…" data-testid="atelier-editor-title" />}
+        </div>
+      )}
+      {area}
+      {outline && (
+        <nav className="rte-outline" data-testid="rte-outline">
+          <div className="rte-ol-h"><span>Sommaire</span><button onMouseDown={(e) => e.preventDefault()} onClick={() => setOutline(false)} aria-label="Fermer"><IoClose size={16} /></button></div>
+          <div className="rte-ol-list">
+            {heads.length ? heads.map((h) => <button key={h.i} className={"rte-ol-item l" + h.lvl} onMouseDown={(e) => e.preventDefault()} onClick={() => jumpTo(h.i)}>{h.text}</button>)
+              : <p className="rte-ol-empty">Ajoute des titres (Style → Titre / Sous-titre) pour voir les chapitres ici.</p>}
+          </div>
+        </nav>
+      )}
+    </div>
+  );
   return (
     <div className="border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} data-testid="rte">
       <div style={{ background: "var(--bg-secondary)" }}>{toolbar}</div>{area}

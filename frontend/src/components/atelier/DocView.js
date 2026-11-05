@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
-import { IoClose, IoPrintOutline, IoPlay, IoChevronBack, IoChevronForward, IoDownloadOutline, IoLinkOutline, IoChatbubbleOutline } from "react-icons/io5";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { IoClose, IoPrintOutline, IoPlay, IoChevronBack, IoChevronForward, IoDownloadOutline, IoLinkOutline, IoChatbubbleOutline, IoListOutline } from "react-icons/io5";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { imgSrc, atelierApi } from "@/lib/atelier";
 import { styleOf, styleVars, varsCss, sections, DOC_CSS, DOC_FORMATS, docFonts } from "@/lib/docStyles";
 
 const esc = (s) => String(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const hashId = (s) => { let h = 0; const t = String(s || "d"); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return "dzt" + Math.abs(h).toString(36); };
 
 // Rendu HTML d'un document selon son format (partagé entre l'aperçu et le PDF)
 export function renderDoc(it, eyebrow, format) {
@@ -22,6 +23,22 @@ export function renderDoc(it, eyebrow, format) {
       return [s.title && `<div class="dz-tile ttl"><h2>${esc(s.title)}</h2></div>`, ...pics, txt && `<div class="dz-tile">${txt}</div>`].filter(Boolean);
     });
     return `<div class="dz-mood"><div class="dz-tile ttl"><div class="dz-eye">${esc(eyebrow)}</div><h1 class="dz-title">${esc(it.title || "Sans titre")}</h1></div>${img ? `<div class="dz-tile pic"><img src="${esc(img)}"/></div>` : ""}${tiles.join("")}</div>`;
+  }
+  if (format === "drawers") {
+    return `${cover()}<div class="dz-body dz-draws">${secs.map((sec, i) => sec.title
+      ? `<details class="dz-draw"${i === 0 ? " open" : ""}><summary>${esc(sec.title)}</summary><div class="dz-dc">${sec.html}</div></details>`
+      : `<div class="dz-dc loose">${sec.html}</div>`).join("")}</div>`;
+  }
+  if (format === "tabs") {
+    const titled = secs.filter((sec) => sec.title);
+    if (titled.length) {
+      const intro = secs.filter((sec) => !sec.title).map((sec) => sec.html).join("");
+      const nm = hashId(it.id || it.title);
+      const ins = titled.map((sec, i) => `<input type="radio" class="dz-tabin" name="${nm}" id="${nm}${i}"${i === 0 ? " checked" : ""}>`).join("");
+      const labs = titled.map((sec, i) => `<label class="dz-tablab" for="${nm}${i}">${esc(sec.title)}</label>`).join("");
+      const pans = titled.map((sec) => `<section class="dz-tabpanel">${sec.html}</section>`).join("");
+      return `${cover()}<div class="dz-body">${intro ? `<div class="dz-intro">${intro}</div>` : ""}<div class="dz-tabs">${ins}<div class="dz-tablist">${labs}</div><div class="dz-tabpanels">${pans}</div></div></div>`;
+    }
   }
   return `${cover()}<div class="dz-body">${it.content || ""}</div>`;
 }
@@ -68,8 +85,22 @@ export default function DocView({ it, eyebrow, onClose, shared, token, onEdit })
   const unshare = async () => { await atelierApi.unshare(it.id).catch(() => {}); setLink(""); toast("Lien coupé"); };
   const [format, setFormat] = useState(doc.format || "a4");
   const [show, setShow] = useState(-1);
+  const bodyRef = useRef(null);
+  const [toc, setToc] = useState([]);
+  const [nav, setNav] = useState(false);
   const s = styleOf(doc.style);
   const html = useMemo(() => renderDoc(it, eyebrow, format), [it, eyebrow, format]);
+  // Sommaire : on relève les chapitres (titres) pour une navigation rapide façon Google Docs.
+  useEffect(() => {
+    const root = bodyRef.current; if (!root) { setToc([]); return; }
+    const id = setTimeout(() => {
+      const heads = [...root.querySelectorAll(".dz-body h1, .dz-body h2, .dz-body h3, .dz-draw>summary, .dz-tabpanel h3")].filter((h) => (h.textContent || "").trim());
+      heads.forEach((h, i) => { if (!h.id) h.id = "dzh-" + i; });
+      setToc(heads.map((h) => ({ id: h.id, text: h.textContent.trim(), lvl: h.tagName === "SUMMARY" ? 2 : +h.tagName[1] })));
+    }, 40);
+    return () => clearTimeout(id);
+  }, [html, format]);
+  const jump = (hid) => { const el = bodyRef.current?.querySelector("#" + (window.CSS?.escape ? CSS.escape(hid) : hid)); if (el) { el.closest("details:not([open])")?.setAttribute("open", ""); el.scrollIntoView({ behavior: "smooth", block: "start" }); } if (window.innerWidth < 760) setNav(false); };
   const slides = useMemo(() => (format === "slides" ? html.match(/<(header|section) class="dz-slide[\s\S]*?<\/(header|section)>/g) || [] : []), [html, format]);
   useEffect(() => {
     if (show < 0) return;
@@ -82,6 +113,7 @@ export default function DocView({ it, eyebrow, onClose, shared, token, onEdit })
       <link rel="stylesheet" href={docFonts()} /><style>{DOC_CSS}</style>
       <div className="dv-bar">
         <div className="dv-seg">{DOC_FORMATS.map(([k, l]) => <button key={k} className={format === k ? "on" : ""} onClick={() => setFormat(k)} data-testid={`doc-view-format-${k}`}>{l}</button>)}</div>
+        {toc.length > 1 && <button className={"at-btn ghost" + (nav ? " on" : "")} onClick={() => setNav((v) => !v)} data-testid="doc-view-outline"><IoListOutline size={15} /> Sommaire</button>}
         <span className="grow" />
         {format === "slides" && <button className="at-btn" onClick={() => { setShow(0); document.documentElement.requestFullscreen?.().catch(() => {}); }} data-testid="doc-view-present"><IoPlay size={15} /> Présenter</button>}
         <button className="at-btn ghost" onClick={() => printStyled(it, eyebrow, doc.style, format)} data-testid="doc-view-pdf"><IoPrintOutline size={15} /> PDF</button>
@@ -98,7 +130,13 @@ export default function DocView({ it, eyebrow, onClose, shared, token, onEdit })
         {(shared ? mode !== "read" : (it.share_comments || []).length > 0) && <button className={"at-btn ghost" + (talk ? " on" : "")} onClick={() => setTalk(!talk)} data-testid="doc-view-comments"><IoChatbubbleOutline size={15} /> {(it.share_comments || []).length || ""}</button>}
         {onClose && <button className="at-icon" onClick={onClose} data-testid="doc-view-close"><IoClose size={20} /></button>}
       </div>
-      <div className="dv-scroll"><div className={"dz f-" + format} data-deco={s.deco || ""} style={styleVars(s)} dangerouslySetInnerHTML={{ __html: html }} /></div>
+      <div className="dv-scroll"><div ref={bodyRef} className={"dz f-" + format} data-deco={s.deco || ""} style={styleVars(s)} dangerouslySetInnerHTML={{ __html: html }} /></div>
+      {nav && toc.length > 0 && (
+        <nav className="dv-outline" data-testid="doc-outline">
+          <div className="dv-ol-h"><span>Sommaire</span><button onClick={() => setNav(false)} aria-label="Fermer"><IoClose size={18} /></button></div>
+          <div className="dv-ol-list">{toc.map((t, i) => <button key={t.id + i} className={"dv-ol-item l" + t.lvl} onClick={() => jump(t.id)}>{t.text}</button>)}</div>
+        </nav>
+      )}
       {talk && <Comments it={it} shared={shared} token={token} />}
       {show >= 0 && slides[show] && (
         <div className="dv-present" onClick={() => setShow((i) => Math.min(slides.length - 1, i + 1))}>

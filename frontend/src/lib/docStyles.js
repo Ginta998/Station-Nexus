@@ -16,7 +16,7 @@ export const DOC_STYLES = [
   { key: "galaxie", name: "Galaxie", ft: "Michroma", fb: "Exo 2", bg: "#060a1c", ink: "#e6ecff", ac: "#4fd6ff", ac2: "#8a5cff", mu: "#7d8ab8", deco: "glow" },
   { key: "tengoku", name: "Tengoku", ft: "Shippori Mincho", fb: "Outfit", bg: "#0a0609", ink: "#ffeef3", ac: "#ff2f5f", ac2: "#ffc4d4", mu: "#b58a97", deco: "seal" },
 ];
-export const DOC_FORMATS = [["a4", "Document A4"], ["slides", "Diaporama 16:9"], ["web", "Page web"], ["mood", "Moodboard"]];
+export const DOC_FORMATS = [["a4", "Document A4"], ["web", "Page web"], ["drawers", "Tiroirs"], ["tabs", "Onglets"], ["slides", "Diaporama 16:9"], ["mood", "Moodboard"]];
 export const styleOf = (k) => DOC_STYLES.find((s) => s.key === k) || DOC_STYLES[0];
 export const docFonts = () => fontHref(DOC_STYLES.flatMap((s) => [s.ft, s.fb]).filter(Boolean));
 export const styleVars = (s) => (s.bg ? { "--dz-bg": s.bg, "--dz-ink": s.ink, "--dz-ac": s.ac, "--dz-ac2": s.ac2 || s.ac, "--dz-mu": s.mu, "--dz-ft": `"${s.ft}",serif`, "--dz-fb": `"${s.fb}",serif` } : {});
@@ -79,4 +79,27 @@ export const DOC_CSS = `
 .dz-tile.pic{padding:0;overflow:hidden}.dz-tile.pic img{display:block;width:100%;border-radius:0}
 .dz-tile.ttl{background:var(--dz-ac);color:var(--dz-bg)}.dz-tile.ttl h2,.dz-tile.ttl .dz-title{color:var(--dz-bg)!important;-webkit-text-fill-color:var(--dz-bg);margin:0;font-size:2em;background:none}
 .dz-tile h2{font-size:1.4em;margin:0 0 .4em}
+
+/* Documents vivants — Tiroirs (sections pliables) */
+.dz-draws{max-width:780px;margin:0 auto;padding:5% 7%}
+.dz-draws .dz-dc.loose{margin:0 0 1em}
+.dz-draw{border:1px solid color-mix(in srgb,var(--dz-ink) 12%,transparent);border-radius:12px;margin:0 0 12px;overflow:hidden;background:color-mix(in srgb,var(--dz-ink) 3%,var(--dz-bg))}
+.dz-draw>summary{cursor:pointer;list-style:none;padding:.72em 1em;font-family:var(--dz-ft);font-size:1.18em;color:var(--dz-ink);display:flex;align-items:center;gap:.55em;user-select:none}
+.dz-draw>summary::-webkit-details-marker{display:none}
+.dz-draw>summary::before{content:"";width:.5em;height:.5em;border-right:2px solid var(--dz-ac);border-bottom:2px solid var(--dz-ac);transform:rotate(-45deg);transition:transform .2s;flex:0 0 auto;margin-left:.1em}
+.dz-draw[open]>summary::before{transform:rotate(45deg)}
+.dz-draw>summary:hover{background:color-mix(in srgb,var(--dz-ac) 9%,transparent)}
+.dz-dc{padding:.1em 1.15em 1em}
+.dz-dc>:first-child{margin-top:.3em}
+
+/* Documents vivants — Onglets (tabs 100% CSS) */
+.dz-tabs{position:relative}
+.dz-tabin{position:absolute;width:0;height:0;opacity:0;pointer-events:none}
+.dz-tablist{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid color-mix(in srgb,var(--dz-ink) 14%,transparent);margin:0 0 1.5em}
+.dz-tablab{cursor:pointer;padding:.5em .95em;border-radius:9px 9px 0 0;font-family:var(--dz-ft);font-size:1.02em;color:var(--dz-mu);border:1px solid transparent;border-bottom:0;margin-bottom:-1px;transition:color .15s,background-color .15s;user-select:none}
+.dz-tablab:hover{color:var(--dz-ink)}
+.dz-tabpanel{display:none;animation:dzfade .25s ease}
+@keyframes dzfade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+${Array.from({ length: 20 }, (_, i) => i + 1).map((k) => `.dz-tabs .dz-tabin:nth-of-type(${k}):checked~.dz-tabpanels .dz-tabpanel:nth-child(${k}){display:block}.dz-tabs .dz-tabin:nth-of-type(${k}):checked~.dz-tablist .dz-tablab:nth-child(${k}){color:var(--dz-ink);border-color:color-mix(in srgb,var(--dz-ink) 14%,transparent);background:color-mix(in srgb,var(--dz-ac) 12%,transparent)}`).join("")}
+@media print{.dz-tabpanel{display:block!important}.dz-tablist,.dz-tabin{display:none!important}.dz-draw>summary::before{display:none}}
 `;

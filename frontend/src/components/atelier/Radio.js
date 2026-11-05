@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IoPlay, IoPause, IoPlaySkipForward, IoPlaySkipBack, IoShuffle, IoRadioOutline, IoVolumeHigh, IoVolumeMute, IoClose, IoAdd, IoTrashOutline, IoImageOutline, IoInfinite, IoListOutline, IoPencil } from "react-icons/io5";
+import { IoPlay, IoPause, IoPlaySkipForward, IoPlaySkipBack, IoShuffle, IoRadioOutline, IoVolumeHigh, IoVolumeMute, IoClose, IoAdd, IoTrashOutline, IoImageOutline, IoInfinite, IoListOutline, IoPencil, IoSearch, IoCheckmark, IoLogoYoutube } from "react-icons/io5";
 import { toast } from "sonner";
 import { uploadJournalImage } from "@/lib/api";
 import { imgSrc, useMediaClaim, atelierApi } from "@/lib/atelier";
@@ -144,6 +144,7 @@ function Progress({ r }) {
 
 export default function RadioView({ radio: r }) {
   const [adding, setAdding] = useState(false);
+  const [yt, setYt] = useState(false);
   const [edit, setEdit] = useState(null);
   const cur = r.pl; const i = r.info;
   const hero = cur ? thumb(i.vid) || coverOf(cur) : coverOf(r.list[0]);
@@ -167,7 +168,8 @@ export default function RadioView({ radio: r }) {
         </div>
       </div>
 
-      <div className="rd-sec-h"><h2>Tes playlists</h2><button className="rd-btn sm" onClick={() => setAdding(true)} data-testid="radio-add"><IoAdd size={16} /> Ajouter</button></div>
+      <div className="rd-sec-h"><h2>Tes playlists</h2><div className="rd-sec-a"><button className={"rd-btn sm ghost" + (yt ? " on" : "")} onClick={() => { setYt((v) => !v); setAdding(false); }} data-testid="radio-yt-toggle"><IoSearch size={15} /> Chercher sur YouTube</button><button className="rd-btn sm" onClick={() => { setAdding(true); setYt(false); }} data-testid="radio-add"><IoAdd size={16} /> Ajouter un lien</button></div></div>
+      {yt && <RadioYt r={r} />}
       {r.list.length > 0 && <SearchAll r={r} />}
       {adding && <AddForm r={r} onDone={() => setAdding(false)} />}
       {!r.list.length && !adding && <p className="rd-empty">Colle le lien d'une playlist YouTube (ou d'une vidéo) pour créer ta première station.</p>}
@@ -213,6 +215,28 @@ function SearchAll({ r }) {
           <span className="t"><b>{titles[v]?.title}</b><small>{titles[v]?.author} · {p.title}</small></span>
         </li>))}</ol>}
       {idx && q.trim().length > 1 && !res.length && <p className="rd-empty">Aucun morceau trouvé.</p>}
+    </div>
+  );
+}
+
+// Recherche YouTube directement dans la radio : écoute en un clic ou ajoute à tes playlists.
+function RadioYt({ r }) {
+  const [q, setQ] = useState(""); const [res, setRes] = useState(null); const [busy, setBusy] = useState(false);
+  const have = new Set(r.list.map((p) => vidOf(p.url)).filter(Boolean));
+  const go = async (e) => { e.preventDefault(); if (!q.trim()) return; setBusy(true); try { setRes(await atelierApi.ytSearch(q.trim())); } catch (_) { toast.error("Recherche impossible"); } setBusy(false); };
+  const playNow = (v) => r.play({ id: "yt" + v.id, url: `https://www.youtube.com/watch?v=${v.id}`, title: v.title, thumb: thumb(v.id) });
+  const add = (v) => { if (have.has(v.id)) return; r.save([...r.list, { id: Date.now().toString(36), url: `https://www.youtube.com/watch?v=${v.id}`, title: v.title, thumb: thumb(v.id) }]); toast.success("Ajouté à la radio"); };
+  return (
+    <div className="rd-yt" data-testid="radio-ytsearch">
+      <form className="rd-yt-form" onSubmit={go}><IoLogoYoutube size={18} /><input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Un titre, un artiste, un mix lo-fi d'écriture…" data-testid="radio-ytsearch-input" />{res && <button type="button" className="rd-ic" onClick={() => { setRes(null); setQ(""); }}><IoClose size={16} /></button>}<button className="rd-btn sm" type="submit" disabled={busy} data-testid="radio-ytsearch-submit">{busy ? "…" : "Chercher"}</button></form>
+      {res && <div className="rd-yt-grid">{res.map((v) => (
+        <div key={v.id} className="rd-yt-card" data-testid={`radio-ytres-${v.id}`}>
+          <span className="th" style={{ backgroundImage: `url(${thumb(v.id)})` }} onClick={() => playNow(v)}>{v.length && <em>{v.length}</em>}<span className="pl"><IoPlay size={20} /></span></span>
+          <b title={v.title}>{v.title}</b><small>{v.author}{v.date ? ` · ${v.date}` : ""}</small>
+          <button className={"rd-yt-add" + (have.has(v.id) ? " on" : "")} disabled={have.has(v.id)} onClick={() => add(v)} data-testid={`radio-ytadd-${v.id}`}>{have.has(v.id) ? <><IoCheckmark size={14} /> Dans la radio</> : <><IoAdd size={14} /> Ajouter</>}</button>
+        </div>))}
+        {!res.length && <p className="rd-empty">Aucun résultat.</p>}
+      </div>}
     </div>
   );
 }

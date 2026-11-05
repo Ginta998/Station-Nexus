@@ -81,6 +81,11 @@ export default function AtelierSettings({ at, openBrains }) {
           <input ref={file} hidden type="file" accept="audio/*" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; uploadMusic(f); }} />
         </div>
       </div>
+      <div className="at-panel" data-testid="atelier-settings-nav">
+        <div className="at-panel-h"><h2>航 Navigation sur téléphone</h2></div>
+        <p className="at-sub">Choisis comment tu navigues sur téléphone. Le <b>Hub mobile</b> remplace le menu par une grille d'espaces (swipe du bas pour l'ouvrir, note rapide, raccourcis). Les styles ne changent que l'allure des boutons — le reste suit le thème de la Station.</p>
+        <NavModeSetting sfx={sfx} />
+      </div>
       <div className="at-panel" data-testid="atelier-settings-shortcuts">
         <div className="at-panel-h"><h2>捷 Raccourcis du téléphone</h2></div>
         <p className="at-sub">La barre du bas sur téléphone n'affiche que ces raccourcis (elle défile, se déploie ou se range en bas).</p>
@@ -107,6 +112,33 @@ export default function AtelierSettings({ at, openBrains }) {
         <button className="at-btn" onClick={backup} data-testid="atelier-backup">Télécharger la sauvegarde</button>
       </div>
     </section>
+  );
+}
+
+function NavModeSetting({ sfx }) {
+  const [mode, setMode] = useState(() => localStorage.getItem("nexus-nav-mode") || "hub");
+  const [skin, setSkin] = useState(() => localStorage.getItem("nexus-hub-skin") || "glossy");
+  const pickMode = (x) => { sfx("select"); localStorage.setItem("nexus-nav-mode", x); setMode(x); window.dispatchEvent(new Event("nexus-nav-mode")); };
+  const pickSkin = (x) => { sfx("select"); localStorage.setItem("nexus-hub-skin", x); setSkin(x); window.dispatchEvent(new Event("nexus-hub-skin")); };
+  const SKINS = [["glossy", "Brillant"], ["glass", "Verre"], ["neon", "Néon"], ["aurore", "Aurore"], ["encre", "Encre"], ["prisme", "Prisme"]];
+  return (
+    <div data-testid="nav-mode-setting">
+      <div className="at-inline">
+        {[["classic", "Classique"], ["hub", "Hub mobile"]].map(([k, l]) => (
+          <button key={k} className={"at-btn" + (mode === k ? "" : " ghost")} onClick={() => pickMode(k)} data-testid={`nav-mode-${k}`}>{l}</button>
+        ))}
+      </div>
+      {mode === "hub" && (
+        <>
+          <p className="at-sub" style={{ marginTop: 14 }}>Style des boutons du hub</p>
+          <div className="at-inline" data-skin={skin} data-testid="hub-skin-setting">
+            {SKINS.map(([k, l]) => (
+              <button key={k} className={"at-btn" + (skin === k ? "" : " ghost")} onClick={() => pickSkin(k)} data-testid={`hub-skin-${k}`}>{l}</button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 

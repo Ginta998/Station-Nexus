@@ -11,6 +11,7 @@ export const useApp = () => useContext(AppContext);
 const LS = {
   theme: "sx_theme", pin: "sx_pin", admin: "sx_admin", music: "sx_musicvolume", ui: "sx_uivolume",
   mute: "sx_mute", playMode: "sx_playmode", pack: "sx_soundpack", custom: "sx_customsounds", ambience: "sx_ambience",
+  mSfx: "sx_mute_sfx", mMusic: "sx_mute_music", mAmb: "sx_mute_amb",
   accent: "sx_accent", radius: "sx_radius", posterSize: "sx_postersize", motion: "sx_motion", cardTagline: "sx_cardtagline", textScale: "sx_textscale", layout: "sx_layout",
   rFont: "sx_reader_font", rSize: "sx_reader_size", rLine: "sx_reader_line", rWidth: "sx_reader_width", rDrop: "sx_reader_dropcap",
 };
@@ -54,6 +55,10 @@ export function AppProvider({ children }) {
     const v = parseFloat(localStorage.getItem(LS.ui)); return Number.isFinite(v) ? v : 0.8;
   });
   const [muted, setMuted] = useState(() => localStorage.getItem(LS.mute) === "1");
+  // Coupure indépendante : SFX (interface) et Musique (pistes sélectionnées — appAudio/cartes).
+  // L'ambiance atmosphérique (pluie, vaisseau…) a sa propre coupure dans lib/ambient (AmbientMixer).
+  const [muteSfx, setMuteSfx] = useState(() => localStorage.getItem(LS.mSfx) === "1");
+  const [muteMusic, setMuteMusic] = useState(() => localStorage.getItem(LS.mMusic) === "1");
   const [soundPack, setSoundPack] = useState(() => { const p = localStorage.getItem(LS.pack); return isValidPack(p) ? p : "auto"; });
   const [customSounds, setCustomSounds] = useState(() => {
     try { return JSON.parse(localStorage.getItem(LS.custom) || "null"); } catch { return null; }
@@ -208,13 +213,13 @@ export function AppProvider({ children }) {
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => { const tp = themeDef(theme, tstate)?.sfx_pack; configureSound({ pack: soundPack === "auto" && tp && tp !== "auto" ? tp : soundPack, theme: baseOf(theme), muted, volume: uiVolume }); }, [soundPack, theme, muted, uiVolume, tstate]);
+  useEffect(() => { const tp = themeDef(theme, tstate)?.sfx_pack; configureSound({ pack: soundPack === "auto" && tp && tp !== "auto" ? tp : soundPack, theme: baseOf(theme), muted: muted || muteSfx, volume: uiVolume }); }, [soundPack, theme, muted, muteSfx, uiVolume, tstate]);
   useEffect(() => {
-    const v = muted ? 0 : musicVolume;
-    if (cardAudio.current) cardAudio.current.volume = v;
-    if (appAudio.current) appAudio.current.volume = v * 0.85;
+    const vMusic = (muted || muteMusic) ? 0 : musicVolume;
+    if (cardAudio.current) cardAudio.current.volume = vMusic;
+    if (appAudio.current) appAudio.current.volume = (muted || muteMusic) ? 0 : musicVolume * 0.85;
     localStorage.setItem(LS.music, String(musicVolume));
-  }, [musicVolume, muted]);
+  }, [musicVolume, muted, muteMusic]);
   useEffect(() => { localStorage.setItem(LS.ui, String(uiVolume)); }, [uiVolume]);
 
   // default ambience, theme & poster size from server settings when the visitor has never chosen
@@ -238,7 +243,7 @@ export function AppProvider({ children }) {
   // app ambience control (never overlaps with a card ambient)
   const startAppAmbience = useCallback(() => {
     const a = appAudio.current;
-    if (!a || !ambienceId || muted) return;
+    if (!a || !ambienceId || muted || muteMusic) return;
     if (mediaActiveRef.current) return;           // cinema / immersive media owns the channel
     if (cardActiveRef.current) return;            // a card ambient owns the audio channel
     if (cardAudio.current && !cardAudio.current.paused) return; // card still audible (during fade)
@@ -246,7 +251,7 @@ export function AppProvider({ children }) {
     if (a.dataset.aid !== ambienceId) { a.src = ambienceUrl(ambienceId); a.dataset.aid = ambienceId; }
     a.volume = 0;
     a.play().then(() => { setAppPlaying(true); fadeTo(a, musicVolume * 0.85, 500); }).catch(() => setAppPlaying(false));
-  }, [ambienceId, muted, musicVolume]);
+  }, [ambienceId, muted, muteMusic, musicVolume]);
 
   const stopAppAmbience = useCallback((immediate) => {
     const a = appAudio.current; if (!a) return;
@@ -256,9 +261,9 @@ export function AppProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (!ambienceId || muted) { stopAppAmbience(true); return; }
+    if (!ambienceId || muted || muteMusic) { stopAppAmbience(true); return; }
     if (!cardActiveRef.current) startAppAmbience();
-  }, [ambienceId, muted, startAppAmbience, stopAppAmbience]);
+  }, [ambienceId, muted, muteMusic, startAppAmbience, stopAppAmbience]);
 
   // Jukebox : boucle sur une piste, enchaînement dans l'ordre, ou aléatoire sans répétition avant la fin du cycle
   const jbRef = useRef({ id: ambienceId, mode: playMode, bag: [], errors: 0 });
@@ -324,7 +329,9 @@ export function AppProvider({ children }) {
   const setReaderDropcap = (v) => { setReaderDropcapState(v); localStorage.setItem(LS.rDrop, v ? "1" : "0"); };
 
 
-  const sfx = useCallback((event) => { if (!muted) playUiSound(event); }, [muted]);
+  const sfx = useCallback((event) => { if (!muted && !muteSfx) playUiSound(event); }, [muted, muteSfx]);
+  const toggleSfx = () => setMuteSfx((m) => { const nv = !m; localStorage.setItem(LS.mSfx, nv ? "1" : "0"); return nv; });
+  const toggleMusic = () => setMuteMusic((m) => { const nv = !m; localStorage.setItem(LS.mMusic, nv ? "1" : "0"); return nv; });
 
   // Called on the first explicit user gesture (entry screen) to unlock audio playback.
   const primeAudio = useCallback(() => {
@@ -462,6 +469,7 @@ export function AppProvider({ children }) {
   const value = {
     theme, setTheme, isAdmin,
     musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
+    muteSfx, muteMusic, toggleSfx, toggleMusic,
     soundPack, setPack, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying, playMode, setPlayMode, nextAmbience,
     profile, saveProfile, clearProfile,

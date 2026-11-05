@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IoArrowBack, IoColorPaletteOutline, IoEyeOutline, IoTimeOutline, IoPrintOutline, IoTrashOutline, IoPin, IoPinOutline, IoImageOutline, IoClose, IoLinkOutline } from "react-icons/io5";
+import { IoArrowBack, IoColorPaletteOutline, IoEyeOutline, IoTimeOutline, IoPrintOutline, IoTrashOutline, IoPin, IoPinOutline, IoImageOutline, IoClose, IoLinkOutline, IoChevronForward, IoChevronBack } from "react-icons/io5";
 import { toast } from "sonner";
 import RichTextEditor from "@/components/RichTextEditor";
 import { uploadJournalImage } from "@/lib/api";
@@ -7,8 +7,9 @@ import { KINDS, KIND_FIELDS, atelierApi, imgSrc } from "@/lib/atelier";
 import { TaskRow, TaskQuickAdd } from "@/components/atelier/TasksView";
 import MediaGallery from "@/components/atelier/MediaGallery";
 import DocView from "@/components/atelier/DocView";
+import DocEdit from "@/components/atelier/DocEdit";
 import DocStylePanel from "@/components/atelier/DocStylePanel";
-import { styleOf, styleVars, DOC_CSS, docFonts } from "@/lib/docStyles";
+import { styleOf, styleVars, DOC_CSS, DOC_FORMATS, docFonts } from "@/lib/docStyles";
 import "@/components/atelier/docs.css";
 import { mediaFromUpload, mediaFromText } from "@/lib/atelier";
 
@@ -57,6 +58,12 @@ export default function ItemEditor({ at, id, open, onClose }) {
     try { await at.saveItem(latest.current); setStatus("saved"); } catch { setStatus("error"); toast.error("Sauvegarde impossible — ton texte reste ici, réessaie"); }
   };
   const dst = styleOf(it?.fields?.doc?.style);
+  const fmt = it?.fields?.doc?.format || "flow";
+  const setFmt = (f) => change({ fields: { ...(it.fields || {}), doc: { ...(it.fields?.doc || {}), format: f } } });
+  const [side, setSide] = useState(() => { try { return localStorage.getItem("nx-ed-side") !== "0"; } catch (_) { return true; } });
+  const toggleSide = () => setSide((v) => { const nv = !v; try { localStorage.setItem("nx-ed-side", nv ? "1" : "0"); } catch (_) {} return nv; });
+  const [wide, setWide] = useState(() => { try { return localStorage.getItem("nx-doc-wide") === "1"; } catch (_) { return false; } });
+  const toggleWide = () => setWide((v) => { const nv = !v; try { localStorage.setItem("nx-doc-wide", nv ? "1" : "0"); } catch (_) {} return nv; });
   const change = (patch) => {
     setIt((x) => ({ ...x, ...patch })); setStatus("dirty");
     clearTimeout(timer.current);
@@ -120,14 +127,20 @@ export default function ItemEditor({ at, id, open, onClose }) {
         <button className="at-icon" onClick={() => printItem(it, uname)} title="Exporter en PDF" data-testid="atelier-editor-pdf"><IoPrintOutline size={17} /></button>
         <button className="at-icon txt" onClick={async () => { await flush(); try { await atelierApi.downloadDocx(it.id, it.title); } catch { toast.error("Export Word impossible"); } }} title="Exporter en Word (.docx)" data-testid="atelier-editor-docx">W</button>
         <button className="at-icon danger" onClick={remove} title="Supprimer" data-testid="atelier-editor-delete"><IoTrashOutline size={17} /></button>
+        <button className="at-icon hide-sm" onClick={toggleSide} title={side ? "Replier le panneau de droite" : "Afficher le panneau de droite"} data-testid="atelier-editor-side">{side ? <IoChevronForward size={17} /> : <IoChevronBack size={17} />}</button>
       </div>
 
-      <div className="at-ed-body">
+      <div className={"at-ed-body" + (side ? "" : " side-closed")}>
         {dst.bg && <><link rel="stylesheet" href={docFonts()} /><style>{DOC_CSS}</style></>}
-        <article className={"at-ed-main" + (dst.bg ? " dz dz-edit" : "")} data-deco={dst.deco || undefined} style={styleVars(dst)}>
-          <p className="at-eyebrow mono">{KINDS[it.kind]?.kanji} {KINDS[it.kind]?.label.toUpperCase()}{uname ? ` · ${uname.toUpperCase()}` : " · INBOX"}</p>
-          <input className="at-ed-title" value={it.title} onChange={(e) => change({ title: e.target.value })} placeholder="Titre…" data-testid="atelier-editor-title" />
-          <RichTextEditor key={it.id + ":" + rev} value={it.content} onChange={(html) => change({ content: html })} page placeholder="Écris, colle depuis Google Docs, développe ton idée…" />
+        <article className={"at-ed-main" + (wide ? " ed-wide" : "") + (dst.bg && fmt === "flow" ? " dz dz-edit" : "")} data-deco={dst.deco || undefined} style={fmt === "flow" ? styleVars(dst) : undefined}>
+          <div className="at-ed-fmts" data-testid="atelier-editor-formats">
+            {[["flow", "Flux"], ...DOC_FORMATS].map(([k, l]) => <button key={k} className={fmt === k ? "on" : ""} onClick={() => setFmt(k)} data-testid={`atelier-format-${k}`}>{l}</button>)}
+            <span className="grow" />
+            <button className={"at-ed-wide" + (wide ? " on" : "")} onClick={toggleWide} data-testid="atelier-format-wide" title={wide ? "Largeur page" : "Pleine largeur"}>{wide ? "Pleine largeur" : "Page"}</button>
+          </div>
+          {fmt === "flow"
+            ? <RichTextEditor key={it.id + ":" + rev} value={it.content} onChange={(html) => change({ content: html })} page eyebrow={`${KINDS[it.kind]?.kanji} ${KINDS[it.kind]?.label.toUpperCase()}${uname ? ` · ${uname.toUpperCase()}` : " · INBOX"}`} title={it.title} onTitle={(t) => change({ title: t })} placeholder="Écris, colle depuis Google Docs, développe ton idée…" />
+            : <DocEdit key={it.id + ":" + rev + ":" + fmt} value={it.content} onChange={(html) => change({ content: html })} format={fmt} styleKey={it.fields?.doc?.style} eyebrow={`${KINDS[it.kind]?.label || ""}${uname ? " · " + uname : ""}`} title={it.title} onTitle={(t) => change({ title: t })} image={it.image} />}
         </article>
 
         <aside className="at-ed-side">

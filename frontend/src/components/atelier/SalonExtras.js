@@ -43,7 +43,7 @@ export function YtSearch({ at, launch }) {
       {res && <div className="sx-yt-grid">{res.map((v) => (
         <div key={v.id} className="sx-yt-card" data-testid={`atelier-ytres-${v.id}`}>
           <span className="th" style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} onClick={() => launch({ title: v.title, url: `https://www.youtube.com/watch?v=${v.id}` })}>{v.length && <em>{v.length}</em>}<span className="pl"><IoPlay size={20} /></span></span>
-          <b title={v.title}>{v.title}</b><small>{v.author}{v.views ? ` · ${v.views} vues` : ""}</small>
+          <b title={v.title}>{v.title}</b><small>{v.author}{v.views ? ` · ${v.views} vues` : ""}{v.date ? ` · ${v.date}` : ""}</small>
           <button className={"add" + (have.has(v.id) ? " on" : "")} disabled={have.has(v.id)} onClick={() => add(v)} data-testid={`atelier-ytadd-${v.id}`}>{have.has(v.id) ? <><IoCheckmark size={14} /> Dans le Salon</> : <><IoAdd size={14} /> Ajouter</>}</button>
         </div>))}
         {!res.length && <p className="at-empty">Aucun résultat.</p>}
