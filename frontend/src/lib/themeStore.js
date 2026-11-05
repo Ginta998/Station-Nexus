@@ -3,8 +3,13 @@ import { api } from "@/lib/api";
 import { THEMES } from "@/lib/themes";
 
 // Bibliothèques de l'Atelier de thèmes
-export const FONTS = ["Space Grotesk", "Orbitron", "Rajdhani", "Audiowide", "Exo 2", "Oxanium", "Chakra Petch", "Syncopate", "Michroma", "Unbounded", "Sora", "Outfit", "Manrope", "Cinzel", "Cormorant Garamond", "Playfair Display", "Marcellus", "DM Serif Display", "Shippori Mincho", "Noto Serif JP", "Zen Kaku Gothic New", "Bebas Neue", "Anton", "Righteous", "Monoton", "Major Mono Display", "IBM Plex Mono", "JetBrains Mono", "VT323", "Press Start 2P"];
+export const FONTS = ["Space Grotesk", "Orbitron", "Rajdhani", "Audiowide", "Exo 2", "Oxanium", "Chakra Petch", "Syncopate", "Michroma", "Unbounded", "Sora", "Outfit", "Manrope", "Cinzel", "Cormorant Garamond", "Playfair Display", "Marcellus", "DM Serif Display", "Shippori Mincho", "Noto Serif JP", "Zen Kaku Gothic New", "Bebas Neue", "Anton", "Righteous", "Monoton", "Major Mono Display", "IBM Plex Mono", "JetBrains Mono", "VT323", "Press Start 2P",
+  "Syne", "Lexend", "Teko", "Jura", "Aldrich", "Electrolize", "Quantico", "Zen Dots", "Turret Road", "Share Tech Mono", "Nova Mono", "Bungee", "Staatliches",
+  "Fraunces", "Spectral", "EB Garamond", "Cormorant", "Forum", "Italiana", "Gloock",
+  "Dela Gothic One", "Yuji Syuku", "RocknRoll One", "Reggae One", "Hina Mincho", "Caveat", "Fredoka"];
 export const FX = [["stars", "Étoiles"], ["particles", "Particules"], ["snow", "Neige"], ["rain", "Pluie"], ["petals", "Pétales"], ["embers", "Braises"], ["fireflies", "Lucioles"], ["fog", "Brouillard"]];
+// Curseurs personnalisés d'un thème (les formes custom prennent la couleur d'accent au runtime).
+export const CURSORS = [["default", "Système"], ["crosshair", "Viseur"], ["glow", "Halo"], ["ring", "Anneau"], ["dot", "Point"]];
 export const KEY_SOUNDS = [["none", "Aucun"], ["mecanique", "Clavier mécanique"], ["machine", "Machine à écrire"], ["bulle", "Bulle"], ["cristal", "Cristal"], ["laser", "Laser"], ["doux", "Feutré"], ["8bit", "Rétro 8-bit"], ["goutte", "Goutte d'eau"]];
 export const PALETTES = [
   ["Nuit cobalt", ["#04060d", "#070b15", "#3f86ff", "#4fd6ff", "#eaf1ff", "#8392a8"]],
@@ -24,7 +29,7 @@ const BLANK = {
   name: "Nouveau thème", kanji: "新", tagline: "", base: "abysse", enabled: true, public: false,
   colors: { bg: "#04060d", bg2: "#070b15", brand: "#3f86ff", brand2: "#4fd6ff", text: "#eaf1ff", text2: "#8392a8", border: "rgba(170,195,235,.16)" },
   font_display: "Space Grotesk", font_body: "Space Grotesk", transform: "none", spacing: 0.01,
-  radius: 10, border_w: 1, blur: 12, shadow: 40,
+  radius: 10, border_w: 1, blur: 12, shadow: 40, cursor: "default",
   bg: { type: "scene", url: "", g: ["#04060d", "#14306b", "#4fd6ff"], angle: 160, dim: 30 },
   fx: {}, fx_color: "#ffffff", sfx_pack: "auto", click_url: "", key_sound: "none", key_url: "", ambience_id: "",
 };

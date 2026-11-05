@@ -16,7 +16,7 @@ const titles = {};
 
 // Lecteur cinéma : interface YouTube masquée, contrôles Nexus
 export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, onClose, fileSrc }) {
-  const box = useRef(null); const fr = useRef(null); const vr = useRef(null); const ready = useRef(false); const idle = useRef(null);
+  const box = useRef(null); const fr = useRef(null); const vr = useRef(null); const ready = useRef(false); const idle = useRef(null); const ccRef = useRef(false);
   const [src] = useState(() => {
     const v = vidOf(url); const l = listOf(url); const st = getPos(url);
     const q = `autoplay=1&controls=0&disablekb=1&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1&fs=0&enablejsapi=1&cc_load_policy=0&origin=${encodeURIComponent(window.location.origin)}${st > 5 ? `&start=${st}` : ""}`;
@@ -50,7 +50,8 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
     const on = (m) => {
       if (!fr.current || m.source !== fr.current.contentWindow) return;
       let d; try { d = JSON.parse(m.data); } catch (_) { return; }
-      if (d.event === "onReady") { ready.current = true; cmd("playVideo"); return; }
+      if (d.event === "onReady") { ready.current = true; cmd("playVideo"); if (!ccRef.current) cmd("unloadModule", ["captions"]); return; }
+      if (d.event === "onApiChange") { if (!ccRef.current) cmd("unloadModule", ["captions"]); return; }
       const x = d.info; if (!x) return;
       setS((o) => ({ ...o, ...(x.playerState != null && { state: x.playerState }), ...(x.currentTime != null && { t: x.currentTime }), ...(x.duration && { d: x.duration }), ...(x.volume != null && { vol: x.volume }), ...(x.muted != null && { muted: x.muted }), ...(x.playbackRate && { rate: x.playbackRate }), ...(x.videoLoadedFraction != null && { buf: x.videoLoadedFraction }), ...(x.videoData?.title && { vt: x.videoData.title, va: x.videoData.author }), ...(Array.isArray(x.playlist) && { ids: x.playlist }), ...(x.playlistIndex != null && { i: x.playlistIndex }) }));
       if (x.currentTime > 5) try { localStorage.setItem(POS + url, String(Math.floor(x.currentTime))); if (x.duration || s.d) localStorage.setItem("nx-dur:" + url, String(Math.floor(x.duration || s.d))); } catch (_) {}
@@ -69,7 +70,7 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
   const vol = (v) => { cmd("setVolume", [v]); cmd(v ? "unMute" : "mute"); setS((o) => ({ ...o, vol: v, muted: !v })); };
   const fs = () => (document.fullscreenElement ? document.exitFullscreen() : box.current?.requestFullscreen?.()).catch?.(() => {});
   const poke = () => { setUi(true); clearTimeout(idle.current); idle.current = setTimeout(() => setUi(false), 2800); };
-  const toggleCc = () => { if (cc) cmd("unloadModule", ["captions"]); else { cmd("loadModule", ["captions"]); cmd("setOption", ["captions", "track", { languageCode: "fr" }]); } setCc(!cc); };
+  const toggleCc = () => { ccRef.current = !cc; if (cc) cmd("unloadModule", ["captions"]); else { cmd("loadModule", ["captions"]); cmd("setOption", ["captions", "track", { languageCode: "fr" }]); } setCc(!cc); };
 
   useEffect(() => {
     if (mini) return;

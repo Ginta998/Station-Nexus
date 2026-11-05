@@ -1503,6 +1503,28 @@ TOKEN_DAYS = 60
 EMERGENT_SESSION_URL = "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data"
 pwd = PasswordHash.recommended()
 
+# ---- Rate limiting en mémoire (anti brute-force, sans dépendance externe) ----
+# Fenêtre glissante par IP + bucket. Suffisant pour une instance unique (Emergent).
+_RL_HITS: Dict[str, List[float]] = {}
+
+
+def _client_ip(request: Request) -> str:
+    fwd = request.headers.get("x-forwarded-for", "")
+    if fwd:
+        return fwd.split(",")[0].strip()
+    return request.client.host if request.client else "?"
+
+
+def rate_limit(request: Request, bucket: str, limit: int, window: int):
+    import time
+    now = time.time()
+    key = f"{bucket}:{_client_ip(request)}"
+    hits = [t for t in _RL_HITS.get(key, []) if now - t < window]
+    if len(hits) >= limit:
+        raise HTTPException(429, "Trop de tentatives. Réessaie dans quelques minutes.")
+    hits.append(now)
+    _RL_HITS[key] = hits
+
 
 class RegisterInput(BaseModel):
     email: str
@@ -1585,7 +1607,8 @@ async def _ensure_profile_for_user(user: dict):
 
 
 @api_router.post("/auth/register")
-async def auth_register(data: RegisterInput):
+async def auth_register(data: RegisterInput, request: Request):
+    rate_limit(request, "register", 5, 3600)
     email = data.email.strip().lower()
     if not email or not data.password:
         raise HTTPException(400, "Email et mot de passe requis")
@@ -1609,7 +1632,8 @@ async def auth_register(data: RegisterInput):
 
 
 @api_router.post("/auth/login")
-async def auth_login(data: LoginInput):
+async def auth_login(data: LoginInput, request: Request):
+    rate_limit(request, "login", 10, 300)
     email = data.email.strip().lower()
     user = await db.users.find_one({"email": email})
     if not user or not user.get("password_hash") or not pwd.verify(data.password, user["password_hash"]):
@@ -1619,7 +1643,8 @@ async def auth_login(data: LoginInput):
 
 
 @api_router.post("/auth/google/session")
-async def auth_google_session(data: GoogleSessionInput):
+async def auth_google_session(data: GoogleSessionInput, request: Request):
+    rate_limit(request, "google", 20, 300)
     async with httpx.AsyncClient(timeout=15) as hc:
         r = await hc.get(EMERGENT_SESSION_URL, headers={"X-Session-ID": data.session_id})
     if r.status_code != 200:
@@ -2639,9 +2664,29 @@ api_router.include_router(build_bunny_router(db, require_admin))
 from themes import build_themes_router  # noqa: E402
 api_router.include_router(build_themes_router(db, require_admin))
 app.include_router(api_router)
+
+# CORS : origines explicites (plus de "*" avec credentials). En prod, définir CORS_ORIGINS
+# sur Emergent (liste séparée par des virgules). Le repli couvre le dev local + la preview.
+_cors_env = os.environ.get('CORS_ORIGINS', '').strip()
+_cors_origins = [o.strip() for o in _cors_env.split(',') if o.strip()] if _cors_env else [
+    "http://localhost:3000", "http://127.0.0.1:3000",
+    "https://tengoku-launcher.preview.emergentagent.com",
+]
 app.add_middleware(CORSMiddleware, allow_credentials=True,
-                   allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+                   allow_origins=_cors_origins,
                    allow_methods=["*"], allow_headers=["*"])
+
+
+# En-têtes de sécurité sur toutes les réponses API
+@app.middleware("http")
+async def _security_headers(request: Request, call_next):
+    resp = await call_next(request)
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    return resp
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

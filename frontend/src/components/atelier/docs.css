@@ -49,4 +49,104 @@ body:has(.dv-root) .bn-fab,body:has(.dv-root) .rd-bar,body:has(.dsp) .bn-fab{dis
 .dv-empty{opacity:.5;font-size:13px;margin:0}
 .dv-edit{outline:none;min-height:50vh}
 .dv-edit:focus{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--dz-ac) 40%,transparent)}
+/* Barre d'outils repliable de l'éditeur (gagne de l'espace entre le titre et le corps) */
+.rte-tool-toggle{border-radius:9px!important}
+.rte-tool-hint{font-size:12px;opacity:.5;align-self:center;font-family:var(--font-body)}
+.rte-toolbar--collapsed{border-bottom-color:transparent!important;padding-bottom:4px!important}
+.rte-toolbar--collapsed>:not(.rte-tool-toggle):not(.rte-tool-hint):not(.rte-tool-keep){display:none!important}
+.rte-tool-keep.on{border-color:var(--brand)!important;color:var(--brand)}
+
+/* Sélecteur de format d'édition (Flux / A4 / Web / Tiroirs / Onglets / Diaporama / Moodboard) */
+.at-ed-fmts{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 16px}
+.at-ed-fmts button{padding:6px 12px;border-radius:999px;border:1px solid var(--border-c);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;white-space:nowrap;transition:background-color .15s,color .15s,border-color .15s}
+.at-ed-fmts button:hover{color:var(--text-primary)}
+.at-ed-fmts button.on{background:color-mix(in srgb,var(--brand) 16%,transparent);border-color:var(--brand);color:var(--brand)}
+
+/* ===== Éditeur « vivant » (DocEdit) : rend comme la visualisation, mais éditable ===== */
+.de-wrap{display:flex;flex-direction:column}
+.de-bar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:8px;border-bottom:1px solid var(--border-c);background:var(--bg-secondary);border-radius:12px 12px 0 0}
+.de-bar .de-fmt{display:flex;gap:4px;overflow-x:auto;max-width:100%}
+.de-fmt button{padding:6px 10px;border-radius:999px;border:0;background:transparent;color:var(--text-secondary);cursor:pointer;white-space:nowrap;font-size:13px}
+.de-fmt button.on{background:color-mix(in srgb,var(--brand) 16%,transparent);color:var(--brand)}
+.de-sep{width:1px;align-self:stretch;background:var(--border-c);margin:2px 4px}
+.de-b2{min-width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;gap:2px;padding:0 7px;border:1px solid var(--border-c);border-radius:8px;background:transparent;color:var(--text-primary);cursor:pointer;font-size:14px;line-height:1}
+.de-b2:hover{border-color:var(--brand);color:var(--brand)}
+.de-col{position:relative;overflow:hidden}
+.de-col input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.de-sel{height:32px;padding:0 6px;border:1px solid var(--border-c);border-radius:8px;background:var(--bg-secondary);color:var(--text-primary);font-size:13px;cursor:pointer}
+/* Édition en PLEINE LARGEUR (plus de page étriquée flottante) — le fond du thème remplit le volet */
+.de-toolbar{position:sticky;top:0;z-index:6;background:var(--bg-secondary);border:1px solid var(--border-c);border-radius:12px;margin-bottom:16px}
+.de-doc{min-height:52vh;max-width:none!important;margin:0!important;box-shadow:none!important;border-radius:14px}
+/* Titre (couverture) et corps alignés sur la même colonne — fini le « parfois centré, parfois décalé » */
+.de-doc .dz-cover,.de-doc .dz-body,.de-doc .de-tabs,.de-doc .dz-draws{max-width:none!important;margin-left:0;margin-right:0;padding-left:clamp(20px,6%,64px);padding-right:clamp(20px,6%,64px)}
+.de-doc .dz-cover{min-height:auto;padding-top:4%;padding-bottom:2.5%}
+.de-doc.f-slides .dz-slide,.de-slides .dz-slide{aspect-ratio:auto;min-height:38vh;border-radius:10px}
+.de-doc .de-h,.de-doc .de-b,.de-title{outline:none}
+.de-doc .de-h:focus,.de-doc .de-b:focus,.de-title:focus{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--dz-ac) 35%,transparent);border-radius:6px}
+.de-doc .de-h:empty::before,.de-doc .de-b:empty::before,.de-title:empty::before{content:attr(data-ph);opacity:.4;pointer-events:none}
+.de-loose{margin:0 0 1em}
+.dz-draw{border:1px solid color-mix(in srgb,var(--dz-ink) 12%,transparent);border-radius:12px;margin:0 0 12px;overflow:hidden;background:color-mix(in srgb,var(--dz-ink) 3%,var(--dz-bg))}
+.dz-draw-h{display:flex;align-items:center;gap:.4em;padding:.5em .8em}
+.dz-draw-h .de-h{margin:0;flex:1}
+.dz-fold{flex:0 0 auto;width:26px;height:26px;border:0;border-radius:7px;background:transparent;color:var(--dz-ac);cursor:pointer;font-size:14px;transition:transform .2s}
+.dz-draw:not(.open) .dz-fold{transform:rotate(-90deg)}
+.dz-draw:not(.open) .de-b{display:none}
+.dz-draw .de-b{padding:.1em 1.1em 1em}
+.de-tablist{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid color-mix(in srgb,var(--dz-ink) 14%,transparent);margin:0 0 1.4em}
+.de-tab{padding:.5em .95em;border-radius:9px 9px 0 0;border:1px solid transparent;border-bottom:0;background:transparent;color:var(--dz-mu);font-family:var(--dz-ft);font-size:1em;cursor:pointer;margin-bottom:-1px}
+.de-tab.active{color:var(--dz-ink);border-color:color-mix(in srgb,var(--dz-ink) 14%,transparent);background:color-mix(in srgb,var(--dz-ac) 12%,transparent)}
+.de-panel{display:none}
+.de-panel.active{display:block}
+/* Panneau Sommaire de l'éditeur */
+.de-outline{position:fixed;left:16px;top:120px;bottom:16px;z-index:96;width:min(290px,calc(100vw - 32px));display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:16px;background:color-mix(in srgb,var(--bg-primary) 96%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--border-c);box-shadow:0 30px 80px -30px #000;animation:atView .25s both}
+.de-ol-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.de-ol-h span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.6}
+.de-ol-h button{background:none;border:0;color:inherit;cursor:pointer;opacity:.7}
+.de-ol-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.de-ol-item{text-align:left;background:none;border:0;color:var(--text-primary);cursor:pointer;font:inherit;font-size:14px;padding:8px 10px;border-radius:9px;border-left:2px solid transparent;transition:background-color .15s,border-color .15s;white-space:normal}
+.de-ol-item:hover{background:color-mix(in srgb,var(--text-primary) 7%,transparent);border-left-color:var(--brand)}
+.de-ol-item.l1{font-weight:600}
+.de-ol-item.l3{padding-left:22px;font-size:13px;opacity:.82}
+.de-ol-empty{font-size:13px;opacity:.55;margin:4px 2px}
+/* Panneau de droite repliable (PC) */
+.at-side-tgl.on{color:var(--brand)}
+@media(min-width:861px){
+  .at-ed-body.side-off .at-ed-side{display:none}
+  .at-ed-body.side-off{grid-template-columns:1fr!important}
+  .at-ed-body.side-off .at-ed-main{max-width:none}
+}
+
+/* Modes d'édition — barre de sections (Onglets) / tiroirs repliables */
+.rte-secbar{display:flex;flex-wrap:wrap;gap:6px;padding:8px 2px;margin-bottom:8px;border-bottom:1px solid var(--border-c)}
+.rte-sectab{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;border:1px solid var(--border-c);background:transparent;color:var(--text-secondary);cursor:pointer;font:inherit;font-size:13px;white-space:nowrap;transition:background-color .15s,color .15s,border-color .15s}
+.rte-sectab:hover{color:var(--text-primary)}
+.rte-sectab.on{background:color-mix(in srgb,var(--brand) 14%,transparent);border-color:var(--brand);color:var(--brand)}
+.rte-secbar.drawers .rte-sectab{border-radius:9px}
+.rte-secbar.drawers .rte-sectab:not(.on){opacity:.6}
+.rte-modes .rte-btn.on{border-color:var(--brand)!important;color:var(--brand)}
+.rte-mode-tabs .rte-area [data-head="1"],.rte-mode-drawers .rte-area [data-head="1"]{scroll-margin-top:84px}
+
+/* Sommaire en édition — panneau de chapitres, navigation rapide */
+.rte-outline{position:fixed;right:16px;top:84px;bottom:16px;z-index:94;width:min(290px,calc(100vw - 32px));display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:16px;background:color-mix(in srgb,var(--bg-primary) 96%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--border-c);box-shadow:0 30px 80px -30px #000;animation:atView .25s both}
+.rte-ol-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.rte-ol-h span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.6}
+.rte-ol-h button{background:none;border:0;color:inherit;cursor:pointer;opacity:.7}
+.rte-ol-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.rte-ol-item{text-align:left;background:none;border:0;color:var(--text-primary);cursor:pointer;font:inherit;font-size:14px;padding:8px 10px;border-radius:9px;border-left:2px solid transparent;transition:background-color .15s,border-color .15s;white-space:normal}
+.rte-ol-item:hover{background:color-mix(in srgb,var(--text-primary) 7%,transparent);border-left-color:var(--brand)}
+.rte-ol-item.l1{font-weight:600}
+.rte-ol-item.l3{padding-left:22px;font-size:13px;opacity:.82}
+.rte-ol-empty{font-size:13px;opacity:.55;margin:4px 2px}
+
+/* Sommaire (navigation par chapitres façon Google Docs) */
+.dv-outline{position:fixed;left:16px;top:70px;bottom:16px;z-index:96;width:min(300px,calc(100vw - 32px));display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:16px;background:rgba(16,16,22,.97);border:1px solid rgba(255,255,255,.1);color:#eee;box-shadow:0 30px 80px -30px #000;animation:atView .25s both}
+.dv-ol-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.dv-ol-h span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.6}
+.dv-ol-h button{background:none;border:0;color:inherit;cursor:pointer;opacity:.7}
+.dv-ol-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.dv-ol-item{text-align:left;background:none;border:0;color:rgba(255,255,255,.8);cursor:pointer;font:inherit;font-size:14px;padding:8px 10px;border-radius:9px;border-left:2px solid transparent;transition:background-color .15s,color .15s,border-color .15s;white-space:normal}
+.dv-ol-item:hover{background:rgba(255,255,255,.07);color:#fff;border-left-color:var(--brand)}
+.dv-ol-item.l1{font-weight:600}
+.dv-ol-item.l3{padding-left:22px;font-size:13px;opacity:.82}
+
 @media(max-width:767px){.dsp-grid{grid-template-columns:repeat(2,1fr)}.dz-slide{font-size:9px}}

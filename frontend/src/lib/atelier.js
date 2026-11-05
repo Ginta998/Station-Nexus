@@ -99,6 +99,10 @@ export const KINDS = {
   document: { label: "Document", plural: "Documents", kanji: "書" },
   inspiration: { label: "Inspiration", plural: "Inspirations", kanji: "想" },
   file: { label: "Fichier", plural: "Fichiers", kanji: "档" },
+  moodboard: { label: "Moodboard", plural: "Moodboards", kanji: "板" },
+  table: { label: "Tableau", plural: "Tableaux", kanji: "表" },
+  checklist: { label: "Checklist", plural: "Checklists", kanji: "列" },
+  board: { label: "Board", plural: "Boards", kanji: "盤" },
 };
 
 // Œuvres : une création concrète développée dans un univers (série, film, livre…), avec son propre espace.
@@ -113,6 +117,22 @@ export const OEUVRE_FORMATS = {
 };
 export const isOeuvre = (it) => !!(it && it.fields && it.fields.oeuvre);
 export const oeuvreFmt = (it) => OEUVRE_FORMATS[it?.fields?.format] || OEUVRE_FORMATS.autre;
+
+// Dossiers Nexus Drive : modélisés comme les œuvres (élément porteur fields.folder = true,
+// imbriqués via fields.parent). Les éléments rangés dedans pointent via fields.folder_id.
+export const isFolder = (it) => !!(it && it.fields && it.fields.folder);
+
+// Catégories de tâches (pipeline créatif). Stockées dans le champ libre `notes` (préfixe "cat:")
+// pour ne rien changer au backend — le reste de `notes` reste disponible pour des notes libres.
+export const TASK_CATS = {
+  ecriture: { label: "Écriture", color: "#c9a86a" },
+  prod: { label: "Production", color: "#5fb0d9" },
+  montage: { label: "Montage", color: "#b98cff" },
+  diffusion: { label: "Diffusion", color: "#6ad98c" },
+  admin: { label: "Admin", color: "#d98c8c" },
+};
+export const taskCat = (t) => { const k = (t?.notes || "").match(/^cat:(\w+)/)?.[1]; return k && TASK_CATS[k] ? k : ""; };
+export const setTaskCat = (notes, cat) => { const rest = (notes || "").replace(/^cat:\w+\n?/, ""); return cat ? "cat:" + cat + (rest ? "\n" + rest : "") : rest; };
 
 // Playlist (YouTube ou autre) par univers — stockée en local (le modèle univers du backend est figé).
 // Pour une œuvre, la playlist vit dans fields.playlist (persisté côté serveur).
@@ -171,7 +191,12 @@ export const UNIVERSE_FIELDS = ["name", "kanji", "color", "cover", "description"
 export const TASK_FIELDS = ["title", "universe_id", "item_id", "due", "priority", "done", "notes"];
 const pick = (o, keys) => Object.fromEntries(keys.map((k) => [k, o[k]]));
 
-export const imgSrc = (u) => (u ? mediaUrl(u) : "");
+// Un lien Google Drive vers un FICHIER (image) ne s'affiche proprement qu'en passant par
+// l'endpoint "thumbnail" (sinon : visionneuse Drive encombrante). Les dossiers sont laissés
+// tels quels (gérés par l'embed), car ils ne sont pas des images.
+const DRIVE_FILE = /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^&]*&)*id=|thumbnail\?(?:[^&]*&)*id=)([\w-]{10,})/;
+export const driveImg = (u) => { const m = typeof u === "string" && u.match(DRIVE_FILE); return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1600` : u; };
+export const imgSrc = (u) => (u ? mediaUrl(driveImg(u)) : "");
 export const todayStr = () => new Date().toLocaleDateString("sv-SE");
 export const stripHtml = (h) => (h || "").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
 

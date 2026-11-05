@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
+import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoExpandOutline, IoContractOutline, IoLibraryOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAtelier } from "@/lib/atelier";
 import { SoundBtn } from "@/components/StationMenu";
 import QuartierView from "@/components/atelier/QuartierView";
 import UniverseView from "@/components/atelier/UniverseView";
 import UniversesHub from "@/components/atelier/UniversesHub";
+import TemplatesPage from "@/components/atelier/TemplatesPage";
 import ItemsGrid from "@/components/atelier/ItemsGrid";
 import CockpitView from "@/components/atelier/CockpitView";
 import AtelierSettings from "@/components/atelier/AtelierSettings";
@@ -29,6 +30,8 @@ import RadioView, { useRadio, RadioEngine, RadioBar } from "@/components/atelier
 import { IoRadioOutline } from "react-icons/io5";
 import OeuvreView from "@/components/atelier/OeuvreView";
 import OeuvreForm from "@/components/atelier/OeuvreForm";
+import DevLogView from "@/components/atelier/DevLogView";
+import MobileLauncher from "@/components/atelier/MobileLauncher";
 
 const Dock = ({ icon, label, sub, on, onClick, testid, color, kanji, badge, drop }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label} {...(drop ? itemDrop(drop) : {})}>
@@ -78,6 +81,8 @@ export default function AtelierApp({ onLeave }) {
   const [dockOpen, setDockOpen] = useState(() => { try { return localStorage.getItem("nexus-dock") !== "0"; } catch (_) { return true; } });
   const toggleDock = () => setDockOpen((o) => { const n = !o; try { localStorage.setItem("nexus-dock", n ? "1" : "0"); } catch (_) {} return n; });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [navHub, setNavHub] = useState(() => { try { return (localStorage.getItem("nexus-nav-mode") || "hub") === "hub"; } catch (_) { return true; } });
+  useEffect(() => { const on = () => setNavHub((localStorage.getItem("nexus-nav-mode") || "hub") === "hub"); window.addEventListener("nexus-nav-mode", on); return () => window.removeEventListener("nexus-nav-mode", on); }, []);
   const launch = (s) => { sfx("select"); setScreen(s); };
   const setMini = (s) => setScreen(s && { ...s, mini: true });
   const [dragging, setDragging] = useState(false);
@@ -90,7 +95,7 @@ export default function AtelierApp({ onLeave }) {
     window.addEventListener("popstate", on); return () => window.removeEventListener("popstate", on);
   }, []);
   const open = (id, kind) => { sfx("select"); setPalette(false); if ((kind || at.items.find((x) => x.id === id)?.kind) === "file") setViewing(id); else setEditing(id); };
-  const inbox = at.items.filter((i) => !i.universe_id);
+  const inbox = at.items.filter((i) => !i.universe_id && !i.fields?.template);
   const pinned = at.universes.filter((u) => u.pinned);
   const cur = view.name === "universe" ? at.universes.find((u) => u.id === view.id) : null;
   const importDocs = (defaults = {}) => { pickDefaults.current = defaults; pick.current?.click(); };
@@ -118,10 +123,10 @@ export default function AtelierApp({ onLeave }) {
     const onKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const crumb = { home: "PONT DE COMMANDEMENT", universes: "ARCHIVES DES UNIVERS", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", oeuvre: "ŒUVRE" }[view.name] || (cur?.name || "").toUpperCase();
+  const crumb = { home: "PONT DE COMMANDEMENT", universes: "NEXUS DRIVE", templates: "BIBLIOTHÈQUE", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", oeuvre: "ŒUVRE", devlog: "DEV & PATCH NOTES" }[view.name] || (cur?.name || "").toUpperCase();
 
   return (
-    <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl ? " has-radio" : "") + (menuOpen ? " menu-open" : "")} data-testid="atelier-app">
+    <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl ? " has-radio" : "") + (menuOpen ? " menu-open" : "") + (navHub ? " nav-hub" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
       <header className="at-top">
         <div className="at-brand" onClick={() => go({ name: "home" })} role="button" style={{ cursor: "pointer" }} data-testid="atelier-logo-home"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
@@ -143,8 +148,8 @@ export default function AtelierApp({ onLeave }) {
             <button className="at-dock-toggle" onClick={toggleDock} title={dockOpen ? "Replier le menu" : "Déployer le menu"} aria-label="Replier ou déployer le menu" data-testid="atelier-dock-toggle">{dockOpen ? "‹‹" : "››"}</button>
           </div>
           <Dock icon={<IoPlanetOutline size={18} />} label="Pont" sub="POSTE DE COMMANDEMENT" on={view.name === "home"} onClick={() => go({ name: "home" })} testid="atelier-nav-home" />
-          <Dock icon={<IoGridOutline size={18} />} label="Univers" sub="MES MONDES & ŒUVRES" on={view.name === "universes" || view.name === "universe" || view.name === "oeuvre"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
-          <Dock icon={<IoSearch size={18} />} label="Recherche" sub="JE TROUVE TOUT · CTRL K" onClick={() => setPalette(true)} testid="atelier-nav-search" />
+          <Dock icon={<IoGridOutline size={18} />} label="Nexus Drive" sub="MONDES, ŒUVRES & FICHIERS" on={view.name === "universes" || view.name === "universe" || view.name === "oeuvre"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
+          <Dock icon={<IoLibraryOutline size={18} />} label="Templates" sub="BIBLIOTHÈQUE" on={view.name === "templates"} onClick={() => go({ name: "templates" })} testid="atelier-nav-templates" />
           <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" sub="IDÉES EN VRAC" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" drop={dropToUniverse(at, null)} />
           <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" sub="MES TÂCHES" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
@@ -157,6 +162,7 @@ export default function AtelierApp({ onLeave }) {
             {pinned.map((u) => <Dock key={u.id} kanji={u.kanji || u.name[0]} color={u.color} label={u.name} on={view.id === u.id} onClick={() => go({ name: "universe", id: u.id })} testid={`atelier-nav-universe-${u.id}`} drop={dropToUniverse(at, u.id)} />)}
           </div>
           <div className="at-dock-foot">
+            <Dock kanji="開" label="Dev" sub="BACKLOG · PATCH NOTES" on={view.name === "devlog"} onClick={() => go({ name: "devlog" })} testid="atelier-nav-devlog" />
             <Dock icon={<IoSettingsOutline size={18} />} label="Réglages" sub="COMPTE · THÈME" on={view.name === "settings"} onClick={() => go({ name: "settings" })} testid="atelier-nav-settings" />
             <Dock icon={<IoExitOutline size={18} />} label="Station" sub="RETOUR PUBLIC" onClick={() => { sfx("back"); onLeave(); }} testid="atelier-leave" />
           </div>
@@ -166,6 +172,7 @@ export default function AtelierApp({ onLeave }) {
           <div className="at-frame" aria-hidden="true"><i /><i /><i /><i /></div>
           {view.name === "home" && <QuartierView {...ctx} />}
           {view.name === "universes" && <UniversesHub {...ctx} />}
+          {view.name === "templates" && <TemplatesPage {...ctx} />}
           {view.name === "universe" && cur && <UniverseView {...ctx} universe={cur} />}
           {view.name === "oeuvre" && <OeuvreView {...ctx} id={view.id} />}
           {view.name === "inbox" && (
@@ -179,6 +186,7 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "bureau" && <BureauView {...ctx} launch={launch} />}
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
           {view.name === "radio" && <RadioView radio={radio} />}
+          {view.name === "devlog" && <DevLogView />}
         </main>
       </div>
 
@@ -188,12 +196,13 @@ export default function AtelierApp({ onLeave }) {
       {drop && <DropDialog at={at} drop={drop} defaults={drop.defaults} open={open} onClose={() => setDrop(null)} />}
       {screen && <Player screen={screen} onClose={() => setScreen(null)} onNavigate={setScreen} />}
       <RadioEngine radio={radio} />
-      {!focusMode && <RadioBar radio={radio} onOpen={() => go({ name: "radio" })} />}}
+      {!focusMode && <RadioBar radio={radio} onOpen={() => go({ name: "radio" })} />}
       {palette && <CommandPalette {...ctx} onClose={() => setPalette(false)} newUniverse={() => { setPalette(false); setUForm({}); }} />}
       {!bunny && <div className="bn-fab"><BunnySprite pose="neutral" size={74} className="cb-bounce" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" testid="bunny-open" /></div>}
       {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} openBrains={() => setBrains(true)} />}
       {brains && <BunnyBrains onClose={() => setBrains(false)} />}
       {focusMode && <FocusView at={at} onClose={() => setFocusMode(false)} />}
+      {navHub && <MobileLauncher ctx={ctx} view={view} onLeave={onLeave} onBunny={() => { sfx("select"); setBunny(true); }} onFocus={() => { sfx("select"); setFocusMode(true); }} onSearch={() => setPalette(true)} bunny={bunny} focusMode={focusMode} />}
       <ContextMenuHost />
       {viewing && <FileViewer at={at} id={viewing} onClose={() => setViewing(null)} edit={(id) => { setViewing(null); setEditing(id); }} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}

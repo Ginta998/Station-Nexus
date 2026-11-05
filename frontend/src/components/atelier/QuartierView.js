@@ -1,10 +1,11 @@
 import { useMemo, useState, useEffect } from "react";
 import { IoSend, IoArrowForward, IoPlay, IoEnterOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { KINDS, imgSrc, todayStr, stripHtml, isOeuvre, oeuvreFmt } from "@/lib/atelier";
+import { KINDS, imgSrc, todayStr, stripHtml, isOeuvre, isFolder, oeuvreFmt } from "@/lib/atelier";
+import { isTemplate } from "@/lib/templates";
 import { toEmbed, popOut } from "@/lib/embed";
 import ItemCard from "@/components/atelier/ItemCard";
-import { TaskRow } from "@/components/atelier/TasksView";
+import { TaskRow, TaskQuickAdd } from "@/components/atelier/TasksView";
 import BunnyBriefing from "@/components/atelier/BunnyBriefing";
 
 const greet = (h) => (h < 5 ? "Bonne nuit" : h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir");
@@ -110,9 +111,9 @@ export default function QuartierView({ at, go, open, launch }) {
   const oeuvres = useMemo(() => at.items.filter(isOeuvre), [at.items]);
   const pinnedOeuvres = useMemo(() => oeuvres.filter((o) => o.pinned), [oeuvres]);
   const pinnedUnis = useMemo(() => at.universes.filter((u) => u.pinned), [at.universes]);
-  const pins = useMemo(() => at.items.filter((i) => i.pinned && !isOeuvre(i)), [at.items]);
+  const pins = useMemo(() => at.items.filter((i) => i.pinned && !isOeuvre(i) && !isFolder(i) && !isTemplate(i)), [at.items]);
   const openItem = (it) => (isOeuvre(it) ? go({ name: "oeuvre", id: it.id }) : open(it.id));
-  const [last, ...recent] = at.items.filter((i) => !isOeuvre(i) && !i.pinned);
+  const [last, ...recent] = at.items.filter((i) => !isOeuvre(i) && !isFolder(i) && !isTemplate(i) && !i.pinned);
   const words = useMemo(() => stripHtml(at.items.map((i) => i.content).join(" ")).split(" ").filter(Boolean).length, [at.items]);
   const active = useMemo(() => {
     const seen = new Set(); const out = at.universes.filter((u) => u.pinned);
@@ -199,7 +200,8 @@ export default function QuartierView({ at, go, open, launch }) {
 
       <div className="at-panel">
         <div className="at-panel-h"><h2>Cap du jour</h2><span className="at-link" onClick={() => go({ name: "tasks" })}>Cockpit <IoArrowForward size={12} /></span></div>
-        {focus.length + next.length === 0 && <p className="at-empty">Aucune tâche. Crée-en depuis une scène ou le cockpit.</p>}
+        <TaskQuickAdd at={at} />
+        {focus.length + next.length === 0 && <p className="at-empty">Aucune tâche. Ajoute-en une ci-dessus.</p>}
         {[...focus, ...next].map((t) => <TaskRow key={t.id} t={t} at={at} open={open} compact />)}
       </div>
 

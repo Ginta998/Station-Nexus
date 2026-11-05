@@ -1,0 +1,237 @@
+{
+  "templates": [
+    { "id": "kit-narratif", "cat": "scenario", "kind": "note", "kanji": "筋", "name": "Kit narratif", "desc": "L'ADN de ton histoire en 7 lignes.",
+      "sections": [
+        { "h": "Logline", "intro": "En une phrase : le contexte, le personnage et sa caractérisation, son but (un verbe d'action), l'obstacle, l'enjeu." },
+        { "h": "Question dramatique", "intro": "La question par oui ou non qui tient le spectateur jusqu'au climax." },
+        { "h": "Question thématique", "intro": "La question humaine, de valeurs, que l'histoire pose." },
+        { "h": "Proposition thématique", "intro": "Ta réponse — l'idée qui traverse l'œuvre. Personnelle et unique." },
+        { "h": "Réponse dramatique", "intro": "La réponse au climax : oui ou non, et à quel prix." },
+        { "h": "Fin logique", "intro": "La fin que tout ce qui précède rend inévitable." },
+        { "h": "Synopsis", "intro": "L'histoire du début à la fin, au présent, dans l'ordre vécu par le spectateur." }
+      ] },
+    { "id": "structure-3-actes", "cat": "scenario", "kind": "note", "kanji": "幕", "name": "Structure en 3 actes", "desc": "Le squelette classique : mise en place, confrontation, résolution.",
+      "sections": [
+        { "h": "Acte I — Mise en place", "sub": [
+          { "h": "Monde ordinaire", "hint": "Le quotidien du héros avant la rupture." },
+          { "h": "Incident déclencheur", "hint": "L'événement qui brise l'équilibre." },
+          { "h": "Passage à l'acte", "hint": "Le choix qui engage le héros dans l'aventure." } ] },
+        { "h": "Acte II — Confrontation", "sub": [
+          { "h": "Obstacles & alliés", "hint": "Les épreuves, les rencontres, la montée en tension." },
+          { "h": "Point médian", "hint": "Un renversement qui change la donne." },
+          { "h": "Tout est perdu", "hint": "Le point le plus bas, la fausse défaite." } ] },
+        { "h": "Acte III — Résolution", "sub": [
+          { "h": "Climax", "hint": "L'affrontement final, la réponse dramatique." },
+          { "h": "Dénouement", "hint": "Le nouvel équilibre, ce qui a changé." } ] }
+      ] },
+    { "id": "beat-sheet", "cat": "scenario", "kind": "note", "kanji": "拍", "name": "Beat sheet", "desc": "Les battements clés du récit, façon Save the Cat.",
+      "sections": [
+        { "h": "Image d'ouverture", "intro": "Le ton et le monde en une image." },
+        { "h": "Thème annoncé", "intro": "La question de fond, posée tôt." },
+        { "h": "Catalyseur", "intro": "Ce qui fait basculer le héros." },
+        { "h": "Débat", "intro": "Son hésitation avant de s'engager." },
+        { "h": "Bascule acte 2", "intro": "Il quitte son monde ordinaire." },
+        { "h": "Fun & games", "intro": "La promesse du pitch, le cœur du film." },
+        { "h": "Point médian", "intro": "Fausse victoire ou fausse défaite." },
+        { "h": "Les méchants se rapprochent", "intro": "La pression monte." },
+        { "h": "Tout est perdu", "intro": "Le fond du gouffre." },
+        { "h": "Finale", "intro": "Il applique la leçon et triomphe." },
+        { "h": "Image de fermeture", "intro": "Le miroir de l'ouverture : ce qui a changé." }
+      ] },
+    { "id": "sequencier", "cat": "scenario", "kind": "note", "kanji": "連", "name": "Séquencier", "desc": "Le découpage séquence par séquence.",
+      "sections": [
+        { "h": "Séquence 1", "sub": [ { "h": "Lieu / moment", "hint": "Où et quand." }, { "h": "Enjeu", "hint": "Ce qui se joue." }, { "h": "Résumé", "hint": "Ce qui s'y passe, en 2-3 lignes." } ] },
+        { "h": "Séquence 2", "sub": [ { "h": "Lieu / moment", "hint": "Où et quand." }, { "h": "Enjeu", "hint": "Ce qui se joue." }, { "h": "Résumé", "hint": "Ce qui s'y passe." } ] },
+        { "h": "Séquence 3", "sub": [ { "h": "Lieu / moment", "hint": "Où et quand." }, { "h": "Enjeu", "hint": "Ce qui se joue." }, { "h": "Résumé", "hint": "Ce qui s'y passe." } ] }
+      ] },
+    { "id": "scene", "cat": "scenario", "kind": "scene", "kanji": "場", "name": "Scène", "desc": "Une scène qui avance : objectif, conflit, issue.",
+      "sections": [
+        { "h": "Contexte", "fields": ["Lieu", "Moment", "Personnages présents", "Point de vue"] },
+        { "h": "Objectif", "intro": "Ce que le personnage veut dans cette scène." },
+        { "h": "Conflit / obstacle", "intro": "Ce qui l'en empêche." },
+        { "h": "Issue & bascule", "intro": "Comment ça se termine — et ce qui change pour la suite." },
+        { "h": "Déroulé", "intro": "L'action et les dialogues de la scène." }
+      ] },
+    { "id": "arc-personnage", "cat": "scenario", "kind": "note", "kanji": "弧", "name": "Arc de personnage", "desc": "La transformation intérieure du héros.",
+      "sections": [
+        { "h": "Mensonge de départ", "intro": "La croyance erronée qui le limite." },
+        { "h": "Blessure", "intro": "L'événement passé qui a forgé ce mensonge." },
+        { "h": "Désir vs besoin", "intro": "Ce qu'il veut (externe) vs ce dont il a besoin (interne)." },
+        { "h": "Épreuves", "intro": "Ce qui attaque sa croyance." },
+        { "h": "Révélation", "intro": "Le moment où il voit la vérité." },
+        { "h": "Nouvel équilibre", "intro": "Qui il devient à la fin." }
+      ] },
+    { "id": "note-intention", "cat": "scenario", "kind": "document", "kanji": "意", "name": "Note d'intention", "desc": "Pourquoi tu fais ce film, et comment.",
+      "sections": [
+        { "h": "Le projet en une phrase", "intro": "De quoi ça parle, vraiment." },
+        { "h": "Pourquoi moi, pourquoi maintenant", "intro": "Ton lien intime au sujet." },
+        { "h": "Parti pris de mise en scène", "intro": "Image, son, rythme, direction d'acteurs." },
+        { "h": "Références", "intro": "Films, œuvres, images qui situent ton intention." },
+        { "h": "Ce que je veux que le spectateur ressente", "intro": "L'émotion cible." }
+      ] },
+    { "id": "scenario", "cat": "scenario", "kind": "document", "kanji": "脚", "name": "Scénario", "desc": "Le format screenplay : six briques, une page ≈ une minute.",
+      "sections": [
+        { "h": "Titre", "fields": ["Titre du film", "Auteur", "Contact (email · téléphone)"] },
+        { "h": "Repères de format (à supprimer)", "intro": "Les six briques d'un scénario. En-tête de séquence : EN CAPITALES, INT. ou EXT. · lieu · moment. Action : au présent, concret, visuel, sans expliquer les pensées. Personnage : en capitales, juste avant sa réplique. Didascalie : entre parenthèses, brève (une intention, un ton, un geste). Dialogue : ce qu'il dit, sous son nom. Police : Courier New." },
+        { "h": "1. INT. LIEU — JOUR", "intro": "Décris l'action au présent, puis le personnage (en capitales), une didascalie éventuelle entre parenthèses, et le dialogue sous le nom. Une séquence = un lieu, un moment." }
+      ] },
+    { "id": "fiche-personnage", "cat": "personnage", "kind": "character", "kanji": "人", "name": "Fiche personnage", "desc": "Identité, design, portrayal, backstory — le personnage en entier.",
+      "sections": [
+        { "h": "Identité", "fields": ["Âge", "Sexe", "Rôle narratif (protagoniste, antagoniste, secondaire, tertiaire)", "Désirs", "Peurs / croyance limitante", "Failles"] },
+        { "h": "Résumé", "intro": "Personnalité & rôle dans l'histoire, en quelques lignes." },
+        { "h": "Character design — silhouette & forme", "intro": "Silhouette générale (fluet, trapu, massif, anguleux…), forme dominante (rond / carré / triangle), couleurs dominantes. Ce que ça raconte de son rôle, sa faille, son énergie." },
+        { "h": "Détails symboliques", "intro": "Les éléments distinctifs (objet, vêtement, marque, arme, prothèse…) et ce que chacun raconte." },
+        { "h": "Portrayal", "sub": [
+          { "h": "Action", "hint": "Comment il agit, son rythme, ce que ses actes trahissent." },
+          { "h": "Parole et voix", "hint": "Sa voix, son ton, ses tics de langage." },
+          { "h": "Apparence et gestuelle", "hint": "Ce que son corps et ses gestes racontent." },
+          { "h": "Interaction", "hint": "Comment les autres réagissent à lui, ses liens clés." } ] },
+        { "h": "Backstory & évolution", "sub": [
+          { "h": "Backstory", "hint": "D'où il vient, l'événement fondateur, sa blessure." },
+          { "h": "Évolution", "hint": "Ce qu'il traverse, ce qu'il apprend, qui il devient." } ] },
+        { "h": "Note libre", "intro": "Tout ce qui ne rentre pas ailleurs." }
+      ] },
+    { "id": "personnage-express", "cat": "personnage", "kind": "character", "kanji": "速", "name": "Personnage express", "desc": "L'essentiel d'un personnage en 6 champs.",
+      "sections": [
+        { "h": "Personnage", "fields": ["Nom", "Rôle narratif", "Désir (ce qu'il veut)", "Besoin (ce dont il a besoin)", "Faille", "Trait marquant"] },
+        { "h": "En une phrase", "intro": "Qui il est et ce qui le rend unique." }
+      ] },
+    { "id": "reseau-relations", "cat": "personnage", "kind": "note", "kanji": "絆", "name": "Réseau de relations", "desc": "Les liens qui définissent un personnage.",
+      "sections": [
+        { "h": "Allié(s)", "intro": "Qui le soutient, et pourquoi." },
+        { "h": "Antagoniste(s)", "intro": "Qui s'oppose à lui, et ce qui les lie." },
+        { "h": "Lien affectif", "intro": "L'ancre émotionnelle (amour, famille, mentor…)." },
+        { "h": "Miroir / rival", "intro": "Celui qui lui renvoie ce qu'il refuse de voir." },
+        { "h": "Évolution des liens", "intro": "Comment ces relations changent au fil du récit." }
+      ] },
+    { "id": "voix-dialogue", "cat": "personnage", "kind": "note", "kanji": "声", "name": "Voix & dialogue", "desc": "Comment ce personnage parle.",
+      "sections": [
+        { "h": "Registre", "intro": "Soutenu, familier, technique, poétique… ?" },
+        { "h": "Tics & formules", "intro": "Mots, expressions, rythmes qui lui appartiennent." },
+        { "h": "Ce qu'il ne dit jamais", "intro": "Ses non-dits, ses évitements." },
+        { "h": "Répliques signature", "intro": "2-3 lignes qui sonnent comme lui." }
+      ] },
+    { "id": "fiche-monde", "cat": "monde", "kind": "place", "kanji": "地", "name": "Fiche monde", "desc": "Essence, forces, population — un socle vivant pour ton univers.",
+      "sections": [
+        { "h": "L'essence (Quoi)", "intro": "La singularité de ton monde : l'idée qui justifie son existence. Amplifie avec des pourquoi et des conséquences." },
+        { "h": "Questionnologie — l'essence", "questions": [
+          { "q": "Pourquoi mon héros est-il dans cette situation précise ?", "type": "Expliquer", "effet": "Relier le monde au protagoniste." },
+          { "q": "Pourquoi ici et pas ailleurs ?", "type": "Expliquer", "effet": "Contexte à la vie et au désir du personnage." },
+          { "q": "Qu'est-ce qui rend ce monde reconnaissable ?", "type": "Décrire", "effet": "Créer une atmosphère unique." },
+          { "q": "Quelles conséquences en découlent ?", "type": "Imaginer", "effet": "Montrer la portée sociale et politique." },
+          { "q": "Et si… ? (amplification)", "type": "Imaginer", "effet": "Avec les « si », on refait le monde." } ] },
+        { "h": "Résumé narratif : l'essence du monde", "intro": "Déploie ton monde en un paragraphe ample qui reprend les réponses." },
+        { "h": "Galerie", "gallery": true },
+        { "h": "Les forces en présence (Qui)", "intro": "Le jeu de forces — pouvoir, résistance, opprimés. Visages, groupes, institutions. Pense en triangle des forces." },
+        { "h": "Questionnologie — population", "questions": [
+          { "q": "Qui domine et comment impose-t-il son autorité ?", "type": "Expliquer", "effet": "Installer les dominants." },
+          { "q": "Où se concentre leur force ?", "type": "Décrire", "effet": "Un lieu reconnaissable." },
+          { "q": "Qui ose défier cet ordre ?", "type": "Décrire", "effet": "Créer conflit et tension." },
+          { "q": "À quel prix résistent-ils ?", "type": "Imaginer", "effet": "Montrer les risques." },
+          { "q": "Qui souffre le plus ?", "type": "Imaginer", "effet": "Donner un visage à la souffrance." } ] }
+      ] },
+    { "id": "fiche-lieu", "cat": "monde", "kind": "place", "kanji": "所", "name": "Fiche lieu", "desc": "Un lieu qui raconte quelque chose.",
+      "sections": [
+        { "h": "Identité du lieu", "fields": ["Nom", "Type (ville, bâtiment, région…)", "Ambiance en 3 mots"] },
+        { "h": "Surface", "intro": "Ce que le spectateur voit : décors, lumière, sons, odeurs." },
+        { "h": "Souterrain", "intro": "Les règles implicites, l'histoire, les secrets du lieu." },
+        { "h": "Rôle narratif", "intro": "Ce que ce lieu permet ou empêche pour l'histoire." },
+        { "h": "Galerie", "gallery": true }
+      ] },
+    { "id": "fiche-faction", "cat": "monde", "kind": "lore", "kanji": "派", "name": "Faction / organisation", "desc": "Un groupe de pouvoir dans ton monde.",
+      "sections": [
+        { "h": "Identité", "fields": ["Nom", "Nature (État, mafia, ordre, gang, culte…)", "Symbole / emblème"] },
+        { "h": "But & idéologie", "intro": "Ce qu'elle veut, ce qu'elle croit." },
+        { "h": "Moyens & territoire", "intro": "Sa force, ses ressources, où elle règne." },
+        { "h": "Faiblesse", "intro": "Sa faille, sa menace interne." },
+        { "h": "Rôle dans l'histoire", "intro": "Comment elle croise le chemin du héros." }
+      ] },
+    { "id": "chronologie", "cat": "monde", "kind": "event", "kanji": "史", "name": "Chronologie / histoire", "desc": "Les grands événements qui ont façonné le monde.",
+      "sections": [
+        { "h": "Avant l'histoire", "intro": "Les événements fondateurs (guerre, chute, découverte…)." },
+        { "h": "Le basculement", "intro": "L'événement qui mène à la situation actuelle." },
+        { "h": "Présent", "intro": "L'état du monde au début de ton récit." },
+        { "h": "Repères datés", "intro": "Liste tes dates clés (même « An 312 » ou « Chapitre 4 ») dans le champ Date de la fiche." }
+      ] },
+    { "id": "systeme-regles", "cat": "monde", "kind": "lore", "kanji": "理", "name": "Système & règles", "desc": "Magie, technologie, lois : le moteur de ton monde.",
+      "sections": [
+        { "h": "Principe", "intro": "Comment ça marche, en une idée claire." },
+        { "h": "Règles", "intro": "Ce que ça permet — et surtout ce que ça interdit." },
+        { "h": "Coût & limites", "intro": "Le prix à payer ; sans coût, pas de tension." },
+        { "h": "Conséquences sociales", "intro": "Ce que ce système change pour la société et les personnages." }
+      ] },
+    { "id": "fiche-objet", "cat": "monde", "kind": "lore", "kanji": "物", "name": "Objet / artefact", "desc": "Un objet porteur de sens.",
+      "sections": [
+        { "h": "Identité", "fields": ["Nom", "Apparence", "Possesseur"] },
+        { "h": "Fonction", "intro": "Ce qu'il fait, ce qu'il permet." },
+        { "h": "Symbolique", "intro": "Ce qu'il raconte, ce qu'il représente pour les personnages." },
+        { "h": "Enjeu", "intro": "Pourquoi on le convoite, ce qu'il déclenche." }
+      ] },
+    { "id": "decoupage-technique", "cat": "production", "kind": "document", "kanji": "画", "name": "Découpage / shotlist", "desc": "Plan par plan pour le tournage.",
+      "sections": [
+        { "h": "Plan 1", "fields": ["Valeur (plan large, serré…)", "Mouvement (fixe, travelling…)", "Action", "Son / voix", "Note"] },
+        { "h": "Plan 2", "fields": ["Valeur", "Mouvement", "Action", "Son / voix", "Note"] },
+        { "h": "Plan 3", "fields": ["Valeur", "Mouvement", "Action", "Son / voix", "Note"] }
+      ] },
+    { "id": "plan-tournage", "cat": "production", "kind": "document", "kanji": "程", "name": "Plan de tournage", "desc": "L'organisation d'une journée de tournage.",
+      "sections": [
+        { "h": "Infos générales", "fields": ["Date", "Lieu", "Horaires", "Contact régie"] },
+        { "h": "Séquences à tourner", "intro": "Liste les scènes, dans l'ordre de tournage (pas de scénario)." },
+        { "h": "Équipe & rôles", "intro": "Qui fait quoi ce jour-là." },
+        { "h": "Matériel", "intro": "Caméra, lumière, son, accessoires." },
+        { "h": "Logistique", "intro": "Transport, repas, autorisations, météo, plan B." }
+      ] },
+    { "id": "moodboard-da", "cat": "production", "kind": "inspiration", "kanji": "彩", "name": "Moodboard / direction artistique", "desc": "L'identité visuelle du projet.",
+      "sections": [
+        { "h": "Intention visuelle", "intro": "L'émotion et le ton que l'image doit porter." },
+        { "h": "Palette", "intro": "Couleurs dominantes et ce qu'elles racontent." },
+        { "h": "Lumière & texture", "intro": "Contrastes, grain, matières, ambiances." },
+        { "h": "Références", "intro": "Films, photos, peintures qui situent le style." },
+        { "h": "Galerie", "gallery": true }
+      ] },
+    { "id": "budget-simple", "cat": "production", "kind": "document", "kanji": "予", "name": "Budget simple", "desc": "Un cadre budgétaire rapide.",
+      "sections": [
+        { "h": "Postes", "fields": ["Équipe / cachets", "Matériel / location", "Décors / accessoires", "Déplacements / repas", "Post-production", "Divers / imprévus"] },
+        { "h": "Total estimé", "intro": "La somme, et la marge de sécurité." },
+        { "h": "Financement", "intro": "Fonds propres, aides, soutien communauté…" }
+      ] },
+    { "id": "pitch-deck", "cat": "pitch", "kind": "document", "kanji": "提", "name": "Pitch deck (plan)", "desc": "Le squelette d'un deck pour présenter ton projet.",
+      "sections": [
+        { "h": "Titre & accroche", "intro": "Le nom, la logline, une image forte." },
+        { "h": "Le pitch", "intro": "De quoi ça parle, en un paragraphe." },
+        { "h": "Personnages", "intro": "Les 2-3 figures clés." },
+        { "h": "Univers & ton", "intro": "Le monde, l'ambiance, les références." },
+        { "h": "Pourquoi maintenant", "intro": "Ce qui rend le projet pertinent aujourd'hui." },
+        { "h": "L'auteur & la vision", "intro": "Qui tu es, pourquoi toi." },
+        { "h": "Galerie", "gallery": true }
+      ] },
+    { "id": "dossier-narratif", "cat": "dossier", "kind": "document", "kanji": "書", "name": "Dossier narratif (plan)", "desc": "La structure d'un dossier complet de présentation.",
+      "sections": [
+        { "h": "Couverture", "intro": "Titre, format, logline, visuel." },
+        { "h": "Note d'intention", "intro": "Pourquoi ce projet, ta vision." },
+        { "h": "Synopsis", "intro": "Court puis développé." },
+        { "h": "Personnages", "intro": "Les fiches des rôles principaux." },
+        { "h": "Univers", "intro": "Le monde, ses règles, son ambiance." },
+        { "h": "Structure / épisodes", "intro": "Le découpage par actes, parties ou épisodes." },
+        { "h": "Direction artistique", "intro": "Références visuelles et sonores." },
+        { "h": "Galerie", "gallery": true }
+      ] },
+    { "id": "bible-serie", "cat": "dossier", "kind": "document", "kanji": "典", "name": "Bible de série (plan)", "desc": "Le document de référence d'une série.",
+      "sections": [
+        { "h": "Concept", "intro": "Le pitch, le genre, le ton, la promesse." },
+        { "h": "Univers", "intro": "Le monde et ses règles." },
+        { "h": "Personnages récurrents", "intro": "Les figures qui portent la série." },
+        { "h": "Arc de la saison 1", "intro": "La ligne narrative d'ensemble." },
+        { "h": "Pistes d'épisodes", "intro": "Quelques résumés d'épisodes." },
+        { "h": "Potentiel", "intro": "Déclinaisons, saisons suivantes, univers étendu." }
+      ] },
+    { "id": "script-reel", "cat": "contenu", "kind": "document", "kanji": "映", "name": "Script Reel / short", "desc": "Un script court format vertical.",
+      "sections": [
+        { "h": "Accroche (0-3 s)", "intro": "La première phrase qui stoppe le scroll." },
+        { "h": "Promesse", "intro": "Ce que le spectateur va gagner / ressentir." },
+        { "h": "Développement", "intro": "Le corps, rythmé, par punchlines." },
+        { "h": "Chute / CTA", "intro": "La fin + l'appel à l'action." },
+        { "h": "Plan de tournage", "intro": "Plans, lieux, accessoires, texte à l'écran." }
+      ] }
+  ]
+}

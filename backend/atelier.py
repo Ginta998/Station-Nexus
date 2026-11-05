@@ -259,7 +259,8 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
                     if v and v.get("videoId"):
                         out.append({"id": v["videoId"], "title": "".join(x.get("text", "") for x in v.get("title", {}).get("runs", [])),
                                     "author": "".join(x.get("text", "") for x in v.get("ownerText", {}).get("runs", [])),
-                                    "length": v.get("lengthText", {}).get("simpleText", ""), "views": v.get("shortViewCountText", {}).get("simpleText", "")})
+                                    "length": v.get("lengthText", {}).get("simpleText", ""), "views": v.get("shortViewCountText", {}).get("simpleText", ""),
+                                    "date": v.get("publishedTimeText", {}).get("simpleText", "")})
                     for x in o.values():
                         walk(x)
                 elif isinstance(o, list):

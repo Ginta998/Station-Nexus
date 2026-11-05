@@ -6,7 +6,8 @@ import { THEMES } from "@/lib/themes";
 import { uploadJournalImage, listAmbiences } from "@/lib/api";
 import { SOUND_PACKS, playUiSound } from "@/lib/sound";
 import { AMBIENTS } from "@/lib/ambient";
-import { setDraft, FONTS, FX, KEY_SOUNDS, PALETTES, GRADIENTS, keySound, fontHref } from "@/lib/themeStore";
+import { setDraft, FONTS, FX, CURSORS, KEY_SOUNDS, PALETTES, GRADIENTS, keySound, fontHref } from "@/lib/themeStore";
+import { useHiddenLib, isHidden, hiddenCount, hideItem, showItem } from "@/lib/hiddenLib";
 
 // Lit les valeurs réelles d'un thème d'origine pour pouvoir le retoucher
 export function readBuiltin(key) {
@@ -82,6 +83,18 @@ function ThemePreview({ t, onOpen }) {
   );
 }
 
+// Masquer / réafficher un élément par défaut d'une bibliothèque (police, effet, palette, son).
+function HideWrap({ kind, id, rev, block, children }) {
+  const h = isHidden(kind, id);
+  if (h && !rev) return null;
+  return <div className={"ts-hw" + (block ? " blk" : "") + (h ? " hid" : "")}>{children}<button type="button" className="ts-hide" title={h ? "Réafficher" : "Masquer de la liste"} onClick={(e) => { e.stopPropagation(); h ? showItem(kind, id) : hideItem(kind, id); }}>{h ? "↺" : "×"}</button></div>;
+}
+function RevBtn({ kind, rev, setRev }) {
+  const n = hiddenCount(kind);
+  if (!n && !rev) return null;
+  return <button type="button" className="ts-revhid" onClick={() => setRev((v) => !v)}>{rev ? "Cacher les masqués" : `Voir les ${n} masqué${n > 1 ? "s" : ""}`}</button>;
+}
+
 const Field = ({ label, children }) => <label className="ts-field"><span>{label}</span>{children}</label>;
 const Range = ({ label, value, min = 0, max = 100, step = 1, onChange, unit = "" }) => (
   <Field label={<>{label} <em>{value}{unit}</em></>}><input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(+e.target.value)} /></Field>
@@ -97,9 +110,11 @@ function Upload({ accept, onDone, label = "Importer" }) {
 }
 
 function ColorsTab({ t, sub }) {
+  useHiddenLib(); const [rev, setRev] = useState(false);
   return (<>
     <h4>Palettes</h4>
-    <div className="ts-pals">{PALETTES.map(([n, c]) => <button key={n} title={n} onClick={() => sub("colors", { bg: c[0], bg2: c[1], brand: c[2], brand2: c[3], text: c[4], text2: c[5] })}>{c.slice(0, 4).map((x) => <i key={x} style={{ background: x }} />)}<span>{n}</span></button>)}</div>
+    <div className="ts-pals">{PALETTES.map(([n, c]) => <HideWrap key={n} kind="palette" id={n} rev={rev}><button title={n} onClick={() => sub("colors", { bg: c[0], bg2: c[1], brand: c[2], brand2: c[3], text: c[4], text2: c[5] })}>{c.slice(0, 4).map((x) => <i key={x} style={{ background: x }} />)}<span>{n}</span></button></HideWrap>)}</div>
+    <RevBtn kind="palette" rev={rev} setRev={setRev} />
     <h4>Sur mesure</h4>
     {COLORS.map(([k, l]) => <Color key={k} label={l} value={t.colors?.[k]} onChange={(v) => sub("colors", { [k]: v })} />)}
   </>);
@@ -107,10 +122,12 @@ function ColorsTab({ t, sub }) {
 
 function TypeTab({ t, set }) {
   useEffect(() => { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = fontHref(FONTS); document.head.appendChild(l); return () => l.remove(); }, []);
-  const pick = (k) => <div className="ts-fonts">{FONTS.map((f) => <button key={f} className={t[k] === f ? "on" : ""} style={{ fontFamily: `"${f}"` }} onClick={() => set({ [k]: f })}>{f}</button>)}</div>;
+  useHiddenLib(); const [rev, setRev] = useState(false);
+  const pick = (k) => <div className="ts-fonts">{FONTS.map((f) => <HideWrap key={f} kind="font" id={f} rev={rev}><button className={t[k] === f ? "on" : ""} style={{ fontFamily: `"${f}"` }} onClick={() => set({ [k]: f })}>{f}</button></HideWrap>)}</div>;
   return (<>
     <h4>Titres</h4>{pick("font_display")}
     <h4>Texte</h4>{pick("font_body")}
+    <RevBtn kind="font" rev={rev} setRev={setRev} />
     <Field label="Casse des titres"><div className="ts-seg">{[["none", "Normale"], ["uppercase", "MAJUSCULES"]].map(([v, l]) => <button key={v} className={t.transform === v ? "on" : ""} onClick={() => set({ transform: v })}>{l}</button>)}</div></Field>
     <Range label="Espacement des lettres" value={t.spacing ?? 0} min={-0.05} max={0.3} step={0.01} unit="em" onChange={(v) => set({ spacing: v })} />
   </>);
@@ -122,6 +139,7 @@ function ShapeTab({ t, set }) {
     <Range label="Épaisseur des bordures" value={t.border_w ?? 1} max={4} unit="px" onChange={(v) => set({ border_w: v })} />
     <Range label="Flou des panneaux (verre)" value={t.blur ?? 12} max={40} unit="px" onChange={(v) => set({ blur: v })} />
     <Range label="Ombres et halo" value={t.shadow ?? 40} onChange={(v) => set({ shadow: v })} />
+    <Field label="Curseur"><div className="ts-seg ts-cursors">{CURSORS.map(([k, l]) => <button key={k} className={(t.cursor || "default") === k ? "on" : ""} onClick={() => set({ cursor: k })} data-testid={`theme-cursor-${k}`}>{l}</button>)}</div></Field>
     <div className="ts-demo"><div className="ts-demo-card">Aperçu d'une carte</div><button className="ts-btn">Bouton</button></div>
   </>);
 }
@@ -146,19 +164,23 @@ function BgTab({ t, sub, set }) {
 }
 
 function FxTab({ t, set, sub }) {
+  useHiddenLib(); const [rev, setRev] = useState(false);
   return (<>
     <Color label="Couleur des effets" value={t.fx_color} onChange={(v) => set({ fx_color: v })} />
-    {FX.map(([k, l]) => <Range key={k} label={l} value={t.fx?.[k] || 0} onChange={(v) => sub("fx", { [k]: v })} />)}
+    {FX.map(([k, l]) => <HideWrap key={k} kind="fx" id={k} rev={rev} block><Range label={l} value={t.fx?.[k] || 0} onChange={(v) => sub("fx", { [k]: v })} /></HideWrap>)}
+    <RevBtn kind="fx" rev={rev} setRev={setRev} />
   </>);
 }
 
 function SoundTab({ t, set }) {
   const [ambs, setAmbs] = useState([]);
+  useHiddenLib(); const [rev, setRev] = useState(false);
   useEffect(() => { listAmbiences().then((a) => setAmbs(Array.isArray(a) ? a : a?.items || [])).catch(() => {}); }, []);
   return (<>
     <h4>Clavier</h4>
-    <div className="ts-keys">{KEY_SOUNDS.map(([k, l]) => <button key={k} className={t.key_sound === k ? "on" : ""} onClick={() => { set({ key_sound: k }); keySound(k, 0.6); }} data-testid={`theme-key-${k}`}>{l}</button>)}
+    <div className="ts-keys">{KEY_SOUNDS.map(([k, l]) => <HideWrap key={k} kind="key" id={k} rev={rev}><button className={t.key_sound === k ? "on" : ""} onClick={() => { set({ key_sound: k }); keySound(k, 0.6); }} data-testid={`theme-key-${k}`}>{l}</button></HideWrap>)}
       <button className={t.key_sound === "file" ? "on" : ""} onClick={() => t.key_url && set({ key_sound: "file" })}>Ton fichier</button></div>
+    <RevBtn kind="key" rev={rev} setRev={setRev} />
     <input className="ts-try" placeholder="Tape ici pour essayer…" />
     <Upload accept="audio/*" onDone={(u) => set({ key_url: u, key_sound: "file" })} label="Importer un son de touche" />
     <h4>Bruitages de l'interface</h4>

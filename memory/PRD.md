@@ -860,3 +860,7 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - PPTX avec couverture + images (backend grab via localhost)
 - Partage lecture seule : POST/DELETE /api/atelier/items/{id}/share, GET /api/share/{token}, page /d/:token (SharedDoc)
 - Salon : lecteur cinéma Cinema.js (YouTube controls=0 masqué + crop, contrôles Nexus, À suivre, compte à rebours, vitesse, CC, plein écran, clavier, mini continu)
+
+## 2026-11 — Import GitHub
+- Code remplacé par https://github.com/Ginta998/Station-Nexus (commit 0b6f8c4), qui contient déjà les derniers ajouts (cinéma, partage niveaux, recherche YouTube, Reprendre la lecture, SW cross-origin, youtube.com). .env conservés.
+- Note : certaines vidéos (ex. Me at the zoo) sont bloquées en intégration depuis le serveur de test ; pas un bug du lecteur.

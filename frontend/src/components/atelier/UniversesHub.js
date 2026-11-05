@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { pressMenu, itemDrop } from "@/components/atelier/ContextMenu";
 import { dropToUniverse } from "@/components/atelier/itemActions";
 import { addShortcut } from "@/components/atelier/Shortcuts";
-import { IoAdd, IoSearch, IoStar, IoStarOutline, IoListOutline, IoGridOutline, IoEnterOutline, IoSparklesOutline } from "react-icons/io5";
+import { IoAdd, IoSearch, IoStar, IoStarOutline, IoListOutline, IoGridOutline, IoEnterOutline, IoSparklesOutline, IoLibraryOutline } from "react-icons/io5";
 import { imgSrc } from "@/lib/atelier";
 import ImportBase from "@/components/atelier/ImportBase";
 
@@ -25,7 +25,7 @@ function HubHero({ universes, count, go, onNew, onImport }) {
       </div>
       <span className="at-hero-grain" aria-hidden="true" />
       <div className="at-hero-content">
-        <div className="at-hero-top"><p className="at-eyebrow mono">// ARCHIVES · {count} UNIVERS</p></div>
+        <div className="at-hero-top"><p className="at-eyebrow mono">// NEXUS DRIVE · {count} UNIVERS</p></div>
         <div className="at-hero-mid">
           <h1>{feat ? feat.name : "Tes univers"}</h1>
           <p className="at-sub">{feat?.description || "Chaque monde que tu construis vit ici. Entre, développe, relie."}</p>
@@ -84,6 +84,7 @@ export default function UniversesHub({ at, go, editUniverse }) {
         <label className="at-hub-q"><IoSearch size={15} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filtrer les univers…" data-testid="atelier-hub-search" /></label>
         <div className="at-seg">{SORTS.map(([k, l]) => <button key={k} className={sort === k ? "on" : ""} onClick={() => setSort(k)} data-testid={`atelier-hub-sort-${k}`}>{l}</button>)}</div>
         <button className="at-icon" onClick={toggleList} title={list ? "Vue grille" : "Vue liste"} data-testid="atelier-hub-view">{list ? <IoGridOutline size={16} /> : <IoListOutline size={16} />}</button>
+        <button className="at-btn ghost" onClick={() => go({ name: "templates" })} data-testid="atelier-hub-templates"><IoLibraryOutline size={15} /> Templates</button>
       </div>
       {groups.length > 0 && (
         <div className="at-chips">

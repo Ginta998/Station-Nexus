@@ -1,5 +1,15 @@
 .ts-panel{position:fixed;top:0;right:0;bottom:0;z-index:120;width:min(440px,100vw);display:flex;flex-direction:column;background:rgba(10,10,14,.9);-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);border-left:1px solid color-mix(in srgb,var(--brand) 35%,transparent);box-shadow:-30px 0 80px -30px #000;color:#f1f1f4;font-family:"Space Grotesk",system-ui,sans-serif;animation:tsIn .35s cubic-bezier(.2,.8,.2,1) both}
 @keyframes tsIn{from{transform:translateX(40px);opacity:0}}
+/* Masquer / réafficher des éléments par défaut (polices, effets, palettes, sons) */
+.ts-hw{position:relative;display:inline-flex}
+.ts-hw.blk{display:block}
+.ts-hw.hid{opacity:.45}
+.ts-hw .ts-hide{position:absolute;top:-7px;right:-7px;width:18px;height:18px;display:none;align-items:center;justify-content:center;border:0;border-radius:50%;background:var(--brand,#3f86ff);color:#06070d;font-size:12px;line-height:1;cursor:pointer;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+.ts-hw:hover .ts-hide,.ts-hw.hid .ts-hide{display:inline-flex}
+.ts-hw.blk .ts-hide{top:2px;right:2px}
+.ts-revhid{display:inline-block;margin:2px 0 10px;padding:4px 11px;border:1px dashed rgba(255,255,255,.22);border-radius:999px;background:transparent;color:#b9bcc6;font-size:12px;cursor:pointer}
+.ts-revhid:hover{color:#fff;border-color:var(--brand,#3f86ff)}
+
 .ts-head{display:flex;align-items:center;gap:12px;padding:18px 18px 12px}
 .ts-head h2{margin:2px 0 0;font-size:22px;font-weight:700}
 .ts-head>div:first-child{flex:1}

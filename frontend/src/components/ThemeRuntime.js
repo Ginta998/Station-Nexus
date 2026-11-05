@@ -7,6 +7,21 @@ import "@/components/themeRuntime.css";
 
 const ytId = (u) => (u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
 
+// Construit la valeur CSS d'un curseur de thème (les formes custom prennent la couleur d'accent).
+const cursorCss = (id, color) => {
+  if (!id || id === "default") return "";
+  if (id === "crosshair") return "crosshair";
+  const c = encodeURIComponent(color || "#ffffff");
+  const svg = {
+    glow: `%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='4' fill='${c}'/%3E%3Ccircle cx='14' cy='14' r='10' fill='none' stroke='${c}' stroke-opacity='.45'/%3E%3C/svg%3E`,
+    ring: `%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Ccircle cx='13' cy='13' r='9' fill='none' stroke='${c}' stroke-width='2'/%3E%3C/svg%3E`,
+    dot: `%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Ccircle cx='6' cy='6' r='3' fill='${c}'/%3E%3C/svg%3E`,
+  }[id];
+  if (!svg) return "";
+  const hot = { glow: "14 14", ring: "13 13", dot: "6 6" }[id];
+  return `url("data:image/svg+xml,${svg}") ${hot}, auto`;
+};
+
 // Applique le thème personnalisé (ou la retouche d'un thème d'origine) à toute l'app
 export default function ThemeRuntime() {
   const { theme, selectAmbience, muted, uiVolume } = useApp();
@@ -21,6 +36,7 @@ export default function ThemeRuntime() {
     Object.entries(v).forEach(([k, val]) => el.style.setProperty(k, val));
     applied.current = Object.keys(v);
     if (d?.blur != null) el.setAttribute("data-tblur", ""); else el.removeAttribute("data-tblur");
+    el.style.cursor = cursorCss(d?.cursor, d?.colors?.brand);
     let link = document.getElementById("nx-fonts");
     if (d && (d.font_display || d.font_body)) {
       if (!link) { link = document.createElement("link"); link.id = "nx-fonts"; link.rel = "stylesheet"; document.head.appendChild(link); }

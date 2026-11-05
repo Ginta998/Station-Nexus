@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import AmbientMixer from "@/components/AmbientMixer";
+import { useAmbient, setAmbientMuted } from "@/lib/ambient";
 import { useQuery } from "@tanstack/react-query";
 import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoCashOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
@@ -28,7 +29,8 @@ const MODES = [["loop", "En boucle", IoRepeat], ["sequence", "À la suite", IoLi
 
 export function SoundBtn({ btn: bstyle = btn, up = false }) {
   const nav = useNavigate();
-  const { muted, toggleMute, ambienceId, selectAmbience, appPlaying, sfx, playMode, setPlayMode, nextAmbience } = useApp();
+  const { muted, toggleMute, ambienceId, selectAmbience, appPlaying, sfx, playMode, setPlayMode, nextAmbience, muteSfx, muteMusic, toggleSfx, toggleMusic } = useApp();
+  const amb = useAmbient();
   const [open, setOpen] = useState(false);
   const [, setTick] = useState(0);
   useEffect(() => { const h = () => setTick((t) => t + 1); window.addEventListener("sx-covers", h); return () => window.removeEventListener("sx-covers", h); }, []);
@@ -67,9 +69,18 @@ export function SoundBtn({ btn: bstyle = btn, up = false }) {
               <span className="ic"><IoPlaySkipForward size={16} /></span> Piste suivante
             </button>
           )}
+          <div className="ssm-h">COUPER PAR TYPE</div>
+          <div style={{ display: "flex", gap: 6, padding: "2px 2px 8px" }} data-testid="sound-cuts">
+            {[["SFX", muteSfx, toggleSfx, "cut-sfx"], ["Musique", muteMusic, toggleMusic, "cut-music"], ["Ambiance", amb.muted, () => setAmbientMuted(!amb.muted), "cut-amb"]].map(([lbl, off, fn, tid]) => (
+              <button key={tid} data-testid={tid} onClick={() => { fn(); if (!off) sfx("select"); }} title={off ? `${lbl} coupé` : `Couper ${lbl}`}
+                style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "7px 4px", borderRadius: 9, border: "1px solid var(--border-c)", background: off ? "transparent" : "color-mix(in srgb, var(--brand) 14%, transparent)", color: off ? "var(--on-media-2)" : "var(--brand)", fontSize: 11, cursor: "pointer", opacity: off ? 0.6 : 1 }}>
+                {off ? <IoVolumeMute size={15} /> : <IoVolumeHigh size={15} />}{lbl}
+              </button>
+            ))}
+          </div>
           <div className="ssm-h">AMBIANCE SONORE</div>
           <button data-testid="sound-mute" className={"ssm-row" + (muted ? " on" : "")} onClick={() => { if (!muted) toggleMute(); setOpen(false); }}>
-            <span className="ic"><IoVolumeMute size={16} /></span> Couper le son
+            <span className="ic"><IoVolumeMute size={16} /></span> Couper tout le son
           </button>
           {ambiences.map((a) => (
             <button key={a.id} data-testid={`sound-track-${a.id}`} className={"ssm-row" + (a.id === ambienceId && !muted ? " on" : "")} onClick={() => pick(a.id)} style={{ alignItems: "center" }}>
