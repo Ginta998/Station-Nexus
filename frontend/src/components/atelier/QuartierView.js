@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import GCalPanel from "@/components/atelier/GCalPanel";
 import { IoSend, IoArrowForward, IoPlay, IoEnterOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { KINDS, imgSrc, todayStr, stripHtml, isOeuvre, isFolder, oeuvreFmt } from "@/lib/atelier";
@@ -173,6 +174,16 @@ export default function QuartierView({ at, go, open, launch }) {
         <p className="at-empty" data-testid="atelier-home-universes-empty">Épingle tes univers (l'étoile dans « Univers ») pour les poser sur le pont.</p>
       )}
 
+      <div className="at-panel">
+        <div className="at-panel-h"><h2>Cap du jour</h2><span className="at-link" onClick={() => go({ name: "tasks" })}>Cockpit <IoArrowForward size={12} /></span></div>
+        <TaskQuickAdd at={at} />
+        {focus.length + next.length === 0 && <p className="at-empty">Aucune tâche. Ajoute-en une ci-dessus.</p>}
+        {[...focus, ...next].map((t) => <TaskRow key={t.id} t={t} at={at} open={open} compact />)}
+      </div>
+
+      <GCalPanel compact />
+      <BunnyBriefing />
+
       {pinnedOeuvres.length > 0 && (
         <section data-testid="atelier-home-oeuvres">
           <SectionHead eye="// TES ŒUVRES" title="Tes œuvres" link="Toutes les archives" onLink={() => go({ name: "universes" })} />
@@ -198,14 +209,6 @@ export default function QuartierView({ at, go, open, launch }) {
         </section>
       )}
 
-      <div className="at-panel">
-        <div className="at-panel-h"><h2>Cap du jour</h2><span className="at-link" onClick={() => go({ name: "tasks" })}>Cockpit <IoArrowForward size={12} /></span></div>
-        <TaskQuickAdd at={at} />
-        {focus.length + next.length === 0 && <p className="at-empty">Aucune tâche. Ajoute-en une ci-dessus.</p>}
-        {[...focus, ...next].map((t) => <TaskRow key={t.id} t={t} at={at} open={open} compact />)}
-      </div>
-
-      <BunnyBriefing />
 
       {salon.length > 0 && (
         <section className="at-salon-sec" data-testid="atelier-home-salon">

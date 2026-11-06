@@ -36,7 +36,7 @@ export function itemMenu(it, at, open) {
 }
 
 // Déposer un élément attrapé : vers un univers (null = Inbox) ou une catégorie
-export const dropToUniverse = (at, uid) => (id) => { const it = at.items.find((x) => x.id === id); if (it && it.universe_id !== uid) at.saveItem({ ...it, universe_id: uid }).then(() => toast.success(`Déplacé vers ${at.universes.find((u) => u.id === uid)?.name || "l'Inbox"}`)); };
-export const dropToKind = (at, kind) => (id) => { const it = at.items.find((x) => x.id === id); if (it && it.kind !== kind) at.saveItem({ ...it, kind }).then(() => toast.success(`Rangé dans ${KINDS[kind].plural}`)); };
+export const dropToUniverse = (at, uid) => (id) => { const it = at.items.find((x) => x.id === id); if (it && it.universe_id !== uid) at.saveItem({ ...it, universe_id: uid }).then(() => toast.success(`Déplacé vers ${at.universes.find((u) => u.id === uid)?.name || "l'Inbox"}`, { id: "drop" })); };
+export const dropToKind = (at, kind) => (id) => { const it = at.items.find((x) => x.id === id); if (it && it.kind !== kind) at.saveItem({ ...it, kind }).then(() => toast.success(`Rangé dans ${KINDS[kind].plural}`, { id: "drop" })); };
 // Déposer un élément dans un dossier (folderId = null : à la racine de l'univers)
-export const dropToFolder = (at, folderId) => (id) => { const it = at.items.find((x) => x.id === id); if (!it || isFolder(it) || isOeuvre(it)) return; if ((it.fields?.folder_id || null) === (folderId || null)) return; at.saveItem({ ...it, fields: { ...(it.fields || {}), folder_id: folderId || null } }).then(() => toast.success(folderId ? "Rangé dans le dossier" : "Sorti du dossier")); };
+export const dropToFolder = (at, folderId) => (id) => { const it = at.items.find((x) => x.id === id); if (!it || isFolder(it) || isOeuvre(it)) return; if ((it.fields?.folder_id || null) === (folderId || null)) return; at.saveItem({ ...it, fields: { ...(it.fields || {}), folder_id: folderId || null } }).then(() => toast.success(folderId ? "Rangé dans le dossier" : "Sorti du dossier", { id: "drop" })); };

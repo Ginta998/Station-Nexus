@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { todayStr } from "@/lib/atelier";
 import TasksView from "@/components/atelier/TasksView";
 import RoadmapView from "@/components/atelier/RoadmapView";
+import GCalPanel from "@/components/atelier/GCalPanel";
 
 const STATUS = [["active", "En cours"], ["done", "Atteint"], ["pause", "En pause"]];
 const SPEC = {
@@ -120,6 +121,7 @@ export default function CockpitView(props) {
       {tab === "overview" && <Overview at={props.at} setTab={setTab} />}
       {tab === "tasks" && <TasksView {...props} />}
       {tab === "roadmap" && <RoadmapView at={props.at} />}
+      {tab === "events" && <div className="at-view"><GCalPanel days={30} /></div>}
       {["goals", "events", "budget", "contacts"].includes(tab) && <RecordTab key={tab} rk={tab} at={props.at} />}
     </section>
   );

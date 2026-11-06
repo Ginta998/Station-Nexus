@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
 import { IoAdd, IoTrashOutline, IoPlay, IoContractOutline, IoCloudUploadOutline, IoOpenOutline, IoClose, IoListOutline, IoArrowUp, IoArrowDown, IoCreateOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { DEFAULT_APPS, toEmbed, popOut } from "@/lib/embed";
@@ -109,6 +110,7 @@ export function SalonView({ at, launch, mini }) {
   const [openPl, setOpenPl] = useState(null);
   const [playlists, setPlaylists] = useState(() => (Array.isArray(at.config?.playlists) && at.config.playlists.length ? at.config.playlists : loadPls(at.config?.playlists)));
   const [order, setOrder] = useState(loadOrder);
+  const sel = useSel();
   const file = useRef(null);
   const links = at.links.filter((l) => l.kind !== "app");
   const byKind = (k) => links.filter((l) => l.kind === k);
@@ -153,7 +155,11 @@ export function SalonView({ at, launch, mini }) {
   const savePl = (pl) => { setPlaylists(pl); at.saveConfig({ playlists: pl }); try { localStorage.setItem(PL_KEY, JSON.stringify(pl)); } catch (_) {} };
   const newPlaylist = () => { const name = window.prompt("Nom de la playlist (ex. One Piece)"); if (name && name.trim()) savePl([...playlists, { id: "pl-" + Date.now(), name: name.trim(), ids: [] }]); };
   const renamePl = (p) => { const n = window.prompt("Nom de la playlist", p.name); if (n && n.trim()) savePl(playlists.map((x) => x.id === p.id ? { ...x, name: n.trim() } : x)); };
-  const addToPlaylist = (plId, linkId) => { savePl(playlists.map((p) => p.id === plId ? { ...p, ids: p.ids.includes(linkId) ? p.ids : [...p.ids, linkId] } : p)); setAddTo(null); toast.success("Ajouté à la playlist"); };
+  const addToPlaylist = (plId, linkIds) => { const add = [].concat(linkIds); savePl(playlists.map((p) => p.id === plId ? { ...p, ids: [...p.ids, ...add.filter((x) => !p.ids.includes(x))] } : p)); setAddTo(null); sel.clear(); toast.success("Ajouté à la playlist"); };
+  const delMany = async () => {
+    if (!window.confirm(`Retirer ${sel.ids.length} vidéo(s) du Salon ?`)) return;
+    await Promise.all(sel.ids.map((id) => at.removeLink(id))); toast.success("Retirées du Salon"); sel.clear();
+  };
   const removePlaylist = (plId) => { if (window.confirm("Supprimer cette playlist ? (les vidéos restent dans le Salon)")) { savePl(playlists.filter((p) => p.id !== plId)); setOpenPl(null); } };
   const saveOrder = (o) => { setOrder(o); try { localStorage.setItem(ORDER_KEY, JSON.stringify(o)); } catch (_) {} };
   const moveSec = (k, dir) => { const i = order.indexOf(k), j = i + dir; if (i < 0 || j < 0 || j >= order.length) return; const o = [...order]; [o[i], o[j]] = [o[j], o[i]]; saveOrder(o); };
@@ -161,8 +167,9 @@ export function SalonView({ at, launch, mini }) {
   const Card = ({ l, items }) => {
     const em = toEmbed(l.url) || {}; const thumb = ytThumb(l.url);
     return (
-      <div className="sx-card" data-testid={`atelier-show-${l.id}`}>
-        <div className="art" onClick={() => play(l, items)}>
+      <div className={"sx-card" + (sel.has(l.id) ? " bk-on" : "")} data-testid={`atelier-show-${l.id}`}>
+        <div className="art" onClick={() => (sel.on ? sel.toggle(l.id) : play(l, items))}>
+          {sel.on && <span className="bk-selbox" data-testid={`atelier-show-sel-${l.id}`}>{sel.has(l.id) ? "✓" : ""}</span>}
           {thumb ? <img src={thumb} alt="" loading="lazy" /> : <span className="k">{l.kind === "listen" ? "♫" : l.kind === "video" ? "映" : l.kind === "site" ? "❖" : "▶"}</span>}
           <span className="pl">{em.blocked ? <IoOpenOutline size={20} /> : <IoPlay size={22} />}</span>
         </div>
@@ -285,6 +292,7 @@ export function SalonView({ at, launch, mini }) {
         <button className="at-btn" type="submit" data-testid="atelier-salon-submit"><IoAdd size={15} /> Ajouter</button>
         <button type="button" className="at-btn ghost" onClick={() => file.current?.click()} disabled={busy !== null} data-testid="atelier-salon-upload"><IoCloudUploadOutline size={15} /> {busy !== null ? `${busy}%` : "Importer"}</button>
         <button type="button" className="at-btn ghost" onClick={newPlaylist} data-testid="atelier-salon-newpl"><IoListOutline size={15} /> Nouvelle playlist</button>
+        {links.length > 1 && <SelBtn sel={sel} />}
         <input ref={file} hidden type="file" accept="video/*,audio/*" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; upload(f); }} />
       </form>
 
@@ -298,13 +306,17 @@ export function SalonView({ at, launch, mini }) {
         return <ItemsSec key={k} k={k} title={LABELS[k]} items={ITEMS[k]} />;
       })}
 
+      <BulkBar sel={sel} all={links.filter((l) => l.kind !== "site").map((l) => l.id)}>
+        <button onClick={() => setAddTo(sel.ids)} data-testid="salon-bulk-playlist"><IoListOutline size={14} /> Ajouter à une playlist</button>
+        <button className="danger" onClick={delMany} data-testid="salon-bulk-delete"><IoTrashOutline size={14} /> Supprimer</button>
+      </BulkBar>
       {addTo && (
         <div className="sx-pick" onClick={() => setAddTo(null)} data-testid="atelier-salon-pick">
           <div className="box" onClick={(e) => e.stopPropagation()}>
             <div className="h"><b>Ajouter à une playlist</b><button className="at-icon" onClick={() => setAddTo(null)}><IoClose size={16} /></button></div>
             {playlists.length === 0 && <p className="empty">Aucune playlist encore — crées-en une.</p>}
             {playlists.map((p) => <button key={p.id} className="opt" onClick={() => addToPlaylist(p.id, addTo)}><IoListOutline size={15} /> <span>{p.name}</span><small>{(p.ids || []).length}</small></button>)}
-            <button className="opt new" onClick={() => { const name = window.prompt("Nom de la playlist"); if (name && name.trim()) { savePl([...playlists, { id: "pl-" + Date.now(), name: name.trim(), ids: [addTo] }]); setAddTo(null); toast.success("Playlist créée"); } }}><IoAdd size={15} /> Nouvelle playlist</button>
+            <button className="opt new" onClick={() => { const name = window.prompt("Nom de la playlist"); if (name && name.trim()) { savePl([...playlists, { id: "pl-" + Date.now(), name: name.trim(), ids: [].concat(addTo) }]); setAddTo(null); sel.clear(); toast.success("Playlist créée"); } }}><IoAdd size={15} /> Nouvelle playlist</button>
           </div>
         </div>
       )}

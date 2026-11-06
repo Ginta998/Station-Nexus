@@ -869,3 +869,8 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - /api/creations et /me/library : agrégation Mongo excluant les champs base64 lourds (46 Mo lus avant → quelques Ko). Résultat identique vérifié.
 - Images public/cosmic-bunny compressées (4,2 Mo → 0,66 Mo), originaux dans /tmp/imgbak.
 - Launcher mobile : bouton Bunny (PiRabbit) à côté du Pont, bouton Quitter retiré.
+
+## 2026-06 Sélection multiple + Google Agenda
+- Bulk.js (useSel/SelBtn/BulkBar) : Drive (déplacer univers/dossier/œuvre, supprimer, glisser plusieurs), Radio (fusionner en station via p.vids, supprimer), Salon (ajouter à playlist, supprimer).
+- Pont : Cap du jour + brief Bunny + Google Agenda sous « Tes univers ».
+- calendar_api.py : OAuth Google (GOOGLE_CLIENT_ID/SECRET), callback /api/calendar/callback, CRUD événements. GCalPanel.js dans Pont (7 j) et Cockpit > Agenda (30 j). Redirect URIs à déclarer : preview + https://stationexus.store/api/calendar/callback.

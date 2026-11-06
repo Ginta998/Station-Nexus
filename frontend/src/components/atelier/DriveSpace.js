@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoCreateOutline, IoFolderOutline, IoChevronForward, IoTrashOutline, IoDocumentTextOutline, IoCloudUploadOutline, IoLinkOutline, IoGridOutline, IoTimeOutline, IoSparklesOutline, IoLibraryOutline, IoImagesOutline, IoAddOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { KINDS, imgSrc, isFolder, fileType, mediaFromText } from "@/lib/atelier";
+import { KINDS, imgSrc, isFolder, isOeuvre, fileType, mediaFromText } from "@/lib/atelier";
 import { templateHtml, templateMenuEntries, allTemplates, typeContent, typeMenuEntries } from "@/lib/templates";
 import ItemCard from "@/components/atelier/ItemCard";
 import { itemDrop, pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 import { dropToFolder } from "@/components/atelier/itemActions";
+import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
 
 function Timeline({ items, at, open }) {
   const dated = items.filter((i) => i.date).sort((a, b) => a.date.localeCompare(b.date, "fr", { numeric: true }));
@@ -18,6 +19,7 @@ function Timeline({ items, at, open }) {
 export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_id = null, label = "Mon espace" }) {
   const [folderId, setFolderId] = useState(null);
   const [view, setView] = useState("grid");
+  const sel = useSel();
 
   const inScope = (i) => (oeuvre_id ? i.fields?.oeuvre_id === oeuvre_id : (i.universe_id === universe_id && !i.fields?.oeuvre_id));
   const scopeFields = (extra = {}) => ({ ...(oeuvre_id ? { oeuvre_id } : {}), ...extra });
@@ -26,6 +28,7 @@ export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_i
   const fid = curFolder ? curFolder.id : null;
   const trail = []; { let f = curFolder; while (f) { trail.unshift(f); f = f.fields?.parent ? at.items.find((x) => x.id === f.fields.parent && isFolder(x)) : null; } }
 
+  useEffect(() => { sel.clear(); }, [fid]); // eslint-disable-line
   const folders = at.items.filter((i) => isFolder(i) && inScope(i) && (i.fields?.parent || null) === fid);
   const items = at.items.filter((i) => !isFolder(i) && inScope(i) && (i.fields?.folder_id || null) === fid);
   const sortedItems = [...items].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
@@ -66,6 +69,25 @@ export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_i
     toast.success("Rangé par type en dossiers");
   };
 
+  const picked = () => at.items.filter((i) => sel.has(i.id));
+  const bulk = (patch, msg) => Promise.all(picked().map((i) => at.saveItem(patch(i)))).then(() => { toast.success(msg); sel.clear(); });
+  const noOe = (f = {}) => { const { oeuvre_id, ...rest } = f; return rest; };
+  const bulkMove = (e) => showMenu(e.clientX, e.clientY, [
+    { id: "bm-u", label: "Vers un univers", icon: <IoGridOutline size={14} />, sub: [
+      { id: "bm-inbox", label: "Inbox", onClick: () => bulk((i) => ({ ...i, universe_id: null, fields: { ...noOe(i.fields), folder_id: null } }), "Déplacé vers l'Inbox") },
+      ...at.universes.map((u) => ({ id: `bm-u-${u.id}`, label: u.name, onClick: () => bulk((i) => ({ ...i, universe_id: u.id, fields: { ...noOe(i.fields), folder_id: null } }), `Déplacé vers ${u.name}`) })),
+    ] },
+    { id: "bm-f", label: "Vers un dossier", icon: <IoFolderOutline size={14} />, sub: [
+      { id: "bm-root", label: `— ${label} (racine)`, onClick: () => bulk((i) => ({ ...i, fields: { ...(i.fields || {}), folder_id: null } }), "Rangé à la racine") },
+      ...at.items.filter((x) => isFolder(x) && inScope(x)).map((f) => ({ id: `bm-f-${f.id}`, label: f.title || "Dossier", onClick: () => bulk((i) => ({ ...i, fields: { ...(i.fields || {}), folder_id: f.id } }), `Rangé dans ${f.title || "le dossier"}`) })),
+    ] },
+    ...(at.items.some(isOeuvre) ? [{ id: "bm-o", label: "Vers une œuvre", icon: <IoLibraryOutline size={14} />, sub: at.items.filter(isOeuvre).map((o) => ({ id: `bm-o-${o.id}`, label: o.title || "Œuvre", onClick: () => bulk((i) => ({ ...i, universe_id: o.universe_id, fields: { ...(i.fields || {}), oeuvre_id: o.id, folder_id: null } }), `Rangé dans ${o.title || "l'œuvre"}`) })) }] : []),
+  ], `DÉPLACER ${sel.ids.length} ÉLÉMENT${sel.ids.length > 1 ? "S" : ""}`);
+  const bulkDelete = async () => {
+    if (!window.confirm(`Supprimer ${sel.ids.length} élément(s) ?`)) return;
+    await Promise.all(picked().map((i) => at.removeItem(i.id))); toast.success("Supprimés"); sel.clear();
+  };
+
   const folderMenu = (f) => ({ title: f.title || "Dossier", entries: [
     { id: "open", label: "Ouvrir", icon: <IoFolderOutline size={14} />, onClick: () => setFolderId(f.id) },
     { id: "rename", label: "Renommer", icon: <IoCreateOutline size={14} />, onClick: () => renameFolder(f) },
@@ -95,6 +117,7 @@ export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_i
       <div className="at-sechead">
         <div className="tt"><p className="at-eyebrow mono">// NEXUS DRIVE</p><h2>{curFolder ? (curFolder.title || "Dossier") : label}</h2></div>
         <div className="at-drive-acts">
+          {view === "grid" && sortedItems.length > 0 && <SelBtn sel={sel} />}
           <button className="at-btn at-drive-new" onClick={createMenu} data-testid="atelier-drive-new"><IoAddOutline size={17} /> Créer</button>
           <span className="at-seg">
             <button className={view === "grid" ? "on" : ""} onClick={() => setView("grid")} title="Grille" data-testid="atelier-view-grid"><IoGridOutline size={15} /></button>
@@ -123,10 +146,14 @@ export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_i
               })}
             </div>
           )}
-          {sortedItems.length > 0 ? <div className="at-grid">{sortedItems.map((i) => <ItemCard key={i.id} it={i} at={at} open={open} />)}</div>
+          {sortedItems.length > 0 ? <div className="at-grid">{sortedItems.map((i) => <ItemCard key={i.id} it={i} at={at} open={open} sel={sel} />)}</div>
             : folders.length === 0 && <p className="at-empty big">{fid ? "Ce dossier est vide. Clic droit pour créer un dossier, une fiche ou déposer des fichiers." : "Ton espace est vide. Clic droit (ou les boutons ci-dessus) pour créer un dossier, une fiche ou déposer des fichiers."}</p>}
         </>
       )}
+      <BulkBar sel={sel} all={sortedItems.map((i) => i.id)}>
+        <button onClick={bulkMove} data-testid="bulk-move"><IoFolderOutline size={14} /> Déplacer</button>
+        <button className="danger" onClick={bulkDelete} data-testid="bulk-delete"><IoTrashOutline size={14} /> Supprimer</button>
+      </BulkBar>
     </section>
   );
 }

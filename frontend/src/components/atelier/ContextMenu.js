@@ -25,7 +25,7 @@ export function itemDrop(onItem) {
   return {
     onDragOver: (e) => { if (ok(e)) { e.preventDefault(); e.currentTarget.classList.add("at-drop-on"); } },
     onDragLeave: (e) => e.currentTarget.classList.remove("at-drop-on"),
-    onDrop: (e) => { if (!ok(e)) return; e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove("at-drop-on"); onItem(e.dataTransfer.getData(ITEM_MIME)); },
+    onDrop: (e) => { if (!ok(e)) return; e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove("at-drop-on"); e.dataTransfer.getData(ITEM_MIME).split(",").filter(Boolean).forEach(onItem); },
   };
 }
 

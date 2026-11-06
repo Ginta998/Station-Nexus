@@ -1,0 +1,26 @@
+.at-bulk {
+  position: fixed; left: 50%; bottom: calc(88px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60;
+  display: flex; align-items: center; gap: 6px; padding: 7px 8px 7px 16px; border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-primary, #0b0b12) 82%, transparent); border: 1px solid color-mix(in srgb, var(--brand, #3f86ff) 45%, transparent);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 12px 40px rgba(0, 0, 0, .45);
+  animation: at-bulk-in .22s ease-out; max-width: calc(100vw - 20px); overflow-x: auto; white-space: nowrap;
+}
+.at-bulk b { font-size: 13px; margin-right: 6px; color: var(--text-primary, #fff); }
+.at-bulk button {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 999px; font-size: 13px; cursor: pointer;
+  color: var(--text-primary, #fff); background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .12);
+  transition: background-color .15s, border-color .15s;
+}
+.at-bulk button:hover { background: color-mix(in srgb, var(--brand, #3f86ff) 25%, transparent); border-color: var(--brand, #3f86ff); }
+.at-bulk button.danger:hover { background: rgba(255, 70, 90, .22); border-color: #ff4a5e; }
+.at-bulk button.x { padding: 7px; }
+@keyframes at-bulk-in { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+.at-selbox, .bk-selbox {
+  position: absolute; top: 8px; left: 8px; z-index: 3; width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center;
+  font-size: 13px; font-weight: 700; color: #fff; background: rgba(0, 0, 0, .45); border: 1.5px solid rgba(255, 255, 255, .7); pointer-events: none;
+}
+.at-card { position: relative; }
+.at-card.at-sel, .rd-card.bk-on, .sx-card.bk-on { outline: 2px solid var(--brand, #3f86ff); outline-offset: 2px; }
+.at-card.at-sel .at-selbox, .bk-on .bk-selbox { background: var(--brand, #3f86ff); border-color: var(--brand, #3f86ff); }
+.rd-card .rd-cov, .sx-card .art { position: relative; }

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { uploadJournalImage } from "@/lib/api";
 import { imgSrc, useMediaClaim, atelierApi } from "@/lib/atelier";
 import "@/components/atelier/radio.css";
+import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "";
 const listOf = (u = "") => (u.match(/[?&]list=([\w-]+)/) || [])[1];
@@ -11,11 +12,19 @@ const vidOf = (u = "") => (u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11
 const thumb = (v, q = "hqdefault") => (v ? `https://i.ytimg.com/vi/${v}/${q}.jpg` : "");
 export const coverOf = (p) => (p?.cover ? imgSrc(p.cover) : p?.thumb || thumb(vidOf(p?.url)));
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+// Tous les morceaux d'une playlist (fusion, playlist YouTube ou vidéo seule)
+const idsOf = async (p) => {
+  if (p.vids?.length) return p.vids;
+  let ids; try { ids = JSON.parse(localStorage.getItem("nx-radio-ids:" + p.id)); } catch (_) {}
+  if (ids?.length) return ids;
+  const l = listOf(p.url); return l ? atelierApi.ytPlaylist(l).catch(() => []) : [vidOf(p.url)].filter(Boolean);
+};
 const saved = (id) => { try { return JSON.parse(localStorage.getItem("nx-radio:" + id)) || {}; } catch (_) { return {}; } };
 
 function srcFor(p) {
   const l = listOf(p.url); const v = vidOf(p.url); const s = saved(p.id);
   const q = `autoplay=1&enablejsapi=1&playsinline=1&rel=0&origin=${encodeURIComponent(ORIGIN)}${s.t > 5 ? `&start=${Math.floor(s.t)}` : ""}`;
+  if (p.vids?.length) { const k = (s.i || 0) % p.vids.length; const o = [...p.vids.slice(k), ...p.vids.slice(0, k)].slice(0, 200); return `https://www.youtube.com/embed/${o[0]}?playlist=${o.slice(1).join(",")}&${q}`; }
   if (l) return `https://www.youtube.com/embed/${v && !s.i ? v : "videoseries"}?list=${l}${s.i ? `&index=${s.i}` : ""}&${q}`;
   return v ? `https://www.youtube.com/embed/${v}?${q}` : "";
 }
@@ -30,7 +39,7 @@ export function useRadio(at) {
   const [vol, setVol] = useState(80);
   const [muted, setMuted] = useState(false);
   const cmd = (func, args = []) => { try { fr.current.contentWindow.postMessage(JSON.stringify({ event: "command", func, args }), "*"); } catch (_) {} };
-  const play = (p) => { const src = srcFor(p); if (!src) return toast.error("Lien YouTube invalide"); setInfo({}); setPl({ ...p, src }); };
+  const play = (p) => { const src = srcFor(p); if (!src) return toast.error("Lien YouTube invalide"); setInfo({}); setPl({ ...p, src, off: p.vids?.length ? (saved(p.id).i || 0) % p.vids.length : 0 }); };
   const playAt = (p, k) => { if (pl?.id === p.id) return cmd("playVideoAt", [k]); live.current.skipRand = true; try { localStorage.setItem("nx-radio:" + p.id, JSON.stringify({ i: k, t: 0 })); } catch (_) {} play(p); };
   const nextPl = () => { if (!list.length) return; const i = list.findIndex((x) => x.id === pl?.id); play(list[shuffle ? Math.floor(Math.random() * list.length) : (i + 1) % list.length]); };
   const live = useRef({});
@@ -66,7 +75,7 @@ export function useRadio(at) {
         if (Array.isArray(x.playlist)) { n.n = x.playlist.length; n.ids = x.playlist; }
         return n;
       });
-      if (c.pl && x.currentTime > 5) { try { localStorage.setItem("nx-radio:" + c.pl.id, JSON.stringify({ i: c.info.i || 0, t: x.currentTime })); } catch (_) {} }
+      if (c.pl && x.currentTime > 5) { try { localStorage.setItem("nx-radio:" + c.pl.id, JSON.stringify({ i: c.pl.vids?.length ? ((c.pl.off || 0) + (c.info.i || 0)) % c.pl.vids.length : c.info.i || 0, t: x.currentTime })); } catch (_) {} }
       if (Array.isArray(x.playlist) && c.shuffle && c.randOnce !== c.pl?.src && x.playlist.length > 1) { c.randOnce = c.pl.src; if (c.skipRand) c.skipRand = false; else c.cmd("playVideoAt", [Math.floor(Math.random() * x.playlist.length)]); }
       if (x.playerState === 0 && c.shuffle && !c.station && (c.info.n || 0) > 1) { c.cmd("playVideoAt", [Math.floor(Math.random() * c.info.n)]); return; }
       if (x.playerState === 0 && c.station && (c.info.i == null || c.info.i >= (c.info.n || 1) - 1)) { try { localStorage.removeItem("nx-radio:" + c.pl.id); } catch (_) {} c.nextPl(); }
@@ -146,7 +155,24 @@ export default function RadioView({ radio: r }) {
   const [adding, setAdding] = useState(false);
   const [yt, setYt] = useState(false);
   const [edit, setEdit] = useState(null);
+  const sel = useSel();
   const cur = r.pl; const i = r.info;
+  const picked = r.list.filter((p) => sel.has(p.id));
+  const merge = async () => {
+    if (picked.length < 2) return toast.error("Choisis au moins 2 playlists à fusionner");
+    const name = window.prompt("Nom de la nouvelle station", picked.map((p) => p.title).join(" + ").slice(0, 60)); if (!name || !name.trim()) return;
+    const t = toast.loading("Fusion des playlists…");
+    const vids = [...new Set((await Promise.all(picked.map(idsOf))).flat())];
+    toast.dismiss(t);
+    if (!vids.length) return toast.error("Aucun morceau trouvé");
+    r.save([...r.list, { id: Date.now().toString(36), title: name.trim(), url: `https://www.youtube.com/watch?v=${vids[0]}`, vids, thumb: thumb(vids[0]), color: picked[0].color }]);
+    toast.success(`Station créée · ${vids.length} morceaux${vids.length > 200 ? " (200 lus à la suite)" : ""}`); sel.clear();
+  };
+  const delMany = () => {
+    if (!window.confirm(`Supprimer ${picked.length} playlist(s) ?`)) return;
+    if (cur && sel.has(cur.id)) r.stop();
+    r.save(r.list.filter((p) => !sel.has(p.id))); toast.success("Supprimées"); sel.clear();
+  };
   const hero = cur ? thumb(i.vid) || coverOf(cur) : coverOf(r.list[0]);
   return (
     <section className="at-view rd-view" style={{ "--rc": cur?.color || r.list[0]?.color || "var(--brand)" }} data-testid="radio-view">
@@ -168,14 +194,18 @@ export default function RadioView({ radio: r }) {
         </div>
       </div>
 
-      <div className="rd-sec-h"><h2>Tes playlists</h2><div className="rd-sec-a"><button className={"rd-btn sm ghost" + (yt ? " on" : "")} onClick={() => { setYt((v) => !v); setAdding(false); }} data-testid="radio-yt-toggle"><IoSearch size={15} /> Chercher sur YouTube</button><button className="rd-btn sm" onClick={() => { setAdding(true); setYt(false); }} data-testid="radio-add"><IoAdd size={16} /> Ajouter un lien</button></div></div>
+      <div className="rd-sec-h"><h2>Tes playlists</h2><div className="rd-sec-a">{r.list.length > 1 && <SelBtn sel={sel} className="rd-btn sm ghost" />}<button className={"rd-btn sm ghost" + (yt ? " on" : "")} onClick={() => { setYt((v) => !v); setAdding(false); }} data-testid="radio-yt-toggle"><IoSearch size={15} /> Chercher sur YouTube</button><button className="rd-btn sm" onClick={() => { setAdding(true); setYt(false); }} data-testid="radio-add"><IoAdd size={16} /> Ajouter un lien</button></div></div>
       {yt && <RadioYt r={r} />}
       {r.list.length > 0 && <SearchAll r={r} />}
       {adding && <AddForm r={r} onDone={() => setAdding(false)} />}
       {!r.list.length && !adding && <p className="rd-empty">Colle le lien d'une playlist YouTube (ou d'une vidéo) pour créer ta première station.</p>}
       <div className="rd-grid">
-        {r.list.map((p, k) => <PlCard key={p.id} p={p} k={k} r={r} on={cur?.id === p.id} onEdit={() => setEdit(p)} />)}
+        {r.list.map((p, k) => <PlCard key={p.id} p={p} k={k} r={r} on={cur?.id === p.id} onEdit={() => setEdit(p)} sel={sel} />)}
       </div>
+      <BulkBar sel={sel} all={r.list.map((p) => p.id)}>
+        <button onClick={merge} data-testid="radio-bulk-merge"><IoInfinite size={14} /> Fusionner</button>
+        <button className="danger" onClick={delMany} data-testid="radio-bulk-delete"><IoTrashOutline size={14} /> Supprimer</button>
+      </BulkBar>
       {cur && i.ids?.length > 1 && <><div className="rd-sec-h"><h2>À suivre</h2></div><Queue r={r} /></>}
       {edit && <PlEditor p={edit} r={r} onClose={() => setEdit(null)} />}
     </section>
@@ -198,9 +228,7 @@ function SearchAll({ r }) {
   const prep = async () => {
     if (idx || busy) return; setBusy(true);
     const out = await Promise.all(r.list.map(async (p) => {
-      let ids; try { ids = JSON.parse(localStorage.getItem("nx-radio-ids:" + p.id)); } catch (_) {}
-      if (!ids?.length) { const l = listOf(p.url); ids = l ? await atelierApi.ytPlaylist(l).catch(() => []) : [vidOf(p.url)].filter(Boolean); }
-      return { p, ids };
+      return { p, ids: await idsOf(p) };
     }));
     await loadTitles(out.flatMap((x) => x.ids)); setIdx(out); setBusy(false);
   };
@@ -308,11 +336,12 @@ function AddForm({ r, onDone }) {
   );
 }
 
-function PlCard({ p, k, r, on, onEdit }) {
+function PlCard({ p, k, r, on, onEdit, sel }) {
   const c = coverOf(p);
   return (
-    <div className={"rd-card" + (on ? " on" : "")} style={{ animationDelay: `${k * 40}ms`, "--rc": p.color || "var(--brand)" }} onContextMenu={(e) => { e.preventDefault(); onEdit(); }} data-testid={`radio-pl-${p.id}`}>
-      <div className="rd-cov" style={c ? { backgroundImage: `url(${c})` } : undefined} onClick={() => (on ? r.toggle() : r.play(p))}>
+    <div className={"rd-card" + (on ? " on" : "") + (sel.has(p.id) ? " bk-on" : "")} style={{ animationDelay: `${k * 40}ms`, "--rc": p.color || "var(--brand)" }} onContextMenu={(e) => { e.preventDefault(); onEdit(); }} data-testid={`radio-pl-${p.id}`}>
+      <div className="rd-cov" style={c ? { backgroundImage: `url(${c})` } : undefined} onClick={() => (sel.on ? sel.toggle(p.id) : on ? r.toggle() : r.play(p))}>
+        {sel.on && <span className="bk-selbox" data-testid={`radio-pl-sel-${p.id}`}>{sel.has(p.id) ? "✓" : ""}</span>}
         {!c && <span className="rd-cov-k">{p.title.slice(0, 2)}</span>}
         <button className="rd-cov-play" data-testid={`radio-pl-play-${p.id}`}>{on && r.playing ? <IoPause size={22} /> : <IoPlay size={22} />}</button>
         {on && r.playing && <span className="rd-eq"><i /><i /><i /></span>}

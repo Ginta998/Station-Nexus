@@ -12,7 +12,7 @@ const ago = (iso) => {
   return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 };
 
-export default function ItemCard({ it, at, open }) {
+export default function ItemCard({ it, at, open, sel }) {
   const k = KINDS[it.kind] || KINDS.note;
   const u = at.universes.find((x) => x.id === it.universe_id);
   const excerpt = stripHtml(it.content).slice(0, 140);
@@ -23,9 +23,10 @@ export default function ItemCard({ it, at, open }) {
   const thumb = it.image || (ft === "image" ? m.url : "") || (yt ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg` : "");
   const nat = m ? fileNature(m) : "";
   return (
-    <button className={`at-card k-${it.kind}`} onClick={() => open(it.id)} data-testid={`atelier-item-${it.id}`} style={{ "--u": u?.color || "var(--brand)" }}
-      draggable onDragStart={(e) => { e.dataTransfer.setData(ITEM_MIME, it.id); e.dataTransfer.effectAllowed = "move"; e.currentTarget.classList.add("at-dragging"); document.body.classList.add("at-item-drag"); }}
+    <button className={`at-card k-${it.kind}${sel?.has(it.id) ? " at-sel" : ""}`} onClick={(e) => (sel && (sel.on || e.ctrlKey || e.metaKey || e.shiftKey) ? sel.toggle(it.id) : open(it.id))} data-testid={`atelier-item-${it.id}`} style={{ "--u": u?.color || "var(--brand)" }}
+      draggable onDragStart={(e) => { e.dataTransfer.setData(ITEM_MIME, sel?.has(it.id) ? sel.ids.join(",") : it.id); e.dataTransfer.effectAllowed = "move"; e.currentTarget.classList.add("at-dragging"); document.body.classList.add("at-item-drag"); }}
       onDragEnd={(e) => { e.currentTarget.classList.remove("at-dragging"); document.body.classList.remove("at-item-drag"); }} {...pressMenu(() => itemMenu(it, at, open))}>
+      {sel?.on && <span className="at-selbox" data-testid={`atelier-item-sel-${it.id}`}>{sel.has(it.id) ? "✓" : ""}</span>}
       {m && nat && <span className={"at-card-nat mono nat-" + nat.toLowerCase().replace(/[^a-z]/g, "")} data-testid={`atelier-item-nat-${it.id}`}>{nat}</span>}
       {thumb ? <div className="at-card-img"><img src={imgSrc(thumb)} alt="" loading="lazy" draggable="false" /></div> : m ? <div className="at-card-file mono"><span>{nat}</span><small>OUVRIR →</small></div> : null}
       <div className="at-card-b">

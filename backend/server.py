@@ -2682,6 +2682,8 @@ from bunny import build_bunny_router  # noqa: E402
 api_router.include_router(build_bunny_router(db, require_admin))
 from themes import build_themes_router  # noqa: E402
 api_router.include_router(build_themes_router(db, require_admin))
+from calendar_api import build_calendar_router  # noqa: E402
+api_router.include_router(build_calendar_router(db, require_admin))
 app.include_router(api_router)
 
 # CORS : origines explicites (plus de "*" avec credentials). En prod, définir CORS_ORIGINS
