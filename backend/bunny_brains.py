@@ -22,11 +22,11 @@ BUILTINS = [
 ENV_BRAINS = [
     {"id": "env-claude", "env": "ANTHROPIC_API_KEY", "name": "Claude Sonnet (clé perso)", "base": "https://api.anthropic.com/v1", "model": "claude-sonnet-5-5", "note": "Ta clé Claude, gérée par le serveur."},
     {"id": "env-opus", "env": "ANTHROPIC_API_KEY", "name": "Claude Opus (clé perso)", "base": "https://api.anthropic.com/v1", "model": "claude-opus-5-5", "note": "Ta clé Claude, le plus puissant."},
-    {"id": "env-gemini", "env": "GEMINI_API_KEY", "name": "Google Gemini (clé perso)", "base": "https://generativelanguage.googleapis.com/v1beta/openai", "model": "gemini-3.8-flash", "note": "Ta clé Gemini, gérée par le serveur."},
+    {"id": "env-gemini", "env": "GEMINI_API_KEY", "name": "Google Gemini (clé perso)", "base": "https://generativelanguage.googleapis.com/v1beta/openai", "model": "gemini-3.6-flash", "note": "Ta clé Gemini, gérée par le serveur."},
 ]
 
 PRESETS = [
-    {"key": "gemini", "name": "Google Gemini 3.8 Flash", "base": "https://generativelanguage.googleapis.com/v1beta/openai", "model": "gemini-3.8-flash", "url": "https://aistudio.google.com/app/apikey", "note": "Gratuit, lit de très longs textes."},
+    {"key": "gemini", "name": "Google Gemini 3.6 Flash", "base": "https://generativelanguage.googleapis.com/v1beta/openai", "model": "gemini-3.6-flash", "url": "https://aistudio.google.com/app/apikey", "note": "Gratuit, lit de très longs textes."},
     {"key": "mistral", "name": "Mistral Small", "base": "https://api.mistral.ai/v1", "model": "mistral-small-latest", "url": "https://console.mistral.ai/api-keys", "note": "Gratuit, excellent en français."},
     {"key": "groq", "name": "Groq · GPT-OSS 120B", "base": "https://api.groq.com/openai/v1", "model": "openai/gpt-oss-120b", "url": "https://console.groq.com/keys", "note": "Gratuit, ultra rapide, 1 000 messages/jour."},
     {"key": "openrouter", "name": "OpenRouter · gratuit", "base": "https://openrouter.ai/api/v1", "model": "openrouter/free", "url": "https://openrouter.ai/keys", "note": "Gratuit, 50 messages/jour."},
@@ -44,9 +44,13 @@ async def list_brains(db):
         for i, b in enumerate(BUILTINS):
             await db.atelier_brains.insert_one({**b, "key": "", "enabled": True, "order": i, "builtin": True, "created_at": now_iso()})
     for b in reversed(ENV_BRAINS):
-        if os.environ.get(b["env"]) and not await db.atelier_brains.find_one({"id": b["id"]}):
+        if not os.environ.get(b["env"]):
+            continue
+        if not await db.atelier_brains.find_one({"id": b["id"]}):
             await db.atelier_brains.update_many({}, {"$inc": {"order": 1}})
             await db.atelier_brains.insert_one({**b, "key": "", "enabled": True, "order": 0, "builtin": True, "created_at": now_iso()})
+        else:
+            await db.atelier_brains.update_one({"id": b["id"]}, {"$set": {k: b[k] for k in ("base", "model", "env")}})
     return await db.atelier_brains.find({}, {"_id": 0}).sort("order", 1).to_list(100)
 
 
@@ -66,13 +70,17 @@ def public(b):
 async def call_brain(c, b, messages, max_tokens=3500):
     h = {"Content-Type": "application/json", **({"Authorization": f"Bearer {key_of(b)}"} if key_of(b) else {})}
     t0 = time.time()
-    r = await c.post(f"{b['base'].rstrip('/')}/chat/completions", headers=h, json={"model": b["model"], "messages": messages, "max_tokens": max_tokens, "temperature": 0.8})
+    r = await c.post(f"{b['base'].rstrip('/')}/chat/completions", headers=h, json={"model": b["model"], "messages": messages, "max_tokens": max_tokens, **({} if "anthropic.com" in b["base"] else {"temperature": 0.8})})
     st = _stats.setdefault(b["id"], {"ok": 0, "fail": 0})
     if r.status_code == 429:
         _resting[b["base"]] = time.time() + COOLDOWN
     if r.status_code != 200:
         st["fail"] += 1
-        st["last_error"] = f"HTTP {r.status_code} · {now_iso()[11:16]}"
+        try:
+            why = str((r.json() if r.text.startswith("{") else r.json()[0]).get("error", {}).get("message", ""))[:90]
+        except Exception:
+            why = ""
+        st["last_error"] = f"HTTP {r.status_code} · {now_iso()[11:16]}" + (f" · {why}" if why else "")
         return None
     text = (r.json()["choices"][0]["message"].get("content") or "").strip()
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
