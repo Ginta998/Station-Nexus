@@ -16,7 +16,7 @@ const titles = {};
 
 // Lecteur cinéma : interface YouTube masquée, contrôles Nexus
 export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, onClose, fileSrc }) {
-  const box = useRef(null); const fr = useRef(null); const vr = useRef(null); const ready = useRef(false); const idle = useRef(null); const ccRef = useRef(false);
+  const box = useRef(null); const fr = useRef(null); const vr = useRef(null); const ready = useRef(false); const idle = useRef(null); const ccRef = useRef(localStorage.getItem("nx-cc") === "1"); const ccVid = useRef(""); const ccPlayed = useRef(null);
   const [src] = useState(() => {
     const v = vidOf(url); const l = listOf(url); const st = getPos(url);
     const q = `autoplay=1&controls=0&disablekb=1&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1&fs=0&enablejsapi=1&cc_load_policy=0&origin=${encodeURIComponent(window.location.origin)}${st > 5 ? `&start=${st}` : ""}`;
@@ -24,7 +24,7 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
   });
   const [s, setS] = useState({ state: -1, t: 0, d: 0, vol: 100, muted: false, rate: 1, buf: 0 });
   const [ui, setUi] = useState(true); const [panel, setPanel] = useState(false); const [rates, setRates] = useState(false);
-  const [cc, setCc] = useState(false); const [full, setFull] = useState(false); const [count, setCount] = useState(null); const [, tick] = useState(0);
+  const [cc, setCc] = useState(ccRef.current); const [full, setFull] = useState(false); const [count, setCount] = useState(null); const [, tick] = useState(0);
   useMediaClaim(true);
   const cmd = (func, args = []) => {
     const v = vr.current;
@@ -38,6 +38,10 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
     if (e.type === "timeupdate" && v.currentTime > 5) try { localStorage.setItem(POS + url, String(Math.floor(v.currentTime))); localStorage.setItem("nx-dur:" + url, String(Math.floor(v.duration || 0))); } catch (_) {}
     if (e.type === "ended") { try { localStorage.removeItem(POS + url); } catch (_) {} setCount(5); }
   };
+  function applyCc() {
+    if (ccRef.current) { cmd("loadModule", ["captions"]); cmd("setOption", ["captions", "track", { languageCode: "fr" }]); }
+    else { cmd("setOption", ["captions", "track", {}]); cmd("unloadModule", ["captions"]); cmd("unloadModule", ["cc"]); }
+  }
   const hasQ = queue && queue.length > 1;
   const items = hasQ ? queue.map((x, k) => { const v = vidOf(x.url); return { v, title: titles[v]?.title || x.title, k }; }) : (s.ids || []).map((v, k) => ({ v, title: titles[v]?.title, k }));
   const qids = hasQ ? queue.map((x) => vidOf(x.url)).filter(Boolean) : s.ids || [];
@@ -50,9 +54,12 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
     const on = (m) => {
       if (!fr.current || m.source !== fr.current.contentWindow) return;
       let d; try { d = JSON.parse(m.data); } catch (_) { return; }
-      if (d.event === "onReady") { ready.current = true; cmd("playVideo"); if (!ccRef.current) cmd("unloadModule", ["captions"]); return; }
-      if (d.event === "onApiChange") { if (!ccRef.current) cmd("unloadModule", ["captions"]); return; }
+      if (d.event === "onReady") { ready.current = true; cmd("playVideo"); applyCc(); return; }
+      if (d.event === "onApiChange") { applyCc(); return; }
       const x = d.info; if (!x) return;
+      // YouTube réactive ses sous-titres à chaque vidéo : on réimpose le choix du bouton
+      const vid = x.videoData?.video_id; if (vid && vid !== ccVid.current) { ccVid.current = vid; applyCc(); }
+      if (x.playerState === 1 && ccPlayed.current !== ccVid.current) { ccPlayed.current = ccVid.current; applyCc(); setTimeout(applyCc, 900); }
       setS((o) => ({ ...o, ...(x.playerState != null && { state: x.playerState }), ...(x.currentTime != null && { t: x.currentTime }), ...(x.duration && { d: x.duration }), ...(x.volume != null && { vol: x.volume }), ...(x.muted != null && { muted: x.muted }), ...(x.playbackRate && { rate: x.playbackRate }), ...(x.videoLoadedFraction != null && { buf: x.videoLoadedFraction }), ...(x.videoData?.title && { vt: x.videoData.title, va: x.videoData.author }), ...(Array.isArray(x.playlist) && { ids: x.playlist }), ...(x.playlistIndex != null && { i: x.playlistIndex }) }));
       if (x.currentTime > 5) try { localStorage.setItem(POS + url, String(Math.floor(x.currentTime))); if (x.duration || s.d) localStorage.setItem("nx-dur:" + url, String(Math.floor(x.duration || s.d))); } catch (_) {}
       if (x.playerState === 0) { try { localStorage.removeItem(POS + url); } catch (_) {} setCount(5); }
@@ -70,7 +77,7 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
   const vol = (v) => { cmd("setVolume", [v]); cmd(v ? "unMute" : "mute"); setS((o) => ({ ...o, vol: v, muted: !v })); };
   const fs = () => (document.fullscreenElement ? document.exitFullscreen() : box.current?.requestFullscreen?.()).catch?.(() => {});
   const poke = () => { setUi(true); clearTimeout(idle.current); idle.current = setTimeout(() => setUi(false), 2800); };
-  const toggleCc = () => { ccRef.current = !cc; if (cc) cmd("unloadModule", ["captions"]); else { cmd("loadModule", ["captions"]); cmd("setOption", ["captions", "track", { languageCode: "fr" }]); } setCc(!cc); };
+  const toggleCc = () => { ccRef.current = !cc; try { localStorage.setItem("nx-cc", cc ? "0" : "1"); } catch (_) {} applyCc(); setCc(!cc); };
 
   useEffect(() => {
     if (mini) return;
