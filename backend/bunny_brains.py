@@ -1,4 +1,5 @@
 """Cerveaux de Bunny : services IA (gratuits ou avec clé) rangés par priorité, avec relais automatique."""
+import os
 import re
 import time
 import uuid
@@ -17,8 +18,14 @@ BUILTINS = [
     {"id": "kilo-auto", "name": "Kilo · auto gratuit", "base": "https://api.kilo.ai/api/gateway", "model": "kilo-auto/free", "note": "Sans clé, 200 messages/heure, modèle choisi automatiquement."},
 ]
 
+# Clés rangées dans les secrets du serveur (prioritaires, jamais renvoyées au navigateur)
+ENV_BRAINS = [
+    {"id": "env-claude", "env": "ANTHROPIC_API_KEY", "name": "Claude Sonnet (clé perso)", "base": "https://api.anthropic.com/v1", "model": "claude-sonnet-5-5", "note": "Ta clé Claude, gérée par le serveur."},
+    {"id": "env-gemini", "env": "GEMINI_API_KEY", "name": "Google Gemini (clé perso)", "base": "https://generativelanguage.googleapis.com/v1beta/openai", "model": "gemini-3.8-flash", "note": "Ta clé Gemini, gérée par le serveur."},
+]
+
 PRESETS = [
-    {"key": "gemini", "name": "Google Gemini 2.5 Flash", "base": "https://generativelanguage.googleapis.com/v1beta/openai", "model": "gemini-2.5-flash", "url": "https://aistudio.google.com/app/apikey", "note": "Gratuit, lit de très longs textes."},
+    {"key": "gemini", "name": "Google Gemini 3.8 Flash", "base": "https://generativelanguage.googleapis.com/v1beta/openai", "model": "gemini-3.8-flash", "url": "https://aistudio.google.com/app/apikey", "note": "Gratuit, lit de très longs textes."},
     {"key": "mistral", "name": "Mistral Small", "base": "https://api.mistral.ai/v1", "model": "mistral-small-latest", "url": "https://console.mistral.ai/api-keys", "note": "Gratuit, excellent en français."},
     {"key": "groq", "name": "Groq · GPT-OSS 120B", "base": "https://api.groq.com/openai/v1", "model": "openai/gpt-oss-120b", "url": "https://console.groq.com/keys", "note": "Gratuit, ultra rapide, 1 000 messages/jour."},
     {"key": "openrouter", "name": "OpenRouter · gratuit", "base": "https://openrouter.ai/api/v1", "model": "openrouter/free", "url": "https://openrouter.ai/keys", "note": "Gratuit, 50 messages/jour."},
@@ -35,11 +42,19 @@ async def list_brains(db):
     if not await db.atelier_brains.count_documents({}):
         for i, b in enumerate(BUILTINS):
             await db.atelier_brains.insert_one({**b, "key": "", "enabled": True, "order": i, "builtin": True, "created_at": now_iso()})
+    for b in reversed(ENV_BRAINS):
+        if os.environ.get(b["env"]) and not await db.atelier_brains.find_one({"id": b["id"]}):
+            await db.atelier_brains.update_many({}, {"$inc": {"order": 1}})
+            await db.atelier_brains.insert_one({**b, "key": "", "enabled": True, "order": 0, "builtin": True, "created_at": now_iso()})
     return await db.atelier_brains.find({}, {"_id": 0}).sort("order", 1).to_list(100)
 
 
+def key_of(b):
+    return b.get("key") or (os.environ.get(b["env"], "") if b.get("env") else "")
+
+
 def public(b):
-    k = b.get("key") or ""
+    k = key_of(b)
     st = _stats.get(b["id"], {})
     rest = _resting.get(b["base"], 0)
     return {**{x: b.get(x) for x in ("id", "name", "base", "model", "enabled", "order", "builtin", "note")},
@@ -48,7 +63,7 @@ def public(b):
 
 
 async def call_brain(c, b, messages, max_tokens=3500):
-    h = {"Content-Type": "application/json", **({"Authorization": f"Bearer {b['key']}"} if b.get("key") else {})}
+    h = {"Content-Type": "application/json", **({"Authorization": f"Bearer {key_of(b)}"} if key_of(b) else {})}
     t0 = time.time()
     r = await c.post(f"{b['base'].rstrip('/')}/chat/completions", headers=h, json={"model": b["model"], "messages": messages, "max_tokens": max_tokens, "temperature": 0.8})
     st = _stats.setdefault(b["id"], {"ok": 0, "fail": 0})
