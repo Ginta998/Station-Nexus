@@ -21,6 +21,7 @@ BUILTINS = [
 # Clés rangées dans les secrets du serveur (prioritaires, jamais renvoyées au navigateur)
 ENV_BRAINS = [
     {"id": "env-claude", "env": "ANTHROPIC_API_KEY", "name": "Claude Sonnet (clé perso)", "base": "https://api.anthropic.com/v1", "model": "claude-sonnet-5-5", "note": "Ta clé Claude, gérée par le serveur."},
+    {"id": "env-opus", "env": "ANTHROPIC_API_KEY", "name": "Claude Opus (clé perso)", "base": "https://api.anthropic.com/v1", "model": "claude-opus-5-5", "note": "Ta clé Claude, le plus puissant."},
     {"id": "env-gemini", "env": "GEMINI_API_KEY", "name": "Google Gemini (clé perso)", "base": "https://generativelanguage.googleapis.com/v1beta/openai", "model": "gemini-3.8-flash", "note": "Ta clé Gemini, gérée par le serveur."},
 ]
 
