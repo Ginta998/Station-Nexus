@@ -72,6 +72,7 @@ class ConfigIn(BaseModel):
     focus_vids: Optional[List[Dict[str, Any]]] = None
     playlists: Optional[List[dict]] = None
     cover_ratio: Optional[str] = None
+    gcal_pont: Optional[bool] = None
     radio: Optional[List[Dict[str, Any]]] = None
 
 

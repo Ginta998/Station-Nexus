@@ -55,6 +55,10 @@ export default function AtelierSettings({ at, openBrains }) {
         </div>
       </div>
       <div className="at-panel">
+        <div className="at-panel-h"><h2>Google Agenda sur le pont</h2></div>
+        <label className="at-check"><input type="checkbox" checked={at.config.gcal_pont !== false} onChange={(e) => at.saveConfig({ gcal_pont: e.target.checked })} data-testid="atelier-gcal-pont" /> Afficher l'encart Google Agenda sur le Pont</label>
+      </div>
+      <div className="at-panel">
         <div className="at-panel-h"><h2>Format des couvertures (PC)</h2></div>
         <p className="at-sub">Hauteur des images d'Univers et d'Œuvres sur grand écran.</p>
         <div className="at-inline" data-testid="atelier-cover-ratio">

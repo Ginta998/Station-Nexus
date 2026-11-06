@@ -181,7 +181,7 @@ export default function QuartierView({ at, go, open, launch }) {
         {[...focus, ...next].map((t) => <TaskRow key={t.id} t={t} at={at} open={open} compact />)}
       </div>
 
-      <GCalPanel compact />
+      {at.config?.gcal_pont !== false && <GCalPanel compact />}
       <BunnyBriefing />
 
       {pinnedOeuvres.length > 0 && (
