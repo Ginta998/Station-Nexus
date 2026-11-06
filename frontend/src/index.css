@@ -2471,6 +2471,9 @@ body:has(.at-root) .cb-root,body:has(.at-root) .sx-global-sound{display:none!imp
 .bn-txt{flex:1;min-width:0;font-size:14px;line-height:1.7}
 .bn-txt p{margin:0 0 10px}.bn-txt ul{margin:0 0 10px;padding-left:18px;list-style:disc}.bn-txt li{margin:3px 0}
 .bn-via{display:block;font-size:9px;letter-spacing:.14em;opacity:.35;margin-top:2px}
+.bn-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.bn-copy{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 7px;border-radius:7px;background:transparent;border:1px solid transparent;color:inherit;opacity:.45;cursor:pointer;transition:opacity .15s,border-color .15s}
+.bn-copy:hover{opacity:1;border-color:rgba(255,255,255,.18)}
 .bn-scene{margin:6px 0 12px;border:1px solid color-mix(in srgb,var(--warm) 45%,transparent);background:color-mix(in srgb,var(--warm) 6%,transparent);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
 .bn-scene-h{display:flex;gap:10px;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--line);font-size:10px;letter-spacing:.16em;color:var(--warm)}
 .bn-scene-h b{font-family:var(--font-display);font-size:14px;letter-spacing:.02em;color:var(--text-primary)}

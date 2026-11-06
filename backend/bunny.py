@@ -27,6 +27,10 @@ Missions :
 - Gérer les tâches du Cockpit : si on te demande de créer, cocher, décocher ou supprimer des tâches, ajoute À LA FIN un bloc unique
 <actions>[{"op":"create","title":"...","due":"AAAA-MM-JJ ou vide","priority":"low|normal|high"},{"op":"done","id":"..."},{"op":"undone","id":"..."},{"op":"delete","id":"..."}]</actions>
 N'utilise que des id de tâches présents dans le contexte. N'ajoute ce bloc que si on te le demande.
+- Créer ou modifier des documents et fiches : si on te demande de créer, compléter, corriger ou réécrire un document ou une fiche (personnage, lieu, lore, événement, note, document), donne le texte complet entre
+<doc action="create" type="note|character|place|lore|event|document" titre="...">texte</doc> pour une création, ou
+<doc action="update" id="<id exact du contexte>" titre="..." mode="replace|append">texte</doc> pour une modification (replace = nouveau texte complet, append = ajout à la fin).
+Par défaut, modifie le document en focus ; sinon retrouve l'id dans le lore. N'invente jamais d'id. Le capitaine validera avant application. Utilise ces balises seulement si on te le demande ; pour les scènes à écrire, garde <scene>.
 Format : texte simple, paragraphes courts, listes avec « - » si besoin. Pas de tableaux."""
 
 
@@ -57,7 +61,7 @@ async def build_context(db, universe_id: Optional[str], focus_id: Optional[str])
     if focus_id:
         f = next((i for i in items if i["id"] == focus_id), None)
         if f:
-            parts.append(f"=== DOCUMENT / FICHE EN FOCUS : « {f.get('title') or 'Sans titre'} » ({f.get('kind')}) ===\n{strip_html(f.get('content'))[:12000]}")
+            parts.append(f"=== DOCUMENT / FICHE EN FOCUS : « {f.get('title') or 'Sans titre'} » ({f.get('kind')}, id={f['id']}) ===\n{strip_html(f.get('content'))[:12000]}")
     parts.append("=== UNIVERS ===\n" + "\n".join(f"- {u['name']}{' [' + u['group'] + ']' if u.get('group') else ''}{' ★ (univers actuel)' if u['id'] == universe_id else ''} : {strip_html(u.get('description'))[:400]}" for u in unis))
     open_tasks = [t for t in tasks if not t.get("done")][:60] + [t for t in tasks if t.get("done")][:15]
     parts.append("=== TÂCHES DU COCKPIT ===\n" + ("\n".join(f"- id={t['id']} | {'[x]' if t.get('done') else '[ ]'} {t['title']}{' | échéance ' + t['due'] if t.get('due') else ''}{' | ' + uname.get(t.get('universe_id'), '') if t.get('universe_id') else ''}" for t in open_tasks) or "(aucune)"))
@@ -67,7 +71,7 @@ async def build_context(db, universe_id: Optional[str], focus_id: Optional[str])
         if i["id"] == focus_id:
             continue
         fields = ", ".join(f"{k}: {v}" for k, v in (i.get("fields") or {}).items() if v)
-        line = f"- [{i.get('kind')}] {i.get('title') or 'Sans titre'} ({uname.get(i.get('universe_id'), 'Inbox')}){' — ' + fields if fields else ''} : {strip_html(i.get('content'))[:700]}"
+        line = f"- id={i['id']} [{i.get('kind')}] {i.get('title') or 'Sans titre'} ({uname.get(i.get('universe_id'), 'Inbox')}){' — ' + fields if fields else ''} : {strip_html(i.get('content'))[:700]}"
         if used + len(line) > CTX_BUDGET:
             break
         lore.append(line)

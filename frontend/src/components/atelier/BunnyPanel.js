@@ -67,7 +67,13 @@ export default function BunnyPanel({ at, universeId, onClose, openBrains }) {
       if (accept) react("excited", "chirp");
     } catch { setErr("Bunny n'a pas pu ranger ce souvenir."); }
   };
-  const insertScene = (title, body) => at.createItem({ kind: "scene", title, universe_id: universeId || null, tags: ["bunny"], content: body.trim().split(/\n{2,}/).map((p) => `<p>${p.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br/>")}</p>`).join("") });
+  const toHtml = (body) => body.trim().split(/\n{2,}/).map((p) => `<p>${p.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br/>")}</p>`).join("");
+  const insertScene = (title, body) => at.createItem({ kind: "scene", title, universe_id: universeId || null, tags: ["bunny"], content: toHtml(body) });
+  const applyDoc = async ({ create, target, title, kind, append, body }) => {
+    if (create || !target) await at.createItem({ kind: kind || "note", title, universe_id: universeId || null, tags: ["bunny"], content: toHtml(body) });
+    else await at.saveItem({ ...target, title: title || target.title, content: append ? (target.content || "") + toHtml(body) : toHtml(body) });
+    react("excited", "chirp");
+  };
 
   return (
     <aside className="bn-panel" data-testid="bunny-panel">
@@ -97,7 +103,7 @@ export default function BunnyPanel({ at, universeId, onClose, openBrains }) {
         {mode === "interview" && msgs.length > 0 && (
           <div className="bn-interview mono" data-testid="bunny-interview-banner"><span>// INTERVIEW · FAISONS CONNAISSANCE</span><button onClick={() => send("On s'arrête là pour aujourd'hui, stop.")} disabled={busy} data-testid="bunny-interview-stop">Terminer</button></div>
         )}
-        {msgs.map((m, i) => <BunnyMessage key={i} m={m} idx={i} onInsertScene={insertScene} onProposal={resolve} dest={uni ? uni.name : "l'Inbox"} />)}
+        {msgs.map((m, i) => <BunnyMessage key={i} m={m} idx={i} onInsertScene={insertScene} onProposal={resolve} onApplyDoc={applyDoc} at={at} dest={uni ? uni.name : "l'Inbox"} />)}
         {busy && <div className="bn-msg ai" data-testid="bunny-typing"><span className="bn-av">兎</span><div className="bn-dots"><i /><i /><i /></div></div>}
         {err && <p className="bn-err" data-testid="bunny-error">{err}</p>}
       </div>
