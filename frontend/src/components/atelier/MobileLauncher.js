@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   IoPlanetOutline, IoGridOutline, IoLibraryOutline, IoCheckboxOutline, IoAppsOutline,
   IoFilmOutline, IoRadioOutline, IoMoonOutline, IoFileTrayOutline, IoSparklesOutline,
-  IoCodeSlashOutline, IoSettingsOutline, IoExitOutline, IoClose, IoCreateOutline,
+  IoCodeSlashOutline, IoSettingsOutline, IoClose, IoCreateOutline,
   IoArrowForward, IoAddOutline, IoAppsSharp,
 } from "react-icons/io5";
 import { PiRabbit } from "react-icons/pi";
@@ -186,7 +186,6 @@ export default function MobileLauncher({ ctx, view, onLeave, onBunny, onFocus, o
         <button className={"nx-menu" + (open ? " on" : "")} onClick={() => (open ? closeMenu() : openMenu())} aria-label={open ? "Fermer le menu" : "Menu"} data-testid="mobile-menu-toggle">{open ? <IoClose size={22} /> : <IoAppsSharp size={22} />}</button>
         <button onClick={() => { setOpen(false); ctx.go({ name: "home" }); }} aria-label="Retour au Pont" data-testid="mobile-home"><IoPlanetOutline size={20} /></button>
         <button onClick={() => { setOpen(false); onBunny(); }} aria-label="Cosmic Bunny" data-testid="mobile-bunny"><PiRabbit size={20} /></button>
-        <button onClick={() => { sfx("back"); onLeave(); }} aria-label="Quitter l'Atelier"><IoExitOutline size={20} /></button>
       </div>
     </div>
   );

@@ -864,3 +864,8 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 ## 2026-11 — Import GitHub
 - Code remplacé par https://github.com/Ginta998/Station-Nexus (commit 0b6f8c4), qui contient déjà les derniers ajouts (cinéma, partage niveaux, recherche YouTube, Reprendre la lecture, SW cross-origin, youtube.com). .env conservés.
 - Note : certaines vidéos (ex. Me at the zoo) sont bloquées en intégration depuis le serveur de test ; pas un bug du lecteur.
+
+## 2026-06 Perf/stabilité
+- /api/creations et /me/library : agrégation Mongo excluant les champs base64 lourds (46 Mo lus avant → quelques Ko). Résultat identique vérifié.
+- Images public/cosmic-bunny compressées (4,2 Mo → 0,66 Mo), originaux dans /tmp/imgbak.
+- Launcher mobile : bouton Bunny (PiRabbit) à côté du Pont, bouton Quitter retiré.

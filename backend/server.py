@@ -575,12 +575,32 @@ def _gate_creation(doc: dict, has_access: bool, owned: bool) -> dict:
     return doc
 
 
+_HEAVY = ["poster", "bg_image", "gallery", "chapters", "episodes", "intention_images", "intention_text"]
+
+
+def _nz(f):
+    return {"$gt": [{"$strLenBytes": {"$ifNull": [f, ""]}}, 0]}
+
+
+async def _light_creations(q: dict) -> list:
+    # Flags computed in Mongo so heavy base64 fields never leave the database
+    pipe = [{"$match": q}, {"$addFields": {
+        "has_poster": _nz("$poster"), "has_bg": _nz("$bg_image"),
+        "chapters_count": {"$size": {"$ifNull": ["$chapters", []]}},
+        "has_intention": {"$and": [{"$ifNull": ["$intention_enabled", False]}, {"$or": [
+            _nz("$intention_text"), {"$gt": [{"$size": {"$ifNull": ["$intention_images", []]}}, 0]}, _nz("$intention_file_id")]}]},
+    }}, {"$project": {"_id": 0, **{k: 0 for k in _HEAVY}}}, {"$sort": {"order": 1}}]
+    docs = await db.creations.aggregate(pipe, allowDiskUse=True).to_list(1000)
+    for d in docs:
+        d.update(poster="", bg_image="", gallery=[], chapters=[], episodes=[], intention_images=[], intention_text="")
+    return [Creation(**d) for d in docs]
+
+
 # ---------------- Creations ----------------
 @api_router.get("/creations", response_model=List[Creation])
 async def list_creations(category: Optional[str] = None):
     q = {"category": category} if category else {}
-    docs = await db.creations.find(q, {"_id": 0}).sort("order", 1).to_list(1000)
-    return [Creation(**_lighten(d)) for d in docs]
+    return await _light_creations(q)
 
 
 @api_router.get("/creations/{cid}", response_model=Creation)
@@ -2023,8 +2043,7 @@ async def my_library(user=Depends(get_current_user)):
     ids = [p["creation_id"] for p in owned]
     items = []
     if ids:
-        docs = await db.creations.find({"id": {"$in": ids}}, {"_id": 0}).to_list(1000)
-        items = [Creation(**_lighten(d)) for d in docs]
+        items = await _light_creations({"id": {"$in": ids}})
     m = await db.memberships.find_one({"user_id": user["id"]}, {"_id": 0})
     active = await _membership_active(user["id"])
     return {"creations": items, "membership": {"active": active, "tier_id": (m or {}).get("tier_id"), "current_period_end": (m or {}).get("current_period_end")}}
