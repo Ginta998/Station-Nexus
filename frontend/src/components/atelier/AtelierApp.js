@@ -202,7 +202,7 @@ export default function AtelierApp({ onLeave }) {
       {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} openBrains={() => setBrains(true)} />}
       {brains && <BunnyBrains onClose={() => setBrains(false)} />}
       {focusMode && <FocusView at={at} onClose={() => setFocusMode(false)} />}
-      {navHub && <MobileLauncher ctx={ctx} view={view} onLeave={onLeave} onBunny={() => { sfx("select"); setBunny(true); }} onFocus={() => { sfx("select"); setFocusMode(true); }} onSearch={() => setPalette(true)} bunny={bunny} focusMode={focusMode} />}
+      {navHub && !bunny && !brains && <MobileLauncher ctx={ctx} view={view} onLeave={onLeave} onBunny={() => { sfx("select"); setBunny(true); }} onFocus={() => { sfx("select"); setFocusMode(true); }} onSearch={() => setPalette(true)} bunny={bunny} focusMode={focusMode} />}
       <ContextMenuHost />
       {viewing && <FileViewer at={at} id={viewing} onClose={() => setViewing(null)} edit={(id) => { setViewing(null); setEditing(id); }} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
