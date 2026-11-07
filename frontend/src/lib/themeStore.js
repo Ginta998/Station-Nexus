@@ -48,9 +48,15 @@ export const PRESETS = [
 export const newTheme = (over = {}) => ({ ...BLANK, ...over, colors: { ...BLANK.colors, ...(over.colors || {}) }, bg: { ...BLANK.bg, ...(over.bg || {}) }, fx: { ...(over.fx || {}) } });
 
 // Store partagé (thèmes en base + brouillon d'aperçu)
+// Cache local : le thème retouché s'applique dès le démarrage, sans flash du thème d'origine
+const CACHE = "nx-themes-cache";
 let state = { docs: [], hidden: [], draft: null };
+try { const c = JSON.parse(localStorage.getItem(CACHE)); if (c?.docs) state = { ...state, docs: c.docs, hidden: c.hidden || [] }; } catch (_) {}
 const subs = new Set();
-const emit = (p) => { state = { ...state, ...p }; subs.forEach((f) => f()); };
+const emit = (p) => {
+  state = { ...state, ...p }; subs.forEach((f) => f());
+  if (p.docs) try { localStorage.setItem(CACHE, JSON.stringify({ docs: state.docs, hidden: state.hidden })); } catch (_) {}
+};
 const sub = (f) => { subs.add(f); return () => subs.delete(f); };
 export const useThemeState = () => useSyncExternalStore(sub, () => state);
 export const setDraft = (draft) => emit({ draft });

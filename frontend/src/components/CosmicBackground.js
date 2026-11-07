@@ -1,6 +1,7 @@
 import { useMemo, useRef, useEffect } from "react";
 import { FrontiereRidges, TerraFlora } from "@/components/ThemeScenes";
 import { useApp } from "@/context/AppContext";
+import { useThemeState, themeDef } from "@/lib/themeStore";
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 
@@ -191,6 +192,9 @@ const JellySVG = () => (
 /* ====================== COMPOSANT ====================== */
 export default function CosmicBackground() {
   const { theme, reduceMotion } = useApp();
+  const ts = useThemeState();
+  const bgType = themeDef(theme, ts)?.bg?.type;
+  const covered = !!bgType && bgType !== "scene" && !!(bgType === "gradient" || themeDef(theme, ts)?.bg?.url);
 
   const F = useMemo(() => {
     const stars = (n, min, max) => Array.from({ length: n }, () => ({ x: rnd(0, 100), y: rnd(0, 100), s: rnd(min, max), d: rnd(0, 8) }));
@@ -247,6 +251,7 @@ export default function CosmicBackground() {
   }, [theme]);
 
   const px = (v) => `${v}px`;
+  if (covered) return null;
 
   return (
     <div className="cosmic-bg" aria-hidden="true" data-reduced={reduceMotion ? "1" : undefined}>

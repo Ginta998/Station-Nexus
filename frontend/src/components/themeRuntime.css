@@ -1,6 +1,7 @@
-.nx-tlayer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.nx-tlayer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;container-type:size}
 .nx-tbg{position:absolute;inset:0;width:100%;height:100%;background-size:cover;background-position:center;object-fit:cover;border:0}
-.nx-tyt{width:177.78vh;min-width:100%;height:56.25vw;min-height:100%;left:50%;top:50%;transform:translate(-50%,-50%);inset:auto}
+.nx-tyt{width:max(100cqw,177.78cqh);height:max(100cqh,56.25cqw);min-width:0;min-height:0;left:50%;top:50%;transform:translate(-50%,-50%);inset:auto}
+video.nx-tbg{object-fit:cover;object-position:center}
 .nx-tdim{position:absolute;inset:0;background:var(--bg-primary)}
 .nx-tfx{position:absolute;inset:0;width:100%;height:100%}
 .nx-fog i{position:absolute;inset:-20%;background:radial-gradient(ellipse 40% 25% at 30% 60%,color-mix(in srgb,var(--fc) 35%,transparent),transparent 70%),radial-gradient(ellipse 35% 22% at 75% 40%,color-mix(in srgb,var(--fc) 28%,transparent),transparent 70%);filter:blur(30px);animation:nxFog 38s linear infinite alternate}
