@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { toCss } from "@/lib/uiScale";
 
 // Menu contextuel de l'Atelier : clic droit sur ordinateur, appui long sur téléphone
 export const showMenu = (x, y, entries, title = "") => window.dispatchEvent(new CustomEvent("at-menu", { detail: { x, y, entries, title } }));
@@ -42,8 +43,8 @@ export function ContextMenuHost() {
   useEffect(() => {
     if (!m || !box.current) return;
     const r = box.current.getBoundingClientRect(); const el = box.current;
-    el.style.left = `${Math.max(8, Math.min(m.x, window.innerWidth - r.width - 8))}px`;
-    el.style.top = `${Math.max(8, Math.min(m.y, window.innerHeight - r.height - 8))}px`;
+    el.style.left = `${toCss(Math.max(8, Math.min(m.x, window.innerWidth - r.width - 8)))}px`;
+    el.style.top = `${toCss(Math.max(8, Math.min(m.y, window.innerHeight - r.height - 8)))}px`;
   }, [m, stack]);
   if (!m) return null;
   const cur = stack.length ? stack[stack.length - 1] : { entries: m.entries, title: m.title };

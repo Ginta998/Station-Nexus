@@ -5,6 +5,7 @@ import { uploadJournalImage } from "@/lib/api";
 import { imgSrc, useMediaClaim, atelierApi } from "@/lib/atelier";
 import "@/components/atelier/radio.css";
 import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "";
 const listOf = (u = "") => (u.match(/[?&]list=([\w-]+)/) || [])[1];
@@ -160,7 +161,7 @@ export default function RadioView({ radio: r }) {
   const picked = r.list.filter((p) => sel.has(p.id));
   const merge = async () => {
     if (picked.length < 2) return toast.error("Choisis au moins 2 playlists à fusionner");
-    const name = window.prompt("Nom de la nouvelle station", picked.map((p) => p.title).join(" + ").slice(0, 60)); if (!name || !name.trim()) return;
+    const name = (await labPrompt("Nom de la nouvelle station", picked.map((p) => p.title).join(" + ").slice(0, 60))); if (!name || !name.trim()) return;
     const t = toast.loading("Fusion des playlists…");
     const vids = [...new Set((await Promise.all(picked.map(idsOf))).flat())];
     toast.dismiss(t);
@@ -168,8 +169,8 @@ export default function RadioView({ radio: r }) {
     r.save([...r.list, { id: Date.now().toString(36), title: name.trim(), url: `https://www.youtube.com/watch?v=${vids[0]}`, vids, thumb: thumb(vids[0]), color: picked[0].color }]);
     toast.success(`Station créée · ${vids.length} morceaux${vids.length > 200 ? " (200 lus à la suite)" : ""}`); sel.clear();
   };
-  const delMany = () => {
-    if (!window.confirm(`Supprimer ${picked.length} playlist(s) ?`)) return;
+  const delMany = async () => {
+    if (!(await labConfirm(`Supprimer ${picked.length} playlist(s) ?`))) return;
     if (cur && sel.has(cur.id)) r.stop();
     r.save(r.list.filter((p) => !sel.has(p.id))); toast.success("Supprimées"); sel.clear();
   };
@@ -179,7 +180,13 @@ export default function RadioView({ radio: r }) {
       <div className="rd-hero" style={{ "--art": hero ? `url(${hero})` : "none" }}>
         <div className="rd-hero-bg" />
         <div className="rd-hero-in">
-          <span className="rd-hero-art" style={{ backgroundImage: `url(${cur ? thumb(i.vid) || coverOf(cur) : coverOf(r.list[0])})` }}>{!hero && <IoRadioOutline size={64} />}</span>
+          {/* Disque : la pochette remplit tout le vinyle (les vignettes YouTube ont des bandes noires : on les recadre) */}
+          <span className={"rd-hero-art rd-disc" + (r.playing ? " spin" : "")}>
+            {hero ? <span className={"rd-disc-art" + (/ytimg\.com/.test(hero) ? " yt" : "")} style={{ backgroundImage: `url(${hero})` }} /> : <IoRadioOutline size={64} />}
+            <span className="rd-disc-grooves" aria-hidden="true" />
+            <span className="rd-disc-gloss" aria-hidden="true" />
+            <span className="rd-disc-hole" aria-hidden="true" />
+          </span>
           <div className="rd-hero-txt">
             <p className="mono rd-eye"><span className={"rd-live" + (r.playing ? " on" : "")} /> {cur ? (r.playing ? "EN ONDE" : "EN PAUSE") : "RADIO NEXUS"}{r.station ? " · MODE STATION" : ""}</p>
             <h1 data-testid="radio-now-title">{cur ? i.title || cur.title : "Ta radio personnelle"}</h1>

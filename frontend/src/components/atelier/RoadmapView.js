@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { IoAdd, IoClose, IoCheckmark, IoCreateOutline, IoTrashOutline, IoFlagOutline, IoSparklesOutline, IoEllipseOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { toast } from "sonner";
 import { todayStr } from "@/lib/atelier";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const COLORS = ["#ff2f5f", "#ffb340", "#3ff0ff", "#7c5cff", "#00e5a0", "#ff7ad9", "#e8e1cf"];
 const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return d.toLocaleDateString("sv-SE"); };
@@ -91,8 +92,8 @@ export default function RoadmapView({ at }) {
   const uni = (id) => at.universes.find((u) => u.id === id);
 
   const toggle = (m) => at.saveRecord("goals", { ...m, status: m.status === "done" ? "active" : "done" });
-  const del = (m) => window.confirm(`Supprimer « ${m.title} » ?`) && at.removeRecord("goals", m.id);
-  const delPhase = (p) => { if (!window.confirm(`Supprimer la phase « ${p.title} » et ses jalons ?`)) return; forPhase(p.id).forEach((m) => at.removeRecord("goals", m.id)); at.removeRecord("goals", p.id); };
+  const del = async (m) => (await labConfirm(`Supprimer « ${m.title} » ?`)) && at.removeRecord("goals", m.id);
+  const delPhase = async (p) => { if (!(await labConfirm(`Supprimer la phase « ${p.title} » et ses jalons ?`))) return; forPhase(p.id).forEach((m) => at.removeRecord("goals", m.id)); at.removeRecord("goals", p.id); };
 
   const Node = ({ m }) => {
     const u = uni(m.universe_id);

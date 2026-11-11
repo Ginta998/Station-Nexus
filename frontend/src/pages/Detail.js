@@ -18,6 +18,7 @@ import CosmicBunnyGame from "@/components/CosmicBunnyGame";
 import CinemaPlayer from "@/components/CinemaPlayer";
 import ShareMenu from "@/components/ShareMenu";
 import MobileMenu from "@/components/MobileMenu";
+import { confirmCheckout } from "@/components/CheckoutConfirm";
 import CreationJournal from "@/components/journal/CreationJournal";
 
 export default function Detail() {
@@ -139,8 +140,10 @@ export default function Detail() {
 
   const buyThis = async () => {
     if (!user) { toast.info("Connecte-toi pour acheter cette création."); openAuth(); return; }
+    const consents = await confirmCheckout({ kind: "creation", title: item.title, price: item.price_eur });
+    if (!consents) return;
     setBuying(true);
-    try { const r = await startCheckout({ kind: "creation", creation_id: item.id }); window.location.href = r.checkout_url; }
+    try { const r = await startCheckout({ kind: "creation", creation_id: item.id, consents }); window.location.href = r.checkout_url; }
     catch (e) { toast.error(e?.response?.data?.detail || "Impossible de démarrer l'achat"); setBuying(false); }
   };
   const subscribe = async () => { sfx("select"); nav("/soutien"); };

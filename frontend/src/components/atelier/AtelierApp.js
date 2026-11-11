@@ -32,6 +32,9 @@ import OeuvreView from "@/components/atelier/OeuvreView";
 import OeuvreForm from "@/components/atelier/OeuvreForm";
 import DevLogView from "@/components/atelier/DevLogView";
 import MobileLauncher from "@/components/atelier/MobileLauncher";
+import { useLabFx } from "@/components/atelier/labFx";
+import { TextSizeButton } from "@/components/TextSizeButton";
+import { LabDialogHost } from "@/components/atelier/LabDialog";
 
 const Dock = ({ icon, label, sub, on, onClick, testid, color, kanji, badge, drop }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label} {...(drop ? itemDrop(drop) : {})}>
@@ -45,7 +48,7 @@ function FsBtn() {
   const [fs, setFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener("fullscreenchange", h); return () => document.removeEventListener("fullscreenchange", h); }, []);
   const toggle = () => { try { if (document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen)?.call(document); else { const el = document.documentElement; (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el); } } catch (_) {} };
-  return <button className="at-icon" onClick={toggle} title={fs ? "Quitter le plein écran" : "Plein écran"} data-testid="atelier-fullscreen">{fs ? <IoContractOutline size={17} /> : <IoExpandOutline size={17} />}</button>;
+  return <button className="at-icon at-fs" onClick={toggle} title={fs ? "Quitter le plein écran" : "Plein écran"} data-testid="atelier-fullscreen">{fs ? <IoContractOutline size={17} /> : <IoExpandOutline size={17} />}</button>;
 }
 
 function ShipClock() {
@@ -125,6 +128,8 @@ export default function AtelierApp({ onLeave }) {
   }, []);
   const crumb = { home: "PONT DE COMMANDEMENT", universes: "NEXUS DRIVE", templates: "BIBLIOTHÈQUE", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", oeuvre: "ŒUVRE", devlog: "DEV & PATCH NOTES" }[view.name] || (cur?.name || "").toUpperCase();
 
+  useLabFx(view.name + (view.id || ""), sfx);
+
   return (
     <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl ? " has-radio" : "") + (menuOpen ? " menu-open" : "") + (navHub ? " nav-hub" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
@@ -134,6 +139,7 @@ export default function AtelierApp({ onLeave }) {
         <div className="at-top-r">
           <ShipClock />
           <SoundBtn btn={soundBtn} />
+          <TextSizeButton className="at-icon at-aa" />
           <FsBtn />
           <button className="at-icon" onClick={() => go({ name: "settings" })} title="Réglages de l'Atelier" data-testid="atelier-settings-top"><IoSettingsOutline size={17} /></button>
           <button className="at-icon" onClick={() => { sfx("back"); onLeave(); }} title="Retour à la Station" data-testid="atelier-leave-top"><IoExitOutline size={17} /></button>
@@ -170,6 +176,7 @@ export default function AtelierApp({ onLeave }) {
 
         <main className="at-main" key={view.name + (view.id || "")}>
           <div className="at-frame" aria-hidden="true"><i /><i /><i /><i /></div>
+          <p className="at-coord" aria-hidden="true">X 0000 · Y 0000</p>
           {view.name === "home" && <QuartierView {...ctx} />}
           {view.name === "universes" && <UniversesHub {...ctx} />}
           {view.name === "templates" && <TemplatesPage {...ctx} />}
@@ -186,7 +193,7 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "bureau" && <BureauView {...ctx} launch={launch} />}
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
           {view.name === "radio" && <RadioView radio={radio} />}
-          {view.name === "devlog" && <DevLogView />}
+          {view.name === "devlog" && <DevLogView at={at} />}
         </main>
       </div>
 
@@ -208,6 +215,7 @@ export default function AtelierApp({ onLeave }) {
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}
       {oForm && <OeuvreForm {...ctx} oeuvre={oForm} onClose={(o) => { setOForm(null); if (o?.id) setView({ name: "oeuvre", id: o.id }); }} />}
+      <LabDialogHost />
     </div>
   );
 }

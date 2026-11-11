@@ -1,142 +1,454 @@
 {
- "version": "0.6",
- "patches": [
-  {
-   "v": "0.6", "date": "2026-11-04", "title": "Journal de dev & petits gains",
-   "groups": {
-    "Nouveau": [
-     "Page Dev : patch notes datés + backlog cochable (tu peux ajouter tes propres idées).",
-     "Clic droit sur les vidéos du Salon (lecture, 2e écran, mini, renommer, playlist, retirer).",
-     "Menu contextuel : ranger une note/élément dans une œuvre.",
-     "Lecteur PDF intégré : tes documents et bibles se lisent dans la Station, sans ouvrir d'onglet.",
-     "Pont : tâche rapide avec catégorie (écriture, prod, montage…) et lien vers un univers/œuvre.",
-     "La section « Univers » devient Nexus Drive — tes mondes, œuvres et fichiers au même endroit.",
-     "Nexus Drive : dossiers & sous-dossiers (glisser-déposer, clic droit « Ranger dans un dossier », couverture auto, à la couleur de l'univers).",
-     "Hub mobile (façon launcher) : sur téléphone, un menu en grille pour tous tes espaces + une 2ᵉ page de raccourcis. Swipe du bas pour l'ouvrir, swipe bas / croix pour fermer, gauche-droite pour changer de page.",
-     "Hub mobile : barre d'outils en bas toujours visible (son & musique, réglages, menu, style des boutons, quitter l'Atelier) + barre de note rapide pour capturer une idée dans l'Inbox.",
-     "Hub mobile : ouverture d'un espace en transition « warp » (voile à sa couleur), zone « Reprendre » (tes derniers fichiers) et 6 styles de boutons (le reste suit le thème de la Station).",
-     "Réglages : bascule « Navigation sur téléphone » entre Classique (menu habituel) et Hub mobile.",
-     "Documents vivants : un « Sommaire » (navigation par chapitres façon Google Docs) pour sauter d'une section à l'autre en lecture, + deux modes « Tiroirs » (sections pliables) et « Onglets ».",
-     "Éditeur : la barre d'outils de mise en forme est repliable (bouton « Aa ») pour gagner de l'espace entre le titre et le texte — repliée par défaut sur téléphone.",
-     "Éditeur : « Sommaire » aussi en mode édition — tes titres/sous-titres forment un plan cliquable pour sauter à une section et continuer d'écrire là où tu veux.",
-     "Éditeur : tu édites désormais DANS le rendu exact de la visualisation (même mise en page) — choisis le format en haut (Flux, A4, Page web, Tiroirs, Onglets, Diaporama, Moodboard) et écris directement dedans. Le document reste un seul fichier, la sauvegarde ne change pas.",
-     "Éditeur : tous les formats ont la MÊME barre d'outils complète, placée au-dessus du titre (Flux inclus — la barre n'est plus coincée entre le titre et le texte) ; Sommaire partout ; bouton Pleine largeur / Page commun à tous les formats ; panneau de droite repliable sur PC.",
-     "Éditeur : mise en page unifiée — titre et texte alignés sur la même colonne quel que soit le format (fini le « parfois centré, parfois décalé »).",
-     "Atelier de thèmes : la bibliothèque de polices passe de 30 à ~57 (futuristes, élégantes, japonaises…) et un curseur personnalisé par thème (Halo, Anneau, Point, Viseur — teinté à ta couleur d'accent), onglet Formes.",
-     "Atelier de thèmes : tout est masquable — survole une police, un effet, une palette ou un son clavier pour le retirer de la liste (bouton ×), et « Voir les masqués » pour les réafficher. Les thèmes d'origine se désactivent déjà (icône œil).",
-     "Radio : recherche YouTube intégrée — trouve un morceau, écoute-le d'un clic ou ajoute-le à tes playlists, sans quitter la radio.",
-     "Sons séparés : coupe indépendamment les SFX (interface), la musique et les ambiances (bouton ♪ → « Couper par type »). « Couper tout » reste dispo.",
-     "Nexus Drive : barre d'actions épurée — un seul bouton « Créer » qui ouvre tout (dossier, fiche, type, template, fichiers, lien). Clic droit toujours actif.",
-     "Hub mobile : bouton « Pont » en bas (retour direct), le style des boutons se choisit maintenant dans les Réglages."
-    ],
-    "Amélioré": [
-     "Passe sécurité : anti brute-force sur la connexion, CORS verrouillé, en-têtes de sécurité.",
-     "Les images Google Drive s'affichent enfin proprement (fini la visionneuse encombrante).",
-     "Nexus Drive : fini les catégories imposées (personnage, lore…). L'espace d'un univers est un vrai Drive — tes dossiers à toi, clic droit pour créer, bouton « Organiser par type » pour ranger l'existant d'un coup.",
-     "Les œuvres aussi passent en Nexus Drive (dossiers partout), avec de nouvelles cartes de dossier (design premium, à la couleur de l'univers).",
-     "Bibliothèque de templates : une page dédiée (menu « Templates ») avec 25 trames classées par thème — Écriture, Personnage, Monde, Production, Pitch, Dossier, Contenu.",
-     "Templates : utilise-les dans un univers ou une œuvre, duplique-les, modifie-les ou crée les tiens. Aussi accessible depuis le Drive (bouton « Template » / clic droit).",
-     "Templates : clic droit sur une carte (utiliser, aperçu, renommer, dupliquer, supprimer), aperçu visuel, + nouvelle template Scénario (format screenplay).",
-     "Nexus Drive : vue Moodboard — un mur d'images plein cadre pour un dossier ou un espace (bascule en haut à droite).",
-     "Nexus Drive : menu « Nouveau » avec 10 types dédiés (Document, Personnage, Lieu, Scène, Lore, Moodboard, Tableau, Checklist, Board kanban, Événement).",
-     "Templates : tu peux maintenant modifier, renommer et supprimer TOUTES les templates, même les intégrées (une version à toi remplace l'originale).",
-     "Templates personnage : Portrayal, Character design et Casting narratif (en tableau) ajoutés en trames séparées."
-    ],
-    "Corrigé": [
-     "Sons : « Musique » coupe bien les pistes que tu sélectionnes (Persona 5, etc.), « Ambiance » coupe les sons d'atmosphère (pluie, vaisseau…) — les deux étaient mélangés.",
-     "Hub mobile : bouton son réparé (le menu s'ouvre en feuille basse, toujours visible), gestes enrichis (le panneau suit le doigt, flick rapide, glissé pour fermer), et styles de boutons refaits plus distincts et futuristes (Verre givré à icônes non colorées, Aurore ≠ Prisme, Néon cyberpunk).",
-     "Nexus Drive : barre d'actions épurée en un bouton « Créer ».",
-     "Menu : le bouton « Recherche » du menu latéral est retiré (il prenait de la place) — la recherche reste via la barre en haut et Ctrl+K.",
-     "Les sous-titres des vidéos ne s'activent plus tout seuls (ils ne reviennent plus au survol).",
-     "Vidéo du Salon : plus de léger zoom, l'image n'est plus rognée.",
-     "Lecteur intégré : les pubs des sites intégrés ne peuvent plus te faire quitter la Station (iframes isolées en « sandbox », YouTube non affecté).",
-     "Recherche YouTube (Salon & Radio) : la date de sortie s'affiche désormais sur chaque résultat."
-    ]
-   }
-  },
-  {
-   "v": "0.5", "date": "2026-10-29", "title": "Tes univers entrent dans la Station",
-   "groups": {
-    "Nouveau": [
-     "Import automatique de ta base depuis les bibles : 12 univers, 17 œuvres, ~140 fiches (lore, personnages, lieux, synopsis).",
-     "Bouton « Vider l'Atelier » pour repartir propre.",
-     "Le Pont n'affiche que les univers et œuvres que tu épingles."
-    ],
-    "Amélioré": [
-     "Descriptions d'univers réduites à une logline ; le concept complet va dans une fiche « Concept & règles »."
-    ]
-   }
-  },
-  {
-   "v": "0.4", "date": "2026-10-29", "title": "Focus, Salon & Bureau",
-   "groups": {
-    "Nouveau": [
-     "Mode Focus immersif : minuteur, ambiances = thèmes, vidéo de fond, mode Immersion.",
-     "Salon façon Netflix/Apple TV : playlists, intégrations de sites en grand, rubriques réordonnables, flèches de rails.",
-     "Bureau : choix du mode d'ouverture par app (intégré / fenêtre / onglet).",
-     "Menu latéral disponible sur téléphone, bouton plein écran."
-    ],
-    "Corrigé": [
-     "Son de la vidéo qui ne coupe plus la lecture ; écran blanc du Focus ; lisibilité des thèmes clairs ; Bunny remontée (ne masque plus les vidéos)."
-    ]
-   }
-  },
-  {
-   "v": "0.3", "date": "2026-10-29", "title": "Œuvres & Pont",
-   "groups": {
-    "Nouveau": [
-     "Les œuvres deviennent des espaces complets (affiche, couleur, scénario, éléments).",
-     "Pont : bandeau héros rotatif, horloge, carrousel cinématique.",
-     "Cockpit : Roadmap + générateur de rétroplanning.",
-     "Export PDF (élément, œuvre, bible d'univers)."
-    ]
-   }
-  },
-  {
-   "v": "0.2", "date": "2026-10-28", "title": "Bases de l'Atelier",
-   "groups": {
-    "Nouveau": [
-     "Bureau : intégration intelligente des liens, aperçus YouTube.",
-     "Salon : playlists façon Netflix (précédent/suivant, enchaînement auto)."
-    ],
-    "Corrigé": [
-     "Bunny : réponses persistées en base (plus de perte au redémarrage)."
-    ]
-   }
-  }
- ],
- "backlog": [
-  { "id": "n1", "t": "Gestes tactiles (swipe, appui long)", "cat": "Mobile", "status": "done" },
-  { "id": "n2", "t": "Page Dev / Patch notes (cette page)", "cat": "Dev", "status": "done" },
-  { "id": "n3", "t": "Vidéos : sous-titres auto + clic droit Salon (supprimer, 2e écran…)", "cat": "Salon", "status": "done" },
-  { "id": "n4", "t": "Recherche YouTube → ajouter/écouter dans la radio", "cat": "Salon", "status": "done" },
-  { "id": "n5", "t": "Séparer les sons : SFX / musique / ambiances (coupure indépendante)", "cat": "Son", "status": "done" },
-  { "id": "n6", "t": "Passe sécurité optimale (clés backend, rate-limit, CSP, Atelier verrouillé)", "cat": "Sécurité", "status": "done" },
-  { "id": "n7", "t": "Nouvelles scènes/effets : cartes, splash, curseur, packs d'icônes par thème", "cat": "Thèmes", "status": "todo" },
-  { "id": "n8", "t": "Date de sortie des vidéos dans la recherche Salon", "cat": "Salon", "status": "done" },
-  { "id": "n9", "t": "Rester inspiré : intégration Pinterest", "cat": "Intégrations", "status": "todo" },
-  { "id": "n10", "t": "Lecteur PDF", "cat": "Atelier", "status": "done" },
-  { "id": "n11", "t": "Pont : tâche rapide avec catégorie, liée à un univers/œuvre", "cat": "Cockpit", "status": "done" },
-  { "id": "n12", "t": "Cockpit : templates + ergonomie (inspiration Taskade)", "cat": "Cockpit", "status": "todo" },
-  { "id": "n13", "t": "Déplacer une note vers une autre œuvre", "cat": "Atelier", "status": "done" },
-  { "id": "n14", "t": "Nexus Drive : dossiers / sous-dossiers (façon Drive)", "cat": "Nexus Drive", "status": "done" },
-  { "id": "n15", "t": "Newsletter propre à la Station", "cat": "Communauté", "status": "todo" },
-  { "id": "n16", "t": "Conformité : mentions légales, RGPD, cookies, CGU, désinscription…", "cat": "Légal", "status": "todo" },
-  { "id": "n17", "t": "Menu launcher mobile (inspiration Neverness to Everness)", "cat": "Mobile", "status": "done" },
-  { "id": "n18", "t": "Document expliquant le fonctionnement du code", "cat": "Dev", "status": "todo" },
-  { "id": "n19", "t": "Iframes : empêcher les pubs de faire sortir de la Station (sandbox)", "cat": "Salon", "status": "done" },
-  { "id": "n20", "t": "Sons clavier multiples + upload multiple + suppression des sons par défaut", "cat": "Son", "status": "todo" },
-  { "id": "n21", "t": "Radio : affichage vinyle / futuriste", "cat": "Thèmes", "status": "todo" },
-  { "id": "n22", "t": "Documents vivants : tiroirs (Gamma) + onglets (Docs), plus agréables à lire", "cat": "Atelier", "status": "done" },
-  { "id": "n23", "t": "Templates de fiches : personnage, monde, scénario (Kit narratif)", "cat": "Nexus Drive", "status": "done" },
-  { "id": "n31", "t": "Bibliothèque : créer / modifier ses propres templates", "cat": "Nexus Drive", "status": "done" },
-  { "id": "n32", "t": "Templates Pitch deck + Dossier narratif (dans le Drive)", "cat": "Nexus Drive", "status": "todo" },
-  { "id": "n24", "t": "Nexus Drive : vue Moodboard (mur visuel d'un dossier)", "cat": "Nexus Drive", "status": "done" },
-  { "id": "n25", "t": "Nexus Drive : dossiers intelligents (filtres sauvegardés, rangement auto)", "cat": "Nexus Drive", "status": "todo" },
-  { "id": "n26", "t": "Nexus Drive : capturer une image/vidéo depuis le Salon ou le Bureau vers un dossier", "cat": "Nexus Drive", "status": "todo" },
-  { "id": "n27", "t": "Nexus Drive : badge « dans la Station / sur Drive » + jauge d'espace", "cat": "Nexus Drive", "status": "todo" },
-  { "id": "n28", "t": "Réseau narratif : liens depuis le Drive (fiche ↔ scène ↔ œuvre)", "cat": "Nexus Drive", "status": "todo" },
-  { "id": "n29", "t": "Nexus Drive : pont API Google (lister ses dossiers Drive en galerie, sans copier-coller)", "cat": "Intégrations", "status": "todo" },
-  { "id": "n30", "t": "Catégories modifiables (renommer / ajouter ses propres types de fiches)", "cat": "Atelier", "status": "todo" }
- ]
+  "version": "0.13",
+  "patches": [
+    {
+      "v": "0.13",
+      "date": "2026-11-11",
+      "title": "Atelier — dossiers d'archive, répertoire, grand écran",
+      "groups": {
+        "Nouveau": [
+          "Bouton aA (Station et Atelier) : agrandit vraiment toute l'interface sur ordinateur, de 90 % à 160 % (« Écran géant » pour les écrans larges). Sur téléphone, il agrandit le texte.",
+          "Œuvres en dossier d'archive : planche d'affiche, code (O-005), tampon de statut, relevés (format, univers, éléments, mots, dates).",
+          "Fiches en dossier d'archive : code, classification, tampon, relevés ; sections numérotées ; éléments reliés en liste codée avec ↗.",
+          "Nexus Drive : vue « Répertoire des archives » (codes, onglets par type, colonnes triables, recherche dans tout l'espace) et dossiers intelligents (filtres enregistrés).",
+          "Fenêtres de confirmation et de saisie au style Laboratoire (Entrée pour valider, Échap pour annuler), à la place de celles du navigateur.",
+          "Radio : la pochette devient un disque qui tourne pendant la lecture.",
+          "Thèmes Laboratoire : curseur fin en croix dans l'Atelier.",
+          "Téléphone : liste « Archives » sur le Pont, barre du bas au style Laboratoire."
+        ],
+        "Amélioré": [
+          "Menu clic droit et notifications de l'Atelier au style Laboratoire."
+        ],
+        "Corrigé": [
+          "Formats de texte (A4, page web, tiroirs, onglets, diaporama, moodboard) : plus de fond gris ou blanc quand aucun style n'est choisi.",
+          "Mode focus sur téléphone : plus rien ne passe par-dessus, les trois modes tiennent à l'écran.",
+          "Éditeur lisible sur les thèmes clairs (son fond était sombre en dur)."
+        ]
+      }
+    },
+    {
+      "v": "0.12",
+      "date": "2026-11-11",
+      "title": "Laboratoire — corrections et sons",
+      "groups": {
+        "Nouveau": [
+          "Réglages de l'Atelier → Ambiance du portail : Salle des archives, Pluie sur le labo, Orbite, Ma musique (fichier importé) ou Silence, avec écoute en cliquant.",
+          "Démarrage : une frappe de clavier par lettre qui s'écrit à l'écran (titre, message, étapes).",
+          "Clavier du démarrage au choix : Mécanique feutré, Machine à écrire, Touches de verre, Gouttes (Réglages de l'Atelier → Ambiance du portail)."
+        ],
+        "Corrigé": [
+          "Pack Laboratoire refait : sons doux, graves et courts, plus aucun aigu.",
+          "Laboratoire clair : les images ne sont plus voilées de blanc ni masquées ; textes, champs, onglets et boutons relus pour fond clair.",
+          "Mode focus : salle sombre et calme sur les thèmes Laboratoire, sans dégradés ni effets qui clignotent.",
+          "Icône du menu actif de nouveau visible.",
+          "Les mots de l'Atelier suivent la couleur du thème (plus de bleu ciel venu des couleurs d'univers).",
+          "Thème Laboratoire allégé : plus de balayage orange ni de quadrillage fixe, seul le halo de la souris reste.",
+          "Sons d'interface : chaque thème joue son propre son par défaut. Dans Réglages → Sons d'interface, le choix s'applique au thème actif seulement ; « Silence » coupe tout. Un ancien pack forcé pour tous les thèmes est annulé.",
+          "Laboratoire clair : heure, compteurs et titres posés sur les images en blanc ; « Reprendre » sur fond net, aux couleurs du thème."
+        ]
+      }
+    },
+    {
+      "v": "0.11",
+      "date": "2026-11-11",
+      "title": "Laboratoire — son, mouvement, lisibilité",
+      "groups": {
+        "Nouveau": [
+          "Démarrage sonore : nappe de laboratoire, ventilation, cloches de verre lointaines, rafales de données ; les étapes se tapent au clavier mécanique ; accord d'« Accès autorisé ».",
+          "Démarrage plus vivant : graduations tournantes, grille fine qui s'allume autour de la souris, faisceau de balayage, flux de données, coordonnées du pointeur, anneaux qui suivent la souris.",
+          "Fond des thèmes Laboratoire : grille fine, halo qui suit la souris, faisceau lent, lamelles en parallaxe.",
+          "Atelier : les titres se décodent à chaque vue, les blocs s'ouvrent comme un obturateur, un faisceau balaie la page, les cartes se cadrent au survol, coordonnées en bas à droite."
+        ],
+        "Amélioré": [
+          "Pack sonore Laboratoire refait, plus présent : clavier mécanique, cloches de verre, obturateurs."
+        ],
+        "Corrigé": [
+          "Laboratoire clair : bandeaux et couvertures en plaques graphite (l'image n'est plus mangée par le blanc), textes clairs et néons recalculés pour fond clair dans tout l'Atelier."
+        ]
+      }
+    },
+    {
+      "v": "0.10",
+      "date": "2026-11-11",
+      "title": "Atelier — direction Laboratoire",
+      "groups": {
+        "Nouveau": [
+          "Nouveau démarrage de l'Atelier : anneaux, étapes, « Vérification des accès » qui se décode au clavier puis « Accès autorisé », obturateur qui s'ouvre sur le pont.",
+          "Le démarrage se passe : bouton « Passer », ou Échap / Entrée / Espace.",
+          "Recherche (Ctrl K) devenue l'« Index des archives » : codes de fichier (U-01, O-005, E-012…), onglets Tout / Univers / Œuvres / Éléments (Tab), colonnes type, univers, date.",
+          "Deux thèmes : Laboratoire (graphite) et Laboratoire clair, avec un fond de lamelles métalliques.",
+          "Pack sonore « Laboratoire » (verre, données, Japon futuriste), joué dans l'Atelier quand le son est en automatique."
+        ],
+        "Amélioré": [
+          "Interface de l'Atelier plus aérée sur tous les thèmes : filets fins, marques de coin, étiquettes à chasse fixe, menu sans pilules. Polices et couleurs restent celles du thème."
+        ],
+        "Corrigé": [
+          "L'intro de la Station ne passe plus par-dessus le chargement de l'Atelier."
+        ]
+      }
+    },
+    {
+      "v": "0.9",
+      "date": "2026-11-11",
+      "title": "Conformité légale — 2e partie",
+      "groups": {
+        "Nouveau": [
+          "Bouton « Signaler » sur les messages du salon, les messages privés et les commentaires, avec accusé de réception ; traitement dans Paramètres → Admin → Signalements (motifs envoyés par email).",
+          "Paramètres → Compte → Mes données : télécharger toutes ses données ou supprimer son compte.",
+          "Date de naissance à l'inscription (15 ans minimum) ; « Finalise ton compte » pour les comptes existants et Google.",
+          "Accord parental obligatoire au paiement pour les 15-17 ans ; palier masqué par défaut pour les mineurs.",
+          "Emails de confirmation : commande (avec la demande d'accès immédiat et la version des CGV), résiliation et rétractation, avec référence.",
+          "Paramètres → onglet Légal : tous les documents et les liens Résilier / Renoncer.",
+          "Paramètres → Admin → Informations légales : SIRET, contact, médiateur, régime de TVA… se complètent sans toucher au code. Tant qu'une info manque, le public ne voit aucun trou."
+        ],
+        "Corrigé": [
+          "La newsletter n'est plus activée automatiquement à l'inscription : case à cocher, et lien de désinscription en un clic dans chaque email.",
+          "Les consentements donnés au paiement sont archivés (date, heure, version des CGV)."
+        ],
+        "Amélioré": [
+          "Pages légales, Résilier et Renoncer : boutons Retour, Accueil et menu principal toujours accessibles."
+        ]
+      }
+    },
+    {
+      "v": "0.8",
+      "date": "2026-11-11",
+      "title": "Conformité légale — 1re partie",
+      "groups": {
+        "Nouveau": [
+          "Pages légales : mentions légales, CGU, CGV, politique de confidentialité (avec un résumé pour les 15-17 ans), cookies et règles de la communauté — accessibles depuis le pied de page de toutes les pages publiques.",
+          "« Résilier votre contrat » : résiliation de l'abonnement en 3 étapes avec accusé de réception imprimable (bas de page, Paramètres, Bibliothèque).",
+          "« Renoncer au contrat ici » : formulaire de rétractation (14 jours, remboursement intégral pour l'abonnement).",
+          "Avant chaque paiement : récapitulatif, acceptation des CGV, demande d'accès immédiat pour les achats à l'unité et bouton « Commande avec obligation de paiement »."
+        ],
+        "Amélioré": [
+          "Polices hébergées par la Station : plus aucun appel à Google Fonts pour les visiteurs.",
+          "Notifications : explication de leur usage avant l'activation.",
+          "Toutes les informations légales (SIRET, contact, médiateur…) se règlent dans un seul fichier."
+        ]
+      }
+    },
+    {
+      "v": "0.7",
+      "date": "2026-11-11",
+      "title": "Backlog éditable & priorités",
+      "groups": {
+        "Nouveau": [
+          "Backlog : chaque entrée se modifie (touche le texte), se supprime, et reçoit une priorité Urgent / Haute / Normale / Basse — la liste se trie par importance.",
+          "Backlog : clic droit / appui long pour changer priorité, statut, catégorie, monter/descendre ou supprimer.",
+          "Le backlog est enregistré dans l'Atelier : le même sur ton Mac et ton téléphone (après redéploiement du backend)."
+        ],
+        "Amélioré": [
+          "Lancement en local sur le Mac, et sur le téléphone via le Wi-Fi."
+        ]
+      }
+    },
+    {
+      "v": "0.6",
+      "date": "2026-11-04",
+      "title": "Journal de dev & petits gains",
+      "groups": {
+        "Nouveau": [
+          "Page Dev : patch notes datés + backlog cochable (tu peux ajouter tes propres idées).",
+          "Clic droit sur les vidéos du Salon (lecture, 2e écran, mini, renommer, playlist, retirer).",
+          "Menu contextuel : ranger une note/élément dans une œuvre.",
+          "Lecteur PDF intégré : tes documents et bibles se lisent dans la Station, sans ouvrir d'onglet.",
+          "Pont : tâche rapide avec catégorie (écriture, prod, montage…) et lien vers un univers/œuvre.",
+          "La section « Univers » devient Nexus Drive — tes mondes, œuvres et fichiers au même endroit.",
+          "Nexus Drive : dossiers & sous-dossiers (glisser-déposer, clic droit « Ranger dans un dossier », couverture auto, à la couleur de l'univers).",
+          "Hub mobile (façon launcher) : sur téléphone, un menu en grille pour tous tes espaces + une 2ᵉ page de raccourcis. Swipe du bas pour l'ouvrir, swipe bas / croix pour fermer, gauche-droite pour changer de page.",
+          "Hub mobile : barre d'outils en bas toujours visible (son & musique, réglages, menu, style des boutons, quitter l'Atelier) + barre de note rapide pour capturer une idée dans l'Inbox.",
+          "Hub mobile : ouverture d'un espace en transition « warp » (voile à sa couleur), zone « Reprendre » (tes derniers fichiers) et 6 styles de boutons (le reste suit le thème de la Station).",
+          "Réglages : bascule « Navigation sur téléphone » entre Classique (menu habituel) et Hub mobile.",
+          "Documents vivants : un « Sommaire » (navigation par chapitres façon Google Docs) pour sauter d'une section à l'autre en lecture, + deux modes « Tiroirs » (sections pliables) et « Onglets ».",
+          "Éditeur : la barre d'outils de mise en forme est repliable (bouton « Aa ») pour gagner de l'espace entre le titre et le texte — repliée par défaut sur téléphone.",
+          "Éditeur : « Sommaire » aussi en mode édition — tes titres/sous-titres forment un plan cliquable pour sauter à une section et continuer d'écrire là où tu veux.",
+          "Éditeur : tu édites désormais DANS le rendu exact de la visualisation (même mise en page) — choisis le format en haut (Flux, A4, Page web, Tiroirs, Onglets, Diaporama, Moodboard) et écris directement dedans. Le document reste un seul fichier, la sauvegarde ne change pas.",
+          "Éditeur : tous les formats ont la MÊME barre d'outils complète, placée au-dessus du titre (Flux inclus — la barre n'est plus coincée entre le titre et le texte) ; Sommaire partout ; bouton Pleine largeur / Page commun à tous les formats ; panneau de droite repliable sur PC.",
+          "Éditeur : mise en page unifiée — titre et texte alignés sur la même colonne quel que soit le format (fini le « parfois centré, parfois décalé »).",
+          "Atelier de thèmes : la bibliothèque de polices passe de 30 à ~57 (futuristes, élégantes, japonaises…) et un curseur personnalisé par thème (Halo, Anneau, Point, Viseur — teinté à ta couleur d'accent), onglet Formes.",
+          "Atelier de thèmes : tout est masquable — survole une police, un effet, une palette ou un son clavier pour le retirer de la liste (bouton ×), et « Voir les masqués » pour les réafficher. Les thèmes d'origine se désactivent déjà (icône œil).",
+          "Radio : recherche YouTube intégrée — trouve un morceau, écoute-le d'un clic ou ajoute-le à tes playlists, sans quitter la radio.",
+          "Sons séparés : coupe indépendamment les SFX (interface), la musique et les ambiances (bouton ♪ → « Couper par type »). « Couper tout » reste dispo.",
+          "Nexus Drive : barre d'actions épurée — un seul bouton « Créer » qui ouvre tout (dossier, fiche, type, template, fichiers, lien). Clic droit toujours actif.",
+          "Hub mobile : bouton « Pont » en bas (retour direct), le style des boutons se choisit maintenant dans les Réglages."
+        ],
+        "Amélioré": [
+          "Passe sécurité : anti brute-force sur la connexion, CORS verrouillé, en-têtes de sécurité.",
+          "Les images Google Drive s'affichent enfin proprement (fini la visionneuse encombrante).",
+          "Nexus Drive : fini les catégories imposées (personnage, lore…). L'espace d'un univers est un vrai Drive — tes dossiers à toi, clic droit pour créer, bouton « Organiser par type » pour ranger l'existant d'un coup.",
+          "Les œuvres aussi passent en Nexus Drive (dossiers partout), avec de nouvelles cartes de dossier (design premium, à la couleur de l'univers).",
+          "Bibliothèque de templates : une page dédiée (menu « Templates ») avec 25 trames classées par thème — Écriture, Personnage, Monde, Production, Pitch, Dossier, Contenu.",
+          "Templates : utilise-les dans un univers ou une œuvre, duplique-les, modifie-les ou crée les tiens. Aussi accessible depuis le Drive (bouton « Template » / clic droit).",
+          "Templates : clic droit sur une carte (utiliser, aperçu, renommer, dupliquer, supprimer), aperçu visuel, + nouvelle template Scénario (format screenplay).",
+          "Nexus Drive : vue Moodboard — un mur d'images plein cadre pour un dossier ou un espace (bascule en haut à droite).",
+          "Nexus Drive : menu « Nouveau » avec 10 types dédiés (Document, Personnage, Lieu, Scène, Lore, Moodboard, Tableau, Checklist, Board kanban, Événement).",
+          "Templates : tu peux maintenant modifier, renommer et supprimer TOUTES les templates, même les intégrées (une version à toi remplace l'originale).",
+          "Templates personnage : Portrayal, Character design et Casting narratif (en tableau) ajoutés en trames séparées."
+        ],
+        "Corrigé": [
+          "Sons : « Musique » coupe bien les pistes que tu sélectionnes (Persona 5, etc.), « Ambiance » coupe les sons d'atmosphère (pluie, vaisseau…) — les deux étaient mélangés.",
+          "Hub mobile : bouton son réparé (le menu s'ouvre en feuille basse, toujours visible), gestes enrichis (le panneau suit le doigt, flick rapide, glissé pour fermer), et styles de boutons refaits plus distincts et futuristes (Verre givré à icônes non colorées, Aurore ≠ Prisme, Néon cyberpunk).",
+          "Nexus Drive : barre d'actions épurée en un bouton « Créer ».",
+          "Menu : le bouton « Recherche » du menu latéral est retiré (il prenait de la place) — la recherche reste via la barre en haut et Ctrl+K.",
+          "Les sous-titres des vidéos ne s'activent plus tout seuls (ils ne reviennent plus au survol).",
+          "Vidéo du Salon : plus de léger zoom, l'image n'est plus rognée.",
+          "Lecteur intégré : les pubs des sites intégrés ne peuvent plus te faire quitter la Station (iframes isolées en « sandbox », YouTube non affecté).",
+          "Recherche YouTube (Salon & Radio) : la date de sortie s'affiche désormais sur chaque résultat."
+        ]
+      }
+    },
+    {
+      "v": "0.5",
+      "date": "2026-10-29",
+      "title": "Tes univers entrent dans la Station",
+      "groups": {
+        "Nouveau": [
+          "Import automatique de ta base depuis les bibles : 12 univers, 17 œuvres, ~140 fiches (lore, personnages, lieux, synopsis).",
+          "Bouton « Vider l'Atelier » pour repartir propre.",
+          "Le Pont n'affiche que les univers et œuvres que tu épingles."
+        ],
+        "Amélioré": [
+          "Descriptions d'univers réduites à une logline ; le concept complet va dans une fiche « Concept & règles »."
+        ]
+      }
+    },
+    {
+      "v": "0.4",
+      "date": "2026-10-29",
+      "title": "Focus, Salon & Bureau",
+      "groups": {
+        "Nouveau": [
+          "Mode Focus immersif : minuteur, ambiances = thèmes, vidéo de fond, mode Immersion.",
+          "Salon façon Netflix/Apple TV : playlists, intégrations de sites en grand, rubriques réordonnables, flèches de rails.",
+          "Bureau : choix du mode d'ouverture par app (intégré / fenêtre / onglet).",
+          "Menu latéral disponible sur téléphone, bouton plein écran."
+        ],
+        "Corrigé": [
+          "Son de la vidéo qui ne coupe plus la lecture ; écran blanc du Focus ; lisibilité des thèmes clairs ; Bunny remontée (ne masque plus les vidéos)."
+        ]
+      }
+    },
+    {
+      "v": "0.3",
+      "date": "2026-10-29",
+      "title": "Œuvres & Pont",
+      "groups": {
+        "Nouveau": [
+          "Les œuvres deviennent des espaces complets (affiche, couleur, scénario, éléments).",
+          "Pont : bandeau héros rotatif, horloge, carrousel cinématique.",
+          "Cockpit : Roadmap + générateur de rétroplanning.",
+          "Export PDF (élément, œuvre, bible d'univers)."
+        ]
+      }
+    },
+    {
+      "v": "0.2",
+      "date": "2026-10-28",
+      "title": "Bases de l'Atelier",
+      "groups": {
+        "Nouveau": [
+          "Bureau : intégration intelligente des liens, aperçus YouTube.",
+          "Salon : playlists façon Netflix (précédent/suivant, enchaînement auto)."
+        ],
+        "Corrigé": [
+          "Bunny : réponses persistées en base (plus de perte au redémarrage)."
+        ]
+      }
+    }
+  ],
+  "backlog": [
+    {
+      "id": "n1",
+      "t": "Gestes tactiles (swipe, appui long)",
+      "cat": "Mobile",
+      "status": "done"
+    },
+    {
+      "id": "n2",
+      "t": "Page Dev / Patch notes (cette page)",
+      "cat": "Dev",
+      "status": "done"
+    },
+    {
+      "id": "n3",
+      "t": "Vidéos : sous-titres auto + clic droit Salon (supprimer, 2e écran…)",
+      "cat": "Salon",
+      "status": "done"
+    },
+    {
+      "id": "n4",
+      "t": "Recherche YouTube → ajouter/écouter dans la radio",
+      "cat": "Salon",
+      "status": "done"
+    },
+    {
+      "id": "n5",
+      "t": "Séparer les sons : SFX / musique / ambiances (coupure indépendante)",
+      "cat": "Son",
+      "status": "done"
+    },
+    {
+      "id": "n6",
+      "t": "Passe sécurité optimale (clés backend, rate-limit, CSP, Atelier verrouillé)",
+      "cat": "Sécurité",
+      "status": "done"
+    },
+    {
+      "id": "n7",
+      "t": "Nouvelles scènes/effets : cartes, splash, curseur, packs d'icônes par thème",
+      "cat": "Thèmes",
+      "status": "todo"
+    },
+    {
+      "id": "n8",
+      "t": "Date de sortie des vidéos dans la recherche Salon",
+      "cat": "Salon",
+      "status": "done"
+    },
+    {
+      "id": "n9",
+      "t": "Rester inspiré : intégration Pinterest",
+      "cat": "Intégrations",
+      "status": "todo"
+    },
+    {
+      "id": "n10",
+      "t": "Lecteur PDF",
+      "cat": "Atelier",
+      "status": "done"
+    },
+    {
+      "id": "n11",
+      "t": "Pont : tâche rapide avec catégorie, liée à un univers/œuvre",
+      "cat": "Cockpit",
+      "status": "done"
+    },
+    {
+      "id": "n12",
+      "t": "Cockpit : templates + ergonomie (inspiration Taskade)",
+      "cat": "Cockpit",
+      "status": "todo"
+    },
+    {
+      "id": "n13",
+      "t": "Déplacer une note vers une autre œuvre",
+      "cat": "Atelier",
+      "status": "done"
+    },
+    {
+      "id": "n14",
+      "t": "Nexus Drive : dossiers / sous-dossiers (façon Drive)",
+      "cat": "Nexus Drive",
+      "status": "done"
+    },
+    {
+      "id": "n15",
+      "t": "Newsletter propre à la Station",
+      "cat": "Communauté",
+      "status": "todo"
+    },
+    {
+      "id": "n16",
+      "t": "Conformité : mentions légales, RGPD, cookies, CGU, désinscription…",
+      "cat": "Légal",
+      "status": "todo"
+    },
+    {
+      "id": "n17",
+      "t": "Menu launcher mobile (inspiration Neverness to Everness)",
+      "cat": "Mobile",
+      "status": "done"
+    },
+    {
+      "id": "n18",
+      "t": "Document expliquant le fonctionnement du code",
+      "cat": "Dev",
+      "status": "todo"
+    },
+    {
+      "id": "n19",
+      "t": "Iframes : empêcher les pubs de faire sortir de la Station (sandbox)",
+      "cat": "Salon",
+      "status": "done"
+    },
+    {
+      "id": "n20",
+      "t": "Sons clavier multiples + upload multiple + suppression des sons par défaut",
+      "cat": "Son",
+      "status": "todo"
+    },
+    {
+      "id": "n21",
+      "t": "Radio : affichage vinyle / futuriste",
+      "cat": "Thèmes",
+      "status": "todo"
+    },
+    {
+      "id": "n22",
+      "t": "Documents vivants : tiroirs (Gamma) + onglets (Docs), plus agréables à lire",
+      "cat": "Atelier",
+      "status": "done"
+    },
+    {
+      "id": "n23",
+      "t": "Templates de fiches : personnage, monde, scénario (Kit narratif)",
+      "cat": "Nexus Drive",
+      "status": "done"
+    },
+    {
+      "id": "n31",
+      "t": "Bibliothèque : créer / modifier ses propres templates",
+      "cat": "Nexus Drive",
+      "status": "done"
+    },
+    {
+      "id": "n32",
+      "t": "Templates Pitch deck + Dossier narratif (dans le Drive)",
+      "cat": "Nexus Drive",
+      "status": "todo"
+    },
+    {
+      "id": "n24",
+      "t": "Nexus Drive : vue Moodboard (mur visuel d'un dossier)",
+      "cat": "Nexus Drive",
+      "status": "done"
+    },
+    {
+      "id": "n25",
+      "t": "Nexus Drive : dossiers intelligents (filtres sauvegardés, rangement auto)",
+      "cat": "Nexus Drive",
+      "status": "todo"
+    },
+    {
+      "id": "n26",
+      "t": "Nexus Drive : capturer une image/vidéo depuis le Salon ou le Bureau vers un dossier",
+      "cat": "Nexus Drive",
+      "status": "todo"
+    },
+    {
+      "id": "n27",
+      "t": "Nexus Drive : badge « dans la Station / sur Drive » + jauge d'espace",
+      "cat": "Nexus Drive",
+      "status": "todo"
+    },
+    {
+      "id": "n28",
+      "t": "Réseau narratif : liens depuis le Drive (fiche ↔ scène ↔ œuvre)",
+      "cat": "Nexus Drive",
+      "status": "todo"
+    },
+    {
+      "id": "n29",
+      "t": "Nexus Drive : pont API Google (lister ses dossiers Drive en galerie, sans copier-coller)",
+      "cat": "Intégrations",
+      "status": "todo"
+    },
+    {
+      "id": "n30",
+      "t": "Catégories modifiables (renommer / ajouter ses propres types de fiches)",
+      "cat": "Atelier",
+      "status": "todo"
+    }
+  ]
 }

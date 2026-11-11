@@ -12,6 +12,8 @@ import DocStylePanel from "@/components/atelier/DocStylePanel";
 import { styleOf, styleVars, DOC_CSS, DOC_FORMATS, docFonts } from "@/lib/docStyles";
 import "@/components/atelier/docs.css";
 import { mediaFromUpload, mediaFromText } from "@/lib/atelier";
+import { archiveCodes, uniCode, words, fmtDate } from "@/lib/archive";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const esc = (s) => (s || "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 function printItem(it, uname) {
@@ -86,8 +88,10 @@ export default function ItemEditor({ at, id, open, onClose }) {
   const links = (it.links || []).map((l) => at.items.find((x) => x.id === l)).filter(Boolean);
   const backlinks = at.items.filter((x) => (x.links || []).includes(it.id) && !(it.links || []).includes(x.id));
   const tasks = at.tasks.filter((t) => t.item_id === it.id);
+  const codes = archiveCodes(at.items);
+  const stamp = (it.fields?.status || (it.pinned ? "Épinglé" : "Actif")).toUpperCase();
   const remove = async () => {
-    if (!window.confirm(`Supprimer « ${it.title || "Sans titre"} » ? (une copie est gardée dans la corbeille du serveur)`)) return;
+    if (!(await labConfirm(`Supprimer « ${it.title || "Sans titre"} » ? (une copie est gardée dans la corbeille du serveur)`))) return;
     clearTimeout(timer.current); await at.removeItem(it.id); toast.success("Élément supprimé"); onClose();
   };
   const upload = async (f) => { if (!f) return; setBusy(true); try { change({ image: (await uploadJournalImage(f)).url }); } catch { toast.error("Image refusée"); } finally { setBusy(false); } };
@@ -144,6 +148,21 @@ export default function ItemEditor({ at, id, open, onClose }) {
         </article>
 
         <aside className="at-ed-side">
+          {/* Fiche d'archive : code, classification, tampon, relevés */}
+          <div className="ar-mini" data-testid="atelier-editor-file">
+            <p className="ar-path mono"><span>ARCHIVES</span> / <span>{uname ? uname.toUpperCase() : "INBOX"}</span> / <b>{codes[it.id]}</b></p>
+            <span className="ar-stamp mono">{stamp}</span>
+            <dl className="ar-meta two">
+              <div><dt>Classification</dt><dd>{KINDS[it.kind]?.kanji} {KINDS[it.kind]?.label}</dd></div>
+              <div><dt>Univers</dt><dd className="mono">{it.universe_id ? uniCode(at.universes, it.universe_id) : "INBOX"}</dd></div>
+              <div><dt>Mots</dt><dd className="mono">{words(it.content).toLocaleString("fr-FR")}</dd></div>
+              <div><dt>Liens</dt><dd className="mono">{String(links.length + backlinks.length).padStart(2, "0")}</dd></div>
+              <div><dt>Médias</dt><dd className="mono">{String((it.media || []).length).padStart(2, "0")}</dd></div>
+              <div><dt>Tâches</dt><dd className="mono">{String(tasks.length).padStart(2, "0")}</dd></div>
+              <div><dt>Ouvert le</dt><dd className="mono">{fmtDate(it.created_at)}</dd></div>
+              <div><dt>Modifié le</dt><dd className="mono">{fmtDate(it.updated_at)}</dd></div>
+            </dl>
+          </div>
           <div className="at-ed-img">
             {it.image ? <img src={imgSrc(it.image)} alt="" /> : <span>{KINDS[it.kind]?.kanji}</span>}
             <div className="acts">
@@ -162,9 +181,11 @@ export default function ItemEditor({ at, id, open, onClose }) {
           <div className="at-ed-sec">
             <h3><IoLinkOutline size={14} /> Éléments reliés</h3>
             <div className="at-chips">
-              {links.map((l) => <span key={l.id} className="chip on"><b onClick={() => goTo(l.id)}>{KINDS[l.kind]?.kanji} {l.title || "Sans titre"}</b><IoClose size={12} onClick={() => change({ links: it.links.filter((x) => x !== l.id) })} /></span>)}
-              {backlinks.map((l) => <span key={l.id} className="chip back" title="Relié depuis cet élément" onClick={() => goTo(l.id)}>↩ {l.title || "Sans titre"}</span>)}
             </div>
+            <ul className="ar-links">
+              {links.map((l) => <li key={l.id}><button className="ar-row" onClick={() => goTo(l.id)}><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>{KINDS[l.kind]?.label}</small><i aria-hidden="true">↗</i></button><button className="ar-x" onClick={() => change({ links: it.links.filter((x) => x !== l.id) })} aria-label={`Retirer le lien vers ${l.title || "Sans titre"}`}><IoClose size={12} /></button></li>)}
+              {backlinks.map((l) => <li key={l.id} className="back"><button className="ar-row" onClick={() => goTo(l.id)} title="Relié depuis cet élément"><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>↩ RENVOI</small><i aria-hidden="true">↗</i></button></li>)}
+            </ul>
             {others.length > 0 && (
               <select value="" onChange={(e) => e.target.value && change({ links: [...(it.links || []), e.target.value] })} data-testid="atelier-editor-link-add">
                 <option value="">+ Relier un élément…</option>

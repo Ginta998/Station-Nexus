@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+import { toCss } from "@/lib/uiScale";
 // Décors SVG des thèmes Frontière et Terra 4099 (courbes douces, brume, végétation organique)
 const R = (d, fill, cls = "") => <path className={cls} d={d} fill={fill} />;
 
@@ -47,5 +49,31 @@ export function TerraFlora() {
         {leafCluster(80, 640, 70, 14, "#26391d", 6)}{leafCluster(1370, 620, 80, 16, "#26391d", 7)}{leafCluster(700, 660, 60, 12, "#1e2f17", 8)}
       </g>
     </svg>
+  );
+}
+
+
+/* Laboratoire : lamelles métalliques, grille fine, halo qui suit le pointeur, faisceau de balayage */
+export function LaboScene() {
+  const el = useRef(null);
+  useEffect(() => {
+    let raf = 0;
+    const mv = (e) => {
+      const t = document.documentElement.dataset.theme; if (t !== "labo" && t !== "laboclair") return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => { const n = el.current; if (!n) return;
+        n.style.setProperty("--mx", toCss(e.clientX) + "px"); n.style.setProperty("--my", toCss(e.clientY) + "px");
+        n.style.setProperty("--px", (e.clientX / window.innerWidth - 0.5).toFixed(3)); n.style.setProperty("--py", (e.clientY / window.innerHeight - 0.5).toFixed(3)); });
+    };
+    window.addEventListener("pointermove", mv, { passive: true });
+    return () => { window.removeEventListener("pointermove", mv); cancelAnimationFrame(raf); };
+  }, []);
+  return (
+    <div className="sc s-labo" ref={el}>
+      <div className="slats" /><div className="fade" />
+      <div className="spot" />
+      <div className="orbit" /><div className="orbit o2" /><div className="axis h" /><div className="axis v" />
+      <span className="tick t1">X-000 · 研究所</span><span className="tick t2">ARCHIVE · 記録</span><span className="tick t3">RHINE · 04</span>
+    </div>
   );
 }

@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
 import MobileMenu from "@/components/MobileMenu";
 import AutoTextarea from "@/components/AutoTextarea";
+import { ReportFlag } from "@/components/ReportDialog";
 
 const REACTIONS = ["❤️", "😂", "🔥", "👍", "😮", "🎉"];
 const btn = { border: "1px solid var(--border-c)", borderRadius: "var(--radius-base)", color: "var(--text-primary)", background: "var(--bg-secondary)" };
@@ -319,9 +320,10 @@ export default function Chat() {
                     <div className="flex items-center gap-2 mb-0.5">
                       <button onClick={!mine ? () => openDM(m.author_id, m.author_name, m.author_avatar) : undefined} className="font-semibold text-sm" style={{ color: mine ? "var(--brand)" : "var(--text-primary)" }} data-testid={`chat-author-${m.id}`}>{m.author_name}</button>
                       <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>{fmt(m.created_at)}</span>
-                      <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity relative">
+                      <div className="chat-acts ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity relative">
                         <button onClick={() => setEmojiFor(emojiFor === m.id ? null : m.id)} className="p-1" style={{ color: "var(--text-secondary)" }} data-testid={`chat-react-btn-${m.id}`}><IoHappyOutline size={16} /></button>
                         {isAdmin && <button onClick={() => pin(m.id)} className="p-1" style={{ color: pinned?.id === m.id ? "var(--brand)" : "var(--text-secondary)" }} data-testid={`chat-pin-${m.id}`} title="Épingler">{pinned?.id === m.id ? <IoBookmark size={15} /> : <IoBookmarkOutline size={15} />}</button>}
+                        {!mine && <ReportFlag target={{ target_type: "chat", target_id: m.id, label: m.text || "" }} />}
                         {isAdmin && <button onClick={() => del(m.id)} className="p-1" style={{ color: "var(--brand)" }} data-testid={`chat-del-${m.id}`}><IoTrashOutline size={15} /></button>}
                         {isAdmin && !mine && <button onClick={() => setModFor(modFor === m.id ? null : m.id)} className="p-1" style={{ color: "var(--text-secondary)" }} data-testid={`chat-mod-${m.id}`}><IoBanOutline size={15} /></button>}
                         {emojiFor === m.id && (
@@ -403,6 +405,7 @@ export default function Chat() {
                       {m.image_id && <img src={assetUrl(m.image_id)} alt="" className="mt-1 max-h-56 rounded" />}
                       <p className="text-[10px] mt-0.5 opacity-70 text-right">{fmt(m.created_at)}</p>
                     </div>
+                    {!mine && <ReportFlag target={{ target_type: "dm", target_id: m.id, label: m.text || "" }} className="self-end p-1 ml-1" size={13} style={{ opacity: 0.55 }} />}
                   </div>
                 );
               })}

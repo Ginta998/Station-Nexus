@@ -5,6 +5,7 @@ import { todayStr } from "@/lib/atelier";
 import TasksView from "@/components/atelier/TasksView";
 import RoadmapView from "@/components/atelier/RoadmapView";
 import GCalPanel from "@/components/atelier/GCalPanel";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const STATUS = [["active", "En cours"], ["done", "Atteint"], ["pause", "En pause"]];
 const SPEC = {
@@ -54,7 +55,7 @@ function Row({ rk, r, at, onEdit }) {
       {rk === "budget" && <span className={"amt " + (r.type === "expense" ? "neg" : "pos")}>{r.type === "expense" ? "−" : "+"}{eur(r.amount)}</span>}
       {rk === "contacts" && <span className="acts">{r.email && <a className="at-icon" href={`mailto:${r.email}`} title={r.email}><IoMailOutline size={15} /></a>}{r.phone && <a className="at-icon" href={`tel:${r.phone}`} title={r.phone}><IoCallOutline size={15} /></a>}</span>}
       <button className="at-icon" onClick={() => onEdit(r)} aria-label="Modifier"><IoCreateOutline size={15} /></button>
-      <button className="at-icon danger" onClick={() => window.confirm("Supprimer ?") && at.removeRecord(rk, r.id)} aria-label="Supprimer"><IoTrashOutline size={15} /></button>
+      <button className="at-icon danger" onClick={async () => (await labConfirm("Supprimer ?")) && at.removeRecord(rk, r.id)} aria-label="Supprimer"><IoTrashOutline size={15} /></button>
     </div>
   );
 }

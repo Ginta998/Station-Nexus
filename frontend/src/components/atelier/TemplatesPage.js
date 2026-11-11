@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { isOeuvre } from "@/lib/atelier";
 import { allTemplates, templateHtml, TEMPLATE_CATS, CAT_ORDER, forkBuiltin, hideBuiltin } from "@/lib/templates";
 import { showMenu, pressMenu } from "@/components/atelier/ContextMenu";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 // Bibliothèque de templates : tous les templates (intégrés + perso), classés par thème.
 // Utiliser dans un univers/œuvre, aperçu, dupliquer, renommer, modifier, supprimer (clic droit).
@@ -30,13 +31,13 @@ export default function TemplatesPage({ at, open, go }) {
     toast.success("Template dupliqué — à toi de le modifier"); open(it.id);
   };
   const newTemplate = async () => {
-    const name = window.prompt("Nom du nouveau template"); if (!name || !name.trim()) return;
+    const name = (await labPrompt("Nom du nouveau template")); if (!name || !name.trim()) return;
     const it = await at.createItem({ universe_id: null, kind: "note", title: name.trim(), content: "<h2>Section</h2><p class=\"tpl-hint\"><em>Écris ici l'amorce à remplacer…</em></p><p><br/></p>", fields: { template: true, tcat: "perso", kanji: "書" } });
     open(it.id);
   };
   const modify = (t) => { if (t.builtin) forkBuiltin(at, t).then((it) => open(it.id)); else open(t.item.id); };
-  const rename = (t) => { const name = window.prompt("Renommer le template", t.name); if (!name || !name.trim()) return; if (t.builtin) forkBuiltin(at, t, name.trim()).then(() => toast.success("Template renommé")); else at.saveItem({ ...t.item, title: name.trim() }).then(() => toast.success("Template renommé")); };
-  const del = (t) => { if (!window.confirm(`Supprimer le template « ${t.name} » ?`)) return; if (t.builtin) { hideBuiltin(t.id); toast.success("Template supprimé"); refresh(); } else { if (t.base) hideBuiltin(t.base); at.removeItem(t.item.id).then(() => toast.success("Template supprimé")); } };
+  const rename = async (t) => { const name = (await labPrompt("Renommer le template", t.name)); if (!name || !name.trim()) return; if (t.builtin) forkBuiltin(at, t, name.trim()).then(() => toast.success("Template renommé")); else at.saveItem({ ...t.item, title: name.trim() }).then(() => toast.success("Template renommé")); };
+  const del = async (t) => { if (!(await labConfirm(`Supprimer le template « ${t.name} » ?`))) return; if (t.builtin) { hideBuiltin(t.id); toast.success("Template supprimé"); refresh(); } else { if (t.base) hideBuiltin(t.base); at.removeItem(t.item.id).then(() => toast.success("Template supprimé")); } };
 
   const cardMenu = (t) => ({ title: t.name, entries: [
     { id: "use", label: "Utiliser dans…", icon: <IoPlayForward size={14} />, sub: targetEntries(t) },

@@ -3,6 +3,7 @@ import { IoClose, IoOpenOutline, IoContractOutline, IoExpandOutline, IoPlayForwa
 import { toEmbed, popOut, toScreen } from "@/lib/embed";
 import { imgSrc, useMediaClaim } from "@/lib/atelier";
 import Cinema, { isYouTube } from "@/components/atelier/Cinema";
+import { toCss } from "@/lib/uiScale";
 
 const POS = "nx-pos:";
 const getPos = (url) => { try { return Math.floor(+localStorage.getItem(POS + url) || 0); } catch (_) { return 0; } };
@@ -86,7 +87,7 @@ function AppBar({ cur, queue, qi, goTo, onMini, onClose, onNavigate }) {
 function MiniBar({ box, title, onExpand, onClose }) {
   const drag = (e) => {
     const el = box.current; const r = el.getBoundingClientRect(); const dx = e.clientX - r.left; const dy = e.clientY - r.top;
-    const move = (ev) => { el.style.left = `${Math.max(0, Math.min(window.innerWidth - r.width, ev.clientX - dx))}px`; el.style.top = `${Math.max(0, Math.min(window.innerHeight - 60, ev.clientY - dy))}px`; el.style.right = "auto"; el.style.bottom = "auto"; };
+    const move = (ev) => { el.style.left = `${toCss(Math.max(0, Math.min(window.innerWidth - r.width, ev.clientX - dx)))}px`; el.style.top = `${toCss(Math.max(0, Math.min(window.innerHeight - 60, ev.clientY - dy)))}px`; el.style.right = "auto"; el.style.bottom = "auto"; };
     const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
     window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
   };

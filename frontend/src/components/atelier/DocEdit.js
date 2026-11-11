@@ -184,7 +184,7 @@ export default function DocEdit({ value, onChange, format = "a4", styleKey, eyeb
       <link rel="stylesheet" href={docFonts()} /><style>{DOC_CSS}</style>
       {toolbar}
       <div className="de-scroll">
-        <div ref={rootRef} className={"dz de-doc f-" + format} data-deco={s.deco || undefined} style={styleVars(s)}
+        <div ref={rootRef} className={"dz de-doc f-" + format + (s.bg ? "" : " dz-plain")} data-deco={s.deco || undefined} style={styleVars(s)}
           onInput={onInput} onClick={onClickRoot} onFocus={onFocusRoot} onKeyUp={saveSel} onMouseUp={saveSel} onBlur={push}
           dangerouslySetInnerHTML={{ __html: html }} />
       </div>

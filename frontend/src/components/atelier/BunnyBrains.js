@@ -3,6 +3,7 @@ import { IoClose, IoArrowUp, IoArrowDown, IoTrashOutline, IoFlashOutline, IoKeyO
 import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import BunnyMind from "@/components/atelier/BunnyMind";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const ago = (iso) => (iso ? new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "");
 function status(b) {
@@ -39,7 +40,7 @@ function BrainRow({ b, i, n, move, refresh }) {
         <button className="at-icon" disabled={i === n - 1} onClick={() => move(i, 1)} title="Descendre" data-testid={`brain-down-${b.id}`}><IoArrowDown size={14} /></button>
         <button className="at-icon" onClick={() => setKey(key === null ? "" : null)} title="Ajouter / changer la clé" data-testid={`brain-key-${b.id}`}><IoKeyOutline size={14} /></button>
         <button className="at-icon" disabled={busy} onClick={test} title="Tester" data-testid={`brain-test-${b.id}`}><IoFlashOutline size={14} /></button>
-        {!b.builtin && <button className="at-icon danger" onClick={() => window.confirm(`Retirer ${b.name} ?`) && act(() => atelierApi.deleteBrain(b.id), "Cerveau retiré")} title="Retirer" data-testid={`brain-delete-${b.id}`}><IoTrashOutline size={14} /></button>}
+        {!b.builtin && <button className="at-icon danger" onClick={async () => (await labConfirm(`Retirer ${b.name} ?`)) && act(() => atelierApi.deleteBrain(b.id), "Cerveau retiré")} title="Retirer" data-testid={`brain-delete-${b.id}`}><IoTrashOutline size={14} /></button>}
       </div>
     </div>
   );

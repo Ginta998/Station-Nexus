@@ -1,8 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "@/lib/localFonts";
 import "@/index.css";
 import "@/themes-new.css";
+import "@/themes-labo.css";
+import "@/themes-laboclair-atelier.css";
 import App from "@/App";
 
 const queryClient = new QueryClient({

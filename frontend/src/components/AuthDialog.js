@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { IoClose, IoLogoGoogle, IoMailOutline, IoHeart, IoNotifications } from "react-icons/io5";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
 export default function AuthDialog() {
@@ -10,6 +11,8 @@ export default function AuthDialog() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [newsletter, setNewsletter] = useState(false);
   const [busy, setBusy] = useState(false);
 
   if (!authOpen) return null;
@@ -19,7 +22,7 @@ export default function AuthDialog() {
     if (busy) return;
     setBusy(true);
     try {
-      if (mode === "register") await register(email, password, name);
+      if (mode === "register") await register(email, password, name, birthdate, newsletter);
       else await login(email, password);
     } catch (err) {
       toast.error(err?.response?.data?.detail || "Une erreur est survenue");
@@ -57,6 +60,16 @@ export default function AuthDialog() {
           )}
           <input data-testid="auth-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Adresse email" className="w-full px-4 py-3 text-sm outline-none" style={fld} />
           <input data-testid="auth-password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe (6+ caractères)" className="w-full px-4 py-3 text-sm outline-none" style={fld} />
+          {mode === "register" && (<>
+            <label className="block text-xs" style={{ color: "var(--text-secondary)" }}>Date de naissance — la Station est ouverte à partir de 15 ans
+              <input data-testid="auth-birthdate" type="date" required value={birthdate} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setBirthdate(e.target.value)} className="w-full mt-1 px-4 py-3 text-sm outline-none" style={{ ...fld, colorScheme: "dark" }} />
+            </label>
+            <label className="flex items-start gap-2 text-xs cursor-pointer" style={{ color: "var(--text-secondary)" }}>
+              <input data-testid="auth-newsletter" type="checkbox" checked={newsletter} onChange={(e) => setNewsletter(e.target.checked)} className="mt-0.5" style={{ accentColor: "var(--brand)" }} />
+              <span>Je veux recevoir la newsletter de la Station (nouveautés, sorties). Désinscription en un clic dans chaque email.</span>
+            </label>
+            <p className="text-[11px]" style={{ color: "var(--text-secondary)" }}>En créant un compte, tu acceptes les <Link to="/legal/cgu" onClick={closeAuth} className="underline">conditions d'utilisation</Link> et la <Link to="/legal/confidentialite" onClick={closeAuth} className="underline">politique de confidentialité</Link>. Entre 15 et 17 ans, demande l'accord d'un parent.</p>
+          </>)}
           <button data-testid="auth-submit" type="submit" disabled={busy} className="w-full flex items-center justify-center gap-2 py-3 font-semibold transition-transform hover:scale-[1.02]"
             style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", opacity: busy ? 0.6 : 1 }}>
             <IoMailOutline size={18} /> {busy ? "..." : mode === "register" ? "Créer mon compte" : "Se connecter"}
