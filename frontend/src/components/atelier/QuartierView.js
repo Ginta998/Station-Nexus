@@ -1,3 +1,4 @@
+import { archiveCodes } from "@/lib/archive";
 import { useMemo, useState, useEffect } from "react";
 import GCalPanel from "@/components/atelier/GCalPanel";
 import { IoSend, IoArrowForward, IoPlay, IoEnterOutline } from "react-icons/io5";
@@ -136,6 +137,8 @@ export default function QuartierView({ at, go, open, launch }) {
   const stats = [["UNIVERS", at.universes.length], ["ÉLÉMENTS", at.items.length], ["MOTS", words.toLocaleString("fr-FR")], ["TÂCHES", at.tasks.filter((t) => !t.done).length]];
   const subTxt = focus.length ? `${focus.length} objectif${focus.length > 1 ? "s" : ""} au cap aujourd'hui.` : "Aucune urgence à bord. Le pont est à toi.";
 
+  const arCodes = archiveCodes(at.items);
+  const mobRecent = [...at.items].filter((i) => !isFolder(i)).sort((a, b) => (b.updated_at || "").localeCompare(a.updated_at || "")).slice(0, 4);
   return (
     <section className="at-view at-pont" data-testid="atelier-home">
       <PontHero active={pinnedUnis.length ? pinnedUnis : active} last={last} lastU={lastU} open={open} go={go} stats={stats} subTxt={subTxt} />
@@ -145,6 +148,20 @@ export default function QuartierView({ at, go, open, launch }) {
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) capture(e); }} data-testid="atelier-capture-input" />
         <button type="submit" className="at-btn" data-testid="atelier-capture-btn"><IoSend size={15} /> Capturer</button>
       </form>
+
+      {/* Téléphone : liste « Archives » façon répertoire (dernières fiches touchées) */}
+      {mobRecent.length > 0 && (
+        <section className="ar-mob" aria-labelledby="ar-mob-h">
+          <div className="ar-mob-h"><h2 id="ar-mob-h">ARCHIVES <small>記録</small></h2><button className="mono" onClick={() => go({ name: "universes" })}>TOUT VOIR ↗</button></div>
+          {mobRecent.map((i) => (
+            <button key={i.id} className="ar-mob-r" onClick={() => open(i.id)}>
+              <span className="mono">{arCodes[i.id]}</span>
+              <span className="t"><b>{i.title || "Sans titre"}</b><small className="mono">{(isOeuvre(i) ? "ŒUVRE" : KINDS[i.kind]?.label || "").toUpperCase()} · {at.universes.find((u) => u.id === i.universe_id)?.name?.toUpperCase() || "INBOX"}</small></span>
+              <i aria-hidden="true">↗</i>
+            </button>
+          ))}
+        </section>
+      )}
 
       {last && (
         <button className="at-resume" onClick={() => open(last.id)} style={{ "--u": lastU?.color || "var(--brand)" }} data-testid="atelier-resume">

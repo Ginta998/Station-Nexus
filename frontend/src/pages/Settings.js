@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { MyData, ReportsAdmin, LegalInfoAdmin } from "@/components/PrivacyTools";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoAlbumsOutline, IoGridOutline, IoListOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline } from "react-icons/io5";
+import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoAlbumsOutline, IoGridOutline, IoListOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline , IoDocumentTextOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { useThemeList } from "@/lib/themeStore";
+import { useThemeList, baseOf as baseOfTheme } from "@/lib/themeStore";
+import { UI_SCALES } from "@/lib/uiScale";
 import { getCover, setCover, fileToCover, registerAmbiences } from "@/lib/covers";
 import { SOUND_PACKS, packForTheme, playUiSound } from "@/lib/sound";
 import { INTROS } from "@/lib/intro";
@@ -18,7 +20,7 @@ import {
   listSubscribers, deleteSubscriber, getSettings, updateSettings, api, API,
   uploadIntroVideo, deleteIntroVideo,
   listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations, emailStatus,
-  getLibrary, cancelMembership, getMembershipPlan, pushTest,
+  getLibrary, getMembershipPlan, pushTest,
 } from "@/lib/api";
 import { pushSupported, getPermission, getNotifPref, getSoundPref, setSoundPref, enablePush, updatePref, disablePush, isSubscribed } from "@/lib/push";
 import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles } from "react-icons/io5";
@@ -621,15 +623,10 @@ function MySubscription() {
   const nav = useNavigate();
   const { user } = useAuth();
   const { profile, saveProfile } = useApp();
-  const { data: lib, refetch } = useQuery({ queryKey: ["library"], queryFn: getLibrary, enabled: !!user });
+  const { data: lib } = useQuery({ queryKey: ["library"], queryFn: getLibrary, enabled: !!user });
   const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
   const m = lib?.membership;
   const tierName = plan?.tiers?.find((t) => t.id === m?.tier_id)?.name || "Nexus";
-  const doCancel = async () => {
-    if (!window.confirm("Résilier ton abonnement à la fin de la période en cours ?")) return;
-    try { await cancelMembership(); toast.success("Abonnement résilié à la fin de la période."); refetch(); }
-    catch (e) { toast.error(e?.response?.data?.detail || "Erreur"); }
-  };
   const toggleHideTier = (show) => {
     saveProfile({ hide_tier: !show, account_id: user?.id });
     toast.success(show ? "Ton palier est visible sur ton profil public." : "Ton palier est masqué sur ton profil public.");
@@ -647,7 +644,7 @@ function MySubscription() {
           </div>
           <div className="flex gap-2">
             <button data-testid="settings-change-tier" onClick={() => nav("/soutien")} className="px-4 py-2 text-sm" style={btnStyle}>Changer de palier</button>
-            <button data-testid="settings-cancel-sub" onClick={doCancel} className="px-4 py-2 text-sm underline" style={{ color: "var(--text-secondary)" }}>Résilier</button>
+            <button data-testid="settings-cancel-sub" onClick={() => nav("/resiliation")} className="px-4 py-2 text-sm underline" style={{ color: "var(--text-secondary)" }}>Résilier votre contrat</button>
           </div>
         </div>
         <label className="flex items-center gap-2.5 mt-4 pt-4 border-t text-sm cursor-pointer" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }}>
@@ -728,6 +725,7 @@ function NotificationsManager() {
 
   return (
     <div data-testid="notifications-manager">
+      <p className="text-xs mb-4" style={{ color: "var(--text-secondary)" }} data-testid="notif-explain">Les notifications servent uniquement à te prévenir des messages du salon, selon le choix ci-dessous. En les activant, ton navigateur te demandera ton autorisation ; tu peux les couper à tout moment ici. <a href="/legal/confidentialite" style={{ textDecoration: "underline" }}>En savoir plus</a></p>
       {!user && (
         <div className="mb-4 p-3 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
           <p className="text-sm mb-2" style={{ color: "var(--text-secondary)" }}>Connecte-toi pour recevoir des notifications du salon sur cet appareil.</p>
@@ -882,7 +880,7 @@ function TourTextsManager({ settings, refetch }) {
 export default function Settings() {
   const THEMES = useThemeList();
   const nav = useNavigate();
-  const { theme, setTheme, isAdmin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, sfx,
+  const { theme, setTheme, isAdmin, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, soundPack, setPack, themeSfx, setThemeSfx, sfx,
     accent, setAccent, radius, setRadius, posterSize, setPosterSize, reduceMotion, setReduceMotion, cardTagline, setCardTagline, textScale, setTextScale,
     posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor, layout, setLayout } = useApp();
   const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
@@ -902,14 +900,8 @@ export default function Settings() {
   ];
   const RADII = [{ v: "", label: "Thème" }, { v: "0px", label: "Net" }, { v: "10px", label: "Arrondi" }, { v: "18px", label: "Doux" }, { v: "999px", label: "Pilule" }];
   const POSTERS = [{ v: "compact", label: "Compact" }, { v: "normal", label: "Normal" }, { v: "grand", label: "Grand" }];
-  const TEXT_SCALES = [
-    { v: "petit", label: "Petit", pct: "A" },
-    { v: "normal", label: "Normal", pct: "A" },
-    { v: "grand", label: "Grand", pct: "A" },
-    { v: "xl", label: "Très grand", pct: "A" },
-    { v: "max", label: "Maximum", pct: "A" },
-  ];
-  const TEXT_SCALE_SIZE = { petit: 12, normal: 15, grand: 18, xl: 22, max: 26 };
+  const TEXT_SCALES = UI_SCALES.map((t) => ({ ...t, label: `${t.label} · ${t.pct}`, pct: "A" }));
+  const TEXT_SCALE_SIZE = { petit: 12, normal: 15, grand: 17, xl: 20, max: 23, ultra: 27 };
 
   const [tab, setTab] = useState("apparence");
   const TABS = [
@@ -917,6 +909,7 @@ export default function Settings() {
     { key: "son", label: "Son", icon: <IoMusicalNotes size={15} /> },
     { key: "bunny", label: "Bunny", icon: <IoSparkles size={15} /> },
     { key: "compte", label: "Compte", icon: <IoPersonOutline size={15} /> },
+    { key: "legal", label: "Légal", icon: <IoDocumentTextOutline size={15} /> },
     { key: "admin", label: "Admin", icon: <IoShieldHalfOutline size={15} />, admin: true },
   ];
   return (
@@ -966,14 +959,14 @@ export default function Settings() {
         </Section>
 
         <Section title="Accessibilité" extra="— confort de lecture">
-          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Taille du texte</p>
-          <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Agrandit tout le texte de l'application (descriptions, commentaires, chapitres…). Réglable séparément pour l'ordinateur et le mobile.</p>
+          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Taille de l'interface</p>
+          <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Sur ordinateur, agrandit toute l'interface (textes, boutons, cartes, images) — « Écran géant » pour les très grands écrans. Sur mobile, agrandit le texte. Réglable séparément.</p>
           {[{ phone: false, label: "Ordinateur", cur: textDesktop }, { phone: true, label: "Mobile", cur: textMobile }].map((dev) => (
             <div key={dev.label} className="mb-3">
               <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: "var(--brand)" }}>{dev.label}</p>
               <div className="flex flex-wrap items-stretch gap-2" data-testid={`text-scale-${dev.phone ? "mobile" : "desktop"}-grid`}>
                 {TEXT_SCALES.map((t) => {
-                  const active = (dev.cur || "grand") === t.v;
+                  const active = (dev.cur || (dev.phone ? "petit" : "normal")) === t.v;
                   return (
                     <button key={t.v} data-testid={`text-${dev.phone ? "mobile" : "desktop"}-${t.v}`} onClick={() => { setTextScaleFor(dev.phone, t.v); sfx("nav"); }}
                       className="flex-1 min-w-[64px] border flex flex-col items-center justify-center gap-1 py-2.5 px-2 transition-transform hover:scale-[1.02]"
@@ -1010,8 +1003,8 @@ export default function Settings() {
         </Section>
 
 
-        <Section title="Sons d'interface" extra="— un pack par thème">
-          <UiSoundPicker theme={theme} soundPack={soundPack} setPack={setPack} />
+        <Section title="Sons d'interface" extra="— pour le thème actif">
+          <UiSoundPicker theme={theme} soundPack={soundPack} setPack={setPack} themeSfx={themeSfx} setThemeSfx={setThemeSfx} />
         </Section>
 
         </>)}
@@ -1029,7 +1022,35 @@ export default function Settings() {
           <NotificationsManager />
         </Section>
 
+        <Section title="Mes données" extra="— export & suppression">
+          <MyData />
+        </Section>
 
+
+        </>)}
+
+        {tab === "legal" && (<>
+        <Section title="Informations légales" extra="— tes droits, nos engagements">
+          <div className="grid sm:grid-cols-2 gap-2" data-testid="settings-legal">
+            {[["/legal/mentions", "Mentions légales", "Qui édite la Station, hébergement, contact"],
+              ["/legal/cgu", "Conditions d'utilisation", "Les règles d'usage du site et du salon"],
+              ["/legal/cgv", "Conditions de vente", "Achats, abonnements, rétractation, garanties"],
+              ["/legal/confidentialite", "Confidentialité", "Tes données personnelles et tes droits"],
+              ["/legal/cookies", "Cookies et traceurs", "Ce qui est enregistré sur ton appareil"],
+              ["/legal/communaute", "Règles de la communauté", "Le bon esprit du salon, comment signaler"]].map(([to, t, d]) => (
+              <button key={to} onClick={() => { sfx("nav"); nav(to); }} className="text-left p-3 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
+                <b className="block text-sm" style={{ color: "var(--text-primary)" }}>{t}</b>
+                <span className="text-xs" style={{ color: "var(--text-secondary)" }}>{d}</span>
+              </button>
+            ))}
+          </div>
+        </Section>
+        <Section title="Ton abonnement et tes achats">
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => nav("/resiliation")} className="px-4 py-2 text-sm border" style={fs} data-testid="settings-legal-resilier">Résilier votre contrat</button>
+            <button onClick={() => nav("/retractation")} className="px-4 py-2 text-sm border" style={fs} data-testid="settings-legal-renoncer">Renoncer au contrat ici</button>
+          </div>
+        </Section>
         </>)}
 
         {tab === "bunny" && (<>
@@ -1047,6 +1068,12 @@ export default function Settings() {
         </>)}
 
         {isAdmin && tab === "admin" && (<>
+        <Section title="Signalements" extra="— contenus signalés par les membres">
+          <ReportsAdmin />
+        </Section>
+        <Section title="Informations légales" extra="— SIRET, contact, médiateur, TVA…">
+          <LegalInfoAdmin />
+        </Section>
         <Section title="Identité du site" extra="— favicon & description (Google, appli, liens partagés)">
           <SiteIdentity />
         </Section>
@@ -1080,16 +1107,19 @@ export default function Settings() {
   );
 }
 
-function UiSoundPicker({ theme, soundPack, setPack }) {
-  const auto = SOUND_PACKS.find((p) => p.key === packForTheme(theme));
-  const opts = [{ key: "auto", label: "Auto", hint: `Suit le thème · ${auto?.label}` }, ...SOUND_PACKS, { key: "silence", label: "Silence", hint: "Aucun son d'interface" }];
+function UiSoundPicker({ theme, soundPack, setPack, themeSfx = {}, setThemeSfx }) {
+  const base = baseOfTheme(theme);
+  const auto = SOUND_PACKS.find((p) => p.key === packForTheme(base));
+  const opts = [{ key: "auto", label: "Par défaut", hint: `Son du thème · ${auto?.label}` }, ...SOUND_PACKS, { key: "silence", label: "Silence", hint: "Aucun son, sur tous les thèmes" }];
   const lastHover = useRef(0);
-  const hover = (k) => { const n = Date.now(); if (k === "silence" || n - lastHover.current < 120) return; lastHover.current = n; playUiSound("hover", k === "auto" ? packForTheme(theme) : k); };
-  const pick = (k) => { setPack(k); if (k !== "silence") playUiSound("select", k === "auto" ? packForTheme(theme) : k); };
+  const cur = soundPack === "silence" ? "silence" : themeSfx[theme] || "auto";
+  const hover = (k) => { const n = Date.now(); if (k === "silence" || n - lastHover.current < 120) return; lastHover.current = n; playUiSound("hover", k === "auto" ? packForTheme(base) : k); };
+  // Le choix s'applique au thème actif ; chaque autre thème garde son propre son
+  const pick = (k) => { if (k === "silence") { setPack("silence"); return; } setPack("auto"); setThemeSfx?.(theme, k); playUiSound("select", k === "auto" ? packForTheme(base) : k); };
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="ui-sound-grid">
       {opts.map((o) => {
-        const on = soundPack === o.key;
+        const on = cur === o.key;
         return (
           <button key={o.key} data-testid={`ui-sound-${o.key}`} onClick={() => pick(o.key)} onMouseEnter={() => hover(o.key)}
             className="text-left px-4 py-3 border transition-transform hover:-translate-y-0.5"

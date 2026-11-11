@@ -19,7 +19,10 @@ import jwt
 import httpx
 import stripe
 import json
+import secrets
+import html as _html
 from pwdlib import PasswordHash
+from legal_api import build_legal_router, check_birthdate, is_minor as _bd_is_minor
 from pywebpush import webpush, WebPushException
 
 
@@ -281,6 +284,7 @@ class Subscriber(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: str
     created_at: str = Field(default_factory=now_iso)
+    token: str = Field(default_factory=lambda: secrets.token_urlsafe(16))  # lien de désinscription
 
 
 class SubscriberInput(BaseModel):
@@ -1178,7 +1182,7 @@ def _announcement_email_html(title: str, text: str, link: Optional[str]) -> str:
         f'<tr><td style="color:#c8c8c8;font-size:15px;line-height:1.6;padding-top:10px">{text}</td></tr>'
         f'{btn}'
         '<tr><td style="color:#666;font-size:12px;padding-top:28px;border-top:1px solid #2a2a2a;margin-top:20px">'
-        'Tu reçois cet email car tu es abonné·e à Stationexus.</td></tr>'
+        'Tu reçois cet email car tu es abonné·e à la newsletter Station Nexus. <a href="%%UNSUB%%" style="color:#999">Se désinscrire</a></td></tr>'
         '</table></td></tr></table>'
     )
 
@@ -1187,10 +1191,16 @@ async def _broadcast_email(subject: str, html: str):
     if not RESEND_API_KEY:
         logger.warning("RESEND_API_KEY manquant — email non envoyé")
         return
-    subs = await db.subscribers.find({}, {"_id": 0, "email": 1}).to_list(10000)
+    subs = await db.subscribers.find({}, {"_id": 0, "email": 1, "token": 1}).to_list(10000)
     sent = 0
     for s in subs:
-        params = {"from": SENDER_EMAIL, "to": [s["email"]], "subject": subject, "html": html}
+        tok = s.get("token")
+        if not tok:  # anciens abonnés : on leur crée un jeton de désinscription
+            tok = secrets.token_urlsafe(16)
+            await db.subscribers.update_one({"email": s["email"]}, {"$set": {"token": tok}})
+        unsub = f"{_site_url()}/api/newsletter/unsubscribe?t={tok}"
+        params = {"from": SENDER_EMAIL, "to": [s["email"]], "subject": subject, "html": html.replace("%%UNSUB%%", unsub),
+                  "headers": {"List-Unsubscribe": f"<{unsub}>", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"}}
         if REPLY_TO_EMAIL:
             params["reply_to"] = REPLY_TO_EMAIL
         try:
@@ -1199,6 +1209,84 @@ async def _broadcast_email(subject: str, html: str):
         except Exception as e:
             logger.error("Echec envoi email à %s: %s", s.get("email"), e)
     logger.info("Broadcast email '%s' envoyé à %d/%d abonnés", subject, sent, len(subs))
+
+
+# ---------------- Emails transactionnels (confirmations légales) ----------------
+SELLER_LINE = "Brichel-Paul Louzala, EI — SIRET 851 984 690 00012 — 18 Square Lulli, 94500 Champigny-sur-Marne"
+
+
+def _site_url() -> str:
+    return (os.environ.get("PUBLIC_APP_URL") or "https://tengoku-launcher.preview.emergentagent.com").rstrip("/")
+
+
+def _mail_html(title: str, body_html: str) -> str:
+    return (
+        '<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:32px 0">'
+        '<tr><td align="center">'
+        '<table width="520" cellpadding="0" cellspacing="0" style="background:#141414;border-radius:10px;padding:32px;font-family:Arial,Helvetica,sans-serif">'
+        '<tr><td style="color:#d4b26a;font-size:13px;font-weight:bold;letter-spacing:3px">STATION NEXUS</td></tr>'
+        f'<tr><td style="color:#ffffff;font-size:20px;font-weight:bold;padding-top:16px">{title}</td></tr>'
+        f'<tr><td style="color:#d0d0d0;font-size:14px;line-height:1.6;padding-top:10px">{body_html}</td></tr>'
+        f'<tr><td style="color:#777;font-size:11px;padding-top:26px;border-top:1px solid #2a2a2a">{SELLER_LINE}</td></tr>'
+        '</table></td></tr></table>'
+    )
+
+
+async def _send_email(to: str, subject: str, html: str, headers: Optional[dict] = None) -> bool:
+    if not RESEND_API_KEY or not to:
+        logger.warning("Email non envoyé (Resend non configuré ou destinataire vide) : %s", subject)
+        return False
+    params = {"from": SENDER_EMAIL, "to": [to], "subject": subject, "html": html}
+    if headers:
+        params["headers"] = headers
+    if REPLY_TO_EMAIL:
+        params["reply_to"] = REPLY_TO_EMAIL
+    try:
+        await asyncio.to_thread(resend.Emails.send, params)
+        return True
+    except Exception as e:
+        logger.error("Echec envoi email à %s: %s", to, e)
+        return False
+
+
+async def _send_order_confirmation(rec: dict):
+    """Confirmation de commande sur support durable (art. L221-13 C. conso)."""
+    u = await db.users.find_one({"id": rec.get("user_id")}, {"_id": 0, "email": 1})
+    if not u or not u.get("email"):
+        return
+    e = _html.escape
+    c = rec.get("consents") or {}
+    base = _site_url()
+    amount = (rec.get("amount") or 0) / 100
+    when = datetime.now(timezone.utc).strftime("%d/%m/%Y")
+    if rec.get("kind") == "creation":
+        cr = await db.creations.find_one({"id": rec.get("creation_id")}, {"_id": 0, "title": 1})
+        what = f"Accès numérique à la création « {e((cr or {}).get('title') or 'Création')} »"
+        clause = ("<p><b>Accès immédiat et droit de rétractation.</b> Avant le paiement, tu as demandé à accéder immédiatement "
+                  "à ce contenu numérique, avant l'expiration du délai de rétractation de 14 jours, et reconnu perdre ton droit "
+                  "de rétractation dès le début de la fourniture (article L221-28, 13° du Code de la consommation).</p>"
+                  f"<p style=\"color:#999\">Texte accepté : « {e(c.get('waiver_text') or '')} »</p>")
+    else:
+        st = await db.settings.find_one({"key": "site"}, {"_id": 0, "membership_tiers": 1}) or {}
+        tier = next((t for t in (st.get("membership_tiers") or []) if t.get("id") == rec.get("tier_id")), {})
+        what = f"Abonnement mensuel {e(tier.get('name') or 'Station Nexus')} — {amount:.2f} € par mois, sans engagement, renouvelé chaque mois"
+        clause = ("<p><b>Droit de rétractation.</b> Tu disposes de 14 jours à compter de la souscription pour te rétracter et être "
+                  f"intégralement remboursé : <a href=\"{base}/retractation\" style=\"color:#9ecbff\">Renoncer au contrat ici</a>.</p>"
+                  "<p><b>Résiliation.</b> Possible à tout moment, avec effet à la fin de la période déjà payée : "
+                  f"<a href=\"{base}/resiliation\" style=\"color:#9ecbff\">Résilier votre contrat</a>.</p>")
+    body = (f"<p>Merci pour ta commande !</p><p><b>{what}</b><br>Montant payé : {amount:.2f} € TTC<br>Date : {when}"
+            f"<br>Référence : {e(str(rec.get('session_id', ''))[-14:])}</p>{clause}"
+            f"<p>Conditions générales de vente acceptées : version du {e(c.get('cgv_version') or '—')} — "
+            f"<a href=\"{base}/legal/cgv\" style=\"color:#9ecbff\">consulter les CGV</a>.</p>"
+            "<p>Conserve cet email : il vaut confirmation de ta commande.</p>")
+    await _send_email(u["email"], "Confirmation de ta commande — Station Nexus", _mail_html("Commande confirmée", body))
+
+
+async def _cancel_subscription_now(sub_id: str):
+    try:
+        await asyncio.to_thread(stripe.Subscription.delete, sub_id)
+    except Exception as e:
+        logger.warning("Résiliation immédiate Stripe impossible (%s): %s", sub_id, e)
 
 
 @api_router.get("/email/status")
@@ -1550,6 +1638,8 @@ class RegisterInput(BaseModel):
     email: str
     password: str
     name: Optional[str] = None
+    birthdate: Optional[str] = None   # AAAA-MM-JJ — 15 ans minimum
+    newsletter: bool = False          # inscription à la newsletter uniquement sur consentement
 
 
 class LoginInput(BaseModel):
@@ -1582,7 +1672,8 @@ def _mint_token(uid: str, email: str) -> str:
 def _public_user(u: dict) -> dict:
     return {"id": u.get("id"), "email": u.get("email"), "name": u.get("name"),
             "avatar": u.get("avatar"), "favorites": u.get("favorites", []),
-            "preferences": u.get("preferences", {}), "is_admin": bool(u.get("is_admin", False))}
+            "preferences": u.get("preferences", {}), "is_admin": bool(u.get("is_admin", False)),
+            "birthdate_set": bool(u.get("birthdate")), "is_minor": _bd_is_minor(u.get("birthdate"))}
 
 
 async def _subscribe_email(email: str):
@@ -1619,7 +1710,7 @@ async def _ensure_profile_for_user(user: dict):
         {"$setOnInsert": {
             "id": uid, "account_id": uid, "name": name,
             "avatar": user.get("avatar") or "", "email": "",
-            "instagram": "", "hide_tier": False,
+            "instagram": "", "hide_tier": _bd_is_minor(user.get("birthdate")),
             "created_at": now, "updated_at": now,
         }},
         upsert=True,
@@ -1632,21 +1723,26 @@ async def auth_register(data: RegisterInput, request: Request):
     email = data.email.strip().lower()
     if not email or not data.password:
         raise HTTPException(400, "Email et mot de passe requis")
+    if not data.birthdate:
+        raise HTTPException(400, "Indique ta date de naissance")
+    birthdate = check_birthdate(data.birthdate)
     existing = await db.users.find_one({"email": email})
     if existing and existing.get("password_hash"):
         raise HTTPException(409, "Cet email a déjà un compte")
     now = datetime.now(timezone.utc).isoformat()
     if existing:
         await db.users.update_one({"email": email}, {"$set": {
-            "name": data.name or existing.get("name"), "password_hash": pwd.hash(data.password), "updated_at": now}})
+            "name": data.name or existing.get("name"), "password_hash": pwd.hash(data.password),
+            "birthdate": birthdate, "updated_at": now}})
         user = await db.users.find_one({"email": email}, {"_id": 0})
     else:
         user = {"id": str(uuid.uuid4()), "email": email, "name": data.name or email.split("@")[0],
-                "avatar": None, "password_hash": pwd.hash(data.password), "favorites": [],
+                "avatar": None, "password_hash": pwd.hash(data.password), "favorites": [], "birthdate": birthdate,
                 "preferences": {}, "is_admin": False, "created_at": now, "updated_at": now}
         await db.users.insert_one(user)
         user = await db.users.find_one({"email": email}, {"_id": 0})
-    await _subscribe_email(email)
+    if data.newsletter:
+        await _subscribe_email(email)
     await _ensure_profile_for_user(user)
     return {"token": _mint_token(user["id"], email), "user": _public_user(user)}
 
@@ -1686,7 +1782,6 @@ async def auth_google_session(data: GoogleSessionInput, request: Request):
                 "preferences": {}, "is_admin": False, "created_at": now, "updated_at": now}
         await db.users.insert_one(user)
     user = await db.users.find_one({"email": email}, {"_id": 0})
-    await _subscribe_email(email)
     await _ensure_profile_for_user(user)
     return {"token": _mint_token(user["id"], email), "user": _public_user(user)}
 
@@ -1870,6 +1965,7 @@ class CheckoutInput(BaseModel):
     creation_id: Optional[str] = None
     tier_id: Optional[str] = None
     origin_url: str
+    consents: Optional[Dict[str, Any]] = None  # CGV, accès immédiat, accord parental (preuve)
 
 
 async def _grant(session_id: str):
@@ -1908,11 +2004,24 @@ async def _grant(session_id: str):
             upsert=True,
         )
     await db.payment_transactions.update_one({"session_id": session_id}, {"$set": {"granted": True}})
+    try:
+        await _send_order_confirmation(rec)
+    except Exception as e:
+        logger.error("Confirmation de commande non envoyée (%s): %s", session_id, e)
 
 
 @api_router.post("/payments/checkout")
-async def create_checkout(data: CheckoutInput, user=Depends(get_current_user)):
+async def create_checkout(data: CheckoutInput, request: Request, user=Depends(get_current_user)):
     origin = data.origin_url.rstrip("/")
+    c = data.consents or {}
+    if not c.get("cgv_accepted"):
+        raise HTTPException(400, "Accepte les conditions générales de vente pour continuer")
+    if data.kind == "creation" and not c.get("immediate_access_waiver"):
+        raise HTTPException(400, "Demande l'accès immédiat au contenu pour finaliser l'achat")
+    if not user.get("birthdate"):
+        raise HTTPException(400, "Indique ta date de naissance avant ton premier achat")
+    if _bd_is_minor(user.get("birthdate")) and not c.get("parental_ok"):
+        raise HTTPException(400, "L'accord d'un de tes parents est nécessaire pour cet achat")
     if data.kind == "creation":
         cr = await db.creations.find_one({"id": data.creation_id}, {"_id": 0})
         if not cr:
@@ -1947,7 +2056,8 @@ async def create_checkout(data: CheckoutInput, user=Depends(get_current_user)):
         "creation_id": data.creation_id if data.kind == "creation" else None,
         "tier_id": data.tier_id if data.kind == "membership" else None,
         "amount": amount, "currency": "eur", "status": "initiated", "payment_status": "pending",
-        "granted": False, "created_at": datetime.now(timezone.utc).isoformat(),
+        "granted": False, "created_at": datetime.now(timezone.utc).isoformat(), "origin": origin,
+        "consents": {**c, "server_at": datetime.now(timezone.utc).isoformat(), "ip": _client_ip(request)},
     })
     return {"checkout_url": session.url, "session_id": session.id}
 
@@ -2058,7 +2168,21 @@ async def membership_cancel(user=Depends(get_current_user)):
         stripe.Subscription.modify(m["stripe_subscription_id"], cancel_at_period_end=True)
     except Exception as e:
         raise HTTPException(500, f"Stripe: {e}")
-    return {"status": "cancel_scheduled", "current_period_end": m.get("current_period_end")}
+    now = datetime.now(timezone.utc)
+    ref = f"RES-{now.strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    end = m.get("current_period_end")
+    await db.cancellations.insert_one({"ref": ref, "user_id": user["id"], "created_at": now.isoformat(),
+                                       "subscription_id": m["stripe_subscription_id"], "effective_at": end})
+    try:
+        end_txt = datetime.fromisoformat(end).strftime("%d/%m/%Y") if end else "la fin de la période en cours"
+    except Exception:
+        end_txt = "la fin de la période en cours"
+    await _send_email(user.get("email"), f"Résiliation de ton abonnement — {ref}", _mail_html("Résiliation enregistrée",
+        f"<p>Nous avons bien reçu ta demande de résiliation le {now.strftime('%d/%m/%Y à %H:%M')} (UTC).</p>"
+        f"<p><b>Référence :</b> {ref}<br><b>Fin de l'abonnement :</b> {end_txt}</p>"
+        "<p>Tu gardes ton accès jusqu'à cette date, et aucun nouveau prélèvement n'aura lieu.</p>"
+        "<p>Conserve cet email : il vaut accusé de réception.</p>"))
+    return {"status": "cancel_scheduled", "current_period_end": end, "ref": ref, "at": now.isoformat()}
 
 
 # ==================== Community Chat (public salon — abonnés) ====================
@@ -2684,6 +2808,8 @@ from themes import build_themes_router  # noqa: E402
 api_router.include_router(build_themes_router(db, require_admin))
 from calendar_api import build_calendar_router  # noqa: E402
 api_router.include_router(build_calendar_router(db, require_admin))
+api_router.include_router(build_legal_router(db, get_current_user, require_admin, _send_email, _mail_html, _public_user,
+                                             _subscribe_email, _cancel_subscription_now, rate_limit, _site_url))
 app.include_router(api_router)
 
 # CORS : origines explicites (plus de "*" avec credentials). En prod, définir CORS_ORIGINS

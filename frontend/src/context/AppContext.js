@@ -3,6 +3,7 @@ import { useThemeState, baseOf, themeDef, isCustomKey } from "@/lib/themeStore";
 import { useAuth } from "@/context/AuthContext";
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { audioUrl, ambienceUrl, readingAudioUrl, getSettings, upsertProfile, listAmbiences } from "@/lib/api";
+import { zoomOf, resetUiRatio } from "@/lib/uiScale";
 import { configureSound, playUiSound, primeAudioCtx, isValidPack } from "@/lib/sound";
 
 const AppContext = createContext(null);
@@ -59,7 +60,11 @@ export function AppProvider({ children }) {
   // L'ambiance atmosphérique (pluie, vaisseau…) a sa propre coupure dans lib/ambient (AmbientMixer).
   const [muteSfx, setMuteSfx] = useState(() => localStorage.getItem(LS.mSfx) === "1");
   const [muteMusic, setMuteMusic] = useState(() => localStorage.getItem(LS.mMusic) === "1");
-  const [soundPack, setSoundPack] = useState(() => { const p = localStorage.getItem(LS.pack); return isValidPack(p) ? p : "auto"; });
+  // Réglage général : « auto » (chaque thème a son son) ou « silence ». Un ancien pack forcé redevient « auto ».
+  const [soundPack, setSoundPack] = useState(() => { const p = localStorage.getItem(LS.pack); return p === "silence" ? "silence" : "auto"; });
+  // Son choisi pour un thème précis (Réglages → Sons d'interface), sinon le son par défaut du thème
+  const [themeSfx, setThemeSfxState] = useState(() => { try { return JSON.parse(localStorage.getItem("sx_theme_sfx") || "{}") || {}; } catch { return {}; } });
+  const setThemeSfx = (key, pack) => setThemeSfxState((m) => { const n = { ...m }; if (!pack || pack === "auto") delete n[key]; else n[key] = pack; localStorage.setItem("sx_theme_sfx", JSON.stringify(n)); return n; });
   const [customSounds, setCustomSounds] = useState(() => {
     try { return JSON.parse(localStorage.getItem(LS.custom) || "null"); } catch { return null; }
   });
@@ -138,7 +143,7 @@ export function AppProvider({ children }) {
   const [homeLayout, setHomeLayoutState] = useState(() => localStorage.getItem("sx_homelayout") || "steam");
   const scaleKey = (phone) => (phone ? "sx_textscale_mobile" : "sx_textscale_desktop");
   // resolve per-device text scale: device key -> legacy key -> default (petit on phone, grand on PC)
-  const resolveScale = (phone) => localStorage.getItem(scaleKey(phone)) || localStorage.getItem(LS.textScale) || (phone ? "petit" : "grand");
+  const resolveScale = (phone) => localStorage.getItem(scaleKey(phone)) || localStorage.getItem(LS.textScale) || (phone ? "petit" : "normal");
   const [textScale, setTextScaleState] = useState(() => resolveScale(isPhoneNow()));
 
   // per-device values (for choosing PC & mobile independently from settings)
@@ -202,7 +207,7 @@ export function AppProvider({ children }) {
   useEffect(() => { document.documentElement.setAttribute("data-poster", posterSize); }, [posterSize]);
   useEffect(() => { document.documentElement.setAttribute("data-motion", reduceMotion ? "reduced" : "full"); }, [reduceMotion]);
   useEffect(() => { document.documentElement.setAttribute("data-card-tagline", cardTagline ? "on" : "off"); }, [cardTagline]);
-  useEffect(() => { document.documentElement.setAttribute("data-textscale", textScale); }, [textScale]);
+  useEffect(() => { const h = document.documentElement; h.setAttribute("data-textscale", textScale); h.style.setProperty("--uiz", String(zoomOf(textScale))); resetUiRatio(); window.dispatchEvent(new Event("resize")); }, [textScale]);
   // switch to the device's own remembered size when crossing the phone/desktop breakpoint
   useEffect(() => {
     if (!window.matchMedia) return;
@@ -213,7 +218,7 @@ export function AppProvider({ children }) {
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => { const tp = themeDef(theme, tstate)?.sfx_pack; configureSound({ pack: soundPack === "auto" && tp && tp !== "auto" ? tp : soundPack, theme: baseOf(theme), muted: muted || muteSfx, volume: uiVolume }); }, [soundPack, theme, muted, muteSfx, uiVolume, tstate]);
+  useEffect(() => { const tp = themeDef(theme, tstate)?.sfx_pack; configureSound({ pack: soundPack === "silence" ? "silence" : themeSfx[theme] && isValidPack(themeSfx[theme]) ? themeSfx[theme] : tp && tp !== "auto" && isValidPack(tp) ? tp : "auto", theme: baseOf(theme), muted: muted || muteSfx, volume: uiVolume }); }, [soundPack, theme, muted, muteSfx, uiVolume, tstate, themeSfx]);
   useEffect(() => {
     const vMusic = (muted || muteMusic) ? 0 : musicVolume;
     if (cardAudio.current) cardAudio.current.volume = vMusic;
@@ -470,7 +475,7 @@ export function AppProvider({ children }) {
     theme, setTheme, isAdmin,
     musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
     muteSfx, muteMusic, toggleSfx, toggleMusic,
-    soundPack, setPack, customSounds, setCustom, sfx,
+    soundPack, setPack, themeSfx, setThemeSfx, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying, playMode, setPlayMode, nextAmbience,
     profile, saveProfile, clearProfile,
     favorites, toggleFavorite, isFavorite,

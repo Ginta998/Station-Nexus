@@ -74,6 +74,9 @@ class ConfigIn(BaseModel):
     cover_ratio: Optional[str] = None
     gcal_pont: Optional[bool] = None
     radio: Optional[List[Dict[str, Any]]] = None
+    backlog: Optional[List[Dict[str, Any]]] = None
+    portal_ambience: Optional[str] = None
+    portal_key: Optional[str] = None
 
 
 def _esc(t: str) -> str:

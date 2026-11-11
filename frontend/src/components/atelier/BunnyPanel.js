@@ -4,6 +4,7 @@ import { playUiSound } from "@/lib/sound";
 import BunnySprite from "@/components/atelier/BunnySprite";
 import { atelierApi, KINDS } from "@/lib/atelier";
 import BunnyMessage from "@/components/atelier/BunnyMessage";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const QUICK = [
   ["Inspire-moi", "Propose-moi trois idées de scènes inattendues pour cet univers."],
@@ -39,7 +40,7 @@ export default function BunnyPanel({ at, universeId, onClose, openBrains }) {
     try { const s = await atelierApi.bunnySession(id); setSid(s.id); setMsgs(s.messages); setMode(s.mode || "chat"); } catch { setErr("Impossible d'ouvrir cette conversation."); }
   };
   const remove = async () => {
-    if (!sid || !window.confirm("Supprimer cette conversation avec Bunny ?")) return;
+    if (!sid || !(await labConfirm("Supprimer cette conversation avec Bunny ?"))) return;
     try { await atelierApi.bunnyDelete(sid); setSessions((l) => l.filter((s) => s.id !== sid)); openSession(null); } catch { setErr("Suppression impossible, réessaie."); }
   };
   const send = async (msg, fresh) => {

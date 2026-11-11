@@ -1,0 +1,57 @@
+/* ===== Laboratoire clair — lisibilité de l'Atelier (règles écrites à la main) =====
+   L'Atelier a été dessiné pour des fonds sombres : on corrige les textes clairs posés sur le papier,
+   sans toucher aux images. Sur les bandeaux à image, le voile devient graphite (et non blanc)
+   pour que l'image reste visible et que le texte posé dessus reste clair. */
+html[data-theme="laboclair"] .cb-stars{opacity:0}
+html[data-theme="laboclair"] .cosmic-bg .layer{opacity:0}
+html[data-theme="laboclair"]{--card-r:0px;--card-bd:rgba(28,31,33,.2);--card-sh:0 12px 26px -16px rgba(60,66,70,.45)}
+
+/* Textes courants */
+[data-theme="laboclair"] .at-root :is(.at-sub,.at-hero-mid .at-sub){color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root :is(.at-empty,.at-card-x,.at-form label,.at-form .lbl){color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root :is(.at-capture textarea,.at-ed-title,.at-hub-q input,.at-pal-in input){color:var(--text-primary)}
+[data-theme="laboclair"] .at-root .at-view h1{text-shadow:none}
+/* Champs */
+[data-theme="laboclair"] .at-root :is(.at-tadd input,.at-tadd select,.at-form input,.at-form textarea,.at-form select,.at-ed-sec select,.at-ed-bar select,.at-inline input,.at-media-add input,.at-appwin-bar input,.at-task .due){
+  background:rgba(255,255,255,.7);color:var(--text-primary);border-color:var(--border-c);color-scheme:light}
+/* Boutons secondaires et onglets */
+[data-theme="laboclair"] .at-root .at-btn.ghost{background:rgba(255,255,255,.6);color:var(--text-primary);border-color:var(--border-c)}
+[data-theme="laboclair"] .at-root .at-btn.ghost:hover{background:#fff;border-color:var(--text-primary)}
+[data-theme="laboclair"] .at-root .at-tabs button{background:rgba(255,255,255,.55);color:var(--text-secondary);border-color:var(--border-c)}
+[data-theme="laboclair"] .at-root .at-tabs button.on{color:var(--text-primary);border-color:var(--text-primary);background:#fff}
+[data-theme="laboclair"] .at-root .at-seg button{color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root .at-seg button.on{color:var(--text-primary);background:rgba(255,255,255,.8)}
+[data-theme="laboclair"] .at-root :is(.dl-tabs,.ck-tabs,.at-cock-tabs) button{color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root :is(.dl-tabs,.ck-tabs,.at-cock-tabs) button.on{color:var(--text-primary)}
+/* Menu */
+[data-theme="laboclair"] .at-root .at-dock-b{color:var(--text-primary)}
+[data-theme="laboclair"] .at-root .at-dock-b .sb{opacity:1;color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root .at-dock-b:hover{color:var(--text-primary)}
+[data-theme="laboclair"] .at-root .at-search{color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root .at-search:hover{color:var(--text-primary)}
+
+/* Bandeaux à image : voile graphite, image visible, texte clair */
+[data-theme="laboclair"] .at-root :is(.at-hero,.at-uhero.has,.sx-hero){--text-primary:#f1f2f3;--text-secondary:#c9ced1;color:#f1f2f3}
+[data-theme="laboclair"] .at-root .at-hero::after{background:linear-gradient(180deg,rgba(16,18,20,.5) 0%,transparent 32%),linear-gradient(0deg,rgba(16,18,20,.75) 0%,transparent 48%),linear-gradient(90deg,rgba(16,18,20,.78) 0%,rgba(16,18,20,.35) 45%,transparent 70%)}
+[data-theme="laboclair"] .at-root .sx-hero::after{background:linear-gradient(0deg,rgba(16,18,20,.7) 0%,transparent 50%),linear-gradient(90deg,rgba(16,18,20,.75),transparent 62%)}
+[data-theme="laboclair"] .at-root .at-uhero.has .bg{opacity:.85}
+[data-theme="laboclair"] .at-root .at-uhero.has::after{background:linear-gradient(90deg,rgba(16,18,20,.82),rgba(16,18,20,.3))}
+[data-theme="laboclair"] .at-root .at-uni-big .cov::after{background:linear-gradient(0deg,rgba(16,18,20,.55),transparent 55%)}
+[data-theme="laboclair"] .at-root :is(.at-hero,.at-uhero.has) .at-btn.ghost{background:rgba(16,18,20,.45);color:#fff;border-color:rgba(255,255,255,.4)}
+[data-theme="laboclair"] .at-root .at-hero-mid .at-sub{color:#d9dddf}
+[data-theme="laboclair"] .at-root .at-btn:not(.ghost):not(.at-drive-new){color:#fff}
+/* Sur les images : tout le texte en clair (heure, compteurs, titres de cartes) */
+[data-theme="laboclair"] .at-root .at-hero :is(.at-hero-top b,.at-hero-stats b,.at-hero-foot b,.at-hero-mid b){color:#fff}
+[data-theme="laboclair"] .at-root .at-hero small{color:#e4e7e9;opacity:.8}
+[data-theme="laboclair"] .at-root .at-hero .at-eyebrow{color:#ffb27a}
+[data-theme="laboclair"] .at-root .at-uni-big .cov::after{background:linear-gradient(0deg,rgba(16,18,20,.82) 0%,rgba(16,18,20,.35) 45%,transparent 70%)}
+[data-theme="laboclair"] .at-root .at-uni-big .t :is(b,small){color:#fff}
+[data-theme="laboclair"] .at-root .at-uni-big .t b{text-shadow:0 1px 12px rgba(0,0,0,.5)}
+/* Reprendre : fond papier net */
+[data-theme="laboclair"] .at-root .at-resume{background:rgba(255,255,255,.72);border-color:var(--border-c)}
+[data-theme="laboclair"] .at-root .at-resume em{opacity:1;color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root :is(.at-hero,.at-uni-big .t,.at-uhero.has) :is(h1,b,small,p,span){text-shadow:0 1px 12px rgba(0,0,0,.55)}
+[data-theme="laboclair"] .at-root .at-hero small{opacity:1}
+[data-theme="laboclair"] .at-root .at-task .chk{border-color:rgba(28,31,33,.45)}
+[data-theme="laboclair"] .at-root .at-task .meta{opacity:1;color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root .at-task .meta *{color:var(--text-secondary)}

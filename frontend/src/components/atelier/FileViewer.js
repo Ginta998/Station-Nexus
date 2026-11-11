@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { KINDS, fileType, imgSrc } from "@/lib/atelier";
 import { EmbedFrame } from "@/components/atelier/AppScreens";
 import { popOut } from "@/lib/embed";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const abs = (u) => (u?.startsWith("http") ? u : window.location.origin + imgSrc(u));
 
@@ -38,7 +39,7 @@ export default function FileViewer({ at, id, onClose, edit }) {
     await at.saveItem({ ...it, content: notes.split(/\n{2,}/).map((p) => `<p>${p.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br/>")}</p>`).join("") });
     toast.success("Notes enregistrées"); setNotes(null);
   };
-  const del = async () => { if (window.confirm(`Supprimer « ${it.title || "ce fichier"} » de l'Atelier ?`)) { await at.removeItem(it.id); onClose(); } };
+  const del = async () => { if ((await labConfirm(`Supprimer « ${it.title || "ce fichier"} » de l'Atelier ?`))) { await at.removeItem(it.id); onClose(); } };
   const ext = m?.type === "link" || m?.type === "youtube" ? m.url : null;
   return (
     <div className="fv-wrap" data-testid="file-viewer">

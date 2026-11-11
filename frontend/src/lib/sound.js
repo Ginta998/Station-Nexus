@@ -15,7 +15,7 @@ const getNoise = (c) => {
   return noiseBuf;
 };
 
-let settings = { pack: "auto", theme: "abysse", muted: false, volume: 0.7 };
+let settings = { pack: "auto", theme: "abysse", muted: false, volume: 0.7, zone: "" };
 export const configureSound = (s) => { settings = { ...settings, ...s }; };
 export const primeAudioCtx = () => { getCtx(); };
 
@@ -70,7 +70,42 @@ function noise(c, dest, { at = 0, dur, gain, type = "bandpass", f = 2500, q = 1,
   s.start(t); s.stop(t + dur + 0.02);
 }
 
+// souffle filtré qui balaie une plage de fréquences (ouverture / fermeture de panneau)
+function sweep(c, dest, { at = 0, dur, gain, from, to, q = 0.9 }) {
+  const t = c.currentTime + at;
+  const s = c.createBufferSource(); s.buffer = getNoise(c);
+  const fl = c.createBiquadFilter(); fl.type = "bandpass"; fl.Q.value = q;
+  fl.frequency.setValueAtTime(from, t); fl.frequency.exponentialRampToValueAtTime(to, t + dur);
+  const g = c.createGain(); g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(gain, t + dur * 0.35); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(fl); fl.connect(g); g.connect(dest); s.start(t); s.stop(t + dur + 0.02);
+}
+const jitter = (f, amt = 0.06) => f * (1 + (Math.random() - 0.5) * amt);
+
 const PACKS = {
+  laboratoire: {
+    label: "Laboratoire", hint: "Doux · net · salle blanche",
+    // Sons courts, doux et feutrés : sinusoïdes filtrées, aucun aigu perçant, aucun écho métallique
+    play(c, ev) {
+      const room = out(c, { time: 0.09, fb: 0.12, tone: 1800 });
+      const dry = out(c);
+      if (ev === "hover") tone(c, dry, { f: 1046.5, dur: 0.03, gain: 0.012, attack: 0.002, lp: 1800 });
+      if (ev === "type") playKeyOn(c, dry, 0.6);
+      if (ev === "nav") { tone(c, room, { type: "triangle", f: 784, dur: 0.09, gain: 0.03, attack: 0.003, lp: 1800 }); tone(c, room, { f: 1174.7, at: 0.05, dur: 0.12, gain: 0.016, attack: 0.004, lp: 2000 }); }
+      if (ev === "select") {
+        tone(c, room, { f: 523.25, dur: 0.22, gain: 0.03, attack: 0.004, lp: 1600 });
+        tone(c, room, { f: 783.99, at: 0.04, dur: 0.26, gain: 0.022, attack: 0.004, lp: 1800 });
+        tone(c, dry, { f: 92, f2: 70, dur: 0.1, gain: 0.06, attack: 0.003, lp: 300 });
+      }
+      if (ev === "back") tone(c, room, { type: "triangle", f: 784, f2: 523.25, dur: 0.12, gain: 0.025, attack: 0.003, lp: 1600 });
+      if (ev === "open") { sweep(c, dry, { dur: 0.32, gain: 0.018, from: 300, to: 1600, q: 0.7 }); tone(c, room, { f: 659.25, at: 0.18, dur: 0.2, gain: 0.018, lp: 1600 }); }
+      if (ev === "close") sweep(c, dry, { dur: 0.26, gain: 0.016, from: 1500, to: 300, q: 0.7 });
+      if (ev === "grant") {
+        [523.25, 659.25, 783.99, 987.77].forEach((f, i) => tone(c, room, { f, at: i * 0.06, dur: 1.6, gain: 0.018, attack: 0.04, lp: 2200 }));
+        tone(c, dry, { f: 65.4, dur: 1.4, gain: 0.07, attack: 0.08, lp: 220 });
+      }
+    },
+  },
   monolithe: {
     label: "Monolithe", hint: "Acier · mécanique précise",
     play(c, ev) {
@@ -256,7 +291,7 @@ const PACKS = {
 };
 
 // thème -> pack (les thèmes sans pack dédié prennent Abysse)
-export const THEME_SOUND = { tengoku: "tengoku", monolithe: "monolithe", abysse: "abysse", olympe: "elysium", olympia: "elysium", neant: "neant", glacier: "glacier", neptune: "neptune", singularite: "singularite", blackhole: "blackhole", supernova: "supernova", helios: "helios", akira: "akira", aurum: "aurum", megapole: "megapole", biome: "biome", albatre: "albatre", yorha: "yorha", aincrad: "elysium", aincradnight: "glacier", frontiere: "supernova", terra: "biome" };
+export const THEME_SOUND = { tengoku: "tengoku", monolithe: "monolithe", abysse: "abysse", olympe: "elysium", olympia: "elysium", neant: "neant", glacier: "glacier", neptune: "neptune", singularite: "singularite", blackhole: "blackhole", supernova: "supernova", helios: "helios", akira: "akira", aurum: "aurum", megapole: "megapole", biome: "biome", albatre: "albatre", yorha: "yorha", aincrad: "elysium", aincradnight: "glacier", frontiere: "supernova", terra: "biome", labo: "laboratoire", laboclair: "laboratoire" };
 export const packForTheme = (theme) => THEME_SOUND[theme] || "abysse";
 export const SOUND_PACKS = Object.entries(PACKS).map(([key, v]) => ({ key, label: v.label, hint: v.hint }));
 export const isValidPack = (p) => p === "auto" || p === "silence" || !!PACKS[p];
@@ -267,4 +302,77 @@ export function playUiSound(event, forcePack) {
   if (key === "silence") return;
   const c = getCtx(); if (!c) return;
   (PACKS[key] || PACKS.abysse).play(c, event);
+}
+
+
+// Frappe de clavier mécanique feutrée (indépendante du pack) : « thock » grave + clic doux
+function playKeyOn(c, dest, k = 1) {
+  tone(c, dest, { f: jitter(150, 0.15), f2: 95, dur: 0.035, gain: 0.07 * k, attack: 0.001, lp: 700 });
+  noise(c, dest, { dur: 0.012, gain: 0.06 * k, f: jitter(1900, 0.2), q: 1.4 });
+}
+// Claviers du démarrage (Réglages de l'Atelier → Ambiance du portail)
+export const PORTAL_KEYS = [
+  { key: "feutre", label: "Mécanique feutré", hint: "Thock grave, clic doux" },
+  { key: "machine", label: "Machine à écrire", hint: "Frappe sèche, ruban" },
+  { key: "verre", label: "Touches de verre", hint: "Tapotement cristallin, doux" },
+  { key: "goutte", label: "Gouttes", hint: "Petites gouttes d'eau" },
+];
+function keyVariant(c, dest, kind, k) {
+  if (kind === "machine") { noise(c, dest, { dur: 0.022, gain: 0.11 * k, f: jitter(2400, 0.15), q: 1.4 }); tone(c, dest, { type: "square", f: jitter(900, 0.1), f2: 600, dur: 0.02, gain: 0.012 * k, lp: 2600 }); tone(c, dest, { f: 120, dur: 0.03, gain: 0.05 * k, lp: 400 }); }
+  else if (kind === "verre") { tone(c, dest, { f: jitter(1318.5, 0.04), dur: 0.09, gain: 0.022 * k, attack: 0.002, lp: 2600 }); noise(c, dest, { dur: 0.006, gain: 0.02 * k, f: 3800, q: 3 }); }
+  else if (kind === "goutte") tone(c, dest, { f: jitter(1250, 0.12), f2: 420, dur: 0.09, gain: 0.05 * k, attack: 0.002, lp: 2200 });
+  else playKeyOn(c, dest, k);
+}
+let lastKey = 0;
+export function playKey(k = 1, kind) {
+  if (settings.muted || (settings.volume ?? 0.7) <= 0) return;
+  const n = performance.now(); if (n - lastKey < 28) return; lastKey = n;
+  const c = getCtx(); if (!c) return;
+  let v = kind; if (!v) { try { v = localStorage.getItem("nx-portal-key") || "feutre"; } catch (_) { v = "feutre"; } }
+  keyVariant(c, out(c), v, k);
+}
+
+// Ambiances du portail (démarrage de l'Atelier). Renvoie { stop(ms) }.
+export const PORTAL_AMBIENCES = [
+  { key: "archives", label: "Salle des archives", hint: "Nappe chaude, souffle de la salle" },
+  { key: "pluie", label: "Pluie sur le labo", hint: "Pluie douce derrière la vitre" },
+  { key: "orbite", label: "Orbite", hint: "Nappe aérienne, carillon lointain" },
+];
+export function startPortalAmbience(kind = "archives") {
+  if (settings.muted || (settings.volume ?? 0.7) <= 0) return { stop() {} };
+  const c = getCtx(); if (!c) return { stop() {} };
+  const wake = () => { if (c.state === "suspended") c.resume().catch(() => {}); };
+  ["pointerdown", "keydown", "touchstart"].forEach((e) => window.addEventListener(e, wake, { passive: true }));
+  const master = c.createGain(); master.gain.value = 0.0001; master.connect(c.destination);
+  master.gain.setTargetAtTime(Math.min(1, (settings.volume ?? 0.7) * 1.4) * 0.45, c.currentTime, 1.4);
+  const nodes = []; const timers = []; let alive = true;
+  const osc = (f, type, g, dest, det = 0) => { const o = c.createOscillator(); o.type = type; o.frequency.value = f; o.detune.value = det; const gg = c.createGain(); gg.gain.value = g; o.connect(gg); gg.connect(dest); o.start(); nodes.push(o); return o; };
+  const lfo = (rate, depth, param) => { const o = c.createOscillator(); o.frequency.value = rate; const g = c.createGain(); g.gain.value = depth; o.connect(g); g.connect(param); o.start(); nodes.push(o); };
+  const noiseLoop = (type, f, q, g, dest) => { const s = c.createBufferSource(); s.buffer = getNoise(c); s.loop = true; const fl = c.createBiquadFilter(); fl.type = type; fl.frequency.value = f; fl.Q.value = q; const gg = c.createGain(); gg.gain.value = g; s.connect(fl); fl.connect(gg); gg.connect(dest); s.start(); nodes.push(s); return { fl, gg }; };
+  const lowpass = (f, dest = master) => { const l = c.createBiquadFilter(); l.type = "lowpass"; l.frequency.value = f; l.connect(dest); return l; };
+  if (kind === "archives") {
+    const lp = lowpass(520); lfo(0.05, 140, lp.frequency);
+    osc(110, "triangle", 0.09, lp); osc(164.81, "triangle", 0.05, lp, 4); osc(220, "sine", 0.04, lp, -5); osc(55, "sine", 0.08, lp);
+    noiseLoop("lowpass", 900, 0.4, 0.03, master);
+  } else if (kind === "pluie") {
+    const rain = noiseLoop("bandpass", 2600, 0.35, 0.09, master); lfo(0.13, 0.025, rain.gg.gain);
+    noiseLoop("lowpass", 380, 0.5, 0.06, master);
+    const lp = lowpass(360); osc(73.42, "triangle", 0.07, lp); osc(110, "sine", 0.035, lp, 3);
+    const drop = () => { if (!alive) return; noise(c, master, { dur: 0.02, gain: 0.04 + Math.random() * 0.04, f: 1800 + Math.random() * 2600, q: 6 }); timers.push(setTimeout(drop, 60 + Math.random() * 260)); };
+    timers.push(setTimeout(drop, 400));
+  } else {
+    const lp = lowpass(1400); lfo(0.04, 500, lp.frequency);
+    osc(146.83, "sine", 0.06, lp); osc(220, "sine", 0.045, lp, 6); osc(329.63, "sine", 0.03, lp, -6); osc(440, "sine", 0.012, lp, 3);
+    const wind = noiseLoop("bandpass", 600, 0.7, 0.03, master); lfo(0.07, 350, wind.fl.frequency);
+    const chime = () => { if (!alive) return; tone(c, master, { f: [587.33, 659.25, 880, 987.77][Math.floor(Math.random() * 4)], dur: 2.4, gain: 0.014, attack: 0.02, lp: 1800 }); timers.push(setTimeout(chime, 2600 + Math.random() * 3200)); };
+    timers.push(setTimeout(chime, 1500));
+  }
+  return {
+    stop(ms = 1200) {
+      if (!alive) return; alive = false; timers.forEach(clearTimeout);
+      ["pointerdown", "keydown", "touchstart"].forEach((e) => window.removeEventListener(e, wake));
+      const t = c.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(0.0001, t + ms / 1000);
+      setTimeout(() => { nodes.forEach((n) => { try { n.stop(); } catch (_) {} }); master.disconnect(); }, ms + 100);
+    },
+  };
 }
