@@ -26,7 +26,7 @@ import { ShortcutBar, runShortcut } from "@/components/atelier/Shortcuts";
 import BunnyBrains from "@/components/atelier/BunnyBrains";
 import BunnySprite from "@/components/atelier/BunnySprite";
 import FocusView from "@/components/atelier/FocusView";
-import RadioView, { useRadio, RadioEngine, RadioBar } from "@/components/atelier/Radio";
+import RadioView, { useRadio, RadioEngine, RadioBar, RadioMini } from "@/components/atelier/Radio";
 import { IoRadioOutline } from "react-icons/io5";
 import OeuvreView from "@/components/atelier/OeuvreView";
 import OeuvreForm from "@/components/atelier/OeuvreForm";
@@ -81,6 +81,8 @@ export default function AtelierApp({ onLeave }) {
   const [brains, setBrains] = useState(false);
   const [focusMode, setFocusMode] = useState(() => window.location.hash === "#focus");
   const radio = useRadio(at);
+  const [radioMini, setRadioMini] = useState(() => { try { return localStorage.getItem("nx-radio-mini") === "1"; } catch { return false; } });
+  const setRadioSmall = (v) => { setRadioMini(v); sfx?.("select"); try { localStorage.setItem("nx-radio-mini", v ? "1" : "0"); } catch {} };
   useEffect(() => { if (screen || focusMode) radio.pause(); }, [screen, focusMode]); // eslint-disable-line
   const [dockOpen, setDockOpen] = useState(() => { try { return localStorage.getItem("nexus-dock") !== "0"; } catch (_) { return true; } });
   const toggleDock = () => setDockOpen((o) => { const n = !o; try { localStorage.setItem("nexus-dock", n ? "1" : "0"); } catch (_) {} return n; });
@@ -132,13 +134,14 @@ export default function AtelierApp({ onLeave }) {
   useLabFx(view.name + (view.id || ""), sfx);
 
   return (
-    <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl ? " has-radio" : "") + (menuOpen ? " menu-open" : "") + (navHub ? " nav-hub" : "")} data-testid="atelier-app">
+    <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl && !radioMini ? " has-radio" : "") + (menuOpen ? " menu-open" : "") + (navHub ? " nav-hub" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
       <header className="at-top">
         <div className="at-brand" onClick={() => go({ name: "home" })} role="button" style={{ cursor: "pointer" }} data-testid="atelier-logo-home"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
         <button className="at-search" onClick={() => { sfx("nav"); setPalette(true); }} data-testid="atelier-search-open"><IoSearch size={15} /><span>Rechercher un univers, une fiche, une scène…</span><kbd className="mono">Ctrl K</kbd></button>
         <div className="at-top-r">
           <ShipClock />
+          {radioMini && <RadioMini radio={radio} onOpen={() => go({ name: "radio" })} onExpand={() => setRadioSmall(false)} />}
           <SoundBtn btn={soundBtn} />
           <TextSizeButton className="at-icon at-aa" />
           <FsBtn />
@@ -207,7 +210,7 @@ export default function AtelierApp({ onLeave }) {
       {drop && <DropDialog at={at} drop={drop} defaults={drop.defaults} open={open} onClose={() => setDrop(null)} />}
       {screen && <Player screen={screen} onClose={() => setScreen(null)} onNavigate={setScreen} />}
       <RadioEngine radio={radio} />
-      {!focusMode && <RadioBar radio={radio} onOpen={() => go({ name: "radio" })} />}
+      {!focusMode && !radioMini && <RadioBar radio={radio} onOpen={() => go({ name: "radio" })} onMini={() => setRadioSmall(true)} />}
       {palette && <CommandPalette {...ctx} onClose={() => setPalette(false)} newUniverse={() => { setPalette(false); setUForm({}); }} />}
       {!bunny && <div className="bn-fab"><BunnySprite pose="neutral" size={74} className="cb-bounce" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" testid="bunny-open" /></div>}
       {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} openBrains={() => setBrains(true)} />}
