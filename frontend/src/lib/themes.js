@@ -21,6 +21,8 @@ export const THEMES = [
   { key: "aincradnight", name: "Aincrad Nocturne", kanji: "夜城", tagline: "Les étages veillent sous la lune", swatch: ["#050a16", "#39a8ff", "#ff9a3c"] },
   { key: "frontiere", name: "Frontière", kanji: "辺境", tagline: "Les machines rôdent au crépuscule", swatch: ["#0d0806", "#e8692a", "#4fd6c6"] },
   { key: "terra", name: "Terra 4099", kanji: "緑廃", tagline: "La nature a repris le monde", swatch: ["#0a0f0b", "#9cc46c", "#e0d3ac"] },
+  { key: "labo", name: "Laboratoire", kanji: "研究", tagline: "Les archives respirent sous les lamelles", swatch: ["#1a1d1f", "#e8833a", "#c9ced1"] },
+  { key: "laboclair", name: "Laboratoire clair", kanji: "白研", tagline: "La lumière froide des salles blanches", swatch: ["#e6e8e9", "#d0601f", "#4a5054"] },
 ];
 
 export const CATEGORIES = [

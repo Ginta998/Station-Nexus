@@ -178,3 +178,14 @@ export const deleteJournalCategory = (id) => api.delete(`/journal/categories/${i
 export const uploadJournalImage = (file) => { const fd = new FormData(); fd.append("file", file); return api.post("/journal-files", fd, { timeout: 120000 }).then((r) => r.data); };
 // les URLs d'images du journal sont relatives (/api/...) : on les rend absolues
 export const mediaUrl = (u) => (u && u.startsWith("/api/") ? `${BACKEND_URL}${u}` : u || "");
+
+// ---- Légal / RGPD / signalements ----
+export const setAge = (p) => api.put("/auth/age", p).then((r) => r.data);
+export const sendRetractation = (p) => api.post("/legal/retractation", p).then((r) => r.data);
+export const exportMyData = () => api.get("/me/export", { responseType: "blob" }).then((r) => r.data);
+export const deleteMyAccount = (confirm) => api.delete("/me", { data: { confirm } }).then((r) => r.data);
+export const reportContent = (p) => api.post("/reports", p).then((r) => r.data);
+export const listReports = () => api.get("/reports").then((r) => r.data);
+export const decideReport = (id, p) => api.put(`/reports/${id}`, p).then((r) => r.data);
+export const getLegalInfo = () => api.get("/legal-info").then((r) => r.data);
+export const saveLegalInfo = (p) => api.put("/legal-info", p).then((r) => r.data);

@@ -23,6 +23,13 @@ import Revenue from "@/pages/Revenue";
 import Chat from "@/pages/Chat";
 import { ChatProvider } from "@/context/ChatContext";
 import PaymentResult from "@/pages/PaymentResult";
+import Legal from "@/pages/Legal";
+import Resiliation from "@/pages/Resiliation";
+import Retractation from "@/pages/Retractation";
+import LegalFooter from "@/components/LegalFooter";
+import { CheckoutConfirmHost } from "@/components/CheckoutConfirm";
+import AgeGate from "@/components/AgeGate";
+import { ReportHost } from "@/components/ReportDialog";
 import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
 import GlobalSound from "@/components/GlobalSound";
@@ -65,6 +72,8 @@ function IntroGate() {
 
   useEffect(() => {
     if (sessionStorage.getItem("sx_intro_shown") === "1") { markEntered(); return; }
+    // L'Atelier a son propre splash : jamais l'intro publique par-dessus
+    if (window.location.pathname.startsWith("/atelier")) { markEntered(); return; }
     if (localStorage.getItem("sx_intro_off") === "1") { markEntered(); return; }
     if (startTarget() === "atelier" && window.location.pathname === "/" && !sessionStorage.getItem("sx_start_done")) { markEntered(); return; }
 
@@ -136,7 +145,14 @@ function App() {
             <Route path="/salon" element={<Chat />} />
             <Route path="/payment/success" element={<PaymentResult mode="success" />} />
             <Route path="/payment/cancel" element={<PaymentResult mode="cancel" />} />
+            <Route path="/legal/:doc" element={<Legal />} />
+            <Route path="/resiliation" element={<Resiliation />} />
+            <Route path="/retractation" element={<Retractation />} />
           </Routes>
+          <LegalFooter />
+          <CheckoutConfirmHost />
+          <AgeGate />
+          <ReportHost />
           <CosmicBunny />
           <GlobalSound />
           <PortalListener />

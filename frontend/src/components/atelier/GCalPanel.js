@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { IoAdd, IoTrashOutline, IoCreateOutline, IoCheckmark, IoLogoGoogle, IoOpenOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const get = (u, p) => api.get(u, { params: p }).then((r) => r.data);
 const pad = (n) => String(n).padStart(2, "0");
@@ -53,7 +54,7 @@ export default function GCalPanel({ days = 7, compact = false }) {
     window.history.replaceState(window.history.state, "", window.location.pathname);
   }, []);
   const connect = async () => { try { window.location.href = (await get("/atelier/calendar/connect")).url; } catch (e) { err(e); } };
-  const del = async (e) => { if (!window.confirm(`Supprimer « ${e.title} » de ton agenda ?`)) return; try { await api.delete(`/atelier/calendar/events/${e.id}`); qc.invalidateQueries({ queryKey: ["gcal"] }); toast.success("Supprimé"); } catch (x) { err(x); } };
+  const del = async (e) => { if (!(await labConfirm(`Supprimer « ${e.title} » de ton agenda ?`))) return; try { await api.delete(`/atelier/calendar/events/${e.id}`); qc.invalidateQueries({ queryKey: ["gcal"] }); toast.success("Supprimé"); } catch (x) { err(x); } };
 
   const list = evs.data || [];
   const groups = []; list.forEach((e) => { const d = e.start.slice(0, 10); const g = groups.find((x) => x.d === d); g ? g.items.push(e) : groups.push({ d, items: [e] }); });

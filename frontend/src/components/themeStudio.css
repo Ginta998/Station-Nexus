@@ -104,7 +104,7 @@
 .ts-prev-cta{position:absolute!important;right:16px;bottom:16px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;opacity:0;transition:opacity .2s}
 .ts-prev:hover .ts-prev-cta{opacity:1}
 .ts-back{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:130;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:999px;border:0;background:var(--brand);color:#fff;font-weight:700;cursor:pointer;box-shadow:0 14px 40px -10px #000;animation:tsIn .3s both}
-@media(max-width:860px){.ts-panel.full{flex-direction:column;height:100vh;top:0;border-radius:0}.ts-panel.full .ts-col{flex:1 1 auto;border-right:0}.ts-prev-wrap{flex:0 0 auto;padding:12px 16px 20px}}
+@media(max-width:860px){.ts-panel.full{flex-direction:column;height:calc(100vh / var(--uiz,1));top:0;border-radius:0}.ts-panel.full .ts-col{flex:1 1 auto;border-right:0}.ts-prev-wrap{flex:0 0 auto;padding:12px 16px 20px}}
 .ts-amb-row{display:grid;grid-template-columns:90px 1fr 28px;align-items:center;gap:10px;font-size:12px}
 .ts-amb-row input{accent-color:var(--brand)}
 .ts-amb-row button{border:0;background:rgba(255,255,255,.08);color:inherit;border-radius:8px;height:26px;cursor:pointer}

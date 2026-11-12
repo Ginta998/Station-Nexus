@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { IoPlay, IoPause, IoPlaySkipForward, IoPlaySkipBack, IoShuffle, IoRadioOutline, IoVolumeHigh, IoVolumeMute, IoClose, IoAdd, IoTrashOutline, IoImageOutline, IoInfinite, IoListOutline, IoPencil, IoSearch, IoCheckmark, IoLogoYoutube } from "react-icons/io5";
+import { IoPlay, IoPause, IoPlaySkipForward, IoPlaySkipBack, IoShuffle, IoRadioOutline, IoVolumeHigh, IoVolumeMute, IoClose, IoAdd, IoTrashOutline, IoImageOutline, IoInfinite, IoListOutline, IoPencil, IoSearch, IoCheckmark, IoLogoYoutube, IoChevronDown, IoExpandOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { uploadJournalImage } from "@/lib/api";
 import { imgSrc, useMediaClaim, atelierApi } from "@/lib/atelier";
 import "@/components/atelier/radio.css";
 import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "";
 const listOf = (u = "") => (u.match(/[?&]list=([\w-]+)/) || [])[1];
@@ -102,7 +103,24 @@ export function RadioEngine({ radio: r }) {
   return <iframe key={r.pl.src} ref={r.fr} className="rd-engine" src={r.pl.src} title="Radio Nexus" allow="autoplay; encrypted-media" referrerPolicy="strict-origin-when-cross-origin" onLoad={() => hello(r)} />;
 }
 
-export function RadioBar({ radio: r, onOpen }) {
+// Lecteur réduit : une pastille dans la barre du haut, à côté du bouton son.
+export function RadioMini({ radio: r, onOpen, onExpand }) {
+  if (!r.pl) return null;
+  const i = r.info;
+  return (
+    <div className="rd-mini" style={{ "--rc": r.pl.color || "var(--brand)" }} data-testid="radio-mini">
+      <button className="rd-mini-now" onClick={onOpen} title={`${i.title || r.pl.title} : ouvrir la Radio`}>
+        <span className="rd-mini-art" style={{ backgroundImage: `url(${thumb(i.vid) || coverOf(r.pl)})` }}>{r.playing && <span className="sx-eq"><i /><i /><i /><i /></span>}</span>
+        <span className="rd-mini-txt">{i.title || r.pl.title}</span>
+      </button>
+      <button className="rd-ic" onClick={r.toggle} title={r.playing ? "Pause" : "Lecture"} data-testid="radio-mini-toggle">{r.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>
+      <button className="rd-ic rd-mini-nx" onClick={r.next} title="Suivant"><IoPlaySkipForward size={14} /></button>
+      <button className="rd-ic" onClick={onExpand} title="Agrandir le lecteur" data-testid="radio-mini-expand"><IoExpandOutline size={14} /></button>
+    </div>
+  );
+}
+
+export function RadioBar({ radio: r, onOpen, onMini }) {
   const i = r.info;
   const [q, setQ] = useState(false);
   if (!r.pl) return null;
@@ -121,6 +139,7 @@ export function RadioBar({ radio: r, onOpen }) {
         <button className={"rd-ic" + (q ? " on" : "")} onClick={() => setQ(!q)} title="File d'attente" data-testid="radio-queue-toggle"><IoListOutline size={18} /></button>
         <button className="rd-ic" onClick={r.mute} data-testid="radio-mute">{r.muted ? <IoVolumeMute size={17} /> : <IoVolumeHigh size={17} />}</button>
         <input className="rd-vol" type="range" min="0" max="100" value={r.muted ? 0 : r.vol} onChange={(e) => r.setVol(+e.target.value)} style={{ "--p": (r.muted ? 0 : r.vol) + "%" }} data-testid="radio-volume" />
+        {onMini && <button className="rd-ic" onClick={onMini} title="Réduire le lecteur en haut de l'écran" data-testid="radio-minimize"><IoChevronDown size={18} /></button>}
         <button className="rd-ic" onClick={r.stop} title="Couper la radio" data-testid="radio-stop"><IoClose size={18} /></button>
       </div>
     </div>
@@ -160,7 +179,7 @@ export default function RadioView({ radio: r }) {
   const picked = r.list.filter((p) => sel.has(p.id));
   const merge = async () => {
     if (picked.length < 2) return toast.error("Choisis au moins 2 playlists à fusionner");
-    const name = window.prompt("Nom de la nouvelle station", picked.map((p) => p.title).join(" + ").slice(0, 60)); if (!name || !name.trim()) return;
+    const name = (await labPrompt("Nom de la nouvelle station", picked.map((p) => p.title).join(" + ").slice(0, 60))); if (!name || !name.trim()) return;
     const t = toast.loading("Fusion des playlists…");
     const vids = [...new Set((await Promise.all(picked.map(idsOf))).flat())];
     toast.dismiss(t);
@@ -168,8 +187,8 @@ export default function RadioView({ radio: r }) {
     r.save([...r.list, { id: Date.now().toString(36), title: name.trim(), url: `https://www.youtube.com/watch?v=${vids[0]}`, vids, thumb: thumb(vids[0]), color: picked[0].color }]);
     toast.success(`Station créée · ${vids.length} morceaux${vids.length > 200 ? " (200 lus à la suite)" : ""}`); sel.clear();
   };
-  const delMany = () => {
-    if (!window.confirm(`Supprimer ${picked.length} playlist(s) ?`)) return;
+  const delMany = async () => {
+    if (!(await labConfirm(`Supprimer ${picked.length} playlist(s) ?`))) return;
     if (cur && sel.has(cur.id)) r.stop();
     r.save(r.list.filter((p) => !sel.has(p.id))); toast.success("Supprimées"); sel.clear();
   };
@@ -179,7 +198,13 @@ export default function RadioView({ radio: r }) {
       <div className="rd-hero" style={{ "--art": hero ? `url(${hero})` : "none" }}>
         <div className="rd-hero-bg" />
         <div className="rd-hero-in">
-          <span className="rd-hero-art" style={{ backgroundImage: `url(${cur ? thumb(i.vid) || coverOf(cur) : coverOf(r.list[0])})` }}>{!hero && <IoRadioOutline size={64} />}</span>
+          {/* Disque : la pochette remplit tout le vinyle (les vignettes YouTube ont des bandes noires : on les recadre) */}
+          <span className={"rd-hero-art rd-disc" + (r.playing ? " spin" : "")}>
+            {hero ? <span className={"rd-disc-art" + (/ytimg\.com/.test(hero) ? " yt" : "")} style={{ backgroundImage: `url(${hero})` }} /> : <IoRadioOutline size={64} />}
+            <span className="rd-disc-grooves" aria-hidden="true" />
+            <span className="rd-disc-gloss" aria-hidden="true" />
+            <span className="rd-disc-hole" aria-hidden="true" />
+          </span>
           <div className="rd-hero-txt">
             <p className="mono rd-eye"><span className={"rd-live" + (r.playing ? " on" : "")} /> {cur ? (r.playing ? "EN ONDE" : "EN PAUSE") : "RADIO NEXUS"}{r.station ? " · MODE STATION" : ""}</p>
             <h1 data-testid="radio-now-title">{cur ? i.title || cur.title : "Ta radio personnelle"}</h1>

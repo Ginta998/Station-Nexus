@@ -8,7 +8,7 @@ export const useAuth = () => useContext(AuthContext);
 // localStorage keys that follow the account across devices (NOT admin/pin/session)
 const PREF_KEYS = [
   "sx_theme", "sx_radius", "sx_motion", "sx_cardtagline",
-  "sx_musicvolume", "sx_uivolume", "sx_mute", "sx_soundpack", "sx_customsounds", "sx_ambience",
+  "sx_musicvolume", "sx_uivolume", "sx_mute", "sx_soundpack", "sx_theme_sfx", "sx_customsounds", "sx_ambience",
   "sx_postersize", "sx_postersize_desktop", "sx_postersize_mobile", "sx_layout",
   "sx_textscale", "sx_textscale_desktop", "sx_textscale_mobile",
   "sx_reader_font", "sx_reader_size", "sx_reader_line", "sx_reader_width", "sx_reader_dropcap",
@@ -82,8 +82,8 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const register = useCallback(async (email, password, name) => {
-    const res = await authRegister({ email, password, name });
+  const register = useCallback(async (email, password, name, birthdate, newsletter = false) => {
+    const res = await authRegister({ email, password, name, birthdate, newsletter });
     await finishAuth(res, "Compte créé — tes favoris te suivront partout ! 🐰");
   }, [finishAuth]);
 
@@ -172,7 +172,7 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, ready, authOpen, authMode, openAuth: (m) => { setAuthMode(m === "register" ? "register" : "login"); setAuthOpen(true); }, closeAuth: () => setAuthOpen(false), register, login, startGoogle, logout, claimAdmin }}>
+    <AuthContext.Provider value={{ user, ready, authOpen, authMode, openAuth: (m) => { setAuthMode(m === "register" ? "register" : "login"); setAuthOpen(true); }, closeAuth: () => setAuthOpen(false), updateUser: setUser, register, login, startGoogle, logout, claimAdmin }}>
       {children}
     </AuthContext.Provider>
   );

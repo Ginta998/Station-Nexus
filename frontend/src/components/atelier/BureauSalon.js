@@ -8,6 +8,7 @@ import { EmbedFrame } from "@/components/atelier/AppScreens";
 import { YtSearch, ContinueRow } from "@/components/atelier/SalonExtras";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import { addShortcut, appShortcut } from "@/components/atelier/Shortcuts";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 // Mode d'ouverture choisi par app (intégré / fenêtre / onglet), mémorisé en local — tu choisis, et tu changes quand tu veux.
 const AMODE_KEY = "nexus-app-mode";
@@ -30,7 +31,7 @@ export function BureauView({ at, launch }) {
     return popOut(a.url, "nexus-" + a.key);
   };
   const removeApp = async (a) => {
-    if (!window.confirm(`Retirer « ${a.title} » du bureau ?`)) return;
+    if (!(await labConfirm(`Retirer « ${a.title} » du bureau ?`))) return;
     if (a.custom) await at.removeLink(a.custom.id); else await at.saveConfig({ hidden_apps: [...hidden, a.key] });
     toast.success(`${a.title} retiré du bureau`);
   };
@@ -147,20 +148,20 @@ export function SalonView({ at, launch, mini }) {
     const qi = Math.max(0, list.findIndex((x) => x.id === item.id));
     launch({ title: item.title, url: item.url, queue: list.map((x) => ({ title: x.title, url: x.url })), qi });
   };
-  const renameLink = (l) => {
-    const t = window.prompt("Titre", l.title || ""); if (t === null) return;
-    const u = window.prompt("Lien (au cas où il ne fonctionne plus)", l.url || ""); if (u === null) return;
+  const renameLink = async (l) => {
+    const t = (await labPrompt("Titre", l.title || "")); if (t === null) return;
+    const u = (await labPrompt("Lien (au cas où il ne fonctionne plus)", l.url || "")); if (u === null) return;
     at.saveLink({ ...l, title: t.trim() || l.title, url: u.trim() || l.url }).then(() => toast.success("Modifié"));
   };
   const savePl = (pl) => { setPlaylists(pl); at.saveConfig({ playlists: pl }); try { localStorage.setItem(PL_KEY, JSON.stringify(pl)); } catch (_) {} };
-  const newPlaylist = () => { const name = window.prompt("Nom de la playlist (ex. One Piece)"); if (name && name.trim()) savePl([...playlists, { id: "pl-" + Date.now(), name: name.trim(), ids: [] }]); };
-  const renamePl = (p) => { const n = window.prompt("Nom de la playlist", p.name); if (n && n.trim()) savePl(playlists.map((x) => x.id === p.id ? { ...x, name: n.trim() } : x)); };
+  const newPlaylist = async () => { const name = (await labPrompt("Nom de la playlist (ex. One Piece)")); if (name && name.trim()) savePl([...playlists, { id: "pl-" + Date.now(), name: name.trim(), ids: [] }]); };
+  const renamePl = async (p) => { const n = (await labPrompt("Nom de la playlist", p.name)); if (n && n.trim()) savePl(playlists.map((x) => x.id === p.id ? { ...x, name: n.trim() } : x)); };
   const addToPlaylist = (plId, linkIds) => { const add = [].concat(linkIds); savePl(playlists.map((p) => p.id === plId ? { ...p, ids: [...p.ids, ...add.filter((x) => !p.ids.includes(x))] } : p)); setAddTo(null); sel.clear(); toast.success("Ajouté à la playlist"); };
   const delMany = async () => {
-    if (!window.confirm(`Retirer ${sel.ids.length} vidéo(s) du Salon ?`)) return;
+    if (!(await labConfirm(`Retirer ${sel.ids.length} vidéo(s) du Salon ?`))) return;
     await Promise.all(sel.ids.map((id) => at.removeLink(id))); toast.success("Retirées du Salon"); sel.clear();
   };
-  const removePlaylist = (plId) => { if (window.confirm("Supprimer cette playlist ? (les vidéos restent dans le Salon)")) { savePl(playlists.filter((p) => p.id !== plId)); setOpenPl(null); } };
+  const removePlaylist = async (plId) => { if ((await labConfirm("Supprimer cette playlist ? (les vidéos restent dans le Salon)"))) { savePl(playlists.filter((p) => p.id !== plId)); setOpenPl(null); } };
   const saveOrder = (o) => { setOrder(o); try { localStorage.setItem(ORDER_KEY, JSON.stringify(o)); } catch (_) {} };
   const moveSec = (k, dir) => { const i = order.indexOf(k), j = i + dir; if (i < 0 || j < 0 || j >= order.length) return; const o = [...order]; [o[i], o[j]] = [o[j], o[i]]; saveOrder(o); };
 
@@ -316,7 +317,7 @@ export function SalonView({ at, launch, mini }) {
             <div className="h"><b>Ajouter à une playlist</b><button className="at-icon" onClick={() => setAddTo(null)}><IoClose size={16} /></button></div>
             {playlists.length === 0 && <p className="empty">Aucune playlist encore — crées-en une.</p>}
             {playlists.map((p) => <button key={p.id} className="opt" onClick={() => addToPlaylist(p.id, addTo)}><IoListOutline size={15} /> <span>{p.name}</span><small>{(p.ids || []).length}</small></button>)}
-            <button className="opt new" onClick={() => { const name = window.prompt("Nom de la playlist"); if (name && name.trim()) { savePl([...playlists, { id: "pl-" + Date.now(), name: name.trim(), ids: [].concat(addTo) }]); setAddTo(null); sel.clear(); toast.success("Playlist créée"); } }}><IoAdd size={15} /> Nouvelle playlist</button>
+            <button className="opt new" onClick={async () => { const name = (await labPrompt("Nom de la playlist")); if (name && name.trim()) { savePl([...playlists, { id: "pl-" + Date.now(), name: name.trim(), ids: [].concat(addTo) }]); setAddTo(null); sel.clear(); toast.success("Playlist créée"); } }}><IoAdd size={15} /> Nouvelle playlist</button>
           </div>
         </div>
       )}

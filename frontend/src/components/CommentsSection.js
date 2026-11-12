@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { IoSend, IoTrashOutline, IoChatbubbleEllipsesOutline, IoTvOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { listComments, addComment, deleteComment } from "@/lib/api";
+import { ReportFlag } from "@/components/ReportDialog";
 import { useApp } from "@/context/AppContext";
 import AutoTextarea from "@/components/AutoTextarea";
 
@@ -110,9 +111,12 @@ export default function CommentsSection({ creationId, units = [], term = "Épiso
               <p className="text-sm mt-0.5 whitespace-pre-wrap" style={{ color: "var(--text-primary)" }}>{c.text}</p>
               <p className="text-[10px] mt-1" style={{ color: "var(--text-secondary)" }}>{new Date(c.created_at).toLocaleDateString("fr-FR")}</p>
             </div>
-            {isAdmin && (
-              <button data-testid={`comment-delete-${c.id}`} onClick={() => remove(c.id)} style={{ color: "var(--brand)" }}><IoTrashOutline size={16} /></button>
-            )}
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <ReportFlag target={{ target_type: "comment", target_id: c.id, label: c.text }} size={14} />
+              {isAdmin && (
+                <button data-testid={`comment-delete-${c.id}`} onClick={() => remove(c.id)} style={{ color: "var(--brand)" }}><IoTrashOutline size={16} /></button>
+              )}
+            </div>
           </div>
         ))}
       </div>

@@ -5,6 +5,7 @@ import { addShortcut } from "@/components/atelier/Shortcuts";
 import { IoAdd, IoSearch, IoStar, IoStarOutline, IoListOutline, IoGridOutline, IoEnterOutline, IoSparklesOutline, IoLibraryOutline } from "react-icons/io5";
 import { imgSrc } from "@/lib/atelier";
 import ImportBase from "@/components/atelier/ImportBase";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const SORTS = [["recent", "Récents"], ["az", "A → Z"], ["size", "Les plus riches"]];
 
@@ -56,7 +57,7 @@ export default function UniversesHub({ at, go, editUniverse }) {
     { id: "edit", label: "Modifier", onClick: () => editUniverse(u) },
     { id: "shortcut", label: "Ajouter aux raccourcis", onClick: () => addShortcut(at, { t: "universe", id: u.id }) },
     "-",
-    { id: "delete", label: "Supprimer l'univers", danger: true, onClick: () => window.confirm(`Supprimer « ${u.name} » ? Ses éléments iront dans l'Inbox.`) && at.removeUniverse(u.id) },
+    { id: "delete", label: "Supprimer l'univers", danger: true, onClick: async () => (await labConfirm(`Supprimer « ${u.name} » ? Ses éléments iront dans l'Inbox.`)) && at.removeUniverse(u.id) },
   ] });
   const [q, setQ] = useState("");
   const [sort, setSort] = useState("recent");

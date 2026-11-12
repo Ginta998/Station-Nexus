@@ -12,6 +12,7 @@ const MICRO = {
   blackhole: "虚無暗闇重力無", albatre: "石灰白月静寂", bunny: "兎桃柔光夢",
   olympe: "聖神殿大理石光", olympia: "神山白銀光雲", neant: "無空虚零",
   aincrad: "浮城剣界層空雲", aincradnight: "夜城剣月層星", frontiere: "辺境機獣火砂風", terra: "緑廃苔機骸森滅",
+  labo: "研究所記録許可接続零壱弐参", laboclair: "研究所記録許可接続白光",
 };
 const READOUT = {
   abysse: ["PROFONDEUR <b>−3214 M</b>", "PRESSION 318 BAR", "ABYSSE"],
@@ -36,6 +37,8 @@ const READOUT = {
   aincradnight: ["ÉTAGE <b>74 / 100</b>", "ZONE SÛRE", "AINCRAD"],
   frontiere: ["MACHINE <b>DÉTECTÉE</b>", "VENT 34 KM/H", "FRONTIÈRE"],
   terra: ["AN <b>4099</b>", "HUMAINS 0", "VERDURE 100%"],
+  labo: ["ARCHIVE <b>X-001</b>", "ACCÈS AUTORISÉ", "研究所"],
+  laboclair: ["SALLE <b>BLANCHE</b>", "ACCÈS AUTORISÉ", "研究所"],
 };
 
 function microFor(t) {

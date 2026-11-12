@@ -129,3 +129,12 @@
 .rd-yt-add:hover{background:color-mix(in srgb,var(--rc,var(--brand)) 28%,transparent)}
 .rd-yt-add.on{opacity:.6;border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06);cursor:default}
 @media(max-width:860px){.rd-yt-grid{grid-template-columns:repeat(2,1fr);gap:14px 12px}}
+
+/* Lecteur réduit, dans la barre du haut */
+.rd-mini{display:flex;align-items:center;gap:2px;height:38px;padding:0 4px 0 4px;border:1px solid var(--line);border-radius:10px;max-width:260px;min-width:0;animation:rdBar .3s ease both}
+.rd-mini-now{display:flex;align-items:center;gap:8px;min-width:0;border:0;background:none;color:inherit;cursor:pointer;padding:0 4px 0 0;text-align:left}
+.rd-mini-art{position:relative;flex:0 0 auto;width:28px;height:28px;border-radius:6px;background:#222 center/cover;display:grid;place-items:center;box-shadow:0 0 0 1px color-mix(in srgb,var(--rc) 50%,transparent)}
+.rd-mini-art .sx-eq{width:14px;height:14px;color:#fff;filter:drop-shadow(0 1px 2px #000)}
+.rd-mini-txt{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.rd-mini .rd-ic{width:28px;height:28px}
+@media (max-width:900px){.rd-mini-txt,.rd-mini-nx{display:none}}

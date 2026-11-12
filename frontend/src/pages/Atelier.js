@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { atelierApi, imgSrc } from "@/lib/atelier";
 import { mediaUrl } from "@/lib/api";
 import AtelierLoader from "@/components/atelier/AtelierLoader";
+import { configureSound, startPortalAmbience, PORTAL_AMBIENCES } from "@/lib/sound";
 
 const loadApp = () => import("@/components/atelier/AtelierApp");
 const AtelierApp = lazy(loadApp);
@@ -15,7 +16,7 @@ const fadeOut = (a, ms, done) => {
   const step = (t) => { const k = Math.min(1, (t - t0) / ms); a.volume = v0 * (1 - k); if (k < 1) requestAnimationFrame(step); else { a.pause(); done(); } };
   requestAnimationFrame(step);
 };
-const STEPS = ["Ouverture du portail", "Synchronisation de tes univers", "Assemblage des modules", "Matérialisation des visuels", "Arrimage à l'Atelier"];
+const STEPS = ["Identification", "Synchronisation des archives", "Assemblage des modules", "Chargement des visuels", "Ouverture du pont"];
 const MIN_TRAVEL = 5200;
 
 // Vrai chargement façon voyage : données, code et images prêts avant d'entrer ; la musique du voyage s'estompe à l'arrivée
@@ -27,7 +28,12 @@ export default function Atelier() {
   const [progress, setProgress] = useState(0);
   const [step, setStep] = useState(0);
   const [phase, setPhase] = useState("loading");
+  const [granted, setGranted] = useState(false);
+  const skipRef = useRef(false);
+  const appReady = useRef(false);
+  const finishRef = useRef(null);
   const audio = useRef(null);
+  const amb = useRef(null);
   const inMedia = useRef(false);
   const real = useRef(0);
   const direct = useRef(new URLSearchParams(window.location.search).has("direct") || !!window.history.state?.usr?.direct).current;
@@ -38,6 +44,18 @@ export default function Atelier() {
     if (!isAdmin) { nav("/", { replace: true }); return; }
     let alive = true;
     const t0 = Date.now();
+    const release = () => { if (inMedia.current) { inMedia.current = false; exitMediaMode(); } };
+    // Ambiance du portail : réglage de l'Atelier (Réglages → Portail), mémorisé aussi sur l'appareil
+    const SYN = PORTAL_AMBIENCES.map((a) => a.key);
+    const pref = localStorage.getItem("nx-portal-amb");
+    let ambKind = SYN.includes(pref) ? pref : pref ? null : "archives";
+    if (!direct && ambKind) amb.current = startPortalAmbience(ambKind);
+    finishRef.current = () => {
+      if (!alive) return; alive = false;
+      amb.current?.stop(900);
+      if (audio.current) fadeOut(audio.current, 900, release); else release();
+      setPhase("arrive"); setTimeout(() => setPhase("ready"), 700);
+    };
     const cached = qc.getQueryData(["atelier"]);
     (async () => {
       try {
@@ -60,7 +78,13 @@ export default function Atelier() {
         if (!alive) return;
         if (direct) { await loadApp(); if (alive) setPhase("ready"); return; }
         const cfg = data.config || {};
-        if (cfg.music_url && !muted) {
+        try { if (cfg.portal_key) localStorage.setItem("nx-portal-key", cfg.portal_key); } catch (_) {}
+        const choice = cfg.portal_ambience || pref || (cfg.music_url ? "music" : "archives");
+        if (choice !== ambKind) {
+          amb.current?.stop(choice === "music" ? 1500 : 500); amb.current = null;
+          if (SYN.includes(choice) && alive) { ambKind = choice; amb.current = startPortalAmbience(choice); }
+        }
+        if (choice === "music" && cfg.music_url && !muted) {
           enterMediaMode(); inMedia.current = true;
           const a = new Audio(mediaUrl(cfg.music_url));
           a.volume = musicVolume * 0.85; audio.current = a;
@@ -69,6 +93,8 @@ export default function Atelier() {
         setReal(25); setStep(2);
         await loadApp();
         if (!alive) return;
+        appReady.current = true;
+        if (skipRef.current) { finishRef.current(); return; }
         setReal(45); setStep(3);
         const imgs = [...new Set([...data.universes.map((u) => u.cover), ...data.items.map((i) => i.image)].filter(Boolean))].map(imgSrc);
         let done = 0;
@@ -80,14 +106,16 @@ export default function Atelier() {
         setReal(100);
         await bar;
         if (!alive) return;
+        setGranted(true); // « ACCÈS AUTORISÉ » se décode, puis l'obturateur se referme sur le pont
         setTimeout(() => {
           if (!alive) return;
           setPhase("arrive");
-          const release = () => { if (inMedia.current) { inMedia.current = false; exitMediaMode(); } };
+          amb.current?.stop(2200);
           if (audio.current) fadeOut(audio.current, 2600, release); else release();
-          setTimeout(() => alive && setPhase("ready"), 1100);
-        }, 350);
+          setTimeout(() => alive && setPhase("ready"), 1000);
+        }, 1300);
       } catch {
+        amb.current?.stop(600);
         if (alive) setPhase("error");
       }
     })();
@@ -95,16 +123,19 @@ export default function Atelier() {
     // eslint-disable-next-line
   }, [ready, isAdmin]);
 
-  useEffect(() => () => { audio.current?.pause(); if (inMedia.current) exitMediaMode(); }, []); // eslint-disable-line
+  useEffect(() => () => { amb.current?.stop(300); audio.current?.pause(); if (inMedia.current) exitMediaMode(); }, []); // eslint-disable-line
+  useEffect(() => { configureSound({ zone: "atelier" }); document.documentElement.classList.add("in-atelier"); return () => { configureSound({ zone: "" }); document.documentElement.classList.remove("in-atelier"); }; }, []);
   useEffect(() => { if (audio.current && phase === "loading") audio.current.volume = muted ? 0 : musicVolume * 0.85; }, [muted, musicVolume, phase]);
 
   const leave = () => nav("/");
+  // Passer le splash : dès que le code de l'Atelier est chargé (sinon dès qu'il l'est)
+  const skip = () => { if (appReady.current) finishRef.current?.(); else skipRef.current = true; };
   return (
     <div className="at-root" data-testid="atelier-page">
       {phase !== "loading" && phase !== "error" && (
         <Suspense fallback={null}><AtelierApp onLeave={leave} /></Suspense>
       )}
-      {phase !== "ready" && <AtelierLoader progress={progress} label={STEPS[step]} error={phase === "error"} leaving={phase === "arrive"} onLeave={leave} />}
+      {phase !== "ready" && <AtelierLoader progress={progress} label={STEPS[step]} steps={STEPS} step={step} granted={granted} error={phase === "error"} leaving={phase === "arrive"} onLeave={leave} onSkip={phase === "loading" ? skip : undefined} />}
     </div>
   );
 }

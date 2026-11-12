@@ -3,6 +3,7 @@ import { IoClose, IoImageOutline, IoTrashOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { uploadJournalImage } from "@/lib/api";
 import { imgSrc, OEUVRE_FORMATS } from "@/lib/atelier";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const COLORS = ["#ff2f5f", "#ffb340", "#3ff0ff", "#7c5cff", "#00e5a0", "#ff7ad9", "#e8e1cf"];
 const STATUS = ["en cours", "en pause", "terminé", "idée"];
@@ -47,7 +48,7 @@ export default function OeuvreForm({ at, oeuvre, onClose }) {
   };
   const remove = async () => {
     if (!existing) return onClose();
-    if (!window.confirm(`Supprimer l'œuvre « ${o.title} » ? Ses éléments retournent dans leur univers.`)) return;
+    if (!(await labConfirm(`Supprimer l'œuvre « ${o.title} » ? Ses éléments retournent dans leur univers.`))) return;
     await at.removeItem(existing.id); toast.success("Œuvre supprimée"); onClose();
   };
 

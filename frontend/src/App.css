@@ -1,5 +1,5 @@
 .App {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(100vh / var(--uiz, 1));
+  min-height: calc(100dvh / var(--uiz, 1));
   background: var(--bg-primary);
 }

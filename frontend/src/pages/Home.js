@@ -253,7 +253,7 @@ export default function Home() {
   let gi = 0; // compteur d'index global pour les affiches
 
   return (
-    <div style={{ minHeight: "100vh", background: "transparent", color: "var(--text-primary)", position: "relative" }}>
+    <div style={{ minHeight: "calc(100vh / var(--uiz, 1))", background: "transparent", color: "var(--text-primary)", position: "relative" }}>
       <div style={{ position: "relative", zIndex: 1 }}>
       <TopBar onAdd={openCreate} onProfile={requireProfile} />
       <HomeCountdown />

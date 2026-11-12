@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { IoArrowBack, IoHome, IoLibraryOutline, IoSparkles, IoCheckmarkCircle } from "react-icons/io5";
-import { getLibrary, getMembershipPlan, cancelMembership, startCheckout, posterUrl } from "@/lib/api";
+import { getLibrary, getMembershipPlan, startCheckout, posterUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import QuickControls from "@/components/QuickControls";
@@ -13,7 +12,7 @@ export default function Library() {
   const nav = useNavigate();
   const { sfx } = useApp();
   const { user, openAuth } = useAuth();
-  const { data, isLoading, refetch } = useQuery({ queryKey: ["library"], queryFn: getLibrary, enabled: !!user });
+  const { data, isLoading } = useQuery({ queryKey: ["library"], queryFn: getLibrary, enabled: !!user });
   const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
   const [busy, setBusy] = useState(false);
 
@@ -21,11 +20,6 @@ export default function Library() {
   const primary = { background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" };
 
   const subscribe = async () => { nav("/soutien"); };
-  const doCancel = async () => {
-    if (!window.confirm("Résilier ton abonnement à la fin de la période en cours ?")) return;
-    try { await cancelMembership(); toast.success("Abonnement résilié à la fin de la période."); refetch(); }
-    catch (e) { toast.error(e?.response?.data?.detail || "Erreur"); }
-  };
 
   const creations = data?.creations || [];
   const membership = data?.membership || { active: false };
@@ -68,7 +62,7 @@ export default function Library() {
                 </div>
                 <div className="flex flex-col gap-2 items-end">
                   <button data-testid="membership-change" onClick={() => nav("/soutien")} className="px-4 py-2 text-sm font-medium" style={btn}>Changer de palier</button>
-                  <button data-testid="membership-cancel" onClick={doCancel} className="text-xs underline" style={{ color: "var(--text-secondary)" }}>Résilier l'abonnement</button>
+                  <button data-testid="membership-cancel" onClick={() => nav("/resiliation")} className="text-xs underline" style={{ color: "var(--text-secondary)" }}>Résilier votre contrat</button>
                 </div>
               </div>
             </div>

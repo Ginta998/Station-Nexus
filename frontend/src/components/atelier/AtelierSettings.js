@@ -9,6 +9,42 @@ import { useApp } from "@/context/AppContext";
 import { StartupSetting } from "@/components/Startup";
 import ShortcutsManager from "@/components/atelier/ShortcutsManager";
 import ThemeStudio from "@/components/ThemeStudio";
+import { PORTAL_AMBIENCES, PORTAL_KEYS, startPortalAmbience, playKey } from "@/lib/sound";
+
+// Son du clavier quand le texte s'écrit au démarrage
+function PortalKeys({ at }) {
+  const [cur, setCur] = useState(() => at.config.portal_key || localStorage.getItem("nx-portal-key") || "feutre");
+  const pick = (k) => {
+    setCur(k); try { localStorage.setItem("nx-portal-key", k); } catch (_) {}
+    at.saveConfig({ portal_key: k }).catch(() => {});
+    for (let i = 0; i < 7; i++) setTimeout(() => playKey(0.9, k), i * 75 + (i > 3 ? 60 : 0));
+  };
+  return (
+    <div className="at-amb-grid" role="radiogroup" aria-label="Clavier du démarrage">
+      {PORTAL_KEYS.map((o) => <button key={o.key} role="radio" aria-checked={cur === o.key} className={"at-amb" + (cur === o.key ? " on" : "")} onClick={() => pick(o.key)} data-testid={`portal-key-${o.key}`}><b>{o.label}</b><small>{o.hint}</small></button>)}
+    </div>
+  );
+}
+
+// Ambiance du démarrage : 3 ambiances synthétisées, ta musique importée, ou le silence
+function PortalAmbience({ at, onUpload }) {
+  const read = () => at.config.portal_ambience || localStorage.getItem("nx-portal-amb") || (at.config.music_url ? "music" : "archives");
+  const [cur, setCur] = useState(read);
+  const prev = useRef(null);
+  const pick = (k) => {
+    if (k === "music" && !at.config.music_url) { onUpload(); return; }
+    setCur(k); try { localStorage.setItem("nx-portal-amb", k); } catch (_) {}
+    at.saveConfig({ portal_ambience: k }).catch(() => {});
+    prev.current?.stop(300); prev.current = null;
+    if (PORTAL_AMBIENCES.some((a) => a.key === k)) { const h = startPortalAmbience(k); prev.current = h; setTimeout(() => h.stop(1500), 5000); }
+  };
+  const opts = [{ key: "music", label: "Ma musique", hint: at.config.music_url ? at.config.music_title || "Piste importée" : "Importer un fichier audio" }, ...PORTAL_AMBIENCES, { key: "silence", label: "Silence", hint: "Aucun son au démarrage" }];
+  return (
+    <div className="at-amb-grid" role="radiogroup" aria-label="Ambiance du portail">
+      {opts.map((o) => <button key={o.key} role="radio" aria-checked={cur === o.key} className={"at-amb" + (cur === o.key ? " on" : "")} onClick={() => pick(o.key)} data-testid={`portal-amb-${o.key}`}><b>{o.label}</b><small>{o.hint}</small></button>)}
+    </div>
+  );
+}
 
 export default function AtelierSettings({ at, openBrains }) {
   const THEMES = useThemeList();
@@ -26,7 +62,7 @@ export default function AtelierSettings({ at, openBrains }) {
     if (!f) return;
     if (!f.type.startsWith("audio/")) return toast.error("Choisis un fichier audio");
     setBusy(true);
-    try { const r = await uploadJournalImage(f); await at.saveConfig({ music_url: r.url, music_title: f.name.replace(/\.[^.]+$/, "") }); toast.success("Musique du portail enregistrée — elle jouera au prochain passage"); }
+    try { const r = await uploadJournalImage(f); try { localStorage.setItem("nx-portal-amb", "music"); } catch (_) {} await at.saveConfig({ music_url: r.url, music_title: f.name.replace(/\.[^.]+$/, ""), portal_ambience: "music" }); toast.success("Musique du portail enregistrée — elle jouera au prochain passage"); }
     catch { toast.error("Envoi impossible (max 25 Mo)"); }
     finally { setBusy(false); }
   };
@@ -76,8 +112,11 @@ export default function AtelierSettings({ at, openBrains }) {
         </div>
       </div>
       <div className="at-panel">
-        <div className="at-panel-h"><h2><IoMusicalNotes size={16} /> Musique du portail</h2></div>
-        <p className="at-sub">Elle accompagne le voyage pendant le chargement, puis s'estompe à l'arrivée sur le pont.</p>
+        <div className="at-panel-h"><h2><IoMusicalNotes size={16} /> Ambiance du portail</h2></div>
+        <p className="at-sub">Elle accompagne le démarrage de l'Atelier, puis s'estompe à l'arrivée sur le pont. Clique pour écouter quelques secondes.</p>
+        <PortalAmbience key={at.config.music_url || "none"} at={at} onUpload={() => file.current?.click()} />
+        <p className="at-sub" style={{ marginTop: 18 }}>Clavier : le son des lettres qui s'écrivent à l'écran.</p>
+        <PortalKeys at={at} />
         <div className="at-inline">
           <span className="mono" data-testid="atelier-music-title">{at.config.music_url ? `♪ ${at.config.music_title || "Piste importée"}` : "Aucune musique pour l'instant"}</span>
           <button className="at-btn" disabled={busy} onClick={() => file.current?.click()} data-testid="atelier-music-upload">{busy ? "Envoi…" : at.config.music_url ? "Changer" : "Importer une musique"}</button>

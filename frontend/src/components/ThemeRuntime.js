@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useApp } from "@/context/AppContext";
 import { useThemeState, themeDef, cssVars, fontHref, keySound } from "@/lib/themeStore";
 import { imgSrc } from "@/lib/atelier";
+import { LOCAL_FONTS } from "@/lib/localFonts";
 import { setAmbientLayers } from "@/lib/ambient";
 import "@/components/themeRuntime.css";
 
@@ -24,7 +25,7 @@ const cursorCss = (id, color) => {
 
 // Applique le thème personnalisé (ou la retouche d'un thème d'origine) à toute l'app
 export default function ThemeRuntime() {
-  const { theme, selectAmbience, muted, uiVolume } = useApp();
+  const { theme, selectAmbience, muted, uiVolume, isAdmin } = useApp();
   const s = useThemeState();
   const d = themeDef(theme, s);
   const applied = useRef([]);
@@ -40,9 +41,12 @@ export default function ThemeRuntime() {
     let link = document.getElementById("nx-fonts");
     if (d && (d.font_display || d.font_body)) {
       if (!link) { link = document.createElement("link"); link.id = "nx-fonts"; link.rel = "stylesheet"; document.head.appendChild(link); }
-      const href = fontHref([d.font_display, d.font_body]); if (link.href !== href) link.href = href;
+      // Public : uniquement les polices hébergées par la Station. Admin : Google pour les polices non hébergées (aperçu des thèmes).
+      const remote = [d.font_display, d.font_body].filter((f) => f && !LOCAL_FONTS.has(f));
+      const href = isAdmin && remote.length ? fontHref(remote) : "";
+      if (href) { if (link.href !== href) link.href = href; } else link.removeAttribute("href");
     }
-  }, [d]);
+  }, [d, isAdmin]);
 
   useEffect(() => { setAmbientLayers(d?.ambient || []); }, [JSON.stringify(d?.ambient || [])]); // eslint-disable-line
   useEffect(() => { if (d?.ambience_id) selectAmbience(d.ambience_id); }, [theme, d?.ambience_id]); // eslint-disable-line

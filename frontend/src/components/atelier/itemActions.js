@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { KINDS, isOeuvre, isFolder } from "@/lib/atelier";
 import { exportItem } from "@/lib/exportPdf";
 import { addShortcut } from "@/components/atelier/Shortcuts";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 // Entrées du menu contextuel d'un élément (ouvrir, épingler, déplacer, catégorie, dupliquer, supprimer)
 export function itemMenu(it, at, open) {
@@ -11,7 +12,7 @@ export function itemMenu(it, at, open) {
     title: it.title || "Sans titre",
     entries: [
       { id: "open", label: "Ouvrir", icon: <IoOpenOutline size={14} />, onClick: () => open(it.id) },
-      { id: "rename", label: "Renommer", icon: <IoCreateOutline size={14} />, onClick: () => { const t = window.prompt("Titre de l'élément", it.title || ""); if (t !== null) at.saveItem({ ...it, title: t.trim() }).then(() => toast.success("Titre modifié")); } },
+      { id: "rename", label: "Renommer", icon: <IoCreateOutline size={14} />, onClick: async () => { const t = (await labPrompt("Titre de l'élément", it.title || "")); if (t !== null) at.saveItem({ ...it, title: t.trim() }).then(() => toast.success("Titre modifié")); } },
       { id: "pin", label: it.pinned ? "Désépingler" : "Épingler en haut", icon: <IoPin size={14} />, onClick: () => at.saveItem({ ...it, pinned: !it.pinned }) },
       { id: "move", label: "Déplacer vers", icon: <IoSwapHorizontal size={14} />, sub: [
         { id: "move-inbox", label: "Inbox", on: !it.universe_id, onClick: () => move(null) },
@@ -30,7 +31,7 @@ export function itemMenu(it, at, open) {
       { id: "shortcut", label: "Ajouter aux raccourcis", icon: <IoPin size={14} />, onClick: () => addShortcut(at, { t: "item", id: it.id }) },
       { id: "pdf", label: "Exporter en PDF", icon: <IoPrintOutline size={14} />, onClick: () => exportItem(it, at.universes) },
       "-",
-      { id: "delete", label: "Supprimer", danger: true, icon: <IoTrashOutline size={14} />, onClick: () => window.confirm(`Supprimer « ${it.title || "Sans titre"} » ?`) && at.removeItem(it.id).then(() => toast.success("Supprimé")) },
+      { id: "delete", label: "Supprimer", danger: true, icon: <IoTrashOutline size={14} />, onClick: async () => (await labConfirm(`Supprimer « ${it.title || "Sans titre"} » ?`)) && at.removeItem(it.id).then(() => toast.success("Supprimé")) },
     ],
   };
 }

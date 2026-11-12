@@ -1,5 +1,5 @@
 import { useMemo, useRef, useEffect } from "react";
-import { FrontiereRidges, TerraFlora } from "@/components/ThemeScenes";
+import { FrontiereRidges, TerraFlora, LaboScene } from "@/components/ThemeScenes";
 import { useApp } from "@/context/AppContext";
 import { useThemeState, themeDef } from "@/lib/themeStore";
 
@@ -318,6 +318,7 @@ export default function CosmicBackground() {
           <div className="mist" /><TerraFlora />
           <div className="spores">{F.spores.map((e, i) => <i key={i} className={e.l ? "l" : ""} style={{ left: `${e.x}%`, animationDuration: `${e.dur}s`, animationDelay: `${e.delay}s`, "--drift": e.drift }} />)}</div>
         </div>
+        <LaboScene />
         <div className="sc s-neptune"><div className="body" /><div className="cur" /></div>
         <div className="sc s-yorha"><div className="yg" /><div className="emblem"><span /><span /><span /></div><div className="sun" /><div className="hz" /></div>
         <div className="sc s-megapole"><div className="sky" /><div className="city" /></div>

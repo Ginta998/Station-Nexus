@@ -1,0 +1,63 @@
+/* ===================== Laboratoire (sombre) & Laboratoire clair — direction Rhine Lab ===================== */
+[data-theme="labo"] {
+  --bg-primary:#1a1d1f; --bg-secondary:#22262a; --brand:#e8833a; --brand-2:#c9ced1;
+  --border-c:rgba(236,238,239,.14); --text-primary:#eceeef; --text-secondary:#a3aaaf; --on-media:#ffffff; --on-media-2:rgba(255,255,255,.74);
+  --radius-base:0px; --border-width:1px; --shadow-1:0 18px 40px rgba(0,0,0,.35); --scrim:rgba(26,29,31,.66);
+  --font-display:"Space Grotesk",sans-serif; --font-body:"Inter",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:.04em;
+}
+[data-theme="laboclair"] {
+  --bg-primary:#e6e8e9; --bg-secondary:#f3f4f5; --brand:#c2541a; --brand-2:#3d4347;
+  --border-c:rgba(28,31,33,.18); --text-primary:#16191b; --text-secondary:#4b5257; --on-media:#1c1f21; --on-media-2:rgba(28,31,33,.72);
+  --radius-base:0px; --border-width:1px; --shadow-1:0 14px 30px rgba(60,66,70,.16); --scrim:rgba(230,232,233,.6);
+  --font-display:"Space Grotesk",sans-serif; --font-body:"Inter",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:.04em;
+}
+html[data-theme="labo"],html[data-theme="laboclair"]{--card-r:0px;--card-bd:var(--border-c);--card-sh:0 16px 30px -18px rgba(0,0,0,.5);--fx-op:0}
+html:is([data-theme="labo"],[data-theme="laboclair"]) .s-labo{display:block}
+html:is([data-theme="labo"],[data-theme="laboclair"]) :is(.comets,.cb-grid){display:none}
+html:is([data-theme="labo"],[data-theme="laboclair"]) :is(.cb-stars,.cb-nebula,.cosmic-bg .layer){opacity:0}
+html:is([data-theme="labo"],[data-theme="laboclair"]) .cb-halo{opacity:.06}
+html:is([data-theme="labo"],[data-theme="laboclair"]) .cb-motes span{--mote:color-mix(in srgb,var(--text-primary) 30%,transparent);box-shadow:none}
+
+/* --- Scène : champ de lamelles métalliques, reflet lent, repères de laboratoire --- */
+.s-labo{--sl-a:#24282b;--sl-b:#2c3134;--sl-c:#363b3f;--sl-d:#1c1f21;--sl-fade:#1a1d1f;--sl-mark:rgba(236,238,239,.06)}
+html[data-theme="laboclair"] .s-labo{--sl-a:#d9dcde;--sl-b:#e4e6e8;--sl-c:#f2f3f4;--sl-d:#cdd1d3;--sl-fade:#e6e8e9;--sl-mark:rgba(28,31,33,.08)}
+.s-labo .slats{position:absolute;inset:-10% -10% 0 -10%;background:repeating-linear-gradient(-26deg,var(--sl-a) 0px,var(--sl-b) 11px,var(--sl-c) 13px,var(--sl-d) 15px,var(--sl-a) 28px);
+  -webkit-mask-image:linear-gradient(200deg,#000 0%,rgba(0,0,0,.85) 30%,transparent 72%);mask-image:linear-gradient(200deg,#000 0%,rgba(0,0,0,.85) 30%,transparent 72%);animation:slDrift 60s ease-in-out infinite alternate}
+.s-labo .fade{position:absolute;inset:0;background:radial-gradient(90% 70% at 70% 40%,transparent 0%,var(--sl-fade) 85%)}
+.s-labo .orbit{position:absolute;right:-6%;top:34%;width:62vmax;height:42vmax;border:1px solid var(--sl-mark);border-radius:50%}
+.s-labo .orbit.o2{right:2%;top:42%;width:46vmax;height:30vmax}
+.s-labo .axis{position:absolute;background:var(--sl-mark)}
+.s-labo .axis.h{left:0;right:0;top:50%;height:1px}.s-labo .axis.v{top:0;bottom:0;left:50%;width:1px}
+.s-labo .tick{position:absolute;font:9px/1 "JetBrains Mono",monospace;letter-spacing:.24em;color:color-mix(in srgb,var(--text-primary) 26%,transparent)}
+.s-labo .tick.t1{left:3%;top:50%;transform:translateY(8px)}.s-labo .tick.t2{left:50%;bottom:3%;transform:translateX(8px)}.s-labo .tick.t3{right:3%;top:3%}
+/* halo du pointeur : la grille s'allume autour de la souris */
+.s-labo .spot{position:absolute;inset:-40px;background:radial-gradient(300px circle at calc(var(--mx,-999px) + 40px) calc(var(--my,-999px) + 40px),color-mix(in srgb,var(--brand) 75%,transparent),transparent 72%);
+  -webkit-mask-image:linear-gradient(#000 1px,transparent 1px),linear-gradient(90deg,#000 1px,transparent 1px);-webkit-mask-size:48px 48px;mask-image:linear-gradient(#000 1px,transparent 1px),linear-gradient(90deg,#000 1px,transparent 1px);mask-size:48px 48px;}
+.s-labo::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(520px circle at var(--mx,-999px) var(--my,-999px),color-mix(in srgb,var(--text-primary) 5%,transparent),transparent 70%)}
+.s-labo .orbit{animation:slOrbit 80s linear infinite}.s-labo .orbit.o2{animation-duration:120s;animation-direction:reverse}
+@keyframes slOrbit{to{transform:rotate(360deg)}}
+@keyframes slDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-3%,1.5%,0)}}
+html[data-motion="reduced"] .s-labo *,.cosmic-bg[data-reduced] .s-labo *{animation:none!important}
+
+/* --- Lisibilité de l'Atelier --- */
+[data-theme="labo"] .at-root{--warm:var(--brand);--glass:color-mix(in srgb,var(--bg-primary) 82%,transparent);--line:rgba(236,238,239,.13)}
+[data-theme="laboclair"] .at-root{--warm:var(--brand);--glass:color-mix(in srgb,var(--bg-secondary) 86%,transparent);--line:rgba(28,31,33,.14)}
+[data-theme="labo"] .at-sub,[data-theme="laboclair"] .at-sub{color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root .at-dock-b{color:var(--text-primary)}
+[data-theme="laboclair"] .at-root .at-dock-b:hover{color:var(--text-primary)}
+:is([data-theme="labo"],[data-theme="laboclair"]) :is(.at-view h1,.at-hero-mid h1){text-shadow:none}
+[data-theme="laboclair"] .sx-playbtn{background:var(--brand);color:#fff}
+[data-theme="laboclair"] .at-search{color:var(--text-secondary)}
+[data-theme="laboclair"] .at-search:hover{color:var(--text-primary)}
+[data-theme="laboclair"] .at-root .at-btn.ghost{color:var(--text-primary);background:color-mix(in srgb,var(--bg-secondary) 75%,transparent);border-color:var(--border-c)}
+[data-theme="laboclair"] .at-root .at-empty{color:var(--text-secondary)}
+[data-theme="laboclair"] .at-root :is(.at-tadd input,.at-tadd select,.at-form input,.at-form textarea,.at-form select,.at-ed-sec select,.at-ed-bar select,.at-inline input,.at-media-add input){background:rgba(255,255,255,.62);color:var(--text-primary);color-scheme:light}
+[data-theme="laboclair"] .at-root .at-resume .k{background:color-mix(in srgb,var(--brand) 10%,var(--bg-secondary))}
+
+
+/* Mode focus : toujours une salle sombre et calme (pas d'effets de souris, pas de lamelles qui bougent) */
+html .fx-root .s-labo{--sl-a:#24282b;--sl-b:#2c3134;--sl-c:#363b3f;--sl-d:#1c1f21;--sl-fade:#15181a;--sl-mark:rgba(236,238,239,.05)}
+html .fx-root .s-labo .spot,html .fx-root .s-labo::after{display:none}
+.fx-root .s-labo *{animation:none!important}
+.fx-root .s-labo .slats{opacity:.55}
+[data-theme="laboclair"] .fx-root{--bg-primary:#15181a;--bg-secondary:#1e2225;--text-primary:#eceeef;--text-secondary:#a9b0b5;--border-c:rgba(236,238,239,.16);--brand:#e8833a;color:#eceeef;background:#15181a}

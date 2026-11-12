@@ -26,12 +26,16 @@ import { ShortcutBar, runShortcut } from "@/components/atelier/Shortcuts";
 import BunnyBrains from "@/components/atelier/BunnyBrains";
 import BunnySprite from "@/components/atelier/BunnySprite";
 import FocusView from "@/components/atelier/FocusView";
-import RadioView, { useRadio, RadioEngine, RadioBar } from "@/components/atelier/Radio";
+import RadioView, { useRadio, RadioEngine, RadioBar, RadioMini } from "@/components/atelier/Radio";
 import { IoRadioOutline } from "react-icons/io5";
 import OeuvreView from "@/components/atelier/OeuvreView";
 import OeuvreForm from "@/components/atelier/OeuvreForm";
 import DevLogView from "@/components/atelier/DevLogView";
 import MobileLauncher from "@/components/atelier/MobileLauncher";
+import { useLabFx } from "@/components/atelier/labFx";
+import { TextSizeButton } from "@/components/TextSizeButton";
+import { LabDialogHost } from "@/components/atelier/LabDialog";
+import Alexandrie from "@/components/atelier/Alexandrie";
 
 const Dock = ({ icon, label, sub, on, onClick, testid, color, kanji, badge, drop }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label} {...(drop ? itemDrop(drop) : {})}>
@@ -45,7 +49,7 @@ function FsBtn() {
   const [fs, setFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener("fullscreenchange", h); return () => document.removeEventListener("fullscreenchange", h); }, []);
   const toggle = () => { try { if (document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen)?.call(document); else { const el = document.documentElement; (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el); } } catch (_) {} };
-  return <button className="at-icon" onClick={toggle} title={fs ? "Quitter le plein écran" : "Plein écran"} data-testid="atelier-fullscreen">{fs ? <IoContractOutline size={17} /> : <IoExpandOutline size={17} />}</button>;
+  return <button className="at-icon at-fs" onClick={toggle} title={fs ? "Quitter le plein écran" : "Plein écran"} data-testid="atelier-fullscreen">{fs ? <IoContractOutline size={17} /> : <IoExpandOutline size={17} />}</button>;
 }
 
 function ShipClock() {
@@ -77,6 +81,8 @@ export default function AtelierApp({ onLeave }) {
   const [brains, setBrains] = useState(false);
   const [focusMode, setFocusMode] = useState(() => window.location.hash === "#focus");
   const radio = useRadio(at);
+  const [radioMini, setRadioMini] = useState(() => { try { return localStorage.getItem("nx-radio-mini") === "1"; } catch { return false; } });
+  const setRadioSmall = (v) => { setRadioMini(v); sfx?.("select"); try { localStorage.setItem("nx-radio-mini", v ? "1" : "0"); } catch {} };
   useEffect(() => { if (screen || focusMode) radio.pause(); }, [screen, focusMode]); // eslint-disable-line
   const [dockOpen, setDockOpen] = useState(() => { try { return localStorage.getItem("nexus-dock") !== "0"; } catch (_) { return true; } });
   const toggleDock = () => setDockOpen((o) => { const n = !o; try { localStorage.setItem("nexus-dock", n ? "1" : "0"); } catch (_) {} return n; });
@@ -95,7 +101,7 @@ export default function AtelierApp({ onLeave }) {
     window.addEventListener("popstate", on); return () => window.removeEventListener("popstate", on);
   }, []);
   const open = (id, kind) => { sfx("select"); setPalette(false); if ((kind || at.items.find((x) => x.id === id)?.kind) === "file") setViewing(id); else setEditing(id); };
-  const inbox = at.items.filter((i) => !i.universe_id && !i.fields?.template);
+  const inbox = at.items.filter((i) => !i.universe_id && !i.fields?.template && !i.fields?.alexandrie);
   const pinned = at.universes.filter((u) => u.pinned);
   const cur = view.name === "universe" ? at.universes.find((u) => u.id === view.id) : null;
   const importDocs = (defaults = {}) => { pickDefaults.current = defaults; pick.current?.click(); };
@@ -123,17 +129,21 @@ export default function AtelierApp({ onLeave }) {
     const onKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const crumb = { home: "PONT DE COMMANDEMENT", universes: "NEXUS DRIVE", templates: "BIBLIOTHÈQUE", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", oeuvre: "ŒUVRE", devlog: "DEV & PATCH NOTES" }[view.name] || (cur?.name || "").toUpperCase();
+  const crumb = { home: "PONT DE COMMANDEMENT", universes: "NEXUS DRIVE", templates: "BIBLIOTHÈQUE", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", alexandrie: "ALEXANDRIE", oeuvre: "ŒUVRE", devlog: "DEV & PATCH NOTES" }[view.name] || (cur?.name || "").toUpperCase();
+
+  useLabFx(view.name + (view.id || ""), sfx);
 
   return (
-    <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl ? " has-radio" : "") + (menuOpen ? " menu-open" : "") + (navHub ? " nav-hub" : "")} data-testid="atelier-app">
+    <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl && !radioMini ? " has-radio" : "") + (menuOpen ? " menu-open" : "") + (navHub ? " nav-hub" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
       <header className="at-top">
         <div className="at-brand" onClick={() => go({ name: "home" })} role="button" style={{ cursor: "pointer" }} data-testid="atelier-logo-home"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
         <button className="at-search" onClick={() => { sfx("nav"); setPalette(true); }} data-testid="atelier-search-open"><IoSearch size={15} /><span>Rechercher un univers, une fiche, une scène…</span><kbd className="mono">Ctrl K</kbd></button>
         <div className="at-top-r">
           <ShipClock />
+          {radioMini && <RadioMini radio={radio} onOpen={() => go({ name: "radio" })} onExpand={() => setRadioSmall(false)} />}
           <SoundBtn btn={soundBtn} />
+          <TextSizeButton className="at-icon at-aa" />
           <FsBtn />
           <button className="at-icon" onClick={() => go({ name: "settings" })} title="Réglages de l'Atelier" data-testid="atelier-settings-top"><IoSettingsOutline size={17} /></button>
           <button className="at-icon" onClick={() => { sfx("back"); onLeave(); }} title="Retour à la Station" data-testid="atelier-leave-top"><IoExitOutline size={17} /></button>
@@ -155,6 +165,7 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
           <Dock kanji="兎" label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
+          <Dock kanji="書" label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
           <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
           <Dock kanji="禅" label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
@@ -170,6 +181,7 @@ export default function AtelierApp({ onLeave }) {
 
         <main className="at-main" key={view.name + (view.id || "")}>
           <div className="at-frame" aria-hidden="true"><i /><i /><i /><i /></div>
+          <p className="at-coord" aria-hidden="true">X 0000 · Y 0000</p>
           {view.name === "home" && <QuartierView {...ctx} />}
           {view.name === "universes" && <UniversesHub {...ctx} />}
           {view.name === "templates" && <TemplatesPage {...ctx} />}
@@ -186,7 +198,8 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "bureau" && <BureauView {...ctx} launch={launch} />}
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
           {view.name === "radio" && <RadioView radio={radio} />}
-          {view.name === "devlog" && <DevLogView />}
+          {view.name === "alexandrie" && <Alexandrie {...ctx} radio={radio} room={view.room} book={view.book} />}
+          {view.name === "devlog" && <DevLogView at={at} />}
         </main>
       </div>
 
@@ -196,7 +209,7 @@ export default function AtelierApp({ onLeave }) {
       {drop && <DropDialog at={at} drop={drop} defaults={drop.defaults} open={open} onClose={() => setDrop(null)} />}
       {screen && <Player screen={screen} onClose={() => setScreen(null)} onNavigate={setScreen} />}
       <RadioEngine radio={radio} />
-      {!focusMode && <RadioBar radio={radio} onOpen={() => go({ name: "radio" })} />}
+      {!focusMode && !radioMini && <RadioBar radio={radio} onOpen={() => go({ name: "radio" })} onMini={() => setRadioSmall(true)} />}
       {palette && <CommandPalette {...ctx} onClose={() => setPalette(false)} newUniverse={() => { setPalette(false); setUForm({}); }} />}
       {!bunny && <div className="bn-fab"><BunnySprite pose="neutral" size={74} className="cb-bounce" onClick={() => { sfx("select"); setBunny(true); }} title="Cosmic Bunny" testid="bunny-open" /></div>}
       {bunny && <BunnyPanel at={at} universeId={view.name === "universe" ? view.id : null} onClose={() => setBunny(false)} openBrains={() => setBrains(true)} />}
@@ -208,6 +221,7 @@ export default function AtelierApp({ onLeave }) {
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}
       {oForm && <OeuvreForm {...ctx} oeuvre={oForm} onClose={(o) => { setOForm(null); if (o?.id) setView({ name: "oeuvre", id: o.id }); }} />}
+      <LabDialogHost />
     </div>
   );
 }

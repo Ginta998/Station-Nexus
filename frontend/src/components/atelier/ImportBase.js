@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { IoClose, IoSparklesOutline, IoWarningOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import base from "@/data/nexus-base.json";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 // Importe ma base : crée automatiquement univers → œuvres → éléments (+ réseau narratif) depuis le fichier généré.
 export default function ImportBase({ at, onClose, go }) {
@@ -18,7 +19,7 @@ export default function ImportBase({ at, onClose, go }) {
   }, []);
 
   const run = async () => {
-    if (already && !window.confirm("Tu as déjà importé une fois. Relancer va créer une seconde copie de tout. Continuer ?")) return;
+    if (already && !(await labConfirm("Tu as déjà importé une fois. Relancer va créer une seconde copie de tout. Continuer ?"))) return;
     setRunning(true); setReport(null);
     const total = base.universes.reduce((s, u) => s + 1 + u.elements.length + u.oeuvres.reduce((a, o) => a + 1 + o.elements.length, 0), 0);
     let done = 0, fails = 0; const tmpToId = {}; const linkJobs = []; const createdU = [], createdI = [];
@@ -61,8 +62,8 @@ export default function ImportBase({ at, onClose, go }) {
 
   // Vide tout l'Atelier (pour repartir propre après un import raté)
   const wipeAll = async () => {
-    if (!window.confirm("Supprimer TOUS les univers et TOUTES les fiches de l'Atelier ? Irréversible.")) return;
-    if (!window.confirm("Dernière confirmation : tout l'Atelier va être vidé.")) return;
+    if (!(await labConfirm("Supprimer TOUS les univers et TOUTES les fiches de l'Atelier ? Irréversible."))) return;
+    if (!(await labConfirm("Dernière confirmation : tout l'Atelier va être vidé."))) return;
     setRunning(true);
     try {
       const items = [...at.items]; let n = 0; const tot = items.length + at.universes.length;

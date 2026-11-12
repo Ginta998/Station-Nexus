@@ -4,6 +4,7 @@ import { IoClose, IoImageOutline, IoTrashOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { listCreations, uploadJournalImage } from "@/lib/api";
 import { imgSrc, getUniPlaylist, setUniPlaylist } from "@/lib/atelier";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
 const COLORS = ["#ff2f5f", "#ffb340", "#3ff0ff", "#7c5cff", "#00e5a0", "#ff7ad9", "#e8e1cf"];
 
@@ -25,7 +26,7 @@ export default function UniverseForm({ at, universe, onClose }) {
     catch { toast.error("Enregistrement impossible"); setBusy(false); }
   };
   const remove = async () => {
-    if (!window.confirm(`Supprimer l'univers « ${u.name} » ? Ses éléments ne sont pas supprimés : ils retournent dans l'Inbox.`)) return;
+    if (!(await labConfirm(`Supprimer l'univers « ${u.name} » ? Ses éléments ne sont pas supprimés : ils retournent dans l'Inbox.`))) return;
     await at.removeUniverse(u.id); toast.success("Univers supprimé, éléments rangés dans l'Inbox"); onClose();
   };
 

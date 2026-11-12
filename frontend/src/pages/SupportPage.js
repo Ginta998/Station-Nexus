@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { confirmCheckout } from "@/components/CheckoutConfirm";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -42,8 +43,11 @@ export default function SupportPage() {
 
   const subscribe = async (tierId) => {
     if (!user) { toast.info("Connecte-toi pour t'abonner."); openAuth(); return; }
+    const t = (plan?.tiers || []).find((x) => x.id === tierId);
+    const consents = await confirmCheckout({ kind: "membership", title: `Abonnement ${t?.name || "Station Nexus"}`, price: t?.price_eur ?? plan?.price_eur });
+    if (!consents) return;
     setBusy(true);
-    try { const r = await startCheckout({ kind: "membership", tier_id: tierId }); window.location.href = r.checkout_url; }
+    try { const r = await startCheckout({ kind: "membership", tier_id: tierId, consents }); window.location.href = r.checkout_url; }
     catch (e) { toast.error(e?.response?.data?.detail || "Impossible de démarrer l'abonnement"); setBusy(false); }
   };
 
