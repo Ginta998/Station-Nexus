@@ -126,7 +126,7 @@ figcaption small{display:block;font-style:normal;font-family:Arial,sans-serif;fo
 .bk-links li{margin:.5em 0}.bk-links small{display:block;color:#666}
 `;
 const bkInline = (s) => esc(s).replace(/\*([^*]+)\*/g, "<em>$1</em>");
-export function exportBook(book, cover) {
+export function exportBook(book, cover, notes = []) {
   let h = `<style>${BOOK_CSS}</style><section class="bk-title">`;
   if (cover) h += `<img src="${esc(cover)}" alt="">`;
   h += `<div class="eyebrow">Bibliothèque d'Alexandrie · ${esc(book.cote || "")}</div><h1>${esc(book.title)}</h1>`;
@@ -149,6 +149,7 @@ export function exportBook(book, cover) {
     h += `</section>`;
   });
   if ((book.links || []).length) h += `<section class="bk-ch"><h2>Pour aller plus loin</h2><ul class="bk-links">${book.links.map((l) => `<li>${l.url ? `<a href="${esc(l.url)}">${esc(l.label)}</a>` : esc(l.label)}${l.note ? `<small>${esc(l.note)}</small>` : ""}</li>`).join("")}</ul></section>`;
+  if (notes.length) h += `<section class="bk-ch"><h2>Mes notes</h2><ul class="bk-links">${notes.map((n) => `<li><b>Page ${n.page + 1}${n.ch ? ` · ${esc(n.ch)}` : ""}</b><small>${esc(n.t).replace(/\n/g, "<br>")}</small></li>`).join("")}</ul></section>`;
   h += `<footer>Atelier Nexus · Alexandrie</footer>`;
   printDoc(book.title, h);
 }
