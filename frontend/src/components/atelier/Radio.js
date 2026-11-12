@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IoPlay, IoPause, IoPlaySkipForward, IoPlaySkipBack, IoShuffle, IoRadioOutline, IoVolumeHigh, IoVolumeMute, IoClose, IoAdd, IoTrashOutline, IoImageOutline, IoInfinite, IoListOutline, IoPencil, IoSearch, IoCheckmark, IoLogoYoutube } from "react-icons/io5";
+import { IoPlay, IoPause, IoPlaySkipForward, IoPlaySkipBack, IoShuffle, IoRadioOutline, IoVolumeHigh, IoVolumeMute, IoClose, IoAdd, IoTrashOutline, IoImageOutline, IoInfinite, IoListOutline, IoPencil, IoSearch, IoCheckmark, IoLogoYoutube, IoChevronDown, IoExpandOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { uploadJournalImage } from "@/lib/api";
 import { imgSrc, useMediaClaim, atelierApi } from "@/lib/atelier";
@@ -103,7 +103,24 @@ export function RadioEngine({ radio: r }) {
   return <iframe key={r.pl.src} ref={r.fr} className="rd-engine" src={r.pl.src} title="Radio Nexus" allow="autoplay; encrypted-media" referrerPolicy="strict-origin-when-cross-origin" onLoad={() => hello(r)} />;
 }
 
-export function RadioBar({ radio: r, onOpen }) {
+// Lecteur réduit : une pastille dans la barre du haut, à côté du bouton son.
+export function RadioMini({ radio: r, onOpen, onExpand }) {
+  if (!r.pl) return null;
+  const i = r.info;
+  return (
+    <div className="rd-mini" style={{ "--rc": r.pl.color || "var(--brand)" }} data-testid="radio-mini">
+      <button className="rd-mini-now" onClick={onOpen} title={`${i.title || r.pl.title} : ouvrir la Radio`}>
+        <span className="rd-mini-art" style={{ backgroundImage: `url(${thumb(i.vid) || coverOf(r.pl)})` }}>{r.playing && <span className="sx-eq"><i /><i /><i /><i /></span>}</span>
+        <span className="rd-mini-txt">{i.title || r.pl.title}</span>
+      </button>
+      <button className="rd-ic" onClick={r.toggle} title={r.playing ? "Pause" : "Lecture"} data-testid="radio-mini-toggle">{r.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>
+      <button className="rd-ic rd-mini-nx" onClick={r.next} title="Suivant"><IoPlaySkipForward size={14} /></button>
+      <button className="rd-ic" onClick={onExpand} title="Agrandir le lecteur" data-testid="radio-mini-expand"><IoExpandOutline size={14} /></button>
+    </div>
+  );
+}
+
+export function RadioBar({ radio: r, onOpen, onMini }) {
   const i = r.info;
   const [q, setQ] = useState(false);
   if (!r.pl) return null;
@@ -122,6 +139,7 @@ export function RadioBar({ radio: r, onOpen }) {
         <button className={"rd-ic" + (q ? " on" : "")} onClick={() => setQ(!q)} title="File d'attente" data-testid="radio-queue-toggle"><IoListOutline size={18} /></button>
         <button className="rd-ic" onClick={r.mute} data-testid="radio-mute">{r.muted ? <IoVolumeMute size={17} /> : <IoVolumeHigh size={17} />}</button>
         <input className="rd-vol" type="range" min="0" max="100" value={r.muted ? 0 : r.vol} onChange={(e) => r.setVol(+e.target.value)} style={{ "--p": (r.muted ? 0 : r.vol) + "%" }} data-testid="radio-volume" />
+        {onMini && <button className="rd-ic" onClick={onMini} title="Réduire le lecteur en haut de l'écran" data-testid="radio-minimize"><IoChevronDown size={18} /></button>}
         <button className="rd-ic" onClick={r.stop} title="Couper la radio" data-testid="radio-stop"><IoClose size={18} /></button>
       </div>
     </div>

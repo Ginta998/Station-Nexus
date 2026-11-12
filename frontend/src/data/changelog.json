@@ -25,13 +25,21 @@
           "Export PDF d'un livre : bouton PDF dans le lecteur, comme dans le Nexus Drive. Page de titre avec l'artwork, sommaire, chapitres, citations, illustrations et liens des vidéos.",
           "Livres illustrés : estampes, tableaux et icônes du domaine public (Wikimedia Commons) dans le fil du texte, avec légende et crédit ; bandes-annonces YouTube lisibles dans la page pour les volumes du Lore et les films.",
           "Les réalisateurs parlent en « je » : Kitano (tous ses films, d'Aniki mon frère à Kids Return et Kubi), Tarkovski et Bresson.",
-          "Analyses ALT 236 dans les livres : Bloodborne, Hellraiser, Elden Ring (Mythologics) et L'infini (Dans l'œil d'Escher)."
+          "Analyses ALT 236 dans les livres : Bloodborne, Hellraiser, Elden Ring (Mythologics) et L'infini (Dans l'œil d'Escher).",
+          "Salle Musique (音) : des pochettes de disques sur les rayons, le vinyle qui sort de sa pochette quand on choisit un album. Six livres : Sixto Rodriguez et Mozart en « je », Debussy par la voix de Monsieur Croche, Wu-Tang Clan, N.W.A et Michael Jackson en récit, avec clips et enregistrements intégrés. Dix-neuf titres à paraître, de Bach à Midori Takada.",
+          "Modifier un livre de la bibliothèque : bouton Modifier dans la notice et dans le lecteur. Titre, sous-titre, présentation et texte balisé, avec insertion d'un chapitre, d'une citation, d'un encadré, d'une vidéo YouTube ou d'une image. Retour au texte d'origine à tout moment.",
+          "Changer une vidéo en un geste : « Changer » sous chaque vidéo du lecteur, on colle le nouveau lien et c'est fait.",
+          "Clic droit sur un volume : lire, modifier, exporter en PDF, changer, retirer ou remettre l'artwork d'origine, revenir au texte d'origine.",
+          "Artworks par défaut sur presque tous les livres : tableaux et estampes du domaine public (Friedrich, Hokusai, Giotto, Roublev, Cabanel, Vernet…) et huit jeux de plus dans le Lore. Chacun se retire pour revenir à la couverture dessinée.",
+          "Radio : le lecteur se réduit en une pastille dans la barre du haut, à côté du bouton son (flèche vers le bas). Un clic pour le rouvrir en grand."
         ],
         "Corrigé": [
           "Écrire un livre : la création ne peut plus faire planter l'écran ; en cas d'échec, un message dit pourquoi.",
           "Lecteur : ouvrir un deuxième livre ne reprend plus la page du précédent.",
           "Lecteur : plus de bandeau d'avertissement sur la voix en ouverture de livre, pour ne pas casser l'immersion.",
-          "Artwork : si la recherche SteamGridDB n'est pas encore installée sur le serveur, le message le dit au lieu d'un simple « Not Found »."
+          "Artwork : si la recherche SteamGridDB n'est pas encore installée sur le serveur, le message le dit au lieu d'un simple « Not Found ».",
+          "Psycho-Pass : la vidéo qui ne se lisait plus est remplacée.",
+          "Plan d'Alexandrie : plus de case vide avec la nouvelle salle ; la page de titre d'un livre illustré tient sur sa page."
         ]
       }
     },

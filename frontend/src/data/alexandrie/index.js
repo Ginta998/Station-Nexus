@@ -4,6 +4,12 @@
 // « !! Encadré » (ou « !! LIBELLÉ :: texte »), paragraphes séparés par une ligne vide, *italique*.
 import nietzsche from "./nietzsche";
 import tarkovski from "./tarkovski";
+import rodriguez from "./rodriguez";
+import wuTang from "./wu-tang";
+import nwa from "./nwa";
+import michaelJackson from "./michael-jackson";
+import mozart from "./mozart";
+import debussy from "./debussy";
 import bresson from "./bresson";
 import bushido from "./bushido";
 import stavisky from "./stavisky";
@@ -30,6 +36,7 @@ export const ROOMS = [
   { key: "philo", label: "Philosophie", kanji: "哲", about: "Des pensées qui dérangent, expliquées de l'intérieur." },
   { key: "histoire", label: "Histoire", kanji: "史", about: "Affaires, règnes, chutes : ce qui s'est passé, et pourquoi." },
   { key: "cinema", label: "Cinéma", kanji: "映", about: "Les cinéastes qui ont inventé une manière de voir." },
+  { key: "musique", label: "Musique", kanji: "音", format: "vinyle", about: "Des plus connus aux plus cachés : ceux qui ont changé ce qu'on entend." },
   { key: "art", label: "Art & illustration", kanji: "絵", about: "Dessinateurs, peintres, illustrateurs, de l'estampe au manga." },
   { key: "lettres", label: "Littérature", kanji: "文", about: "Des livres qui parlent d'autres livres, pour donner envie de les ouvrir." },
   { key: "japon", label: "Japon", kanji: "和", about: "Samouraïs, voies, esthétiques." },
@@ -42,9 +49,9 @@ export const TYPES = {
   recit: { label: "Récit", about: "Un narrateur raconte, plusieurs points de vue." },
   apprentissage: { label: "Apprentissage", about: "On t'accompagne dans une notion difficile." },
 };
-export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13];
+export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
 
-const up = (room, type, title, sub, format) => ({ id: "up-" + title.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-"), room, type, title, sub, format: format || (room === "lore" ? "vhs" : "livre") });
+const up = (room, type, title, sub, format) => ({ id: "up-" + title.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-"), room, type, title, sub, format: format || (room === "lore" ? "vhs" : room === "musique" ? "vinyle" : "livre") });
 const lo = (title, sub, format) => up("lore", "recit", title, sub, format);
 export const UPCOMING = [
   up("philo", "pensee", "Merleau-Ponty", "Le corps qui voit"), up("philo", "pensee", "Spinoza", "La joie comme méthode"), up("philo", "pensee", "Kierkegaard", "Le saut"),
@@ -58,6 +65,14 @@ export const UPCOMING = [
   up("cinema", "recit", "La Nouvelle Vague", "Caméra à l'épaule"), up("cinema", "pensee", "Kubrick", "Le contrôle"), up("cinema", "pensee", "Bergman", "Les visages"),
   up("cinema", "pensee", "Satoshi Kon", "Le montage du rêve"), up("cinema", "pensee", "Miyazaki", "Le vent se lève"), up("cinema", "apprentissage", "Le montage", "D'Eisenstein à Murch"),
   up("cinema", "pensee", "Béla Tarr", "Le temps d'après"), up("cinema", "pensee", "Wong Kar-wai", "Le temps perdu"),
+  // Musique : des plus connus aux plus cachés
+  up("musique", "pensee", "Bach", "Le cantor de Leipzig"), up("musique", "pensee", "Nina Simone", "La colère et la grâce"), up("musique", "recit", "Public Enemy", "Le bruit qui dérange"),
+  up("musique", "recit", "Daft Punk", "Les robots de Paris"), up("musique", "pensee", "Erik Satie", "Le velours et l'ennui"), up("musique", "recit", "Robert Johnson", "Le carrefour"),
+  up("musique", "recit", "Fela Kuti", "La république de Kalakuta"), up("musique", "pensee", "Ryuichi Sakamoto", "Le son et le temps"), up("musique", "recit", "J Dilla", "Le temps qui boite"),
+  up("musique", "recit", "MF DOOM", "L'homme au masque de fer"), up("musique", "recit", "Nick Drake", "Trois albums dans le silence"), up("musique", "recit", "Moondog", "Le Viking de la 6e Avenue"),
+  up("musique", "recit", "Lili Boulanger", "Vingt-quatre ans pour tout écrire"), up("musique", "pensee", "Hildegard von Bingen", "La lumière vivante"), up("musique", "recit", "Arthur Russell", "Le violoncelle et la boule à facettes"),
+  up("musique", "recit", "Vashti Bunyan", "Trente ans de silence"), up("musique", "recit", "Midori Takada", "À travers le miroir"), up("musique", "recit", "Hiroshi Yoshimura", "La musique d'environnement"),
+  up("musique", "apprentissage", "L'échantillonnage", "Du breakbeat au sampler"),
   up("art", "recit", "Moebius", "Le trait qui voyage"), up("art", "recit", "Gustave Doré", "L'homme qui illustra tout"), up("art", "recit", "Katsuhiro Ōtomo", "Akira"),
   up("art", "recit", "Kim Jung Gi", "Dessiner sans esquisse"), up("art", "recit", "Yoshitaka Amano", "Les brumes"), up("art", "recit", "Mucha", "L'Art nouveau"),
   up("art", "recit", "Hiroshige", "La pluie sur le pont"), up("art", "recit", "Caravage", "La lumière et le couteau"), up("art", "recit", "Takehiko Inoue", "Vagabond"),

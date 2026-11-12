@@ -15,7 +15,7 @@ const book = {
 
 Imagine un pays où il n'y a presque plus de crimes. Plus de chômage. Plus d'angoisse devant l'avenir : à vingt ans, on te dit exactement pour quel métier tu es fait, et l'on ne se trompe pas. Les rues sont propres, les gens polis, les hologrammes habillent les murs de ce que tu veux voir.
 
-@yt yXKPtn_LSds | Psycho-Pass, premier générique (abnormalize, Ling Tosite Sigure).
+@yt ML-iqXrCS0A | Psycho-Pass, le premier épisode (version doublée en anglais).
 
 C'est le Japon de 2112. Le reste du monde s'est effondré dans la guerre et la faim. Lui a fermé ses frontières et s'est confié à un système. Il s'appelle Sibyl, du nom des prophétesses antiques.
 
