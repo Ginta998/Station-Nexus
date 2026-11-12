@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline } from "react-icons/io5";
+import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
@@ -16,7 +16,7 @@ import "@/components/atelier/alexandrie.css";
 
 // ALEXANDRIE — la bibliothèque de l'Atelier. Des salles, des rayonnages, des livres qui s'ouvrent.
 // Les livres de fond sont dans src/data/alexandrie ; les tiens sont des fiches de l'Atelier (fields.alexandrie).
-const LS = { prog: "nx-alex-progress", wish: "nx-alex-wish", covers: "nx-alex-covers" };
+const LS = { prog: "nx-alex-progress", wish: "nx-alex-wish", covers: "nx-alex-covers", fav: "nx-alex-fav" };
 const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || "") ?? d; } catch (_) { return d; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
 const NOEDITS = {};
@@ -129,6 +129,8 @@ function notesOf(item) {
   const d = new DOMParser().parseFromString(`<div>${item.content || ""}</div>`, "text/html").body.firstChild;
   return [...d.querySelectorAll("p")].map((p, k) => { const m = p.textContent.trim().match(/^Page (\d+)(?: · (.*?))? : ([\s\S]*)$/); return m ? { id: "old" + k, p: +m[1] - 1, n: 0, ch: m[2] || "", t: m[3] } : null; }).filter(Boolean);
 }
+// Notes d'un livre, avec la page recalculée pour la mise en page actuelle
+const bookNotes = (at, id, pages) => notesOf(notesItemOf(at, id)).map((n) => ({ ...n, page: Math.max(0, pages ? Math.min(pages - 1, n.n ? Math.round((n.p / n.n) * pages) : n.p) : n.p) })).sort((a, b) => a.page - b.page);
 function ReaderNotes({ at, book, page, pages, chapter, onClose, onJump }) {
   const item = notesItemOf(at, book.id); const list = notesOf(item);
   const [txt, setTxt] = useState(() => { const s = String(window.getSelection?.() || "").trim(); return s && s.length < 600 ? `« ${s} »\n` : ""; });
@@ -215,7 +217,7 @@ function YtFig({ b, onSwap }) {
   );
 }
 
-function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover, at }) {
+function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover, at, startNotes }) {
   const { sfx } = useApp();
   const flow = useRef(null);
   const tx = useRef(0);
@@ -224,7 +226,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
   const [per, setPer] = useState(2);
   const [toc, setToc] = useState(false);
   const [music, setMusic] = useState(false);
-  const [notes, setNotes] = useState(false);
+  const [notes, setNotes] = useState(!!startNotes);
   const [mark, setMark] = useState(() => !!read(LS.prog, {})[book.id]?.mark);
   // Géométrie des colonnes : le pas d'une page = largeur de colonne + gouttière, hors marges.
   const geom = () => {
@@ -246,7 +248,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
   useEffect(() => { const all = read(LS.prog, {}); all[book.id] = { page, pages, mark, at: Date.now() }; write(LS.prog, all); }, [page, pages, mark, book.id]);
   const go = (d) => { const n = Math.max(0, Math.min(pages - 1, spread + d * per)); if (n !== spread) { setPage(n); sfx?.("nav"); } };
   useEffect(() => {
-    const k = (e) => { if (paused) return; if (e.key === "Escape") { e.stopPropagation(); notes ? setNotes(false) : music ? setMusic(false) : toc ? setToc(false) : onClose(); return; } if (/^(INPUT|TEXTAREA)$/.test(e.target?.tagName)) return; if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); go(1); } if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(-1); } };
+    const k = (e) => { if (paused) return; if (e.key === "Escape") { e.stopPropagation(); notes ? setNotes(false) : music ? setMusic(false) : toc ? setToc(false) : onClose(); return; } if (/^(INPUT|TEXTAREA)$/.test(e.target?.tagName) || e.target?.isContentEditable) return; if ((e.key === "n" || e.key === "N") && at && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); setNotes((x) => !x); setToc(false); setMusic(false); return; } if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); go(1); } if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(-1); } };
     window.addEventListener("keydown", k, true); return () => window.removeEventListener("keydown", k, true);
   });
   const chapterAt = () => { try { const g = geom(); const x = spread * g.step + g.pad + 2; let t = ""; flow.current.querySelectorAll("[data-ch]").forEach((el) => { if (el.offsetLeft <= x + g.step * (g.p - 1)) t = el.querySelector("h2")?.textContent || t; }); return t; } catch (_) { return ""; } };
@@ -261,9 +263,9 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
         <span className="grow" />
         {book.mine ? <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
           : onModify && <button className="ax-rb" onClick={onModify} title="Modifier le texte, les images, les vidéos" data-testid="alex-modify"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
-        {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
+        {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} title="Notes (touche N)" data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
         {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music"><IoMusicalNotes size={15} /> <span>Musique</span></button>}
-        <button className="ax-rb" onClick={() => exportBook(book, cover)} title="Exporter le livre en PDF" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>
+        <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>
         <button className="ax-rb" onClick={() => { setToc((t) => !t); setMusic(false); }} aria-expanded={toc} data-testid="alex-toc"><IoList size={16} /> <span>Sommaire</span></button>
         <button className={"ax-rb" + (mark ? " on" : "")} onClick={() => { setMark((m) => !m); sfx?.("select"); }} aria-pressed={mark} title="Marque-page">{mark ? <IoBookmark size={16} /> : <IoBookmarkOutline size={16} />}</button>
       </header>
@@ -392,7 +394,7 @@ function Rail({ code, label, list, upFrom, selId, onSel, covers, wish, onOpen, k
 }
 
 // Une salle : on y est entré par sa porte. Rayon A (à lire), notice du volume choisi, rayon B (à paraître).
-function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish, onCover, onEdit, onModify, menuFor }) {
+function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish, onCover, onEdit, onModify, menuFor, noteCount, onNotes, favs, onFav }) {
   const all = [...here, ...up]; const cur = all.find((b) => b.id === selId) || all[0]; const isUp = cur ? !here.includes(cur) : false;
   const id = cur?.id; const pg = cur && prog[cur.id]; const T = TYPES[cur?.type] || TYPES.recit; const fmt = cur ? fmtOf(cur) : "livre";
   const act = (b, u) => (u ? onWish(b.id) : onRead(b));
@@ -405,7 +407,7 @@ function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish
       {cur && (
         <div className="ax-notice" key={cur.id}>
           <p className="mono meta">{isUp ? "À PARAÎTRE" : cur.cote || "MES LIVRES"} · {T.label.toUpperCase()} · {fmt === "vhs" ? "CASSETTE" : fmt === "vinyle" ? "DISQUE" : "LIVRE"}{!isUp && cur.words ? ` · ${readingTime(cur.words).toUpperCase()}` : ""}</p>
-          <h3>{cur.title}</h3>
+          <h3>{cur.title}{favs.includes(cur.id) && <IoHeart className="ax-favh" size={20} aria-label="Coup de cœur" />}</h3>
           {cur.sub && <p className="sub">{cur.sub}</p>}
           {cur.about && <p className="ab">{cur.about}</p>}
           {isUp && <p className="ab">Pas encore écrit. Marque-le d'une étoile : les titres étoilés passent en premier.</p>}
@@ -413,6 +415,8 @@ function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish
             {isUp ? <button className="at-btn" onClick={() => onWish(cur.id)} data-testid="alex-wish">{wish.includes(cur.id) ? <><IoStar size={15} /> Demandé</> : <><IoStarOutline size={15} /> Je veux le lire</>}</button>
               : <button className="at-btn" onClick={() => onRead(cur)} data-testid="alex-read"><IoPlay size={14} /> {pg && pg.page > 0 ? `Reprendre page ${pg.page + 1}` : fmt === "vhs" ? "Lancer" : "Lire"}</button>}
             {cur.mine && <button className="ax-ghost" onClick={() => onEdit(cur.itemId)}><IoCreateOutline size={15} /> Écrire</button>}
+            {!isUp && noteCount(cur.id) > 0 && <button className="ax-ghost" onClick={() => onNotes(cur)} data-testid="alex-notes-notice"><IoPencil size={14} /> Mes notes · {noteCount(cur.id)}</button>}
+            {!isUp && <button className={"ax-ghost" + (favs.includes(cur.id) ? " on" : "")} onClick={() => onFav(cur.id)} aria-pressed={favs.includes(cur.id)} data-testid="alex-fav">{favs.includes(cur.id) ? <IoHeart size={15} /> : <IoHeartOutline size={15} />} Coup de cœur</button>}
             {!cur.mine && !isUp && <button className="ax-ghost" onClick={() => onModify(cur)} data-testid="alex-modify-notice"><IoCreateOutline size={15} /> Modifier</button>}
             <button className="ax-ghost" onClick={() => onCover(cur)} data-testid="alex-cover-edit"><IoImageOutline size={15} /> {covers[cur.id] ? "Changer l'artwork" : "Mettre un artwork"}</button>
           </div>
@@ -485,6 +489,9 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const [sel, setSel] = useState({});
   const [coverFor, setCoverFor] = useState(null);
   const [wish, setWish] = useState(() => read(LS.wish, []));
+  const [favs, setFavs] = useState(() => read(LS.fav, []));
+  const toggleFav = (id) => { const f = favs.includes(id) ? favs.filter((x) => x !== id) : [id, ...favs]; setFavs(f); write(LS.fav, f); sfx?.("select"); };
+  const [readNotes, setReadNotes] = useState(false);
   const [localCovers, setLocalCovers] = useState(() => read(LS.covers, {}));
   const [bad, setBad] = useState({});
   const rawCovers = { ...localCovers, ...(at.config?.alexandrie?.covers || {}) };
@@ -538,7 +545,8 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     !upc && { id: "read", label: prog[b.id]?.page > 0 ? `Reprendre page ${prog[b.id].page + 1}` : "Lire", icon: <IoPlay size={14} />, onClick: () => openBook(b) },
     upc && { id: "wish", label: wish.includes(b.id) ? "Ne plus demander" : "Je veux le lire", icon: <IoStarOutline size={14} />, onClick: () => toggleWish(b.id) },
     !upc && (b.mine ? { id: "write", label: "Écrire", icon: <IoCreateOutline size={14} />, onClick: () => open(b.itemId) } : { id: "modify", label: "Modifier le livre", icon: <IoCreateOutline size={14} />, onClick: () => modifyBook(b) }),
-    !upc && { id: "pdf", label: "Exporter en PDF", icon: <IoPrintOutline size={14} />, onClick: () => exportBook(b, covers[b.id]) },
+    !upc && { id: "fav", label: favs.includes(b.id) ? "Retirer des coups de cœur" : "Coup de cœur", icon: favs.includes(b.id) ? <IoHeart size={14} /> : <IoHeartOutline size={14} />, onClick: () => toggleFav(b.id) },
+    !upc && { id: "pdf", label: "Exporter en PDF", icon: <IoPrintOutline size={14} />, onClick: () => exportBook(b, covers[b.id], bookNotes(at, b.id, 0)) },
     "-",
     { id: "cover", label: covers[b.id] ? "Changer l'artwork" : "Mettre un artwork", icon: <IoImageOutline size={14} />, onClick: () => setCoverFor(b) },
     covers[b.id] && { id: "uncover", label: "Retirer l'artwork", icon: <IoTrashOutline size={14} />, onClick: () => saveCover(b.id, "") },
@@ -640,13 +648,13 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
               <button className="at-btn" onClick={() => addBook(R.key)} data-testid="alex-add"><IoAdd size={16} /> Écrire</button>
             </div>
           </header>
-          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(match)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} />
+          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(match)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} noteCount={(id) => notesOf(notesItemOf(at, id)).length} onNotes={(b) => { setReadNotes(true); openBook(b); }} favs={favs} onFav={toggleFav} />
         </>
       )}
       {wish.length > 0 && <p className="ax-wishes mono">★ {wish.length} TITRE{wish.length > 1 ? "S" : ""} DEMANDÉ{wish.length > 1 ? "S" : ""} : {wish.map((id) => UPCOMING.find((u) => u.id === id)?.title).filter(Boolean).join(" · ")}</p>}
       {coverFor && <CoverDialog b={coverFor} current={covers[coverFor.id]} def={DEFAULT_COVERS[coverFor.id]} onSave={(u) => saveCover(coverFor.id, u)} onClose={() => setCoverFor(null)} />}
       {search && <AlexSearch books={all} onClose={() => setSearch(false)} onOpen={openBook} onGoto={(b) => { setSearch(false); setRoom(b.room); setSel((s) => ({ ...s, [b.room]: b.id })); }} />}
-      {readingBook && <Reader key={readingBook.id} book={readingBook} at={at} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); }} onEdit={(id) => { setReading(null); open(id); }}
+      {readingBook && <Reader key={readingBook.id} book={readingBook} at={at} startNotes={readNotes} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); setReadNotes(false); }} onEdit={(id) => { setReading(null); open(id); }}
         onModify={() => modifyBook(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} />}
     </section>
   );

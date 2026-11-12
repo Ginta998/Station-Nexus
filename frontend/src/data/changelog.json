@@ -36,7 +36,8 @@
           "Musique et cinéma : chaque livre s'ouvre sur une vidéo dès l'avant-propos (Sugar Man, Triumph, Straight Outta Compton, Don't Stop 'Til You Get Enough, Mozart, Clair de lune, hommages à Kitano, Tarkovski et Bresson).",
           "Plan des salles : les livres miniatures ont du relief, du grain, des filets dorés, des étiquettes VHS, et leur artwork quand il y en a un.",
           "Notes dans le livre : le panneau Notes liste tes notes par page, un clic te ramène à la bonne page, chaque note se modifie ou se supprime, et des repères marquent les notes sur la barre de progression. Le bouton affiche leur nombre.",
-          "Favicon : neuf variantes du réticule d'origine (Nuit, Argent, Duo, Or, Orange, Rouge, Magenta, Violet, Émeraude), au choix dans Réglages, onglet admin, Identité du site. « Origine » remet celui de base."
+          "Favicon : neuf variantes du réticule d'origine (Nuit, Argent, Duo, Or, Orange, Rouge, Magenta, Violet, Émeraude), au choix dans Réglages, onglet admin, Identité du site. « Origine » remet celui de base.",
+          "Alexandrie : bouton « Mes notes » dans la fiche d'un livre annoté, touche N pour ouvrir les notes dans le lecteur, notes ajoutées à la fin du PDF exporté, et « Coup de cœur » (fiche, clic droit) : les livres aimés passent en premier sur le Pont."
         ],
         "Corrigé": [
           "Écrire un livre : la création ne peut plus faire planter l'écran ; en cas d'échec, un message dit pourquoi.",

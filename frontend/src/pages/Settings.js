@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { MyData, ReportsAdmin, LegalInfoAdmin } from "@/components/PrivacyTools";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoLockOpen, IoLockClosed, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoAlbumsOutline, IoGridOutline, IoListOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline , IoDocumentTextOutline } from "react-icons/io5";
+import { IoArrowBack, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline , IoDocumentTextOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { useThemeList, baseOf as baseOfTheme } from "@/lib/themeStore";
 import { UI_SCALES } from "@/lib/uiScale";
@@ -38,13 +38,6 @@ const Section = ({ title, extra, children }) => (
 );
 
 // Séparateur de catégorie — façon artefact ( // APPARENCE  // MUSIQUE … )
-const Cat = ({ children }) => (
-  <div className="flex items-center gap-3 mt-2 mb-7" data-testid={`cat-${String(children).toLowerCase()}`}>
-    <span className="text-xs tracking-[0.3em]" style={{ color: "var(--brand)", fontFamily: "var(--font-mono, ui-monospace, monospace)" }}>// {children}</span>
-    <span className="flex-1 h-px" style={{ background: "linear-gradient(90deg, var(--border-c), transparent)" }} />
-  </div>
-);
-
 const AMBIENCE_ICONS = ["🎵","🌙","🌧️","🔥","🌊","🍃","🎐","🏯","⛩️","🌸","❄️","☕","📖","🕯️","🌌","🎹","🐉","🦊","💮","🎏","🌿","⚡","🫧","🪷"];
 
 const PLAY_MODES = [["loop", "En boucle", "une seule piste répétée"], ["sequence", "Jukebox à la suite", "toutes les pistes dans l'ordre, puis on recommence"], ["shuffle", "Jukebox aléatoire", "toutes les pistes au hasard, sans répétition avant la fin du tour"]];
@@ -568,20 +561,6 @@ function AnnouncementsManager() {
         )}
         <button onClick={add} data-testid="announcement-add" className="px-4 py-2 font-semibold flex items-center gap-1" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}><IoAddOutline /> Publier</button>
       </div>
-    </div>
-  );
-}
-
-const POSTER_PREVIEW_PX = { compact: 40, normal: 58, grand: 78 };
-function MiniPoster({ size }) {
-  const w = POSTER_PREVIEW_PX[size] || POSTER_PREVIEW_PX.normal;
-  return (
-    <div className="flex flex-col items-center gap-1 flex-shrink-0" data-testid="poster-preview">
-      <div style={{ width: w, height: w * 1.5, borderRadius: "var(--radius-base)", background: "linear-gradient(155deg, var(--brand) 0%, var(--bg-secondary) 70%)", border: "1px solid var(--border-c)", position: "relative", overflow: "hidden", transition: "width .22s ease, height .22s ease", boxShadow: "0 4px 14px rgba(0,0,0,0.4)" }}>
-        <div style={{ position: "absolute", left: 5, right: 14, bottom: 10, height: 3, background: "rgba(255,255,255,0.85)", borderRadius: 2 }} />
-        <div style={{ position: "absolute", left: 5, right: 22, bottom: 5, height: 2, background: "rgba(255,255,255,0.5)", borderRadius: 2 }} />
-      </div>
-      <span className="text-[10px]" style={{ color: "var(--text-secondary)" }}>Aperçu</span>
     </div>
   );
 }
