@@ -1,4 +1,4 @@
-import { FAVICONS, faviconUri, faviconPng } from "@/lib/favicons";
+import { FAVICONS, faviconPng } from "@/lib/favicons";
 import { useState, useEffect, useRef } from "react";
 import { MyData, ReportsAdmin, LegalInfoAdmin } from "@/components/PrivacyTools";
 import { useNavigate } from "react-router-dom";
@@ -1150,7 +1150,7 @@ function SiteIdentity() {
   const refreshTab = (t) => document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"]').forEach((l) => { const u = new URL(l.href, window.location.href); u.searchParams.set("v", t); l.href = u.toString(); });
   const putIcon = async (data, label) => { setBusy(true); try { await api.put("/site/icon", { data }); const t = Date.now(); setV(t); refreshTab(t); toast.success(label ? `Favicon « ${label} » appliqué` : data ? "Nouvelle icône enregistrée" : "Icône Station Nexus rétablie"); } catch { toast.error("Image invalide ou trop lourde"); } setBusy(false); };
   const [picked, setPicked] = useState(() => { try { return localStorage.getItem("sx_favicon_pick") || ""; } catch { return ""; } });
-  const pickFav = async (f) => { try { await putIcon(await faviconPng(f.svg), f.label); setPicked(f.key); try { localStorage.setItem("sx_favicon_pick", f.key); } catch {} } catch { toast.error("Le favicon n'a pas pu être créé"); } };
+  const pickFav = async (f) => { if (f.base) { await putIcon(""); setPicked("origine"); try { localStorage.setItem("sx_favicon_pick", "origine"); } catch {} return; } try { await putIcon(await faviconPng(f.src), f.label); setPicked(f.key); try { localStorage.setItem("sx_favicon_pick", f.key); } catch {} } catch { toast.error("Le favicon n'a pas pu être créé"); } };
   const onIcon = async (file) => { if (!file) return; try { await putIcon(await toPng(file)); } catch { toast.error("Image invalide"); } };
   const saveDesc = async () => { await updateSettings({ ...settings, site_description: desc.trim() }); toast.success("Description enregistrée"); refetch(); };
   const fs = { borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "var(--bg-secondary)", color: "var(--text-primary)" };
@@ -1167,13 +1167,13 @@ function SiteIdentity() {
         </div>
       </div>
       <div className="flex-1">
-        <p className="text-xs mb-2" style={{ color: "var(--text-secondary)", letterSpacing: ".12em" }}>FAVICONS · DIRECTION LABORATOIRE</p>
+        <p className="text-xs mb-2" style={{ color: "var(--text-secondary)", letterSpacing: ".12em" }}>FAVICON · VARIANTES DU RÉTICULE</p>
         <div className="grid gap-2 mb-5" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(92px,1fr))" }} data-testid="favicon-gallery">
           {FAVICONS.map((f) => (
             <button key={f.key} type="button" disabled={busy} onClick={() => pickFav(f)} title={f.hint} data-testid={`favicon-${f.key}`}
               className="flex flex-col items-center gap-1.5 p-2 border transition-transform hover:-translate-y-0.5"
               style={{ borderColor: picked === f.key ? "var(--brand)" : "var(--border-c)", background: picked === f.key ? "color-mix(in srgb,var(--brand) 12%,transparent)" : "transparent", borderRadius: "var(--radius-base)", color: "var(--text-primary)" }}>
-              <span className="flex items-end gap-1.5"><img src={faviconUri(f.svg)} alt="" className="w-12 h-12" style={{ borderRadius: 10 }} /><img src={faviconUri(f.svg)} alt="" className="w-4 h-4" /></span>
+              <span className="flex items-end gap-1.5"><img src={f.src} alt="" className="w-12 h-12" style={{ borderRadius: 10 }} /><img src={f.src} alt="" className="w-4 h-4" /></span>
               <span className="text-xs">{f.label}</span>
             </button>
           ))}
