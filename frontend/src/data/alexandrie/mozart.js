@@ -13,6 +13,8 @@ const book = {
 
 Je t'écris comme j'écrivais à mon père, c'est-à-dire beaucoup, vite, avec des fautes, des calembours et des cochonneries, et quelquefois avec le cœur serré. J'ai écrit des centaines de lettres dans ma vie. On les a gardées, toutes, ou presque. C'est par elles qu'on me connaît le mieux, mieux que par les portraits, qui me font tous plus beau et plus sérieux que je n'étais.
 
+@yt 3INlfXNBKDU | Concerto pour piano n° 21, l'Andante (1785).
+
 J'étais petit, j'avais le teint marqué par la petite vérole, de grands yeux un peu saillants, un nez fort. J'aimais les beaux habits, le billard, les quilles, le punch, la danse, les jeux de mots. Je n'étais pas l'ange que les gens imaginent. J'étais un musicien qui travaillait tout le temps, et qui avait besoin d'argent.
 
 # Salzbourg

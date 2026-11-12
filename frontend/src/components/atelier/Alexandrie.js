@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
 import { DEFAULT_COVERS, mergeCovers, sgdbTerm } from "@/data/alexandrie/covers";
-import { IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoText } from "react-icons/io5";
+import { IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo } from "react-icons/io5";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm } from "@/components/atelier/LabDialog";
 import { exportBook } from "@/lib/exportPdf";
@@ -27,19 +27,47 @@ const hue = (s) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)
 function itemToBook(it) {
   try { return itemToBookRaw(it); } catch (_) { return { id: "item:" + it.id, itemId: it.id, mine: true, title: String(it.title || "Sans titre"), sub: "", room: "atelier", type: "recit", about: "", cote: "PERS.", chapters: [{ title: "", blocks: [{ t: "p", x: "Ce livre n'a pas pu être lu. Ouvre-le pour le corriger." }] }], words: 0, links: [] }; }
 }
+// Texte d'un nœud avec l'italique gardé (*mot*)
+const nodeText = (n) => [...n.childNodes].map((c) => (c.nodeType === 3 ? c.textContent : /^(EM|I)$/.test(c.nodeName) ? `*${c.textContent}*` : c.nodeName === "BR" ? " " : nodeText(c))).join("").replace(/\s+/g, " ").trim();
+const YT_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/;
 function itemToBookRaw(it) {
   const doc = new DOMParser().parseFromString(`<div>${it.content || ""}</div>`, "text/html").body.firstChild;
   const chapters = []; let cur = { title: "", blocks: [] };
+  const newCh = (t) => { if (cur.blocks.length || cur.title) chapters.push(cur); cur = { title: t, blocks: [] }; };
   for (const n of [...doc.childNodes]) {
-    const tag = n.nodeName; const txt = (n.textContent || "").trim(); if (!txt) continue;
-    if (/^H[12]$/.test(tag)) { if (cur.blocks.length || cur.title) chapters.push(cur); cur = { title: txt, blocks: [] }; }
-    else if (tag === "H3") cur.blocks.push({ t: "h", x: txt });
-    else if (tag === "BLOCKQUOTE") cur.blocks.push({ t: "q", x: txt });
-    else cur.blocks.push({ t: "p", x: txt });
+    const tag = n.nodeName; const txt = (n.textContent || "").trim();
+    const img = n.nodeType === 1 && (tag === "IMG" ? n : n.querySelector?.("img"));
+    if (img && (tag === "FIGURE" || tag === "IMG" || !txt)) { const [cap, credit] = (n.querySelector?.("figcaption")?.textContent || img.alt || "").split(" | ").map((x) => x.trim()); cur.blocks.push({ t: "img", src: img.getAttribute("src"), cap, credit }); continue; }
+    if (!txt) continue;
+    const a = n.nodeType === 1 && n.querySelector?.("a[href]"); const yt = a && (a.getAttribute("href") || "").match(YT_RE);
+    if (yt && a.textContent.trim() === txt) { cur.blocks.push({ t: "yt", id: yt[1], cap: txt.replace(/^▶\s*/, "").replace(/^https?:\S+$/, "") }); continue; }
+    if (/^H[12]$/.test(tag)) { newCh(txt); continue; }
+    if (tag === "H3" || tag === "H4") { cur.blocks.push({ t: "h", x: nodeText(n) }); continue; }
+    if (tag === "BLOCKQUOTE") { const ps = [...n.querySelectorAll("p")].map(nodeText).filter(Boolean); cur.blocks.push(ps.length > 1 ? { t: "q", x: ps.slice(0, -1).join(" "), by: ps[ps.length - 1] } : { t: "q", x: nodeText(n) }); continue; }
+    // Une phrase toute en gras, courte : un titre de chapitre. Un début en gras suivi de « : » : un encadré.
+    const strong = n.nodeType === 1 && n.querySelector?.("strong,b");
+    if (strong && strong.textContent.trim() === txt && txt.length < 90) { newCh(txt.replace(/[:.]\s*$/, "")); continue; }
+    if (strong && txt.startsWith(strong.textContent.trim()) && /:\s*$/.test(strong.textContent.trim())) { cur.blocks.push({ t: "box", label: strong.textContent.trim().replace(/\s*:\s*$/, "").toUpperCase(), x: nodeText(n).slice(strong.textContent.trim().length).trim() }); continue; }
+    cur.blocks.push({ t: "p", x: n.nodeType === 1 ? nodeText(n) : txt });
   }
   if (cur.blocks.length || cur.title) chapters.push(cur);
   const a = it.fields?.alexandrie || {};
-  return { id: "item:" + it.id, itemId: it.id, mine: true, title: String(it.title || "Sans titre"), sub: a.sub || "", room: a.room || "atelier", type: a.type || "recit", about: a.about || "", color: a.color, cote: "PERS.", chapters: chapters.length ? chapters : [{ title: "", blocks: [{ t: "p", x: "Ce livre est encore vide. Ouvre-le dans l'éditeur pour l'écrire." }] }], links: [], words: stripHtml(it.content || "").split(/\s+/).filter(Boolean).length };
+  return { id: "item:" + it.id, itemId: it.id, mine: true, title: String(it.title || "Sans titre"), sub: a.sub || "", room: a.room || "atelier", type: a.type || "recit", about: a.about || "", color: a.color, cote: "PERS.", chapters: chapters.length ? chapters : [{ title: "", blocks: [{ t: "p", x: "Ce livre est encore vide. Ouvre-le dans l'éditeur pour l'écrire." }] }], links: [], text: stripHtml(it.content || ""), words: stripHtml(it.content || "").split(/\s+/).filter(Boolean).length };
+}
+// Livre de la bibliothèque → document de l'éditeur (pour le modifier avec le même éditeur que tes livres)
+const hEsc = (x) => String(x || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const hEm = (x) => hEsc(x).replace(/\*([^*]+)\*/g, "<em>$1</em>");
+function bookToHtml(text) {
+  return String(text || "").trim().split(/\n\s*\n/).map((raw) => {
+    const s = raw.replace(/\s*\n\s*/g, " ").trim(); if (!s) return "";
+    if (s.startsWith("# ")) return `<h2>${hEsc(s.slice(2))}</h2>`;
+    if (s.startsWith("## ")) return `<h3>${hEm(s.slice(3))}</h3>`;
+    if (s.startsWith("> ")) { const [x, by] = s.slice(2).split(" | "); return `<blockquote><p>${hEm(x)}</p>${by ? `<p>${hEm(by)}</p>` : ""}</blockquote>`; }
+    if (s.startsWith("!! ")) { const m = s.slice(3).split(" :: "); return m.length > 1 ? `<p><strong>${hEsc(m[0])} :</strong> ${hEm(m.slice(1).join(" :: "))}</p>` : `<p><strong>À RETENIR :</strong> ${hEm(m[0])}</p>`; }
+    if (s.startsWith("@img ")) { const [src, cap, credit] = s.slice(5).split(" | ").map((x) => (x || "").trim()); return `<figure><img src="${hEsc(src)}" alt="${hEsc(cap)}"><figcaption>${hEsc([cap, credit].filter(Boolean).join(" | "))}</figcaption></figure>`; }
+    if (s.startsWith("@yt ")) { const [id, cap] = s.slice(4).split(" | ").map((x) => (x || "").trim()); return `<p><a href="https://www.youtube.com/watch?v=${hEsc(id)}">▶ ${hEsc(cap || "Vidéo")}</a></p>`; }
+    return `<p>${hEm(s)}</p>`;
+  }).join("");
 }
 
 const inline = (s) => s.split(/(\*[^*]+\*)/g).map((p, i) => (p.startsWith("*") && p.endsWith("*") && p.length > 2 ? <em key={i}>{p.slice(1, -1)}</em> : p));
@@ -91,35 +119,57 @@ function Volume({ b, sel, cover, upcoming, wished, onPick, onOpen, menu }) {
   );
 }
 
-// Notes de lecture : écrites sans quitter le livre, rangées dans le Nexus Drive (une note par livre, étiquetée « alexandrie »).
-function ReaderNotes({ at, book, page, per, chapter, onClose, onOpen }) {
-  const item = at.items.find((i) => i.fields?.alexNotes === book.id);
+// Notes de lecture : prises dans le livre, retrouvées dans le livre (liste par page, repères sur la barre de progression).
+// Elles sont gardées dans une fiche « Notes de lecture » du Nexus Drive, une par livre.
+const notesItemOf = (at, id) => at?.items.find((i) => i.fields?.alexNotes === id);
+function notesOf(item) {
+  if (!item) return [];
+  if (Array.isArray(item.fields?.notes)) return item.fields.notes;
+  // anciennes notes, écrites en texte : « Page 12 · Chapitre : texte »
+  const d = new DOMParser().parseFromString(`<div>${item.content || ""}</div>`, "text/html").body.firstChild;
+  return [...d.querySelectorAll("p")].map((p, k) => { const m = p.textContent.trim().match(/^Page (\d+)(?: · (.*?))? : ([\s\S]*)$/); return m ? { id: "old" + k, p: +m[1] - 1, n: 0, ch: m[2] || "", t: m[3] } : null; }).filter(Boolean);
+}
+function ReaderNotes({ at, book, page, pages, chapter, onClose, onJump }) {
+  const item = notesItemOf(at, book.id); const list = notesOf(item);
   const [txt, setTxt] = useState(() => { const s = String(window.getSelection?.() || "").trim(); return s && s.length < 600 ? `« ${s} »\n` : ""; });
-  const [busy, setBusy] = useState(false);
-  const past = useMemo(() => { if (!item?.content) return []; const d = new DOMParser().parseFromString(`<div>${item.content}</div>`, "text/html").body.firstChild; return [...d.querySelectorAll("p")].map((p) => p.textContent.trim()).filter(Boolean).reverse(); }, [item?.content]);
-  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  const keep = async () => {
-    const t = txt.trim(); if (!t || busy) return; setBusy(true);
-    const where = `Page ${page + 1}${chapter ? ` · ${chapter}` : ""}`;
-    const html = `<p><strong>${esc(where)}</strong> : ${esc(t).replace(/\n/g, "<br>")}</p>`;
+  const [busy, setBusy] = useState(false); const [edit, setEdit] = useState(null);
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const save = async (next, msg) => {
+    setBusy(true);
+    const sorted = [...next].sort((a, b) => (a.n ? a.p / a.n : 0) - (b.n ? b.p / b.n : 0));
+    const html = sorted.map((n) => `<p><strong>${esc(`Page ${n.p + 1}${n.ch ? ` · ${n.ch}` : ""}`)}</strong> : ${esc(n.t).replace(/\n/g, "<br>")}</p>`).join("");
     try {
-      if (item) await at.saveItem({ ...item, content: (item.content || "") + html });
-      else await at.createItem({ kind: "note", title: `Notes de lecture · ${book.title}`, content: html, tags: ["alexandrie", "notes de lecture"], fields: { alexNotes: book.id } });
-      setTxt(""); toast.success("Note gardée dans le Nexus Drive");
-    } catch (e) { toast.error("La note n'a pas pu être gardée"); }
-    setBusy(false);
+      if (item) await at.saveItem({ ...item, content: html, fields: { ...item.fields, notes: sorted } });
+      else await at.createItem({ kind: "note", title: `Notes de lecture · ${book.title}`, content: html, tags: ["alexandrie", "notes de lecture"], fields: { alexNotes: book.id, notes: sorted } });
+      if (msg) toast.success(msg); setBusy(false); return true;
+    } catch (e) { toast.error("La note n'a pas pu être gardée"); setBusy(false); return false; }
   };
+  const keep = async () => {
+    const t = txt.trim(); if (!t || busy) return;
+    const next = edit ? list.map((n) => (n.id === edit ? { ...n, t } : n)) : [...list, { id: Date.now().toString(36), p: page, n: pages, ch: chapter || "", t, at: Date.now() }];
+    if (await save(next, edit ? "Note modifiée" : "Note gardée")) { setTxt(""); setEdit(null); }
+  };
+  const del = async (n) => { if (await labConfirm("Supprimer cette note ?")) save(list.filter((x) => x.id !== n.id), "Note supprimée"); };
+  const here = (n) => (n.n ? Math.round((n.p / n.n) * pages) : n.p);
   return (
     <aside className="ax-music ax-notes" data-testid="alex-notes-panel">
-      <p className="mono">NOTES DE LECTURE · PAGE {page + 1}</p>
-      <textarea autoFocus value={txt} onChange={(e) => setTxt(e.target.value)} onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") keep(); }} placeholder="Une idée, une phrase à garder, ce que ça t'inspire… (sélectionne un passage avant d'ouvrir les notes pour le citer)" rows={5} data-testid="alex-notes-input" />
+      <p className="mono">{edit ? "MODIFIER LA NOTE" : `NOTE · PAGE ${page + 1}${chapter ? ` · ${chapter.toUpperCase()}` : ""}`}</p>
+      <textarea autoFocus value={txt} onChange={(e) => setTxt(e.target.value)} onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") keep(); }} placeholder="Une idée, une phrase à garder, ce que ça t'inspire… (sélectionne un passage avant d'ouvrir les notes pour le citer)" rows={4} data-testid="alex-notes-input" />
       <div className="ax-acts">
-        <button className="at-btn" onClick={keep} disabled={busy || !txt.trim()} data-testid="alex-notes-keep">{busy ? "…" : "Garder la note"}</button>
-        {item && <button className="ax-ghost" onClick={() => onOpen(item.id)}><IoOpenOutline size={14} /> Ouvrir dans le Drive</button>}
+        <button className="at-btn" onClick={keep} disabled={busy || !txt.trim()} data-testid="alex-notes-keep">{busy ? "…" : edit ? "Enregistrer" : "Garder la note"}</button>
+        {edit && <button className="ax-ghost" onClick={() => { setEdit(null); setTxt(""); }}>Annuler</button>}
         <button className="ax-ghost" onClick={onClose}>Fermer</button>
       </div>
-      {past.length > 0 && <><p className="mono" style={{ marginTop: 16 }}>DÉJÀ NOTÉ · {past.length}</p>{past.slice(0, 20).map((p, i) => <p key={i} className="ax-note">{p}</p>)}</>}
-      {!past.length && <p className="ax-note" style={{ opacity: 0.7 }}>Tes notes sur ce livre iront dans une seule note du Nexus Drive, « Notes de lecture · {book.title} », avec la page et le chapitre.</p>}
+      <p className="mono" style={{ marginTop: 16 }}>MES NOTES SUR CE LIVRE · {list.length}</p>
+      {!list.length && <p className="ax-note" style={{ opacity: 0.7 }}>Tes notes s'afficheront ici, rangées par page. Un clic sur une note te ramène à sa page.</p>}
+      <div className="ax-nlist">
+        {[...list].sort((a, b) => here(a) - here(b)).map((n) => (
+          <div key={n.id} className={"ax-n" + (here(n) === page || here(n) === page + 1 ? " on" : "")}>
+            <button className="ax-n-go" onClick={() => onJump(here(n))} title="Aller à cette page" data-testid="alex-note-go"><b className="mono">P. {here(n) + 1}{n.ch ? ` · ${n.ch}` : ""}</b><span>{n.t}</span></button>
+            <span className="ax-n-a"><button onClick={() => { setEdit(n.id); setTxt(n.t); }} title="Modifier"><IoPencil size={12} /></button><button onClick={() => del(n)} title="Supprimer"><IoTrashOutline size={12} /></button></span>
+          </div>
+        ))}
+      </div>
     </aside>
   );
 }
@@ -202,6 +252,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
   const chapterAt = () => { try { const g = geom(); const x = spread * g.step + g.pad + 2; let t = ""; flow.current.querySelectorAll("[data-ch]").forEach((el) => { if (el.offsetLeft <= x + g.step * (g.p - 1)) t = el.querySelector("h2")?.textContent || t; }); return t; } catch (_) { return ""; } };
   const jump = (i) => { const el = flow.current?.querySelector(`[data-ch="${i}"]`); if (!el) return; const g = geom(); setPage(Math.max(0, Math.round((el.offsetLeft - g.pad) / g.step))); setToc(false); };
   const T = TYPES[book.type] || TYPES.recit; const R = ROOMS.find((r) => r.key === book.room);
+  const noteMarks = notesOf(notesItemOf(at, book.id)).map((n) => ({ id: n.id, t: n.t, at: Math.max(0, Math.min(pages - 1, n.n ? Math.round((n.p / n.n) * pages) : n.p)) }));
   return createPortal(
     <div className={"ax-reader ax-view" + (fmtOf(book) === "vhs" ? " skin-vhs" : "")} style={{ "--h": book.color ?? hue(book.title) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
       <header className="ax-rbar">
@@ -210,7 +261,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
         <span className="grow" />
         {book.mine ? <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
           : onModify && <button className="ax-rb" onClick={onModify} title="Modifier le texte, les images, les vidéos" data-testid="alex-modify"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
-        {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} data-testid="alex-notes"><IoPencil size={14} /> <span>Notes</span></button>}
+        {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
         {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music"><IoMusicalNotes size={15} /> <span>Musique</span></button>}
         <button className="ax-rb" onClick={() => exportBook(book, cover)} title="Exporter le livre en PDF" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>
         <button className="ax-rb" onClick={() => { setToc((t) => !t); setMusic(false); }} aria-expanded={toc} data-testid="alex-toc"><IoList size={16} /> <span>Sommaire</span></button>
@@ -251,9 +302,9 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
         </div>
         <button className="ax-turn r" onClick={() => go(1)} disabled={spread + per >= pages} aria-label="Page suivante"><IoArrowForward size={20} /></button>
       </div>
-      <footer className="ax-rfoot mono"><span>{book.title.toUpperCase()}</span><span className="ax-prog"><i style={{ width: `${Math.min(100, ((spread + per) / pages) * 100)}%` }} /></span><span>PAGE {Math.min(pages, spread + 1)}{per === 2 && spread + 2 <= pages ? `–${spread + 2}` : ""} / {pages}</span></footer>
+      <footer className="ax-rfoot mono"><span>{book.title.toUpperCase()}</span><span className="ax-prog"><i style={{ width: `${Math.min(100, ((spread + per) / pages) * 100)}%` }} />{noteMarks.map((n) => <button key={n.id} className="ax-pmark" style={{ left: `${(n.at / Math.max(1, pages - 1)) * 100}%` }} onClick={() => { setPage(n.at); setNotes(true); }} title={`Note page ${n.at + 1} : ${n.t.slice(0, 80)}`} aria-label={`Note page ${n.at + 1}`} />)}</span><span>PAGE {Math.min(pages, spread + 1)}{per === 2 && spread + 2 <= pages ? `–${spread + 2}` : ""} / {pages}</span></footer>
       {music && radio && <ReaderMusic radio={radio} onClose={() => setMusic(false)} />}
-      {notes && at && <ReaderNotes at={at} book={book} page={page} per={per} chapter={chapterAt()} onClose={() => setNotes(false)} onOpen={onEdit} />}
+      {notes && at && <ReaderNotes at={at} book={book} page={spread} pages={pages} chapter={chapterAt()} onClose={() => setNotes(false)} onJump={(p) => { setPage(Math.max(0, Math.min(pages - 1, p))); sfx?.("nav"); }} />}
       {toc && (
         <aside className="ax-toc" data-testid="alex-toc-panel">
           <p className="mono">SOMMAIRE</p>
@@ -424,52 +475,6 @@ function CoverDialog({ b, current, def, onSave, onClose }) {
   );
 }
 
-// Modifier un livre de la bibliothèque : le texte balisé, le titre, le sous-titre, la présentation.
-// Les changements sont gardés dans la configuration de l'Atelier ; l'original reste dans le code et se retrouve d'un clic.
-const MARKUP = [["# Titre", "Nouveau chapitre"], ["## Titre", "Intertitre"], ["> Citation | Auteur, source", "Citation sourcée"], ["!! LIBELLÉ :: texte", "Encadré"], ["*mot*", "Italique"], ["@img lien | légende | crédit", "Image"], ["@yt lien ou ID | légende", "Vidéo YouTube"]];
-function BookEditor({ base, edit, onSave, onReset, onClose }) {
-  const src = { ...base, ...(edit || {}) };
-  const [f, setF] = useState({ title: src.title, sub: src.sub || "", about: src.about || "", text: String(src.text || "").trim() });
-  const [media, setMedia] = useState(""); const [help, setHelp] = useState(false); const [busy, setBusy] = useState(false);
-  const ta = useRef(null);
-  const put = (snip) => { const el = ta.current; const at = el ? el.selectionStart : f.text.length; const before = f.text.slice(0, at).replace(/\s*$/, ""); const t = `${before}\n\n${snip}\n\n${f.text.slice(at).replace(/^\s*/, "")}`; setF({ ...f, text: t }); setTimeout(() => { if (!el) return; const p = before.length + 2 + snip.length; el.focus(); el.setSelectionRange(p, p); }, 0); };
-  const addMedia = () => { const u = media.trim(); if (!u) return; const id = /youtu/.test(u) || /^[\w-]{11}$/.test(u) ? ytId(u) : null; put(id ? `@yt ${id} | Légende` : `@img ${u} | Légende | Crédit`); setMedia(""); };
-  const save = async () => {
-    const patch = { title: f.title.trim() || base.title, sub: f.sub.trim(), about: f.about.trim(), text: f.text.replace(/^@yt\s+(\S+)/gm, (m, v) => `@yt ${ytId(v) || v}`) };
-    try { parseBook({ ...base, ...patch }); } catch (_) { toast.error("Le texte n'a pas pu être lu : vérifie le balisage"); return; }
-    setBusy(true); await onSave(patch); setBusy(false);
-  };
-  useEffect(() => { const k = (e) => { if (document.querySelector(".ld-wrap")) return; if (e.key === "Escape") { e.stopPropagation(); onClose(); } if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); save(); } }; window.addEventListener("keydown", k, true); return () => window.removeEventListener("keydown", k, true); });
-  return createPortal(
-    <div className="ax-fiche-wrap ax-edwrap" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="ax-fiche ax-editor" role="dialog" aria-modal="true" aria-label={`Modifier ${base.title}`} data-testid="alex-editor">
-        <p className="mono ax-fiche-top"><span>MODIFIER · {base.cote || ""} · 編集</span><button type="button" onClick={onClose} aria-label="Fermer"><IoClose size={15} /></button></p>
-        <div className="ax-ed-head">
-          <label><span className="mono">TITRE</span><input className="ax-in" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></label>
-          <label><span className="mono">SOUS-TITRE</span><input className="ax-in" value={f.sub} onChange={(e) => setF({ ...f, sub: e.target.value })} /></label>
-          <label className="wide"><span className="mono">PRÉSENTATION</span><textarea className="ax-in" rows={2} value={f.about} onChange={(e) => setF({ ...f, about: e.target.value })} /></label>
-        </div>
-        <div className="ax-ed-tools">
-          <button type="button" className="ax-ghost" onClick={() => put("# Nouveau chapitre")}><IoAdd size={14} /> Chapitre</button>
-          <button type="button" className="ax-ghost" onClick={() => put("> La citation | Auteur, source")}><IoText size={14} /> Citation</button>
-          <button type="button" className="ax-ghost" onClick={() => put("!! À RETENIR :: Le texte de l'encadré.")}><IoText size={14} /> Encadré</button>
-          <label className="ax-ytq ax-ed-media"><IoLogoYoutube size={15} /><input value={media} onChange={(e) => setMedia(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addMedia(); } }} placeholder="Lien YouTube ou adresse d'une image, puis Entrée" data-testid="alex-ed-media" /><button type="button" onClick={addMedia}>Insérer</button></label>
-          <button type="button" className={"ax-ghost" + (help ? " on" : "")} onClick={() => setHelp((h) => !h)}>Balisage</button>
-        </div>
-        {help && <div className="ax-ed-help mono">{MARKUP.map(([m, l]) => <span key={m}><b>{m}</b>{l}</span>)}<span><b>(ligne vide)</b>Nouveau paragraphe</span></div>}
-        <textarea ref={ta} className="ax-ed-text" value={f.text} onChange={(e) => setF({ ...f, text: e.target.value })} spellCheck data-testid="alex-ed-text" />
-        <div className="ax-acts">
-          <button className="at-btn" onClick={save} disabled={busy} data-testid="alex-ed-save">{busy ? "…" : "Enregistrer"} <kbd className="mono">Ctrl S</kbd></button>
-          <button className="ax-ghost" onClick={onClose}>Annuler</button>
-          <span className="grow" />
-          {edit && <button className="ax-ghost" onClick={onReset} data-testid="alex-ed-reset"><IoArrowUndo size={14} /> Revenir à l'original</button>}
-        </div>
-      </div>
-    </div>,
-    document.querySelector(".at-root") || document.body
-  );
-}
-
 export default function Alexandrie({ at, open, radio, room: startRoom, book: startBook }) {
   const { sfx } = useApp();
   const [room, setRoom] = useState(startRoom || null);
@@ -487,31 +492,52 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   // Un artwork par défaut qui ne répond pas est écarté : le volume garde sa couverture dessinée.
   useEffect(() => { Object.values(DEFAULT_COVERS).forEach((u) => { const im = new Image(); im.onerror = () => setBad((x) => ({ ...x, [u]: 1 })); im.src = u; }); }, []);
   const prog = read(LS.prog, {});
-  // Livres de la bibliothèque, avec tes modifications par-dessus (texte, titre, vidéos).
+  // Livres de la bibliothèque. Les modifier ouvre une copie dans l'éditeur de documents (le même que pour écrire un livre) :
+  // la copie remplace le livre sur les rayons, l'original reste dans le code et revient d'un clic.
   const edits = at.config?.alexandrie?.edits || NOEDITS;
-  const withEdit = (b) => { const e = edits[b.id]; if (!e) return parseBook(b); try { return { ...parseBook({ ...b, ...e }), edited: true }; } catch (_) { return parseBook(b); } };
-  const books = useMemo(() => BOOKS.map(withEdit), [edits]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [editing, setEditing] = useState(null);
-  const saveEdit = async (id, patch) => {
-    const e = { ...edits }; if (patch) e[id] = patch; else delete e[id];
+  const overrides = useMemo(() => Object.fromEntries(at.items.filter((i) => i.fields?.alexandrie?.of).map((i) => [i.fields.alexandrie.of, i])), [at.items]);
+  const rawOf = (b) => ({ ...b, ...(edits[b.id] || {}) });
+  const books = useMemo(() => BOOKS.map((b) => {
+    const base = (() => { try { return parseBook(rawOf(b)); } catch (_) { return parseBook(b); } })();
+    const o = overrides[b.id]; if (!o) return edits[b.id] ? { ...base, edited: true } : base;
+    try { const x = itemToBookRaw(o); const a = o.fields.alexandrie; return { ...base, title: o.title || base.title, sub: a.sub ?? base.sub, about: a.about ?? base.about, chapters: x.chapters, words: x.words, text: x.text, edited: true, copyId: o.id }; } catch (_) { return base; }
+  }), [edits, overrides]); // eslint-disable-line react-hooks/exhaustive-deps
+  const modifyBook = async (b) => {
+    if (b.mine) { setReading(null); open(b.itemId); return; }
+    if (overrides[b.id]) { setReading(null); open(overrides[b.id].id); return; }
+    const raw = rawOf(BOOKS.find((x) => x.id === b.id) || b);
     try {
-      await at.saveConfig({ alexandrie: { ...(at.config?.alexandrie || {}), edits: e } });
-      const base = BOOKS.find((x) => x.id === id);
-      setReading((r) => (r && r.id === id ? (patch ? { ...parseBook({ ...base, ...patch }), edited: true } : parseBook(base)) : r));
-      toast.success(patch ? "Livre modifié" : "Texte d'origine rétabli"); setEditing(null); return true;
-    } catch (err) { toast.error("La modification n'a pas pu être enregistrée"); return false; }
+      const it = await at.createItem({ kind: "document", title: raw.title, content: bookToHtml(raw.text), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, room: b.room, type: b.type, sub: raw.sub || "", about: raw.about || "" } } });
+      if (!it?.id) throw new Error("création refusée");
+      setReading(null); open(it.id, "document");
+      toast.success("Le livre s'ouvre dans l'éditeur. Tes changements apparaîtront sur les rayons.");
+    } catch (e) { toast.error("Le livre n'a pas pu être ouvert : " + (e?.response?.data?.detail || e?.message || "erreur")); }
   };
-  const swapVideo = (bookId, oldId, newId) => {
-    const base = BOOKS.find((x) => x.id === bookId); if (!base) return;
-    const cur = { ...base, ...(edits[bookId] || {}) };
-    const text = cur.text.replace(new RegExp(`^@yt\\s+${oldId.replace(/[-]/g, "\\-")}`, "m"), `@yt ${newId}`);
-    saveEdit(bookId, { ...(edits[bookId] || {}), text });
+  const swapVideo = async (b, oldId, newId) => {
+    const it = b.itemId ? at.items.find((i) => i.id === b.itemId) : overrides[b.id];
+    try {
+      if (it) await at.saveItem({ ...it, content: String(it.content || "").split(oldId).join(newId) });
+      else {
+        const raw = rawOf(BOOKS.find((x) => x.id === b.id) || b);
+        const text = raw.text.split(`@yt ${oldId}`).join(`@yt ${newId}`);
+        const made = await at.createItem({ kind: "document", title: raw.title, content: bookToHtml(text), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, room: b.room, type: b.type, sub: raw.sub || "", about: raw.about || "" } } });
+        if (!made?.id) throw new Error("création refusée");
+      }
+      toast.success("Vidéo remplacée");
+    } catch (_) { toast.error("La vidéo n'a pas pu être remplacée"); }
   };
-  const revertEdit = async (b) => { if (await labConfirm(`Revenir au texte d'origine de « ${b.title} » ? Tes modifications seront perdues.`)) saveEdit(b.id, null); };
+  const revertEdit = async (b) => {
+    if (!(await labConfirm(`Revenir au texte d'origine de « ${b.title} » ? Tes modifications seront perdues.`))) return;
+    try {
+      if (overrides[b.id]) await at.removeItem(overrides[b.id].id);
+      if (edits[b.id]) { const e = { ...edits }; delete e[b.id]; await at.saveConfig({ alexandrie: { ...(at.config?.alexandrie || {}), edits: e } }); }
+      toast.success("Texte d'origine rétabli");
+    } catch (_) { toast.error("Le texte d'origine n'a pas pu être rétabli"); }
+  };
   const menuFor = (b, upc) => () => ({ title: b.title, entries: [
     !upc && { id: "read", label: prog[b.id]?.page > 0 ? `Reprendre page ${prog[b.id].page + 1}` : "Lire", icon: <IoPlay size={14} />, onClick: () => openBook(b) },
     upc && { id: "wish", label: wish.includes(b.id) ? "Ne plus demander" : "Je veux le lire", icon: <IoStarOutline size={14} />, onClick: () => toggleWish(b.id) },
-    !upc && (b.mine ? { id: "write", label: "Écrire", icon: <IoCreateOutline size={14} />, onClick: () => open(b.itemId) } : { id: "modify", label: "Modifier le livre", icon: <IoCreateOutline size={14} />, onClick: () => setEditing(b.id) }),
+    !upc && (b.mine ? { id: "write", label: "Écrire", icon: <IoCreateOutline size={14} />, onClick: () => open(b.itemId) } : { id: "modify", label: "Modifier le livre", icon: <IoCreateOutline size={14} />, onClick: () => modifyBook(b) }),
     !upc && { id: "pdf", label: "Exporter en PDF", icon: <IoPrintOutline size={14} />, onClick: () => exportBook(b, covers[b.id]) },
     "-",
     { id: "cover", label: covers[b.id] ? "Changer l'artwork" : "Mettre un artwork", icon: <IoImageOutline size={14} />, onClick: () => setCoverFor(b) },
@@ -520,8 +546,9 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     !upc && b.edited && "-",
     !upc && b.edited && { id: "revert", label: "Revenir au texte d'origine", icon: <IoArrowUndo size={14} />, danger: true, onClick: () => revertEdit(b) },
   ] });
-  const mine = useMemo(() => at.items.filter((i) => i.fields?.alexandrie).map(itemToBook), [at.items]);
+  const mine = useMemo(() => at.items.filter((i) => i.fields?.alexandrie && !i.fields.alexandrie.of).map(itemToBook), [at.items]);
   const all = useMemo(() => [...books, ...mine], [books, mine]);
+  const readingBook = reading && (all.find((b) => b.id === reading.id) || reading);
   const match = (b) => type === "all" || b.type === type;
   useEffect(() => { if (!startBook) return; const b = all.find((x) => x.id === startBook); if (b) { setSel((x) => ({ ...x, [b.room]: b.id })); setReading(b); } }, [startBook]); // eslint-disable-line react-hooks/exhaustive-deps
   const current = all.filter((b) => prog[b.id] && prog[b.id].page > 0 && prog[b.id].page < (prog[b.id].pages || 1) - 1).sort((a, b) => prog[b.id].at - prog[a.id].at).slice(0, 4);
@@ -553,10 +580,10 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const saveCover = (id, url) => { const c = { ...rawCovers }; if (url === null) delete c[id]; else if (url) c[id] = url; else if (DEFAULT_COVERS[id]) c[id] = "-"; else delete c[id]; setLocalCovers(c); write(LS.covers, c); at.saveConfig({ alexandrie: { ...(at.config?.alexandrie || {}), covers: c } }).catch(() => {}); setCoverFor(null); };
   // « / » ouvre l'index, Échap revient au plan
   useEffect(() => {
-    const k = (e) => { if (reading || coverFor || search || editing) return; if (/^(INPUT|TEXTAREA)$/.test(e.target?.tagName) || e.target?.isContentEditable) return;
+    const k = (e) => { if (reading || coverFor || search) return; if (/^(INPUT|TEXTAREA)$/.test(e.target?.tagName) || e.target?.isContentEditable) return;
       if (e.key === "/") { e.preventDefault(); setSearch(true); } if (e.key === "Escape" && room) { setRoom(null); } };
     window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k);
-  }, [reading, coverFor, search, room, editing]);
+  }, [reading, coverFor, search, room]);
   const R = ROOMS.find((r) => r.key === room); const ri = ROOMS.indexOf(R);
   const inRoom = (k) => ({ here: all.filter((b) => b.room === k), up: UPCOMING.filter((b) => b.room === k) });
   const searchBtn = <button className="ax-find" onClick={() => setSearch(true)} data-testid="alex-find"><IoSearch size={15} /><span>Chercher un titre, un nom, un mot dans un livre…</span><kbd className="mono">/</kbd></button>;
@@ -588,7 +615,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
                   <span className="mono ax-door-n">SALLE {String(i + 1).padStart(2, "0")}<i>{here.length} À {r.format === "vhs" ? "VOIR" : "LIRE"} · {up.length} À VENIR</i></span>
                   <span className="ax-door-l">{r.label}</span>
                   <span className="ax-door-ab">{r.about}</span>
-                  <span className="ax-door-strip" aria-hidden="true">{strip.map((b, j) => { const L = volLook(b, j >= here.length); return <i key={b.id} className={`t-${L.tone}` + (j >= here.length ? " up" : "")} style={{ "--h": b.color ?? hue(b.title), width: Math.round(L.w / 4.4), height: Math.round(L.hgt / 5.4), backgroundImage: covers[b.id] ? `url(${covers[b.id]})` : undefined }} />; })}</span>
+                  <span className="ax-door-strip" aria-hidden="true">{strip.map((b, j) => { const L = volLook(b, j >= here.length); return <i key={b.id} className={`t-${L.tone} f-${L.fmt}` + (j >= here.length ? " up" : "") + (covers[b.id] ? " img" : "")} style={{ "--h": b.color ?? hue(b.title), "--r": L.r % 40, "--lean": L.r % 7 === 0 ? "-4deg" : "0deg", width: Math.max(8, Math.round(L.w / 4)), height: Math.round(L.hgt / 4.9), "--img": covers[b.id] ? `url(${covers[b.id]})` : undefined }} />; })}</span>
                   <span className="mono ax-door-go">ENTRER <IoArrowForward size={13} /></span>
                 </button>
               ); })}
@@ -613,15 +640,14 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
               <button className="at-btn" onClick={() => addBook(R.key)} data-testid="alex-add"><IoAdd size={16} /> Écrire</button>
             </div>
           </header>
-          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(match)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onCover={setCoverFor} onEdit={open} onModify={(b) => setEditing(b.id)} menuFor={menuFor} />
+          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(match)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} />
         </>
       )}
       {wish.length > 0 && <p className="ax-wishes mono">★ {wish.length} TITRE{wish.length > 1 ? "S" : ""} DEMANDÉ{wish.length > 1 ? "S" : ""} : {wish.map((id) => UPCOMING.find((u) => u.id === id)?.title).filter(Boolean).join(" · ")}</p>}
       {coverFor && <CoverDialog b={coverFor} current={covers[coverFor.id]} def={DEFAULT_COVERS[coverFor.id]} onSave={(u) => saveCover(coverFor.id, u)} onClose={() => setCoverFor(null)} />}
       {search && <AlexSearch books={all} onClose={() => setSearch(false)} onOpen={openBook} onGoto={(b) => { setSearch(false); setRoom(b.room); setSel((s) => ({ ...s, [b.room]: b.id })); }} />}
-      {reading && <Reader key={reading.id} book={reading} at={at} radio={radio} cover={covers[reading.id]} paused={!!editing} onClose={() => { sfx?.("close"); setReading(null); }} onEdit={(id) => { setReading(null); open(id); }}
-        onModify={reading.mine ? null : () => setEditing(reading.id)} onSwap={reading.mine ? null : (oldId, newId) => swapVideo(reading.id, oldId, newId)} />}
-      {editing && BOOKS.find((x) => x.id === editing) && <BookEditor base={BOOKS.find((x) => x.id === editing)} edit={edits[editing]} onSave={(p) => saveEdit(editing, p)} onReset={() => revertEdit(BOOKS.find((x) => x.id === editing))} onClose={() => setEditing(null)} />}
+      {readingBook && <Reader key={readingBook.id} book={readingBook} at={at} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); }} onEdit={(id) => { setReading(null); open(id); }}
+        onModify={() => modifyBook(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} />}
     </section>
   );
 }

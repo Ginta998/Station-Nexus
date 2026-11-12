@@ -36,10 +36,22 @@
 .ax-door-n i{font-style:normal;color:var(--lab-mute);margin-left:auto;position:relative}
 .ax-door-l{margin-top:8px;font-family:var(--font-display);font-size:clamp(21px,2vw,30px);line-height:1.05;letter-spacing:var(--display-spacing);text-transform:var(--display-transform)}
 .ax-door-ab{font-size:13.5px;line-height:1.45;color:var(--lab-mute);max-width:46ch}
-.ax-door-strip{margin-top:auto;padding:10px 2px 0;height:78px;display:flex;align-items:flex-end;gap:3px;overflow:hidden;border-bottom:3px solid color-mix(in srgb,var(--text-primary) 24%,var(--bg-primary));box-shadow:0 1px 0 var(--lab-acc)}
-.ax-door-strip i{flex:0 0 auto;background:var(--bg) center/cover;border-top:5px solid var(--art);box-shadow:inset -2px 0 3px -1px rgba(0,0,0,.55),inset 0 0 0 1px rgba(0,0,0,.25);transition:transform .3s var(--lab-ease)}
-.ax-door-strip i.up{filter:saturate(.4) brightness(.75)}
-.ax-door:hover .ax-door-strip i:nth-child(3n+1){transform:translateY(-5px)}
+.ax-door-strip{margin-top:auto;padding:10px 4px 0;height:82px;display:flex;align-items:flex-end;gap:2px;overflow:hidden;position:relative;
+  background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.28));border-bottom:4px solid #2a211a;box-shadow:0 1px 0 var(--lab-acc),inset 0 -6px 8px -6px rgba(0,0,0,.7)}
+.ax-door-strip i{flex:0 0 auto;position:relative;transform-origin:50% 100%;transform:rotate(var(--lean,0deg));border-radius:1px 1px 0 0;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.42),rgba(255,255,255,.1) 22%,rgba(255,255,255,.03) 48%,rgba(0,0,0,.22) 78%,rgba(0,0,0,.5)),
+    linear-gradient(180deg,transparent 7px,var(--art) 7px 8px,transparent 8px 10px,var(--art) 10px 11px,transparent 11px calc(100% - 11px),var(--art) calc(100% - 11px) calc(100% - 10px),transparent calc(100% - 10px)),
+    var(--bg);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.35),1px 0 2px rgba(0,0,0,.55);transition:transform .3s var(--lab-ease)}
+.ax-door-strip i::before,.ax-door-strip i::after{content:"";position:absolute;inset:0;pointer-events:none}
+.ax-door-strip i::before{background:var(--ax-grain) 0 0/140px;mix-blend-mode:soft-light;opacity:.7}
+.ax-door-strip i::after{background:var(--ax-scuff) calc(var(--r,0) * -9px) 0/90px 300px;mix-blend-mode:soft-light;opacity:.45}
+.ax-door-strip i.f-vhs{border-radius:1px;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(255,255,255,.08) 30%,rgba(0,0,0,.3)),linear-gradient(180deg,transparent 58%,hsl(var(--h) 70% 52%) 58% 61%,transparent 61% 64%,hsl(calc(var(--h) + 30) 70% 56%) 64% 67%,transparent 67%),var(--bg)}
+.ax-door-strip i.f-vinyle{border-radius:0;background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(255,255,255,.14) 40%,rgba(0,0,0,.4)),var(--bg)}
+.ax-door-strip i.img{background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(255,255,255,.12) 25%,rgba(0,0,0,.05) 50%,rgba(0,0,0,.45)),var(--img) center/cover,var(--bg);background-size:auto,cover,auto}
+.ax-door-strip i.up{filter:saturate(.45) brightness(.7)}
+.ax-door:hover .ax-door-strip i:nth-child(3n+1){transform:translateY(-5px) rotate(0deg)}
 .ax-door-go{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:10px;letter-spacing:.22em;color:var(--lab-mute)}
 .ax-door:hover .ax-door-go{color:var(--lab-acc)}
 /* Dans une salle */
@@ -301,23 +313,6 @@ body:has(.ax-reader) :is(.nx-tools,.bn-fab){display:none!important}
 .ax-yt-ed{display:flex;gap:6px;margin-top:8px;break-inside:avoid}
 .ax-yt-ed input{flex:1;min-width:0;padding:7px 9px;border:1px solid var(--rule);background:transparent;color:var(--ink);font:13px/1.3 var(--lab-mono,monospace)}
 .ax-yt-ed .at-btn{padding:6px 12px}
-/* Modifier un livre */
-.ax-editor{width:min(1080px,100%)!important;height:min(92vh,980px);gap:12px!important}
-.ax-ed-head{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-self:stretch}
-.ax-editor>*{align-self:stretch}
-.ax-ed-head label{display:flex;flex-direction:column;gap:5px}.ax-ed-head label.wide{grid-column:1 / -1}
-.ax-ed-head span{font-size:9px;letter-spacing:.2em;color:var(--lab-mute)}
-.ax-ed-head textarea{resize:vertical;line-height:1.45}
-.ax-ed-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.ax-ed-tools .ax-ghost{padding:7px 11px;font-size:12.5px}.ax-ed-tools .ax-ghost.on{border-color:var(--lab-acc);color:var(--lab-acc)}
-.ax-ed-media{flex:1;min-width:260px;margin:0!important}
-.ax-ed-help{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 16px;padding:10px 12px;border:1px solid var(--lab-hair);font-size:10.5px;color:var(--lab-mute)}
-.ax-ed-help span{display:flex;flex-direction:column;gap:2px}.ax-ed-help b{color:var(--lab-ink);font-weight:500}
-.ax-ed-text{flex:1;min-height:200px;width:100%;resize:none;padding:14px 16px;background:color-mix(in srgb,var(--bg-primary) 60%,transparent);border:1px solid var(--lab-hair-2);color:var(--lab-ink);font:13.5px/1.65 var(--lab-mono,ui-monospace,monospace);outline:none;tab-size:2}
-.ax-ed-text:focus{border-color:var(--lab-acc)}
-.ax-editor .ax-acts{align-items:center;margin-top:0}.ax-editor .grow{flex:1}
-.ax-editor kbd{margin-left:6px;font-size:9px;opacity:.6}
-@media (max-width:700px){.ax-ed-head{grid-template-columns:1fr}.ax-editor{height:94vh}}
 /* Salle Musique : pochettes de disques */
 .ax-vol.f-vinyle{border-radius:1px;box-shadow:inset -3px 0 4px -2px rgba(0,0,0,.45),inset 2px 0 3px -2px rgba(255,255,255,.22),inset 0 0 0 1px rgba(0,0,0,.3),3px 0 5px -3px rgba(0,0,0,.6)}
 .ax-vol.f-vinyle .ax-vol-art{width:calc(100% - 8px);height:22px;margin-top:6px}
@@ -342,3 +337,17 @@ body:has(.ax-reader) :is(.nx-tools,.bn-fab){display:none!important}
 @media (max-width:700px){.ax-cover.f-vinyle{width:240px;height:240px;margin-right:calc(16px + 88px)}}
 .ax-tp-about{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:9;overflow:hidden}
 .ax-titlepage:has(.ax-tp-art){gap:10px}.ax-titlepage:has(.ax-tp-art) .ax-tp-about{-webkit-line-clamp:5}
+/* Notes de lecture dans le livre */
+.ax-prog{position:relative}
+.ax-pmark{position:absolute;top:50%;width:9px;height:9px;margin:-5px 0 0 -4px;padding:0;border:0;border-radius:50%;background:var(--lab-acc);box-shadow:0 0 0 2px var(--bg-primary),0 0 8px var(--lab-acc);cursor:pointer;transition:transform .2s}
+.ax-pmark:hover{transform:scale(1.5)}
+.ax-nlist{display:flex;flex-direction:column;overflow-y:auto;max-height:46vh;margin:0 -4px}
+.ax-n{display:flex;gap:6px;align-items:flex-start;border-top:1px solid var(--lab-hair);padding:2px 4px}
+.ax-n.on{background:color-mix(in srgb,var(--lab-acc) 9%,transparent)}
+.ax-n-go{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:8px 0;border:0;background:none;color:var(--lab-ink);text-align:left;cursor:pointer;font:inherit}
+.ax-n-go b{font-size:9px;letter-spacing:.16em;color:var(--lab-acc);font-weight:500}
+.ax-n-go span{font-size:13px;line-height:1.5;color:var(--lab-mute);white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.ax-n-go:hover span{color:var(--lab-ink)}
+.ax-n-a{display:flex;gap:2px;padding-top:6px;opacity:.5}.ax-n:hover .ax-n-a{opacity:1}
+.ax-n-a button{display:grid;place-items:center;width:24px;height:24px;border:0;background:none;color:var(--lab-ink);cursor:pointer}
+.ax-n-a button:hover{color:var(--lab-acc)}

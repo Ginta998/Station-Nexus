@@ -101,7 +101,7 @@ export default function AtelierApp({ onLeave }) {
     window.addEventListener("popstate", on); return () => window.removeEventListener("popstate", on);
   }, []);
   const open = (id, kind) => { sfx("select"); setPalette(false); if ((kind || at.items.find((x) => x.id === id)?.kind) === "file") setViewing(id); else setEditing(id); };
-  const inbox = at.items.filter((i) => !i.universe_id && !i.fields?.template);
+  const inbox = at.items.filter((i) => !i.universe_id && !i.fields?.template && !i.fields?.alexandrie);
   const pinned = at.universes.filter((u) => u.pinned);
   const cur = view.name === "universe" ? at.universes.find((u) => u.id === view.id) : null;
   const importDocs = (defaults = {}) => { pickDefaults.current = defaults; pick.current?.click(); };
@@ -165,8 +165,7 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
           <Dock kanji="兎" label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
-          <Dock kanji="書" label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie" && view.room !== "lore"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
-          <Dock kanji="伝" label="Lore" sub="MONDES & MYTHES" on={view.name === "alexandrie" && view.room === "lore"} onClick={() => go({ name: "alexandrie", room: "lore" })} testid="atelier-nav-lore" />
+          <Dock kanji="書" label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
           <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
           <Dock kanji="禅" label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}

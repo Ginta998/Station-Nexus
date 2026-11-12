@@ -13,6 +13,8 @@ const book = {
 
 Ce livre ne te demande pas d'aimer Michael Jackson, ni de le détester. Il te demande de regarder.
 
+@yt yURRmWtbTbo | Don't Stop 'Til You Get Enough (1979), le premier grand succès adulte, écrit par lui seul.
+
 Il y a peu d'artistes dont on puisse dire qu'ils ont changé à la fois la musique, la danse, le clip, la télévision et l'industrie du disque. Il y en a encore moins dont la vie privée a été aussi exposée, jugée, et contestée. Les deux sont vrais. On ne comprend pas l'un sans l'autre.
 
 Je te raconterai l'œuvre en détail, parce que c'est elle qui reste. Et je te dirai aussi, sans détour et sans conclure à ta place, ce qui a été dit, jugé, et ce qui reste en débat.

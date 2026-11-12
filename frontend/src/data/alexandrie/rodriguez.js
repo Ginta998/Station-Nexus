@@ -13,6 +13,8 @@ const book = {
 
 On m'a souvent demandé ce que ça fait. D'apprendre, à cinquante-cinq ans, qu'on est célèbre depuis vingt-cinq ans dans un pays où on n'a jamais mis les pieds. Que des gens ont grandi avec vos chansons, qu'ils les ont chantées dans des manifestations, qu'ils les ont apprises à leurs enfants. Et que, pendant tout ce temps, vous portiez des plaques de plâtre dans des maisons qu'on démolissait à Detroit.
 
+@yt 9Unm3PZ2CBE | Sugar Man, la chanson qui ouvre Cold Fact (1970).
+
 Je vais essayer de répondre. Mais il faut que je commence par le début, parce que la fin n'a de sens que si on sait d'où je viens.
 
 # Le sixième
@@ -42,8 +44,6 @@ Les chansons parlaient de ce que je connaissais. Les rues de Detroit, les dealer
 On disait que ça ressemblait à Dylan. Je comprends pourquoi, mais je ne le pensais pas. Dylan venait du folk, des chansons de la campagne. Moi, je venais du béton.
 
 !! CE QU'IL FAUT ÉCOUTER :: *Cold Fact* fait à peine plus d'une demi-heure. Commence par « Sugar Man », puis « I Wonder », puis « Crucify Your Mind ». Écoute les cordes : elles ne décorent pas, elles inquiètent.
-
-@yt 9Unm3PZ2CBE | Sugar Man, la chanson qui ouvre Cold Fact (1970).
 
 # Rien
 

@@ -16,6 +16,8 @@ const book = {
 
 On m'a demandé de parler de mes films. C'est une drôle d'idée. Je les ai faits pour ne pas avoir à en parler.
 
+@yt 8TknRXaTJ4s | Hommage à Kitano, sur une musique de Joe Hisaishi.
+
 Et puis il y a un problème de départ, qu'il vaut mieux poser tout de suite.
 
 > Je déteste mes films. Tous, sans exception. | Takeshi Kitano, Kitano par Kitano, 2010

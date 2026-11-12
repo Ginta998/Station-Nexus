@@ -27,11 +27,16 @@
           "Les réalisateurs parlent en « je » : Kitano (tous ses films, d'Aniki mon frère à Kids Return et Kubi), Tarkovski et Bresson.",
           "Analyses ALT 236 dans les livres : Bloodborne, Hellraiser, Elden Ring (Mythologics) et L'infini (Dans l'œil d'Escher).",
           "Salle Musique (音) : des pochettes de disques sur les rayons, le vinyle qui sort de sa pochette quand on choisit un album. Six livres : Sixto Rodriguez et Mozart en « je », Debussy par la voix de Monsieur Croche, Wu-Tang Clan, N.W.A et Michael Jackson en récit, avec clips et enregistrements intégrés. Dix-neuf titres à paraître, de Bach à Midori Takada.",
-          "Modifier un livre de la bibliothèque : bouton Modifier dans la notice et dans le lecteur. Titre, sous-titre, présentation et texte balisé, avec insertion d'un chapitre, d'une citation, d'un encadré, d'une vidéo YouTube ou d'une image. Retour au texte d'origine à tout moment.",
           "Changer une vidéo en un geste : « Changer » sous chaque vidéo du lecteur, on colle le nouveau lien et c'est fait.",
           "Clic droit sur un volume : lire, modifier, exporter en PDF, changer, retirer ou remettre l'artwork d'origine, revenir au texte d'origine.",
           "Artworks par défaut sur presque tous les livres : tableaux et estampes du domaine public (Friedrich, Hokusai, Giotto, Roublev, Cabanel, Vernet…) et huit jeux de plus dans le Lore. Chacun se retire pour revenir à la couverture dessinée.",
-          "Radio : le lecteur se réduit en une pastille dans la barre du haut, à côté du bouton son (flèche vers le bas). Un clic pour le rouvrir en grand."
+          "Radio : le lecteur se réduit en une pastille dans la barre du haut, à côté du bouton son (flèche vers le bas). Un clic pour le rouvrir en grand.",
+          "Modifier un livre de la bibliothèque ouvre le même éditeur que pour écrire un livre : une copie du livre s'y ouvre, tes changements remplacent le livre sur les rayons, et « Revenir au texte d'origine » le rétablit.",
+          "Dans tes livres : un lien YouTube seul sur sa ligne devient une vidéo intégrée, une image devient une illustration, une phrase entièrement en gras devient un chapitre, et un début en gras terminé par « : » devient un encadré.",
+          "Musique et cinéma : chaque livre s'ouvre sur une vidéo dès l'avant-propos (Sugar Man, Triumph, Straight Outta Compton, Don't Stop 'Til You Get Enough, Mozart, Clair de lune, hommages à Kitano, Tarkovski et Bresson).",
+          "Plan des salles : les livres miniatures ont du relief, du grain, des filets dorés, des étiquettes VHS, et leur artwork quand il y en a un.",
+          "Notes dans le livre : le panneau Notes liste tes notes par page, un clic te ramène à la bonne page, chaque note se modifie ou se supprime, et des repères marquent les notes sur la barre de progression. Le bouton affiche leur nombre.",
+          "Neuf favicons dans la direction Laboratoire (Labo, Labo nuit, Réticule, Hexagone, Bande, Fiole, Plaque, Noyau, SN) : Réglages, onglet admin, Identité du site. Un clic l'applique à tout le site, onglet compris."
         ],
         "Corrigé": [
           "Écrire un livre : la création ne peut plus faire planter l'écran ; en cas d'échec, un message dit pourquoi.",
@@ -39,7 +44,10 @@
           "Lecteur : plus de bandeau d'avertissement sur la voix en ouverture de livre, pour ne pas casser l'immersion.",
           "Artwork : si la recherche SteamGridDB n'est pas encore installée sur le serveur, le message le dit au lieu d'un simple « Not Found ».",
           "Psycho-Pass : la vidéo qui ne se lisait plus est remplacée.",
-          "Plan d'Alexandrie : plus de case vide avec la nouvelle salle ; la page de titre d'un livre illustré tient sur sa page."
+          "Plan d'Alexandrie : plus de case vide avec la nouvelle salle ; la page de titre d'un livre illustré tient sur sa page.",
+          "Un livre écrit dans Alexandrie ne va plus dans l'Inbox.",
+          "Menu : l'entrée Lore est retirée, la salle Lore reste dans Alexandrie.",
+          "Changer une vidéo : le remplacement est maintenant gardé sur le serveur comme tes livres ; avant, il pouvait s'afficher « Vidéo remplacée » sans rien changer."
         ]
       }
     },

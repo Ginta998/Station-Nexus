@@ -16,6 +16,8 @@ const book = {
 
 On m'a souvent reproché d'être difficile. On disait que mes films étaient lents, obscurs, que personne ne les comprenait. Des spectateurs m'écrivaient des lettres furieuses. D'autres m'écrivaient qu'ils avaient vu, dans un de mes films, leur propre enfance, leur mère, la maison où ils étaient nés, et qu'ils ne savaient pas comment j'avais fait.
 
+@yt xpzPD9ONk0k | Les plus beaux plans de ses films, de L'Enfance d'Ivan au Sacrifice.
+
 C'est pour ces lettres-là que j'ai travaillé. Pas pour ceux qui voulaient une histoire. Une histoire, n'importe quel livre la raconte mieux qu'un film. Le cinéma peut faire autre chose, une chose qu'aucun autre art ne peut faire, et c'est de cela que je veux te parler.
 
 J'ai fait sept longs métrages en vingt-quatre ans. C'est très peu. Pendant ce temps, d'autres en faisaient trente. Je n'ai pas pu en faire plus : on m'en a empêché, l'argent manquait, les projets étaient refusés, et à la fin j'ai dû quitter mon pays. Mais je ne regrette rien, parce que je n'aurais pas su faire autrement. Chacun de ces films, je l'ai fait comme si c'était le dernier.

@@ -13,6 +13,8 @@ const book = {
 
 Ce livre raconte une histoire de musique. Mais il faut d'abord dire où elle se passe, sinon on ne comprend rien.
 
+@yt TMZi25Pq3T8 | Straight Outta Compton (1988), le clip.
+
 Compton est une petite ville au sud de Los Angeles. Dans les années 1950, elle était surtout blanche, une banlieue ouvrière. Puis les familles noires sont arrivées, souvent venues du Sud des États-Unis pour travailler dans l'industrie. Les familles blanches sont parties. Les usines ont fermé. Dans les années 1980, Compton est devenue l'une des villes les plus pauvres et les plus violentes de Californie. Le crack arrive, les gangs se partagent les rues, la police de Los Angeles mène une guerre qui ressemble à une occupation.
 
 À la même époque, le rap est new-yorkais. Il vient du Bronx, de Brooklyn, du Queens. La côte Ouest n'existe presque pas sur la carte. Personne ne s'attend à ce qu'elle parle.
@@ -51,7 +53,7 @@ Le premier morceau commence par une phrase d'Ice Cube qui annonce, pour qui ne l
 
 Aucune radio ne le passe. Les chaînes de télévision ne diffusent pas les clips. Le disque se vend quand même. Par le bouche-à-oreille, par les magasins, par les voitures qui roulent vitres baissées. Il devient disque de platine sans presque aucune aide.
 
-@yt TMZi25Pq3T8 | Straight Outta Compton (1988), le clip.
+@yt u31FO_4d9TY | Express Yourself (1988), le morceau le plus léger de l'album, sur un échantillon de Charles Wright.
 
 # Le morceau
 
