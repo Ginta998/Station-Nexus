@@ -1,6 +1,40 @@
 {
-  "version": "0.13",
+  "version": "0.14",
   "patches": [
+    {
+      "v": "0.14",
+      "date": "2026-11-12",
+      "title": "Alexandrie et Lore : la bibliothèque de l'Atelier",
+      "groups": {
+        "Nouveau": [
+          "Alexandrie (書) : une bibliothèque dans l'Atelier, tenue par Nérodus. On entre par le plan des salles : neuf portes, chacune avec un aperçu de ses rayons.",
+          "Dans une salle : rayons sombres éclairés d'en haut, planche et étiquette de rayon, salle précédente et suivante, retour au plan (Échap).",
+          "Volumes avec de la matière : livres reliés de hauteurs et d'épaisseurs différentes avec leur étiquette de cote, boîtiers VHS usés avec pastilles et autocollants.",
+          "Artwork : remplace la couverture de n'importe quel volume. Recherche SteamGridDB intégrée (grilles verticales, un clic pour choisir), ou adresse, fichier, glisser-déposer, coller une image.",
+          "Index de la bibliothèque (touche /) : même répertoire que l'Index des archives, il cherche aussi à l'intérieur des livres.",
+          "Lore (伝) : une aile pour les univers de jeux, de films, de romans et de mangas, lue dans un habillage sombre. Dix volumes : Bloodborne, Elden Ring, Dune, Méridien de sang, SOMA, Psycho-Pass, Signalis, Hellraiser, Deus Ex, Final Fantasy XIII.",
+          "Vingt-trois volumes en tout, avec Nietzsche, Hegel, L'affaire Stavisky, Le général Boulanger, Robespierre, Cléopâtre, Tarkovski, Bresson, Kitano, Hokusai, 1793, Bushidō et L'infini.",
+          "Notes de lecture : bouton Notes dans le lecteur. Chaque note part dans le Nexus Drive, avec la page et le chapitre ; un passage sélectionné est cité d'office.",
+          "Artworks par défaut : une vingtaine de volumes du Lore reçoivent leur jaquette (liens Steam et Open Library). Chacune se remplace ou se retire.",
+          "Sur le Pont : « Reprendre à Alexandrie », sous le Salon. Un clic rouvre le livre à la bonne page.",
+          "Trois genres : Pensée (une voix te parle), Récit (une histoire, plusieurs points de vue), Apprentissage (pas à pas, avec des exercices).",
+          "Un vrai lecteur : double page, grain du papier, lettrines, citations sourcées, encadrés, sommaire, marque-page, reprise à la page quittée, flèches du clavier ou glissement du doigt.",
+          "Musique pendant la lecture : bouton Musique dans le lecteur, recherche YouTube ou tes playlists de la Radio.",
+          "Titres à paraître sur les rayons : une étoile pour demander un volume en priorité.",
+          "« Écrire un livre » : tes propres livres rejoignent la salle Mes livres.",
+          "Export PDF d'un livre : bouton PDF dans le lecteur, comme dans le Nexus Drive. Page de titre avec l'artwork, sommaire, chapitres, citations, illustrations et liens des vidéos.",
+          "Livres illustrés : estampes, tableaux et icônes du domaine public (Wikimedia Commons) dans le fil du texte, avec légende et crédit ; bandes-annonces YouTube lisibles dans la page pour les volumes du Lore et les films.",
+          "Les réalisateurs parlent en « je » : Kitano (tous ses films, d'Aniki mon frère à Kids Return et Kubi), Tarkovski et Bresson.",
+          "Analyses ALT 236 dans les livres : Bloodborne, Hellraiser, Elden Ring (Mythologics) et L'infini (Dans l'œil d'Escher)."
+        ],
+        "Corrigé": [
+          "Écrire un livre : la création ne peut plus faire planter l'écran ; en cas d'échec, un message dit pourquoi.",
+          "Lecteur : ouvrir un deuxième livre ne reprend plus la page du précédent.",
+          "Lecteur : plus de bandeau d'avertissement sur la voix en ouverture de livre, pour ne pas casser l'immersion.",
+          "Artwork : si la recherche SteamGridDB n'est pas encore installée sur le serveur, le message le dit au lieu d'un simple « Not Found »."
+        ]
+      }
+    },
     {
       "v": "0.13",
       "date": "2026-11-11",

@@ -98,3 +98,57 @@ export function exportUniverseBible(u, elements = []) {
   }
   printDoc("Bible · " + (u.name || "Univers"), h + footer());
 }
+
+// Livre d'Alexandrie : page de titre, sommaire, chapitres, citations, encadrés, illustrations, liens.
+const BOOK_CSS = `
+.bk-title{page-break-after:always;text-align:center;padding-top:2.2cm}
+.bk-title img{max-height:11cm;max-width:8cm;box-shadow:0 6px 18px rgba(0,0,0,.25);border-radius:2px}
+.bk-title h1{font-size:34pt;margin:.6em 0 .1em}
+.bk-sub{font-style:italic;font-size:15pt;color:#555;margin:0 0 1.2em}
+.bk-about{max-width:13cm;margin:1.2em auto;color:#333}
+.bk-toc{page-break-after:always}
+.bk-toc ol{padding-left:1.2em}.bk-toc li{margin:.25em 0}
+.bk-ch{page-break-before:always}
+.bk-ch h2{font-size:20pt;border:0;font-variant:normal;margin-top:0}
+.bk-ch .num{font-family:Arial,sans-serif;font-size:8pt;letter-spacing:.2em;color:#999}
+.bk-ch p{margin:0;text-indent:1.4em;text-align:justify}
+.bk-ch p.first{text-indent:0}
+.bk-ch h3{margin:1.2em 0 .4em}
+blockquote p{text-indent:0!important}
+blockquote cite{display:block;font-style:normal;font-family:Arial,sans-serif;font-size:7.5pt;letter-spacing:.12em;text-transform:uppercase;color:#999;margin-top:.3em}
+.bk-box{border:1px solid #ddd;background:#f7f4ee;padding:.7em 1em;margin:1em 0;page-break-inside:avoid}
+.bk-box b{display:block;font-family:Arial,sans-serif;font-size:7.5pt;letter-spacing:.16em;color:#8a6d3b;margin-bottom:.3em}
+.bk-box p{text-indent:0}
+figure{margin:1.2em 0;text-align:center;page-break-inside:avoid}
+figure img{max-height:12cm;max-width:100%}
+figcaption{font-style:italic;font-size:10pt;color:#555}
+figcaption small{display:block;font-style:normal;font-family:Arial,sans-serif;font-size:7pt;letter-spacing:.12em;color:#999;text-transform:uppercase}
+.bk-links li{margin:.5em 0}.bk-links small{display:block;color:#666}
+`;
+const bkInline = (s) => esc(s).replace(/\*([^*]+)\*/g, "<em>$1</em>");
+export function exportBook(book, cover) {
+  let h = `<style>${BOOK_CSS}</style><section class="bk-title">`;
+  if (cover) h += `<img src="${esc(cover)}" alt="">`;
+  h += `<div class="eyebrow">Bibliothèque d'Alexandrie · ${esc(book.cote || "")}</div><h1>${esc(book.title)}</h1>`;
+  if (book.sub) h += `<p class="bk-sub">${esc(book.sub)}</p>`;
+  if (book.about) h += `<p class="bk-about">${esc(book.about)}</p>`;
+  h += `</section>`;
+  const chs = (book.chapters || []).filter((c) => c.title);
+  if (chs.length > 2) h += `<section class="bk-toc"><h2>Sommaire</h2><ol>${chs.map((c) => `<li>${esc(c.title)}</li>`).join("")}${(book.links || []).length ? "<li>Pour aller plus loin</li>" : ""}</ol></section>`;
+  (book.chapters || []).forEach((c, i) => {
+    h += `<section class="bk-ch">`;
+    if (c.title) h += `<div class="num">${String(i + 1).padStart(2, "0")}</div><h2>${esc(c.title)}</h2>`;
+    c.blocks.forEach((b, j) => {
+      if (b.t === "q") h += `<blockquote><p>${bkInline(b.x)}</p>${b.by ? `<cite>${esc(b.by)}</cite>` : ""}</blockquote>`;
+      else if (b.t === "h") h += `<h3>${bkInline(b.x)}</h3>`;
+      else if (b.t === "box") h += `<div class="bk-box"><b>${esc(b.label || "À RETENIR")}</b><p>${bkInline(b.x)}</p></div>`;
+      else if (b.t === "img") h += `<figure><img src="${esc(b.src)}" alt="" onerror="this.parentNode.remove()">${b.cap || b.credit ? `<figcaption>${b.cap ? bkInline(b.cap) : ""}${b.credit ? `<small>${esc(b.credit)}</small>` : ""}</figcaption>` : ""}</figure>`;
+      else if (b.t === "yt") h += `<figure><img src="https://i.ytimg.com/vi/${esc(b.id)}/hqdefault.jpg" alt="" style="max-height:6cm" onerror="this.remove()"><figcaption>${b.cap ? bkInline(b.cap) : "Vidéo"}<small>youtube.com/watch?v=${esc(b.id)}</small></figcaption></figure>`;
+      else h += `<p${j === 0 && c.title ? ' class="first"' : ""}>${bkInline(b.x)}</p>`;
+    });
+    h += `</section>`;
+  });
+  if ((book.links || []).length) h += `<section class="bk-ch"><h2>Pour aller plus loin</h2><ul class="bk-links">${book.links.map((l) => `<li>${l.url ? `<a href="${esc(l.url)}">${esc(l.label)}</a>` : esc(l.label)}${l.note ? `<small>${esc(l.note)}</small>` : ""}</li>`).join("")}</ul></section>`;
+  h += `<footer>Atelier Nexus · Alexandrie</footer>`;
+  printDoc(book.title, h);
+}

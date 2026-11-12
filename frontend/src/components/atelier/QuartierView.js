@@ -9,6 +9,7 @@ import { toEmbed, popOut } from "@/lib/embed";
 import ItemCard from "@/components/atelier/ItemCard";
 import { TaskRow, TaskQuickAdd } from "@/components/atelier/TasksView";
 import BunnyBriefing from "@/components/atelier/BunnyBriefing";
+import AlexandrieHome from "@/components/atelier/AlexandrieHome";
 
 const greet = (h) => (h < 5 ? "Bonne nuit" : h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir");
 const ytId = (u = "") => (u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
@@ -246,6 +247,10 @@ export default function QuartierView({ at, go, open, launch }) {
           </div>
         </section>
       )}
+      <section className="at-salon-sec" data-testid="atelier-home-alexandrie">
+        <SectionHead eye="// LECTURE" title="Reprendre à Alexandrie" link="La bibliothèque" onLink={() => go({ name: "alexandrie" })} />
+        <AlexandrieHome at={at} go={go} />
+      </section>
     </section>
   );
 }
