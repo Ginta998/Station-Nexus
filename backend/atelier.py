@@ -74,6 +74,7 @@ class ConfigIn(BaseModel):
     cover_ratio: Optional[str] = None
     gcal_pont: Optional[bool] = None
     radio: Optional[List[Dict[str, Any]]] = None
+    alexandrie: Optional[Dict[str, Any]] = None
     backlog: Optional[List[Dict[str, Any]]] = None
     portal_ambience: Optional[str] = None
     portal_key: Optional[str] = None
@@ -272,6 +273,40 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
                         walk(x)
             walk(_json.loads(m.group(1)))
         return out[:24]
+
+    # SteamGridDB : artworks pour Alexandrie. La clé reste côté serveur (variable STEAMGRIDDB_API_KEY).
+    @r.get("/sgdb/search")
+    async def sgdb_search(q: str, kind: str = "grids", game: Optional[int] = None):
+        import os
+        import httpx
+        from urllib.parse import quote
+        key = os.environ.get("STEAMGRIDDB_API_KEY", "")
+        if not key:
+            raise HTTPException(503, "Clé SteamGridDB absente : ajoute STEAMGRIDDB_API_KEY dans la configuration du serveur.")
+        if kind not in ("grids", "heroes"):
+            kind = "grids"
+        base = "https://www.steamgriddb.com/api/v2"
+        async with httpx.AsyncClient(timeout=12, headers={"Authorization": f"Bearer {key}"}) as c:
+            games = []
+            if not game:
+                rs = await c.get(f"{base}/search/autocomplete/{quote(q.strip()[:80], safe='')}")
+                if rs.status_code in (401, 403):
+                    raise HTTPException(502, "SteamGridDB refuse la clé.")
+                if rs.status_code != 200:
+                    raise HTTPException(502, f"SteamGridDB ne répond pas (code {rs.status_code}).")
+                games = [{"id": g["id"], "name": g.get("name", "")} for g in (rs.json().get("data") or [])[:8]]
+                if not games:
+                    return {"games": [], "game": None, "items": []}
+                game = games[0]["id"]
+            params = {"types": "static", "nsfw": "false", "humor": "false"}
+            if kind == "grids":
+                params["dimensions"] = "600x900,342x482,660x930"
+            rg = await c.get(f"{base}/{kind}/game/{game}", params=params)
+            data = (rg.json().get("data") or []) if rg.status_code == 200 else []
+        items = [{"id": a["id"], "url": a["url"], "thumb": a.get("thumb") or a["url"], "w": a.get("width"), "h": a.get("height"),
+                  "style": a.get("style", ""), "score": a.get("score", 0), "author": (a.get("author") or {}).get("name", "")} for a in data]
+        items.sort(key=lambda a: -(a["score"] or 0))
+        return {"games": games, "game": game, "items": items[:48]}
 
     @r.delete("/items/{iid}/share")
     async def unshare_item(iid: str):

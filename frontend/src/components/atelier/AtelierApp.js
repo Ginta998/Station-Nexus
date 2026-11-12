@@ -35,6 +35,7 @@ import MobileLauncher from "@/components/atelier/MobileLauncher";
 import { useLabFx } from "@/components/atelier/labFx";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { LabDialogHost } from "@/components/atelier/LabDialog";
+import Alexandrie from "@/components/atelier/Alexandrie";
 
 const Dock = ({ icon, label, sub, on, onClick, testid, color, kanji, badge, drop }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label} {...(drop ? itemDrop(drop) : {})}>
@@ -126,7 +127,7 @@ export default function AtelierApp({ onLeave }) {
     const onKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const crumb = { home: "PONT DE COMMANDEMENT", universes: "NEXUS DRIVE", templates: "BIBLIOTHÈQUE", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", oeuvre: "ŒUVRE", devlog: "DEV & PATCH NOTES" }[view.name] || (cur?.name || "").toUpperCase();
+  const crumb = { home: "PONT DE COMMANDEMENT", universes: "NEXUS DRIVE", templates: "BIBLIOTHÈQUE", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", alexandrie: "ALEXANDRIE", oeuvre: "ŒUVRE", devlog: "DEV & PATCH NOTES" }[view.name] || (cur?.name || "").toUpperCase();
 
   useLabFx(view.name + (view.id || ""), sfx);
 
@@ -161,6 +162,8 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
           <Dock kanji="兎" label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
+          <Dock kanji="書" label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie" && view.room !== "lore"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
+          <Dock kanji="伝" label="Lore" sub="MONDES & MYTHES" on={view.name === "alexandrie" && view.room === "lore"} onClick={() => go({ name: "alexandrie", room: "lore" })} testid="atelier-nav-lore" />
           <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
           <Dock kanji="禅" label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
@@ -193,6 +196,7 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "bureau" && <BureauView {...ctx} launch={launch} />}
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
           {view.name === "radio" && <RadioView radio={radio} />}
+          {view.name === "alexandrie" && <Alexandrie {...ctx} radio={radio} room={view.room} book={view.book} />}
           {view.name === "devlog" && <DevLogView at={at} />}
         </main>
       </div>
