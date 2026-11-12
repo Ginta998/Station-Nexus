@@ -14,6 +14,8 @@ const book = {
 
 Il y a deux façons de raconter le Wu-Tang Clan. La première, c'est la légende : neuf guerriers venus de l'île de Shaolin, chacun avec son style de combat, réunis par un maître pour conquérir le monde. La seconde, c'est l'histoire : neuf jeunes hommes pauvres de Staten Island, à New York, qui n'avaient presque rien et qui ont inventé une façon de faire de la musique et des affaires que personne n'avait vue avant eux.
 
+@yt cPRKsKwEdUQ | Triumph (1997), les neuf voix du clan dans un seul morceau de près de six minutes, sans refrain.
+
 Le plus beau, c'est que les deux sont vraies en même temps. Le Wu-Tang a construit sa légende à partir de son histoire. Il a pris les films de kung-fu qu'il regardait dans les cinémas de quartier, les leçons de la rue, les échecs, une doctrine religieuse, les bandes dessinées, et il en a fait une mythologie. Ce livre te raconte les deux.
 
 # Shaolin

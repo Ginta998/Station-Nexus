@@ -14,6 +14,8 @@ const book = {
 
 Je n'aime pas qu'on m'appelle impressionniste. On l'a fait toute ma vie, et je trouve que c'est un mot de critique paresseux. Les peintres impressionnistes peignaient la lumière sur les choses. Moi, j'ai essayé d'écrire ce qui se passe entre les choses : l'air, l'eau, le temps qui passe, ce qu'on ressent et qu'on ne sait pas dire.
 
+@yt jRYNaLvtMd4 | Clair de lune, joué par Lang Lang.
+
 On peut m'appeler musicien français. Vers la fin, je signais mes partitions comme ça. Claude Debussy, musicien français. C'était la guerre, et c'était aussi une façon de dire que je ne voulais plus imiter les Allemands.
 
 > La musique commence là où la parole est impuissante à exprimer ; elle est écrite pour l'inexprimable. | Claude Debussy, Monsieur Croche, revue Musica, mai 1903
@@ -121,8 +123,6 @@ Elle était drôle, vive, autoritaire. C'était la personne que j'aimais le plus
 *La Cathédrale engloutie* raconte une vieille légende bretonne : une ville engloutie sous la mer, dont la cathédrale remonte parfois à la surface à l'aube, avec ses cloches qui sonnent, puis redescend. Les accords montent du fond du piano, sonnent, se perdent.
 
 On joue aussi beaucoup une pièce plus ancienne, *Clair de lune*, que j'avais écrite jeune, vers 1890, d'après un poème de Verlaine, et que je n'ai publiée qu'en 1905. On me dit que c'est la pièce que tout le monde connaît. Elle est douce, un peu sentimentale. Je l'aime bien quand même.
-
-@yt jRYNaLvtMd4 | Clair de lune, joué par Lang Lang.
 
 # Jeux
 

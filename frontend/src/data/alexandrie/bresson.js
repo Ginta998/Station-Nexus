@@ -15,6 +15,8 @@ const book = {
 
 Je n'aime pas parler de mes films. On m'y a obligé pendant quarante ans, et j'ai toujours eu l'impression de mentir un peu. Un film, s'il est réussi, ne se raconte pas. Il se voit et il s'entend.
 
+@yt T6HvMPVkkwE | Les plus beaux plans de ses films : mains, portes, visages.
+
 Mais je vais essayer, une fois, d'être précis. Parce qu'on dit beaucoup de bêtises sur moi. On dit que je suis austère, janséniste, que mes films sont froids, que mes acteurs sont des automates. On se trompe sur presque tout. Je ne suis pas froid. Je suis exact. Ce n'est pas la même chose.
 
 Je vais commencer par un mot. Je ne fais pas du cinéma. Je fais du cinématographe.
