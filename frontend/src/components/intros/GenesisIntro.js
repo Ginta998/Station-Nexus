@@ -68,7 +68,7 @@ export function GenesisAnim({ children }) {
     root.current?.style.setProperty("--gx-a", `rgb(${A})`); root.current?.style.setProperty("--gx-b", `rgb(${B})`);
     const spr = [sprite(A), sprite(B), sprite([255, 255, 255])];
     const deep = A.map((v) => Math.round(2 + v * 0.03)).join(",");
-    const m = Math.min(W, H); const cx = W / 2, cy = H * 0.4; const R = m * 0.21;
+    const m = Math.min(W, H * 0.9); const cx = W / 2, cy = H * 0.35; const R = m * 0.21;
     const fs = R * 1.02;
     const N = W < 700 ? 1500 : 2300;
     const P = Array.from({ length: N }, (_, i) => {

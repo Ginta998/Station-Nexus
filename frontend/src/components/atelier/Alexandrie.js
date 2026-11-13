@@ -139,7 +139,7 @@ function CoverInner({ b, cover, upcoming, wished, fmt, R, em, cfs }) {
           {b.sub && <span className="ax-cover-sub">{b.sub}</span>}
         </>
       )}
-      {fmt === "vhs" ? <span className="ax-sticker">{upcoming ? "BIENTÔT" : "REMBOBINER SVP"}</span> : <span className="ax-cover-tag mono">{upcoming ? (wished ? "★ DEMANDÉ" : "À PARAÎTRE") : b.cote}</span>}
+      {fmt === "vhs" ? upcoming && <span className="ax-sticker">BIENTÔT</span> : <span className="ax-cover-tag mono">{upcoming ? (wished ? "★ DEMANDÉ" : "À PARAÎTRE") : b.cote}</span>}
       <span className="ax-wear" aria-hidden="true" />
     </>
   );

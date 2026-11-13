@@ -83,6 +83,12 @@ import toussaint from "./toussaint-louverture";
 import soundiata from "./soundiata-keita";
 import saintJust from "./saint-just";
 import danton from "./danton";
+import rumbaCongolaise from "./rumba-congolaise";
+import meroe from "./meroe";
+import musashi from "./musashi";
+import ramanujan from "./ramanujan";
+import spinoza from "./spinoza";
+import moebius from "./moebius";
 
 export const ROOMS = [
   { key: "philo", label: "Philosophie", kanji: "哲", about: "Des pensées qui dérangent, expliquées de l'intérieur." },
@@ -101,11 +107,11 @@ export const TYPES = {
   recit: { label: "Récit", about: "Un narrateur raconte, plusieurs points de vue." },
   apprentissage: { label: "Apprentissage", about: "On t'accompagne dans une notion difficile." },
 };
-export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, dreyfus, commune, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, xenoblade, skyrim, airGear, darkSouls, hollowKnight, nier, berserk, outerWilds, evangelion, discoElysium, madeInAbyss, sekiro, pathologic, rainWorld, lain, limbo, inside, shadowColossus, silentHill2, akira, blame, hyperLight, kentucky, ergoProxy, planescape, darkwood, dorohedoro, texhnolyze, stalker, alien, bladeRunner, fearHunger, warhammer, twinPeaks, madMax, hordeContrevent, hyperion, gormenghast, annihilation, nouveauSoleil, fondation, nausicaa, lumumba, kimpaVita, kongo, ff12, toussaint, soundiata, saintJust, danton, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
+export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, dreyfus, commune, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, xenoblade, skyrim, airGear, darkSouls, hollowKnight, nier, berserk, outerWilds, evangelion, discoElysium, madeInAbyss, sekiro, pathologic, rainWorld, lain, limbo, inside, shadowColossus, silentHill2, akira, blame, hyperLight, kentucky, ergoProxy, planescape, darkwood, dorohedoro, texhnolyze, stalker, alien, bladeRunner, fearHunger, warhammer, twinPeaks, madMax, hordeContrevent, hyperion, gormenghast, annihilation, nouveauSoleil, fondation, nausicaa, lumumba, kimpaVita, kongo, ff12, toussaint, soundiata, saintJust, danton, rumbaCongolaise, meroe, musashi, ramanujan, spinoza, moebius, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
 
 const up = (room, type, title, sub, format) => ({ id: "up-" + title.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-"), room, type, title, sub, format: format || (room === "lore" ? "vhs" : room === "musique" ? "vinyle" : "livre") });
 export const UPCOMING = [
-  up("philo", "pensee", "Merleau-Ponty", "Le corps qui voit"), up("philo", "pensee", "Spinoza", "La joie comme méthode"), up("philo", "pensee", "Kierkegaard", "Le saut"),
+  up("philo", "pensee", "Merleau-Ponty", "Le corps qui voit"), up("philo", "pensee", "Kierkegaard", "Le saut"),
   up("philo", "pensee", "Simone Weil", "L'attention"), up("philo", "apprentissage", "Kant", "Que puis-je savoir ?"), up("philo", "pensee", "Marc Aurèle", "Pensées pour soi"),
   up("philo", "apprentissage", "Platon", "La caverne et après"), up("philo", "pensee", "Camus", "L'absurde et la révolte"), up("philo", "apprentissage", "Bergson", "La durée"),
   up("histoire", "recit", "Néron", "L'empereur qui voulait être artiste"),
@@ -123,16 +129,16 @@ export const UPCOMING = [
   up("musique", "recit", "Lili Boulanger", "Vingt-quatre ans pour tout écrire"), up("musique", "pensee", "Hildegard von Bingen", "La lumière vivante"), up("musique", "recit", "Arthur Russell", "Le violoncelle et la boule à facettes"),
   up("musique", "recit", "Vashti Bunyan", "Trente ans de silence"), up("musique", "recit", "Midori Takada", "À travers le miroir"), up("musique", "recit", "Hiroshi Yoshimura", "La musique d'environnement"),
   up("musique", "apprentissage", "L'échantillonnage", "Du breakbeat au sampler"),
-  up("art", "recit", "Moebius", "Le trait qui voyage"), up("art", "recit", "Gustave Doré", "L'homme qui illustra tout"), up("art", "recit", "Katsuhiro Ōtomo", "Akira"),
+  up("art", "recit", "Gustave Doré", "L'homme qui illustra tout"), up("art", "recit", "Katsuhiro Ōtomo", "Akira"),
   up("art", "recit", "Kim Jung Gi", "Dessiner sans esquisse"), up("art", "recit", "Yoshitaka Amano", "Les brumes"), up("art", "recit", "Mucha", "L'Art nouveau"),
   up("art", "recit", "Hiroshige", "La pluie sur le pont"), up("art", "recit", "Caravage", "La lumière et le couteau"), up("art", "recit", "Takehiko Inoue", "Vagabond"),
   up("art", "apprentissage", "La composition", "Où va l'œil"), up("art", "recit", "Franquin", "Le mouvement"), up("art", "recit", "Kentarō Miura", "Berserk"),
   up("lettres", "recit", "Les Misérables", "Hugo et le peuple"), up("lettres", "recit", "Dostoïevski", "Crime et châtiment"), up("lettres", "recit", "Homère", "La colère d'Achille"),
   up("lettres", "recit", "Dante", "Descendre pour remonter"), up("lettres", "pensee", "Rilke", "Lettres à un jeune poète"), up("lettres", "recit", "Mishima", "La mer de la fertilité"),
-  up("japon", "pensee", "Hagakure", "À l'ombre des feuilles"), up("japon", "pensee", "Musashi", "Le Livre des cinq anneaux"), up("japon", "recit", "Les 47 rōnin", "La vengeance d'Akō"),
+  up("japon", "pensee", "Hagakure", "À l'ombre des feuilles"), up("japon", "recit", "Les 47 rōnin", "La vengeance d'Akō"),
   up("japon", "apprentissage", "Wabi-sabi", "La beauté de l'imparfait"), up("japon", "recit", "Oda Nobunaga", "Le démon du sixième ciel"), up("japon", "apprentissage", "Le zen", "S'asseoir"),
   up("sciences", "apprentissage", "Gödel", "Ce qu'on ne peut pas prouver"), up("sciences", "apprentissage", "Le nombre d'or", "Mythe et géométrie"), up("sciences", "recit", "Évariste Galois", "Une nuit pour tout écrire"),
-  up("sciences", "apprentissage", "La relativité", "Le temps n'est pas le même pour tous"), up("sciences", "apprentissage", "Les probabilités", "Penser le hasard"), up("sciences", "recit", "Ramanujan", "L'homme qui connaissait l'infini"),
+  up("sciences", "apprentissage", "La relativité", "Le temps n'est pas le même pour tous"), up("sciences", "apprentissage", "Les probabilités", "Penser le hasard"), 
   up("sciences", "apprentissage", "Les fractales", "La côte de Bretagne"), up("sciences", "recit", "Alan Turing", "La machine"),
 ];
 
