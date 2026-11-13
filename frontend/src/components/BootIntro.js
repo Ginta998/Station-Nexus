@@ -4,6 +4,7 @@ import { INTROS, playBoot } from "@/lib/intro";
 import { introVideoUrl } from "@/lib/api";
 import { pickWelcome } from "@/lib/social";
 import { HudAnim, WarpAnim, EclipseAnim } from "@/components/intros/PremiumIntros";
+import { GenesisAnim } from "@/components/intros/GenesisIntro";
 
 function Logo({ delay = 1.4 }) {
   return (
@@ -132,7 +133,7 @@ function HanabiAnim() {
   );
 }
 
-const ANIMS = { hud: HudAnim, warp: WarpAnim, eclipse: EclipseAnim, tengoku: TengokuAnim, kanji: KanjiAnim, pulse: PulseAnim, towers: TowersAnim, slash: SlashAnim, hanabi: HanabiAnim };
+const ANIMS = { labo: GenesisAnim, hud: HudAnim, warp: WarpAnim, eclipse: EclipseAnim, tengoku: TengokuAnim, kanji: KanjiAnim, pulse: PulseAnim, towers: TowersAnim, slash: SlashAnim, hanabi: HanabiAnim };
 
 export default function BootIntro({ type, hasVideo, onDone, welcomeMessages }) {
   const { muted, uiVolume, primeAudio, profile } = useApp();
@@ -168,12 +169,20 @@ export default function BootIntro({ type, hasVideo, onDone, welcomeMessages }) {
           className="w-full h-full object-cover" data-testid="boot-video" />
       ) : (
         <>
-          {!ready && <Anim />}
-          {!ready && <ProgressBar duration={duration} />}
+          {type === "labo" ? (
+            <Anim>
+              {ready && (
+                <div className="gx-ready" data-testid="boot-ready">
+                  {profile && <div className="gx-welcome" data-testid="boot-welcome">{welcome}</div>}
+                  <button className="gx-enter" onClick={(e) => { e.stopPropagation(); finish(); }} data-testid="boot-enter">Entrer</button>
+                </div>
+              )}
+            </Anim>
+          ) : !ready && <><Anim /><ProgressBar duration={duration} /></>}
         </>
       )}
 
-      {ready && (
+      {ready && type !== "labo" && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 px-6 text-center" data-testid="boot-ready">
           {profile ? (
             <div className="flex flex-col items-center gap-5" style={{ animation: "introWord 0.7s ease forwards" }} data-testid="boot-profile">

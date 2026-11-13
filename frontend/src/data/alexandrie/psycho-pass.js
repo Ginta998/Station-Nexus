@@ -1,7 +1,6 @@
 const book = {
   id: "psycho-pass", title: "Psycho-Pass", sub: "Le système Sibyl", room: "lore", type: "recit", format: "vhs", cote: "LO-006", color: 196, emblem: "罰",
   about: "Tokyo, 2112. Une machine mesure ton âme et décide de ton métier, de ton mariage et de ta mort. La première saison racontée en entier : une inspectrice, un chien de chasse, un criminel que la machine ne voit pas, et ce qu'il y a dans la tour.",
-  voice: "RÉCIT DE NÉRODUS. IL COUVRE LA PREMIÈRE SAISON (2012), RÉVÉLATIONS ET FIN COMPRISES.",
   links: [
     { label: "Psycho-Pass, saison 1 (Production I.G, 2012)", note: "Écrit par Gen Urobuchi, réalisé par Naoyoshi Shiotani. Vingt-deux épisodes : c'est la saison qui compte." },
     { label: "Philip K. Dick, Rapport minoritaire et Les androïdes rêvent-ils de moutons électriques ?", note: "Makishima le cite. Punir avant le crime, et se demander ce qui distingue l'homme de ce qui l'imite." },
@@ -22,6 +21,13 @@ C'est le Japon de 2112. Le reste du monde s'est effondré dans la guerre et la f
 La série ne te demande pas si ce monde est horrible. Ce serait trop facile. Elle te demande ce que tu répondrais à quelqu'un qui te dirait : voilà la paix, voilà le bonheur du plus grand nombre, et voilà ce que cela coûte. Regarde bien le prix avant de refuser. Et regarde bien avant d'accepter.
 
 Je vais te raconter la première saison. Elle a été écrite par Gen Urobuchi, un auteur qui aime construire des mondes comme des pièges logiques, puis y lâcher quelqu'un d'honnête.
+
+
+# Ceux qui l'ont fait
+
+Psycho-Pass est une série originale de Production I.G, diffusée en 2012. Son scénariste principal est Gen Urobuchi, l'auteur de Madoka Magica et de Fate/Zero, connu pour ses récits sombres. La réalisation est de Naoyoshi Shiotani, sous la direction générale de Katsuyuki Motohiro, le réalisateur de la série policière Bayside Shakedown.
+
+Les personnages ont été imaginés par Akira Amano, la mangaka de Reborn!, puis adaptés pour l'animation. La musique est de Yugo Kanno. Le générique, Abnormalize, est du groupe Ling Tosite Sigure.
 
 # La couleur de ton âme
 
@@ -51,6 +57,18 @@ L'autre Inspecteur de l'unité, Ginoza, est raide, cassant, et il prévient Akan
 
 Dès le premier soir, Akane tire sur Kogami avec son Dominator, pour l'empêcher d'exécuter l'otage que le système avait condamnée. Elle a raison : la femme se calme, son coefficient redescend. La machine s'était trompée d'une minute. Akane ne dit rien de plus. Mais tu sais déjà qui elle est.
 
+# Les autres membres de l'unité
+
+Psycho-Pass prend le temps de donner une histoire à chacun de ses chiens, et ce sont souvent les plus belles pages de la série.
+
+**Yayoi Kunizuka** était guitariste. Elle jouait dans un groupe, avec une autre musicienne, qui rêvait de faire tomber le système par des attentats. Son amitié pour elle, puis l'amour qu'elle lui portait, ont fait monter sa teinte. Elle a été déclarée criminelle latente. Plus tard, Kogami l'a aidée à sortir de son établissement de soins en lui proposant de devenir Exécutrice. Elle est froide, discrète, d'une loyauté absolue envers lui.
+
+**Shion Karanomori** est l'analyste de l'unité. Elle aussi est une criminelle latente, enfermée dans son laboratoire, entourée d'écrans. Elle fume, plaisante, observe tout, et voit souvent avant les autres ce qui cloche dans les dossiers.
+
+**Kagari** est le plus attachant. Déclaré criminel latent à cinq ans par un examen de routine à l'école, il a grandi dans une institution, sans jamais avoir rien fait. Il joue aux jeux vidéo, cuisine pour les autres, plaisante sans cesse. Il sait qu'il n'aura jamais d'autre vie que celle de chien. C'est pour cela que sa mort, dans la tour, est si cruelle : celui que le système avait condamné avant qu'il sache marcher est le premier à voir ce que le système est.
+
+**Masaoka** est la mémoire de la police. Il fume, boit, peint des tableaux à l'huile dans sa chambre, et répète que les vieilles méthodes valaient bien les machines. Il veille sur Akane comme un grand-père, et sur son fils Ginoza, qui le méprise, comme un père qui n'a plus le droit de l'être.
+
 # Celui que la machine ne voit pas
 
 Les premières enquêtes semblent sans lien. Un ouvrier harcelé qui massacre ses collègues. Un tueur qui se cache derrière des avatars sur les réseaux. Une lycéenne qui fait de ses camarades des sculptures. À chaque fois, quelqu'un a fourni au meurtrier les moyens d'aller jusqu'au bout de son désir : un outil, une technique, un encouragement. Quelqu'un qui regarde.
@@ -66,6 +84,16 @@ Il lui explique son choix avec calme. Tu as deux armes. L'une appartient à Siby
 Akane tremble. Elle tire, et manque. Elle a grandi dans un monde où l'on ne décide pas : elle ne peut pas croire le fusil contre la machine. Makishima est déçu. Il tue la jeune fille.
 
 Retiens ce que la scène démontre, parce que tout le reste en découle. Le système avait retiré aux hommes le poids de juger. Il leur a donc retiré la capacité de le faire. Un peuple qu'on protège de toute décision ne sait plus en prendre, même la plus évidente.
+
+# La chasse
+
+Au milieu de la saison, il y a un épisode qui ressemble à un cauchemar de série B, et qui en dit long sur Makishima.
+
+Parmi ses alliés, il y a un vieil homme presque entièrement fait de prothèses, un écrivain riche et raffiné, qui organise des chasses à l'homme dans les ruines d'un quartier abandonné. Ses proies sont des criminels latents évadés, qu'il traque avec des chiens mécaniques, et dont il garde les trophées.
+
+Une amie d'Akane est enlevée et lâchée dans cette zone. Kogami, qui a suivi la piste, s'y retrouve aussi, et c'est lui qu'on chasse. Dans le noir, sans Dominator, avec ses seules mains et son intelligence, il retourne la chasse contre le chasseur.
+
+L'épisode montre ce que Makishima fait des gens qui l'entourent. Il ne les commande pas. Il leur donne seulement l'occasion d'aller au bout de leur désir, et il regarde.
 
 # Les casques
 
@@ -132,6 +160,18 @@ Le système, lui, est un mensonge tenu par des monstres. Mais les gens y mangent
 Entre les deux, Akane. Sa position est la plus difficile et la moins spectaculaire. Elle refuse de casser ce qui protège des gens qui n'ont jamais appris à se protéger eux-mêmes. Elle refuse aussi de l'aimer. Elle obéit en sachant, ce qui est très différent d'obéir sans savoir, et elle garde ouverte la question du jour où il faudra débrancher.
 
 Il y a un vieux philosophe anglais, Bentham, qui avait imaginé une prison ronde où un seul gardien, caché dans une tour, pouvait voir toutes les cellules. Il n'avait même plus besoin d'être là : il suffisait que les détenus se sachent regardés pour qu'ils se surveillent eux-mêmes. Psycho-Pass ajoute une étape. Les détenus sont heureux, et ils remercient la tour.
+
+# Après la première saison
+
+Psycho-Pass a eu une longue suite, inégale, qu'on peut parcourir rapidement.
+
+En 2014, une **deuxième saison**, écrite par un autre auteur, Tow Ubukata, met Akane, devenue la plus expérimentée de l'unité, face à un nouvel adversaire, Kirito Kamui. Lui aussi est invisible pour le système, mais pour une raison différente de celle de Makishima : son corps est fait de nombreux autres corps, et Sibyl ne sait pas le lire comme une seule personne. Il veut forcer le système à se juger lui-même. La saison pousse la logique de Sibyl jusqu'au vertige, en posant une question simple : que se passe-t-il quand on mesure non plus un individu, mais un groupe ?
+
+En 2015, un **film** emmène Akane hors du Japon, dans un pays d'Asie du Sud-Est en guerre, où l'on a commencé à exporter le système. Elle y retrouve Kogami, devenu mercenaire au service d'une rébellion.
+
+Puis viennent trois films courts, en 2019, centrés sur des personnages secondaires, une **troisième saison** la même année, avec deux nouveaux inspecteurs, et d'autres films qui prolongent l'histoire. Le monde s'agrandit, le Japon s'ouvre à l'immigration, Sibyl change.
+
+La plupart des fans s'accordent sur un point : rien n'égale la première saison, et le duel entre Makishima et Kogami. Mais les suites ont le mérite de continuer à poser la même question, à travers d'autres angles : jusqu'où une société peut-elle confier son jugement à une machine, et que fait-on le jour où l'on découvre ce qu'il y a dans la machine ?
 
 # Ce que tu peux en prendre
 

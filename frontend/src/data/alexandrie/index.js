@@ -31,6 +31,56 @@ import signalis from "./signalis";
 import hellraiser from "./hellraiser";
 import deusEx from "./deus-ex";
 import ff13 from "./final-fantasy-xiii";
+import xenoblade from "./xenoblade";
+import skyrim from "./skyrim";
+import airGear from "./air-gear";
+import dreyfus from "./dreyfus";
+import commune from "./commune-de-paris";
+import darkSouls from "./dark-souls";
+import hollowKnight from "./hollow-knight";
+import nier from "./nier";
+import berserk from "./berserk";
+import outerWilds from "./outer-wilds";
+import evangelion from "./evangelion";
+import discoElysium from "./disco-elysium";
+import madeInAbyss from "./made-in-abyss";
+import sekiro from "./sekiro";
+import pathologic from "./pathologic";
+import rainWorld from "./rain-world";
+import lain from "./serial-experiments-lain";
+import limbo from "./limbo";
+import inside from "./inside";
+import shadowColossus from "./shadow-of-the-colossus";
+import silentHill2 from "./silent-hill-2";
+import akira from "./akira";
+import blame from "./blame";
+import hyperLight from "./hyper-light-drifter";
+import kentucky from "./kentucky-route-zero";
+import ergoProxy from "./ergo-proxy";
+import planescape from "./planescape-torment";
+import darkwood from "./darkwood";
+import dorohedoro from "./dorohedoro";
+import texhnolyze from "./texhnolyze";
+import stalker from "./stalker";
+import alien from "./alien";
+import bladeRunner from "./blade-runner";
+import fearHunger from "./fear-hunger";
+import warhammer from "./warhammer-40-000";
+import twinPeaks from "./twin-peaks";
+import madMax from "./mad-max";
+import hordeContrevent from "./la-horde-du-contrevent";
+import hyperion from "./hyperion";
+import gormenghast from "./gormenghast";
+import annihilation from "./annihilation";
+import nouveauSoleil from "./le-livre-du-nouveau-soleil";
+import fondation from "./fondation";
+import nausicaa from "./nausicaa";
+import lumumba from "./lumumba";
+import kimpaVita from "./kimpa-vita";
+import kongo from "./royaume-du-kongo";
+import ff12 from "./final-fantasy-xii";
+import toussaint from "./toussaint-louverture";
+import soundiata from "./soundiata-keita";
 
 export const ROOMS = [
   { key: "philo", label: "Philosophie", kanji: "哲", about: "Des pensées qui dérangent, expliquées de l'intérieur." },
@@ -49,18 +99,16 @@ export const TYPES = {
   recit: { label: "Récit", about: "Un narrateur raconte, plusieurs points de vue." },
   apprentissage: { label: "Apprentissage", about: "On t'accompagne dans une notion difficile." },
 };
-export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
+export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, dreyfus, commune, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, xenoblade, skyrim, airGear, darkSouls, hollowKnight, nier, berserk, outerWilds, evangelion, discoElysium, madeInAbyss, sekiro, pathologic, rainWorld, lain, limbo, inside, shadowColossus, silentHill2, akira, blame, hyperLight, kentucky, ergoProxy, planescape, darkwood, dorohedoro, texhnolyze, stalker, alien, bladeRunner, fearHunger, warhammer, twinPeaks, madMax, hordeContrevent, hyperion, gormenghast, annihilation, nouveauSoleil, fondation, nausicaa, lumumba, kimpaVita, kongo, ff12, toussaint, soundiata, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
 
 const up = (room, type, title, sub, format) => ({ id: "up-" + title.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-"), room, type, title, sub, format: format || (room === "lore" ? "vhs" : room === "musique" ? "vinyle" : "livre") });
-const lo = (title, sub, format) => up("lore", "recit", title, sub, format);
 export const UPCOMING = [
   up("philo", "pensee", "Merleau-Ponty", "Le corps qui voit"), up("philo", "pensee", "Spinoza", "La joie comme méthode"), up("philo", "pensee", "Kierkegaard", "Le saut"),
   up("philo", "pensee", "Simone Weil", "L'attention"), up("philo", "apprentissage", "Kant", "Que puis-je savoir ?"), up("philo", "pensee", "Marc Aurèle", "Pensées pour soi"),
   up("philo", "apprentissage", "Platon", "La caverne et après"), up("philo", "pensee", "Camus", "L'absurde et la révolte"), up("philo", "apprentissage", "Bergson", "La durée"),
-  up("histoire", "recit", "Néron", "L'empereur qui voulait être artiste"), up("histoire", "recit", "L'affaire Dreyfus", "Un pays coupé en deux"), up("histoire", "recit", "La Commune de Paris", "Soixante-douze jours"),
-  up("histoire", "recit", "Napoléon", "Les Cent-Jours"), up("histoire", "recit", "Toussaint Louverture", "La révolution haïtienne"), up("histoire", "recit", "Alexandre le Grand", "Jusqu'au bout du monde"),
-  up("histoire", "recit", "L'affaire du collier de la reine", "L'escroquerie qui fit tomber un trône"), up("histoire", "recit", "Saint-Just", "L'archange"), up("histoire", "recit", "Soundiata Keïta", "L'empire du Mali"),
-  up("histoire", "recit", "Le scandale de Panama", "Les chéquards"), up("histoire", "recit", "Danton", "L'audace"), up("histoire", "recit", "Jules César", "Le Rubicon"),
+  up("histoire", "recit", "Néron", "L'empereur qui voulait être artiste"),
+  up("histoire", "recit", "Napoléon", "Les Cent-Jours"), up("histoire", "recit", "Alexandre le Grand", "Jusqu'au bout du monde"),
+  up("histoire", "recit", "L'affaire du collier de la reine", "L'escroquerie qui fit tomber un trône"), up("histoire", "recit", "Saint-Just", "L'archange"),   up("histoire", "recit", "Le scandale de Panama", "Les chéquards"), up("histoire", "recit", "Danton", "L'audace"), up("histoire", "recit", "Jules César", "Le Rubicon"),
   up("cinema", "recit", "Le Nouvel Hollywood", "Dix ans où les fous ont eu les clés"), up("cinema", "pensee", "Kurosawa", "Le mouvement et la pluie"), up("cinema", "pensee", "Ozu", "La hauteur du tatami"),
   up("cinema", "recit", "La Nouvelle Vague", "Caméra à l'épaule"), up("cinema", "pensee", "Kubrick", "Le contrôle"), up("cinema", "pensee", "Bergman", "Les visages"),
   up("cinema", "pensee", "Satoshi Kon", "Le montage du rêve"), up("cinema", "pensee", "Miyazaki", "Le vent se lève"), up("cinema", "apprentissage", "Le montage", "D'Eisenstein à Murch"),
@@ -83,21 +131,6 @@ export const UPCOMING = [
   up("japon", "apprentissage", "Wabi-sabi", "La beauté de l'imparfait"), up("japon", "recit", "Oda Nobunaga", "Le démon du sixième ciel"), up("japon", "apprentissage", "Le zen", "S'asseoir"),
   up("sciences", "apprentissage", "Gödel", "Ce qu'on ne peut pas prouver"), up("sciences", "apprentissage", "Le nombre d'or", "Mythe et géométrie"), up("sciences", "recit", "Évariste Galois", "Une nuit pour tout écrire"),
   up("sciences", "apprentissage", "La relativité", "Le temps n'est pas le même pour tous"), up("sciences", "apprentissage", "Les probabilités", "Penser le hasard"), up("sciences", "recit", "Ramanujan", "L'homme qui connaissait l'infini"),
-  // Lore & mondes : les univers demandés, puis des pistes moins connues
-  lo("Xenoblade Chronicles", "Deux titans, un monde"), 
-  lo("Skyrim", "Les Parchemins des Anciens"), 
-  lo("Air Gear", "Les rois et les routes"), 
-  lo("Limbo", "Le garçon à la lisière"), lo("Inside", "Le garçon et la masse"),
-  lo("Dark Souls", "L'âge du feu"), lo("Sekiro", "L'héritage du dragon"), lo("NieR", "Les réplicants et les ombres"), lo("Hollow Knight", "Le royaume de Hallownest"),
-  lo("Pathologic", "Douze jours de peste"), lo("Disco Elysium", "Revachol et le Pâle"), lo("Outer Wilds", "Les Nomaï et la boucle"), lo("Fear & Hunger", "Les donjons et les dieux anciens"),
-  lo("Rain World", "Le cycle et les itérateurs"), lo("Hyper Light Drifter", "La maladie et le voyageur"), lo("Kentucky Route Zero", "La route sous la route"), lo("Darkwood", "La forêt qui se referme"),
-  lo("Planescape: Torment", "Qu'est-ce qui peut changer la nature d'un homme ?"), lo("Silent Hill 2", "La ville qui te connaît"), lo("Shadow of the Colossus", "Seize géants pour une morte"),
-  lo("Berserk", "L'Éclipse et la causalité"), lo("Blame!", "La Cité sans fin"), lo("Made in Abyss", "La malédiction de la remontée"), lo("Dorohedoro", "Hole et les mages"),
-  lo("Serial Experiments Lain", "Le Wired"), lo("Texhnolyze", "La ville de Lux"), lo("Ergo Proxy", "Romdeau et les proxys"), lo("Evangelion", "Les Anges et le Projet"),
-  lo("Stalker", "La Zone, de Strougatski à Tarkovski"), lo("Annihilation", "La Zone X", "livre"), lo("Hypérion", "Le Gritche et les sept pèlerins", "livre"), lo("Le Livre du Nouveau Soleil", "Severian le bourreau", "livre"),
-  lo("Gormenghast", "Le château et le rituel", "livre"), lo("La Horde du Contrevent", "Remonter le vent", "livre"), lo("Le Cycle de Fondation", "La psychohistoire", "livre"),
-  lo("Warhammer 40 000", "L'Hérésie d'Horus"), lo("Alien", "Les Ingénieurs et la Compagnie"), lo("Blade Runner", "Plus humain que l'humain"), lo("Akira", "Néo-Tokyo et le numéro 28"),
-  lo("Mad Max", "Le monde d'après le pétrole"), lo("Twin Peaks", "La Loge noire"),
   up("sciences", "apprentissage", "Les fractales", "La côte de Bretagne"), up("sciences", "recit", "Alan Turing", "La machine"),
 ];
 
@@ -111,10 +144,12 @@ export function parseBook(b) {
     else if (s.startsWith("> ")) { const [x, by] = s.slice(2).split(" | "); push({ t: "q", x: x.trim(), by: by?.trim() }); }
     else if (s.startsWith("@img ")) { const [src, cap, credit] = s.slice(5).split(" | ").map((x) => x && x.trim()); push({ t: "img", src, cap, credit }); }
     else if (s.startsWith("@yt ")) { const [id, cap] = s.slice(4).split(" | ").map((x) => x && x.trim()); push({ t: "yt", id, cap }); }
+    // @art 3 | légende : la 3e bannière SteamGridDB du jeu ; @art g 2 | légende : la 2e affiche verticale
+    else if (s.startsWith("@art ")) { const [h, cap, credit] = s.slice(5).split(" | ").map((x) => x && x.trim()); push({ t: "art", kind: /^g\b/.test(h) ? "grids" : "heroes", n: parseInt(h.replace(/^g\s*/, ""), 10) || 1, cap, credit }); }
     else if (s.startsWith("!! ")) { const m = s.slice(3).split(" :: "); push(m.length > 1 ? { t: "box", label: m[0].trim(), x: m.slice(1).join(" :: ").trim() } : { t: "box", x: m[0].trim() }); }
     else push({ t: "p", x: s });
   }
-  const words = b.text.split("\n").filter((l) => !/^@(img|yt) /.test(l.trim())).join(" ").split(/\s+/).filter(Boolean).length;
+  const words = b.text.split("\n").filter((l) => !/^@(img|yt|art) /.test(l.trim())).join(" ").split(/\s+/).filter(Boolean).length;
   return { ...b, chapters, words };
 }
 export const readingTime = (w) => { const m = Math.max(1, Math.round((w || 0) / 220)); return m < 60 ? `${m} MIN DE LECTURE` : `${Math.floor(m / 60)} H ${String(m % 60).padStart(2, "0")} DE LECTURE`; };

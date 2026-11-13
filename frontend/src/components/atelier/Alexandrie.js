@@ -1,11 +1,13 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { playPageTurn } from "@/lib/sound";
 import { createPortal } from "react-dom";
 import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
 import { DEFAULT_COVERS, mergeCovers, sgdbTerm } from "@/data/alexandrie/covers";
-import { IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo } from "react-icons/io5";
+import { IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline } from "react-icons/io5";
+import { lookOf, WEB_FONTS } from "@/data/alexandrie/looks";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm } from "@/components/atelier/LabDialog";
 import { exportBook } from "@/lib/exportPdf";
@@ -16,7 +18,7 @@ import "@/components/atelier/alexandrie.css";
 
 // ALEXANDRIE — la bibliothèque de l'Atelier. Des salles, des rayonnages, des livres qui s'ouvrent.
 // Les livres de fond sont dans src/data/alexandrie ; les tiens sont des fiches de l'Atelier (fields.alexandrie).
-const LS = { prog: "nx-alex-progress", wish: "nx-alex-wish", covers: "nx-alex-covers", fav: "nx-alex-fav" };
+const LS = { prog: "nx-alex-progress", wish: "nx-alex-wish", covers: "nx-alex-covers", fav: "nx-alex-fav", view: "nx-alex-view" };
 const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || "") ?? d; } catch (_) { return d; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
 const NOEDITS = {};
@@ -28,26 +30,41 @@ function itemToBook(it) {
   try { return itemToBookRaw(it); } catch (_) { return { id: "item:" + it.id, itemId: it.id, mine: true, title: String(it.title || "Sans titre"), sub: "", room: "atelier", type: "recit", about: "", cote: "PERS.", chapters: [{ title: "", blocks: [{ t: "p", x: "Ce livre n'a pas pu être lu. Ouvre-le pour le corriger." }] }], words: 0, links: [] }; }
 }
 // Texte d'un nœud avec l'italique gardé (*mot*)
-const nodeText = (n) => [...n.childNodes].map((c) => (c.nodeType === 3 ? c.textContent : /^(EM|I)$/.test(c.nodeName) ? `*${c.textContent}*` : c.nodeName === "BR" ? " " : nodeText(c))).join("").replace(/\s+/g, " ").trim();
+const nodeText = (n) => [...n.childNodes].map((c) => (c.nodeType === 3 ? c.textContent : /^(EM|I)$/.test(c.nodeName) ? `*${c.textContent}*` : /^(STRONG|B)$/.test(c.nodeName) ? `**${c.textContent}**` : c.nodeName === "BR" ? " " : nodeText(c))).join("").replace(/\s+/g, " ").trim();
 const YT_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/;
 function itemToBookRaw(it) {
   const doc = new DOMParser().parseFromString(`<div>${it.content || ""}</div>`, "text/html").body.firstChild;
   const chapters = []; let cur = { title: "", blocks: [] };
   const newCh = (t) => { if (cur.blocks.length || cur.title) chapters.push(cur); cur = { title: t, blocks: [] }; };
-  for (const n of [...doc.childNodes]) {
+  const nodes = [...doc.childNodes];
+  nodes.forEach((n, ni) => { try { one(n, ni); } catch (_) {} if (cur) cur.end = ni; });
+  function one(n, ni) {
     const tag = n.nodeName; const txt = (n.textContent || "").trim();
+    // Une vidéo YouTube : lien seul, lien dans une phrase, adresse collée telle quelle, ou lecteur intégré.
+    const fr = n.nodeType === 1 && (tag === "IFRAME" ? n : n.querySelector?.("iframe"));
+    const frId = fr && (fr.getAttribute("src") || "").match(YT_RE);
+    if (frId) { cur.blocks.push({ t: "yt", id: frId[1], cap: txt.replace(/^▶\s*/, "") }); return; }
     const img = n.nodeType === 1 && (tag === "IMG" ? n : n.querySelector?.("img"));
-    if (img && (tag === "FIGURE" || tag === "IMG" || !txt)) { const [cap, credit] = (n.querySelector?.("figcaption")?.textContent || img.alt || "").split(" | ").map((x) => x.trim()); cur.blocks.push({ t: "img", src: img.getAttribute("src"), cap, credit }); continue; }
-    if (!txt) continue;
-    const a = n.nodeType === 1 && n.querySelector?.("a[href]"); const yt = a && (a.getAttribute("href") || "").match(YT_RE);
-    if (yt && a.textContent.trim() === txt) { cur.blocks.push({ t: "yt", id: yt[1], cap: txt.replace(/^▶\s*/, "").replace(/^https?:\S+$/, "") }); continue; }
-    if (/^H[12]$/.test(tag)) { newCh(txt); continue; }
-    if (tag === "H3" || tag === "H4") { cur.blocks.push({ t: "h", x: nodeText(n) }); continue; }
-    if (tag === "BLOCKQUOTE") { const ps = [...n.querySelectorAll("p")].map(nodeText).filter(Boolean); cur.blocks.push(ps.length > 1 ? { t: "q", x: ps.slice(0, -1).join(" "), by: ps[ps.length - 1] } : { t: "q", x: nodeText(n) }); continue; }
+    if (img && (tag === "FIGURE" || tag === "IMG" || !txt)) { const [cap, credit] = (n.querySelector?.("figcaption")?.textContent || img.alt || "").split(" | ").map((x) => x.trim()); cur.blocks.push({ t: "img", src: img.getAttribute("src"), cap, credit }); return; }
+    if (!txt) return;
+    if (!/^H[1-4]$/.test(tag)) {
+      const a = n.nodeType === 1 ? [...(n.querySelectorAll?.("a[href]") || [])].find((x) => YT_RE.test(x.getAttribute("href") || "")) : null;
+      const yt = (a && (a.getAttribute("href") || "").match(YT_RE)) || txt.match(YT_RE);
+      if (yt) {
+        // la légende : le reste du paragraphe, sans l'adresse ni le ▶
+        let cap = txt; if (a && /^https?:/.test(a.textContent.trim())) cap = cap.replace(a.textContent.trim(), " ");
+        cap = cap.replace(/https?:\/\/\S+/g, " ").replace(/^[\s▶|:–-]+|[\s|:–-]+$/g, "").replace(/\s+/g, " ").trim();
+        if (cap.length > 220) { cur.blocks.push({ t: "p", x: cap }); cap = ""; }
+        cur.blocks.push({ t: "yt", id: yt[1], cap }); return;
+      }
+    }
+    if (/^H[12]$/.test(tag)) { newCh(txt); return; }
+    if (tag === "H3" || tag === "H4") { cur.blocks.push({ t: "h", x: nodeText(n) }); return; }
+    if (tag === "BLOCKQUOTE") { const ps = [...n.querySelectorAll("p")].map(nodeText).filter(Boolean); cur.blocks.push(ps.length > 1 ? { t: "q", x: ps.slice(0, -1).join(" "), by: ps[ps.length - 1] } : { t: "q", x: nodeText(n) }); return; }
     // Une phrase toute en gras, courte : un titre de chapitre. Un début en gras suivi de « : » : un encadré.
     const strong = n.nodeType === 1 && n.querySelector?.("strong,b");
-    if (strong && strong.textContent.trim() === txt && txt.length < 90) { newCh(txt.replace(/[:.]\s*$/, "")); continue; }
-    if (strong && txt.startsWith(strong.textContent.trim()) && /:\s*$/.test(strong.textContent.trim())) { cur.blocks.push({ t: "box", label: strong.textContent.trim().replace(/\s*:\s*$/, "").toUpperCase(), x: nodeText(n).slice(strong.textContent.trim().length).trim() }); continue; }
+    if (strong && strong.textContent.trim() === txt && txt.length < 90) { newCh(txt.replace(/[:.]\s*$/, "")); return; }
+    if (strong && txt.startsWith(strong.textContent.trim()) && /:\s*$/.test(strong.textContent.trim())) { cur.blocks.push({ t: "box", label: strong.textContent.trim().replace(/\s*:\s*$/, "").toUpperCase(), x: nodeText(n).replace(/^\*\*[^*]*\*\*\s*/, "").trim() }); return; }
     cur.blocks.push({ t: "p", x: n.nodeType === 1 ? nodeText(n) : txt });
   }
   if (cur.blocks.length || cur.title) chapters.push(cur);
@@ -56,7 +73,17 @@ function itemToBookRaw(it) {
 }
 // Livre de la bibliothèque → document de l'éditeur (pour le modifier avec le même éditeur que tes livres)
 const hEsc = (x) => String(x || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const hEm = (x) => hEsc(x).replace(/\*([^*]+)\*/g, "<em>$1</em>");
+// Liens « pour aller plus loin » : sans adresse précise, on ouvre une recherche (YouTube pour la musique et les vidéos, le web sinon).
+const AV = /bande originale|album|chanson|générique|playlist|musique|vidéo|chaîne|clip|\bOST\b/i;
+const linkUrl = (l, title = "") => {
+  if (l.url) return l.url;
+  const q = l.label.replace(/\s*\([^)]*\)\s*/g, " ").trim();
+  // un libellé générique (« Les livres du jeu ») reçoit le titre du livre pour que la recherche ait du sens
+  const generic = /^(les?|la|l')\s?/i.test(q) && !q.includes(",");
+  const full = generic && title && !q.toLowerCase().includes(title.toLowerCase()) ? `${q} ${title}` : q;
+  return (AV.test(`${l.label} ${l.note || ""}`) ? "https://www.youtube.com/results?search_query=" : "https://www.google.com/search?q=") + encodeURIComponent(full);
+};
+const hEm = (x) => hEsc(x).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>");
 function bookToHtml(text) {
   return String(text || "").trim().split(/\n\s*\n/).map((raw) => {
     const s = raw.replace(/\s*\n\s*/g, " ").trim(); if (!s) return "";
@@ -70,7 +97,22 @@ function bookToHtml(text) {
   }).join("");
 }
 
-const inline = (s) => s.split(/(\*[^*]+\*)/g).map((p, i) => (p.startsWith("*") && p.endsWith("*") && p.length > 2 ? <em key={i}>{p.slice(1, -1)}</em> : p));
+// Changer de plage : la bande qui saute (cassette), l'onde qui part du centre (disque). Seulement transform, opacité et découpe.
+const VHS_KF = [{ transform: "translate3d(-8px,0,0)", opacity: 0.2 }, { transform: "translate3d(6px,0,0)", opacity: 0.75, offset: 0.18 }, { transform: "translate3d(-3px,0,0)", opacity: 0.45, offset: 0.36 }, { transform: "translate3d(2px,0,0)", opacity: 0.9, offset: 0.62 }, { transform: "none", opacity: 1 }];
+const PAPER_KF = (d) => [{ transform: `translate3d(${d * 18}px,0,0)`, opacity: 0 }, { transform: "none", opacity: 1 }];
+const VINYL_KF = [{ clipPath: "circle(0% at 50% 50%)", opacity: 0.6 }, { clipPath: "circle(76% at 50% 50%)", opacity: 1 }];
+// Une fiche renvoyée telle quelle au serveur : aucun champ vide (null) que le serveur refuserait.
+const clean = (it) => ({ ...it, kind: it.kind || "document", title: it.title ?? "", content: it.content ?? "", image: it.image ?? "", date: it.date ?? "", pinned: !!it.pinned, fields: it.fields || {}, tags: it.tags || [], links: it.links || [], media: it.media || [] });
+// Message d'erreur lisible : la raison donnée par le serveur, sinon le code, sinon le message.
+const errText = (e) => { const d = e?.response?.data?.detail; const st = e?.response?.status; if (typeof d === "string" && d) return d; if (Array.isArray(d) && d[0]?.msg) return d[0].msg; if (st === 401 || st === 403) return "connexion requise (reconnecte-toi en admin)"; if (st) return `erreur ${st} du serveur`; if (/network|timeout/i.test(e?.message || "")) return "le serveur ne répond pas"; return e?.message || "erreur inconnue"; };
+// Insère une ligne à la fin d'un chapitre du texte source (mêmes règles de découpage que parseBook).
+const insertInChapter = (text, ci, line) => {
+  const parts = String(text || "").trim().split(/\n\s*\n/); let ch = -1, last = -1;
+  parts.forEach((raw, i) => { const x = raw.trim(); if (!x) return; if (x.startsWith("# ")) ch++; else if (ch < 0) ch = 0; if (ch === ci) last = i; });
+  if (last < 0) parts.push(line); else parts.splice(last + 1, 0, line);
+  return parts.join("\n\n");
+};
+const inline = (s) => s.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((p, i) => (p.startsWith("**") && p.endsWith("**") && p.length > 4 ? <strong key={i}>{p.slice(2, -2)}</strong> : p.startsWith("*") && p.endsWith("*") && p.length > 2 ? <em key={i}>{p.slice(1, -1)}</em> : p));
 
 // Un volume sur le rayonnage : tranche (illustration, titre vertical, étiquette de cote) ou, s'il est choisi, boîtier de face.
 const TONES = ["ink", "color", "paper", "color", "ink", "deep", "color"];
@@ -204,6 +246,41 @@ function Fig({ b }) {
     </figure>
   );
 }
+// Artwork du jeu pendant la lecture : lu sur SteamGridDB par le serveur de la Station, jamais stocké ici.
+// Une seule requête par jeu et par format ; la vignette s'affiche, l'image entière s'ouvre au clic.
+const ART = new Map();
+const artList = (term, kind) => { const k = term + "|" + kind; if (!ART.has(k)) ART.set(k, atelierApi.sgdbSearch(term, null, kind).then((r) => r?.items || []).catch(() => { setTimeout(() => ART.delete(k), 30000); return []; })); return ART.get(k); };
+function ArtFig({ b, term }) {
+  const [a, setA] = useState(undefined);
+  useEffect(() => { let on = true; artList(term, b.kind).then((xs) => on && setA(xs.length ? xs[(b.n - 1) % xs.length] : null)); return () => { on = false; }; }, [term, b.kind, b.n]);
+  const link = `https://www.steamgriddb.com/search/${b.kind}?term=${encodeURIComponent(term)}`;
+  return (
+    <figure className={`ax-fig ax-art ${b.kind}`}>
+      <a className="ax-art-box" href={a?.url || link} target="_blank" rel="noopener noreferrer">{a ? <img src={a.thumb || a.url} alt={b.cap || ""} loading="lazy" referrerPolicy="no-referrer" onError={() => setA(null)} /> : <span className="mono">{a === null ? "VOIR LES ARTWORKS SUR STEAMGRIDDB ↗" : "…"}</span>}</a>
+      <figcaption>{b.cap && inline(b.cap)}<small className="mono">{b.credit ? `${b.credit} · ` : ""}{a?.author ? `ARTWORK PAR ${a.author} · ` : ""}<a href={link} target="_blank" rel="noopener noreferrer">STEAMGRIDDB ↗</a></small></figcaption>
+    </figure>
+  );
+}
+// Ajouter une vidéo YouTube à un chapitre, depuis la lecture : on colle le lien, on écrit la légende, on choisit le chapitre.
+const VSEARCH = [["beauty", "beauty"], ["analyse", "analysis"], ["lore", "lore"], ["musique", "soundtrack"], ["making-of", "making of"]];
+function VideoAdd({ book, start, onAdd, onClose }) {
+  const [v, setV] = useState(""); const [cap, setCap] = useState(""); const [ci, setCi] = useState(Math.min(start || 0, Math.max(0, book.chapters.length - 1))); const [busy, setBusy] = useState(false);
+  const id = ytId(v.trim());
+  const submit = async (e) => { e.preventDefault(); if (!id) { toast.error("Lien YouTube non reconnu"); return; } setBusy(true); try { await onAdd(ci, id, cap.replace(/\s*\|\s*/g, " / ").replace(/\s+/g, " ").trim()); } finally { setBusy(false); } };
+  return (
+    <aside className="ax-toc ax-vadd" data-testid="alex-vadd" onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); onClose(); } }}>
+      <p className="mono">AJOUTER UNE VIDÉO</p>
+      <form onSubmit={submit}>
+        <label><span className="mono">LIEN YOUTUBE</span><input autoFocus value={v} onChange={(e) => setV(e.target.value)} placeholder="https://www.youtube.com/watch?v=… ou youtu.be/…" data-testid="alex-vadd-url" /></label>
+        {v.trim() && (id ? <span className="ax-vadd-thumb" style={{ backgroundImage: `url(https://i.ytimg.com/vi/${id}/mqdefault.jpg)` }}><IoPlay size={18} /></span> : <small className="ax-vadd-bad">Ce n'est pas un lien YouTube reconnu.</small>)}
+        <label><span className="mono">LÉGENDE</span><input value={cap} onChange={(e) => setCap(e.target.value)} placeholder="Ce que montre la vidéo, et sa langue" data-testid="alex-vadd-cap" /></label>
+        <label><span className="mono">CHAPITRE</span><select value={ci} onChange={(e) => setCi(Number(e.target.value))} data-testid="alex-vadd-ch">{book.chapters.map((c, i) => <option key={i} value={i}>{String(i + 1).padStart(2, "0")} · {c.title || "Texte"}</option>)}</select></label>
+        <button type="submit" className="ax-vadd-ok" disabled={!id || busy} data-testid="alex-vadd-ok">{busy ? "Ajout…" : "Ajouter à la fin du chapitre"}</button>
+      </form>
+      <p className="ax-vadd-find"><span className="mono">CHERCHER</span>{VSEARCH.map(([l, q]) => <a key={q} href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${book.title} ${q}`)}`} target="_blank" rel="noopener noreferrer">{l} ↗</a>)}</p>
+    </aside>
+  );
+}
 function YtFig({ b, onSwap }) {
   const [on, setOn] = useState(false); const [ed, setEd] = useState(false); const [v, setV] = useState("");
   const swap = (e) => { e.preventDefault(); const id = ytId(v); if (!id) { toast.error("Lien YouTube non reconnu"); return; } onSwap(b.id, id); setEd(false); setOn(false); };
@@ -217,10 +294,9 @@ function YtFig({ b, onSwap }) {
   );
 }
 
-function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover, at, startNotes }) {
+function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, radio, cover, at, startNotes }) {
   const { sfx } = useApp();
   const flow = useRef(null);
-  const tx = useRef(0);
   const [page, setPage] = useState(() => read(LS.prog, {})[book.id]?.page || 0);
   const [pages, setPages] = useState(1);
   const [per, setPer] = useState(2);
@@ -228,6 +304,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
   const [music, setMusic] = useState(false);
   const [notes, setNotes] = useState(!!startNotes);
   const [mark, setMark] = useState(() => !!read(LS.prog, {})[book.id]?.mark);
+  const [vid, setVid] = useState(false);
   // Géométrie des colonnes : le pas d'une page = largeur de colonne + gouttière, hors marges.
   const geom = () => {
     const el = flow.current; const cs = getComputedStyle(el);
@@ -236,45 +313,89 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
     const colW = (el.clientWidth - pad * 2 - gap * (p - 1)) / p;
     return { el, pad, gap, p, step: colW + gap };
   };
+  // Tourner les pages : au doigt (la page suit le doigt), en touchant le bord de la page, ou au clavier.
+  const drag = useRef(null); const anim = useRef(0); const wheel = useRef({ x: 0, lock: 0 });
+  const [turn, setTurn] = useState(null); const turnT = useRef(0);
+  const fmt = fmtOf(book); const look = useMemo(() => lookOf(book), [book]);
+  const [turnSound, setTurnSound] = useState(() => read("nx-alex-turn-sound", true) !== false);
+  const turnFx = (d) => { if (turnSound) playPageTurn(fmt, d); };
+  const bookEl = useRef(null);
+  useEffect(() => () => clearTimeout(turnT.current), []);
+  useEffect(() => { // polices de l'identité du livre qui ne sont pas embarquées
+    if (!look) return;
+    [look.d, look.r].filter((f) => WEB_FONTS.includes(f)).forEach((f) => { const id = "axf-" + f.replace(/\W/g, ""); if (document.getElementById(id)) return; const l = document.createElement("link"); l.id = id; l.rel = "stylesheet"; l.href = `https://fonts.googleapis.com/css2?family=${f.replace(/ /g, "+")}:ital,wght@0,400;0,700;1,400&display=swap`; document.head.appendChild(l); });
+  }, [look]);
   const measure = () => {
-    if (!flow.current) return; const g = geom(); setPer(g.p);
+    if (!flow.current) return;
+    const g = geom(); setPer(g.p);
     const n = Math.max(1, Math.round((g.el.scrollWidth - g.pad * 2 + g.gap) / g.step));
     setPages(n); setPage((x) => Math.min(x, Math.max(0, n - 1)));
   };
   useEffect(() => { const el = flow.current; if (!el) return; const f = () => measure(); el.addEventListener("load", f, true); el.addEventListener("error", f, true); return () => { el.removeEventListener("load", f, true); el.removeEventListener("error", f, true); }; }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useLayoutEffect(() => { measure(); const t = setTimeout(measure, 350); document.fonts?.ready?.then(measure).catch(() => {}); window.addEventListener("resize", measure); return () => { clearTimeout(t); window.removeEventListener("resize", measure); }; }, [book]); // eslint-disable-line
   const spread = Math.floor(page / per) * per;
-  useEffect(() => { if (!flow.current) return; const g = geom(); g.el.scrollLeft = Math.round(spread * g.step); }, [spread, per, pages, book]); // eslint-disable-line
-  useEffect(() => { const all = read(LS.prog, {}); all[book.id] = { page, pages, mark, at: Date.now() }; write(LS.prog, all); }, [page, pages, mark, book.id]);
-  const go = (d) => { const n = Math.max(0, Math.min(pages - 1, spread + d * per)); if (n !== spread) { setPage(n); sfx?.("nav"); } };
   useEffect(() => {
-    const k = (e) => { if (paused) return; if (e.key === "Escape") { e.stopPropagation(); notes ? setNotes(false) : music ? setMusic(false) : toc ? setToc(false) : onClose(); return; } if (/^(INPUT|TEXTAREA)$/.test(e.target?.tagName) || e.target?.isContentEditable) return; if ((e.key === "n" || e.key === "N") && at && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); setNotes((x) => !x); setToc(false); setMusic(false); return; } if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); go(1); } if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(-1); } };
+    if (!flow.current) return;
+    const g = geom(); const left = Math.round(spread * g.step);
+    if (anim.current && Math.abs(g.el.scrollLeft - left) < g.step * 2.2) { clearTimeout(anim.current); g.el.scrollTo({ left, behavior: "smooth" }); anim.current = setTimeout(() => { anim.current = 0; if (flow.current) flow.current.scrollLeft = left; }, 420); }
+    else { clearTimeout(anim.current); anim.current = 0; g.el.scrollLeft = left; }
+  }, [spread, per, pages, book]); // eslint-disable-line
+  useEffect(() => { const all = read(LS.prog, {}); all[book.id] = { page, pages, mark, at: Date.now() }; write(LS.prog, all); }, [page, pages, mark, book.id]);
+  const go = (d) => {
+    const n = Math.max(0, Math.min(pages - 1, spread + d * per));
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if ((fmt !== "livre" || per === 2) && n !== spread) { // ordinateur, cassette, disque : la page change d'un coup, une courte animation l'accompagne
+      clearTimeout(anim.current); anim.current = 0; setPage(n); turnFx(n > spread ? 1 : -1);
+      if (!reduce) {
+        const dir = n > spread ? 1 : -1; clearTimeout(turnT.current); setTurn({ dir: dir > 0 ? "next" : "prev", k: Date.now() }); turnT.current = setTimeout(() => setTurn(null), fmt === "vinyle" ? 640 : 520);
+        const fl = flow.current; try { fl.getAnimations?.().forEach((x) => x.cancel()); fl.animate?.(fmt === "vhs" ? VHS_KF : fmt === "vinyle" ? VINYL_KF : PAPER_KF(dir), fmt === "vhs" ? { duration: 380, easing: "linear" } : fmt === "vinyle" ? { duration: 620, easing: "cubic-bezier(.25,.7,.3,1)" } : { duration: 340, easing: "cubic-bezier(.2,.7,.3,1)" }); } catch (_) {}
+      }
+      return;
+    }
+    anim.current = anim.current || 1; if (n !== spread) { setPage(n); turnFx(n > spread ? 1 : -1); clearTimeout(turnT.current); setTurn({ dir: n > spread ? "next" : "prev", k: Date.now() }); turnT.current = setTimeout(() => setTurn(null), 520); } else if (flow.current) { const g = geom(); flow.current.scrollTo({ left: Math.round(spread * g.step), behavior: "smooth" }); anim.current = setTimeout(() => { anim.current = 0; }, 420); } };
+  // À la souris : on attrape la page et on la fait glisser, comme au doigt. Au pavé tactile : un glissement horizontal à deux doigts.
+  const onMouseDown = (e) => {
+    if (e.button !== 0 || e.target.closest?.("a,button,iframe,input,textarea,figure,.ax-yt-ed")) return;
+    drag.current = { x: e.clientX, y: e.clientY, t: Date.now(), base: flow.current?.scrollLeft || 0, on: false };
+    const move = (ev) => { const d = drag.current; if (!d || !flow.current) return; const dx = ev.clientX - d.x, dy = ev.clientY - d.y;
+      if (!d.on && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) { d.on = true; document.body.classList.add("ax-grabbing"); window.getSelection?.()?.removeAllRanges(); }
+      if (d.on) ev.preventDefault(); };
+    const up = (ev) => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); document.body.classList.remove("ax-grabbing");
+      const d = drag.current; drag.current = null; if (!d?.on) return; const dx = ev.clientX - d.x, dt = Date.now() - d.t; const fast = Math.abs(dx) / Math.max(1, dt) > 0.35;
+      if (Math.abs(dx) > 50 || (fast && Math.abs(dx) > 25)) go(dx < 0 ? 1 : -1); };
+    window.addEventListener("mousemove", move); window.addEventListener("mouseup", up);
+  };
+  const onWheel = (e) => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; const w = wheel.current; const now = Date.now();
+    if (now < w.lock) return; w.x += e.deltaX; if (Math.abs(w.x) > 70) { go(w.x > 0 ? 1 : -1); w.x = 0; w.lock = now + 550; }
+  };
+  const onTouchStart = (e) => { const t = e.touches[0]; drag.current = { x: t.clientX, y: t.clientY, t: Date.now(), base: flow.current?.scrollLeft || 0, on: false }; };
+  const onTouchMove = (e) => {
+    const d = drag.current; if (!d || !flow.current) return; const t = e.touches[0]; const dx = t.clientX - d.x, dy = t.clientY - d.y;
+    if (!d.on && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2) d.on = true;
+    if (d.on && fmt === "livre") { const atEdge = (dx > 0 && spread === 0) || (dx < 0 && spread + per >= pages); flow.current.scrollLeft = d.base - dx * (atEdge ? 0.25 : 1); }
+  };
+  const onTouchEnd = (e) => {
+    const d = drag.current; drag.current = null; if (!d) return; const t = e.changedTouches[0]; const dx = t.clientX - d.x, dt = Date.now() - d.t;
+    if (d.on) { const fast = Math.abs(dx) / Math.max(1, dt) > 0.35; go(Math.abs(dx) > (flow.current?.clientWidth || 300) * 0.22 || (fast && Math.abs(dx) > 30) ? (dx < 0 ? 1 : -1) : 0); return; }
+    // toucher les bords de la page la tourne (sauf sur un lien, une vidéo, une image)
+    if (Math.abs(dx) < 8 && dt < 400 && !e.target.closest?.("a,button,iframe,input,textarea,figure,.ax-yt-ed")) { const r = e.currentTarget.getBoundingClientRect(); const x = (t.clientX - r.left) / r.width; if (x > 0.66) go(1); else if (x < 0.34) go(-1); }
+  };
+  useEffect(() => {
+    const k = (e) => { if (paused) return; if (e.key === "Escape") { e.stopPropagation(); vid ? setVid(false) : notes ? setNotes(false) : music ? setMusic(false) : toc ? setToc(false) : onClose(); return; } if (/^(INPUT|TEXTAREA)$/.test(e.target?.tagName) || e.target?.isContentEditable) return; if ((e.key === "n" || e.key === "N") && at && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); setNotes((x) => !x); setToc(false); setMusic(false); return; } if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); go(1); } if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(-1); } };
     window.addEventListener("keydown", k, true); return () => window.removeEventListener("keydown", k, true);
   });
   const chapterAt = () => { try { const g = geom(); const x = spread * g.step + g.pad + 2; let t = ""; flow.current.querySelectorAll("[data-ch]").forEach((el) => { if (el.offsetLeft <= x + g.step * (g.p - 1)) t = el.querySelector("h2")?.textContent || t; }); return t; } catch (_) { return ""; } };
+  const chapterIdx = () => { try { const g = geom(); const x = spread * g.step + g.pad + 2; let k = 0; flow.current.querySelectorAll("[data-ch]").forEach((el) => { const i = Number(el.dataset.ch); if (Number.isInteger(i) && el.offsetLeft <= x + g.step * (g.p - 1)) k = i; }); return k; } catch (_) { return 0; } };
   const jump = (i) => { const el = flow.current?.querySelector(`[data-ch="${i}"]`); if (!el) return; const g = geom(); setPage(Math.max(0, Math.round((el.offsetLeft - g.pad) / g.step))); setToc(false); };
   const T = TYPES[book.type] || TYPES.recit; const R = ROOMS.find((r) => r.key === book.room);
-  const noteMarks = notesOf(notesItemOf(at, book.id)).map((n) => ({ id: n.id, t: n.t, at: Math.max(0, Math.min(pages - 1, n.n ? Math.round((n.p / n.n) * pages) : n.p)) }));
-  return createPortal(
-    <div className={"ax-reader ax-view" + (fmtOf(book) === "vhs" ? " skin-vhs" : "")} style={{ "--h": book.color ?? hue(book.title) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
-      <header className="ax-rbar">
-        <button className="ax-rb" onClick={onClose} data-testid="alex-close"><IoArrowBack size={15} /> <span>Rayonnages</span></button>
-        <p className="mono ax-rpath">ALEXANDRIE / {(R?.label || "MES LIVRES").toUpperCase()} / <b>{book.cote}</b></p>
-        <span className="grow" />
-        {book.mine ? <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
-          : onModify && <button className="ax-rb" onClick={onModify} title="Modifier le texte, les images, les vidéos" data-testid="alex-modify"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
-        {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} title="Notes (touche N)" data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
-        {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music"><IoMusicalNotes size={15} /> <span>Musique</span></button>}
-        <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>
-        <button className="ax-rb" onClick={() => { setToc((t) => !t); setMusic(false); }} aria-expanded={toc} data-testid="alex-toc"><IoList size={16} /> <span>Sommaire</span></button>
-        <button className={"ax-rb" + (mark ? " on" : "")} onClick={() => { setMark((m) => !m); sfx?.("select"); }} aria-pressed={mark} title="Marque-page">{mark ? <IoBookmark size={16} /> : <IoBookmarkOutline size={16} />}</button>
-      </header>
-      <div className="ax-stage">
-        <button className="ax-turn l" onClick={() => go(-1)} disabled={spread === 0} aria-label="Page précédente"><IoArrowBack size={20} /></button>
-        <div className={"ax-book" + (per === 1 ? " single" : "")} onTouchStart={(e) => { tx.current = e.touches[0].clientX; }} onTouchEnd={(e) => { const d = e.changedTouches[0].clientX - tx.current; if (Math.abs(d) > 45) go(d < 0 ? 1 : -1); }}>
-          <div className="ax-flow" ref={flow} onScroll={() => { try { const g = geom(); const want = Math.round(spread * g.step); if (Math.abs(g.el.scrollLeft - want) > 2) g.el.scrollLeft = want; } catch (_) {} }}>
+  const half = Math.ceil(book.chapters.length / 2); const track = (i) => (i < half ? "A" : "B") + (i < half ? i + 1 : i - half + 1);
+  // Le corps du livre ne dépend que du livre : tourner une page ne le redessine pas.
+  const swapR = useRef(onSwap); swapR.current = onSwap;
+  const swapS = useMemo(() => (onSwap ? (a, b) => swapR.current?.(a, b) : null), [!!onSwap]); // eslint-disable-line react-hooks/exhaustive-deps
+  const body = useMemo(() => (<>
             <section className="ax-titlepage">
-              {cover && <span className="ax-tp-art" style={{ backgroundImage: `url(${cover})` }} />}
+              {fmt === "vinyle" ? <span className="ax-tp-sleeve"><span className="ax-tp-disc" />{cover ? <span className="ax-tp-art" style={{ backgroundImage: `url(${cover})` }} /> : <span className="ax-tp-art blank" />}</span> : cover && <span className="ax-tp-art" style={{ backgroundImage: `url(${cover})` }} />}
               <p className="mono ax-tp-room">{R ? `${R.kanji} ${R.label.toUpperCase()}` : "MES LIVRES"}</p>
               <h1>{book.title}</h1>
               {book.sub && <p className="ax-tp-sub">{book.sub}</p>}
@@ -285,11 +406,12 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
             </section>
             {book.chapters.map((c, i) => (
               <section className="ax-ch" key={i} data-ch={i}>
-                {c.title && <header><span className="mono">{String(i + 1).padStart(2, "0")}</span><h2>{c.title}</h2></header>}
+                {c.title && <header><span className="mono">{fmt === "vinyle" ? track(i) : String(i + 1).padStart(2, "0")}</span><h2>{c.title}</h2></header>}
                 {c.blocks.map((b, j) => b.t === "q" ? <blockquote key={j}><p>{inline(b.x)}</p>{b.by && <cite>{b.by}</cite>}</blockquote>
                   : b.t === "h" ? <h3 key={j}>{inline(b.x)}</h3>
                   : b.t === "img" ? <Fig key={j} b={b} />
-                  : b.t === "yt" ? <YtFig key={j} b={b} onSwap={onSwap} />
+                  : b.t === "yt" ? <YtFig key={j} b={b} onSwap={swapS} />
+                  : b.t === "art" ? <ArtFig key={j} b={b} term={book.art || sgdbTerm(book)} />
                   : b.t === "box" ? <aside className="ax-box" key={j}><b className="mono">{b.label || "À RETENIR"}</b><p>{inline(b.x)}</p></aside>
                   : <p key={j} className={j === 0 && c.title ? "first" : ""}>{inline(b.x)}</p>)}
               </section>
@@ -297,20 +419,45 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, paused, radio, cover,
             {(book.links || []).length > 0 && (
               <section className="ax-ch ax-more" data-ch="more">
                 <header><span className="mono">→</span><h2>Pour aller plus loin</h2></header>
-                <ul>{book.links.map((l, i) => <li key={i}>{l.url ? <a href={l.url} target="_blank" rel="noopener noreferrer">{l.label} <IoOpenOutline size={12} /></a> : <span>{l.label}</span>}{l.note && <small>{l.note}</small>}</li>)}</ul>
+                <ul>{book.links.map((l, i) => <li key={i}><a href={linkUrl(l, book.title)} target="_blank" rel="noopener noreferrer" title={l.url ? "Ouvrir" : "Rechercher"}>{l.label} <IoOpenOutline size={12} /></a>{l.note && <small>{l.note}</small>}</li>)}</ul>
               </section>
             )}
+  </>), [book, fmt, cover, swapS]); // eslint-disable-line react-hooks/exhaustive-deps
+  const noteMarks = notesOf(notesItemOf(at, book.id)).map((n) => ({ id: n.id, t: n.t, at: Math.max(0, Math.min(pages - 1, n.n ? Math.round((n.p / n.n) * pages) : n.p)) }));
+  return createPortal(
+    <div className={"ax-reader ax-view fmt-" + fmt + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
+      <header className="ax-rbar">
+        <button className="ax-rb" onClick={onClose} data-testid="alex-close"><IoArrowBack size={15} /> <span>Rayonnages</span></button>
+        <p className="mono ax-rpath">ALEXANDRIE / {(R?.label || "MES LIVRES").toUpperCase()} / <b>{book.cote}</b></p>
+        <span className="grow" />
+        {book.mine ? <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
+          : onModify && <button className="ax-rb" onClick={onModify} title="Modifier le texte, les images, les vidéos" data-testid="alex-modify"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
+        {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} title="Notes (touche N)" data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
+        {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music"><IoMusicalNotes size={15} /> <span>Musique</span></button>}
+        {onAddVideo && <button className={"ax-rb" + (vid ? " on" : "")} onClick={() => { setVid((v) => !v); setToc(false); setMusic(false); setNotes(false); }} aria-expanded={vid} title="Ajouter une vidéo YouTube à un chapitre" data-testid="alex-addvid"><IoLogoYoutube size={15} /> <span>Vidéo</span></button>}
+        <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>
+        <button className="ax-rb" onClick={() => { setToc((t) => !t); setMusic(false); setVid(false); }} aria-expanded={toc} data-testid="alex-toc"><IoList size={16} /> <span>Sommaire</span></button>
+        <button className="ax-rb" onClick={() => { const v = !turnSound; setTurnSound(v); write("nx-alex-turn-sound", v); if (v) playPageTurn(fmt, 1); }} aria-pressed={!turnSound} title={turnSound ? "Couper le bruit des pages" : "Remettre le bruit des pages"} data-testid="alex-turn-sound">{turnSound ? <IoVolumeHighOutline size={16} /> : <IoVolumeMuteOutline size={16} />}</button>
+        <button className={"ax-rb" + (mark ? " on" : "")} onClick={() => { setMark((m) => !m); sfx?.("select"); }} aria-pressed={mark} title="Marque-page">{mark ? <IoBookmark size={16} /> : <IoBookmarkOutline size={16} />}</button>
+      </header>
+      <div className="ax-stage">
+        <button className="ax-turn l" onClick={() => go(-1)} disabled={spread === 0} aria-label="Page précédente"><IoArrowBack size={20} /></button>
+        <div ref={bookEl} className={"ax-book" + (per === 1 ? " single" : "")} onMouseDown={onMouseDown} onWheel={onWheel} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={() => { drag.current = null; go(0); }}>
+          {turn && <i key={turn.k} className={"ax-turnfx " + turn.dir} aria-hidden="true"><b /><em>{turn.dir === "next" ? "▶▶ FF" : "◀◀ REW"}</em></i>}
+          <div className="ax-flow" ref={flow} onScroll={() => { try { if (drag.current?.on || anim.current) return; const g = geom(); const want = Math.round(spread * g.step); if (Math.abs(g.el.scrollLeft - want) > 2) g.el.scrollLeft = want; } catch (_) {} }}>
+            {body}
           </div>
         </div>
         <button className="ax-turn r" onClick={() => go(1)} disabled={spread + per >= pages} aria-label="Page suivante"><IoArrowForward size={20} /></button>
       </div>
-      <footer className="ax-rfoot mono"><span>{book.title.toUpperCase()}</span><span className="ax-prog"><i style={{ width: `${Math.min(100, ((spread + per) / pages) * 100)}%` }} />{noteMarks.map((n) => <button key={n.id} className="ax-pmark" style={{ left: `${(n.at / Math.max(1, pages - 1)) * 100}%` }} onClick={() => { setPage(n.at); setNotes(true); }} title={`Note page ${n.at + 1} : ${n.t.slice(0, 80)}`} aria-label={`Note page ${n.at + 1}`} />)}</span><span>PAGE {Math.min(pages, spread + 1)}{per === 2 && spread + 2 <= pages ? `–${spread + 2}` : ""} / {pages}</span></footer>
+      <footer className="ax-rfoot mono"><button className="ax-fturn" onClick={() => go(-1)} disabled={spread === 0} aria-label="Page précédente" data-testid="alex-prev"><IoArrowBack size={18} /></button><span>{book.title.toUpperCase()}</span><span className="ax-prog"><i style={{ width: `${Math.min(100, ((spread + per) / pages) * 100)}%` }} />{noteMarks.map((n) => <button key={n.id} className="ax-pmark" style={{ left: `${(n.at / Math.max(1, pages - 1)) * 100}%` }} onClick={() => { setPage(n.at); setNotes(true); }} title={`Note page ${n.at + 1} : ${n.t.slice(0, 80)}`} aria-label={`Note page ${n.at + 1}`} />)}</span><span>{fmt === "vinyle" ? (spread < pages / 2 ? "FACE A · " : "FACE B · ") : ""}PAGE {Math.min(pages, spread + 1)}{per === 2 && spread + 2 <= pages ? `–${spread + 2}` : ""} / {pages}</span><button className="ax-fturn" onClick={() => go(1)} disabled={spread + per >= pages} aria-label="Page suivante" data-testid="alex-next"><IoArrowForward size={18} /></button></footer>
+      {vid && onAddVideo && <VideoAdd book={book} start={chapterIdx()} onClose={() => setVid(false)} onAdd={async (ci, id, cap) => { if (await onAddVideo(ci, id, cap)) setVid(false); }} />}
       {music && radio && <ReaderMusic radio={radio} onClose={() => setMusic(false)} />}
       {notes && at && <ReaderNotes at={at} book={book} page={spread} pages={pages} chapter={chapterAt()} onClose={() => setNotes(false)} onJump={(p) => { setPage(Math.max(0, Math.min(pages - 1, p))); sfx?.("nav"); }} />}
       {toc && (
         <aside className="ax-toc" data-testid="alex-toc-panel">
           <p className="mono">SOMMAIRE</p>
-          {book.chapters.map((c, i) => <button key={i} onClick={() => jump(i)}><span className="mono">{String(i + 1).padStart(2, "0")}</span>{c.title || "Texte"}</button>)}
+          {book.chapters.map((c, i) => <button key={i} onClick={() => jump(i)}><span className="mono">{fmt === "vinyle" ? track(i) : String(i + 1).padStart(2, "0")}</span>{c.title || "Texte"}</button>)}
           {(book.links || []).length > 0 && <button onClick={() => jump("more")}><span className="mono">→</span>Pour aller plus loin</button>}
         </aside>
       )}
@@ -393,19 +540,37 @@ function Rail({ code, label, list, upFrom, selId, onSel, covers, wish, onOpen, k
   );
 }
 
+// La salle en grille : toutes les couvertures d'un coup d'œil. Un clic choisit (la notice s'affiche au-dessus), un double-clic ouvre.
+function Grid({ list, upFrom, selId, onSel, covers, onOpen, menuFor }) {
+  return (
+    <div className="ax-grid" data-testid="alex-grid">
+      {list.map((b, i) => { const u = i >= upFrom; const fmt = fmtOf(b); const pm = menuFor ? pressMenu(menuFor(b, u)) : {}; const cv = covers[b.id];
+        return (
+          <button key={b.id} className={"ax-gc" + (b.id === selId ? " on" : "") + (u ? " up" : "")} style={{ animationDelay: `${Math.min(i, 30) * 18}ms` }} onClick={() => onSel(b.id)} onDoubleClick={() => onOpen(b, u)} {...pm} onContextMenu={(e) => { onSel(b.id); pm.onContextMenu?.(e); }} data-testid={`alex-gc-${b.id}`}>
+            <span className={`ax-gc-cv f-${fmt}`} style={{ "--h": b.color ?? hue(b.title), backgroundImage: cv ? `url(${cv})` : undefined }}>{!cv && <i>{b.emblem || b.title[0]}</i>}{fmt !== "livre" && <em>{fmt === "vhs" ? "VHS" : "LP"}</em>}</span>
+            <b>{b.title}</b>{b.sub && <small>{b.sub}</small>}
+          </button>
+        ); })}
+    </div>
+  );
+}
+
 // Une salle : on y est entré par sa porte. Rayon A (à lire), notice du volume choisi, rayon B (à paraître).
-function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish, onCover, onEdit, onModify, menuFor, noteCount, onNotes, favs, onFav }) {
+function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish, onCover, onEdit, onModify, menuFor, noteCount, onNotes, favs, onFav, view }) {
   const all = [...here, ...up]; const cur = all.find((b) => b.id === selId) || all[0]; const isUp = cur ? !here.includes(cur) : false;
   const id = cur?.id; const pg = cur && prog[cur.id]; const T = TYPES[cur?.type] || TYPES.recit; const fmt = cur ? fmtOf(cur) : "livre";
   const act = (b, u) => (u ? onWish(b.id) : onRead(b));
   const num = String(n).padStart(2, "0");
   const split = here.length >= 6 && up.length > 0;
+  const grid = view === "grille"; const nref = useRef(null);
+  useEffect(() => { if (grid && selId) nref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [selId]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <section className="ax-room" aria-label={r.label} data-testid={`alex-room-${r.key}`} key={r.key}>
-      {split ? (here.length > 0 && <Rail code={`RAYON ${num}-A`} label={r.format === "vhs" ? "À DÉCOUVRIR" : "À LIRE"} list={here} upFrom={here.length} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} />)
+      {grid ? null : split ? (here.length > 0 && <Rail code={`RAYON ${num}-A`} label={r.format === "vhs" ? "À DÉCOUVRIR" : "À LIRE"} list={here} upFrom={here.length} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} />)
         : all.length > 0 && <Rail code={`RAYON ${num}-A`} label={(r.format === "vhs" ? "À DÉCOUVRIR" : "À LIRE") + (up.length ? " · PUIS À PARAÎTRE" : "")} list={all} upFrom={here.length} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} />}
       {cur && (
-        <div className="ax-notice" key={cur.id}>
+        <div className={"ax-notice" + (grid ? " cv" : "")} key={cur.id} ref={nref}>
+          {grid && <span className={`ax-gc-cv ax-notice-cv f-${fmt}`} style={{ "--h": cur.color ?? hue(cur.title), backgroundImage: covers[cur.id] ? `url(${covers[cur.id]})` : undefined }} aria-hidden="true">{!covers[cur.id] && <i>{cur.emblem || cur.title[0]}</i>}{fmt !== "livre" && <em>{fmt === "vhs" ? "VHS" : "LP"}</em>}</span>}
           <p className="mono meta">{isUp ? "À PARAÎTRE" : cur.cote || "MES LIVRES"} · {T.label.toUpperCase()} · {fmt === "vhs" ? "CASSETTE" : fmt === "vinyle" ? "DISQUE" : "LIVRE"}{!isUp && cur.words ? ` · ${readingTime(cur.words).toUpperCase()}` : ""}</p>
           <h3>{cur.title}{favs.includes(cur.id) && <IoHeart className="ax-favh" size={20} aria-label="Coup de cœur" />}</h3>
           {cur.sub && <p className="sub">{cur.sub}</p>}
@@ -422,13 +587,33 @@ function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish
           </div>
         </div>
       )}
-      {split && up.length > 0 && <Rail code={`RAYON ${num}-B`} label="À PARAÎTRE" list={up} upFrom={0} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} />}
+      {grid && all.length > 0 && <Grid list={all} upFrom={here.length} selId={id} onSel={onSel} covers={covers} onOpen={act} menuFor={menuFor} />}
+      {!grid && split && up.length > 0 && <Rail code={`RAYON ${num}-B`} label="À PARAÎTRE" list={up} upFrom={0} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} />}
       {!all.length && <p className="ax-empty">Rien sur ces rayons pour l'instant.</p>}
     </section>
   );
 }
 
-// Choisir l'artwork d'un volume : adresse, fichier, glisser-déposer ou coller. Raccourcis de recherche d'images.
+// Sources d'artworks sans clé, interrogées depuis le navigateur. Chacune rend une liste { id, url, thumb, title }.
+const getJson = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
+const ART_SOURCES = [
+  { k: "sgdb", label: "Jeux", hint: "SteamGridDB", ph: "Nom du jeu, en anglais de préférence" },
+  { k: "wiki", label: "Affiches", hint: "Wikipédia : films, séries, albums, jeux", ph: "Titre du film, de la série, de l'album…",
+    run: async (q) => { const d = await getJson(`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=16&prop=pageimages&piprop=thumbnail%7Coriginal&pithumbsize=600&pilicense=any`);
+      return Object.values(d.query?.pages || {}).filter((x) => x.thumbnail).sort((a, b) => a.index - b.index).map((x) => ({ id: "w" + x.pageid, url: x.thumbnail.source, thumb: x.thumbnail.source, title: x.title })); } },
+  { k: "jikan", label: "Manga & anime", hint: "MyAnimeList", ph: "Titre du manga ou de l'anime",
+    run: async (q) => { const [a, m] = await Promise.all(["anime", "manga"].map((t) => getJson(`https://api.jikan.moe/v4/${t}?q=${encodeURIComponent(q)}&limit=8&sfw=true`).catch(() => ({ data: [] }))));
+      return [...(m.data || []), ...(a.data || [])].map((x) => ({ id: x.url, url: x.images?.jpg?.large_image_url || x.images?.jpg?.image_url, thumb: x.images?.jpg?.image_url, title: x.title })).filter((x) => x.url); } },
+  { k: "ol", label: "Livres", hint: "Open Library", ph: "Titre du livre, auteur",
+    run: async (q) => { const d = await getJson(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=20&fields=key,title,cover_i,author_name`);
+      return (d.docs || []).filter((x) => x.cover_i).map((x) => ({ id: x.key, url: `https://covers.openlibrary.org/b/id/${x.cover_i}-L.jpg`, thumb: `https://covers.openlibrary.org/b/id/${x.cover_i}-M.jpg`, title: `${x.title}${x.author_name ? " · " + x.author_name[0] : ""}` })); } },
+  { k: "itunes", label: "Musique", hint: "Pochettes d'albums", ph: "Artiste, album",
+    run: async (q) => { const d = await getJson(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=album&limit=20`);
+      return (d.results || []).map((x) => ({ id: "i" + x.collectionId, url: (x.artworkUrl100 || "").replace("100x100", "600x600"), thumb: (x.artworkUrl100 || "").replace("100x100", "200x200"), title: `${x.collectionName} · ${x.artistName}` })).filter((x) => x.url); } },
+];
+const artDefault = (b) => (fmtOf(b) === "vhs" ? "sgdb" : fmtOf(b) === "vinyle" ? "itunes" : b.room === "cinema" ? "wiki" : b.room === "lore" ? "ol" : "wiki");
+
+// Choisir l'artwork d'un volume : recherche intégrée (jeux, affiches, manga, livres, musique), adresse, fichier, glisser-déposer ou coller.
 function CoverDialog({ b, current, def, onSave, onClose }) {
   const [url, setUrl] = useState(current || ""); const [busy, setBusy] = useState(false);
   const send = async (f) => { if (!f || !/^image\//.test(f.type)) return; setBusy(true); try { const r = await uploadJournalImage(f); setUrl(r.url); onSave(r.url); } catch (_) { toast.error("Envoi de l'image impossible"); } setBusy(false); };
@@ -436,11 +621,19 @@ function CoverDialog({ b, current, def, onSave, onClose }) {
     const paste = (e) => { const f = [...(e.clipboardData?.files || [])].find((x) => /^image\//.test(x.type)); if (f) { e.preventDefault(); send(f); } };
     window.addEventListener("paste", paste); return () => window.removeEventListener("paste", paste);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const term = encodeURIComponent(b.title); const game = fmtOf(b) === "vhs";
-  // Recherche SteamGridDB intégrée (passe par le serveur, qui garde la clé)
-  const [sq, setSq] = useState(() => sgdbTerm(b)); const [sg, setSg] = useState(null); const [sgBusy, setSgBusy] = useState(false); const [sgErr, setSgErr] = useState("");
-  const sgGo = async (game) => { const q = sq.trim(); if (!q) return; setSgBusy(true); setSgErr(""); try { setSg(await atelierApi.sgdbSearch(q, game)); } catch (e) { setSgErr(e?.response?.status === 404 ? "La recherche SteamGridDB n'est pas encore installée sur le serveur de la Station (backend Emergent)." : e?.response?.data?.detail || "SteamGridDB ne répond pas."); } setSgBusy(false); };
-  useEffect(() => { sgGo(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const term = encodeURIComponent(b.title);
+  const [src, setSrc] = useState(() => artDefault(b)); const S = ART_SOURCES.find((x) => x.k === src);
+  const [sq, setSq] = useState(() => sgdbTerm(b)); const [res, setRes] = useState(null); const [games, setGames] = useState(null); const [sBusy, setSBusy] = useState(false); const [sErr, setSErr] = useState("");
+  const go = async (game, k = src) => {
+    const q = sq.trim(); if (!q) return; setSBusy(true); setSErr(""); setRes(null);
+    try {
+      if (k === "sgdb") { const r = await atelierApi.sgdbSearch(q, game); setGames(r.games?.length > 1 ? { list: r.games, cur: r.game } : null); setRes((r.items || []).map((a) => ({ id: a.id, url: a.url, thumb: a.thumb, title: a.author ? `par ${a.author}` : "" }))); }
+      else { setGames(null); setRes(await ART_SOURCES.find((x) => x.k === k).run(q)); }
+    } catch (e) { setSErr(k === "sgdb" ? (e?.response?.status === 404 ? "La recherche SteamGridDB n'est pas encore installée sur le serveur de la Station (backend Emergent)." : e?.response?.data?.detail || "SteamGridDB ne répond pas.") : "Cette source ne répond pas pour l'instant. Essaie une autre source ou les liens ci-dessus."); }
+    setSBusy(false);
+  };
+  useEffect(() => { go(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const pickSrc = (k) => { setSrc(k); go(undefined, k); };
   return (
     <div className="ax-fiche-wrap" onClick={onClose}>
       <form className="ax-fiche ax-coverdlg" onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); onSave(url.trim()); }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) send(f); else { const u = e.dataTransfer.getData("text/uri-list") || e.dataTransfer.getData("text/plain"); if (/^https?:/.test(u)) setUrl(u.trim()); } }} role="dialog" aria-modal="true" aria-label="Artwork">
@@ -449,24 +642,27 @@ function CoverDialog({ b, current, def, onSave, onClose }) {
           <span className="ax-cd-prev" style={url ? { backgroundImage: `url(${url})` } : undefined}>{!url && <i>Glisse une image ici</i>}</span>
           <div>
             <h3>{b.title}</h3>
-            <p className="ab">Colle l'adresse d'une image, colle une image copiée (Ctrl V), glisse-la ici ou envoie un fichier. Elle habille le boîtier, la tranche et la page de titre.</p>
-            <input className="ax-in" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://… (clic droit sur une image : copier l'adresse)" autoFocus data-testid="alex-cover-url" />
-            <p className="mono ax-cd-l">TROUVER UN ARTWORK</p>
+            <p className="ab">Choisis une image dans la recherche, colle une adresse ou une image copiée (Ctrl V), glisse-la ici ou envoie un fichier.</p>
+            <input className="ax-in" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://… (clic droit sur une image : copier l'adresse)" data-testid="alex-cover-url" />
+            <p className="mono ax-cd-l">CHERCHER AILLEURS</p>
             <div className="ax-acts">
+              <a className="ax-ghost" href={`https://www.google.com/search?tbm=isch&q=${term}+affiche+poster`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> Google Images</a>
+              <a className="ax-ghost" href={`https://www.themoviedb.org/search?query=${term}`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> TMDB</a>
               <a className="ax-ghost" href={`https://www.steamgriddb.com/search/grids?term=${term}`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> SteamGridDB</a>
-              <a className="ax-ghost" href={`https://www.google.com/search?tbm=isch&q=${term}+${game ? "artwork" : "couverture"}`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> Images</a>
+              <a className="ax-ghost" href={`https://www.pinterest.com/search/pins/?q=${term}+poster`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> Pinterest</a>
             </div>
           </div>
         </div>
         <div className="ax-sg" data-testid="alex-sgdb">
+          <div className="ax-sg-games ax-srcs" role="tablist" aria-label="Source">{ART_SOURCES.map((x) => <button type="button" key={x.k} role="tab" aria-selected={src === x.k} className={src === x.k ? "on" : ""} onClick={() => pickSrc(x.k)} title={x.hint} data-testid={`alex-src-${x.k}`}>{x.label}</button>)}</div>
           <div className="ax-sg-bar">
-            <p className="mono ax-cd-l">STEAMGRIDDB</p>
-            <label className="ax-ytq"><IoSearch size={15} /><input value={sq} onChange={(e) => setSq(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); sgGo(); } }} placeholder="Nom du jeu, en anglais de préférence" data-testid="alex-sgdb-q" /><button type="button" onClick={() => sgGo()} disabled={sgBusy}>{sgBusy ? "…" : "Chercher"}</button></label>
+            <p className="mono ax-cd-l">{S.hint.toUpperCase()}</p>
+            <label className="ax-ytq"><IoSearch size={15} /><input value={sq} onChange={(e) => setSq(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); go(); } }} placeholder={S.ph} data-testid="alex-sgdb-q" /><button type="button" onClick={() => go()} disabled={sBusy}>{sBusy ? "…" : "Chercher"}</button></label>
           </div>
-          {sg?.games?.length > 1 && <div className="ax-sg-games">{sg.games.map((g) => <button type="button" key={g.id} className={g.id === sg.game ? "on" : ""} onClick={() => sgGo(g.id)}>{g.name}</button>)}</div>}
-          {sgErr && <p className="ax-empty" style={{ padding: "12px 0" }}>{sgErr}</p>}
-          {!sgErr && sg && !sg.items.length && <p className="ax-empty" style={{ padding: "12px 0" }}>Aucun artwork trouvé. Essaie le titre anglais exact.</p>}
-          {sg?.items?.length > 0 && <div className="ax-sg-grid">{sg.items.map((a) => <button type="button" key={a.id} className={url === a.url ? "on" : ""} onClick={() => setUrl(a.url)} onDoubleClick={() => onSave(a.url)} title={a.author ? `par ${a.author}` : ""} data-testid={`alex-sgdb-${a.id}`}><img src={a.thumb} alt="" loading="lazy" /></button>)}</div>}
+          {games && <div className="ax-sg-games">{games.list.map((g) => <button type="button" key={g.id} className={g.id === games.cur ? "on" : ""} onClick={() => go(g.id)}>{g.name}</button>)}</div>}
+          {sErr && <p className="ax-empty" style={{ padding: "12px 0" }}>{sErr}</p>}
+          {!sErr && res && !res.length && <p className="ax-empty" style={{ padding: "12px 0" }}>Rien trouvé. Essaie le titre original ou une autre source.</p>}
+          {res?.length > 0 && <div className="ax-sg-grid">{res.map((a) => <button type="button" key={a.id} className={url === a.url ? "on" : ""} onClick={() => setUrl(a.url)} onDoubleClick={() => onSave(a.url)} title={a.title} data-testid={`alex-sgdb-${a.id}`}><img src={a.thumb} alt={a.title || ""} loading="lazy" referrerPolicy="no-referrer" /></button>)}</div>}
         </div>
         <div className="ax-acts">
           <button className="at-btn" type="submit" disabled={busy}>{busy ? "Envoi…" : "Enregistrer"}</button>
@@ -484,6 +680,8 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const [room, setRoom] = useState(startRoom || null);
   useEffect(() => { setRoom(startRoom || null); }, [startRoom]);
   const [type, setType] = useState("all");
+  const [view, setView] = useState(() => read(LS.view, "rayon"));
+  const pickView = (v) => { setView(v); write(LS.view, v); sfx?.("select"); };
   const [search, setSearch] = useState(false);
   const [reading, setReading] = useState(null);
   const [sel, setSel] = useState({});
@@ -523,7 +721,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const swapVideo = async (b, oldId, newId) => {
     const it = b.itemId ? at.items.find((i) => i.id === b.itemId) : overrides[b.id];
     try {
-      if (it) await at.saveItem({ ...it, content: String(it.content || "").split(oldId).join(newId) });
+      if (it) await at.saveItem({ ...clean(it), content: String(it.content || "").split(oldId).join(newId) });
       else {
         const raw = rawOf(BOOKS.find((x) => x.id === b.id) || b);
         const text = raw.text.split(`@yt ${oldId}`).join(`@yt ${newId}`);
@@ -531,7 +729,27 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
         if (!made?.id) throw new Error("création refusée");
       }
       toast.success("Vidéo remplacée");
-    } catch (_) { toast.error("La vidéo n'a pas pu être remplacée"); }
+    } catch (e) { console.error("[Alexandrie] remplacement de vidéo", e); toast.error("La vidéo n'a pas pu être remplacée : " + errText(e)); }
+  };
+  // Ajouter une vidéo à la fin d'un chapitre : dans la copie (ou ton livre), sinon une copie est créée.
+  const addVideo = async (b, ci, id, cap) => {
+    const it = b.itemId ? at.items.find((i) => i.id === b.itemId) : overrides[b.id];
+    const fresh = async () => { // pas encore de copie (ou copie disparue du serveur) : on en crée une, avec la vidéo
+      const raw = rawOf(BOOKS.find((x) => x.id === b.id) || b);
+      const made = await at.createItem({ kind: "document", title: raw.title, content: bookToHtml(insertInChapter(raw.text, ci, `@yt ${id} | ${cap || "Vidéo"}`)), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, room: b.room, type: b.type, sub: raw.sub || "", about: raw.about || "" } } });
+      if (!made?.id) throw new Error("le serveur n'a pas créé la copie");
+    };
+    try {
+      if (it) {
+        const doc = new DOMParser().parseFromString(`<div>${it.content || ""}</div>`, "text/html").body.firstChild;
+        const p = document.createElement("p"); const a = document.createElement("a"); a.href = `https://www.youtube.com/watch?v=${id}`; a.textContent = `▶ ${cap || "Vidéo"}`; p.appendChild(a);
+        const end = b.chapters?.[ci]?.end; const ref = Number.isInteger(end) ? doc.childNodes[end] : null;
+        if (ref) ref.after(p); else doc.appendChild(p);
+        try { await at.saveItem({ ...clean(it), title: it.title || b.title, content: doc.innerHTML }); }
+        catch (e) { if (e?.response?.status === 404 && !b.mine) await fresh(); else throw e; }
+      } else await fresh();
+      toast.success("Vidéo ajoutée au chapitre"); sfx?.("select"); return true;
+    } catch (e) { console.error("[Alexandrie] ajout de vidéo", e); toast.error("La vidéo n'a pas pu être ajoutée : " + errText(e)); return false; }
   };
   const revertEdit = async (b) => {
     if (!(await labConfirm(`Revenir au texte d'origine de « ${b.title} » ? Tes modifications seront perdues.`))) return;
@@ -616,7 +834,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
           )}
           <p className="mono ax-plan-t"><span>PLAN DES SALLES · 館内図</span><i /></p>
           <div className="ax-plan" data-testid="alex-plan">
-            {ROOMS.map((r, i) => { const { here, up } = inRoom(r.key); const strip = [...here, ...up].slice(0, 16);
+            {ROOMS.map((r, i) => { const { here, up } = inRoom(r.key); const strip = [...here, ...up];
               return (
                 <button key={r.key} className={"ax-door" + (r.key === "lore" ? " wide" : "")} onClick={() => enter(r.key)} data-testid={`alex-door-${r.key}`} style={{ animationDelay: `${i * 45}ms` }}>
                   <span className="ax-door-k" aria-hidden="true">{r.kanji}</span>
@@ -644,18 +862,22 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
             <div className="ax-top-t"><h1>{R.label}</h1><p className="ax-top-ab">{R.about}</p></div>
             <div className="ax-tools">
               <div className="ax-types" role="tablist" aria-label="Genre">{[["all", "Tous"], ...Object.entries(TYPES).map(([k, v]) => [k, v.label])].map(([k, l]) => <button key={k} role="tab" aria-selected={type === k} className={type === k ? "on" : ""} onClick={() => setType(k)}>{l}</button>)}</div>
+              <div className="ax-viewsw" role="group" aria-label="Affichage">
+                <button className={view === "rayon" ? "on" : ""} aria-pressed={view === "rayon"} onClick={() => pickView("rayon")} data-testid="alex-view-rayon"><IoLibraryOutline size={14} /> Rayon</button>
+                <button className={view === "grille" ? "on" : ""} aria-pressed={view === "grille"} onClick={() => pickView("grille")} data-testid="alex-view-grille"><IoGridOutline size={14} /> Grille</button>
+              </div>
               {R.format === "vhs" && <button className="ax-ghost" onClick={() => dressRoom([...inRoom(R.key).here, ...inRoom(R.key).up])} disabled={dressing} data-testid="alex-dress"><IoImageOutline size={15} /> {dressing ? "Recherche…" : "Habiller la salle"}</button>}
               <button className="at-btn" onClick={() => addBook(R.key)} data-testid="alex-add"><IoAdd size={16} /> Écrire</button>
             </div>
           </header>
-          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(match)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} noteCount={(id) => notesOf(notesItemOf(at, id)).length} onNotes={(b) => { setReadNotes(true); openBook(b); }} favs={favs} onFav={toggleFav} />
+          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(match)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} noteCount={(id) => notesOf(notesItemOf(at, id)).length} onNotes={(b) => { setReadNotes(true); openBook(b); }} favs={favs} onFav={toggleFav} view={view} />
         </>
       )}
       {wish.length > 0 && <p className="ax-wishes mono">★ {wish.length} TITRE{wish.length > 1 ? "S" : ""} DEMANDÉ{wish.length > 1 ? "S" : ""} : {wish.map((id) => UPCOMING.find((u) => u.id === id)?.title).filter(Boolean).join(" · ")}</p>}
       {coverFor && <CoverDialog b={coverFor} current={covers[coverFor.id]} def={DEFAULT_COVERS[coverFor.id]} onSave={(u) => saveCover(coverFor.id, u)} onClose={() => setCoverFor(null)} />}
       {search && <AlexSearch books={all} onClose={() => setSearch(false)} onOpen={openBook} onGoto={(b) => { setSearch(false); setRoom(b.room); setSel((s) => ({ ...s, [b.room]: b.id })); }} />}
       {readingBook && <Reader key={readingBook.id} book={readingBook} at={at} startNotes={readNotes} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); setReadNotes(false); }} onEdit={(id) => { setReading(null); open(id); }}
-        onModify={() => modifyBook(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} />}
+        onModify={() => modifyBook(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} onAddVideo={(ci, id, cap) => addVideo(readingBook, ci, id, cap)} />}
     </section>
   );
 }

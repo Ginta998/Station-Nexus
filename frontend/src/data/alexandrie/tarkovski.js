@@ -2,7 +2,6 @@ const W = (f) => `https://commons.wikimedia.org/wiki/Special:FilePath/${f}?width
 const book = {
   id: "tarkovski", title: "Tarkovski", sub: "Je sculpte le temps", room: "cinema", type: "pensee", cote: "CI-001", color: 165, emblem: "時",
   about: "Sept longs métrages en vingt-quatre ans, la censure, l'exil, et une seule idée : le cinéma est l'art de capturer le temps. Andreï Tarkovski raconte chacun de ses films, de L'Enfance d'Ivan au Sacrifice.",
-  voice: "VOIX RECONSTITUÉE. TARKOVSKI EST MORT EN 1986 ; CE « JE » REFORMULE CE QU'IL A ÉCRIT DANS LE TEMPS SCELLÉ, DANS SON JOURNAL ET DANS SES ENTRETIENS. SEULES LES CITATIONS ENCADRÉES SONT DE LUI.",
   links: [
     { label: "Andreï Tarkovski, Le Temps scellé (1986)", note: "Son livre de cinéma, achevé dans ses dernières semaines. La vraie voix." },
     { label: "Andreï Tarkovski, Journal 1970-1986 (Martyrologe)", note: "Les doutes, la censure, l'argent qui manque, l'exil, la maladie." },

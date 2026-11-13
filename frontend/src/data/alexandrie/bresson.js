@@ -1,7 +1,6 @@
 const book = {
   id: "bresson", title: "Bresson", sub: "Le cinématographe", room: "cinema", type: "pensee", cote: "CI-002", color: 95, emblem: "手",
   about: "Treize films en quarante ans, aucun acteur, pas un geste de trop. Robert Bresson raconte sa méthode et ses films, du Journal d'un curé de campagne à L'Argent : les modèles, les mains, les sons, les ellipses.",
-  voice: "VOIX RECONSTITUÉE. BRESSON EST MORT EN 1999 ; CE « JE » REFORMULE SES NOTES SUR LE CINÉMATOGRAPHE ET SES ENTRETIENS. SEULES LES COURTES CITATIONS ENCADRÉES SONT DE LUI.",
   links: [
     { label: "Robert Bresson, Notes sur le cinématographe (1975)", note: "Cent pages de phrases courtes. Il se lit en une heure et se relit toute une vie." },
     { label: "Bresson par Bresson : entretiens 1943-1983", note: "Il y explique chaque film, patiemment, à des journalistes qui ne comprennent pas." },

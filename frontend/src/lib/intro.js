@@ -1,5 +1,6 @@
 // Boot intro definitions + synthesized boot sounds (Web Audio, no files needed).
 export const INTROS = [
+  { key: "labo", label: "Genèse", kanji: "創", tagline: "Une galaxie naît, tourne et dessine le 天 de la Station (aux couleurs de ton thème)", duration: 4300 },
   { key: "hud", label: "Réticule HUD", kanji: "天", tagline: "Le réticule du favicon s'assemble (premium)", duration: 3600 },
   { key: "warp", label: "Hyperespace", kanji: "翔", tagline: "Saut en vitesse lumière vers la station (premium)", duration: 3600 },
   { key: "eclipse", label: "Éclipse", kanji: "蝕", tagline: "Couronne solaire et anneau de diamant (premium)", duration: 3800 },
@@ -42,6 +43,16 @@ export function playBoot(type, { muted = false, volume = 0.8 } = {}) {
   const c = getCtx();
   if (!c) return;
   const v = volume;
+  if (type === "labo") {
+    // genèse : souffle qui monte avec la galaxie, poussière scintillante, impact quand le 天 se forme, accord ouvert
+    note(c, { type: "sine", freq: 55, glide: 110, dur: 2.6, gain: 0.14, delay: 0.1, vol: v });
+    note(c, { type: "triangle", freq: 220, glide: 440, dur: 2.2, gain: 0.04, delay: 0.4, vol: v });
+    [1319, 1568, 1760, 2093, 2349, 2637].forEach((f, i) => note(c, { type: "sine", freq: f, dur: 0.5, gain: 0.025, delay: 0.7 + i * 0.22, vol: v }));
+    note(c, { type: "sine", freq: 70, glide: 40, dur: 1, gain: 0.34, delay: 2.5, vol: v });
+    note(c, { type: "sawtooth", freq: 1800, glide: 200, dur: 0.35, gain: 0.03, delay: 2.5, vol: v });
+    [262, 392, 523, 659, 988].forEach((f, i) => note(c, { type: "triangle", freq: f, dur: 2.4, gain: 0.055, delay: 2.6 + i * 0.07, vol: v }));
+    return;
+  }
   if (type === "hud") {
     // HUD : bips de verrouillage, balayage montant, accord d'arrivée
     [0.15, 0.5, 0.85].forEach((d, i) => note(c, { type: "square", freq: 1760 + i * 220, dur: 0.05, gain: 0.03, delay: d, vol: v }));

@@ -1,7 +1,6 @@
 const book = {
   id: "meridien-de-sang", title: "Méridien de sang", sub: "Le juge Holden ne dort jamais", room: "lore", type: "recit", format: "livre", cote: "LO-004", color: 12, emblem: "裁",
   about: "1849, la frontière du Mexique. Une bande de chasseurs de scalps, un gamin sans nom, et un géant chauve qui sait tout, danse, et affirme qu'il ne mourra jamais. Le roman de Cormac McCarthy, raconté et déplié.",
-  voice: "RÉCIT DE NÉRODUS. LE ROMAN EST D'UNE VIOLENCE EXTRÊME ; ELLE EST DITE ICI SANS ÊTRE DÉTAILLÉE. LA FIN EST RACONTÉE.",
   links: [
     { label: "Cormac McCarthy, Méridien de sang ou le rougeoiement du soir dans l'Ouest (1985)", note: "En français dans la traduction de François Hirsch. Lis le chapitre de la poudre (le récit de Tobin) à voix haute." },
     { label: "Samuel Chamberlain, My Confession", note: "Les mémoires d'un soldat qui a chevauché avec la bande de Glanton. Le juge Holden y figure déjà : McCarthy ne l'a pas inventé de toutes pièces." },

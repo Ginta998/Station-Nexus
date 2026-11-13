@@ -56,7 +56,7 @@
   .nx-tools>button,.nx-tools>.relative{flex:1}
   .nx-tools>button,.nx-tools>.relative>button{display:grid;place-items:center;width:100%;height:46px;border:0;border-radius:14px;background:transparent;color:color-mix(in srgb,var(--text-primary) 74%,transparent);cursor:pointer;transition:color .2s,background-color .2s,transform .14s}
   .nx-tools>button:active,.nx-tools>.relative>button:active{transform:scale(.92)}
-  .nx-tools>.nx-menu{flex:0 0 58px;color:#0c0c14;background:linear-gradient(145deg,var(--brand),color-mix(in srgb,var(--brand) 60%,#fff));box-shadow:0 6px 18px color-mix(in srgb,var(--brand) 40%,transparent)}
+  .nx-tools>.nx-menu{flex:0 0 58px;color:var(--bg-primary);background:linear-gradient(145deg,var(--brand),color-mix(in srgb,var(--brand) 60%,#fff));box-shadow:0 6px 18px color-mix(in srgb,var(--brand) 40%,transparent)}
   .nx-tools>.nx-menu.on{background:color-mix(in srgb,var(--brand) 22%,transparent);color:var(--brand);box-shadow:none}
   /* Menu son du hub : feuille basse, toujours à l'écran et au-dessus de tout (corrige « ne répond pas ») */
   .nx-tools .relative>.fixed{z-index:1255}
@@ -71,7 +71,7 @@
   .nx-note{display:flex;align-items:center;gap:8px;padding:7px 8px 7px 12px;border-radius:16px;border:1px solid var(--line,var(--border-c));background:color-mix(in srgb,var(--text-primary) 5%,transparent)}
   .nx-note .ic{color:var(--brand);display:grid;place-items:center}
   .nx-note input{flex:1;min-width:0;border:0;background:transparent;color:var(--text-primary);font-size:14px;outline:none}
-  .nx-note .send{flex:0 0 auto;width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:11px;color:#0c0c14;background:var(--brand);cursor:pointer}
+  .nx-note .send{flex:0 0 auto;width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:11px;color:var(--bg-primary);background:var(--brand);cursor:pointer}
 
   .nx-ptitle{margin:4px 2px;font-size:10px;letter-spacing:.14em;color:color-mix(in srgb,var(--text-primary) 50%,transparent)}
   .nx-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 4px}
@@ -86,24 +86,29 @@
   /* ===== Styles de pastilles « Nexus 2000 » — seule l'allure des boutons change, le reste suit le thème ===== */
   .nx-cell .circle::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0}
   .nx-cell .circle svg,.nx-cell .circle b,.nx-cell .circle .bdg{position:relative;z-index:1}
-  /* Holo : dégradé coloré, reflet haut, halo doux */
-  [data-skin=glossy] .nx-cell .circle{background:linear-gradient(155deg,color-mix(in srgb,var(--c) 34%,transparent),color-mix(in srgb,var(--c) 6%,transparent));border:1px solid color-mix(in srgb,var(--c) 42%,transparent);box-shadow:0 4px 16px color-mix(in srgb,var(--c) 20%,transparent),inset 0 1px 0 color-mix(in srgb,#fff 26%,transparent)}
-  [data-skin=glossy] .nx-cell .circle::after{background:linear-gradient(160deg,color-mix(in srgb,#fff 22%,transparent),transparent 42%)}
-  /* Verre : vrai « Apple glass » — translucide, très subtil, flou léger, icône non colorée */
-  [data-skin=glass] .nx-cell .circle{color:var(--text-primary);background:linear-gradient(145deg,color-mix(in srgb,#fff 10%,transparent),color-mix(in srgb,#fff 2%,transparent));border:1px solid color-mix(in srgb,#fff 12%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 22%,transparent),0 2px 10px rgba(0,0,0,.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-  [data-skin=glass] .nx-cell .circle::after{background:linear-gradient(140deg,color-mix(in srgb,#fff 12%,transparent),transparent 46%)}
-  [data-skin=glass] .nx-cell.on .circle{color:var(--c);border-color:color-mix(in srgb,var(--c) 45%,transparent)}
+  /* Toutes les pastilles se calculent sur le thème (fond et texte) : lisibles sur fond clair comme sur fond sombre */
+  .nx-launcher{--cc:color-mix(in srgb,var(--c,var(--brand)) 62%,var(--text-primary))}
+  .nx-cell .circle{color:var(--cc)}
+  /* Brillant : dégradé coloré, reflet haut, halo doux */
+  [data-skin=glossy] .nx-cell .circle{background:linear-gradient(155deg,color-mix(in srgb,var(--c) 30%,var(--bg-primary)),color-mix(in srgb,var(--c) 8%,var(--bg-primary)));border:1px solid color-mix(in srgb,var(--c) 45%,transparent);box-shadow:0 4px 16px color-mix(in srgb,var(--c) 18%,transparent),inset 0 1px 0 color-mix(in srgb,#fff 26%,transparent)}
+  [data-skin=glossy] .nx-cell .circle::after{background:linear-gradient(160deg,color-mix(in srgb,#fff 20%,transparent),transparent 42%)}
+  /* Verre : translucide, sans couleur, sans flou (le flou faisait clignoter les pastilles pendant l'ouverture du menu) */
+  [data-skin=glass] .nx-cell .circle{color:var(--text-primary);background:linear-gradient(145deg,color-mix(in srgb,var(--text-primary) 12%,transparent),color-mix(in srgb,var(--text-primary) 3%,transparent));border:1px solid color-mix(in srgb,var(--text-primary) 16%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 24%,transparent),0 2px 10px rgba(0,0,0,.12)}
+  [data-skin=glass] .nx-cell .circle::after{background:linear-gradient(140deg,color-mix(in srgb,#fff 16%,transparent),transparent 46%)}
+  [data-skin=glass] .nx-cell.on .circle{color:var(--cc);border-color:color-mix(in srgb,var(--c) 50%,transparent)}
   /* Néon : cellule sombre, anneau vif, halo cyberpunk */
-  [data-skin=neon] .nx-cell .circle{background:radial-gradient(120% 120% at 50% 15%,color-mix(in srgb,var(--c) 12%,#0a0b12),#080910);border:1.5px solid color-mix(in srgb,var(--c) 90%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--c) 48%,transparent),inset 0 0 10px color-mix(in srgb,var(--c) 16%,transparent)}
+  [data-skin=neon] .nx-cell .circle{color:var(--c);background:radial-gradient(120% 120% at 50% 15%,color-mix(in srgb,var(--c) 12%,#0a0b12),#080910);border:1.5px solid color-mix(in srgb,var(--c) 90%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--c) 48%,transparent),inset 0 0 10px color-mix(in srgb,var(--c) 16%,transparent)}
   [data-skin=neon] .nx-cell .circle svg{filter:drop-shadow(0 0 4px color-mix(in srgb,var(--c) 75%,transparent))}
-  /* Aurore : bandes verticales (nettement différent du prisme conique) */
-  [data-skin=aurore] .nx-cell .circle{background:linear-gradient(180deg,color-mix(in srgb,var(--c) 42%,transparent),color-mix(in srgb,#5be0c0 24%,transparent) 46%,color-mix(in srgb,#b98cff 30%,transparent));border:1px solid color-mix(in srgb,var(--c) 28%,transparent);box-shadow:0 4px 18px color-mix(in srgb,var(--c) 18%,transparent)}
-  /* Encre : totalement sans couleur (monochrome futuriste) — encre sombre, icône & libellé à l'encre */
-  [data-skin=encre] .nx-cell .circle{color:var(--text-primary);background:linear-gradient(160deg,#16181f,#0a0b10);border:1px solid color-mix(in srgb,var(--text-primary) 12%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 7%,transparent)}
-  [data-skin=encre] .nx-cell .circle::after{background:linear-gradient(150deg,color-mix(in srgb,#fff 6%,transparent),transparent 44%)}
-  [data-skin=encre] .nx-cell.on .circle{color:#fff;border-color:color-mix(in srgb,var(--text-primary) 42%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--text-primary) 28%,transparent)}
-  /* Prisme : véritable liseré arc-en-ciel conique */
-  [data-skin=prisme] .nx-cell .circle{background:linear-gradient(#0c0d15,#0c0d15) padding-box,conic-gradient(from 130deg,var(--c),#64cad8,#b98cff,#ff9f68,var(--c)) border-box;border:1.5px solid transparent;box-shadow:0 0 12px color-mix(in srgb,var(--c) 26%,transparent)}
+  /* Aurore : bandes verticales */
+  [data-skin=aurore] .nx-cell .circle{background:linear-gradient(180deg,color-mix(in srgb,var(--c) 40%,var(--bg-primary)),color-mix(in srgb,#5be0c0 22%,var(--bg-primary)) 46%,color-mix(in srgb,#b98cff 28%,var(--bg-primary)));border:1px solid color-mix(in srgb,var(--c) 30%,transparent);box-shadow:0 4px 18px color-mix(in srgb,var(--c) 18%,transparent)}
+  /* Encre : sans couleur, en négatif du thème (pastille à l'encre du texte, icône à la couleur du fond) */
+  [data-skin=encre] .nx-cell .circle{color:var(--bg-primary);background:linear-gradient(160deg,color-mix(in srgb,var(--text-primary) 94%,var(--bg-primary)),color-mix(in srgb,var(--text-primary) 78%,var(--bg-primary)));border:1px solid color-mix(in srgb,var(--text-primary) 40%,transparent);box-shadow:0 3px 12px rgba(0,0,0,.18)}
+  [data-skin=encre] .nx-cell .circle::after{background:linear-gradient(150deg,color-mix(in srgb,#fff 14%,transparent),transparent 44%)}
+  [data-skin=encre] .nx-cell.on .circle{box-shadow:0 0 0 2px var(--bg-primary),0 0 0 3.5px var(--text-primary)}
+  /* Prisme : cristal sans couleur, arêtes taillées et facettes qui accrochent la lumière */
+  [data-skin=prisme] .nx-cell .circle{color:var(--text-primary);background:linear-gradient(color-mix(in srgb,var(--text-primary) 6%,var(--bg-primary)),color-mix(in srgb,var(--text-primary) 6%,var(--bg-primary))) padding-box,conic-gradient(from 130deg,color-mix(in srgb,var(--text-primary) 90%,transparent),color-mix(in srgb,var(--text-primary) 12%,transparent) 22%,color-mix(in srgb,var(--text-primary) 70%,transparent) 45%,color-mix(in srgb,var(--text-primary) 8%,transparent) 70%,color-mix(in srgb,var(--text-primary) 90%,transparent)) border-box;border:1.5px solid transparent;box-shadow:0 3px 12px rgba(0,0,0,.14)}
+  [data-skin=prisme] .nx-cell .circle::after{background:linear-gradient(125deg,transparent 26%,color-mix(in srgb,var(--text-primary) 12%,transparent) 34%,transparent 44%,color-mix(in srgb,var(--text-primary) 7%,transparent) 58%,transparent 66%)}
+  [data-skin=prisme] .nx-cell.on .circle{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--text-primary) 55%,transparent),0 3px 12px rgba(0,0,0,.14)}
 
   .nx-resume{margin-top:4px}
   .nx-rcard{width:100%;display:flex;align-items:center;gap:11px;padding:9px 11px;margin-bottom:7px;border:1px solid var(--line,var(--border-c));border-radius:15px;background:color-mix(in srgb,var(--text-primary) 4%,transparent);color:var(--text-primary);cursor:pointer;text-align:left}

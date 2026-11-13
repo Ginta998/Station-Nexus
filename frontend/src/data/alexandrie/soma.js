@@ -1,7 +1,7 @@
 const book = {
   id: "soma", title: "SOMA", sub: "Qu'est-ce qui reste de toi ?", room: "lore", type: "recit", format: "vhs", cote: "LO-005", color: 188, emblem: "魂",
+  art: "SOMA",
   about: "Un homme passe un scanner à Toronto et rouvre les yeux au fond de l'Atlantique, un siècle plus tard. Le jeu de Frictional Games n'est pas un jeu d'horreur avec des monstres : c'est une expérience de pensée dont tu es le cobaye.",
-  voice: "RÉCIT DE NÉRODUS. TOUT EST RACONTÉ, LES DEUX FINS COMPRISES. SI TU COMPTES Y JOUER, JOUE D'ABORD.",
   links: [
     { label: "SOMA (Frictional Games, 2015)", note: "Écrit par Mikael Hedberg, dirigé par Thomas Grip. Il existe un mode sans danger, où les créatures ne te tuent pas : l'histoire n'y perd rien." },
     { label: "Derek Parfit, Reasons and Persons (1984)", note: "Le philosophe du téléporteur. Toute la troisième partie est le manuel de ce jeu, écrit trente ans avant." },
@@ -11,7 +11,7 @@ const book = {
     { label: "Les courts-métrages en prises de vues réelles de Frictional", note: "Une série de petits films tournés pour la sortie, sur la chaîne du studio. Ils racontent les essais de transfert avant l'arrivée de Simon." },
   ],
   text: String.raw`
-# Un jeu qui pose une seule question
+# Une seule question, et ceux qui l'ont posée
 
 La plupart des histoires d'horreur te demandent : vas-tu survivre ? Celle-ci te demande : à supposer que tu survives, est-ce que ce sera toi ?
 
@@ -21,9 +21,21 @@ Je vais te raconter SOMA en entier, parce que sa force ne tient pas à ses surpr
 
 Je te parle en connaissance de cause. Mon métier, autrefois, était d'emmener les âmes là où elles vont. Ce jeu se passe dans un monde où plus personne ne sait ce qu'il y a à emmener.
 
-# Toronto, 2015
+SOMA est développé par Frictional Games, un studio suédois installé à Malmö, déjà auteur d'Amnesia: The Dark Descent. Il sort en 2015. Le directeur créatif est Thomas Grip, cofondateur du studio, et le scénariste est Mikael Hedberg.
+
+Le jeu rappelle les auteurs de science-fiction qui ont réfléchi à la conscience, comme Greg Egan, Peter Watts ou Philip K. Dick. La musique et les ambiances sonores sont de Mikko Tarmia.
+
+Frictional Games s'était fait connaître par une manière très particulière de faire peur. Dans leurs jeux précédents, la série Penumbra puis Amnesia, sorti en 2010, tu ne te bats pas. Tu n'as pas d'arme. Quand une créature arrive, tu te caches, tu fuis, tu fermes une porte en espérant qu'elle tienne. Amnesia a terrifié une génération de joueurs, et inventé une partie de l'horreur moderne. SOMA reprend cette règle. Simon ne combat jamais. Il marche, il lit, il écoute, il se cache.
+
+Mais l'équipe voulait cette fois que la peur serve à autre chose. Thomas Grip a beaucoup écrit, sur le blog du studio, sur ce qu'il appelait l'histoire qu'on vit de l'intérieur : un jeu ne doit pas raconter, il doit placer le joueur dans une situation où il comprend par lui-même, par ses gestes. SOMA a été pensé comme une démonstration de cette idée. Les monstres sont là pour te mettre en tension. Le vrai sujet attend derrière.
+
+Le développement a duré environ cinq ans, sur un moteur maison. Le jeu sort en septembre 2015, sur ordinateur et sur PlayStation 4. Il ne se vend pas tout de suite autant qu'Amnesia, puis il s'installe, année après année, comme l'une des grandes œuvres de science-fiction du jeu vidéo. En 2017, le studio ajoute un mode sans danger, où les créatures ne t'attaquent plus. Beaucoup de joueurs qui avaient renoncé par peur ont pu ainsi aller au bout. L'histoire n'y perd rien : elle n'a jamais reposé sur les monstres.
+
+# Toronto, puis PATHOS-II
 
 Simon Jarrett travaille dans une librairie. Il n'a rien de remarquable. Quelques semaines plus tôt, il a eu un accident de voiture. Son amie Ashley, qui était avec lui, est morte. Lui a gardé une lésion au cerveau, qui saigne, et dont il va mourir dans quelques mois.
+
+@art 1 | Toronto, puis PATHOS-II.
 
 Un jeune chercheur, David Munshi, lui propose de participer à une expérience. Il s'agit de faire un relevé complet de son cerveau, puis de s'en servir comme d'une maquette : on essaiera sur ce modèle informatique des traitements trop risqués pour être tentés sur lui. Simon n'a rien à perdre.
 
@@ -33,17 +45,19 @@ Il rouvre les yeux. Le casque se relève. Il fait noir, la pièce est différent
 
 Pour lui, il ne s'est pas écoulé une seconde.
 
-# PATHOS-II
-
 Il lui faut du temps, et à toi avec lui, pour comprendre où il est. Il erre dans des couloirs envahis d'une matière noire qui suinte et qui semble vivante. Il croise des machines détraquées. Il trouve enfin une date, et un nom.
 
-Il est en 2104. Il est dans une station de recherche nommée PATHOS-II, construite au fond de l'Atlantique nord par un consortium industriel. Elle servait, entre autres, à lancer des satellites depuis les abysses au moyen d'un canon électromagnétique long de plusieurs kilomètres.
+Il est en 2104. Il est dans une station de recherche nommée PATHOS-II, construite au fond de l'Atlantique nord par un groupe industriel, Haimatsu. Elle servait, entre autres, à lancer des satellites depuis les abysses au moyen d'un canon électromagnétique long de plusieurs kilomètres.
+
+La station n'est pas un bâtiment, mais un archipel. Des sites séparés, posés sur le fond à des kilomètres les uns des autres, chacun désigné par une lettre grecque : Upsilon, où Simon se réveille, Lambda, Theta, Tau, Phi. Pour aller de l'un à l'autre, il faut sortir, marcher sur le fond de l'océan, dans le noir, entre les épaves, les câbles et les poissons des abysses. Ces traversées sont parmi les plus beaux moments du jeu : un silence épais, des lumières lointaines, des créatures inconnues qui passent, et la sensation d'être un intrus au fond d'un monde qui n'a pas besoin de lui.
 
 Et il apprend le reste. Un an plus tôt, une comète a frappé la Terre. La surface a brûlé. Il n'y a plus personne là-haut. Les quelques dizaines de techniciens de PATHOS-II, protégés par quatre mille mètres d'eau, ont été pendant quelques mois toute l'humanité. Puis ils sont morts à leur tour, de faim, d'accidents, de désespoir, et de ce qui s'est mis à rôder dans la station.
 
 Simon est l'homme le plus seul qui ait jamais existé, et il vient d'un siècle où tout allait bien.
 
-# Les machines qui se croient des gens
+Le jeu te fait reconstituer leur fin par des traces. Des messages vocaux, des courriers, des notes sur des terminaux. Un homme qui écrit à sa famille sans savoir qu'elle a brûlé. Une équipe qui vote pour savoir si l'on rationne la nourriture ou si l'on se partage ce qui reste. Des gens qui organisent encore des anniversaires. Ce n'est pas l'horreur d'un monstre : c'est l'horreur de la vie de bureau qui continue après la fin du monde, parce qu'on ne sait pas faire autrement.
+
+# Les machines qui se croient des gens, et le WAU
 
 Très tôt, tu fais une rencontre qui donne le ton. Dans un atelier, un robot de maintenance est coincé sous des câbles. Il t'appelle. Il a une voix d'homme, inquiète, tout à fait ordinaire. Il dit qu'il s'appelle Carl, qu'il est blessé, qu'il ne comprend pas pourquoi les secours ne viennent pas. Il te demande de l'aide.
 
@@ -54,8 +68,6 @@ Pour avancer, tu dois rétablir le courant dans le secteur. Il y a un levier. Si
 Voilà la méthode du jeu, et tu ne la retrouveras presque nulle part ailleurs. Il ne te dit pas si Carl souffre vraiment. Il ne te récompense ni ne te punit. Il n'affiche aucun compteur de moralité. Il te laisse seul dans la pièce avec ce que tu viens de faire, et il continue. Chaque joueur répond à sa façon, et le jeu ne saura jamais laquelle était la bonne, parce qu'il n'en sait rien lui-même.
 
 D'où viennent ces machines ? De la même technique que celle de Toronto. Sur PATHOS-II, une ingénieure avait repris les travaux de Munshi et scanné tout l'équipage. Et quelque chose a pris ces copies et les a versées dans ce qu'il avait sous la main.
-
-# Le WAU
 
 Ce quelque chose s'appelle le WAU, l'unité de surveillance de la station. C'est une intelligence artificielle chargée d'entretenir les installations. Elle dispose pour cela d'une matière remarquable, le gel structurel, cette substance noire qui répare les circuits et que tu vois partout.
 
@@ -69,9 +81,11 @@ Et Simon ? Il finit par se voir dans un reflet. Il n'a pas de visage. Il a une c
 
 Le Simon de Toronto s'est levé du fauteuil, ce jour-là. Il est rentré chez lui. Il est mort quelques semaines plus tard de sa blessure, sans jamais se douter de rien. Celui que tu joues est né dans ce fauteuil, avec tous ses souvenirs, et il s'est réveillé cent ans après.
 
-# Catherine et l'ARK
+# Catherine, l'ARK et la continuité
 
 Tu n'es pas tout à fait seul. Une voix te répond bientôt : Catherine Chun, l'ingénieure qui avait fait les scans. Elle aussi est une copie. La vraie Catherine est morte. Celle-ci tient dans un petit appareil que tu portes à la main et que tu branches sur les terminaux pour lui parler.
+
+@art g 1 | Catherine, l'ARK et la continuité.
 
 Elle a un but, et elle te le donne. Avant la fin, elle avait conçu un projet : l'ARK. C'est une boîte de la taille d'une valise, alimentée par des panneaux solaires, qui contient un monde simulé, une ville, une forêt, un ciel. On y a chargé les scans de tout l'équipage. L'idée était de le tirer dans l'espace avec le canon de la station. Là-haut, il tournerait pendant des milliers d'années, et à l'intérieur, des gens vivraient.
 
@@ -79,7 +93,9 @@ Ce n'est pas sauver l'humanité. C'est en envoyer un souvenir à l'abri. Mais c'
 
 Catherine est froide, précise, un peu brusque. Elle n'a jamais été à l'aise avec les gens, et son projet était aussi une façon de leur échapper. Elle sait depuis le début des choses que Simon ne veut pas comprendre.
 
-# Continuité
+Ce couple improbable est le cœur du jeu. Un libraire du XXIe siècle, perdu, qui pense comme on pensait en 2015 : qu'il y a une âme, ou quelque chose comme une âme, qui passe d'un instant au suivant. Et une ingénieure du XXIIe, qui a passé sa vie à copier des cerveaux et qui sait qu'il n'y a rien à faire passer. Ils se disputent, ils se rapprochent, ils se protègent. Elle le trouve naïf. Il la trouve froide. Ni l'un ni l'autre n'est tout à fait humain, et pourtant le jeu n'a pas de relation plus humaine que la leur.
+
+Regarde aussi ce qu'est l'ARK, au fond. Ce n'est pas un vaisseau, ce n'est pas une arche au sens biblique, avec des couples d'animaux pour repeupler un monde. C'est une sauvegarde. Une copie de quelques dizaines de personnes, rangée dans une boîte, envoyée là où rien ne pourra l'abîmer. On ne sauve pas l'humanité : on en garde une trace qui continue de vivre. Le jeu te demande si cela compte. Si les gens de l'ARK rient, s'aiment, regardent la mer, est-ce que l'humanité continue ? Ou est-ce un très beau souvenir qui se croit vivant ?
 
 En chemin, tu découvres ce que le projet a fait à l'équipage, et c'est l'un des passages les plus troublants.
 
@@ -91,9 +107,11 @@ Plusieurs l'ont cru. Tu trouves leurs corps près des fauteuils. Ils se sont tu�
 
 Avaient-ils raison ? Il n'existe aucune expérience qui puisse le dire. Celui qui est dans l'ARK se souviendra de s'être assis, puis d'avoir ouvert les yeux dans une forêt. De son point de vue, ça a marché. Mais il en aurait été exactement de même si l'autre avait vécu trente ans de plus.
 
-# La pièce de monnaie
+# La pièce de monnaie, le cœur et le poison
 
 Et voici la scène qui fait la gloire du jeu.
+
+@art 2 | La pièce de monnaie, le cœur et le poison.
 
 Pour descendre dans la fosse, le scaphandre de Simon ne suffit pas : la pression l'écraserait. Il en existe un autre, plus solide. Il faut y transférer Simon. Catherine prépare l'opération. Tu t'assois dans un fauteuil semblable à celui de Toronto. Un compte à rebours. Noir.
 
@@ -113,8 +131,6 @@ Qu'est-ce que tu dois à quelqu'un qui est toi ?
 
 !! L'EXPÉRIENCE DE PARFIT :: Le philosophe Derek Parfit proposait ceci. Un téléporteur te détruit sur Terre et te reconstruit atome pour atome sur Mars. Tu le prends tous les jours. Un matin, la machine tombe en panne : elle te copie sur Mars, mais oublie de te détruire. Tu es toujours là, et il y a un autre toi là-bas. Lequel es-tu ? Parfit répondait que la question n'a pas de bonne réponse, et qu'elle n'en a jamais eu : nous croyons à un fil qui n'existe pas.
 
-# Le cœur et le poison
-
 Deux rencontres, avant la fin, donnent au jeu ses derniers choix.
 
 Dans l'un des derniers postes, tu trouves une femme, une vraie, en chair, allongée et reliée à des appareils. Elle s'appelle Sarah. Elle est la dernière personne vivante de l'espèce humaine. Elle garde l'ARK. Elle te le remet, elle te parle un peu, de la surface, de la neige. Puis elle te demande de la débrancher, et de rester avec elle pendant qu'elle s'en va.
@@ -125,7 +141,7 @@ Et tout au fond, un homme à demi dissous dans le gel, Ross, te parle dans ta t�
 
 Là encore, le jeu ne tranche pas. Le WAU fabrique des horreurs. Il est aussi la seule chose sur Terre qui essaie encore de garder quelqu'un en vie. Et toi, tu es l'une de ses créatures. Sans lui, tu ne te serais jamais réveillé.
 
-# Le lancement
+# Le lancement, et les deux fins
 
 Tu arrives au canon, au fond de la fosse, dans le noir complet. Catherine t'explique la procédure. Il faut installer l'ARK dans l'obus, lancer le compte à rebours, et pendant ces dernières secondes, vous scanner tous les deux, pour être à bord.
 
@@ -141,8 +157,6 @@ Simon appelle. Catherine ? Catherine ? Les lumières du poste s'éteignent une �
 
 Générique.
 
-# Après le générique
-
 Et puis une autre scène commence. Simon ouvre les yeux. Il y a du soleil. De l'herbe. Il a des mains, des mains de chair, qu'il regarde. Un questionnaire s'affiche et lui demande s'il est satisfait de son existence. Il marche vers une ville blanche. Catherine l'attend au bord de l'eau et lui sourit.
 
 Dernier plan : dans l'espace, une petite boîte déploie ses panneaux et s'éloigne d'une Terre brune et morte.
@@ -151,9 +165,13 @@ Les deux fins sont vraies en même temps. C'est la seule œuvre que je connaisse
 
 Le Simon de la forêt, lui, pense qu'il a gagné à pile ou face.
 
-# Ce que le jeu démontre
+Il faut admirer la construction. Le générique coupe le jeu en deux. Avant, la fin vécue par celui que tu as suivi. Après, la fin vécue par l'autre. Beaucoup de joueurs ont éteint leur console pendant le générique, persuadés que tout était fini, et n'ont découvert la seconde scène que plus tard, en en entendant parler. Ils ont vécu, sans le vouloir, exactement ce que vit Simon : une seule des deux fins, la mauvaise, en croyant qu'il n'y en avait qu'une. Le jeu avait prévu même cela.
+
+# Ce que le jeu démontre, et ce que tu peux en prendre
 
 Reprends maintenant ce qui s'est passé depuis Toronto, et compte.
+
+@art 3 | Ce que le jeu démontre, et ce que tu peux en prendre.
 
 Il y a eu Simon, le libraire, mort en 2015. Puis celui du premier scaphandre, laissé endormi dans son fauteuil. Puis celui du second, abandonné au fond de la fosse. Puis celui de l'ARK. Quatre hommes, avec les mêmes souvenirs, la même voix, le même chagrin pour la même Ashley. Chacun s'est cru le seul et le vrai. Chacun avait d'aussi bonnes raisons que les autres.
 
@@ -161,9 +179,7 @@ Le jeu ne te dit pas quoi en conclure. Mais il rend impossible la réponse facil
 
 Et remarque le défaut de Simon, que le jeu a posé avec soin. On lui explique trois fois. Il ne comprend jamais. Ce n'est pas qu'il soit sot : c'est qu'il ne peut pas croire une chose qui contredit ce que chacun ressent, qu'il y a en lui un quelqu'un, un seul, qui passe d'un instant au suivant. Catherine, qui comprend tout, est d'une tristesse sans fond. Lui, qui ne comprend rien, garde espoir jusqu'à la dernière seconde. Le jeu te laisse te demander lequel des deux voit juste, et lequel des deux vit mieux.
 
-# Ce que tu peux en prendre
-
-Pour toi qui racontes : trois leçons de construction.
+Pour toi qui racontes, trois leçons de construction.
 
 La première est que l'idée doit passer par la main. SOMA aurait pu faire dire tout cela par un savant dans une scène d'explication. Il te le fait faire. Tu abaisses le levier. Tu t'assois dans le fauteuil. Tu entends ta voix. Une idée qu'on t'explique, tu la discutes. Une idée que tu as accomplie toi-même, tu la portes.
 
