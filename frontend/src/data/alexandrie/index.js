@@ -89,6 +89,12 @@ import musashi from "./musashi";
 import ramanujan from "./ramanujan";
 import spinoza from "./spinoza";
 import moebius from "./moebius";
+import deadSpace from "./dead-space";
+import guru from "./guru";
+import roisDesOmbres from "./rois-des-ombres";
+import outlawStar from "./outlaw-star";
+import joeHisaishi from "./joe-hisaishi";
+import fullmetalAlchemist from "./fullmetal-alchemist";
 
 export const ROOMS = [
   { key: "philo", label: "Philosophie", kanji: "哲", about: "Des pensées qui dérangent, expliquées de l'intérieur." },
@@ -107,7 +113,7 @@ export const TYPES = {
   recit: { label: "Récit", about: "Un narrateur raconte, plusieurs points de vue." },
   apprentissage: { label: "Apprentissage", about: "On t'accompagne dans une notion difficile." },
 };
-export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, dreyfus, commune, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, xenoblade, skyrim, airGear, darkSouls, hollowKnight, nier, berserk, outerWilds, evangelion, discoElysium, madeInAbyss, sekiro, pathologic, rainWorld, lain, limbo, inside, shadowColossus, silentHill2, akira, blame, hyperLight, kentucky, ergoProxy, planescape, darkwood, dorohedoro, texhnolyze, stalker, alien, bladeRunner, fearHunger, warhammer, twinPeaks, madMax, hordeContrevent, hyperion, gormenghast, annihilation, nouveauSoleil, fondation, nausicaa, lumumba, kimpaVita, kongo, ff12, toussaint, soundiata, saintJust, danton, rumbaCongolaise, meroe, musashi, ramanujan, spinoza, moebius, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
+export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, dreyfus, commune, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, xenoblade, skyrim, airGear, darkSouls, hollowKnight, nier, berserk, outerWilds, evangelion, discoElysium, madeInAbyss, sekiro, pathologic, rainWorld, lain, limbo, inside, shadowColossus, silentHill2, akira, blame, hyperLight, kentucky, ergoProxy, planescape, darkwood, dorohedoro, texhnolyze, stalker, alien, bladeRunner, fearHunger, warhammer, twinPeaks, madMax, hordeContrevent, hyperion, gormenghast, annihilation, nouveauSoleil, fondation, nausicaa, lumumba, kimpaVita, kongo, ff12, toussaint, soundiata, saintJust, danton, rumbaCongolaise, meroe, musashi, ramanujan, spinoza, moebius, deadSpace, guru, roisDesOmbres, outlawStar, joeHisaishi, fullmetalAlchemist, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
 
 const up = (room, type, title, sub, format) => ({ id: "up-" + title.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-"), room, type, title, sub, format: format || (room === "lore" ? "vhs" : room === "musique" ? "vinyle" : "livre") });
 export const UPCOMING = [
