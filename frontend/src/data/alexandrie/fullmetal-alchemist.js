@@ -14,11 +14,19 @@ Hiromu Arakawa est née en 1973 à Hokkaido, l'île du nord du Japon, dans une f
 
 Cette enfance à la ferme est partout dans Fullmetal Alchemist. Arakawa a souvent raconté qu'à la ferme, on apprend que rien ne s'obtient sans travail, que la vie et la mort sont des choses concrètes, et qu'on mange ce qu'on a élevé. Son manga repose sur une loi qui ressemble à une leçon de paysan : pour obtenir quelque chose, il faut donner quelque chose de valeur égale.
 
+L'idée de départ vient de la pierre philosophale. Arakawa s'intéresse à cet objet légendaire des alchimistes, censé changer le plomb en or et donner la vie éternelle. Elle lit des livres d'alchimie et les trouve pleins de contradictions : chaque auteur dit le contraire du précédent. Ce qui la passionne, ce n'est pas la recette, c'est la philosophie : l'idée que tout est relié, que la matière, l'âme et le monde forment un seul tout. Elle veut aussi que son histoire parle de vrais problèmes, et pas seulement de magie. Pour cela, elle regarde des reportages et rencontre des réfugiés, d'anciens soldats, d'anciens yakuzas, qui lui racontent ce que fait la guerre aux gens, et ce que c'est que de vivre avec ce qu'on a fait.
+
+Pour le monde, elle s'inspire de l'Europe de la révolution industrielle, et surtout de l'Angleterre du XIXe siècle : son architecture, ses vêtements, ses usines, ses trains. La région d'Ishval, elle, évoque le Moyen-Orient et les invasions qu'il a subies au XXe siècle. Et elle tient à une chose : malgré la noirceur du récit, la comédie doit rester au centre. Les frères se chamaillent, Ed explose de colère dès qu'on le trouve petit, Al ramasse des chats errants qu'il cache dans son armure. Ces respirations rendent le reste supportable.
+
+Le succès est immense. Le manga dépasse les quatre-vingts millions d'exemplaires dans le monde. Chaque volume s'est vendu à plus d'un million d'exemplaires au Japon. Il reçoit en 2004 le prix Shōgakukan du manga, puis, entre autres, le prix Seiun de la meilleure bande dessinée de science-fiction en 2011, et Arakawa le prix du nouvel artiste au prix culturel Osamu Tezuka la même année.
+
 L'œuvre a été adaptée deux fois par le studio Bones. Une première série en 2003, réalisée par Seiji Mizushima, écrite par Shō Aikawa, avec une musique de Michiru Ōshima : comme le manga n'était pas fini, elle invente sa propre fin, plus sombre, prolongée en 2005 par un film. Puis Fullmetal Alchemist: Brotherhood, de 2009 à 2010, réalisée par Yasuhiro Irie, avec une musique d'Akira Senju, qui suit le manga jusqu'au bout en soixante-quatre épisodes. Brotherhood est aujourd'hui considérée comme l'une des plus grandes séries d'animation jamais faites.
 
 @art 1 | L'univers de Fullmetal Alchemist
 
 # L'échange équivalent
+
+@yt gShZvoImZdc | Fullmetal Alchemist: Brotherhood, bande-annonce.
 
 Le monde de Fullmetal Alchemist ressemble à l'Europe du début du XXe siècle : des trains à vapeur, des uniformes militaires, des villes de brique et de fer, des usines, des appareils photo à soufflet. Le pays s'appelle Amestris. C'est un État militaire, dirigé par un Généralissime, le Führer King Bradley, un homme âgé, souriant, borgne, et le meilleur combattant du pays.
 
@@ -40,7 +48,27 @@ Pendant le voyage, Ed découvre qu'il peut transmuter sans tracer de cercle, en 
 
 @art 3 | Les frères Elric
 
+## La maîtresse, et ce que l'île leur a appris
+
+Avant de devenir des prodiges, les frères ont eu une maîtresse. Izumi Curtis tient une boucherie avec son mari dans la ville de Dublith. Quand on lui demande qui elle est, elle répond qu'elle n'est qu'une ménagère. C'est l'une des plus redoutables alchimistes du pays, et une combattante qui renverse des colosses. Pour leur premier entraînement, elle a abandonné les deux enfants pendant un mois sur une île déserte, sans rien, avec une seule énigme à résoudre : un est tout, tout est un. Ils ont failli mourir de faim, ils ont appris à chasser, à survivre, et ils ont compris le sens de la phrase : chaque être est une petite partie du grand flux du monde, et ce flux passe à travers chacun.
+
+Izumi porte un secret qui la rend plus proche d'eux qu'ils ne le croient. Elle a perdu un enfant à la naissance, et elle a tenté, elle aussi, de le ramener par l'alchimie. La Vérité lui a pris une partie de ses organes. Elle crache du sang quand elle se bat trop longtemps. Quand elle découvre ce que ses élèves ont fait, elle ne les absout pas. Mais elle les comprend.
+
+## Winry
+
+Winry Rockbell, l'amie d'enfance, est peut-être le personnage le plus solide du manga. Elle répare le bras et la jambe d'Ed, chaque fois qu'il les casse, en le grondant. Elle rêve de devenir la meilleure mécanicienne d'automail du pays, et elle y parvient presque, en apprenant seule chez les artisans de Rush Valley. Ses parents étaient médecins. Ils sont partis soigner les blessés pendant la guerre d'Ishval, et ils n'en sont pas revenus. Plus tard, elle apprend qui les a tués : Scar, l'homme que les frères affrontent. Elle tient un pistolet, face à lui. Elle ne tire pas. Ce choix, plus que n'importe quel combat, dit ce que le manga pense de la vengeance.
+
 # La pierre et les homoncules
+
+## Le pays des chiens de l'armée
+
+Amestris se découvre au fil du voyage, ville après ville. Il y a Central, la capitale, avec son quartier général, ses bureaux, ses intrigues. Il y a les villages de l'Est, pauvres, que l'armée rançonne. Il y a Liore, où un faux prophète utilise une pierre pour faire croire à des miracles. Il y a Rush Valley, la ville des mécaniciens d'automail. Il y a Briggs, la forteresse du nord, au sommet des montagnes enneigées, face au pays voisin de Drachma. Et partout, l'armée.
+
+Chaque alchimiste d'État reçoit un nom de guerre qui dit sa spécialité. Roy Mustang est l'Alchimiste de flamme : avec des gants marqués d'un cercle, il claque des doigts et une étincelle devient incendie. Alex Louis Armstrong, colosse sentimental qui pleure à chaque émotion et arrache sa chemise pour montrer ses muscles, est l'Alchimiste au bras puissant. Kimblee est l'Alchimiste écarlate. Shou Tucker, lui, s'est fait un nom avec les chimères. Chaque nom est une promesse faite à l'État : ce que je sais faire est à vous.
+
+Le pays a aussi ses voisins. À l'est, au-delà d'un grand désert, se trouve Xing, un empire immense, divisé en clans, où l'on pratique une autre alchimie, l'alkahestry, plus proche de la médecine, qui se sert du flux d'énergie qui parcourt la terre, le pouls du dragon. Le jeune prince Ling Yao en arrive avec ses deux gardes du corps, le vieux Fu et sa petite-fille Lan Fan, à la recherche du secret de l'immortalité, pour devenir empereur. Une petite fille, May Chang, vient d'un clan rival avec un minuscule panda. Leur alkahestry jouera un rôle décisif au moment du jour promis : c'est une force que Père ne contrôle pas.
+
+## Le prix de la pierre
 
 Plus les frères approchent de la pierre philosophale, plus ce qu'ils découvrent est horrible. Un alchimiste d'État, Shou Tucker, a créé une chimère capable de parler, à partir de sa propre fille et de son chien, pour garder son titre. C'est l'une des scènes les plus terribles du manga, et elle apprend à Ed que l'alchimie, au service de l'ambition, peut tout justifier. Puis ils apprennent le secret de la pierre : on la fabrique avec des vies humaines. Une pierre philosophale, ce sont des centaines, des milliers d'âmes condensées dans un caillou rouge. Elle ne contourne pas l'échange équivalent. Elle le fait payer à d'autres.
 
@@ -60,7 +88,19 @@ Puis on apprend que cette guerre, comme toutes les autres guerres de l'histoire 
 
 Père a fondé Amestris pour recommencer, en plus grand. Chaque guerre, chaque massacre, chaque bataille sanglante de l'histoire du pays a été provoqué à un endroit précis, pour graver, avec du sang, les points d'un cercle de la taille du pays tout entier. Le jour d'une éclipse de soleil, le jour promis, il veut transmuter tous les habitants d'Amestris pour absorber la puissance de Dieu lui-même.
 
-La fin raconte la résistance contre ce plan : des soldats, des alchimistes, des Ishvaliens, des étrangers, et deux frères, qui se battent ensemble. Elle se termine par un choix. Pour récupérer le corps de son frère, Ed doit donner quelque chose de valeur égale. Il donne sa propre porte, c'est-à-dire sa capacité à faire de l'alchimie, pour toujours. Il devient un garçon ordinaire. Et il découvre que c'est un prix qu'il paie volontiers.
+## Le jour promis
+
+Le dernier tiers du manga raconte ce jour, l'un des plus longs de l'histoire de la bande dessinée japonaise : plusieurs volumes pour une seule journée. Tout le monde converge vers Central. Les soldats de Briggs, venus du nord sous le commandement d'Olivier Armstrong. Mustang et son équipe, qui lancent un coup d'État contre le Führer. Scar et des Ishvaliens. Ling, devenu l'hôte de l'homoncule Greed, et ses gardes. May Chang. Hohenheim. Et les deux frères, descendus dans les souterrains où Père attend, au centre exact du cercle qui couvre le pays.
+
+Père a besoin de cinq sacrifices, cinq personnes qui ont ouvert la porte de la Vérité et survécu. Il en a quatre : Ed, Al, Izumi, Hohenheim. Pour le cinquième, il force Mustang à faire une transmutation humaine. Mustang paie le prix : la Vérité lui prend la vue. L'alchimiste de flamme, l'homme qui voulait devenir Führer, se retrouve aveugle au moment décisif. Puis l'éclipse commence, et Père active le cercle. Pendant un instant, tous les habitants d'Amestris sont arrachés à leur corps, leurs âmes aspirées vers lui. Il ouvre la porte du monde et absorbe ce qu'il appelle Dieu.
+
+Mais Hohenheim avait préparé une parade, pendant des années de voyage à travers le pays. Il a déposé, à des endroits précis, des fragments des âmes de Xerxes qu'il porte en lui, pour dessiner un contre-cercle. Les âmes d'Amestris reviennent dans leurs corps. Et avec l'aide de Scar, qui achève le cercle inversé dessiné par son frère, l'alchimie redevient possible pour tous ceux qui se battent.
+
+Le combat final réunit tout le monde, tous ceux qui ont été blessés, humiliés, trahis. Al, dont le corps est resté de l'autre côté de la porte depuis le premier jour, fait alors un choix : il passe un marché avec May Chang pour se sacrifier et rendre à Ed le bras qu'il avait donné pour lui. Ed, avec ce bras retrouvé, frappe Père une dernière fois. Le petit être du flacon retourne devant la Vérité, et disparaît.
+
+Reste Al. Pour le ramener, Ed doit payer quelque chose de valeur égale. Il comprend qu'il possède une seule chose qui vaut autant que son frère : sa propre porte, c'est-à-dire sa capacité à faire de l'alchimie, pour toujours. Il la donne, sans hésiter. La Vérité sourit, et lui dit qu'il a gagné. Al revient dans son corps, maigre, faible, vivant. Ed devient un garçon ordinaire.
+
+Dans les dernières pages, deux ans ont passé. Les frères partent chacun de leur côté, l'un vers l'ouest, l'autre vers l'est, pour apprendre ce que le monde peut leur enseigner. Ed promet à Winry de lui donner la moitié de sa vie si elle lui donne la moitié de la sienne : une demande en mariage formulée comme un échange équivalent, que Winry corrige en disant qu'elle lui donnera bien plus que la moitié. La dernière image montre une famille, des enfants, une photographie.
 
 ## Ceux qui portent la guerre
 
@@ -85,6 +125,8 @@ Père, lui, finit comme il a commencé : renvoyé de l'autre côté de la porte,
 @art 2 | Amestris en guerre
 
 # Deux séries, deux fins
+
+@yt K0GbHoMHXUw | Le premier générique de Brotherhood, Again, chanté par Yui.
 
 Fullmetal Alchemist est l'une des rares œuvres à avoir été adaptée deux fois en série par le même studio, avec deux histoires différentes. La première série, en 2003, réalisée par Seiji Mizushima, a rattrapé le manga au bout de quelques mois. Avec l'accord d'Arakawa, l'équipe a inventé sa propre suite. Les homoncules y naissent des transmutations humaines ratées, et l'un d'eux porte le visage de Trisha, la mère des Elric. Leur maîtresse est une alchimiste immortelle, Dante. Et la fin envoie Ed de l'autre côté de la porte, dans notre monde à nous, en Allemagne. Le film qui la prolonge, Conqueror of Shamballa, en 2005, se passe à Munich en 1923, au moment où un petit parti politique tente de prendre le pouvoir, et le cinéaste Fritz Lang y fait une apparition.
 

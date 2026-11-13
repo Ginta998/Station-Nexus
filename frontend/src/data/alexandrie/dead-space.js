@@ -31,6 +31,22 @@ Il y a aussi des tensions politiques. Des colonies se sont soulevées contre la 
 
 Et puis il y a l'Église. L'Unitologie est née au XXIIIe siècle, autour de la figure de Michael Altman. Ses fidèles sont partout : dans les équipages, dans l'armée, dans l'administration. Ils paient très cher pour monter dans la hiérarchie de l'Église et recevoir ses enseignements secrets. Ils se saluent au nom d'Altman. Pour eux, la mort n'est pas une fin, mais le passage vers l'unité promise. Le gouvernement les tolère, les craint et s'en sert. Ses scientifiques savent depuis longtemps que les Marqueurs sont dangereux, mais ils continuent à les étudier, parce que ces objets semblent produire une énergie illimitée. Tout le drame de la série tient dans cette alliance malsaine : une Église qui adore l'arme, un État qui veut s'en servir, et une compagnie qui envoie ses ouvriers creuser à côté.
 
+# Fabriquer la peur
+
+Dead Space a failli ne jamais exister. Au milieu des années deux mille, le studio d'Electronic Arts à Redwood Shores vit des licences des autres : des jeux James Bond, Le Seigneur des anneaux, Le Parrain. EA n'aime pas les nouveaux univers, trop risqués. Glen Schofield en propose un quand même, une horreur de science-fiction, et il le dit lui-même : chez EA, on a un peu paniqué. Pour rassurer, il le présente d'abord comme une suite possible de System Shock, le grand jeu d'horreur spatiale des années quatre-vingt-dix. L'équipe joue à System Shock 2 pour s'en imprégner. Un tout premier concept s'appelle Rancid Moon : des criminels sur une lune, qui deviennent des esprits maléfiques. On en est loin.
+
+Puis, en 2005, sort Resident Evil 4. Toute l'équipe est sidérée. Le jeu de Capcom prouve que l'horreur peut encore se vendre, et qu'on peut la jouer avec une caméra placée juste derrière l'épaule du héros. La formule qui convainc EA tient en une phrase : Resident Evil 4 dans l'espace. Schofield obtient une équipe de dix-huit personnes et six mois pour fabriquer un morceau de jeu complet, une tranche verticale, qui doit prouver tout le reste. Cette démonstration décide EA à lancer le projet.
+
+Les inspirations viennent du cinéma. Schofield pense à Alien, de Ridley Scott, et à Event Horizon, le film de Paul W. S. Anderson sur un vaisseau revenu de l'enfer. Le designer Ben Wanat, fou de films d'horreur, pense surtout à The Thing, de John Carpenter : des corps qui se déforment, s'ouvrent, deviennent autre chose. Ses nécromorphes ont des membres allongés, amincis, avec des zones de chair à vif qui indiquent où trancher. Il refuse les points faibles lumineux, ce cliché des jeux d'action. Les thèmes de la démence et des hallucinations arrivent tard dans le projet, poussés par l'amour de Wanat pour Solaris, le film de Tarkovski où les morts reviennent hanter une station spatiale.
+
+L'Ishimura lui-même est dessiné par l'équipe du directeur artistique Ian Milham comme le croisement d'une cathédrale gothique et d'une plateforme pétrolière. Ses lampes s'inspirent des lampes de dentiste, sa signalétique de celle du métro japonais. Un premier prototype donnait l'impression que les murs étaient faits de tronçonneuses et de griffes : trop évident, on l'a calmé. Wanat joue sur les espaces vides, les virages à angle droit, les ombres qui bougent quand on avance, pour que chaque couloir cache quelque chose.
+
+Les premiers essais copient les commandes de Resident Evil 4 : on ne peut pas bouger en tirant. Les tests avec des joueurs montrent que le public n'en veut plus. On rend le mouvement, et il faut alors trouver d'autres façons de faire monter la tension : les conduits d'aération, où l'équipe essaie de placer un vrai monstre aussi souvent que possible, le vide sans son, l'apesanteur. Un dirigeant propose une jauge d'horreur, qui déclencherait une frayeur toutes les vingt minutes. Schofield refuse : une peur se règle à l'instinct, pas au chronomètre. Et dans l'ambiance sonore, on entend parfois une sirène d'alerte aérienne : un hommage discret à Akira Yamaoka et aux cauchemars de Silent Hill.
+
+Isaac, enfin, est muet. Wanat et Schofield veulent que le joueur se glisse dans sa combinaison sans qu'un personnage parle à sa place. La critique le leur reprochera, et la suite lui donnera une voix. Le jeu sort en octobre 2008 et dépasse les deux millions d'exemplaires. EA, surpris par ce succès, commande aussitôt une suite et rebaptise le studio : Visceral Games.
+
+@yt RYaJCmJgb9A | La bande-annonce de 2008, sur Twinkle, Twinkle, Little Star chantée doucement : l'une des plus célèbres de l'histoire du jeu vidéo.
+
 # Couper, et regarder dans son dos
 
 Très vite, les morts se relèvent. Ce ne sont pas des zombies. Ce sont des nécromorphes : des cadavres réorganisés par un organisme étranger, qui les déplie, les recoud, les transforme en armes. Des lames d'os sortent des bras. Des corps se gonflent de pustules qui explosent. Des enfants deviennent des choses qui rampent par grappes. Ils sortent des conduits d'aération, partout, tout le temps.
@@ -41,7 +57,19 @@ L'autre grande idée tient dans le dos d'Isaac. Dead Space n'affiche presque rie
 
 Isaac reçoit aussi deux pouvoirs d'ingénieur, qui deviennent des armes. La stase ralentit le temps autour d'une cible : une porte qui claque trop vite, une machine qui tourne, un monstre qui charge. La kinésie lui permet de saisir des objets à distance et de les projeter, y compris les lames arrachées aux nécromorphes. Entre deux combats, il améliore son équipement sur des établis, avec des nœuds d'énergie trouvés dans les couloirs, et il achète munitions et combinaisons dans des boutiques automatiques. Même là, le jeu reste dans son monde : l'Ishimura est un vaisseau de travail, avec ses distributeurs et ses ateliers.
 
-Le son fait la moitié de la peur. Don Veca et son équipe ont travaillé chaque bruit pour qu'on ne sache jamais s'il vient d'un monstre ou du vaisseau : un conduit qui cogne, une machine qui grince, une voix qui murmure, un enfant qui pleure quelque part. Jason Graves a enregistré l'orchestre en lui demandant de jouer des motifs libres, superposés, sans mesure commune, pour créer des masses sonores instables. La musique ne prévient presque jamais. Et la bande-annonce du premier jeu, en 2008, a marqué les joueurs avec une simple comptine, Twinkle, Twinkle, Little Star, chantée doucement sur des images de couloirs sanglants.
+Le son fait la moitié de la peur. Don Veca et son équipe ont travaillé chaque bruit pour qu'on ne sache jamais s'il vient d'un monstre ou du vaisseau : un conduit qui cogne, une machine qui grince, une voix qui murmure, un enfant qui pleure quelque part. Jason Graves a enregistré l'orchestre en lui demandant de jouer des motifs libres, superposés, sans mesure commune, pour créer des masses sonores instables. La musique ne prévient presque jamais. Et la bande-annonce du premier jeu, en 2008, a marqué les joueurs avec une simple comptine chantée doucement sur des images de couloirs sanglants.
+
+@yt QtaIi4zI8M0 | Jason Graves, Welcome Aboard the U.S.G. Ishimura : le premier morceau de la bande originale.
+
+## Le bestiaire
+
+Les nécromorphes ne sont pas une seule espèce, mais une famille de transformations. Le Slasher est la forme la plus courante : un cadavre debout, dont les bras se sont changés en longues faux d'os. Le Lurker naît d'un nourrisson, et rampe sur les murs avec des tentacules dans le dos. Le Leaper est un torse sans jambes, propulsé par une longue queue, qui bondit de loin. La Pregnant porte un ventre gonflé qu'il ne faut surtout pas percer, sous peine de libérer un essaim de petites créatures. L'Exploder traîne un bras transformé en sac de matière instable, qui détone au contact.
+
+Certaines formes servent à fabriquer les autres. L'Infector, une créature ailée aux allures de raie, plante une trompe dans les cadavres et les réveille, un par un : Isaac le voit faire, et comprend que chaque mort laissé dans un couloir est une menace à venir. D'autres sont des gardiens : le Brute, colosse cuirassé qu'on ne blesse que dans le dos ou aux articulations, ou le Guardian, une masse de chair collée au mur qui crache des tentacules. Et il y a le Traqueur, celui que le docteur Mercer a créé à partir d'un cadavre et qui se régénère sans fin : on ne peut que le ralentir, le geler, le fuir, et finalement le brûler.
+
+Au-dessus de tout cela, il y a les êtres géants : le Léviathan, une masse de tentacules installée au cœur d'un pont du vaisseau, qui crache des sacs explosifs ; et l'Esprit-ruche, sur Aegis VII, qui commande l'ensemble. Plus tard dans le jeu apparaissent les Dividers, qui se séparent en morceaux autonomes quand on les tue, et les Twitchers, aux mouvements saccadés, trop rapides pour l'œil. Dans les suites, la famille s'agrandit encore : des meutes d'enfants transformés, des Stalkers qui chargent depuis les angles morts. Chaque forme oblige le joueur à apprendre une nouvelle manière de couper.
+
+## Le vide
 
 Il y a aussi le vide. Certaines parties du vaisseau ont perdu leur atmosphère. Isaac doit y marcher avec une réserve d'oxygène qui baisse. Le son disparaît presque entièrement : on n'entend plus que la respiration d'Isaac, les battements de son cœur, le bruit étouffé des coups. Et dans certaines zones, la gravité est coupée : Isaac saute d'une paroi à l'autre, colle ses bottes au plafond, et le haut et le bas n'existent plus.
 
@@ -51,6 +79,12 @@ Il y a aussi le vide. Certaines parties du vaisseau ont perdu leur atmosphère. 
 
 # Le Marqueur, et la chute de l'Ishimura
 
+## Isaac Clarke
+
+Le héros porte un nom choisi en hommage à deux géants de la science-fiction : Isaac Asimov et Arthur C. Clarke. Ce n'est pas un hasard. Dead Space se veut une science-fiction sérieuse, avec ses machines, ses entreprises, sa politique, et pas seulement un train fantôme dans l'espace. Isaac est ingénieur systèmes, diplômé, compétent, ordinaire. Il ne connaît rien au combat. Sa seule armure est sa combinaison de travail, le RIG, qu'il améliore au fil du jeu en tenues de plus en plus lourdes, jusqu'à ressembler à un chevalier de métal.
+
+Dans le premier jeu, on ne voit presque jamais son visage, et il ne prononce pas un mot. Il reçoit des ordres, il répare, il survit. Toute sa vie intérieure tient dans un seul fil : retrouver Nicole. Le joueur la cherche avec lui, regarde avec lui son message vidéo qui s'interrompt toujours au même endroit, et découvre avec lui, à la fin, qu'il cherchait une morte. Cette révélation rejaillit sur tout ce qu'on vient de vivre : chaque fois qu'Isaac a vu Nicole au bout d'un couloir, le Marqueur le manipulait déjà.
+
 ## L'Ishimura, avant Isaac
 
 Le vaisseau qu'Isaac traverse raconte lui-même sa chute. Dead Space confie presque tout son récit aux traces laissées par l'équipage : des journaux audio, des vidéos de surveillance, des notes griffonnées, des messages inscrits avec du sang sur les cloisons. On ne voit presque jamais l'horreur se produire. On arrive toujours après.
@@ -59,7 +93,7 @@ Voici ce qu'on reconstitue. Les mineurs de la colonie d'Aegis VII ont sorti le M
 
 Trois personnages dominent ces archives. Le docteur Terrence Kyne, responsable scientifique, comprend avant tout le monde que le Marqueur rend fou et qu'il faut le remettre sur la planète. Il s'oppose au capitaine, et le capitaine meurt au cours de cet affrontement. Kyne passe le reste du jeu caché, à parler à Isaac par radio, à moitié lucide, à moitié perdu dans ses propres visions. Le docteur Challus Mercer, lui, est un fanatique. Il voit dans les nécromorphes la forme parfaite de l'humain, l'étape suivante. Il travaille à créer une créature qui se régénère sans fin, le Traqueur, et il lâche cette chose sur Isaac en lui récitant des sermons. Et puis il y a Nicole, la compagne d'Isaac, dont on suit les messages, un par un, à mesure qu'elle comprend que personne ne viendra les sauver.
 
-Le vaisseau entier devient un organisme. Les nécromorphes ne sont pas une foule de monstres isolés : ils obéissent à une conscience commune, que les jeux appellent l'Esprit-ruche, une créature énorme restée sur Aegis VII, qui coordonne l'infestation à distance. Sur l'Ishimura, une matière organique recouvre peu à peu les murs, les machines, les cadavres. Des créatures immenses, comme le Léviathan accroché au réservoir d'eau du vaisseau, se forment à partir de ce qui reste de l'équipage. Isaac avance dans un corps vivant qui l'a déjà digéré à moitié.
+Le vaisseau entier devient un organisme. Les nécromorphes ne sont pas une foule de monstres isolés : ils obéissent à une conscience commune, que les jeux appellent l'Esprit-ruche, une créature énorme restée sur Aegis VII, qui coordonne l'infestation à distance. Sur l'Ishimura, une matière organique recouvre peu à peu les murs, les machines, les cadavres. Des créatures immenses, comme le Léviathan, une masse de tentacules installée dans les réserves du vaisseau, se forment à partir de ce qui reste de l'équipage. Isaac avance dans un corps vivant qui l'a déjà digéré à moitié.
 
 La fin du premier jeu ferme la boucle. Kyne veut ramener le Marqueur sur la planète, parce qu'il pense que cela calmera l'Esprit-ruche. Kendra le tue et veut emporter l'objet pour le gouvernement. Isaac, guidé par l'image de Nicole, finit par replacer le Marqueur sur son socle, affronte l'Esprit-ruche et s'enfuit dans la navette de Kendra, pendant qu'Aegis VII se brise. Seul dans la navette, il regarde une dernière fois le message de Nicole jusqu'au bout. Elle y dit ce qu'elle n'avait jamais pu terminer. Puis il se retourne, et elle est assise à côté de lui.
 
@@ -85,6 +119,8 @@ Isaac l'apprend en même temps qu'il comprend autre chose. Kendra Daniels n'est 
 
 # Titan et Tau Volantis
 
+Le succès du premier jeu change le studio. Glen Schofield le quitte pendant la production de la suite pour fonder Sledgehammer Games, qui travaillera sur Call of Duty, et emmène avec lui près de la moitié de l'équipe. Le producteur Chuck Beaver se souvient de cette période comme de la pire de sa carrière. Wright Bagwell, entré dans l'équipe après avoir joué à une démo du premier jeu, devient le directeur créatif de Dead Space 2. Ben Wanat dirigera Dead Space 3.
+
 ## Le Sprawl
 
 Dead Space 2 sort en janvier 2011. Il se passe trois ans après le premier jeu, sur le Sprawl, une immense ville spatiale construite sur un fragment de Titan, la plus grande lune de Saturne. Près d'un million de personnes y vivent : des familles, des écoles, une église unitologiste géante, des centres commerciaux, des hôpitaux. Isaac s'y réveille dans une camisole, dans un hôpital psychiatrique, sans souvenirs précis des trois dernières années. Autour de lui, l'épidémie vient de commencer.
@@ -105,7 +141,7 @@ Cette planète s'appelle Tau Volantis. C'est un monde de neige et de glace, et c
 
 Les extraterrestres de Tau Volantis avaient compris cela trop tard. Mais ils avaient réussi à figer leur propre Lune au cœur de la planète, grâce à une machine colossale, en sacrifiant leur civilisation. Isaac, Ellie, son compagnon Robert Norton, et un soldat survivant, John Carver, que l'on peut incarner en jeu coopératif, cherchent le Codex, la clé de cette machine, qui pourrait arrêter tous les Marqueurs d'un coup. Le jeu se termine sur un sacrifice, Isaac et Carver tombant dans la Lune qu'ils viennent d'arrêter. Une extension, Awakened, ajoute un épilogue : les autres Lunes se sont réveillées, et elles approchent de la Terre.
 
-Dead Space 3 a divisé les joueurs. Il est plus orienté vers l'action, il permet de fabriquer ses propres armes, il ajoute un mode coopératif et des achats payants. Beaucoup y ont vu la fin de l'horreur pure qui faisait la force de la série. Mais il a donné à l'univers sa mythologie complète, d'une ampleur cosmique.
+Dead Space 3 a divisé les joueurs. Il est plus orienté vers l'action, il permet de fabriquer ses propres armes, il ajoute un mode coopératif et des achats payants. Beaucoup y ont vu la fin de l'horreur pure qui faisait la force de la série. Mais il a donné à l'univers sa mythologie complète, d'une ampleur cosmique. Ses ventes ont été comparables à celles du deuxième jeu, sans atteindre ce qu'EA espérait. Il n'y a jamais eu de Dead Space 4 : seulement une ébauche, où Wanat voulait faire d'Ellie l'héroïne, et où Isaac, peut-être, serait devenu un héraut des Marqueurs.
 
 # Les autres récits, et le remake
 
@@ -120,6 +156,10 @@ Dead Space: Extraction, en 2009 sur la console Wii, est un jeu de tir sur rails 
 Malgré son succès critique, la série n'a jamais vendu autant qu'Electronic Arts l'espérait. Visceral Games a été fermé en 2017, alors qu'il travaillait sur un jeu Star Wars. Glen Schofield a fondé un autre studio, Striking Distance, et a créé The Callisto Protocol, sorti en 2022 : une prison sur une lune de Jupiter, des créatures, une caméra à l'épaule, un héritier direct de Dead Space.
 
 En janvier 2023, le studio Motive, à Montréal, a sorti un remake du premier jeu. Il reprend l'histoire, les lieux et les mécaniques, mais en profondeur. Isaac parle, avec la voix de Gunner Wright. L'Ishimura devient un seul espace continu, sans écran de chargement, qu'on peut parcourir d'un bout à l'autre. Les corps des nécromorphes sont faits de couches, peau, muscles, os, que les armes arrachent une à une. Un système appelé le directeur d'intensité change en permanence les lumières, les bruits et les apparitions, pour qu'on ne puisse jamais se rassurer en connaissant le jeu par cœur. Et l'histoire de Nicole est complétée : on comprend mieux qui elle était, ce qu'elle a vu, et pourquoi elle a pleuré dans son dernier message.
+
+@yt XJ7jv3xYHOs | Dead Space (2023), le remake de Motive : bande-annonce de lancement.
+
+@yt YH-VJLJvgCk | La bande-annonce « berceuse » du remake, en écho à celle de 2008.
 
 @art g 1 | Une affiche du remake de 2023
 

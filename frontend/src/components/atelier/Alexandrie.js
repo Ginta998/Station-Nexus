@@ -7,7 +7,7 @@ import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
 import { DEFAULT_COVERS, mergeCovers, sgdbTerm } from "@/data/alexandrie/covers";
 import { IoCheckmarkCircle, IoTimeOutline, IoClipboardOutline, IoDownloadOutline, IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline, IoPlaySkipForward, IoListOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
-import { lookOf, WEB_FONTS } from "@/data/alexandrie/looks";
+import { lookOf, WEB_FONTS, fontHref } from "@/data/alexandrie/looks";
 import { SEP, parsePaste, pasteToBook, bookToPaste, nextCote, withCote } from "@/data/alexandrie/paste";
 import AlexPaste from "@/components/atelier/AlexPaste";
 import { Controls, Progress, Queue, thumb as ytThumb, coverOf } from "@/components/atelier/Radio";
@@ -383,7 +383,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
   useEffect(() => () => clearTimeout(turnT.current), []);
   useEffect(() => { // polices de l'identité du livre qui ne sont pas embarquées
     if (!look) return;
-    [look.d, look.r].filter((f) => WEB_FONTS.includes(f)).forEach((f) => { const id = "axf-" + f.replace(/\W/g, ""); if (document.getElementById(id)) return; const l = document.createElement("link"); l.id = id; l.rel = "stylesheet"; l.href = `https://fonts.googleapis.com/css2?family=${f.replace(/ /g, "+")}:ital,wght@0,400;0,700;1,400&display=swap`; document.head.appendChild(l); });
+    [look.d, look.r].filter((f) => WEB_FONTS.includes(f) || look.web?.includes(f)).forEach((f) => { const id = "axf-" + f.replace(/\W/g, ""); if (document.getElementById(id)) return; const l = document.createElement("link"); l.id = id; l.rel = "stylesheet"; l.href = fontHref(f); document.head.appendChild(l); });
   }, [look]);
   const measure = () => {
     if (!flow.current) return;
