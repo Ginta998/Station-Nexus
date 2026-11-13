@@ -81,6 +81,8 @@ import kongo from "./royaume-du-kongo";
 import ff12 from "./final-fantasy-xii";
 import toussaint from "./toussaint-louverture";
 import soundiata from "./soundiata-keita";
+import saintJust from "./saint-just";
+import danton from "./danton";
 
 export const ROOMS = [
   { key: "philo", label: "Philosophie", kanji: "哲", about: "Des pensées qui dérangent, expliquées de l'intérieur." },
@@ -99,7 +101,7 @@ export const TYPES = {
   recit: { label: "Récit", about: "Un narrateur raconte, plusieurs points de vue." },
   apprentissage: { label: "Apprentissage", about: "On t'accompagne dans une notion difficile." },
 };
-export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, dreyfus, commune, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, xenoblade, skyrim, airGear, darkSouls, hollowKnight, nier, berserk, outerWilds, evangelion, discoElysium, madeInAbyss, sekiro, pathologic, rainWorld, lain, limbo, inside, shadowColossus, silentHill2, akira, blame, hyperLight, kentucky, ergoProxy, planescape, darkwood, dorohedoro, texhnolyze, stalker, alien, bladeRunner, fearHunger, warhammer, twinPeaks, madMax, hordeContrevent, hyperion, gormenghast, annihilation, nouveauSoleil, fondation, nausicaa, lumumba, kimpaVita, kongo, ff12, toussaint, soundiata, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
+export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, dreyfus, commune, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, xenoblade, skyrim, airGear, darkSouls, hollowKnight, nier, berserk, outerWilds, evangelion, discoElysium, madeInAbyss, sekiro, pathologic, rainWorld, lain, limbo, inside, shadowColossus, silentHill2, akira, blame, hyperLight, kentucky, ergoProxy, planescape, darkwood, dorohedoro, texhnolyze, stalker, alien, bladeRunner, fearHunger, warhammer, twinPeaks, madMax, hordeContrevent, hyperion, gormenghast, annihilation, nouveauSoleil, fondation, nausicaa, lumumba, kimpaVita, kongo, ff12, toussaint, soundiata, saintJust, danton, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
 
 const up = (room, type, title, sub, format) => ({ id: "up-" + title.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-"), room, type, title, sub, format: format || (room === "lore" ? "vhs" : room === "musique" ? "vinyle" : "livre") });
 export const UPCOMING = [
@@ -108,7 +110,7 @@ export const UPCOMING = [
   up("philo", "apprentissage", "Platon", "La caverne et après"), up("philo", "pensee", "Camus", "L'absurde et la révolte"), up("philo", "apprentissage", "Bergson", "La durée"),
   up("histoire", "recit", "Néron", "L'empereur qui voulait être artiste"),
   up("histoire", "recit", "Napoléon", "Les Cent-Jours"), up("histoire", "recit", "Alexandre le Grand", "Jusqu'au bout du monde"),
-  up("histoire", "recit", "L'affaire du collier de la reine", "L'escroquerie qui fit tomber un trône"), up("histoire", "recit", "Saint-Just", "L'archange"),   up("histoire", "recit", "Le scandale de Panama", "Les chéquards"), up("histoire", "recit", "Danton", "L'audace"), up("histoire", "recit", "Jules César", "Le Rubicon"),
+  up("histoire", "recit", "L'affaire du collier de la reine", "L'escroquerie qui fit tomber un trône"),   up("histoire", "recit", "Le scandale de Panama", "Les chéquards"), up("histoire", "recit", "Jules César", "Le Rubicon"),
   up("cinema", "recit", "Le Nouvel Hollywood", "Dix ans où les fous ont eu les clés"), up("cinema", "pensee", "Kurosawa", "Le mouvement et la pluie"), up("cinema", "pensee", "Ozu", "La hauteur du tatami"),
   up("cinema", "recit", "La Nouvelle Vague", "Caméra à l'épaule"), up("cinema", "pensee", "Kubrick", "Le contrôle"), up("cinema", "pensee", "Bergman", "Les visages"),
   up("cinema", "pensee", "Satoshi Kon", "Le montage du rêve"), up("cinema", "pensee", "Miyazaki", "Le vent se lève"), up("cinema", "apprentissage", "Le montage", "D'Eisenstein à Murch"),

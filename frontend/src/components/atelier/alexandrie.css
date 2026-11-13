@@ -486,34 +486,53 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .ax-vadd-find a{color:var(--lab-acc);text-decoration:none}
 .ax-vadd-find a:hover{text-decoration:underline}
 
-/* Vue en grille d'une salle : tous les volumes d'un coup d'œil */
+/* Vue en grille d'une salle : les boîtiers de face (livre, cassette, pochette), en réduction */
 .ax-viewsw{display:inline-flex;border:1px solid var(--lab-hair-2)}
 .ax-viewsw button{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;background:none;border:0;color:var(--lab-mute);font:inherit;font-size:12.5px;cursor:pointer}
 .ax-viewsw button.on{background:var(--lab-acc);color:var(--lab-bg,#0b0b12)}
-.ax-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:18px 14px;margin-top:18px}
-.ax-gc{display:flex;flex-direction:column;gap:6px;text-align:left;padding:0;background:none;border:0;color:var(--lab-ink);font:inherit;cursor:pointer;animation:aiRow .4s var(--lab-ease) both}
-.ax-gc-cv{position:relative;display:grid;place-items:center;aspect-ratio:2/3;background:var(--bg) center/cover no-repeat;color:var(--art);--bg:linear-gradient(160deg,hsl(var(--h) 38% 30%),hsl(var(--h) 46% 14%));--art:hsl(var(--h) 60% 82%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.35),inset 7px 0 7px -5px rgba(0,0,0,.55),0 10px 18px -10px rgba(0,0,0,.75);transition:transform .2s var(--lab-ease),box-shadow .2s}
-.ax-gc-cv i{font-style:normal;font-family:var(--ax-serif),"Noto Serif JP",serif;font-size:40px;line-height:1;opacity:.9}
-.ax-gc-cv em{position:absolute;left:0;top:0;padding:0 4px;background:#fff;color:#111;font:italic 800 8px/1.6 "Arial Black",Arial,sans-serif}
-.ax-gc-cv.f-vinyle{aspect-ratio:1}
-.ax-gc b{font-size:13.5px;line-height:1.2;font-weight:600}
+.ax-grid{--gw:150px;--z:.64;--zv:.36;display:grid;grid-template-columns:repeat(auto-fill,var(--gw));justify-content:space-between;gap:26px 16px;margin-top:22px}
+.ax-gc{width:var(--gw);display:flex;flex-direction:column;gap:6px;text-align:left;padding:0;background:none;border:0;color:var(--lab-ink);font:inherit;cursor:pointer;animation:aiRow .4s var(--lab-ease) both}
+.ax-gc b{font-size:13.5px;line-height:1.2;font-weight:600;margin-top:4px}
 .ax-gc small{font-size:11.5px;line-height:1.3;color:var(--lab-mute)}
-.ax-gc:hover .ax-gc-cv,.ax-gc:focus-visible .ax-gc-cv{transform:translateY(-4px)}
-.ax-gc.on .ax-gc-cv{box-shadow:0 0 0 2px var(--lab-acc),0 12px 20px -10px rgba(0,0,0,.8)}
 .ax-gc.on b{color:var(--lab-acc)}
-.ax-gc.up{opacity:.55}
-@media (max-width:640px){.ax-grid{grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:14px 10px}}
+.ax-gc.up{opacity:.6}
+/* Le boîtier réduit : sa taille réelle, mise à l'échelle depuis le coin bas gauche */
+.ax-face{position:relative;display:block;width:var(--fw);height:var(--fh);--fw:calc(226px * var(--z));--fh:calc(344px * var(--z))}
+.ax-face .ax-cover{position:absolute;left:0;bottom:0;margin:0;transform:scale(var(--z))!important;transform-origin:left bottom;animation:none;cursor:inherit;pointer-events:none;transition:filter .2s}
+.ax-face.f-vhs{--fw:calc(198px * var(--z))}
+.ax-face.f-vinyle{--fw:calc(318px * var(--zv) * 1.3);--fh:calc(318px * var(--zv))}
+.ax-face.f-vinyle .ax-cover{transform:scale(var(--zv))!important;margin:0}
+.ax-face .ax-disc{animation:none;transform:translateX(30%) rotate(8deg)}
+.ax-gc .ax-face{transition:transform .25s var(--lab-ease)}
+.ax-gc:hover .ax-face,.ax-gc:focus-visible .ax-face{transform:translateY(-6px)}
+.ax-gc:hover .ax-face.f-vinyle .ax-disc{transform:translateX(42%) rotate(20deg);transition:transform .5s}
+.ax-gc.on .ax-face::after{content:"";position:absolute;left:-5px;right:-5px;bottom:-7px;height:2px;background:var(--lab-acc)}
+@media (max-width:640px){.ax-grid{--gw:104px;--z:.45;--zv:.25;gap:20px 10px}.ax-gc b{font-size:12.5px}.ax-gc small{display:none}}
 
-/* En grille, la notice montre la pochette du volume choisi */
+/* En grille, la notice montre le boîtier du volume choisi */
 .ax-notice.cv{grid-template-columns:auto minmax(0,1fr) auto}
 .ax-notice.cv>*{grid-column:2}
-.ax-notice.cv .ax-notice-cv{grid-column:1;grid-row:1 / span 6;width:118px;align-self:start;margin-right:-8px}
-.ax-notice.cv .ax-notice-cv.f-vinyle{width:150px}
+.ax-notice.cv .ax-notice-cv{grid-column:1;grid-row:1 / span 6;align-self:center;--z:.5;--zv:.32;margin-right:-6px}
 .ax-notice.cv .ax-acts{grid-column:3}
 @media (max-width:900px){
   .ax-notice.cv{grid-template-columns:auto minmax(0,1fr);column-gap:16px}
-  .ax-notice.cv .ax-notice-cv{grid-row:1 / span 4;width:76px;margin:0}
-  .ax-notice.cv .ax-notice-cv.f-vinyle{width:90px}
-  .ax-notice.cv .ax-notice-cv i{font-size:28px}
+  .ax-notice.cv .ax-notice-cv{grid-row:1 / span 4;--z:.32;--zv:.22;margin:0}
   .ax-notice.cv .ax-acts{grid-column:1 / -1}
 }
+.ax-face .ax-cover.f-vinyle{width:318px;height:318px}
+
+/* Lecteur de musique dans le livre : celui de la Radio */
+.ax-player{margin:0 0 12px;padding:12px;background:linear-gradient(160deg,color-mix(in srgb,var(--rc) 26%,#0d0d12),#0d0d12 70%);color:#f1f1f4;border:1px solid color-mix(in srgb,var(--rc) 45%,transparent)}
+.ax-pl-top{display:flex;align-items:center;gap:11px;margin-bottom:8px}
+.ax-pl-art{flex:0 0 auto;position:relative;width:64px;height:64px;background:#111 center/cover;box-shadow:0 8px 18px -8px rgba(0,0,0,.8)}
+.ax-pl-art .sx-eq{position:absolute;left:4px;bottom:4px}
+.ax-pl-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ax-pl-tx b{font-size:13.5px;font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ax-pl-tx small{font-size:11px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ax-player .rd-prog{margin-top:6px;max-width:none}
+.ax-pl-row{display:flex;align-items:center;gap:6px;margin-top:6px}
+.ax-pl-row .rd-vol{flex:1}
+.ax-pl-q{margin-top:8px;max-height:240px;overflow-y:auto;border-top:1px solid rgba(255,255,255,.12);padding-top:8px}
+.ax-ytr.on{box-shadow:inset 3px 0 0 var(--lab-acc)}
+.ax-rb-now{display:inline-block;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+.ax-rb-sq{padding-left:9px!important;padding-right:9px!important}

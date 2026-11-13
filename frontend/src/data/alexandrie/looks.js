@@ -91,6 +91,8 @@ const B = {
   stavisky: ["presse", { d: "Playfair Display", acc: "#2d5b4a", orn: "◆" }],
   boulanger: ["presse", { acc: "#2c3f7a" }],
   robespierre: ["revolution"],
+  "saint-just": ["revolution", { acc: "#8f1f1f", orn: "✠" }],
+  danton: ["revolution", { acc: "#5a3a1c", orn: "✶" }],
   "toussaint-louverture": ["revolution", { acc: "#1d4f9c", orn: "✦" }],
   "soundiata-keita": ["papyrus", { d: "Cinzel", acc: "#b5761c", orn: "◆" }],
   lumumba: ["presse", { acc: "#1f6fb5", orn: "★" }],

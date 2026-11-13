@@ -6,8 +6,9 @@ import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
 import { DEFAULT_COVERS, mergeCovers, sgdbTerm } from "@/data/alexandrie/covers";
-import { IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline } from "react-icons/io5";
+import { IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline, IoPlaySkipForward, IoListOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
 import { lookOf, WEB_FONTS } from "@/data/alexandrie/looks";
+import { Controls, Progress, Queue, thumb as ytThumb, coverOf } from "@/components/atelier/Radio";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm } from "@/components/atelier/LabDialog";
 import { exportBook } from "@/lib/exportPdf";
@@ -123,17 +124,10 @@ const volLook = (b, upcoming) => {
   const hgt = fmt === "vhs" ? 336 : fmt === "vinyle" ? 318 : 312 + (r % 5) * 7;
   return { r, fmt, w, hgt, tone: (fmt === "vhs" ? ["color", "deep", "ink", "color", "deep"] : TONES)[hue(b.title + "t") % (fmt === "vhs" ? 5 : TONES.length)], lean: ((r % 9) - 4) * 0.12 };
 };
-function Volume({ b, sel, cover, upcoming, wished, onPick, onOpen, menu }) {
-  const pm = menu ? pressMenu(menu) : {};
-  const ctx = menu ? { ...pm, onContextMenu: (e) => { if (!sel) onPick?.(); pm.onContextMenu(e); } } : {};
-  const h = b.color ?? hue(b.title); const L = volLook(b, upcoming); const fmt = L.fmt;
-  const R = ROOMS.find((r) => r.key === b.room); const em = b.emblem || (upcoming ? b.title.replace(/^(Le |La |Les |L')/, "")[0].toUpperCase() : R?.kanji || "書");
-  const cls = ` t-${L.tone} f-${fmt}` + (upcoming ? " up" : "") + (b.mine ? " mine" : "");
-  const len = b.title.length; const fs = Math.max(11.5, Math.min(21, Math.floor(196 / (len * 0.66))));
-  const longest = Math.max(...b.title.split(/[\s-]+/).map((w) => w.length)); const cfs = Math.max(17, Math.min(40, Math.floor((fmt === "vhs" ? 168 : 190) / (longest * 0.7)), len > 22 ? 22 : 40));
-  const vars = { "--h": h, "--r": L.r % 40, "--c": 18 + (L.r % 60) };
-  if (sel) return (
-    <button className={"ax-cover" + cls + (cover ? " img" : "")} style={vars} onClick={onOpen} data-testid={`alex-cover-${b.id}`} aria-label={`${b.title} : ${upcoming ? "à paraître" : "ouvrir"}`} {...ctx}>
+// Le boîtier de face (livre, cassette, pochette) : utilisé sur le rayon, dans la grille et dans la notice.
+function CoverInner({ b, cover, upcoming, wished, fmt, R, em, cfs }) {
+  return (
+    <>
       {fmt === "vinyle" && <span className="ax-disc" aria-hidden="true"><i /></span>}
       {cover && <span className="ax-cover-img" style={{ backgroundImage: `url(${cover})` }} />}
       {fmt === "vhs" && <span className="ax-cover-band mono"><b>VHS</b><span>{(R?.label || "LORE").toUpperCase()}</span><i>{b.cote || "À PARAÎTRE"}</i></span>}
@@ -147,6 +141,34 @@ function Volume({ b, sel, cover, upcoming, wished, onPick, onOpen, menu }) {
       )}
       {fmt === "vhs" ? <span className="ax-sticker">{upcoming ? "BIENTÔT" : "REMBOBINER SVP"}</span> : <span className="ax-cover-tag mono">{upcoming ? (wished ? "★ DEMANDÉ" : "À PARAÎTRE") : b.cote}</span>}
       <span className="ax-wear" aria-hidden="true" />
+    </>
+  );
+}
+function Face({ b, cover, upcoming, wished }) {
+  const L = volLook(b, upcoming); const fmt = L.fmt; const R = ROOMS.find((r) => r.key === b.room);
+  const em = b.emblem || (upcoming ? b.title.replace(/^(Le |La |Les |L')/, "")[0].toUpperCase() : R?.kanji || "書");
+  const len = b.title.length; const longest = Math.max(...b.title.split(/[\s-]+/).map((w) => w.length));
+  const cfs = Math.max(17, Math.min(40, Math.floor((fmt === "vhs" ? 168 : 190) / (longest * 0.8)), len > 22 ? 22 : 40));
+  return (
+    <span className={`ax-face f-${fmt}`} aria-hidden="true">
+      <span className={`ax-cover t-${L.tone} f-${fmt}` + (upcoming ? " up" : "") + (cover ? " img" : "")} style={{ "--h": b.color ?? hue(b.title), "--r": L.r % 40, "--c": 18 + (L.r % 60) }}>
+        <CoverInner b={b} cover={cover} upcoming={upcoming} wished={wished} fmt={fmt} R={R} em={em} cfs={cfs} />
+      </span>
+    </span>
+  );
+}
+function Volume({ b, sel, cover, upcoming, wished, onPick, onOpen, menu }) {
+  const pm = menu ? pressMenu(menu) : {};
+  const ctx = menu ? { ...pm, onContextMenu: (e) => { if (!sel) onPick?.(); pm.onContextMenu(e); } } : {};
+  const h = b.color ?? hue(b.title); const L = volLook(b, upcoming); const fmt = L.fmt;
+  const R = ROOMS.find((r) => r.key === b.room); const em = b.emblem || (upcoming ? b.title.replace(/^(Le |La |Les |L')/, "")[0].toUpperCase() : R?.kanji || "書");
+  const cls = ` t-${L.tone} f-${fmt}` + (upcoming ? " up" : "") + (b.mine ? " mine" : "");
+  const len = b.title.length; const fs = Math.max(11.5, Math.min(21, Math.floor(196 / (len * 0.66))));
+  const longest = Math.max(...b.title.split(/[\s-]+/).map((w) => w.length)); const cfs = Math.max(17, Math.min(40, Math.floor((fmt === "vhs" ? 168 : 190) / (longest * 0.8)), len > 22 ? 22 : 40));
+  const vars = { "--h": h, "--r": L.r % 40, "--c": 18 + (L.r % 60) };
+  if (sel) return (
+    <button className={"ax-cover" + cls + (cover ? " img" : "")} style={vars} onClick={onOpen} data-testid={`alex-cover-${b.id}`} aria-label={`${b.title} : ${upcoming ? "à paraître" : "ouvrir"}`} {...ctx}>
+      <CoverInner b={b} cover={cover} upcoming={upcoming} wished={wished} fmt={fmt} R={R} em={em} cfs={cfs} />
     </button>
   );
   return (
@@ -219,17 +241,41 @@ function ReaderNotes({ at, book, page, pages, chapter, onClose, onJump }) {
 }
 
 // Musique pendant la lecture : recherche YouTube, lecture par la Radio de l'Atelier.
+// Le lecteur de la Radio, dans le livre : pochette, titre, avance, morceau suivant, file d'attente, volume.
+function NowPlaying({ r }) {
+  const [q, setQ] = useState(false); const i = r.info || {};
+  return (
+    <div className="ax-player" style={{ "--rc": r.pl.color || "var(--lab-acc)" }} data-testid="alex-player">
+      <div className="ax-pl-top">
+        <span className="ax-pl-art" style={{ backgroundImage: `url(${ytThumb(i.vid) || coverOf(r.pl)})` }}>{r.playing && <span className="sx-eq"><i /><i /><i /><i /></span>}</span>
+        <span className="ax-pl-tx"><b>{i.title || r.pl.title}</b><small>{i.author ? `${i.author} · ` : ""}{r.pl.title}{i.n > 1 ? ` · ${(i.i || 0) + 1} / ${i.n}` : ""}</small></span>
+        <button className="rd-ic" onClick={r.stop} title="Couper la musique" data-testid="alex-player-stop"><IoClose size={17} /></button>
+      </div>
+      <Controls r={r} small />
+      <Progress r={r} />
+      <div className="ax-pl-row">
+        <button className="rd-ic" onClick={r.mute} title={r.muted ? "Remettre le son" : "Couper le son"}>{r.muted ? <IoVolumeMute size={16} /> : <IoVolumeHigh size={16} />}</button>
+        <input className="rd-vol" type="range" min="0" max="100" value={r.muted ? 0 : r.vol} onChange={(e) => r.setVol(+e.target.value)} style={{ "--p": (r.muted ? 0 : r.vol) + "%" }} aria-label="Volume" />
+        <button className={"rd-ic" + (q ? " on" : "")} onClick={() => setQ(!q)} title="File d'attente" data-testid="alex-player-queue"><IoListOutline size={17} /></button>
+      </div>
+      {q && <div className="ax-pl-q"><Queue r={r} /></div>}
+    </div>
+  );
+}
+// Musique pendant la lecture : recherche YouTube, lecture par la Radio de l'Atelier.
+// Un résultat lancé devient une file : les autres résultats suivent, on peut passer au suivant.
 function ReaderMusic({ radio, onClose }) {
   const [q, setQ] = useState(""); const [res, setRes] = useState(null); const [busy, setBusy] = useState(false);
   const go = async (e) => { e.preventDefault(); if (!q.trim()) return; setBusy(true); try { setRes(await atelierApi.ytSearch(q.trim())); } catch (_) { toast.error("Recherche impossible"); } setBusy(false); };
-  const play = (v) => radio.play({ id: "yt" + v.id, url: `https://www.youtube.com/watch?v=${v.id}`, title: v.title, thumb: `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg` });
+  const play = (v) => { const ids = res.map((x) => x.id); const k = ids.indexOf(v.id); const vids = [...ids.slice(k), ...ids.slice(0, k)];
+    radio.play({ id: "yt-q-" + Date.now(), url: `https://www.youtube.com/watch?v=${v.id}`, title: `Recherche : ${q.trim()}`, thumb: `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`, vids }); };
   return (
     <aside className="ax-music" data-testid="alex-music-panel">
       <p className="mono">MUSIQUE DE LECTURE</p>
-      {radio.pl && <div className="ax-now"><button onClick={radio.toggle} aria-label={radio.playing ? "Pause" : "Lecture"}>{radio.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button><span>{radio.info?.title || radio.pl.title}</span><input type="range" min="0" max="100" value={radio.muted ? 0 : radio.vol ?? 60} onChange={(e) => radio.setVol(+e.target.value)} aria-label="Volume" /><button onClick={radio.stop} aria-label="Arrêter"><IoClose size={15} /></button></div>}
-      <form onSubmit={go} className="ax-ytq"><IoLogoYoutube size={17} /><input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher sur YouTube : Hisaishi, pluie, lo-fi…" data-testid="alex-music-input" /><button type="submit" disabled={busy}>{busy ? "…" : "Chercher"}</button></form>
-      {res && (res.length ? res.slice(0, 12).map((v) => <button key={v.id} className="ax-ytr" onClick={() => play(v)} data-testid={`alex-yt-${v.id}`}><i style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} /><span><b>{v.title}</b><small>{v.author}{v.length ? ` · ${v.length}` : ""}</small></span></button>) : <p className="ax-empty">Aucun résultat.</p>)}
-      {!res && (radio.list || []).length > 0 && <><p className="mono" style={{ marginTop: 14 }}>MES PLAYLISTS</p>{radio.list.slice(0, 8).map((p) => <button key={p.id} className="ax-ytr" onClick={() => radio.play(p)}><i style={{ backgroundImage: p.cover || p.thumb ? `url(${p.cover || p.thumb})` : undefined }} /><span><b>{p.title}</b><small>Playlist de ta radio</small></span></button>)}</>}
+      {radio.pl && <NowPlaying r={radio} />}
+      <form onSubmit={go} className="ax-ytq"><IoLogoYoutube size={17} /><input autoFocus={!radio.pl} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher sur YouTube : Hisaishi, pluie, lo-fi…" data-testid="alex-music-input" /><button type="submit" disabled={busy}>{busy ? "…" : "Chercher"}</button></form>
+      {res && (res.length ? res.slice(0, 12).map((v) => <button key={v.id} className={"ax-ytr" + (radio.info?.vid === v.id ? " on" : "")} onClick={() => play(v)} data-testid={`alex-yt-${v.id}`}><i style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} /><span><b>{v.title}</b><small>{v.author}{v.length ? ` · ${v.length}` : ""}</small></span></button>) : <p className="ax-empty">Aucun résultat.</p>)}
+      {!res && (radio.list || []).length > 0 && <><p className="mono" style={{ marginTop: 14 }}>MES PLAYLISTS</p>{radio.list.slice(0, 8).map((p) => <button key={p.id} className={"ax-ytr" + (radio.pl?.id === p.id ? " on" : "")} onClick={() => radio.play(p)}><i style={{ backgroundImage: p.cover || p.thumb ? `url(${coverOf(p)})` : undefined }} /><span><b>{p.title}</b><small>Playlist de ta radio</small></span></button>)}</>}
       <button className="ax-rb" style={{ marginTop: 12 }} onClick={onClose}>Fermer</button>
     </aside>
   );
@@ -433,7 +479,9 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, r
         {book.mine ? <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
           : onModify && <button className="ax-rb" onClick={onModify} title="Modifier le texte, les images, les vidéos" data-testid="alex-modify"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
         {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} title="Notes (touche N)" data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
-        {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music"><IoMusicalNotes size={15} /> <span>Musique</span></button>}
+        {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music" title={radio.pl ? radio.info?.title || radio.pl.title : "Musique"}><IoMusicalNotes size={15} /> <span>{radio.pl ? <span className="ax-rb-now">{radio.info?.title || radio.pl.title}</span> : "Musique"}</span></button>}
+        {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.toggle} title={radio.playing ? "Pause" : "Lecture"} data-testid="alex-music-toggle">{radio.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>}
+        {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.next} title="Morceau suivant" data-testid="alex-music-next"><IoPlaySkipForward size={15} /></button>}
         {onAddVideo && <button className={"ax-rb" + (vid ? " on" : "")} onClick={() => { setVid((v) => !v); setToc(false); setMusic(false); setNotes(false); }} aria-expanded={vid} title="Ajouter une vidéo YouTube à un chapitre" data-testid="alex-addvid"><IoLogoYoutube size={15} /> <span>Vidéo</span></button>}
         <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>
         <button className="ax-rb" onClick={() => { setToc((t) => !t); setMusic(false); setVid(false); }} aria-expanded={toc} data-testid="alex-toc"><IoList size={16} /> <span>Sommaire</span></button>
@@ -544,10 +592,10 @@ function Rail({ code, label, list, upFrom, selId, onSel, covers, wish, onOpen, k
 function Grid({ list, upFrom, selId, onSel, covers, onOpen, menuFor }) {
   return (
     <div className="ax-grid" data-testid="alex-grid">
-      {list.map((b, i) => { const u = i >= upFrom; const fmt = fmtOf(b); const pm = menuFor ? pressMenu(menuFor(b, u)) : {}; const cv = covers[b.id];
+      {list.map((b, i) => { const u = i >= upFrom; const pm = menuFor ? pressMenu(menuFor(b, u)) : {}; const cv = covers[b.id];
         return (
           <button key={b.id} className={"ax-gc" + (b.id === selId ? " on" : "") + (u ? " up" : "")} style={{ animationDelay: `${Math.min(i, 30) * 18}ms` }} onClick={() => onSel(b.id)} onDoubleClick={() => onOpen(b, u)} {...pm} onContextMenu={(e) => { onSel(b.id); pm.onContextMenu?.(e); }} data-testid={`alex-gc-${b.id}`}>
-            <span className={`ax-gc-cv f-${fmt}`} style={{ "--h": b.color ?? hue(b.title), backgroundImage: cv ? `url(${cv})` : undefined }}>{!cv && <i>{b.emblem || b.title[0]}</i>}{fmt !== "livre" && <em>{fmt === "vhs" ? "VHS" : "LP"}</em>}</span>
+            <Face b={b} cover={cv} upcoming={u} />
             <b>{b.title}</b>{b.sub && <small>{b.sub}</small>}
           </button>
         ); })}
@@ -570,7 +618,7 @@ function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish
         : all.length > 0 && <Rail code={`RAYON ${num}-A`} label={(r.format === "vhs" ? "À DÉCOUVRIR" : "À LIRE") + (up.length ? " · PUIS À PARAÎTRE" : "")} list={all} upFrom={here.length} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} />}
       {cur && (
         <div className={"ax-notice" + (grid ? " cv" : "")} key={cur.id} ref={nref}>
-          {grid && <span className={`ax-gc-cv ax-notice-cv f-${fmt}`} style={{ "--h": cur.color ?? hue(cur.title), backgroundImage: covers[cur.id] ? `url(${covers[cur.id]})` : undefined }} aria-hidden="true">{!covers[cur.id] && <i>{cur.emblem || cur.title[0]}</i>}{fmt !== "livre" && <em>{fmt === "vhs" ? "VHS" : "LP"}</em>}</span>}
+          {grid && <span className="ax-notice-cv"><Face b={cur} cover={covers[cur.id]} upcoming={isUp} wished={wish.includes(cur.id)} /></span>}
           <p className="mono meta">{isUp ? "À PARAÎTRE" : cur.cote || "MES LIVRES"} · {T.label.toUpperCase()} · {fmt === "vhs" ? "CASSETTE" : fmt === "vinyle" ? "DISQUE" : "LIVRE"}{!isUp && cur.words ? ` · ${readingTime(cur.words).toUpperCase()}` : ""}</p>
           <h3>{cur.title}{favs.includes(cur.id) && <IoHeart className="ax-favh" size={20} aria-label="Coup de cœur" />}</h3>
           {cur.sub && <p className="sub">{cur.sub}</p>}
