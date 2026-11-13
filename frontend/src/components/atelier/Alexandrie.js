@@ -6,8 +6,10 @@ import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
 import { DEFAULT_COVERS, mergeCovers, sgdbTerm } from "@/data/alexandrie/covers";
-import { IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline, IoPlaySkipForward, IoListOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
+import { IoCheckmarkCircle, IoTimeOutline, IoClipboardOutline, IoDownloadOutline, IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline, IoPlaySkipForward, IoListOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
 import { lookOf, WEB_FONTS } from "@/data/alexandrie/looks";
+import { SEP, parsePaste, pasteToBook, bookToPaste, nextCote, withCote } from "@/data/alexandrie/paste";
+import AlexPaste from "@/components/atelier/AlexPaste";
 import { Controls, Progress, Queue, thumb as ytThumb, coverOf } from "@/components/atelier/Radio";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm } from "@/components/atelier/LabDialog";
@@ -19,7 +21,7 @@ import "@/components/atelier/alexandrie.css";
 
 // ALEXANDRIE — la bibliothèque de l'Atelier. Des salles, des rayonnages, des livres qui s'ouvrent.
 // Les livres de fond sont dans src/data/alexandrie ; les tiens sont des fiches de l'Atelier (fields.alexandrie).
-const LS = { prog: "nx-alex-progress", wish: "nx-alex-wish", covers: "nx-alex-covers", fav: "nx-alex-fav", view: "nx-alex-view" };
+const LS = { prog: "nx-alex-progress", wish: "nx-alex-wish", covers: "nx-alex-covers", fav: "nx-alex-fav", view: "nx-alex-view", shelf: "nx-alex-shelf" };
 const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || "") ?? d; } catch (_) { return d; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
 const NOEDITS = {};
@@ -28,6 +30,8 @@ const hue = (s) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)
 
 // Fiche de l'Atelier → livre lisible (HTML simple découpé en chapitres sur les titres)
 function itemToBook(it) {
+  const a = it.fields?.alexandrie || {};
+  if (a.src) { try { return pasteToBook(a.src, { id: "item:" + it.id, itemId: it.id, mine: true }); } catch (_) { /* repli plus bas */ } }
   try { return itemToBookRaw(it); } catch (_) { return { id: "item:" + it.id, itemId: it.id, mine: true, title: String(it.title || "Sans titre"), sub: "", room: "atelier", type: "recit", about: "", cote: "PERS.", chapters: [{ title: "", blocks: [{ t: "p", x: "Ce livre n'a pas pu être lu. Ouvre-le pour le corriger." }] }], words: 0, links: [] }; }
 }
 // Texte d'un nœud avec l'italique gardé (*mot*)
@@ -38,7 +42,7 @@ function itemToBookRaw(it) {
   const chapters = []; let cur = { title: "", blocks: [] };
   const newCh = (t) => { if (cur.blocks.length || cur.title) chapters.push(cur); cur = { title: t, blocks: [] }; };
   const nodes = [...doc.childNodes];
-  nodes.forEach((n, ni) => { try { one(n, ni); } catch (_) {} if (cur) cur.end = ni; });
+  nodes.forEach((n, ni) => { const c = cur, k = c.blocks.length; try { one(n, ni); } catch (_) {} c.blocks.slice(k).forEach((b) => { b.si = ni; }); if (cur !== c) cur.blocks.forEach((b) => { b.si = b.si ?? ni; }); if (cur) cur.end = ni; });
   function one(n, ni) {
     const tag = n.nodeName; const txt = (n.textContent || "").trim();
     // Une vidéo YouTube : lien seul, lien dans une phrase, adresse collée telle quelle, ou lecteur intégré.
@@ -106,13 +110,19 @@ const VINYL_KF = [{ clipPath: "circle(0% at 50% 50%)", opacity: 0.6 }, { clipPat
 const clean = (it) => ({ ...it, kind: it.kind || "document", title: it.title ?? "", content: it.content ?? "", image: it.image ?? "", date: it.date ?? "", pinned: !!it.pinned, fields: it.fields || {}, tags: it.tags || [], links: it.links || [], media: it.media || [] });
 // Message d'erreur lisible : la raison donnée par le serveur, sinon le code, sinon le message.
 const errText = (e) => { const d = e?.response?.data?.detail; const st = e?.response?.status; if (typeof d === "string" && d) return d; if (Array.isArray(d) && d[0]?.msg) return d[0].msg; if (st === 401 || st === 403) return "connexion requise (reconnecte-toi en admin)"; if (st) return `erreur ${st} du serveur`; if (/network|timeout/i.test(e?.message || "")) return "le serveur ne répond pas"; return e?.message || "erreur inconnue"; };
-// Insère une ligne à la fin d'un chapitre du texte source (mêmes règles de découpage que parseBook).
-const insertInChapter = (text, ci, line) => {
-  const parts = String(text || "").trim().split(/\n\s*\n/); let ch = -1, last = -1;
-  parts.forEach((raw, i) => { const x = raw.trim(); if (!x) return; if (x.startsWith("# ")) ch++; else if (ch < 0) ch = 0; if (ch === ci) last = i; });
-  if (last < 0) parts.push(line); else parts.splice(last + 1, 0, line);
-  return parts.join("\n\n");
-};
+// Le corps d'un bloc collé : tout ce qui suit l'en-tête (mêmes règles que parsePaste)
+const splitSrc = (src) => { const ls = String(src || "").replace(/\r/g, "").split("\n"); let i = 0;
+  for (; i < ls.length; i++) { const t = ls[i].trim(); if (t.startsWith("# ")) break; if (/^-{3,}$/.test(t)) { i++; break; } }
+  return { head: ls.slice(0, i).join("\n"), body: ls.slice(i).join("\n").trim() }; };
+const joinSrc = (head, body) => `${head.replace(/\s+$/, "")}\n\n${body.trim()}\n`;
+// Vidéos dans un texte source : insérer après le paragraphe si, remplacer, retirer
+const bodyEdit = (src, fn) => { const { head, body } = splitSrc(src); const parts = body.split(/\n\s*\n/); fn(parts); return joinSrc(head, parts.filter((x) => x !== null).join("\n\n")); };
+const ytIns = (si, line) => (parts) => parts.splice(Math.min(parts.length, Math.max(0, si + 1)), 0, line);
+const ytDel = (id) => (parts) => parts.forEach((x, i) => { if (x.trim().startsWith(`@yt ${id}`)) parts[i] = null; });
+const ytSwap = (oldId, newId) => (parts) => parts.forEach((x, i) => { if (x.trim().startsWith(`@yt ${oldId}`)) parts[i] = x.replace(`@yt ${oldId}`, `@yt ${newId}`); });
+// Un livre (quel qu'il soit) → texte collable, pour l'export et la copie
+const blockText = (b) => (b.t === "q" ? `> ${b.x}${b.by ? ` | ${b.by}` : ""}` : b.t === "h" ? `## ${b.x}` : b.t === "yt" ? `@yt ${b.id} | ${b.cap || ""}` : b.t === "img" ? `@img ${b.src} | ${b.cap || ""}${b.credit ? ` | ${b.credit}` : ""}` : b.t === "art" ? `@art ${b.kind === "grids" ? "g " : ""}${b.n} | ${b.cap || ""}` : b.t === "box" ? `!! ${b.label || "À RETENIR"} :: ${b.x}` : b.x);
+const asPaste = (b) => b.src || bookToPaste({ ...b, cote: b.cote === "PERS." ? "" : b.cote, text: b.text && !b.mine && !b.edited ? b.text : b.chapters.map((c) => [c.title && `# ${c.title}`, ...c.blocks.map(blockText)].filter(Boolean).join("\n\n")).join("\n\n") });
 const inline = (s) => s.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((p, i) => (p.startsWith("**") && p.endsWith("**") && p.length > 4 ? <strong key={i}>{p.slice(2, -2)}</strong> : p.startsWith("*") && p.endsWith("*") && p.length > 2 ? <em key={i}>{p.slice(1, -1)}</em> : p));
 
 // Un volume sur le rayonnage : tranche (illustration, titre vertical, étiquette de cote) ou, s'il est choisi, boîtier de face.
@@ -125,7 +135,9 @@ const volLook = (b, upcoming) => {
   return { r, fmt, w, hgt, tone: (fmt === "vhs" ? ["color", "deep", "ink", "color", "deep"] : TONES)[hue(b.title + "t") % (fmt === "vhs" ? 5 : TONES.length)], lean: ((r % 9) - 4) * 0.12 };
 };
 // Le boîtier de face (livre, cassette, pochette) : utilisé sur le rayon, dans la grille et dans la notice.
-function CoverInner({ b, cover, upcoming, wished, fmt, R, em, cfs }) {
+// Étiquette discrète : lu, à lire, coup de cœur
+const StTag = ({ st }) => (st && (st.read || st.want || st.fav) ? <span className="ax-stag mono" aria-label={[st.read && "lu", st.want && "à lire", st.fav && "coup de cœur"].filter(Boolean).join(", ")}>{st.read ? "✓ LU" : st.want ? "À LIRE" : ""}{st.fav && <i>♥</i>}</span> : null);
+function CoverInner({ b, cover, upcoming, wished, fmt, R, em, cfs, st }) {
   return (
     <>
       {fmt === "vinyle" && <span className="ax-disc" aria-hidden="true"><i /></span>}
@@ -141,10 +153,11 @@ function CoverInner({ b, cover, upcoming, wished, fmt, R, em, cfs }) {
       )}
       {fmt === "vhs" ? upcoming && <span className="ax-sticker">BIENTÔT</span> : <span className="ax-cover-tag mono">{upcoming ? (wished ? "★ DEMANDÉ" : "À PARAÎTRE") : b.cote}</span>}
       <span className="ax-wear" aria-hidden="true" />
+      <StTag st={st} />
     </>
   );
 }
-function Face({ b, cover, upcoming, wished }) {
+function Face({ b, cover, upcoming, wished, st }) {
   const L = volLook(b, upcoming); const fmt = L.fmt; const R = ROOMS.find((r) => r.key === b.room);
   const em = b.emblem || (upcoming ? b.title.replace(/^(Le |La |Les |L')/, "")[0].toUpperCase() : R?.kanji || "書");
   const len = b.title.length; const longest = Math.max(...b.title.split(/[\s-]+/).map((w) => w.length));
@@ -152,12 +165,12 @@ function Face({ b, cover, upcoming, wished }) {
   return (
     <span className={`ax-face f-${fmt}`} aria-hidden="true">
       <span className={`ax-cover t-${L.tone} f-${fmt}` + (upcoming ? " up" : "") + (cover ? " img" : "")} style={{ "--h": b.color ?? hue(b.title), "--r": L.r % 40, "--c": 18 + (L.r % 60) }}>
-        <CoverInner b={b} cover={cover} upcoming={upcoming} wished={wished} fmt={fmt} R={R} em={em} cfs={cfs} />
+        <CoverInner b={b} cover={cover} upcoming={upcoming} wished={wished} fmt={fmt} R={R} em={em} cfs={cfs} st={st} />
       </span>
     </span>
   );
 }
-function Volume({ b, sel, cover, upcoming, wished, onPick, onOpen, menu }) {
+function Volume({ b, sel, cover, upcoming, wished, onPick, onOpen, menu, st }) {
   const pm = menu ? pressMenu(menu) : {};
   const ctx = menu ? { ...pm, onContextMenu: (e) => { if (!sel) onPick?.(); pm.onContextMenu(e); } } : {};
   const h = b.color ?? hue(b.title); const L = volLook(b, upcoming); const fmt = L.fmt;
@@ -168,12 +181,13 @@ function Volume({ b, sel, cover, upcoming, wished, onPick, onOpen, menu }) {
   const vars = { "--h": h, "--r": L.r % 40, "--c": 18 + (L.r % 60) };
   if (sel) return (
     <button className={"ax-cover" + cls + (cover ? " img" : "")} style={vars} onClick={onOpen} data-testid={`alex-cover-${b.id}`} aria-label={`${b.title} : ${upcoming ? "à paraître" : "ouvrir"}`} {...ctx}>
-      <CoverInner b={b} cover={cover} upcoming={upcoming} wished={wished} fmt={fmt} R={R} em={em} cfs={cfs} />
+      <CoverInner b={b} cover={cover} upcoming={upcoming} wished={wished} fmt={fmt} R={R} em={em} cfs={cfs} st={st} />
     </button>
   );
   return (
     <button className={"ax-vol" + cls} style={{ ...vars, width: L.w, height: L.hgt, "--lean": `${L.lean}deg` }} onClick={onPick} title={`${b.title}${b.sub ? " · " + b.sub : ""}${upcoming ? " (à paraître)" : ""}`} data-testid={`alex-book-${b.id}`} {...ctx}>
       <span className="ax-vol-art" style={cover ? { backgroundImage: `url(${cover})` } : undefined}>{!cover && <i>{em}</i>}</span>
+      {st && (st.read || st.want || st.fav) && <span className="ax-vmark mono" aria-hidden="true">{st.read ? "✓" : st.want ? "◷" : ""}{st.fav ? "♥" : ""}</span>}
       <span className="ax-vol-t" style={{ fontSize: fs }}>{b.title}</span>
       {fmt === "vhs"
         ? <span className="ax-vol-f"><em className="ax-dot" />{upcoming && <small className="ax-soon">{wished ? "★" : "BIENTÔT"}</small>}<b className="ax-vhs">VHS</b></span>
@@ -282,11 +296,11 @@ function ReaderMusic({ radio, onClose }) {
 }
 
 // Illustration dans le livre : image (cachée si le lien ne répond pas) ou vidéo YouTube lancée sur place.
-function Fig({ b }) {
+function Fig({ b, si }) {
   const [ok, setOk] = useState(true);
   if (!ok) return null;
   return (
-    <figure className="ax-fig">
+    <figure className="ax-fig" data-si={si}>
       <a href={b.src} target="_blank" rel="noopener noreferrer"><img src={b.src} alt={b.cap || ""} loading="lazy" referrerPolicy="no-referrer" onError={() => setOk(false)} /></a>
       {(b.cap || b.credit) && <figcaption>{b.cap && inline(b.cap)}{b.credit && <small className="mono">{b.credit}</small>}</figcaption>}
     </figure>
@@ -296,12 +310,12 @@ function Fig({ b }) {
 // Une seule requête par jeu et par format ; la vignette s'affiche, l'image entière s'ouvre au clic.
 const ART = new Map();
 const artList = (term, kind) => { const k = term + "|" + kind; if (!ART.has(k)) ART.set(k, atelierApi.sgdbSearch(term, null, kind).then((r) => r?.items || []).catch(() => { setTimeout(() => ART.delete(k), 30000); return []; })); return ART.get(k); };
-function ArtFig({ b, term }) {
+function ArtFig({ b, term, si }) {
   const [a, setA] = useState(undefined);
   useEffect(() => { let on = true; artList(term, b.kind).then((xs) => on && setA(xs.length ? xs[(b.n - 1) % xs.length] : null)); return () => { on = false; }; }, [term, b.kind, b.n]);
   const link = `https://www.steamgriddb.com/search/${b.kind}?term=${encodeURIComponent(term)}`;
   return (
-    <figure className={`ax-fig ax-art ${b.kind}`}>
+    <figure className={`ax-fig ax-art ${b.kind}`} data-si={si}>
       <a className="ax-art-box" href={a?.url || link} target="_blank" rel="noopener noreferrer">{a ? <img src={a.thumb || a.url} alt={b.cap || ""} loading="lazy" referrerPolicy="no-referrer" onError={() => setA(null)} /> : <span className="mono">{a === null ? "VOIR LES ARTWORKS SUR STEAMGRIDDB ↗" : "…"}</span>}</a>
       <figcaption>{b.cap && inline(b.cap)}<small className="mono">{b.credit ? `${b.credit} · ` : ""}{a?.author ? `ARTWORK PAR ${a.author} · ` : ""}<a href={link} target="_blank" rel="noopener noreferrer">STEAMGRIDDB ↗</a></small></figcaption>
     </figure>
@@ -309,10 +323,10 @@ function ArtFig({ b, term }) {
 }
 // Ajouter une vidéo YouTube à un chapitre, depuis la lecture : on colle le lien, on écrit la légende, on choisit le chapitre.
 const VSEARCH = [["beauty", "beauty"], ["analyse", "analysis"], ["lore", "lore"], ["musique", "soundtrack"], ["making-of", "making of"]];
-function VideoAdd({ book, start, onAdd, onClose }) {
-  const [v, setV] = useState(""); const [cap, setCap] = useState(""); const [ci, setCi] = useState(Math.min(start || 0, Math.max(0, book.chapters.length - 1))); const [busy, setBusy] = useState(false);
+function VideoAdd({ book, page, onAdd, onClose }) {
+  const [v, setV] = useState(""); const [cap, setCap] = useState(""); const [busy, setBusy] = useState(false);
   const id = ytId(v.trim());
-  const submit = async (e) => { e.preventDefault(); if (!id) { toast.error("Lien YouTube non reconnu"); return; } setBusy(true); try { await onAdd(ci, id, cap.replace(/\s*\|\s*/g, " / ").replace(/\s+/g, " ").trim()); } finally { setBusy(false); } };
+  const submit = async (e) => { e.preventDefault(); if (!id) { toast.error("Lien YouTube non reconnu"); return; } setBusy(true); try { await onAdd(id, cap.replace(/\s*\|\s*/g, " / ").replace(/\s+/g, " ").trim()); } finally { setBusy(false); } };
   return (
     <aside className="ax-toc ax-vadd" data-testid="alex-vadd" onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); onClose(); } }}>
       <p className="mono">AJOUTER UNE VIDÉO</p>
@@ -320,27 +334,27 @@ function VideoAdd({ book, start, onAdd, onClose }) {
         <label><span className="mono">LIEN YOUTUBE</span><input autoFocus value={v} onChange={(e) => setV(e.target.value)} placeholder="https://www.youtube.com/watch?v=… ou youtu.be/…" data-testid="alex-vadd-url" /></label>
         {v.trim() && (id ? <span className="ax-vadd-thumb" style={{ backgroundImage: `url(https://i.ytimg.com/vi/${id}/mqdefault.jpg)` }}><IoPlay size={18} /></span> : <small className="ax-vadd-bad">Ce n'est pas un lien YouTube reconnu.</small>)}
         <label><span className="mono">LÉGENDE</span><input value={cap} onChange={(e) => setCap(e.target.value)} placeholder="Ce que montre la vidéo, et sa langue" data-testid="alex-vadd-cap" /></label>
-        <label><span className="mono">CHAPITRE</span><select value={ci} onChange={(e) => setCi(Number(e.target.value))} data-testid="alex-vadd-ch">{book.chapters.map((c, i) => <option key={i} value={i}>{String(i + 1).padStart(2, "0")} · {c.title || "Texte"}</option>)}</select></label>
-        <button type="submit" className="ax-vadd-ok" disabled={!id || busy} data-testid="alex-vadd-ok">{busy ? "Ajout…" : "Ajouter à la fin du chapitre"}</button>
+        <p className="ax-vadd-where mono">ELLE SE PLACE ICI, À LA PAGE {page}.</p>
+        <button type="submit" className="ax-vadd-ok" disabled={!id || busy} data-testid="alex-vadd-ok">{busy ? "Ajout…" : "Ajouter à cette page"}</button>
       </form>
       <p className="ax-vadd-find"><span className="mono">CHERCHER</span>{VSEARCH.map(([l, q]) => <a key={q} href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${book.title} ${q}`)}`} target="_blank" rel="noopener noreferrer">{l} ↗</a>)}</p>
     </aside>
   );
 }
-function YtFig({ b, onSwap }) {
+function YtFig({ b, onSwap, onRemove, si }) {
   const [on, setOn] = useState(false); const [ed, setEd] = useState(false); const [v, setV] = useState("");
   const swap = (e) => { e.preventDefault(); const id = ytId(v); if (!id) { toast.error("Lien YouTube non reconnu"); return; } onSwap(b.id, id); setEd(false); setOn(false); };
   return (
-    <figure className="ax-fig ax-yt">
+    <figure className="ax-fig ax-yt" data-si={si}>
       {on ? <iframe src={`https://www.youtube-nocookie.com/embed/${b.id}?autoplay=1&rel=0`} title={b.cap || "Vidéo"} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
         : <button type="button" onClick={() => setOn(true)} style={{ backgroundImage: `url(https://i.ytimg.com/vi/${b.id}/hqdefault.jpg)` }} aria-label={`Lire la vidéo : ${b.cap || ""}`}><IoPlay size={26} /></button>}
-      <figcaption>{b.cap && inline(b.cap)}<small className="mono"><a href={`https://www.youtube.com/watch?v=${b.id}`} target="_blank" rel="noopener noreferrer">VOIR SUR YOUTUBE ↗</a>{onSwap && <button type="button" className="ax-yt-sw" onClick={() => { setEd((x) => !x); setV(""); }} data-testid={`alex-yt-swap-${b.id}`}><IoSwapHorizontal size={11} /> CHANGER</button>}</small></figcaption>
+      <figcaption>{b.cap && inline(b.cap)}<small className="mono"><a href={`https://www.youtube.com/watch?v=${b.id}`} target="_blank" rel="noopener noreferrer">VOIR SUR YOUTUBE ↗</a>{onSwap && <button type="button" className="ax-yt-sw" onClick={() => { setEd((x) => !x); setV(""); }} data-testid={`alex-yt-swap-${b.id}`}><IoSwapHorizontal size={11} /> CHANGER</button>}{onRemove && <button type="button" className="ax-yt-sw" onClick={async () => { if (await labConfirm(`Supprimer cette vidéo du livre ?${b.cap ? `\n« ${b.cap} »` : ""}`)) onRemove(b.id); }} data-testid={`alex-yt-del-${b.id}`}><IoTrashOutline size={11} /> SUPPRIMER</button>}</small></figcaption>
       {ed && <form className="ax-yt-ed" onSubmit={swap}><input ref={(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus({ preventScroll: true }))} value={v} onChange={(e) => setV(e.target.value)} onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); setEd(false); } }} placeholder="Colle le lien de la nouvelle vidéo YouTube" data-testid="alex-yt-swap-in" /><button className="at-btn" type="submit">OK</button></form>}
     </figure>
   );
 }
 
-function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, radio, cover, at, startNotes }) {
+function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes }) {
   const { sfx } = useApp();
   const flow = useRef(null);
   const [page, setPage] = useState(() => read(LS.prog, {})[book.id]?.page || 0);
@@ -386,11 +400,16 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, r
     if (anim.current && Math.abs(g.el.scrollLeft - left) < g.step * 2.2) { clearTimeout(anim.current); g.el.scrollTo({ left, behavior: "smooth" }); anim.current = setTimeout(() => { anim.current = 0; if (flow.current) flow.current.scrollLeft = left; }, 420); }
     else { clearTimeout(anim.current); anim.current = 0; g.el.scrollLeft = left; }
   }, [spread, per, pages, book]); // eslint-disable-line
-  useEffect(() => { const all = read(LS.prog, {}); all[book.id] = { page, pages, mark, at: Date.now() }; write(LS.prog, all); }, [page, pages, mark, book.id]);
+  useEffect(() => { if (book.preview) return; const all = read(LS.prog, {}); all[book.id] = { page, pages, mark, at: Date.now() }; write(LS.prog, all); }, [page, pages, mark, book.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const doneR = useRef(false); // arrivé à la dernière page : le livre passe dans « Lus »
+  useEffect(() => { if (!doneR.current && pages > 2 && page + per >= pages && onDone) { doneR.current = true; onDone(); } }, [page, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
   const go = (d) => {
     const n = Math.max(0, Math.min(pages - 1, spread + d * per));
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if ((fmt !== "livre" || per === 2) && n !== spread) { // ordinateur, cassette, disque : la page change d'un coup, une courte animation l'accompagne
+    // Téléphone : la page glisse sous le doigt, quel que soit le format. Pas d'effet par-dessus le texte
+    // (les calques animés sur une colonne aussi large faisaient clignoter l'écran).
+    const phone = per === 1;
+    if (!phone && n !== spread) { // ordinateur, cassette, disque : la page change d'un coup, une courte animation l'accompagne
       clearTimeout(anim.current); anim.current = 0; setPage(n); turnFx(n > spread ? 1 : -1);
       if (!reduce) {
         const dir = n > spread ? 1 : -1; clearTimeout(turnT.current); setTurn({ dir: dir > 0 ? "next" : "prev", k: Date.now() }); turnT.current = setTimeout(() => setTurn(null), fmt === "vinyle" ? 640 : 520);
@@ -398,7 +417,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, r
       }
       return;
     }
-    anim.current = anim.current || 1; if (n !== spread) { setPage(n); turnFx(n > spread ? 1 : -1); clearTimeout(turnT.current); setTurn({ dir: n > spread ? "next" : "prev", k: Date.now() }); turnT.current = setTimeout(() => setTurn(null), 520); } else if (flow.current) { const g = geom(); flow.current.scrollTo({ left: Math.round(spread * g.step), behavior: "smooth" }); anim.current = setTimeout(() => { anim.current = 0; }, 420); } };
+    anim.current = anim.current || 1; if (n !== spread) { setPage(n); turnFx(n > spread ? 1 : -1); } else if (flow.current) { const g = geom(); flow.current.scrollTo({ left: Math.round(spread * g.step), behavior: "smooth" }); anim.current = setTimeout(() => { anim.current = 0; }, 420); } };
   // À la souris : on attrape la page et on la fait glisser, comme au doigt. Au pavé tactile : un glissement horizontal à deux doigts.
   const onMouseDown = (e) => {
     if (e.button !== 0 || e.target.closest?.("a,button,iframe,input,textarea,figure,.ax-yt-ed")) return;
@@ -419,7 +438,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, r
   const onTouchMove = (e) => {
     const d = drag.current; if (!d || !flow.current) return; const t = e.touches[0]; const dx = t.clientX - d.x, dy = t.clientY - d.y;
     if (!d.on && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2) d.on = true;
-    if (d.on && fmt === "livre") { const atEdge = (dx > 0 && spread === 0) || (dx < 0 && spread + per >= pages); flow.current.scrollLeft = d.base - dx * (atEdge ? 0.25 : 1); }
+    if (d.on) { const atEdge = (dx > 0 && spread === 0) || (dx < 0 && spread + per >= pages); flow.current.scrollLeft = d.base - dx * (atEdge ? 0.25 : 1); }
   };
   const onTouchEnd = (e) => {
     const d = drag.current; drag.current = null; if (!d) return; const t = e.changedTouches[0]; const dx = t.clientX - d.x, dt = Date.now() - d.t;
@@ -432,13 +451,18 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, r
     window.addEventListener("keydown", k, true); return () => window.removeEventListener("keydown", k, true);
   });
   const chapterAt = () => { try { const g = geom(); const x = spread * g.step + g.pad + 2; let t = ""; flow.current.querySelectorAll("[data-ch]").forEach((el) => { if (el.offsetLeft <= x + g.step * (g.p - 1)) t = el.querySelector("h2")?.textContent || t; }); return t; } catch (_) { return ""; } };
-  const chapterIdx = () => { try { const g = geom(); const x = spread * g.step + g.pad + 2; let k = 0; flow.current.querySelectorAll("[data-ch]").forEach((el) => { const i = Number(el.dataset.ch); if (Number.isInteger(i) && el.offsetLeft <= x + g.step * (g.p - 1)) k = i; }); return k; } catch (_) { return 0; } };
   const jump = (i) => { const el = flow.current?.querySelector(`[data-ch="${i}"]`); if (!el) return; const g = geom(); setPage(Math.max(0, Math.round((el.offsetLeft - g.pad) / g.step))); setToc(false); };
   const T = TYPES[book.type] || TYPES.recit; const R = ROOMS.find((r) => r.key === book.room);
   const half = Math.ceil(book.chapters.length / 2); const track = (i) => (i < half ? "A" : "B") + (i < half ? i + 1 : i - half + 1);
   // Le corps du livre ne dépend que du livre : tourner une page ne le redessine pas.
   const swapR = useRef(onSwap); swapR.current = onSwap;
   const swapS = useMemo(() => (onSwap ? (a, b) => swapR.current?.(a, b) : null), [!!onSwap]); // eslint-disable-line react-hooks/exhaustive-deps
+  const remR = useRef(onRemoveVideo); remR.current = onRemoveVideo;
+  const removeS = useMemo(() => (onRemoveVideo ? (id) => remR.current?.(id) : null), [!!onRemoveVideo]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Où l'on est : le dernier paragraphe qui commence sur la page (ou la double page) affichée
+  const hereSi = () => { try { const g = geom(); const end = (spread + per) * g.step + g.pad - 4; let si = null;
+    flow.current.querySelectorAll("[data-si]").forEach((el) => { if (el.offsetLeft < end && el.dataset.si !== "") si = Number(el.dataset.si); });
+    return si ?? (book.chapters[0]?.si ?? -1); } catch (_) { return -1; } };
   const body = useMemo(() => (<>
             <section className="ax-titlepage">
               {fmt === "vinyle" ? <span className="ax-tp-sleeve"><span className="ax-tp-disc" />{cover ? <span className="ax-tp-art" style={{ backgroundImage: `url(${cover})` }} /> : <span className="ax-tp-art blank" />}</span> : cover && <span className="ax-tp-art" style={{ backgroundImage: `url(${cover})` }} />}
@@ -453,13 +477,13 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, r
             {book.chapters.map((c, i) => (
               <section className="ax-ch" key={i} data-ch={i}>
                 {c.title && <header><span className="mono">{fmt === "vinyle" ? track(i) : String(i + 1).padStart(2, "0")}</span><h2>{c.title}</h2></header>}
-                {c.blocks.map((b, j) => b.t === "q" ? <blockquote key={j}><p>{inline(b.x)}</p>{b.by && <cite>{b.by}</cite>}</blockquote>
-                  : b.t === "h" ? <h3 key={j}>{inline(b.x)}</h3>
-                  : b.t === "img" ? <Fig key={j} b={b} />
-                  : b.t === "yt" ? <YtFig key={j} b={b} onSwap={swapS} />
-                  : b.t === "art" ? <ArtFig key={j} b={b} term={book.art || sgdbTerm(book)} />
-                  : b.t === "box" ? <aside className="ax-box" key={j}><b className="mono">{b.label || "À RETENIR"}</b><p>{inline(b.x)}</p></aside>
-                  : <p key={j} className={j === 0 && c.title ? "first" : ""}>{inline(b.x)}</p>)}
+                {c.blocks.map((b, j) => b.t === "q" ? <blockquote key={j} data-si={b.si}><p>{inline(b.x)}</p>{b.by && <cite>{b.by}</cite>}</blockquote>
+                  : b.t === "h" ? <h3 key={j} data-si={b.si}>{inline(b.x)}</h3>
+                  : b.t === "img" ? <Fig key={j} b={b} si={b.si} />
+                  : b.t === "yt" ? <YtFig key={j} b={b} si={b.si} onSwap={swapS} onRemove={removeS} />
+                  : b.t === "art" ? <ArtFig key={j} b={b} si={b.si} term={book.art || sgdbTerm(book)} />
+                  : b.t === "box" ? <aside className="ax-box" key={j} data-si={b.si}><b className="mono">{b.label || "À RETENIR"}</b><p>{inline(b.x)}</p></aside>
+                  : <p key={j} data-si={b.si} className={j === 0 && c.title ? "first" : ""}>{inline(b.x)}</p>)}
               </section>
             ))}
             {(book.links || []).length > 0 && (
@@ -476,13 +500,13 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, r
         <button className="ax-rb" onClick={onClose} data-testid="alex-close"><IoArrowBack size={15} /> <span>Rayonnages</span></button>
         <p className="mono ax-rpath">ALEXANDRIE / {(R?.label || "MES LIVRES").toUpperCase()} / <b>{book.cote}</b></p>
         <span className="grow" />
-        {book.mine ? <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
+        {book.mine && !book.src ? onEdit && <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
           : onModify && <button className="ax-rb" onClick={onModify} title="Modifier le texte, les images, les vidéos" data-testid="alex-modify"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
         {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} title="Notes (touche N)" data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
         {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music" title={radio.pl ? radio.info?.title || radio.pl.title : "Musique"}><IoMusicalNotes size={15} /> <span>{radio.pl ? <span className="ax-rb-now">{radio.info?.title || radio.pl.title}</span> : "Musique"}</span></button>}
         {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.toggle} title={radio.playing ? "Pause" : "Lecture"} data-testid="alex-music-toggle">{radio.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>}
         {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.next} title="Morceau suivant" data-testid="alex-music-next"><IoPlaySkipForward size={15} /></button>}
-        {onAddVideo && <button className={"ax-rb" + (vid ? " on" : "")} onClick={() => { setVid((v) => !v); setToc(false); setMusic(false); setNotes(false); }} aria-expanded={vid} title="Ajouter une vidéo YouTube à un chapitre" data-testid="alex-addvid"><IoLogoYoutube size={15} /> <span>Vidéo</span></button>}
+        {onAddVideo && <button className={"ax-rb" + (vid ? " on" : "")} onClick={() => { setVid((v) => !v); setToc(false); setMusic(false); setNotes(false); }} aria-expanded={vid} title="Ajouter une vidéo YouTube à cette page" data-testid="alex-addvid"><IoLogoYoutube size={15} /> <span>Vidéo</span></button>}
         <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>
         <button className="ax-rb" onClick={() => { setToc((t) => !t); setMusic(false); setVid(false); }} aria-expanded={toc} data-testid="alex-toc"><IoList size={16} /> <span>Sommaire</span></button>
         <button className="ax-rb" onClick={() => { const v = !turnSound; setTurnSound(v); write("nx-alex-turn-sound", v); if (v) playPageTurn(fmt, 1); }} aria-pressed={!turnSound} title={turnSound ? "Couper le bruit des pages" : "Remettre le bruit des pages"} data-testid="alex-turn-sound">{turnSound ? <IoVolumeHighOutline size={16} /> : <IoVolumeMuteOutline size={16} />}</button>
@@ -499,7 +523,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onAddVideo, paused, r
         <button className="ax-turn r" onClick={() => go(1)} disabled={spread + per >= pages} aria-label="Page suivante"><IoArrowForward size={20} /></button>
       </div>
       <footer className="ax-rfoot mono"><button className="ax-fturn" onClick={() => go(-1)} disabled={spread === 0} aria-label="Page précédente" data-testid="alex-prev"><IoArrowBack size={18} /></button><span>{book.title.toUpperCase()}</span><span className="ax-prog"><i style={{ width: `${Math.min(100, ((spread + per) / pages) * 100)}%` }} />{noteMarks.map((n) => <button key={n.id} className="ax-pmark" style={{ left: `${(n.at / Math.max(1, pages - 1)) * 100}%` }} onClick={() => { setPage(n.at); setNotes(true); }} title={`Note page ${n.at + 1} : ${n.t.slice(0, 80)}`} aria-label={`Note page ${n.at + 1}`} />)}</span><span>{fmt === "vinyle" ? (spread < pages / 2 ? "FACE A · " : "FACE B · ") : ""}PAGE {Math.min(pages, spread + 1)}{per === 2 && spread + 2 <= pages ? `–${spread + 2}` : ""} / {pages}</span><button className="ax-fturn" onClick={() => go(1)} disabled={spread + per >= pages} aria-label="Page suivante" data-testid="alex-next"><IoArrowForward size={18} /></button></footer>
-      {vid && onAddVideo && <VideoAdd book={book} start={chapterIdx()} onClose={() => setVid(false)} onAdd={async (ci, id, cap) => { if (await onAddVideo(ci, id, cap)) setVid(false); }} />}
+      {vid && onAddVideo && <VideoAdd book={book} page={spread + 1} onClose={() => setVid(false)} onAdd={async (id, cap) => { if (await onAddVideo(hereSi(), id, cap)) setVid(false); }} />}
       {music && radio && <ReaderMusic radio={radio} onClose={() => setMusic(false)} />}
       {notes && at && <ReaderNotes at={at} book={book} page={spread} pages={pages} chapter={chapterAt()} onClose={() => setNotes(false)} onJump={(p) => { setPage(Math.max(0, Math.min(pages - 1, p))); sfx?.("nav"); }} />}
       {toc && (
@@ -569,7 +593,7 @@ function AlexSearch({ books, onClose, onOpen, onGoto }) {
 }
 
 // Un rayon : une rangée de volumes sur sa planche, avec son étiquette.
-function Rail({ code, label, list, upFrom, selId, onSel, covers, wish, onOpen, kanji, menuFor }) {
+function Rail({ code, label, list, upFrom, selId, onSel, covers, wish, onOpen, kanji, menuFor, stOf }) {
   const rail = useRef(null);
   const k = list.findIndex((b) => b.id === selId);
   useEffect(() => { const box = rail.current; const el = box?.querySelector(".ax-cover"); if (!el) return; box.scrollTo({ left: el.offsetLeft - (box.clientWidth - el.offsetWidth) / 2, behavior: "smooth" }); }, [selId, list.length]);
@@ -580,7 +604,7 @@ function Rail({ code, label, list, upFrom, selId, onSel, covers, wish, onOpen, k
       <span className="ax-rack-k" aria-hidden="true">{kanji}</span>
       <button className="ax-step l" onClick={() => (k < 0 ? page(-1) : move(-1))} aria-label="Précédent"><IoArrowBack size={17} /></button>
       <div className="ax-rail" ref={rail} tabIndex={0} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); move(1); } if (e.key === "ArrowLeft") { e.preventDefault(); move(-1); } if (e.key === "Enter" && k >= 0) onOpen(list[k], k >= upFrom); }}>
-        {list.map((b, i) => <Volume key={b.id} b={b} sel={i === k} cover={covers[b.id]} upcoming={i >= upFrom} wished={wish.includes(b.id)} onPick={() => onSel(b.id)} onOpen={() => onOpen(b, i >= upFrom)} menu={menuFor && menuFor(b, i >= upFrom)} />)}
+        {list.map((b, i) => <Volume key={b.id} b={b} sel={i === k} cover={covers[b.id]} upcoming={i >= upFrom} wished={wish.includes(b.id)} onPick={() => onSel(b.id)} onOpen={() => onOpen(b, i >= upFrom)} menu={menuFor && menuFor(b, i >= upFrom)} st={i < upFrom && stOf ? stOf(b.id) : null} />)}
       </div>
       <button className="ax-step r" onClick={() => (k < 0 ? page(1) : move(1))} aria-label="Suivant"><IoArrowForward size={17} /></button>
       <p className="ax-rack-tag mono"><b>{code}</b><span>{label}</span><i>{list.length} VOLUME{list.length > 1 ? "S" : ""}</i></p>
@@ -589,13 +613,13 @@ function Rail({ code, label, list, upFrom, selId, onSel, covers, wish, onOpen, k
 }
 
 // La salle en grille : toutes les couvertures d'un coup d'œil. Un clic choisit (la notice s'affiche au-dessus), un double-clic ouvre.
-function Grid({ list, upFrom, selId, onSel, covers, onOpen, menuFor }) {
+function Grid({ list, upFrom, selId, onSel, covers, onOpen, menuFor, stOf }) {
   return (
     <div className="ax-grid" data-testid="alex-grid">
       {list.map((b, i) => { const u = i >= upFrom; const pm = menuFor ? pressMenu(menuFor(b, u)) : {}; const cv = covers[b.id];
         return (
           <button key={b.id} className={"ax-gc" + (b.id === selId ? " on" : "") + (u ? " up" : "")} style={{ animationDelay: `${Math.min(i, 30) * 18}ms` }} onClick={() => onSel(b.id)} onDoubleClick={() => onOpen(b, u)} {...pm} onContextMenu={(e) => { onSel(b.id); pm.onContextMenu?.(e); }} data-testid={`alex-gc-${b.id}`}>
-            <Face b={b} cover={cv} upcoming={u} />
+            <Face b={b} cover={cv} upcoming={u} st={!u && stOf ? stOf(b.id) : null} />
             <b>{b.title}</b>{b.sub && <small>{b.sub}</small>}
           </button>
         ); })}
@@ -604,7 +628,7 @@ function Grid({ list, upFrom, selId, onSel, covers, onOpen, menuFor }) {
 }
 
 // Une salle : on y est entré par sa porte. Rayon A (à lire), notice du volume choisi, rayon B (à paraître).
-function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish, onCover, onEdit, onModify, menuFor, noteCount, onNotes, favs, onFav, view }) {
+function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish, onCover, onEdit, onModify, menuFor, noteCount, onNotes, favs, onFav, view, stOf, onStatus }) {
   const all = [...here, ...up]; const cur = all.find((b) => b.id === selId) || all[0]; const isUp = cur ? !here.includes(cur) : false;
   const id = cur?.id; const pg = cur && prog[cur.id]; const T = TYPES[cur?.type] || TYPES.recit; const fmt = cur ? fmtOf(cur) : "livre";
   const act = (b, u) => (u ? onWish(b.id) : onRead(b));
@@ -614,11 +638,11 @@ function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish
   useEffect(() => { if (grid && selId) nref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [selId]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <section className="ax-room" aria-label={r.label} data-testid={`alex-room-${r.key}`} key={r.key}>
-      {grid ? null : split ? (here.length > 0 && <Rail code={`RAYON ${num}-A`} label={r.format === "vhs" ? "À DÉCOUVRIR" : "À LIRE"} list={here} upFrom={here.length} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} />)
-        : all.length > 0 && <Rail code={`RAYON ${num}-A`} label={(r.format === "vhs" ? "À DÉCOUVRIR" : "À LIRE") + (up.length ? " · PUIS À PARAÎTRE" : "")} list={all} upFrom={here.length} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} />}
+      {grid ? null : split ? (here.length > 0 && <Rail code={`RAYON ${num}-A`} label={r.format === "vhs" ? "À DÉCOUVRIR" : "À LIRE"} list={here} upFrom={here.length} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} stOf={stOf} />)
+        : all.length > 0 && <Rail code={`RAYON ${num}-A`} label={(r.format === "vhs" ? "À DÉCOUVRIR" : "À LIRE") + (up.length ? " · PUIS À PARAÎTRE" : "")} list={all} upFrom={here.length} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} stOf={stOf} />}
       {cur && (
         <div className={"ax-notice" + (grid ? " cv" : "")} key={cur.id} ref={nref}>
-          {grid && <span className="ax-notice-cv"><Face b={cur} cover={covers[cur.id]} upcoming={isUp} wished={wish.includes(cur.id)} /></span>}
+          {grid && <span className="ax-notice-cv"><Face b={cur} cover={covers[cur.id]} upcoming={isUp} wished={wish.includes(cur.id)} st={isUp ? null : stOf(cur.id)} /></span>}
           <p className="mono meta">{isUp ? "À PARAÎTRE" : cur.cote || "MES LIVRES"} · {T.label.toUpperCase()} · {fmt === "vhs" ? "CASSETTE" : fmt === "vinyle" ? "DISQUE" : "LIVRE"}{!isUp && cur.words ? ` · ${readingTime(cur.words).toUpperCase()}` : ""}</p>
           <h3>{cur.title}{favs.includes(cur.id) && <IoHeart className="ax-favh" size={20} aria-label="Coup de cœur" />}</h3>
           {cur.sub && <p className="sub">{cur.sub}</p>}
@@ -627,16 +651,20 @@ function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish
           <div className="ax-acts">
             {isUp ? <button className="at-btn" onClick={() => onWish(cur.id)} data-testid="alex-wish">{wish.includes(cur.id) ? <><IoStar size={15} /> Demandé</> : <><IoStarOutline size={15} /> Je veux le lire</>}</button>
               : <button className="at-btn" onClick={() => onRead(cur)} data-testid="alex-read"><IoPlay size={14} /> {pg && pg.page > 0 ? `Reprendre page ${pg.page + 1}` : fmt === "vhs" ? "Lancer" : "Lire"}</button>}
-            {cur.mine && <button className="ax-ghost" onClick={() => onEdit(cur.itemId)}><IoCreateOutline size={15} /> Écrire</button>}
+            {cur.mine && !cur.src && <button className="ax-ghost" onClick={() => onEdit(cur.itemId)}><IoCreateOutline size={15} /> Écrire</button>}
             {!isUp && noteCount(cur.id) > 0 && <button className="ax-ghost" onClick={() => onNotes(cur)} data-testid="alex-notes-notice"><IoPencil size={14} /> Mes notes · {noteCount(cur.id)}</button>}
+            {!isUp && (() => { const st = stOf(cur.id); return <>
+              <button className={"ax-ghost" + (st.read ? " on" : "")} onClick={() => onStatus("read", cur.id)} aria-pressed={st.read} data-testid="alex-st-read"><IoCheckmarkCircle size={15} /> {st.read ? "Lu" : "Marquer lu"}</button>
+              <button className={"ax-ghost" + (st.want ? " on" : "")} onClick={() => onStatus("want", cur.id)} aria-pressed={st.want} data-testid="alex-st-want"><IoTimeOutline size={15} /> À lire</button>
+            </>; })()}
             {!isUp && <button className={"ax-ghost" + (favs.includes(cur.id) ? " on" : "")} onClick={() => onFav(cur.id)} aria-pressed={favs.includes(cur.id)} data-testid="alex-fav">{favs.includes(cur.id) ? <IoHeart size={15} /> : <IoHeartOutline size={15} />} Coup de cœur</button>}
-            {!cur.mine && !isUp && <button className="ax-ghost" onClick={() => onModify(cur)} data-testid="alex-modify-notice"><IoCreateOutline size={15} /> Modifier</button>}
+            {(!cur.mine || cur.src) && !isUp && <button className="ax-ghost" onClick={() => onModify(cur)} data-testid="alex-modify-notice"><IoCreateOutline size={15} /> Modifier</button>}
             <button className="ax-ghost" onClick={() => onCover(cur)} data-testid="alex-cover-edit"><IoImageOutline size={15} /> {covers[cur.id] ? "Changer l'artwork" : "Mettre un artwork"}</button>
           </div>
         </div>
       )}
-      {grid && all.length > 0 && <Grid list={all} upFrom={here.length} selId={id} onSel={onSel} covers={covers} onOpen={act} menuFor={menuFor} />}
-      {!grid && split && up.length > 0 && <Rail code={`RAYON ${num}-B`} label="À PARAÎTRE" list={up} upFrom={0} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} />}
+      {grid && all.length > 0 && <Grid list={all} upFrom={here.length} selId={id} onSel={onSel} covers={covers} onOpen={act} menuFor={menuFor} stOf={stOf} />}
+      {!grid && split && up.length > 0 && <Rail code={`RAYON ${num}-B`} label="À PARAÎTRE" list={up} upFrom={0} selId={id} onSel={onSel} covers={covers} wish={wish} onOpen={act} kanji={r.kanji} menuFor={menuFor} stOf={stOf} />}
       {!all.length && <p className="ax-empty">Rien sur ces rayons pour l'instant.</p>}
     </section>
   );
@@ -735,8 +763,18 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const [sel, setSel] = useState({});
   const [coverFor, setCoverFor] = useState(null);
   const [wish, setWish] = useState(() => read(LS.wish, []));
-  const [favs, setFavs] = useState(() => read(LS.fav, []));
-  const toggleFav = (id) => { const f = favs.includes(id) ? favs.filter((x) => x !== id) : [id, ...favs]; setFavs(f); write(LS.fav, f); sfx?.("select"); };
+  // Mes lectures : lus, à lire, coups de cœur. Gardés sur le serveur (tous les appareils) et dans le navigateur.
+  const [shelf, setShelf] = useState(() => ({ read: [], want: [], fav: read(LS.fav, []), ...read(LS.shelf, {}), ...(at.config?.alexandrie?.shelf || {}) }));
+  const srvShelf = at.config?.alexandrie?.shelf;
+  useEffect(() => { if (srvShelf) setShelf((x) => ({ ...x, ...srvShelf })); }, [JSON.stringify(srvShelf || null)]); // eslint-disable-line react-hooks/exhaustive-deps
+  const saveShelf = (sh) => { setShelf(sh); write(LS.shelf, sh); at.saveConfig({ alexandrie: { ...(at.config?.alexandrie || {}), shelf: sh } }).catch(() => {}); };
+  const setStatus = (k, id, on) => { const has = shelf[k].includes(id); const want = on ?? !has; if (want === has) return;
+    const sh = { ...shelf, [k]: want ? [id, ...shelf[k]] : shelf[k].filter((x) => x !== id) };
+    if (want && k === "read") sh.want = sh.want.filter((x) => x !== id); if (want && k === "want") sh.read = sh.read.filter((x) => x !== id);
+    saveShelf(sh); sfx?.("select"); };
+  const favs = shelf.fav; const toggleFav = (id) => setStatus("fav", id);
+  const stOf = (id) => ({ read: shelf.read.includes(id), want: shelf.want.includes(id), fav: shelf.fav.includes(id) });
+  const [stf, setStf] = useState("all"); const [mineTab, setMineTab] = useState(null);
   const [readNotes, setReadNotes] = useState(false);
   const [localCovers, setLocalCovers] = useState(() => read(LS.covers, {}));
   const [bad, setBad] = useState({});
@@ -753,9 +791,21 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const books = useMemo(() => BOOKS.map((b) => {
     const base = (() => { try { return parseBook(rawOf(b)); } catch (_) { return parseBook(b); } })();
     const o = overrides[b.id]; if (!o) return edits[b.id] ? { ...base, edited: true } : base;
+    if (o.fields.alexandrie.src) { try { const x = pasteToBook(o.fields.alexandrie.src, { id: b.id }); return { ...base, ...x, id: b.id, cote: x.cote === "PERS." ? base.cote : x.cote, edited: true, copyId: o.id }; } catch (_) { return base; } }
     try { const x = itemToBookRaw(o); const a = o.fields.alexandrie; return { ...base, title: o.title || base.title, sub: a.sub ?? base.sub, about: a.about ?? base.about, chapters: x.chapters, words: x.words, text: x.text, edited: true, copyId: o.id }; } catch (_) { return base; }
   }), [edits, overrides]); // eslint-disable-line react-hooks/exhaustive-deps
-  const modifyBook = async (b) => {
+  // Modifier par copier-coller : le texte complet du livre (réglages + chapitres) s'ouvre dans la fenêtre de collage.
+  const [paste, setPaste] = useState(null); // { text, item?, of?, title? }
+  const itemOf = (b) => (b.itemId ? at.items.find((i) => i.id === b.itemId) : overrides[b.id]);
+  const modifyBook = (b) => {
+    const it = itemOf(b);
+    if (it && !it.fields?.alexandrie?.src) { setReading(null); open(it.id, "document"); return; } // écrit dans l'éditeur : il s'y modifie
+    setReading(null);
+    setPaste({ text: it ? it.fields.alexandrie.src : asPaste(rawBook(b)), item: it, of: it ? undefined : b.id, title: b.title });
+  };
+  const rawBook = (b) => { const r = rawOf(BOOKS.find((x) => x.id === b.id) || b); return { ...b, ...r }; };
+  // Méthode classique : une copie du livre dans l'éditeur de documents
+  const modifyInEditor = async (b) => {
     if (b.mine) { setReading(null); open(b.itemId); return; }
     if (overrides[b.id]) { setReading(null); open(overrides[b.id].id); return; }
     const raw = rawOf(BOOKS.find((x) => x.id === b.id) || b);
@@ -766,39 +816,26 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       toast.success("Le livre s'ouvre dans l'éditeur. Tes changements apparaîtront sur les rayons.");
     } catch (e) { toast.error("Le livre n'a pas pu être ouvert : " + (e?.response?.data?.detail || e?.message || "erreur")); }
   };
-  const swapVideo = async (b, oldId, newId) => {
-    const it = b.itemId ? at.items.find((i) => i.id === b.itemId) : overrides[b.id];
+  // Vidéos : dans le texte collé du livre (ou sa copie), sinon dans le document de l'éditeur. Un livre du code reçoit une copie.
+  const editVideos = async (b, fn, htmlFn, ok) => {
+    const it = itemOf(b);
     try {
-      if (it) await at.saveItem({ ...clean(it), content: String(it.content || "").split(oldId).join(newId) });
-      else {
-        const raw = rawOf(BOOKS.find((x) => x.id === b.id) || b);
-        const text = raw.text.split(`@yt ${oldId}`).join(`@yt ${newId}`);
-        const made = await at.createItem({ kind: "document", title: raw.title, content: bookToHtml(text), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, room: b.room, type: b.type, sub: raw.sub || "", about: raw.about || "" } } });
-        if (!made?.id) throw new Error("création refusée");
-      }
-      toast.success("Vidéo remplacée");
-    } catch (e) { console.error("[Alexandrie] remplacement de vidéo", e); toast.error("La vidéo n'a pas pu être remplacée : " + errText(e)); }
+      if (it?.fields?.alexandrie?.src) { const src = fn(it.fields.alexandrie.src); await at.saveItem({ ...clean(it), content: bookToHtml(splitSrc(src).body), fields: { ...it.fields, alexandrie: { ...it.fields.alexandrie, src } } }); }
+      else if (it) { const doc = new DOMParser().parseFromString(`<div>${it.content || ""}</div>`, "text/html").body.firstChild; htmlFn(doc); await at.saveItem({ ...clean(it), title: it.title || b.title, content: doc.innerHTML }); }
+      else { const src = fn(asPaste(rawBook(b))); const r = rawBook(b);
+        const made = await at.createItem({ kind: "document", title: r.title, content: bookToHtml(splitSrc(src).body), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, src, room: b.room, type: b.type, sub: r.sub || "", about: r.about || "" } } });
+        if (!made?.id) throw new Error("le serveur n'a pas créé la copie"); }
+      toast.success(ok); sfx?.("select"); return true;
+    } catch (e) { console.error("[Alexandrie] vidéo", e); toast.error("La vidéo n'a pas pu être modifiée : " + errText(e)); return false; }
   };
-  // Ajouter une vidéo à la fin d'un chapitre : dans la copie (ou ton livre), sinon une copie est créée.
-  const addVideo = async (b, ci, id, cap) => {
-    const it = b.itemId ? at.items.find((i) => i.id === b.itemId) : overrides[b.id];
-    const fresh = async () => { // pas encore de copie (ou copie disparue du serveur) : on en crée une, avec la vidéo
-      const raw = rawOf(BOOKS.find((x) => x.id === b.id) || b);
-      const made = await at.createItem({ kind: "document", title: raw.title, content: bookToHtml(insertInChapter(raw.text, ci, `@yt ${id} | ${cap || "Vidéo"}`)), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, room: b.room, type: b.type, sub: raw.sub || "", about: raw.about || "" } } });
-      if (!made?.id) throw new Error("le serveur n'a pas créé la copie");
-    };
-    try {
-      if (it) {
-        const doc = new DOMParser().parseFromString(`<div>${it.content || ""}</div>`, "text/html").body.firstChild;
-        const p = document.createElement("p"); const a = document.createElement("a"); a.href = `https://www.youtube.com/watch?v=${id}`; a.textContent = `▶ ${cap || "Vidéo"}`; p.appendChild(a);
-        const end = b.chapters?.[ci]?.end; const ref = Number.isInteger(end) ? doc.childNodes[end] : null;
-        if (ref) ref.after(p); else doc.appendChild(p);
-        try { await at.saveItem({ ...clean(it), title: it.title || b.title, content: doc.innerHTML }); }
-        catch (e) { if (e?.response?.status === 404 && !b.mine) await fresh(); else throw e; }
-      } else await fresh();
-      toast.success("Vidéo ajoutée au chapitre"); sfx?.("select"); return true;
-    } catch (e) { console.error("[Alexandrie] ajout de vidéo", e); toast.error("La vidéo n'a pas pu être ajoutée : " + errText(e)); return false; }
-  };
+  const ytNodes = (doc, id) => [...doc.childNodes].filter((n) => n.nodeType === 1 && (n.innerHTML || "").includes(id));
+  const swapVideo = (b, oldId, newId) => editVideos(b, (src) => bodyEdit(src, ytSwap(oldId, newId)), (doc) => ytNodes(doc, oldId).forEach((n) => { n.innerHTML = n.innerHTML.split(oldId).join(newId); }), "Vidéo remplacée");
+  const removeVideo = (b, id) => editVideos(b, (src) => bodyEdit(src, ytDel(id)), (doc) => ytNodes(doc, id).forEach((n) => n.remove()), "Vidéo supprimée");
+  // Ajouter une vidéo à la page où l'on est : juste après le dernier paragraphe qui commence sur cette page.
+  const addVideo = (b, si, id, cap) => { const line = `@yt ${id} | ${cap || "Vidéo"}`;
+    return editVideos(b, (src) => bodyEdit(src, ytIns(si, line)), (doc) => {
+      const p = document.createElement("p"); const a = document.createElement("a"); a.href = `https://www.youtube.com/watch?v=${id}`; a.textContent = `▶ ${cap || "Vidéo"}`; p.appendChild(a);
+      const ref = doc.childNodes[si]; if (ref) ref.after(p); else doc.appendChild(p); }, "Vidéo ajoutée à cette page"); };
   const revertEdit = async (b) => {
     if (!(await labConfirm(`Revenir au texte d'origine de « ${b.title} » ? Tes modifications seront perdues.`))) return;
     try {
@@ -810,7 +847,12 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const menuFor = (b, upc) => () => ({ title: b.title, entries: [
     !upc && { id: "read", label: prog[b.id]?.page > 0 ? `Reprendre page ${prog[b.id].page + 1}` : "Lire", icon: <IoPlay size={14} />, onClick: () => openBook(b) },
     upc && { id: "wish", label: wish.includes(b.id) ? "Ne plus demander" : "Je veux le lire", icon: <IoStarOutline size={14} />, onClick: () => toggleWish(b.id) },
-    !upc && (b.mine ? { id: "write", label: "Écrire", icon: <IoCreateOutline size={14} />, onClick: () => open(b.itemId) } : { id: "modify", label: "Modifier le livre", icon: <IoCreateOutline size={14} />, onClick: () => modifyBook(b) }),
+    !upc && { id: "modify", label: b.mine && !b.src ? "Écrire" : "Modifier (copier-coller)", icon: <IoCreateOutline size={14} />, onClick: () => modifyBook(b) },
+    !upc && !b.mine && !b.edited && { id: "modify-ed", label: "Modifier dans l'éditeur", icon: <IoPencil size={14} />, onClick: () => modifyInEditor(b) },
+    !upc && { id: "copy", label: "Copier le texte du livre", icon: <IoClipboardOutline size={14} />, onClick: () => navigator.clipboard?.writeText(asPaste(b.mine || b.edited ? b : rawBook(b))).then(() => toast.success("Texte copié : il se colle tel quel dans « Coller un livre »"), () => toast.error("La copie n'a pas marché")) },
+    "-",
+    !upc && { id: "st-read", label: shelf.read.includes(b.id) ? "Retirer de « Lus »" : "Marquer comme lu", icon: <IoCheckmarkCircle size={14} />, onClick: () => setStatus("read", b.id) },
+    !upc && { id: "st-want", label: shelf.want.includes(b.id) ? "Retirer de « À lire »" : "À lire", icon: <IoTimeOutline size={14} />, onClick: () => setStatus("want", b.id) },
     !upc && { id: "fav", label: favs.includes(b.id) ? "Retirer des coups de cœur" : "Coup de cœur", icon: favs.includes(b.id) ? <IoHeart size={14} /> : <IoHeartOutline size={14} />, onClick: () => toggleFav(b.id) },
     !upc && { id: "pdf", label: "Exporter en PDF", icon: <IoPrintOutline size={14} />, onClick: () => exportBook(b, covers[b.id], bookNotes(at, b.id, 0)) },
     "-",
@@ -819,11 +861,57 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     DEFAULT_COVERS[b.id] && covers[b.id] !== DEFAULT_COVERS[b.id] && { id: "recover", label: "Remettre l'artwork d'origine", icon: <IoArrowUndo size={14} />, onClick: () => saveCover(b.id, null) },
     !upc && b.edited && "-",
     !upc && b.edited && { id: "revert", label: "Revenir au texte d'origine", icon: <IoArrowUndo size={14} />, danger: true, onClick: () => revertEdit(b) },
+    b.mine && "-",
+    b.mine && { id: "del", label: "Supprimer le livre", icon: <IoTrashOutline size={14} />, danger: true, onClick: () => deleteBook(b) },
   ] });
+  const deleteBook = async (b) => {
+    if (!(await labConfirm(`Supprimer « ${b.title} » ? Il disparaîtra des rayons et du Nexus Drive.`))) return;
+    try { await at.removeItem(b.itemId); toast.success("Livre supprimé"); } catch (e) { toast.error("Le livre n'a pas pu être supprimé : " + errText(e)); }
+  };
+  // Enregistrer ce qui a été collé : un livre modifié, ou un ou plusieurs livres nouveaux.
+  const savePaste = async (blocks) => {
+    const roomNow = R?.key; const made = [];
+    try {
+      if (paste.item || paste.of) {
+        const src = blocks[0]; const { meta, body } = parsePaste(src); const fa = { room: meta.room, type: meta.type, sub: meta.sub, about: meta.about };
+        if (paste.item) await at.saveItem({ ...clean(paste.item), title: meta.title, content: bookToHtml(body), fields: { ...paste.item.fields, alexandrie: { ...paste.item.fields.alexandrie, ...fa, src } } });
+        else { const it = await at.createItem({ kind: "document", title: meta.title, content: bookToHtml(body), tags: ["alexandrie"], fields: { alexandrie: { of: paste.of, ...fa, src } } }); if (!it?.id) throw new Error("création refusée"); }
+        if (blocks.length > 1) toast("Seul le premier livre a été gardé : la modification porte sur un seul volume.");
+        toast.success(`« ${meta.title} » enregistré`);
+      } else {
+        const sh = { ...shelf, read: [...shelf.read], want: [...shelf.want], fav: [...shelf.fav] }; const cv = {};
+        for (const t0 of blocks) {
+          let { meta } = parsePaste(t0);
+          if (!/^\s*salle\s*:/im.test(t0) && roomNow) meta = { ...meta, room: roomNow }; // collé dans une salle : il y reste
+          const src = meta.cote ? t0 : withCote(t0, nextCote(meta.room, [...all, ...made]));
+          const { body } = parsePaste(src); const fa = { room: meta.room, type: meta.type, sub: meta.sub, about: meta.about };
+          const it = await at.createItem({ kind: "document", title: meta.title, content: bookToHtml(body), tags: ["alexandrie"], fields: { alexandrie: { ...fa, src: /^\s*salle\s*:/im.test(src) ? src : src.replace(/^(\s*titre\s*:.*)$/im, `$1\nSALLE : ${meta.room}`) } } });
+          if (!it?.id) throw new Error("création refusée");
+          const id = "item:" + it.id; made.push({ id, cote: parsePaste(src).meta.cote, room: meta.room });
+          if (meta.status) { sh[meta.status] = [id, ...sh[meta.status]]; if (meta.status === "read") sh.want = sh.want.filter((x) => x !== id); }
+          if (meta.cover) cv[id] = meta.cover;
+        }
+        if (made.length) { if (JSON.stringify(sh) !== JSON.stringify(shelf)) saveShelf(sh);
+          if (Object.keys(cv).length) { const c = { ...rawCovers, ...cv }; setLocalCovers(c); write(LS.covers, c); at.saveConfig({ alexandrie: { ...(at.config?.alexandrie || {}), covers: c } }).catch(() => {}); } }
+        toast.success(made.length > 1 ? `${made.length} livres ajoutés aux rayons` : "Livre ajouté aux rayons");
+      }
+      sfx?.("select"); setPaste(null);
+    } catch (e) { console.error("[Alexandrie] collage", e); toast.error(`Enregistrement interrompu${made.length ? ` après ${made.length} livre(s)` : ""} : ${errText(e)}`); }
+  };
+  // Exporter mes livres : tous les livres écrits ou collés, et les copies modifiées, dans un seul fichier à recoller.
+  const exportMine = () => {
+    const list = [...books.filter((b) => b.edited), ...mine];
+    if (!list.length) { toast("Aucun livre à exporter pour l'instant : seuls tes livres et tes copies modifiées le sont."); return; }
+    const txt = list.map(asPaste).join("\n\n=====\n\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([txt], { type: "text/plain;charset=utf-8" }));
+    a.download = `alexandrie-mes-livres-${new Date().toISOString().slice(0, 10)}.txt`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    toast.success(`${list.length} livre${list.length > 1 ? "s" : ""} exporté${list.length > 1 ? "s" : ""}. Le fichier se recolle tel quel.`);
+  };
   const mine = useMemo(() => at.items.filter((i) => i.fields?.alexandrie && !i.fields.alexandrie.of).map(itemToBook), [at.items]);
   const all = useMemo(() => [...books, ...mine], [books, mine]);
   const readingBook = reading && (all.find((b) => b.id === reading.id) || reading);
-  const match = (b) => type === "all" || b.type === type;
+  const match = (b) => (type === "all" || b.type === type) && (stf === "all" || shelf[stf].includes(b.id));
+  const matchUp = (b) => (type === "all" || b.type === type) && (stf === "all" || (stf === "want" && wish.includes(b.id)));
   useEffect(() => { if (!startBook) return; const b = all.find((x) => x.id === startBook); if (b) { setSel((x) => ({ ...x, [b.room]: b.id })); setReading(b); } }, [startBook]); // eslint-disable-line react-hooks/exhaustive-deps
   const current = all.filter((b) => prog[b.id] && prog[b.id].page > 0 && prog[b.id].page < (prog[b.id].pages || 1) - 1).sort((a, b) => prog[b.id].at - prog[a.id].at).slice(0, 4);
   const toggleWish = (id) => { const w = wish.includes(id) ? wish.filter((x) => x !== id) : [...wish, id]; setWish(w); write(LS.wish, w); sfx?.("select"); };
@@ -872,7 +960,10 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
               <h1>La bibliothèque</h1>
               <p className="ax-top-ab">Nérodus tient les rayonnages. Pousse une porte.</p>
             </div>
-            <div className="ax-tools">{searchBtn}<button className="at-btn" onClick={() => addBook("atelier")} data-testid="alex-add"><IoAdd size={16} /> Écrire un livre</button></div>
+            <div className="ax-tools">{searchBtn}
+              <button className="ax-ghost" onClick={() => setPaste({ text: "" })} data-testid="alex-paste-open"><IoClipboardOutline size={15} /> Coller un livre</button>
+              <button className="at-btn" onClick={() => addBook("atelier")} data-testid="alex-add"><IoAdd size={16} /> Écrire un livre</button>
+              <button className="ax-ghost ax-ico" onClick={exportMine} title="Exporter mes livres (un fichier texte à recoller)" aria-label="Exporter mes livres" data-testid="alex-export"><IoDownloadOutline size={15} /></button></div>
           </header>
           {current.length > 0 && (
             <div className="ax-current">
@@ -880,6 +971,15 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
               <div>{current.map((b) => <button key={b.id} onClick={() => openBook(b)} style={{ "--h": b.color ?? hue(b.title) }}><b>{b.title}</b><small className="mono">PAGE {prog[b.id].page + 1} / {prog[b.id].pages}</small><span><i style={{ width: `${(prog[b.id].page / Math.max(1, prog[b.id].pages - 1)) * 100}%` }} /></span></button>)}</div>
             </div>
           )}
+          {(shelf.read.length + shelf.want.length + shelf.fav.length > 0) && (() => {
+            const k = mineTab || (shelf.want.length ? "want" : shelf.read.length ? "read" : "fav"); const list = shelf[k].map((id) => all.find((b) => b.id === id)).filter(Boolean);
+            return (
+              <div className="ax-mine" data-testid="alex-mine">
+                <p className="mono ax-plan-t"><span>MES LECTURES · 読書</span><i /></p>
+                <div className="ax-types" role="tablist" aria-label="Mes lectures">{[["want", "À lire"], ["read", "Lus"], ["fav", "Coups de cœur"]].map(([v, l]) => <button key={v} role="tab" aria-selected={k === v} className={k === v ? "on" : ""} onClick={() => setMineTab(v)} data-testid={`alex-mine-${v}`}>{l} · {shelf[v].filter((id) => all.some((b) => b.id === id)).length}</button>)}</div>
+                {list.length ? <Grid list={list} upFrom={list.length} selId={null} onSel={(id) => { const b = all.find((x) => x.id === id); if (b) { setSel((x) => ({ ...x, [b.room]: b.id })); enter(b.room); } }} covers={covers} onOpen={(b) => openBook(b)} menuFor={menuFor} stOf={stOf} /> : <p className="ax-empty">Rien ici pour l'instant.</p>}
+              </div>
+            ); })()}
           <p className="mono ax-plan-t"><span>PLAN DES SALLES · 館内図</span><i /></p>
           <div className="ax-plan" data-testid="alex-plan">
             {ROOMS.map((r, i) => { const { here, up } = inRoom(r.key); const strip = [...here, ...up];
@@ -909,23 +1009,29 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
             <span className="ax-plaque-k" aria-hidden="true">{R.kanji}</span>
             <div className="ax-top-t"><h1>{R.label}</h1><p className="ax-top-ab">{R.about}</p></div>
             <div className="ax-tools">
+              <div className="ax-types" role="tablist" aria-label="Mes lectures">{[["all", "Tout"], ["read", "Lus"], ["want", "À lire"], ["fav", "Coups de cœur"]].map(([k, l]) => <button key={k} role="tab" aria-selected={stf === k} className={stf === k ? "on" : ""} onClick={() => setStf(k)} data-testid={`alex-stf-${k}`}>{l}</button>)}</div>
               <div className="ax-types" role="tablist" aria-label="Genre">{[["all", "Tous"], ...Object.entries(TYPES).map(([k, v]) => [k, v.label])].map(([k, l]) => <button key={k} role="tab" aria-selected={type === k} className={type === k ? "on" : ""} onClick={() => setType(k)}>{l}</button>)}</div>
               <div className="ax-viewsw" role="group" aria-label="Affichage">
                 <button className={view === "rayon" ? "on" : ""} aria-pressed={view === "rayon"} onClick={() => pickView("rayon")} data-testid="alex-view-rayon"><IoLibraryOutline size={14} /> Rayon</button>
                 <button className={view === "grille" ? "on" : ""} aria-pressed={view === "grille"} onClick={() => pickView("grille")} data-testid="alex-view-grille"><IoGridOutline size={14} /> Grille</button>
               </div>
               {R.format === "vhs" && <button className="ax-ghost" onClick={() => dressRoom([...inRoom(R.key).here, ...inRoom(R.key).up])} disabled={dressing} data-testid="alex-dress"><IoImageOutline size={15} /> {dressing ? "Recherche…" : "Habiller la salle"}</button>}
+              <button className="ax-ghost" onClick={() => setPaste({ text: "" })} data-testid="alex-paste-open"><IoClipboardOutline size={15} /> Coller</button>
               <button className="at-btn" onClick={() => addBook(R.key)} data-testid="alex-add"><IoAdd size={16} /> Écrire</button>
             </div>
           </header>
-          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(match)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} noteCount={(id) => notesOf(notesItemOf(at, id)).length} onNotes={(b) => { setReadNotes(true); openBook(b); }} favs={favs} onFav={toggleFav} view={view} />
+          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(matchUp)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} noteCount={(id) => notesOf(notesItemOf(at, id)).length} onNotes={(b) => { setReadNotes(true); openBook(b); }} favs={favs} onFav={toggleFav} view={view} stOf={stOf} onStatus={setStatus} />
         </>
       )}
       {wish.length > 0 && <p className="ax-wishes mono">★ {wish.length} TITRE{wish.length > 1 ? "S" : ""} DEMANDÉ{wish.length > 1 ? "S" : ""} : {wish.map((id) => UPCOMING.find((u) => u.id === id)?.title).filter(Boolean).join(" · ")}</p>}
       {coverFor && <CoverDialog b={coverFor} current={covers[coverFor.id]} def={DEFAULT_COVERS[coverFor.id]} onSave={(u) => saveCover(coverFor.id, u)} onClose={() => setCoverFor(null)} />}
       {search && <AlexSearch books={all} onClose={() => setSearch(false)} onOpen={openBook} onGoto={(b) => { setSearch(false); setRoom(b.room); setSel((s) => ({ ...s, [b.room]: b.id })); }} />}
-      {readingBook && <Reader key={readingBook.id} book={readingBook} at={at} startNotes={readNotes} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); setReadNotes(false); }} onEdit={(id) => { setReading(null); open(id); }}
-        onModify={() => modifyBook(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} onAddVideo={(ci, id, cap) => addVideo(readingBook, ci, id, cap)} />}
+      {paste && <AlexPaste initial={paste.text} editing={paste.title} onSave={savePaste} onClose={() => setPaste(null)} onPreview={(b) => setReading(b)} renderCover={(b) => <Face b={b} cover={b.coverUrl || covers[b.id]} />} />}
+      {readingBook && (readingBook.preview
+        ? <Reader key={readingBook.id + readingBook.words} book={readingBook} at={null} radio={radio} cover={readingBook.coverUrl} onClose={() => { sfx?.("close"); setReading(null); }} />
+        : <Reader key={readingBook.id} book={readingBook} at={at} startNotes={readNotes} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); setReadNotes(false); }} onEdit={(id) => { setReading(null); open(id); }}
+          onModify={() => modifyBook(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} onRemoveVideo={(id) => removeVideo(readingBook, id)} onAddVideo={(si, id, cap) => addVideo(readingBook, si, id, cap)}
+          onDone={() => setStatus("read", readingBook.id, true)} />)}
     </section>
   );
 }

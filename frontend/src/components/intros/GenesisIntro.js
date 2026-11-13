@@ -60,22 +60,31 @@ export function GenesisAnim({ children }) {
   useEffect(() => {
     const el = cv.current; if (!el) return undefined;
     const g = el.getContext("2d");
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    let W = 0, H = 0;
-    const fit = () => { W = el.clientWidth; H = el.clientHeight; el.width = W * dpr; el.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const dpr = Math.min(window.innerWidth < 700 ? 1.5 : 2, window.devicePixelRatio || 1);
+    // Géométrie mesurée sur le canvas lui-même : le dessin et le texte partagent les mêmes coordonnées
+    // (zoom aA, barre d'adresse du téléphone, rotation). Le titre et le bouton sont posés par variables CSS.
+    let W = 0, H = 0, m = 1, cx = 0, cy = 0, R = 1, fs = 1;
+    const fit = () => {
+      W = el.clientWidth; H = el.clientHeight; el.width = W * dpr; el.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const th = root.current?.querySelector(".gx-title")?.offsetHeight || 80; const rh = 150; // titre, puis bienvenue + bouton
+      R = Math.max(34, Math.min(Math.min(W, H * 0.9) * 0.21, (H - th - rh - 64) / 2.64));
+      cy = Math.max(R * 1.32 + 14, Math.min(H * 0.35, H - 20 - rh - th - R * 1.32)); cx = W / 2; m = R / 0.21; fs = R * 1.02;
+      const st = root.current?.style; if (!st) return;
+      st.setProperty("--gx-cy", `${cy}px`); st.setProperty("--gx-r", `${R}px`);
+      st.setProperty("--gx-ty", `${cy + R * 1.32}px`); st.setProperty("--gx-ry", `${Math.min(cy + R * 1.32 + th + 22, H - rh + 10)}px`);
+    };
     fit();
     const A = readColor("--brand", "#3f86ff"), B = readColor("--brand-2", "#4fd6ff");
     root.current?.style.setProperty("--gx-a", `rgb(${A})`); root.current?.style.setProperty("--gx-b", `rgb(${B})`);
     const spr = [sprite(A), sprite(B), sprite([255, 255, 255])];
     const deep = A.map((v) => Math.round(2 + v * 0.03)).join(",");
-    const m = Math.min(W, H * 0.9); const cx = W / 2, cy = H * 0.35; const R = m * 0.21;
-    const fs = R * 1.02;
-    const N = W < 700 ? 1500 : 2300;
+    const small = W < 700; const N = small ? 1000 : 2300;
+    // rayons et cibles en proportion (de m et de R) : un redimensionnement ne casse rien
     const P = Array.from({ length: N }, (_, i) => {
-      const arm = i % 3; const r = Math.pow(Math.random(), 0.55) * m * 0.5;
+      const arm = i % 3; const r = Math.pow(Math.random(), 0.55) * 0.5;
       return {
-        r, a: (arm / 3) * Math.PI * 2 + r / (m * 0.11) + (Math.random() - 0.5) * 0.55,
-        w: 0.55 + 1.6 * (1 - r / (m * 0.5)), t: null, d: Math.random() * 0.35,
+        r, a: (arm / 3) * Math.PI * 2 + r / 0.11 + (Math.random() - 0.5) * 0.55,
+        w: 0.55 + 1.6 * (1 - r / 0.5), t: null, d: Math.random() * 0.35,
         s: 0.6 + Math.random() * 1.5, c: i % 7 === 0 ? 2 : i % 2, ph: Math.random() * 6.28,
         vx: 0, vy: 0,
       };
@@ -84,7 +93,7 @@ export function GenesisAnim({ children }) {
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const t0 = performance.now(); let raf = 0; let placed = false;
     // Les cibles du 天 sont posées dès que la police fine est là (au plus tard avant la convergence)
-    const place = () => { if (placed) return; placed = true; const goal = targets(cx, cy, R, fs).sort(() => Math.random() - 0.5); goal.slice(0, Math.min(goal.length, N - 300)).forEach((q, i) => { P[i].t = q; }); };
+    const place = () => { if (placed) return; placed = true; const goal = targets(0, 0, R, fs).sort(() => Math.random() - 0.5); goal.slice(0, Math.min(goal.length, N - 300)).forEach((q, i) => { P[i].t = [q[0] / R, q[1] / R, q[2]]; }); };
     kanjiFont().then(place);
 
     // Le trait net : 天 fin, anneau d'un pixel, graduations qui tournent lentement, trois crochets en contre-sens
@@ -130,13 +139,13 @@ export function GenesisAnim({ children }) {
       const spin = t * 0.9;
       const crisp = out(clamp((t - 2.5) / 0.9));
       for (const p of P) {
-        const a = p.a + spin * p.w; const rr = p.r * birth;
+        const a = p.a + spin * p.w; const rr = p.r * m * birth;
         let x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr * 0.92;
         let alpha = clamp((t - 0.2 - p.d * 0.6) / 0.4);
         const e = ease(clamp((t - 1.45 - p.d) / 1.05));
         if (p.t) {
           // Vers le 天 : trajectoire courbe (on garde l'élan de la rotation)
-          const bx = p.t[0], by = p.t[1];
+          const bx = cx + p.t[0] * R, by = cy + p.t[1] * R;
           const sw = Math.sin(e * Math.PI) * (rr * 0.35 + 30);
           const nx = -(by - y), ny = bx - x; const nl = Math.hypot(nx, ny) || 1;
           x = x + (bx - x) * e + (nx / nl) * sw; y = y + (by - y) * e + (ny / nl) * sw;
@@ -149,7 +158,7 @@ export function GenesisAnim({ children }) {
           p.x += p.vx; p.y += p.vy; p.vx *= 0.97; p.vy *= 0.97; x = p.x; y = p.y; alpha *= 1 - clamp((t - 2.55) / 1.2);
         }
         if (alpha <= 0.01) continue;
-        const z = p.s * (p.t ? 0.5 + 0.5 * (1 - e) : 1) * (W < 700 ? 0.6 : 1) * 5.2;
+        const z = p.s * (p.t ? 0.5 + 0.5 * (1 - e) : 1) * (small ? 0.6 : 1) * 5.2;
         g.globalAlpha = alpha; g.drawImage(spr[p.c], x - z / 2, y - z / 2, z, z);
       }
       g.globalAlpha = 1;
@@ -158,7 +167,9 @@ export function GenesisAnim({ children }) {
     };
     g.fillStyle = `rgb(${deep})`; g.fillRect(0, 0, W, H);
     raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    const onResize = () => { fit(); g.fillStyle = `rgb(${deep})`; g.fillRect(0, 0, W, H); };
+    window.addEventListener("resize", onResize);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); };
   }, []);
 
   const letters = "STATION NEXUS".split("");

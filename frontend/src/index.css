@@ -14,7 +14,7 @@
 /* ===== Taille de l'interface (bouton aA) =====
    Ordinateur : texte de base fixe, toute l'interface est agrandie par zoom (--uiz posé par AppContext).
    Téléphone : pas de zoom, seule la taille du texte change (règles plus bas). */
-html { font-size: 112.5%; --text-scale: 1.125; }
+html { font-size: 112.5%; --text-scale: 1.125; -webkit-tap-highlight-color: transparent; }
 @media (min-width: 768px) { html { zoom: var(--uiz, 1); } }
 @media (max-width: 767px) { html { --uiz: 1 !important; } }
 .min-h-screen { min-height: calc(100vh / var(--uiz, 1)); }
@@ -1084,6 +1084,8 @@ html[data-motion="reduced"] .cosmic-bg .comets{display:none}
    ====================================================================== */
 /* grain illustré (pellicule) sur toute l'interface */
 body::after{content:"";position:fixed;inset:0;z-index:9000;pointer-events:none;opacity:.11;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px}
+/* Téléphone : pas de calque de grain en mélange par-dessus tout l'écran (il faisait scintiller les transitions) */
+@media (max-width:900px),(pointer:coarse){body::after{display:none}}
 html[data-motion="reduced"] body::after{opacity:.035}
 
 /* égaliseur du bouton son */
@@ -3033,24 +3035,23 @@ html[data-theme="abysse"] .cb-halo{opacity:.2}
 /* Splash public « Genèse » : galaxie, 天, onde de choc ; couleurs du thème */
 .gx-root{position:absolute;inset:0;overflow:hidden;background:#020308}
 .gx-cv{position:absolute;inset:0;width:100%;height:100%;display:block}
-.gx-rays{position:absolute;left:50%;top:35%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;pointer-events:none;opacity:0;mix-blend-mode:screen;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--gx-a) 32%,transparent) 0deg .7deg,transparent .7deg 9deg);-webkit-mask:radial-gradient(circle,#000 4%,transparent 42%);mask:radial-gradient(circle,#000 4%,transparent 42%);animation:gxRays 2.4s ease 2.55s forwards,gxSpin 40s linear 2.55s infinite}
+.gx-rays{position:absolute;left:50%;top:var(--gx-cy,35%);width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;pointer-events:none;opacity:0;mix-blend-mode:screen;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--gx-a) 32%,transparent) 0deg .7deg,transparent .7deg 9deg);-webkit-mask:radial-gradient(circle,#000 4%,transparent 42%);mask:radial-gradient(circle,#000 4%,transparent 42%);animation:gxRays 2.4s ease 2.55s forwards,gxSpin 40s linear 2.55s infinite}
 @keyframes gxRays{0%{opacity:0}25%{opacity:.75}100%{opacity:.32}}
 @keyframes gxSpin{to{transform:rotate(360deg)}}
-.gx-shock{position:absolute;left:50%;top:35%;width:20vmin;height:20vmin;margin:-10vmin 0 0 -10vmin;border-radius:50%;pointer-events:none;opacity:0;border:1px solid #fff;box-shadow:0 0 30px var(--gx-a),inset 0 0 30px var(--gx-b);animation:gxShock 1.3s cubic-bezier(.15,.75,.3,1) 2.55s forwards}
+.gx-shock{position:absolute;left:50%;top:var(--gx-cy,35%);width:calc(var(--gx-r,21vmin) * .95);height:calc(var(--gx-r,21vmin) * .95);margin:calc(var(--gx-r,21vmin) * -.475) 0 0 calc(var(--gx-r,21vmin) * -.475);border-radius:50%;pointer-events:none;opacity:0;border:1px solid #fff;box-shadow:0 0 30px var(--gx-a),inset 0 0 30px var(--gx-b);animation:gxShock 1.3s cubic-bezier(.15,.75,.3,1) 2.55s forwards}
 .gx-shock.b{border-width:1px;animation-delay:2.7s;animation-duration:1.6s}
 @keyframes gxShock{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(9)}}
-.gx-flash{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 35%,#fff 0,color-mix(in srgb,var(--gx-a) 70%,#fff) 12%,transparent 55%);mix-blend-mode:screen;animation:gxFlash .9s ease-out 2.5s}
+.gx-flash{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% var(--gx-cy,35%),#fff 0,color-mix(in srgb,var(--gx-a) 70%,#fff) 12%,transparent 55%);mix-blend-mode:screen;animation:gxFlash .9s ease-out 2.5s}
 @keyframes gxFlash{0%{opacity:0}12%{opacity:.45}100%{opacity:0}}
-.gx-title{position:absolute;left:0;right:0;top:calc(35% + min(27.5vw,24.75vh));display:flex;flex-direction:column;align-items:center;gap:1.6vmin;text-align:center;padding:0 16px}
+.gx-title{position:absolute;left:0;right:0;top:var(--gx-ty,62%);display:flex;flex-direction:column;align-items:center;gap:1.6vmin;text-align:center;padding:0 16px}
 .gx-word{font-family:var(--font-display);font-weight:400;font-size:clamp(26px,6.4vmin,64px);letter-spacing:.24em;margin-right:-.24em;color:#fff;white-space:nowrap;line-height:1}
 .gx-word span{display:inline-block;opacity:0;text-shadow:0 0 18px var(--gx-a),0 0 44px color-mix(in srgb,var(--gx-a) 60%,transparent);animation:gxLetter .9s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes gxLetter{0%{opacity:0;transform:translateY(.5em) scale(1.4);filter:blur(12px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none}}
 .gx-sub{font-family:var(--font-body);font-size:clamp(11px,1.9vmin,16px);letter-spacing:.42em;margin-right:-.42em;text-transform:uppercase;color:color-mix(in srgb,var(--gx-b) 55%,#fff);opacity:0;animation:gxSub 1s ease 3.5s forwards}
 @keyframes gxSub{from{opacity:0;letter-spacing:.9em}to{opacity:.85;letter-spacing:.42em}}
 @media (prefers-reduced-motion:reduce){.gx-word span,.gx-sub{animation-duration:.01s;animation-delay:0s!important}.gx-rays,.gx-shock,.gx-flash{display:none}}
-.gx-ready{position:absolute;left:0;right:0;top:min(calc(35% + min(27.5vw,24.75vh) + clamp(56px,11vmin,110px)),calc(100% - 112px));display:flex;flex-direction:column;align-items:center;gap:18px;padding:0 16px;text-align:center;z-index:2}
+.gx-ready{position:absolute;left:0;right:0;top:var(--gx-ry,74%);display:flex;flex-direction:column;align-items:center;gap:18px;padding:0 16px;text-align:center;z-index:2}
 @media (max-height:560px){.gx-ready{gap:12px}}
-@media (max-height:420px){.gx-sub{display:none}}
 .gx-welcome{font-family:var(--font-display);font-size:clamp(20px,3.4vmin,34px);color:#fff;text-shadow:0 0 24px var(--gx-a);animation:introWord .7s ease forwards}
 .gx-enter{font-family:var(--font-display);font-size:clamp(15px,2.2vmin,20px);letter-spacing:.32em;text-transform:uppercase;padding:14px 46px 14px calc(46px + .32em);color:#fff;background:color-mix(in srgb,var(--gx-a) 22%,transparent);border:1px solid var(--gx-a);border-radius:999px;box-shadow:0 0 34px color-mix(in srgb,var(--gx-a) 55%,transparent),inset 0 0 18px color-mix(in srgb,var(--gx-a) 35%,transparent);backdrop-filter:blur(6px);animation:introWord .6s ease both,gxBreath 2.6s ease-in-out .6s infinite;transition:transform .2s,background .2s}
 .gx-enter:hover{transform:scale(1.05);background:color-mix(in srgb,var(--gx-a) 40%,transparent)}

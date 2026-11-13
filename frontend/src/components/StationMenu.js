@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import AmbientMixer from "@/components/AmbientMixer";
 import { useAmbient, setAmbientMuted } from "@/lib/ambient";
 import { useQuery } from "@tanstack/react-query";
-import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoCashOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
+import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
@@ -156,7 +156,6 @@ export default function StationMenu({ onAdd, onProfile }) {
     { label: "À propos", sub: "LA STATION", icon: <IoPlanetOutline size={18} />, onClick: () => go("/a-propos") },
     { label: "Paramètres", sub: "COMPTE · THÈME · AMBIANCE", icon: <IoSettingsOutline size={18} />, onClick: () => go("/parametres") },
     ...(isAdmin && onAdd ? [{ label: "Créer une création", sub: "MODE CRÉATION", icon: <IoAddOutline size={18} />, onClick: () => { setMenuOpen(false); onAdd(); } }] : []),
-    ...(isAdmin ? [{ label: "Mes revenus", sub: "TABLEAU DE BORD", icon: <IoCashOutline size={18} />, onClick: () => go("/revenus") }] : []),
     ...(isAdmin ? [{ label: "Portail · Atelier", sub: "TON ESPACE DE CRÉATION", icon: <IoPlanetOutline size={18} />, onClick: () => go("/atelier") }] : []),
   ];
 

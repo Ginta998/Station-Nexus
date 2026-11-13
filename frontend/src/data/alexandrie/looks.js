@@ -126,7 +126,31 @@ const B = {
 
 const DARK = (hex) => { const n = parseInt(hex.replace("#", "").padEnd(6, "0").slice(0, 6), 16); return ((n >> 16) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114) < 110; };
 
+// Les ambiances, avec ce qu'elles évoquent (pour le choix d'un thème au collage d'un livre)
+export const THEMES = L;
+export const THEME_INFO = {
+  gothique: "Cathédrales, sang, nuit victorienne", cendre: "Royaumes en ruine, or terni", givre: "Nord, neige, sagas",
+  washi: "Japon, encre, papier de mûrier", terminal: "Science-fiction, écrans, machines", presse: "Journal ancien, enquête, siècle passé",
+  revolution: "XVIIIe siècle, pamphlets, papier vergé", papyrus: "Antiquité, Égypte, Afrique ancienne", fraktur: "Allemagne, philosophie, gravure",
+  didone: "Classique, élégant, savant", sable: "Désert, épopée, poussière", western: "Ouest américain, frontière",
+  machine: "Industriel, brut, mécanique", brume: "Horreur, brouillard, dossiers", ombre: "Noir et blanc, silence, crime",
+  cosmos: "Espace, étoiles, voyage", peinture: "Atelier, toile, couleurs", manga: "Trame, encre, énergie", neon: "Nuit urbaine, néons, cyberpunk",
+};
+export const TEXTURES = ["plain", "grain", "laid", "fiber", "canvas", "washi", "frost", "sand", "fog", "news", "scan", "screen", "film", "stars", "vignette"];
+export const hasLook = (id) => !!B[id];
+
+// Thème d'un livre collé : une ambiance, ou le look d'un livre existant (« comme bloodborne »), plus des retouches.
+export function lookFrom(spec) {
+  const over = spec?.over || {}; const e = spec?.like && B[spec.like];
+  let k = e ? { ...L[e[0]], ...(e[1] || {}), key: e[0] } : spec?.theme && L[spec.theme] ? { ...L[spec.theme], key: spec.theme } : null;
+  if (!k && !Object.keys(over).length) return null;
+  k = { ...(k || { ...L.didone, key: "didone" }), ...over };
+  k.web = [over.d, over.r].filter(Boolean); k.dark = DARK(k.p);
+  return k;
+}
+
 export function lookOf(book) {
+  if (book?.look) return lookFrom(book.look);
   const e = B[book?.id]; if (!e) return null;
   const base = L[e[0]]; if (!base) return null;
   const k = { ...base, ...(e[1] || {}), key: e[0] };

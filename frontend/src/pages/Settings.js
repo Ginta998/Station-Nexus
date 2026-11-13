@@ -1048,6 +1048,9 @@ export default function Settings() {
         </>)}
 
         {isAdmin && tab === "admin" && (<>
+        <Section title="Mes revenus" extra="— tableau de bord des abonnements et des ventes">
+          <button data-testid="admin-revenue" onClick={() => nav("/revenus")} className="text-sm px-4 py-2 border" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>Ouvrir le tableau de bord</button>
+        </Section>
         <Section title="Signalements" extra="— contenus signalés par les membres">
           <ReportsAdmin />
         </Section>

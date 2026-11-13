@@ -536,3 +536,51 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .ax-ytr.on{box-shadow:inset 3px 0 0 var(--lab-acc)}
 .ax-rb-now{display:inline-block;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
 .ax-rb-sq{padding-left:9px!important;padding-right:9px!important}
+
+/* Mes lectures : étiquette discrète sur la couverture et marque sur la tranche */
+.ax-stag{position:absolute;bottom:calc(10px / var(--z,1));left:calc(10px / var(--z,1));z-index:5;display:inline-flex;align-items:center;gap:.45em;padding:.32em .6em .26em;font-size:calc(10px / var(--z,1));letter-spacing:.14em;line-height:1;color:#fff;background:rgba(10,10,12,.62);border:1px solid rgba(255,255,255,.22);border-radius:2px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);pointer-events:none}
+.ax-stag i{font-style:normal;letter-spacing:0;color:#fff}
+.ax-cover.f-vinyle .ax-stag{font-size:calc(10px / var(--zv,1));bottom:calc(10px / var(--zv,1));left:calc(10px / var(--zv,1))}
+.ax-vmark{position:absolute;top:4px;left:50%;transform:translateX(-50%);z-index:3;font-size:9px;line-height:1;color:var(--lab-acc);text-shadow:0 0 4px rgba(0,0,0,.6);pointer-events:none}
+.ax-mine{margin:4px 0 26px}.ax-mine .ax-types{margin:0 0 16px}
+.ax-ico{padding:9px 10px}
+.ax-vadd-where{margin:2px 0 0;font-size:10px;letter-spacing:.14em;color:var(--lab-mute)}
+
+/* Coller un livre */
+.ax-pd-scrim{position:fixed;inset:0;z-index:1230;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--bg-primary) 70%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:aiFade .2s ease both}
+.ax-pd{width:min(1180px,100%);height:min(820px,calc(100dvh - 32px));display:flex;flex-direction:column;background:var(--lab-panel,var(--bg-secondary));border:1px solid var(--lab-hair-2);color:var(--lab-ink);box-shadow:0 30px 80px -20px rgba(0,0,0,.7)}
+.ax-pd-head{display:flex;align-items:center;gap:16px;padding:14px 18px;border-bottom:1px solid var(--lab-hair);flex-wrap:wrap}
+.ax-pd-head p{margin:0;font-size:10px;letter-spacing:.2em;color:var(--lab-acc)}.ax-pd-head h3{margin:2px 0 0;font-size:20px;font-weight:600}
+.ax-pd-tpl{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap}.ax-pd-tpl>span.mono{font-size:9.5px;letter-spacing:.18em;color:var(--lab-mute)}
+.ax-pd-tb{display:inline-flex;border:1px solid var(--lab-hair-2)}.ax-pd-tb button{background:none;border:0;color:var(--lab-ink);font:inherit;font-size:12.5px;padding:6px 10px;cursor:pointer}.ax-pd-tb button+button{border-left:1px solid var(--lab-hair-2);padding:6px 8px;color:var(--lab-mute)}.ax-pd-tb button:hover{color:var(--lab-acc)}
+.ax-pd-file{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:1px solid var(--lab-hair-2);color:var(--lab-ink);font-size:12.5px;cursor:pointer}.ax-pd-file:hover{color:var(--lab-acc)}.ax-pd-file input{display:none}
+.ax-pd-x{display:grid;place-items:center;width:36px;height:36px;background:none;border:1px solid var(--lab-hair-2);color:var(--lab-ink);cursor:pointer}
+.ax-pd-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+.ax-pd-body textarea{width:100%;height:100%;resize:none;border:0;border-right:1px solid var(--lab-hair);padding:18px;background:color-mix(in srgb,var(--bg-primary) 60%,transparent);color:var(--lab-ink);font:13px/1.6 "JetBrains Mono",ui-monospace,monospace;outline:none;tab-size:2}
+.ax-pd-prev{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.ax-pd-empty{color:var(--lab-mute);font-size:13.5px;line-height:1.6;margin:8px 4px}
+.ax-pd-card{display:flex;gap:16px;padding:14px;border:1px solid var(--lab-hair);background:color-mix(in srgb,var(--bg-primary) 35%,transparent)}
+.ax-pd-cv{flex:0 0 auto;--z:.42;--zv:.3}
+.ax-pd-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.ax-pd-info>b{font-size:16px;line-height:1.2}.ax-pd-info>small{font-size:9.5px;letter-spacing:.14em;color:var(--lab-mute);line-height:1.5}
+.ax-pd-err{font-size:12.5px;color:#ff8a7a}
+.ax-pd-th{display:flex;flex-direction:column;gap:4px;width:100%}.ax-pd-th span{font-size:9.5px;letter-spacing:.16em;color:var(--lab-mute)}
+.ax-pd-th select{width:100%;padding:8px;background:var(--bg-primary);color:var(--lab-ink);border:1px solid var(--lab-hair-2);font:inherit;font-size:13px}
+.ax-pd-sw{display:grid;grid-template-columns:1fr auto;gap:4px 10px;width:100%;padding:12px 14px;border:1px solid;border-left-width:3px}
+.ax-pd-sw b{font-size:18px;font-weight:400;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ax-pd-sw i{font-style:normal}.ax-pd-sw span{grid-column:1/-1;font-size:13px;line-height:1.5}
+.ax-pd-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-top:1px solid var(--lab-hair)}.ax-pd-foot small{font-size:10px;letter-spacing:.16em;color:var(--lab-mute)}
+@media (max-width:900px){
+  .ax-pd-scrim{padding:0}.ax-pd{height:100dvh;border:0}
+  .ax-pd-head{padding:10px 12px;gap:10px}.ax-pd-tpl{order:3;margin-left:0;width:100%}
+  .ax-pd-body{grid-template-columns:1fr;grid-template-rows:minmax(180px,1fr) auto}
+  .ax-pd-body textarea{border-right:0;border-bottom:1px solid var(--lab-hair);font-size:12.5px;padding:12px}
+  .ax-pd-prev{max-height:44dvh;padding:10px}
+  .ax-pd-foot{padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px))}
+}
+
+/* Téléphone : ouverture douce, sans 3D ni calques par-dessus le texte (ils faisaient clignoter l'écran) */
+@keyframes axFadeUp{from{opacity:0;transform:translate3d(0,10px,0)}to{opacity:1;transform:none}}
+@media (max-width:900px){
+  .ax-book{animation:axFadeUp .32s ease both}
+  .ax-turnfx{display:none}
+}
