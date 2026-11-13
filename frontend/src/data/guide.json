@@ -163,15 +163,23 @@
    "rows": [
     [
      "Les livres",
-     "Des fichiers texte balisés : # chapitre, ## intertitre, > citation | source, !! LIBELLÉ :: encadré, @img lien | légende | crédit, @yt lien | légende."
+     "Des fichiers texte balisés : # chapitre, ## intertitre, > citation | source, !! LIBELLÉ :: encadré, @img lien | légende | crédit, @yt lien | légende, @art n | légende. Les livres du code sont dans frontend/src/data/alexandrie ; les livres collés suivent exactement le même format."
     ],
     [
      "Modifier un livre",
-     "Crée une copie en fiche de l'Atelier (avec l'éditeur de documents) qui remplace l'original sur les rayons. « Revenir au texte d'origine » supprime la copie. Le bouton « Vidéo » du lecteur ajoute une vidéo YouTube à la fin d'un chapitre (il crée la copie si besoin) ; « Changer » sur une vidéo la remplace."
+     "« Modifier (copier-coller) » ouvre le texte complet du livre (réglages et chapitres) dans la fenêtre de collage ; en l'enregistrant, une copie remplace l'original sur les rayons. « Modifier dans l'éditeur » garde l'ancienne méthode. « Revenir au texte d'origine » supprime la copie. Le bouton « Vidéo » du lecteur ajoute une vidéo YouTube à la page où l'on est ; « Changer » et « Supprimer » (avec confirmation) agissent sur une vidéo du livre."
     ],
     [
      "Tes livres",
      "Des fiches de l'Atelier marquées Alexandrie. Dans l'éditeur : un titre ou une phrase entièrement en gras devient un chapitre. Une vidéo YouTube est reconnue sous toutes ses formes (adresse collée, lien dans une phrase, lien sur un mot, lecteur intégré) ; le reste du paragraphe devient sa légende."
+    ],
+    [
+     "Coller un livre",
+     "Bouton « Coller un livre » (plan des salles) ou « Coller » (dans une salle). En tête du bloc : TITRE, SOUS-TITRE, SALLE, GENRE (récit, pensée, apprentissage), FORMAT (livre, vhs, vinyle), COTE (sinon la suivante de la salle), EMBLÈME, COULEUR, STEAMGRID (le jeu pour les @art), THÈME (une ambiance, ou « comme bloodborne » pour reprendre le look d'un livre), retouches POLICE, POLICE TEXTE, PAPIER, ENCRE, ACCENT, ORNEMENT, TEXTURE, puis À PROPOS, LIEN (libellé | adresse | note), STATUT (lu, à lire, coup de cœur), COUVERTURE (adresse d'image). Une ligne --- ou le premier # ouvre les chapitres, au même format que les livres du code. Plusieurs livres d'un coup : sépare-les par une ligne =====. L'aperçu montre la couverture, les chapitres et le thème, qu'on peut changer en direct, et « Lire l'aperçu » ouvre le livre avant de l'enregistrer. Les lignes qui commencent par // sont ignorées. Les livres collés sont des fiches de l'Atelier (dans la base, pas dans GitHub) : le bouton ⤓ du plan les exporte tous dans un fichier texte qui se recolle tel quel."
+    ],
+    [
+     "Mes lectures",
+     "Chaque livre peut être marqué Lu, À lire ou Coup de cœur (fiche du livre ou clic droit). Une étiquette discrète apparaît sur la couverture et une marque sur la tranche. Un livre lu jusqu'à la dernière page passe tout seul dans « Lus ». Le plan des salles a une colonne « Mes lectures » ; dans une salle, le filtre Tout / Lus / À lire / Coups de cœur. Ces listes sont gardées sur le serveur et suivent tous tes appareils."
     ],
     [
      "Notes",
@@ -187,7 +195,7 @@
     ],
     [
      "Sur téléphone",
-     "Sur ordinateur, la page d'un livre change d'un coup (bouton, clavier, souris ou pavé tactile) avec un fondu et un pli de lumière ; aucune feuille en 3D, pour rester fluide. Les VHS et les vinyles ne tournent pas de pages : avance rapide avec ▶▶ FF ou ◀◀ REW pour la cassette, plage qui apparaît depuis le centre pour le disque, et au doigt ils ne glissent pas; l'identité visuelle de chaque livre (polices, papier, accent, texture) est dans frontend/src/data/alexandrie/looks.js ; le bruit (papier, VHS ou vinyle selon le format) vient de playPageTurn dans frontend/src/lib/sound.js. Les pages se tournent au doigt : on glisse vers la gauche pour avancer, vers la droite pour revenir, ou on touche le bord droit ou gauche de la page. Un glissement trop court est annulé. Des flèches gauche et droite sont aussi dans le bas du lecteur. La progression et les notes restent communes avec l'ordinateur."
+     "Une page à la fois, qu'on fait glisser au doigt (livres, VHS et vinyles), ou en touchant le bord droit ou gauche de la page ; des flèches sont aussi dans le bas du lecteur. Pas d'effet en surimpression ni d'ouverture en 3D, et pas de calque de grain sur l'écran : ces calques faisaient clignoter les transitions. Sur ordinateur, la page change d'un coup avec un pli de lumière (livre), une avance rapide ▶▶ FF (VHS) ou une plage qui s'ouvre depuis le centre (vinyle). L'identité visuelle de chaque livre est dans frontend/src/data/alexandrie/looks.js ; le bruit des pages vient de playPageTurn dans frontend/src/lib/sound.js."
     ]
    ]
   },

@@ -5,7 +5,10 @@
 //   ink/ink2 : encre principale et secondaire   acc : accent   orn : ornement   tex : texture de la page
 
 // Polices qui ne sont pas embarquées dans le site : chargées depuis Google Fonts à l'ouverture du livre.
-export const WEB_FONTS = ["IM Fell English", "Old Standard TT", "UnifrakturMaguntia", "Special Elite", "Libre Baskerville", "Oranienbaum"];
+export const WEB_FONTS = ["IM Fell English", "Old Standard TT", "UnifrakturMaguntia", "Special Elite", "Libre Baskerville", "Oranienbaum", "Saira Condensed", "Courier Prime", "Limelight", "Audiowide", "Cinzel Decorative"];
+// Styles réellement disponibles chez Google Fonts : demander un gras ou un italique qui n'existe pas fait échouer tout le chargement.
+const AXES = { "IM Fell English": ":ital@0;1", "UnifrakturMaguntia": "", "Special Elite": "", "Oranienbaum": "", "Limelight": "", "Audiowide": "", "Saira Condensed": ":wght@400;600", "Cinzel Decorative": ":wght@400;700" };
+export const fontHref = (f) => `https://fonts.googleapis.com/css2?family=${f.replace(/ /g, "+")}${AXES[f] ?? ":ital,wght@0,400;0,700;1,400"}&display=swap`;
 
 const L = {
   gothique: { d: "IM Fell English", r: "Spectral", p: "#16110f", p2: "#0e0a09", p3: "#060404", ink: "#e9dccb", ink2: "#a5927b", acc: "#b3262e", orn: "✠", tex: "vignette" },
@@ -26,6 +29,13 @@ const L = {
   cosmos: { d: "Sora", r: "Spectral", p: "#0e1828", p2: "#0a1220", p3: "#050a12", ink: "#e9e3d4", ink2: "#97a0ad", acc: "#e8823a", orn: "✦", tex: "stars" },
   peinture: { d: "Playfair Display", r: "Libre Baskerville", p: "#e6dbc4", p2: "#d6c9ad", p3: "#bdae8e", ink: "#1c1915", ink2: "#615747", acc: "#b8462c", orn: "◉", tex: "canvas" },
   manga: { d: "Anton", r: "Spectral", p: "#f2efe8", p2: "#e2ded5", p3: "#c9c4b8", ink: "#141414", ink2: "#5c5a55", acc: "#e3202b", orn: "■", tex: "screen" },
+  // Thèmes créés pour un livre, réutilisables
+  ishimura: { d: "Saira Condensed", r: "Space Grotesk", p: "#0d0f10", p2: "#08090a", p3: "#030404", ink: "#d5dad6", ink2: "#7f8884", acc: "#ff6a2b", orn: "⟁", tex: "rig" },
+  emprise: { d: "Special Elite", r: "Courier Prime", p: "#110f0e", p2: "#0a0908", p3: "#040303", ink: "#dcd3c4", ink2: "#8d8478", acc: "#a41d1d", orn: "⊙", tex: "candle" },
+  pegre: { d: "Limelight", r: "Libre Baskerville", p: "#0f0d0b", p2: "#090807", p3: "#030302", ink: "#ebe2cd", ink2: "#9c927d", acc: "#c9a24a", orn: "♠", tex: "deco" },
+  grappler: { d: "Audiowide", r: "Space Grotesk", p: "#0f1a2d", p2: "#0a1322", p3: "#050a14", ink: "#f1e7d3", ink2: "#9aa6b8", acc: "#e8823a", orn: "★", tex: "nebula" },
+  aquarelle: { d: "Cormorant Garamond", r: "Spectral", p: "#f5f1e7", p2: "#e7e1d3", p3: "#cfc7b4", ink: "#1f2a33", ink2: "#5d6b75", acc: "#2f6a8f", orn: "久", tex: "watercolor" },
+  alchimie: { d: "Cinzel Decorative", r: "Spectral", p: "#e8dbbf", p2: "#d7c7a6", p3: "#bead88", ink: "#2a1b11", ink2: "#6f5a43", acc: "#a3241c", orn: "☿", tex: "circle" },
   neon: { d: "Bebas Neue", r: "Space Grotesk", p: "#111015", p2: "#0a090d", p3: "#040306", ink: "#ecebf2", ink2: "#8d8a9a", acc: "#3fd0ff", orn: "◢", tex: "scan" },
 };
 
@@ -99,6 +109,12 @@ const B = {
   ramanujan: ["didone", { acc: "#a0521c", orn: "∑" }],
   spinoza: ["didone", { d: "IM Fell English", p: "#f0ead9", p2: "#e1d9c5", p3: "#c9bfa6", acc: "#2f5f6f", orn: "◌", tex: "laid" }],
   moebius: ["peinture", { d: "Sora", p: "#efe2c8", p2: "#e2d0ae", p3: "#c9b48c", acc: "#c46a2a", orn: "∞", tex: "plain" }],
+  "dead-space": ["ishimura"],
+  guru: ["emprise"],
+  "rois-des-ombres": ["pegre"],
+  "outlaw-star": ["grappler"],
+  "joe-hisaishi": ["aquarelle"],
+  "fullmetal-alchemist": ["alchimie"],
   "toussaint-louverture": ["revolution", { acc: "#1d4f9c", orn: "✦" }],
   "soundiata-keita": ["papyrus", { d: "Cinzel", acc: "#b5761c", orn: "◆" }],
   lumumba: ["presse", { acc: "#1f6fb5", orn: "★" }],
@@ -126,7 +142,33 @@ const B = {
 
 const DARK = (hex) => { const n = parseInt(hex.replace("#", "").padEnd(6, "0").slice(0, 6), 16); return ((n >> 16) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114) < 110; };
 
+// Les ambiances, avec ce qu'elles évoquent (pour le choix d'un thème au collage d'un livre)
+export const THEMES = L;
+export const THEME_INFO = {
+  gothique: "Cathédrales, sang, nuit victorienne", cendre: "Royaumes en ruine, or terni", givre: "Nord, neige, sagas",
+  washi: "Japon, encre, papier de mûrier", terminal: "Science-fiction, écrans, machines", presse: "Journal ancien, enquête, siècle passé",
+  revolution: "XVIIIe siècle, pamphlets, papier vergé", papyrus: "Antiquité, Égypte, Afrique ancienne", fraktur: "Allemagne, philosophie, gravure",
+  didone: "Classique, élégant, savant", sable: "Désert, épopée, poussière", western: "Ouest américain, frontière",
+  machine: "Industriel, brut, mécanique", brume: "Horreur, brouillard, dossiers", ombre: "Noir et blanc, silence, crime",
+  cosmos: "Espace, étoiles, voyage", peinture: "Atelier, toile, couleurs", manga: "Trame, encre, énergie", neon: "Nuit urbaine, néons, cyberpunk",
+  ishimura: "Vaisseau minier, acier, horreur spatiale", emprise: "Dossier noir, machine à écrire, lueur de bougie", pegre: "Art déco, or et nuit, années vingt",
+  grappler: "Space opera des années 90, nébuleuses", aquarelle: "Papier clair, aquarelle bleue, partition", alchimie: "Parchemin, cercle de transmutation",
+};
+export const TEXTURES = ["plain", "grain", "laid", "fiber", "canvas", "washi", "frost", "sand", "fog", "news", "scan", "screen", "film", "stars", "vignette", "rig", "candle", "deco", "nebula", "watercolor", "circle"];
+export const hasLook = (id) => !!B[id];
+
+// Thème d'un livre collé : une ambiance, ou le look d'un livre existant (« comme bloodborne »), plus des retouches.
+export function lookFrom(spec) {
+  const over = spec?.over || {}; const e = spec?.like && B[spec.like];
+  let k = e ? { ...L[e[0]], ...(e[1] || {}), key: e[0] } : spec?.theme && L[spec.theme] ? { ...L[spec.theme], key: spec.theme } : null;
+  if (!k && !Object.keys(over).length) return null;
+  k = { ...(k || { ...L.didone, key: "didone" }), ...over };
+  k.web = [over.d, over.r].filter(Boolean); k.dark = DARK(k.p);
+  return k;
+}
+
 export function lookOf(book) {
+  if (book?.look) return lookFrom(book.look);
   const e = B[book?.id]; if (!e) return null;
   const base = L[e[0]]; if (!base) return null;
   const k = { ...base, ...(e[1] || {}), key: e[0] };

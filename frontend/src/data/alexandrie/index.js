@@ -89,6 +89,12 @@ import musashi from "./musashi";
 import ramanujan from "./ramanujan";
 import spinoza from "./spinoza";
 import moebius from "./moebius";
+import deadSpace from "./dead-space";
+import guru from "./guru";
+import roisDesOmbres from "./rois-des-ombres";
+import outlawStar from "./outlaw-star";
+import joeHisaishi from "./joe-hisaishi";
+import fullmetalAlchemist from "./fullmetal-alchemist";
 
 export const ROOMS = [
   { key: "philo", label: "Philosophie", kanji: "哲", about: "Des pensées qui dérangent, expliquées de l'intérieur." },
@@ -107,7 +113,7 @@ export const TYPES = {
   recit: { label: "Récit", about: "Un narrateur raconte, plusieurs points de vue." },
   apprentissage: { label: "Apprentissage", about: "On t'accompagne dans une notion difficile." },
 };
-export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, dreyfus, commune, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, xenoblade, skyrim, airGear, darkSouls, hollowKnight, nier, berserk, outerWilds, evangelion, discoElysium, madeInAbyss, sekiro, pathologic, rainWorld, lain, limbo, inside, shadowColossus, silentHill2, akira, blame, hyperLight, kentucky, ergoProxy, planescape, darkwood, dorohedoro, texhnolyze, stalker, alien, bladeRunner, fearHunger, warhammer, twinPeaks, madMax, hordeContrevent, hyperion, gormenghast, annihilation, nouveauSoleil, fondation, nausicaa, lumumba, kimpaVita, kongo, ff12, toussaint, soundiata, saintJust, danton, rumbaCongolaise, meroe, musashi, ramanujan, spinoza, moebius, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
+export const BOOKS = [nietzsche, hegel, stavisky, boulanger, robespierre, dreyfus, commune, cleopatre, tarkovski, bresson, kitano, hokusai, quatrevingtTreize, bushido, infini, bloodborne, eldenRing, dune, meridien, soma, psychoPass, signalis, hellraiser, deusEx, ff13, xenoblade, skyrim, airGear, darkSouls, hollowKnight, nier, berserk, outerWilds, evangelion, discoElysium, madeInAbyss, sekiro, pathologic, rainWorld, lain, limbo, inside, shadowColossus, silentHill2, akira, blame, hyperLight, kentucky, ergoProxy, planescape, darkwood, dorohedoro, texhnolyze, stalker, alien, bladeRunner, fearHunger, warhammer, twinPeaks, madMax, hordeContrevent, hyperion, gormenghast, annihilation, nouveauSoleil, fondation, nausicaa, lumumba, kimpaVita, kongo, ff12, toussaint, soundiata, saintJust, danton, rumbaCongolaise, meroe, musashi, ramanujan, spinoza, moebius, deadSpace, guru, roisDesOmbres, outlawStar, joeHisaishi, fullmetalAlchemist, rodriguez, wuTang, nwa, michaelJackson, mozart, debussy];
 
 const up = (room, type, title, sub, format) => ({ id: "up-" + title.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-"), room, type, title, sub, format: format || (room === "lore" ? "vhs" : room === "musique" ? "vinyle" : "livre") });
 export const UPCOMING = [
@@ -144,10 +150,12 @@ export const UPCOMING = [
 
 export function parseBook(b) {
   const chapters = []; let cur = null;
-  const push = (blk) => { if (!cur) { cur = { title: "", blocks: [] }; chapters.push(cur); } cur.blocks.push(blk); };
+  // si : rang du paragraphe dans le texte source (pour insérer ou retirer une vidéo à cet endroit)
+  let si = -1;
+  const push = (blk) => { if (!cur) { cur = { title: "", blocks: [] }; chapters.push(cur); } blk.si = si; cur.blocks.push(blk); };
   for (const raw of b.text.trim().split(/\n\s*\n/)) {
-    const s = raw.replace(/\s*\n\s*/g, " ").trim(); if (!s) continue;
-    if (s.startsWith("# ")) { cur = { title: s.slice(2).trim(), blocks: [] }; chapters.push(cur); }
+    si++; const s = raw.replace(/\s*\n\s*/g, " ").trim(); if (!s) continue;
+    if (s.startsWith("# ")) { cur = { title: s.slice(2).trim(), blocks: [], si }; chapters.push(cur); }
     else if (s.startsWith("## ")) push({ t: "h", x: s.slice(3).trim() });
     else if (s.startsWith("> ")) { const [x, by] = s.slice(2).split(" | "); push({ t: "q", x: x.trim(), by: by?.trim() }); }
     else if (s.startsWith("@img ")) { const [src, cap, credit] = s.slice(5).split(" | ").map((x) => x && x.trim()); push({ t: "img", src, cap, credit }); }
