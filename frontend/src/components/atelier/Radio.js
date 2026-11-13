@@ -10,7 +10,7 @@ import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "";
 const listOf = (u = "") => (u.match(/[?&]list=([\w-]+)/) || [])[1];
 const vidOf = (u = "") => (u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
-const thumb = (v, q = "hqdefault") => (v ? `https://i.ytimg.com/vi/${v}/${q}.jpg` : "");
+export const thumb = (v, q = "hqdefault") => (v ? `https://i.ytimg.com/vi/${v}/${q}.jpg` : "");
 export const coverOf = (p) => (p?.cover ? imgSrc(p.cover) : p?.thumb || thumb(vidOf(p?.url)));
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
 // Tous les morceaux d'une playlist (fusion, playlist YouTube ou vidéo seule)
@@ -146,7 +146,7 @@ export function RadioBar({ radio: r, onOpen, onMini }) {
   );
 }
 
-function Controls({ r, small }) {
+export function Controls({ r, small }) {
   const s = small ? 18 : 22;
   return (
     <div className={"rd-ctrl" + (small ? " sm" : "")}>
@@ -159,7 +159,7 @@ function Controls({ r, small }) {
   );
 }
 
-function Progress({ r }) {
+export function Progress({ r }) {
   const { t = 0, d = 0 } = r.info;
   return (
     <div className="rd-prog">
@@ -294,7 +294,7 @@ function RadioYt({ r }) {
   );
 }
 
-function Queue({ r }) {
+export function Queue({ r }) {
   const { ids = [], i = 0, vid } = r.info;
   const [, tick] = useState(0);
   const [q, setQ] = useState("");

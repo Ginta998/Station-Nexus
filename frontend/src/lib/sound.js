@@ -376,3 +376,41 @@ export function startPortalAmbience(kind = "archives") {
     },
   };
 }
+
+
+// Tourner une page d'Alexandrie : papier pour un livre, mécanique de cassette pour une VHS, saphir et craquements pour un vinyle.
+// Indépendant du pack du thème, mais coupé avec les autres sons d'interface.
+function band(c, dest, { at = 0, dur, gain, from, to, q = 1.1, attack = 0.05, type = "bandpass" }) {
+  const t = c.currentTime + at;
+  const s = c.createBufferSource(); s.buffer = getNoise(c); s.loop = true;
+  const fl = c.createBiquadFilter(); fl.type = type; fl.Q.value = q;
+  fl.frequency.setValueAtTime(from, t); fl.frequency.exponentialRampToValueAtTime(to, t + dur);
+  const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(fl); fl.connect(g); g.connect(dest); s.start(t); s.stop(t + dur + 0.03);
+}
+export function playPageTurn(kind = "livre", dir = 1) {
+  if (settings.muted || (settings.volume ?? 0.7) <= 0 || settings.pack === "silence") return;
+  const c = getCtx(); if (!c) return;
+  const d = out(c);
+  const r = () => Math.random();
+  if (kind === "vhs") {
+    // le boîtier en plastique qui s'ouvre : deux petits déclics feutrés et un souffle de bande très discret
+    noise(c, d, { dur: 0.022, gain: 0.05, type: "lowpass", f: 1400, q: 0.7 });
+    tone(c, d, { f: 210, f2: 150, dur: 0.03, gain: 0.02, attack: 0.001, lp: 900 });
+    band(c, d, { at: 0.03, dur: 0.24, gain: 0.006, from: 2600, to: 3400, q: 0.6, attack: 0.08 });
+    noise(c, d, { at: 0.2, dur: 0.018, gain: 0.035, type: "lowpass", f: 1100, q: 0.7 });
+    return;
+  }
+  if (kind === "vinyle") {
+    // le saphir se pose, un léger frottement, des craquements
+    tone(c, d, { f: 72, f2: 44, dur: 0.09, gain: 0.06, attack: 0.002, lp: 300 });
+    band(c, d, { at: 0.03, dur: 0.2, gain: 0.025, from: dir > 0 ? 500 : 1300, to: dir > 0 ? 1300 : 500, q: 2.2, attack: 0.03 });
+    for (let i = 0; i < 11; i++) noise(c, d, { at: 0.02 + r() * 0.42, dur: 0.004 + r() * 0.005, gain: 0.015 + r() * 0.035, f: 2200 + r() * 3200, q: 1.5 });
+    return;
+  }
+  // papier : la feuille se soulève, glisse, retombe
+  band(c, d, { dur: 0.3, gain: 0.06, from: 650, to: 3400, q: 0.8, attack: 0.07 });
+  band(c, d, { at: 0.05, dur: 0.22, gain: 0.02, from: 4200, to: 7000, type: "highpass", attack: 0.05 });
+  for (let i = 0; i < 4; i++) noise(c, d, { at: 0.03 + r() * 0.2, dur: 0.006 + r() * 0.006, gain: 0.012 + r() * 0.015, f: 4200 + r() * 2200, q: 2 });
+  tone(c, d, { f: 140, f2: 70, at: 0.25, dur: 0.07, gain: 0.025, attack: 0.004, lp: 400 });
+}

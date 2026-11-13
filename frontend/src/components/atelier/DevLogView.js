@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { IoCheckboxOutline, IoSquareOutline, IoAdd, IoTrashOutline, IoCreateOutline, IoArrowUp, IoArrowDown, IoFlagOutline, IoPricetagOutline, IoSwapHorizontal } from "react-icons/io5";
 import data from "@/data/changelog.json";
+import guide from "@/data/guide.json";
 import { pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
@@ -68,9 +69,22 @@ export default function DevLogView({ at }) {
       <nav className="at-tabs">
         <button className={tab === "patch" ? "on" : ""} onClick={() => setTab("patch")}>Patch notes<small>{data.patches.length}</small></button>
         <button className={tab === "backlog" ? "on" : ""} onClick={() => setTab("backlog")}>Backlog<small>{live.length - doneCount}</small></button>
+        <button className={tab === "guide" ? "on" : ""} onClick={() => setTab("guide")} data-testid="devlog-tab-guide">Fonctionnement<small>{guide.sections.length}</small></button>
       </nav>
 
-      {tab === "patch" ? (
+      {tab === "guide" ? (
+        <div className="dl-patches" data-testid="devlog-guide">
+          <p className="at-sub mono" style={{ margin: 0 }}>MIS À JOUR LE {guide.updated} · COMMENT LA STATION FONCTIONNE, QUI FAIT QUOI</p>
+          {guide.sections.map((sec) => (
+            <article key={sec.title} className="dl-patch">
+              <div className="dl-ph"><span className="dl-v mono">{sec.k}</span><b>{sec.title}</b></div>
+              {sec.rows.map(([h, t]) => (
+                <div key={h} className="dl-grp"><span className="dl-tag" style={{ minWidth: 150, textAlign: "left" }}>{h}</span><p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{t}</p></div>
+              ))}
+            </article>
+          ))}
+        </div>
+      ) : tab === "patch" ? (
         <div className="dl-patches">
           {data.patches.map((p) => (
             <article key={p.v} className="dl-patch" data-testid={`devlog-patch-${p.v}`}>

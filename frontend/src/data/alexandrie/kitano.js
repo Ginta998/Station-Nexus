@@ -1,7 +1,6 @@
 const book = {
   id: "kitano", title: "Kitano", sub: "Je déteste mes films", room: "cinema", type: "pensee", cote: "CI-003", color: 212, emblem: "北",
   about: "Le comique le plus célèbre du Japon et l'un de ses cinéastes les plus tristes raconte sa vie film par film : Adachi, Asakusa, le plan fixe, la mer, la nuit d'août 1994, Hana-bi, Aniki mon frère, Zatoichi, Kubi. Une heure de lecture.",
-  voice: "VOIX RECONSTITUÉE. KITANO EST VIVANT ET N'A PAS ÉCRIT CE TEXTE : LE « JE » REFORMULE CE QU'IL A DIT DANS SES ENTRETIENS ET DANS KITANO PAR KITANO. SEULES LES CITATIONS ENCADRÉES, SOURCÉES, SONT DE LUI.",
   links: [
     { label: "Takeshi Kitano et Michel Temman, Kitano par Kitano (Grasset, 2010)", note: "Ses mémoires, racontés à Michel Temman." },
     { label: "Coffret Takeshi Kitano, bande-annonce du BFI", url: "https://www.youtube.com/watch?v=NH8VFNhyGA0", note: "Les films restaurés en 2020." },

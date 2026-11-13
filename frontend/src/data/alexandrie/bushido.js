@@ -1,7 +1,6 @@
 const book = {
   id: "bushido", title: "Bushidō", sub: "La voie de celui qui sert", room: "japon", type: "pensee", cote: "JA-001", color: 355, emblem: "武",
   about: "Le livre de Nitobe relu vertu par vertu, avec ses histoires, ses sources, ce qu'il a inventé et ce qu'on en a fait. Un livre long, pour un sujet qui ne se résume pas.",
-  voice: "NÉRODUS TE PARLE. IL SUIT LE LIVRE D'INAZŌ NITOBE (1900), LIBRE DE DROITS ; LES CITATIONS SONT TRADUITES DE L'ANGLAIS ORIGINAL.",
   links: [
     { label: "Inazō Nitobe, Bushido: The Soul of Japan (1900)", url: "https://www.gutenberg.org/ebooks/12096", note: "Le texte original, en anglais, libre de droits. Tu l'as lu en français : relis un chapitre dans sa langue d'écriture." },
     { label: "Yamamoto Tsunetomo, Hagakure", note: "L'autre versant : la voie comme préparation à mourir. Fragments dictés entre 1709 et 1716." },

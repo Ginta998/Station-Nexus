@@ -9,6 +9,8 @@ export const DEFAULT_COVERS = {
   nietzsche: wm("Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg"),
   hegel: wm("Bataille_d%27I%C3%A9na,_14_octobre_1806_(Vernet).jpg"),
   robespierre: wm("F%C3%AAte_de_l%27Etre_supr%C3%AAme_2.jpg"),
+  "affaire-dreyfus": wm("Degradation_alfred_dreyfus.jpg"),
+  "commune-de-paris": wm("Barricade18March1871.jpg"),
   cleopatre: wm("Alexandre_Cabanel_-_Cléopatre_essayant_des_poisons_sur_des_condamnés_à_mort.jpg"),
   tarkovski: wm("Angelsatmamre-trinity-rublev-1410.jpg"),
   bresson: wm("Giotto_-_Scrovegni_-_-26-_-_Entry_into_Jerusalem2.jpg"),
@@ -25,6 +27,7 @@ export const DEFAULT_COVERS = {
   ...both("signalis", steam(1262350)),
   ...both("deus-ex", steam(6910)),
   ...both("final-fantasy-xiii", steam(292120)),
+  ...both("final-fantasy-xii", steam(595520)),
   ...both("skyrim", steam(489830)),
   ...both("limbo", steam(48000)),
   ...both("inside", steam(304430)),
@@ -51,8 +54,8 @@ export const mergeCovers = (local, saved, bad) => Object.fromEntries(Object.entr
 
 // Termes de recherche SteamGridDB quand le titre français ou court ne suffit pas.
 export const SGDB_TERMS = {
-  "final-fantasy-xiii": "Final Fantasy XIII", nier: "NieR:Automata", "dark-souls": "Dark Souls Remastered", sekiro: "Sekiro: Shadows Die Twice",
-  skyrim: "The Elder Scrolls V: Skyrim", pathologic: "Pathologic 2", "disco-elysium": "Disco Elysium", "deus-ex": "Deus Ex", "fear-hunger": "Fear & Hunger",
+  "final-fantasy-xiii": "Final Fantasy XIII", "final-fantasy-xii": "Final Fantasy XII: The Zodiac Age", nier: "NieR:Automata", "dark-souls": "Dark Souls Remastered", sekiro: "Sekiro: Shadows Die Twice",
+  "xenoblade-chronicles": "Xenoblade Chronicles: Definitive Edition", skyrim: "The Elder Scrolls V: Skyrim", pathologic: "Pathologic 2", "disco-elysium": "Disco Elysium", "deus-ex": "Deus Ex", "fear-hunger": "Fear & Hunger",
   "planescape-torment": "Planescape: Torment", "silent-hill-2": "Silent Hill 2", "shadow-of-the-colossus": "Shadow of the Colossus", "outer-wilds": "Outer Wilds",
   "warhammer-40-000": "Warhammer 40,000", alien: "Alien: Isolation", stalker: "S.T.A.L.K.E.R.: Shadow of Chernobyl", "psycho-pass": "Psycho-Pass: Mandatory Happiness",
   "blade-runner": "Blade Runner", "mad-max": "Mad Max", akira: "Akira", evangelion: "Evangelion", berserk: "Berserk", "made-in-abyss": "Made in Abyss",

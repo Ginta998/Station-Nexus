@@ -125,7 +125,7 @@ figcaption{font-style:italic;font-size:10pt;color:#555}
 figcaption small{display:block;font-style:normal;font-family:Arial,sans-serif;font-size:7pt;letter-spacing:.12em;color:#999;text-transform:uppercase}
 .bk-links li{margin:.5em 0}.bk-links small{display:block;color:#666}
 `;
-const bkInline = (s) => esc(s).replace(/\*([^*]+)\*/g, "<em>$1</em>");
+const bkInline = (s) => esc(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>");
 export function exportBook(book, cover, notes = []) {
   let h = `<style>${BOOK_CSS}</style><section class="bk-title">`;
   if (cover) h += `<img src="${esc(cover)}" alt="">`;

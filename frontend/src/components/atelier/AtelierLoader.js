@@ -28,7 +28,9 @@ export function Decode({ text, speed = 34, tick, className, onDone }) {
 
 // Splash de l'Atelier — style « Laboratoire » : anneaux lents, vérification des accès, progression réelle.
 // Les couleurs et polices viennent du thème actif. Passable (bouton, Échap, Entrée, Espace).
+const ATELIER_WORDS = { word: "ATELIER NEXUS", sub: "ESPACE DE CRÉATION", os: "OS", osSub: "工房", checking: "VÉRIFICATION DES ACCÈS", granted: "ACCÈS AUTORISÉ", smallA: "認証 · SESSION EN COURS", smallB: "許可 · BIENVENUE AU PONT", done: "ACCÈS AUTORISÉ" };
 export default function AtelierLoader({ progress, label, steps = [], step = 0, granted, error, leaving, onLeave, onSkip }) {
+  const W = ATELIER_WORDS;
   const { muted } = useApp();
   const [canSkip, setCanSkip] = useState(false);
   useEffect(() => { const t = setTimeout(() => setCanSkip(true), 400); return () => clearTimeout(t); }, []);
@@ -75,9 +77,9 @@ export default function AtelierLoader({ progress, label, steps = [], step = 0, g
       <p className="lb-coord" aria-hidden="true">X 0000 · Y 0000</p>
       {!error && <ul className="lb-feed" aria-hidden="true">{feed.map((l) => <li key={l.id}>{l.t}</li>)}</ul>}
       <header className="lb-id">
-        <b className="lb-word"><Decode text="ATELIER NEXUS" tick={tick} speed={30} /></b>
-        <span className="lb-sub"><Decode text="ESPACE DE CRÉATION" tick={tick} speed={20} /></span>
-        <span className="lb-os">OS <i>工房</i></span>
+        <b className="lb-word"><Decode text={W.word} tick={tick} speed={30} /></b>
+        <span className="lb-sub"><Decode text={W.sub} tick={tick} speed={20} /></span>
+        <span className="lb-os">{W.os} <i>{W.osSub}</i></span>
       </header>
       {onSkip && !error && <button className="lb-skip" onClick={onSkip} data-testid="atelier-skip">PASSER <span aria-hidden="true">↗</span></button>}
 
@@ -97,9 +99,9 @@ export default function AtelierLoader({ progress, label, steps = [], step = 0, g
           </svg>
           <div className="lb-core">
             {granted
-              ? <Decode key="ok" className="lb-msg" text="ACCÈS AUTORISÉ" tick={tick} speed={30} />
-              : <Decode key="chk" className="lb-msg" text="VÉRIFICATION DES ACCÈS" tick={tick} speed={38} />}
-            <span className="lb-small">{granted ? "許可 · BIENVENUE AU PONT" : "認証 · SESSION EN COURS"}</span>
+              ? <Decode key="ok" className="lb-msg" text={W.granted} tick={tick} speed={30} />
+              : <Decode key="chk" className="lb-msg" text={W.checking} tick={tick} speed={38} />}
+            <span className="lb-small">{granted ? W.smallB : W.smallA}</span>
           </div>
         </div>
       )}
@@ -113,7 +115,7 @@ export default function AtelierLoader({ progress, label, steps = [], step = 0, g
           </ol>
           <div className="lb-prog">
             <div className="lb-bar"><span style={{ width: `${progress}%` }} data-testid="atelier-load-bar" /></div>
-            <div className="lb-prog-l"><span>{granted ? "ACCÈS AUTORISÉ" : label?.toUpperCase()}</span><b data-testid="atelier-load-pct">{progress}%</b></div>
+            <div className="lb-prog-l"><span>{granted ? W.done : label?.toUpperCase()}</span><b data-testid="atelier-load-pct">{progress}%</b></div>
           </div>
         </>
       )}

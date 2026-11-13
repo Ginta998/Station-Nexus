@@ -1,7 +1,6 @@
 const book = {
   id: "nietzsche", title: "Nietzsche", sub: "Deviens ce que tu es", room: "philo", type: "pensee", cote: "PH-001", color: 12, emblem: "超",
   about: "Un homme malade, seul, presque aveugle, qui écrit que la vie est à aimer telle qu'elle est. Il te parle.",
-  voice: "VOIX RECONSTITUÉE PAR NÉRODUS D'APRÈS LES LIVRES ET LES LETTRES DE NIETZSCHE. LES VRAIES PHRASES SONT EN CITATION, AVEC LEUR SOURCE.",
   links: [
     { label: "Le Gai Savoir (1882)", note: "Le meilleur livre pour commencer. Lis les paragraphes 125, 276 et 341." },
     { label: "Ainsi parlait Zarathoustra (1883-1885)", note: "Son poème. À lire après, lentement, à voix haute." },
