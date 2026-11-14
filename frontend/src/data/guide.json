@@ -182,6 +182,10 @@
      "Chaque livre peut être marqué Lu, À lire ou Coup de cœur (fiche du livre ou clic droit). Une étiquette discrète apparaît sur la couverture et une marque sur la tranche. Un livre lu jusqu'à la dernière page passe tout seul dans « Lus ». Le plan des salles a une colonne « Mes lectures » ; dans une salle, le filtre Tout / Lus / À lire / Coups de cœur. Ces listes sont gardées sur le serveur et suivent tous tes appareils."
     ],
     [
+     "Titres à paraître",
+     "Les volumes « À paraître » ont trois boutons (fiche ou clic droit) : « Je veux le lire » (une étoile, ils passent en premier), « Écrire ce livre » (la fenêtre de collage s'ouvre avec le titre, la salle, le genre et le format déjà remplis) et « Retirer » (il quitte les rayons). Un titre écrit, ou dont un de tes livres porte le même nom, disparaît tout seul des titres à paraître. Les titres retirés se remettent d'un clic en bas de la bibliothèque, et la liste est gardée sur le serveur."
+    ],
+    [
      "Notes",
      "Une fiche « Notes de lecture » par livre, avec la page de chaque note. Visibles dans le lecteur, la fiche du livre et le PDF."
     ],

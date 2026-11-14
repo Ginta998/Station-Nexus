@@ -159,6 +159,7 @@
 @keyframes axIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:rotate(var(--lean,0deg))}}
 @keyframes axTurn{from{opacity:.2;transform:perspective(1100px) rotateY(-80deg) translateY(-8px)}to{opacity:1;transform:perspective(1100px) rotateY(0) rotate(-1.2deg) translateY(-8px)}}
 .ax-wishes{font-size:10px;letter-spacing:.14em;color:var(--lab-mute);line-height:1.8}
+.ax-linkbtn{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;color:var(--lab-ink,inherit);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 /* Fiche « à paraître » */
 .ax-fiche-wrap{position:fixed;inset:0;z-index:1250;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--bg-primary) 55%,transparent);backdrop-filter:blur(5px);animation:aiFade .2s both}
 .ax-fiche{width:min(440px,100%);padding:22px 24px;background:var(--lab-panel);border:1px solid var(--lab-hair-2);color:var(--lab-ink);animation:aiOpen .35s var(--lab-ease) both;display:flex;flex-direction:column;gap:10px;align-items:flex-start}

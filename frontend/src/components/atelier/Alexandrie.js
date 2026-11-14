@@ -21,10 +21,11 @@ import "@/components/atelier/alexandrie.css";
 
 // ALEXANDRIE — la bibliothèque de l'Atelier. Des salles, des rayonnages, des livres qui s'ouvrent.
 // Les livres de fond sont dans src/data/alexandrie ; les tiens sont des fiches de l'Atelier (fields.alexandrie).
-const LS = { prog: "nx-alex-progress", wish: "nx-alex-wish", covers: "nx-alex-covers", fav: "nx-alex-fav", view: "nx-alex-view", shelf: "nx-alex-shelf" };
+const LS = { hideUp: "nx-alex-hide-up", prog: "nx-alex-progress", wish: "nx-alex-wish", covers: "nx-alex-covers", fav: "nx-alex-fav", view: "nx-alex-view", shelf: "nx-alex-shelf" };
 const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || "") ?? d; } catch (_) { return d; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
 const NOEDITS = {};
+const normT = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 const ytId = (s = "") => (s.match(/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([\w-]{11})/) || [])[1] || (/^[\w-]{11}$/.test(s.trim()) ? s.trim() : null);
 const hue = (s) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
 
@@ -540,7 +541,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
 
 // Index de la bibliothèque : même répertoire que l'Index des archives, mais sur les rayonnages (titres et plein texte).
 const STABS = [["all", "TOUT"], ["lire", "À LIRE"], ["up", "À PARAÎTRE"], ["pensee", "PENSÉE"], ["recit", "RÉCIT"], ["apprentissage", "APPRENTISSAGE"]];
-function AlexSearch({ books, onClose, onOpen, onGoto }) {
+function AlexSearch({ books, upcoming = UPCOMING, onClose, onOpen, onGoto }) {
   const { sfx } = useApp();
   const [q, setQ] = useState(""); const [tab, setTab] = useState("all"); const [sel, setSel] = useState(0);
   const input = useRef(null); const list = useRef(null);
@@ -553,10 +554,10 @@ function AlexSearch({ books, onClose, onOpen, onGoto }) {
       const t = texts[b.id]; const p = needle ? t.indexOf(needle) : -1; const headLen = `${b.title} ${b.sub || ""}`.length;
       return { key: b.id, up: false, type: b.type, code: b.cote || "MES-LIV", kj: room(b.room)?.kanji || "私", title: b.title, sub: (b.sub || "").toUpperCase(), snip: p > headLen ? "…" + t.slice(Math.max(0, p - 40), p + 70).replace(/\s+/g, " ") + "…" : "", ty: TYPES[b.type]?.label || "Récit", where: room(b.room)?.label || "Mes livres", dur: b.words ? readingTime(b.words) : "", run: () => onOpen(b) };
     });
-    const u = UPCOMING.filter((b) => !needle || `${b.title} ${b.sub || ""}`.toLowerCase().includes(needle)).slice(0, needle ? 40 : 8).map((b) => (
+    const u = upcoming.filter((b) => !needle || `${b.title} ${b.sub || ""}`.toLowerCase().includes(needle)).slice(0, needle ? 40 : 8).map((b) => (
       { key: b.id, up: true, type: b.type, code: "À VENIR", kj: room(b.room)?.kanji, title: b.title, sub: (b.sub || "").toUpperCase(), snip: "", ty: TYPES[b.type]?.label, where: room(b.room)?.label, dur: "à paraître", run: () => onGoto(b) }));
     return [...a, ...u].filter((r) => tab === "all" || (tab === "lire" ? !r.up : tab === "up" ? r.up : r.type === tab)).slice(0, 60);
-  }, [needle, books, texts, tab, onOpen, onGoto]);
+  }, [needle, books, upcoming, texts, tab, onOpen, onGoto]);
   useEffect(() => setSel(0), [needle, tab]);
   useEffect(() => { list.current?.querySelector(`[data-i="${sel}"]`)?.scrollIntoView({ block: "nearest" }); }, [sel]);
   const close = () => { sfx?.("close"); onClose(); };
@@ -628,7 +629,7 @@ function Grid({ list, upFrom, selId, onSel, covers, onOpen, menuFor, stOf }) {
 }
 
 // Une salle : on y est entré par sa porte. Rayon A (à lire), notice du volume choisi, rayon B (à paraître).
-function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish, onCover, onEdit, onModify, menuFor, noteCount, onNotes, favs, onFav, view, stOf, onStatus }) {
+function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish, onWriteUp, onHideUp, onCover, onEdit, onModify, menuFor, noteCount, onNotes, favs, onFav, view, stOf, onStatus }) {
   const all = [...here, ...up]; const cur = all.find((b) => b.id === selId) || all[0]; const isUp = cur ? !here.includes(cur) : false;
   const id = cur?.id; const pg = cur && prog[cur.id]; const T = TYPES[cur?.type] || TYPES.recit; const fmt = cur ? fmtOf(cur) : "livre";
   const act = (b, u) => (u ? onWish(b.id) : onRead(b));
@@ -647,10 +648,12 @@ function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish
           <h3>{cur.title}{favs.includes(cur.id) && <IoHeart className="ax-favh" size={20} aria-label="Coup de cœur" />}</h3>
           {cur.sub && <p className="sub">{cur.sub}</p>}
           {cur.about && <p className="ab">{cur.about}</p>}
-          {isUp && <p className="ab">Pas encore écrit. Marque-le d'une étoile : les titres étoilés passent en premier.</p>}
+          {isUp && <p className="ab">Pas encore écrit. Écris-le toi-même, marque-le d'une étoile pour qu'il passe en premier, ou retire-le des rayons.</p>}
           <div className="ax-acts">
             {isUp ? <button className="at-btn" onClick={() => onWish(cur.id)} data-testid="alex-wish">{wish.includes(cur.id) ? <><IoStar size={15} /> Demandé</> : <><IoStarOutline size={15} /> Je veux le lire</>}</button>
               : <button className="at-btn" onClick={() => onRead(cur)} data-testid="alex-read"><IoPlay size={14} /> {pg && pg.page > 0 ? `Reprendre page ${pg.page + 1}` : fmt === "vhs" ? "Lancer" : "Lire"}</button>}
+            {isUp && <button className="ax-ghost" onClick={() => onWriteUp(cur)} data-testid="alex-up-write"><IoCreateOutline size={15} /> Écrire ce livre</button>}
+            {isUp && <button className="ax-ghost" onClick={() => onHideUp(cur)} data-testid="alex-up-hide"><IoTrashOutline size={15} /> Retirer</button>}
             {cur.mine && !cur.src && <button className="ax-ghost" onClick={() => onEdit(cur.itemId)}><IoCreateOutline size={15} /> Écrire</button>}
             {!isUp && noteCount(cur.id) > 0 && <button className="ax-ghost" onClick={() => onNotes(cur)} data-testid="alex-notes-notice"><IoPencil size={14} /> Mes notes · {noteCount(cur.id)}</button>}
             {!isUp && (() => { const st = stOf(cur.id); return <>
@@ -763,6 +766,11 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const [sel, setSel] = useState({});
   const [coverFor, setCoverFor] = useState(null);
   const [wish, setWish] = useState(() => read(LS.wish, []));
+  // Titres à paraître retirés des rayons. Gardés sur le serveur (tous les appareils) et dans le navigateur.
+  const srvHid = at.config?.alexandrie?.hiddenUp;
+  const [hidUp, setHidUp] = useState(() => srvHid || read(LS.hideUp, []));
+  useEffect(() => { if (srvHid) setHidUp(srvHid); }, [JSON.stringify(srvHid || null)]); // eslint-disable-line react-hooks/exhaustive-deps
+  const saveHid = (h) => { setHidUp(h); write(LS.hideUp, h); at.saveConfig({ alexandrie: { ...(at.config?.alexandrie || {}), hiddenUp: h } }).catch(() => {}); };
   // Mes lectures : lus, à lire, coups de cœur. Gardés sur le serveur (tous les appareils) et dans le navigateur.
   const [shelf, setShelf] = useState(() => ({ read: [], want: [], fav: read(LS.fav, []), ...read(LS.shelf, {}), ...(at.config?.alexandrie?.shelf || {}) }));
   const srvShelf = at.config?.alexandrie?.shelf;
@@ -847,6 +855,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const menuFor = (b, upc) => () => ({ title: b.title, entries: [
     !upc && { id: "read", label: prog[b.id]?.page > 0 ? `Reprendre page ${prog[b.id].page + 1}` : "Lire", icon: <IoPlay size={14} />, onClick: () => openBook(b) },
     upc && { id: "wish", label: wish.includes(b.id) ? "Ne plus demander" : "Je veux le lire", icon: <IoStarOutline size={14} />, onClick: () => toggleWish(b.id) },
+    upc && { id: "up-write", label: "Écrire ce livre", icon: <IoCreateOutline size={14} />, onClick: () => writeUp(b) },
     !upc && { id: "modify", label: b.mine && !b.src ? "Écrire" : "Modifier (copier-coller)", icon: <IoCreateOutline size={14} />, onClick: () => modifyBook(b) },
     !upc && !b.mine && !b.edited && { id: "modify-ed", label: "Modifier dans l'éditeur", icon: <IoPencil size={14} />, onClick: () => modifyInEditor(b) },
     !upc && { id: "copy", label: "Copier le texte du livre", icon: <IoClipboardOutline size={14} />, onClick: () => navigator.clipboard?.writeText(asPaste(b.mine || b.edited ? b : rawBook(b))).then(() => toast.success("Texte copié : il se colle tel quel dans « Coller un livre »"), () => toast.error("La copie n'a pas marché")) },
@@ -861,6 +870,8 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     DEFAULT_COVERS[b.id] && covers[b.id] !== DEFAULT_COVERS[b.id] && { id: "recover", label: "Remettre l'artwork d'origine", icon: <IoArrowUndo size={14} />, onClick: () => saveCover(b.id, null) },
     !upc && b.edited && "-",
     !upc && b.edited && { id: "revert", label: "Revenir au texte d'origine", icon: <IoArrowUndo size={14} />, danger: true, onClick: () => revertEdit(b) },
+    upc && "-",
+    upc && { id: "up-hide", label: "Retirer des titres à paraître", icon: <IoTrashOutline size={14} />, danger: true, onClick: () => hideUp(b) },
     b.mine && "-",
     b.mine && { id: "del", label: "Supprimer le livre", icon: <IoTrashOutline size={14} />, danger: true, onClick: () => deleteBook(b) },
   ] });
@@ -868,6 +879,18 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     if (!(await labConfirm(`Supprimer « ${b.title} » ? Il disparaîtra des rayons et du Nexus Drive.`))) return;
     try { await at.removeItem(b.itemId); toast.success("Livre supprimé"); } catch (e) { toast.error("Le livre n'a pas pu être supprimé : " + errText(e)); }
   };
+  // Un titre à paraître : l'écrire (la fenêtre de collage s'ouvre avec ses réglages) ou le retirer des rayons.
+  const writeUp = (b) => {
+    const T = TYPES[b.type]; setReading(null);
+    setPaste({ up: b.id, text: `// Les réglages viennent du titre à paraître. Écris ou colle le livre sous la ligne ---.\nTITRE : ${b.title}\n${b.sub ? `SOUS-TITRE : ${b.sub}\n` : ""}SALLE : ${b.room}\nGENRE : ${T ? T.label.toLowerCase() : "récit"}\nFORMAT : ${b.format || "livre"}\n---\n\n# Premier chapitre\n\nLe texte du chapitre.\n` });
+  };
+  const hideUp = async (b) => {
+    if (!(await labConfirm(`Retirer « ${b.title} » des titres à paraître ? Tu pourras le remettre en bas de la bibliothèque.`))) return;
+    saveHid([...hidUp.filter((x) => x !== b.id), b.id]);
+    if (wish.includes(b.id)) { const w = wish.filter((x) => x !== b.id); setWish(w); write(LS.wish, w); }
+    toast.success(`« ${b.title} » retiré des rayons`); sfx?.("select");
+  };
+  const restoreUp = () => { saveHid([]); toast.success("Titres à paraître remis sur les rayons"); sfx?.("select"); };
   // Enregistrer ce qui a été collé : un livre modifié, ou un ou plusieurs livres nouveaux.
   const savePaste = async (blocks) => {
     const roomNow = R?.key; const made = [];
@@ -893,6 +916,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
         }
         if (made.length) { if (JSON.stringify(sh) !== JSON.stringify(shelf)) saveShelf(sh);
           if (Object.keys(cv).length) { const c = { ...rawCovers, ...cv }; setLocalCovers(c); write(LS.covers, c); at.saveConfig({ alexandrie: { ...(at.config?.alexandrie || {}), covers: c } }).catch(() => {}); } }
+        if (paste.up && made.length && !hidUp.includes(paste.up)) saveHid([...hidUp, paste.up]); // écrit : il quitte les titres à paraître
         toast.success(made.length > 1 ? `${made.length} livres ajoutés aux rayons` : "Livre ajouté aux rayons");
       }
       sfx?.("select"); setPaste(null);
@@ -909,6 +933,8 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   };
   const mine = useMemo(() => at.items.filter((i) => i.fields?.alexandrie && !i.fields.alexandrie.of).map(itemToBook), [at.items]);
   const all = useMemo(() => [...books, ...mine], [books, mine]);
+  // Un titre à paraître disparaît quand il est retiré, ou quand un de tes livres porte le même titre.
+  const upcoming = useMemo(() => { const own = new Set(mine.map((b) => normT(b.title))); return UPCOMING.filter((u) => !hidUp.includes(u.id) && !own.has(normT(u.title))); }, [hidUp, mine]);
   const readingBook = reading && (all.find((b) => b.id === reading.id) || reading);
   const match = (b) => (type === "all" || b.type === type) && (stf === "all" || shelf[stf].includes(b.id));
   const matchUp = (b) => (type === "all" || b.type === type) && (stf === "all" || (stf === "want" && wish.includes(b.id)));
@@ -947,7 +973,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k);
   }, [reading, coverFor, search, room]);
   const R = ROOMS.find((r) => r.key === room); const ri = ROOMS.indexOf(R);
-  const inRoom = (k) => ({ here: all.filter((b) => b.room === k), up: UPCOMING.filter((b) => b.room === k) });
+  const inRoom = (k) => ({ here: all.filter((b) => b.room === k), up: upcoming.filter((b) => b.room === k) });
   const searchBtn = <button className="ax-find" onClick={() => setSearch(true)} data-testid="alex-find"><IoSearch size={15} /><span>Chercher un titre, un nom, un mot dans un livre…</span><kbd className="mono">/</kbd></button>;
 
   return (
@@ -956,7 +982,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
         <>
           <header className="ax-top">
             <div className="ax-top-t">
-              <p className="at-eyebrow mono">// ALEXANDRIE · 図書館 · {all.length} VOLUMES · {UPCOMING.length} À PARAÎTRE</p>
+              <p className="at-eyebrow mono">// ALEXANDRIE · 図書館 · {all.length} VOLUMES · {upcoming.length} À PARAÎTRE</p>
               <h1>La bibliothèque</h1>
               <p className="ax-top-ab">Nérodus tient les rayonnages. Pousse une porte.</p>
             </div>
@@ -1020,12 +1046,13 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
               <button className="at-btn" onClick={() => addBook(R.key)} data-testid="alex-add"><IoAdd size={16} /> Écrire</button>
             </div>
           </header>
-          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(matchUp)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} noteCount={(id) => notesOf(notesItemOf(at, id)).length} onNotes={(b) => { setReadNotes(true); openBook(b); }} favs={favs} onFav={toggleFav} view={view} stOf={stOf} onStatus={setStatus} />
+          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(matchUp)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onWriteUp={writeUp} onHideUp={hideUp} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} noteCount={(id) => notesOf(notesItemOf(at, id)).length} onNotes={(b) => { setReadNotes(true); openBook(b); }} favs={favs} onFav={toggleFav} view={view} stOf={stOf} onStatus={setStatus} />
         </>
       )}
-      {wish.length > 0 && <p className="ax-wishes mono">★ {wish.length} TITRE{wish.length > 1 ? "S" : ""} DEMANDÉ{wish.length > 1 ? "S" : ""} : {wish.map((id) => UPCOMING.find((u) => u.id === id)?.title).filter(Boolean).join(" · ")}</p>}
+      {wish.length > 0 && <p className="ax-wishes mono">★ {wish.length} TITRE{wish.length > 1 ? "S" : ""} DEMANDÉ{wish.length > 1 ? "S" : ""} : {wish.map((id) => upcoming.find((u) => u.id === id)?.title).filter(Boolean).join(" · ")}</p>}
+      {hidUp.length > 0 && <p className="ax-wishes mono">{hidUp.length} TITRE{hidUp.length > 1 ? "S" : ""} À PARAÎTRE RETIRÉ{hidUp.length > 1 ? "S" : ""} · <button className="ax-linkbtn" onClick={restoreUp} data-testid="alex-up-restore">LES REMETTRE</button></p>}
       {coverFor && <CoverDialog b={coverFor} current={covers[coverFor.id]} def={DEFAULT_COVERS[coverFor.id]} onSave={(u) => saveCover(coverFor.id, u)} onClose={() => setCoverFor(null)} />}
-      {search && <AlexSearch books={all} onClose={() => setSearch(false)} onOpen={openBook} onGoto={(b) => { setSearch(false); setRoom(b.room); setSel((s) => ({ ...s, [b.room]: b.id })); }} />}
+      {search && <AlexSearch books={all} upcoming={upcoming} onClose={() => setSearch(false)} onOpen={openBook} onGoto={(b) => { setSearch(false); setRoom(b.room); setSel((s) => ({ ...s, [b.room]: b.id })); }} />}
       {paste && <AlexPaste initial={paste.text} editing={paste.title} onSave={savePaste} onClose={() => setPaste(null)} onPreview={(b) => setReading(b)} renderCover={(b) => <Face b={b} cover={b.coverUrl || covers[b.id]} />} />}
       {readingBook && (readingBook.preview
         ? <Reader key={readingBook.id + readingBook.words} book={readingBook} at={null} radio={radio} cover={readingBook.coverUrl} onClose={() => { sfx?.("close"); setReading(null); }} />
