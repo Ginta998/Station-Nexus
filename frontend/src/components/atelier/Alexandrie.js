@@ -406,18 +406,19 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
   const go = (d) => {
     const n = Math.max(0, Math.min(pages - 1, spread + d * per));
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    // Téléphone : la page glisse sous le doigt, quel que soit le format. Pas d'effet par-dessus le texte
-    // (les calques animés sur une colonne aussi large faisaient clignoter l'écran).
-    const phone = per === 1;
-    if (!phone && n !== spread) { // ordinateur, cassette, disque : la page change d'un coup, une courte animation l'accompagne
-      clearTimeout(anim.current); anim.current = 0; setPage(n); turnFx(n > spread ? 1 : -1);
-      if (!reduce) {
-        const dir = n > spread ? 1 : -1; clearTimeout(turnT.current); setTurn({ dir: dir > 0 ? "next" : "prev", k: Date.now() }); turnT.current = setTimeout(() => setTurn(null), fmt === "vinyle" ? 640 : 520);
-        const fl = flow.current; try { fl.getAnimations?.().forEach((x) => x.cancel()); fl.animate?.(fmt === "vhs" ? VHS_KF : fmt === "vinyle" ? VINYL_KF : PAPER_KF(dir), fmt === "vhs" ? { duration: 380, easing: "linear" } : fmt === "vinyle" ? { duration: 620, easing: "cubic-bezier(.25,.7,.3,1)" } : { duration: 340, easing: "cubic-bezier(.2,.7,.3,1)" }); } catch (_) {}
-      }
-      return;
-    }
-    anim.current = anim.current || 1; if (n !== spread) { setPage(n); turnFx(n > spread ? 1 : -1); } else if (flow.current) { const g = geom(); flow.current.scrollTo({ left: Math.round(spread * g.step), behavior: "smooth" }); anim.current = setTimeout(() => { anim.current = 0; }, 420); } };
+    // La page change d'un coup (jamais de défilement lent), une courte animation l'accompagne.
+    // Téléphone : pas de calque par-dessus le texte (il faisait clignoter l'écran), animation plus brève.
+    const phone = per === 1; const fl = flow.current;
+    clearTimeout(anim.current); anim.current = 0;
+    if (fl) { fl.style.transition = ""; fl.style.transform = ""; }
+    if (n === spread) return;
+    setPage(n); turnFx(n > spread ? 1 : -1);
+    if (reduce) return;
+    const dir = n > spread ? 1 : -1;
+    if (!phone) { clearTimeout(turnT.current); setTurn({ dir: dir > 0 ? "next" : "prev", k: Date.now() }); turnT.current = setTimeout(() => setTurn(null), fmt === "vinyle" ? 640 : 520); }
+    const k = phone ? 0.6 : 1;
+    try { fl.getAnimations?.().forEach((x) => x.cancel()); fl.animate?.(fmt === "vhs" ? VHS_KF : fmt === "vinyle" ? VINYL_KF : PAPER_KF(phone ? dir * 1.6 : dir), { duration: (fmt === "vhs" ? 380 : fmt === "vinyle" ? 620 : 340) * k, easing: fmt === "vhs" ? "linear" : "cubic-bezier(.2,.7,.3,1)" }); } catch (_) {}
+  };
   // À la souris : on attrape la page et on la fait glisser, comme au doigt. Au pavé tactile : un glissement horizontal à deux doigts.
   const onMouseDown = (e) => {
     if (e.button !== 0 || e.target.closest?.("a,button,iframe,input,textarea,figure,.ax-yt-ed")) return;
@@ -438,7 +439,8 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
   const onTouchMove = (e) => {
     const d = drag.current; if (!d || !flow.current) return; const t = e.touches[0]; const dx = t.clientX - d.x, dy = t.clientY - d.y;
     if (!d.on && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2) d.on = true;
-    if (d.on) { const atEdge = (dx > 0 && spread === 0) || (dx < 0 && spread + per >= pages); flow.current.scrollLeft = d.base - dx * (atEdge ? 0.25 : 1); }
+    // la page suit légèrement le doigt (simple décalage, sans faire défiler le texte)
+    if (d.on) { const atEdge = (dx > 0 && spread === 0) || (dx < 0 && spread + per >= pages); const x = Math.max(-70, Math.min(70, dx * (atEdge ? 0.12 : 0.35))); flow.current.style.transition = "none"; flow.current.style.transform = `translate3d(${x}px,0,0)`; }
   };
   const onTouchEnd = (e) => {
     const d = drag.current; drag.current = null; if (!d) return; const t = e.changedTouches[0]; const dx = t.clientX - d.x, dt = Date.now() - d.t;
@@ -514,7 +516,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
       </header>
       <div className="ax-stage">
         <button className="ax-turn l" onClick={() => go(-1)} disabled={spread === 0} aria-label="Page précédente"><IoArrowBack size={20} /></button>
-        <div ref={bookEl} className={"ax-book" + (per === 1 ? " single" : "")} onMouseDown={onMouseDown} onWheel={onWheel} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={() => { drag.current = null; go(0); }}>
+        <div ref={bookEl} className={"ax-book" + (per === 1 ? " single" : "")} onMouseDown={onMouseDown} onWheel={onWheel} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={() => { drag.current = null; go(0); }} data-testid="alex-book">
           {turn && <i key={turn.k} className={"ax-turnfx " + turn.dir} aria-hidden="true"><b /><em>{turn.dir === "next" ? "▶▶ FF" : "◀◀ REW"}</em></i>}
           <div className="ax-flow" ref={flow} onScroll={() => { try { if (drag.current?.on || anim.current) return; const g = geom(); const want = Math.round(spread * g.step); if (Math.abs(g.el.scrollLeft - want) > 2) g.el.scrollLeft = want; } catch (_) {} }}>
             {body}

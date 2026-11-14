@@ -590,3 +590,13 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
   .ax-book{animation:axFadeUp .32s ease both}
   .ax-turnfx{display:none}
 }
+
+/* Téléphone : le lecteur occupe tout son espace, rien ne défile ni ne transparaît derrière */
+.ax-reader{overscroll-behavior:contain}
+body:has(.ax-reader) .at-main{overflow:hidden!important}
+@media (max-width:900px){
+  .ax-reader{touch-action:none}
+  .ax-flow{touch-action:none;will-change:transform;backface-visibility:hidden}
+  .ax-book{contain:layout paint;isolation:isolate}
+  .ax-toc,.ax-music,.ax-notes,.ax-rbar{touch-action:pan-x pan-y}
+}
