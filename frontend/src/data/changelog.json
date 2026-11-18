@@ -1,6 +1,30 @@
 {
-  "version": "0.16",
+  "version": "0.17",
   "patches": [
+    {
+      "v": "0.17",
+      "date": "2026-11-18",
+      "title": "Entrer dans le monde d'une œuvre",
+      "groups": {
+        "Nouveau": [
+          "Nexus : l'œuvre s'ouvre en plein écran, comme le menu d'un jeu. Chaque bouton ouvre un écran (Chapitres ou Épisodes, Making of, Moodboard, Intentions, Bande-annonce, Commentaires, Autres mondes), et chaque écran peut en ouvrir un autre : une entrée du Making of, une image du Moodboard, un chapitre.",
+          "Toujours repéré : le fil d'Ariane en haut (Station › l'œuvre › la section › l'élément) est cliquable à chaque niveau, ← ou Échap remonte d'un cran, et des losanges en bas montrent la profondeur.",
+          "Au clavier comme à la manette : ↑ ↓ pour choisir, Entrée pour valider, ← ou Échap pour revenir, ← → pour passer d'une image à l'autre.",
+          "Lancer une œuvre en chapitres ou en épisodes ouvre d'abord la liste, avec à droite l'aperçu de celui qu'on survole ; « Reprendre » relance directement là où tu t'étais arrêté.",
+          "Trois nouvelles ambiances remplacent Planche de manga, Platine et Bibliothèque : Archives (papier crème, menus à carrés, fenêtre de description), Orbite (verre sombre, lignes fines, losanges lumineux) et Arène (panneaux inclinés, grands caractères, couleurs vives). Les œuvres réglées sur les anciennes passent automatiquement sur la nouvelle la plus proche.",
+          "Magnétoscope : tout le monde de l'œuvre se passe dans l'écran cathodique ; Borne d'arcade : dans l'écran de la borne.",
+          "Autres mondes : passer directement dans l'univers d'une autre œuvre sans repasser par l'accueil.",
+          "Œuvre payante : « Débloquer » ouvre un écran d'achat dans le monde, et un chapitre réservé y mène aussi.",
+          "Clic droit (appui long sur téléphone) sur chaque élément : ouvrir, voir l'image, copier le lien, et pour l'admin modifier l'œuvre ou habiller le monde."
+        ],
+        "Amélioré": [
+          "Sur téléphone, les listes montrent une vignette par chapitre ou épisode, et les outils d'admin passent dans l'appui long pour laisser la place au fil d'Ariane."
+        ],
+        "Retiré": [
+          "Nexus : la fiche à onglets sous le menu (deux systèmes de navigation) est remplacée par les écrans imbriqués. La fiche Classique ne change pas."
+        ]
+      }
+    },
     {
       "v": "0.16",
       "date": "2026-11-18",

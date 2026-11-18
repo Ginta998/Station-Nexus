@@ -5,9 +5,9 @@ import { getCreationFull, updateCreation } from "@/lib/api";
 import { WORLD_STYLES, worldStyleOf } from "@/components/nexus/world";
 
 const STYLE_HINT = {
-  cinema: "Bandes noires, grand titre, menu de DVD", vhs: "Téléviseur cathodique, cassette, menu de magnétoscope",
-  arcade: "Écran titre, police pixel, PRESS START", manga: "Cases à bord épais, bulle, onomatopée",
-  vinyle: "Pochette, disque qui tourne, liste des pistes", roman: "Livre ouvert, page de titre, sommaire",
+  cinema: "Bandes noires, grand titre, menu de DVD", vhs: "Écran cathodique, menus d'affichage, cassette",
+  arcade: "Écran titre, police pixel, PRESS START", yorha: "Papier crème, menus carrés, fenêtre de description",
+  eve: "Verre sombre, lignes fines, losanges lumineux", hero: "Panneaux inclinés, grands caractères, couleurs vives",
 };
 // Réduit une image avant de l'envoyer (fond du monde)
 const shrink = (file, max = 1920) => new Promise((res, rej) => {
@@ -18,7 +18,7 @@ const shrink = (file, max = 1920) => new Promise((res, rej) => {
 
 // Habiller le monde d'une œuvre, depuis l'œuvre elle-même : ambiance, couleur, fond, textes. L'éditeur complet reste à un clic.
 export default function WorldStudio({ item, catLabel, onClose, onSaved, onFullEditor, onPreview }) {
-  const [ws, setWs] = useState(item.world_style || "");
+  const [ws, setWs] = useState(({ manga: "hero", vinyle: "eve", roman: "yorha" })[item.world_style] || item.world_style || "");
   const [accent, setAccent] = useState(item.accent || "");
   const [bg, setBg] = useState(null); // nouvelle image de fond (data URL) ou "" pour la retirer
   const [txt, setTxt] = useState({ title: item.title || "", tagline: item.tagline || "", synopsis: item.synopsis || "" });

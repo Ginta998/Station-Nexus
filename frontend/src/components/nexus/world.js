@@ -3,17 +3,20 @@ import { fmtOfCreation } from "@/components/nexus/NexusHome";
 
 // Chaque œuvre a son propre « menu de jeu » : une ambiance choisie d'après ce qu'elle est.
 export const WORLD_STYLES = {
-  cinema: "Salle de cinéma", vhs: "Magnétoscope", arcade: "Borne d'arcade", manga: "Planche de manga", vinyle: "Platine", roman: "Bibliothèque",
+  cinema: "Salle de cinéma", vhs: "Magnétoscope", arcade: "Borne d'arcade", yorha: "Archives", eve: "Orbite", hero: "Arène",
 };
+// Anciennes ambiances (avant la 0.17) : on les ramène vers les nouvelles
+const LEGACY = { manga: "hero", vinyle: "eve", roman: "yorha" };
 export function worldStyleOf(item, catLabel = "") {
-  if (item.world_style && WORLD_STYLES[item.world_style]) return item.world_style;
+  const w = LEGACY[item.world_style] || item.world_style;
+  if (w && WORLD_STYLES[w]) return w;
   if (item.launch_type === "game") return "arcade";
   const f = fmtOfCreation(item, catLabel);
-  if (f === "vinyle") return "vinyle";
+  if (f === "vinyle" || /musique|music|album|ost/i.test(`${item.category} ${catLabel}`)) return "eve";
   if (item.launch_type === "film") return "cinema";
   if (item.launch_type === "episodes") return "vhs";
-  if (/manga|bd|comic|webtoon|manhwa/i.test(`${item.category} ${catLabel}`)) return "manga";
-  return "roman";
+  if (/manga|bd|comic|webtoon|manhwa/i.test(`${item.category} ${catLabel}`)) return "hero";
+  return "yorha";
 }
 
 // La couleur de l'œuvre, tirée de son affiche (la teinte la plus vive). Sans affiche lisible : la couleur du thème.
