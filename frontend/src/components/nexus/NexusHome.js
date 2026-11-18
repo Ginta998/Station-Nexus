@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoPlay, IoClose, IoMusicalNotes, IoLinkOutline, IoDocumentTextOutline } from "react-icons/io5";
+import { IoPlay, IoClose, IoMusicalNotes, IoLinkOutline, IoDocumentTextOutline, IoArrowUndo } from "react-icons/io5";
 import { toast } from "sonner";
-import { posterUrl } from "@/lib/api";
+import { posterUrl, updateCreation } from "@/lib/api";
+import { useQueryClient } from "@tanstack/react-query";
 import { useApp } from "@/context/AppContext";
 import { Face, Rail } from "@/components/atelier/Alexandrie";
 import { ContextMenuHost, pressMenu } from "@/components/atelier/ContextMenu";
@@ -38,7 +39,8 @@ function progressOf(it) {
 // La barre d'outils (recherche, thèmes, choix de la vue) est celle de l'accueil, passée telle quelle.
 export default function NexusHome({ all = [], cats = [], settings, query = "", view = "rails", toolbar }) {
   const nav = useNavigate();
-  const { sfx, playAmbient } = useApp();
+  const { sfx, playAmbient, isAdmin } = useApp();
+  const qc = useQueryClient();
   const [sel, setSel] = useState(null);       // œuvre choisie : sa notice est ouverte
   const [launch, setLaunch] = useState(null);
   const [mapCat, setMapCat] = useState("__all__");
@@ -69,16 +71,24 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
   const remember = (id) => { const r = readJ("sx_recent") || []; try { localStorage.setItem("sx_recent", JSON.stringify([id, ...r.filter((x) => x !== id)].slice(0, 8))); } catch (_) {} };
   const go = useCallback((x) => { setLaunch(null); nav(`/oeuvre/${x.id}`, { state: progressOf(x.it)?.resume ? { resume: true } : undefined }); }, [nav]);
   const start = useCallback((x) => { if (!x) return; sfx?.("select"); remember(x.id); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (!launch) return; const t = setTimeout(() => go(launch), launch.format === "vinyle" ? 1700 : 1500); return () => clearTimeout(t); }, [launch, go]);
+  const [leaving, setLeaving] = useState(false);
+  useEffect(() => { if (!launch) return; setLeaving(false); const a = setTimeout(() => setLeaving(true), 1250); const t = setTimeout(() => go(launch), 1560); return () => { clearTimeout(a); clearTimeout(t); }; }, [launch, go]);
   useEffect(() => { setSel(null); }, [view]);
 
   const menuFor = (x) => () => ({ title: x.title, entries: [
     { label: "Lancer", icon: <IoPlay size={14} />, onClick: () => start(x) },
     { label: "Voir la notice", icon: <IoDocumentTextOutline size={14} />, onClick: () => pick(x.id) },
     playAmbient && { label: "Écouter l'ambiance", icon: <IoMusicalNotes size={14} />, onClick: () => playAmbient(x.id) },
+    isAdmin && { label: "Mettre de face (en tête du rayon)", icon: <IoArrowUndo size={14} />, onClick: () => toFront(x) },
     "-",
     { label: "Copier le lien", icon: <IoLinkOutline size={14} />, onClick: () => { navigator.clipboard?.writeText(`${window.location.origin}/oeuvre/${x.id}`).catch(() => {}); toast.success("Lien copié"); } },
   ] });
+
+  // Admin : l'œuvre passe en tête de son rayon, donc de face (l'ordre est celui des créations, le même qu'en Classique)
+  const toFront = async (x) => {
+    const min = Math.min(...all.filter((c) => c.category === x.it.category).map((c) => c.order || 0));
+    try { await updateCreation(x.id, { ...x.it, order: min - 1 }); await qc.invalidateQueries({ queryKey: ["creations"] }); toast.success(`« ${x.title} » est de face`); } catch (_) { toast.error("Impossible de changer l'ordre (reconnecte-toi en admin)"); }
+  };
 
   // Arcade : la tuile choisie reste visible
   const arcRail = useRef(null);
@@ -221,9 +231,9 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
       <p className="mono nx-keys" aria-hidden="true">← → CHOISIR · {view === "rails" ? "↑ ↓ CHANGER DE RAYON · " : ""}ENTRÉE LANCER · ÉCHAP FERMER · CLIC DROIT ACTIONS</p>
 
       {launch && (
-        <div className={"nx-launchfx f-" + launch.format} onClick={() => go(launch)} data-testid="nx-launchfx" role="status" aria-label={`Lancement de ${launch.title}`}>
+        <div className={"nx-launchfx f-" + launch.format + (leaving ? " out" : "")} onClick={() => go(launch)} data-testid="nx-launchfx" role="status" aria-label={`Lancement de ${launch.title}`}>
+          <i className="nx-lf-glow" aria-hidden="true" />
           <div className="nx-lf-obj"><Face b={launch} cover={covers[launch.id]} /></div>
-          {launch.format === "vhs" && <i className="nx-lf-slot" />}
           <p className="nx-lf-t"><span className="mono">{launch.format === "vhs" ? "▶ PLAY" : launch.format === "vinyle" ? "◉ FACE A" : "OUVERTURE"}</span>{launch.title}</p>
           <small className="mono nx-lf-skip">TOUCHE OU CLIC POUR PASSER</small>
         </div>

@@ -20,6 +20,10 @@ import ShareMenu from "@/components/ShareMenu";
 import MobileMenu from "@/components/MobileMenu";
 import { confirmCheckout } from "@/components/CheckoutConfirm";
 import CreationJournal from "@/components/journal/CreationJournal";
+import { useExperience } from "@/lib/experience";
+import { Face } from "@/components/atelier/Alexandrie";
+import { fmtOfCreation } from "@/components/nexus/NexusHome";
+import { listJournal } from "@/lib/api";
 
 export default function Detail() {
   const { id } = useParams();
@@ -46,6 +50,11 @@ export default function Detail() {
   const [lightbox, setLightbox] = useState(null);
   const [buying, setBuying] = useState(false);
   const cardRef = useRef(null);
+  // Expérience Nexus : la fiche devient le « monde » de l'œuvre (l'objet en grand, puis des onglets)
+  const nexus = useExperience() === "nexus";
+  const [wtab, setWtab] = useState(null);
+  useEffect(() => { window.scrollTo(0, 0); setWtab(null); }, [id]);
+  const { data: making = [] } = useQuery({ queryKey: ["journal", "creation", id], queryFn: () => listJournal({ creation_id: id }).then((l) => l.filter((e) => e.published)), enabled: nexus });
 
   // l'ambiance de la création ne démarre qu'au bouton ; on la coupe en quittant la fiche
   useEffect(() => () => stopAmbient(), [item?.id]); // eslint-disable-line
@@ -98,6 +107,18 @@ export default function Detail() {
   const thisPlaying = isPlaying && playingId === item.id;
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
   const savedProgress = item.launch_type === "chapters" ? (() => { try { return JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) { return null; } })() : null;
+  const worldTabs = [
+    (item.launch_type === "chapters" && item.chapters?.length > 0) && ["units", item.unit_label || "Chapitres"],
+    (item.launch_type === "episodes" && item.episodes?.length > 0) && ["units", item.unit_label || "Épisodes"],
+    ((item.trailer_url && item.trailer_url.trim()) || item.has_trailer) && ["trailer", "Bande-annonce"],
+    item.gallery?.length > 0 && ["gallery", "Moodboard"],
+    making.length > 0 && ["making", "Making of"],
+    item.intention_enabled && (item.intention_text || item.intention_images?.length > 0 || item.intention_file_id) && ["intention", item.intention_title || "Intentions"],
+    item.embeds?.length > 0 && ["embeds", "Réseaux"],
+    ["comments", "Commentaires"],
+    ["all", "Tout"],
+  ].filter(Boolean);
+  const curTab = worldTabs.some(([k]) => k === wtab) ? wtab : worldTabs[0][0];
   const canResume = savedProgress && ((savedProgress.chapter || 0) > 0 || (savedProgress.ratio || 0) > 0.02);
 
   // Prochain à regarder (reprise de lecture) — affiché en haut de la fiche
@@ -244,6 +265,11 @@ export default function Detail() {
         </div>
 
         <div className="max-w-7xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
+          {nexus ? (
+            <div ref={cardRef} className="ax-view nx-world-obj" data-testid="detail-object">
+              <Face b={{ id: item.id, title: item.title, sub: item.tagline || "", format: fmtOfCreation(item, catLabel), emblem: item.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }} cover={hasImg ? posterSrc : null} />
+            </div>
+          ) : (
           <div ref={cardRef} className="group flex-shrink-0 w-72 sm:w-96 md:w-[28rem] lg:w-[34rem] aspect-[2/3] overflow-hidden border relative poster-in sx-fxcard"
             style={{ borderColor: "var(--card-bd, color-mix(in srgb, var(--brand) 40%, var(--border-c)))", borderRadius: "var(--card-r, calc(var(--radius-base)*1.3))", boxShadow: "0 30px 80px rgba(0,0,0,0.6), var(--card-sh, 0 0 60px -14px color-mix(in srgb, var(--brand) 55%, transparent))" }} data-testid="detail-poster">
             <span className="poster-scan" aria-hidden="true" />
@@ -265,6 +291,7 @@ export default function Detail() {
               <p className="text-[10px] tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.72)", fontFamily: "var(--font-mono, monospace)" }}>// STATION NEXUS · 天</p>
             </div>
           </div>
+          )}
 
           <div className="w-full md:flex-1 min-w-0 fade-up" style={{ animationDelay: ".12s" }}>
             <div className="mb-3" style={{ fontSize: 10, letterSpacing: "0.3em", color: "var(--brand)", fontFamily: "var(--font-mono, monospace)" }}>// FICHE DE CRÉATION</div>
@@ -367,7 +394,12 @@ export default function Detail() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-5 md:px-12 pb-8 md:pb-14 fade-up">
+        <div className={"max-w-7xl mx-auto px-5 md:px-12 pb-8 md:pb-14 fade-up" + (nexus ? " nx-world" : "")} data-tab={nexus ? curTab : undefined}>
+            {nexus && worldTabs.length > 1 && (
+              <nav className="nx-wtabs" role="tablist" data-testid="world-tabs">
+                {worldTabs.map(([k, label]) => <button key={k} role="tab" aria-selected={curTab === k} className={curTab === k ? "on" : ""} onClick={() => { sfx("nav"); setWtab(k); }} data-testid={`world-tab-${k}`}>{label}</button>)}
+              </nav>
+            )}
             {item.launch_type === "chapters" && (item.chapters?.length > 0) && (
               <MovixSelector
                 testid="detail-chapters"

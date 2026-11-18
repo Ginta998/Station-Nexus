@@ -46,11 +46,6 @@
 @media (hover:none){.nx-keys{display:none}}
 @media (max-width:760px){.nx-qrow{grid-auto-columns:minmax(240px,84%)}.nx-qtx b{font-size:18px}}
 
-/* Arrivée : les volumes se posent un à un sur la planche */
-.nx-root .ax-rail>*{animation:nxDrop .55s var(--lab-ease) both}
-.nx-root .ax-rail>:nth-child(2){animation-delay:45ms}.nx-root .ax-rail>:nth-child(3){animation-delay:90ms}.nx-root .ax-rail>:nth-child(4){animation-delay:135ms}.nx-root .ax-rail>:nth-child(5){animation-delay:180ms}.nx-root .ax-rail>:nth-child(6){animation-delay:225ms}.nx-root .ax-rail>:nth-child(7){animation-delay:270ms}.nx-root .ax-rail>:nth-child(8){animation-delay:315ms}.nx-root .ax-rail>:nth-child(9){animation-delay:360ms}.nx-root .ax-rail>:nth-child(10){animation-delay:405ms}.nx-root .ax-rail>:nth-child(11){animation-delay:450ms}.nx-root .ax-rail>:nth-child(12){animation-delay:495ms}
-@keyframes nxDrop{from{opacity:0;translate:0 -26px}}
-
 /* Carte : la constellation, puis les œuvres du secteur en objets */
 .nx-root .nx-const{margin:16px 0 0;background:radial-gradient(120% 90% at 50% 10%,color-mix(in srgb,var(--lab-acc) 10%,var(--bg-primary)),color-mix(in srgb,var(--bg-primary) 70%,transparent));backdrop-filter:blur(8px)}
 .nx-mapres{margin-top:18px}
@@ -82,26 +77,56 @@
 .nx-arc-tile:hover{opacity:.9}
 @media (max-width:760px){.nx-arc-stage{grid-template-columns:1fr;justify-items:center;text-align:center;min-height:0}.nx-arc-obj{--z:.62;--zv:.42}.nx-arc-info .ax-acts{justify-content:center}.nx-arc-info .ab{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}}
 
-/* Lancement : l'objet vient au centre, puis la cassette entre dans le lecteur, le disque sort de sa pochette, le livre s'ouvre */
-.nx-launchfx{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;cursor:pointer;
-  background:radial-gradient(ellipse at 50% 45%,color-mix(in srgb,var(--bg-secondary) 80%,var(--brand) 8%),var(--bg-primary) 70%);animation:nxFade .25s both}
-.nx-launchfx::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);opacity:0;animation:nxScan 1.5s steps(1) both}
-@keyframes nxScan{70%{opacity:0}72%{opacity:1}100%{opacity:1}}
-.nx-lf-obj{--z:1.15;--zv:.8;perspective:1000px;position:relative;z-index:2}
-.nx-lf-obj .ax-face{animation:nxRise .5s var(--lab-ease) both;filter:drop-shadow(0 40px 50px rgba(0,0,0,.6))}
-@keyframes nxRise{from{transform:translateY(60px) scale(.7);opacity:0}}
-.f-vhs .nx-lf-obj .ax-face{animation:nxRise .5s var(--lab-ease) both,nxInsert .6s .65s cubic-bezier(.6,0,.3,1) forwards}
-@keyframes nxInsert{to{transform:translateY(46%) scaleY(.06);opacity:0}}
-.nx-lf-slot{position:absolute;left:50%;top:calc(50% + 80px);width:min(300px,70vw);height:14px;transform:translateX(-50%);background:#050505;border:1px solid var(--lab-hair-2);box-shadow:0 0 0 6px color-mix(in srgb,var(--bg-secondary) 90%,#000),0 0 30px color-mix(in srgb,var(--brand) 30%,transparent);z-index:3;animation:nxFade .4s .3s both}
-.f-livre .nx-lf-obj .ax-face{transform-origin:left center;animation:nxRise .5s var(--lab-ease) both,nxOpen .8s .6s cubic-bezier(.5,0,.3,1) forwards}
-@keyframes nxOpen{to{transform:rotateY(-78deg) scale(1.1);opacity:.15}}
-.f-vinyle .nx-lf-obj .ax-disc{animation:nxSpin .7s .55s cubic-bezier(.5,0,.3,1) forwards}
-@keyframes nxSpin{to{transform:translateX(62%) rotate(380deg)}}
-.f-vinyle .nx-lf-obj .ax-face{animation:nxRise .5s var(--lab-ease) both,nxGone .4s 1.25s forwards}
-@keyframes nxGone{to{opacity:0;transform:scale(1.08)}}
+/* Lancement : l'écran se voile, l'objet s'avance doucement, un reflet passe sur sa couverture, puis tout s'efface vers l'œuvre.
+   Uniquement des transformations et de l'opacité (fluide même sur téléphone). */
+.nx-launchfx{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;cursor:pointer;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 42%,color-mix(in srgb,var(--brand) 14%,var(--bg-primary)),var(--bg-primary) 68%);animation:nxVeil .45s ease-out both}
+.nx-launchfx.out{opacity:0;transition:opacity .32s ease-in}
+@keyframes nxVeil{from{opacity:0}}
+.nx-lf-obj{--z:1.1;--zv:.78;position:relative;perspective:1200px;will-change:transform,opacity;animation:nxCome .9s cubic-bezier(.16,1,.3,1) both}
+@keyframes nxCome{from{opacity:0;transform:translateY(34px) scale(.9)}}
+.nx-lf-obj .ax-face{filter:drop-shadow(0 34px 44px rgba(0,0,0,.55))}
+.nx-lf-obj .ax-cover::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;mix-blend-mode:screen;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.26) 50%,transparent 60%) 0 0/300% 100% no-repeat;background-position:100% 0;animation:nxSheen 1.2s .35s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes nxSheen{to{background-position:0 0}}
+.nx-launchfx .ax-cover,.nx-world-obj .ax-cover{-webkit-box-reflect:none}
+.nx-lf-glow{position:absolute;left:50%;top:50%;width:min(520px,90vw);height:min(520px,90vw);translate:-50% -56%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--brand) 28%,transparent),transparent);animation:nxPulse 1.6s ease-out both}
+@keyframes nxPulse{from{opacity:0;scale:.6}60%{opacity:1}to{opacity:.7;scale:1}}
+.f-livre .nx-lf-obj .ax-face{transform-origin:left center;animation:nxTip 1.1s .25s cubic-bezier(.16,1,.3,1) both}
+@keyframes nxTip{to{transform:rotateY(-14deg)}}
+.f-vinyle .nx-lf-obj .ax-disc{animation:nxDisc 1.4s .2s cubic-bezier(.16,1,.3,1) both}
+@keyframes nxDisc{from{transform:translateX(30%) rotate(8deg)}to{transform:translateX(58%) rotate(200deg)}}
+.f-vhs .nx-lf-obj .ax-face{animation:nxSettle 1.1s .3s cubic-bezier(.16,1,.3,1) both}
+@keyframes nxSettle{to{transform:translateY(6px)}}
+.nx-lf-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--ax-serif,var(--font-display));font-size:clamp(24px,3.2vw,38px);font-weight:600;margin:0;text-align:center;padding:0 20px;animation:nxCome .9s .15s cubic-bezier(.16,1,.3,1) both}
+.nx-lf-t span{font-family:var(--lab-mono);font-size:10.5px;font-weight:400;letter-spacing:.34em;color:var(--lab-acc)}
+.nx-lf-skip{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));font-size:9.5px;letter-spacing:.24em;color:var(--lab-mute);opacity:.55}
 .nx-lf-t{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--font-display);font-size:clamp(22px,3vw,34px);margin:0;text-align:center;padding:0 20px;animation:nxFade .4s .35s both;z-index:2}
 .nx-lf-t span{font-size:11px;letter-spacing:.32em;color:var(--lab-acc)}
 .nx-lf-skip{position:absolute;bottom:24px;font-size:9.5px;letter-spacing:.24em;color:var(--lab-mute);opacity:.6}
 /* La fiche et le lancement passent devant tout le reste (Bunny, contrôles flottants) */
 body:has(.nx-launchfx) :is(.cb-root,.nx-tools,.bn-fab){display:none}
-@media (prefers-reduced-motion:reduce){.nx-root .ax-rail>*{animation:none}}
+
+/* ===== Le monde de l'œuvre (fiche en expérience Nexus) ===== */
+.nx-world-obj{--z:1.3;--zv:.92;flex-shrink:0;position:relative;perspective:1200px;animation:nxCome .8s cubic-bezier(.16,1,.3,1) both}
+.nx-world-obj .ax-face{filter:drop-shadow(0 40px 50px rgba(0,0,0,.55));transform:rotateY(-8deg);transform-origin:left center;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.nx-world-obj:hover .ax-face{transform:rotateY(0)}
+@media (max-width:767px){.nx-world-obj{--z:.95;--zv:.68}}
+.nx-wtabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin:0 0 26px;padding:6px 0 0;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--bg-primary) 92%,transparent) 70%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid color-mix(in srgb,var(--text-primary) 13%,transparent)}
+.nx-wtabs::-webkit-scrollbar{display:none}
+.nx-wtabs button{flex:0 0 auto;position:relative;padding:12px 16px 13px;background:none;border:0;color:var(--text-secondary);font-family:"JetBrains Mono","Space Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:color .2s}
+.nx-wtabs button:hover{color:var(--text-primary)}
+.nx-wtabs button.on{color:var(--brand)}
+.nx-wtabs button.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;background:var(--brand);box-shadow:0 0 10px var(--brand)}
+.nx-world{--secs:1}
+.nx-world:not([data-tab="all"]) :is([data-testid="detail-chapters"],[data-testid="detail-episodes"],[data-testid="detail-trailer-section"],[data-testid="detail-gallery"],[data-testid="detail-embeds"],[data-testid="creation-journal"],[data-testid="detail-intention"],[data-testid="comments-section"],[data-testid="fiche-support"]){display:none}
+.nx-world[data-tab="units"] :is([data-testid="detail-chapters"],[data-testid="detail-episodes"]),
+.nx-world[data-tab="trailer"] [data-testid="detail-trailer-section"],
+.nx-world[data-tab="gallery"] [data-testid="detail-gallery"],
+.nx-world[data-tab="embeds"] [data-testid="detail-embeds"],
+.nx-world[data-tab="making"] [data-testid="creation-journal"],
+.nx-world[data-tab="intention"] [data-testid="detail-intention"],
+.nx-world[data-tab="comments"] [data-testid="comments-section"]{display:block;margin-top:0;animation:nxFade .35s ease-out both}
+.nx-world [data-testid="detail-gallery"] .grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}

@@ -107,7 +107,7 @@
         ],
         [
           "Classique ou Nexus",
-          "Deux expériences pour la station publique, au choix de chaque visiteur (Paramètres › Apparence › Expérience, gardé dans son navigateur, Classique par défaut). Nexus réutilise les objets d'Alexandrie (Face, dans components/atelier/Alexandrie.js) : son code est dans components/nexus/. Le format d'une œuvre vient de son type de lancement : chapitres ou lecture = livre, épisodes, film ou jeu = cassette, catégorie musicale = vinyle."
+          "Deux expériences pour la station publique, au choix de chaque visiteur (Paramètres › Apparence › Expérience, gardé dans son navigateur, Classique par défaut). Nexus réutilise les objets d'Alexandrie (Face, dans components/atelier/Alexandrie.js) : son code est dans components/nexus/. Le format d'une œuvre vient de son type de lancement : chapitres ou lecture = livre, épisodes, film ou jeu = cassette, catégorie musicale = vinyle. En Nexus, la fiche d'une œuvre (pages/Detail.js) devient son « monde » : l'objet en grand et des onglets ; le Making of vient des entrées du journal de bord liées à l'œuvre."
         ],
         [
           "L'Atelier",
