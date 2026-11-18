@@ -27,7 +27,8 @@ import BunnyBrains from "@/components/atelier/BunnyBrains";
 import BunnySprite from "@/components/atelier/BunnySprite";
 import FocusView from "@/components/atelier/FocusView";
 import RadioView, { useRadio, RadioEngine, RadioBar, RadioMini } from "@/components/atelier/Radio";
-import { IoRadioOutline } from "react-icons/io5";
+import { IoRadioOutline, IoBookOutline, IoMoonOutline, IoCodeSlashOutline } from "react-icons/io5";
+import { PiRabbit } from "react-icons/pi";
 import OeuvreView from "@/components/atelier/OeuvreView";
 import OeuvreForm from "@/components/atelier/OeuvreForm";
 import DevLogView from "@/components/atelier/DevLogView";
@@ -163,17 +164,17 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" sub="IDÉES EN VRAC" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" drop={dropToUniverse(at, null)} />
           <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" sub="MES TÂCHES" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
-          <Dock kanji="兎" label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
+          <Dock icon={<PiRabbit size={18} />} label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
-          <Dock kanji="書" label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
+          <Dock icon={<IoBookOutline size={17} />} label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
           <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
-          <Dock kanji="禅" label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
+          <Dock icon={<IoMoonOutline size={17} />} label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
           <div className="at-dock-unis">
             {pinned.map((u) => <Dock key={u.id} kanji={u.kanji || u.name[0]} color={u.color} label={u.name} on={view.id === u.id} onClick={() => go({ name: "universe", id: u.id })} testid={`atelier-nav-universe-${u.id}`} drop={dropToUniverse(at, u.id)} />)}
           </div>
           <div className="at-dock-foot">
-            <Dock kanji="開" label="Dev" sub="BACKLOG · PATCH NOTES" on={view.name === "devlog"} onClick={() => go({ name: "devlog" })} testid="atelier-nav-devlog" />
+            <Dock icon={<IoCodeSlashOutline size={17} />} label="Dev" sub="BACKLOG · PATCH NOTES" on={view.name === "devlog"} onClick={() => go({ name: "devlog" })} testid="atelier-nav-devlog" />
             <Dock icon={<IoSettingsOutline size={18} />} label="Réglages" sub="COMPTE · THÈME" on={view.name === "settings"} onClick={() => go({ name: "settings" })} testid="atelier-nav-settings" />
             <Dock icon={<IoExitOutline size={18} />} label="Station" sub="RETOUR PUBLIC" onClick={() => { sfx("back"); onLeave(); }} testid="atelier-leave" />
           </div>

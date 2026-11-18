@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { playPageTurn } from "@/lib/sound";
 import { createPortal } from "react-dom";
-import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline } from "react-icons/io5";
+import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline, IoExpandOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
@@ -12,7 +12,7 @@ import { SEP, parsePaste, pasteToBook, bookToPaste, nextCote, withCote } from "@
 import AlexPaste from "@/components/atelier/AlexPaste";
 import { Controls, Progress, Queue, thumb as ytThumb, coverOf } from "@/components/atelier/Radio";
 import { pressMenu } from "@/components/atelier/ContextMenu";
-import { labConfirm } from "@/components/atelier/LabDialog";
+import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 import { exportBook } from "@/lib/exportPdf";
 import { ROOMS, TYPES, BOOKS, UPCOMING, parseBook, readingTime } from "@/data/alexandrie";
 import { stripHtml } from "@/lib/atelier";
@@ -289,6 +289,7 @@ function ReaderMusic({ radio, onClose }) {
     <aside className="ax-music" data-testid="alex-music-panel">
       <p className="mono">MUSIQUE DE LECTURE</p>
       {radio.pl && <NowPlaying r={radio} />}
+      {radio.pl && radio.kept && !radio.kept() && <button className="ax-rb" style={{ marginBottom: 10 }} onClick={radio.keep} data-testid="alex-music-keep"><IoAdd size={14} /> Ajouter ce morceau à ma radio</button>}
       <form onSubmit={go} className="ax-ytq"><IoLogoYoutube size={17} /><input autoFocus={!radio.pl} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher sur YouTube : Hisaishi, pluie, lo-fi…" data-testid="alex-music-input" /><button type="submit" disabled={busy}>{busy ? "…" : "Chercher"}</button></form>
       {res && (res.length ? res.slice(0, 12).map((v) => <button key={v.id} className={"ax-ytr" + (radio.info?.vid === v.id ? " on" : "")} onClick={() => play(v)} data-testid={`alex-yt-${v.id}`}><i style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} /><span><b>{v.title}</b><small>{v.author}{v.length ? ` · ${v.length}` : ""}</small></span></button>) : <p className="ax-empty">Aucun résultat.</p>)}
       {!res && (radio.list || []).length > 0 && <><p className="mono" style={{ marginTop: 14 }}>MES PLAYLISTS</p>{radio.list.slice(0, 8).map((p) => <button key={p.id} className={"ax-ytr" + (radio.pl?.id === p.id ? " on" : "")} onClick={() => radio.play(p)}><i style={{ backgroundImage: p.cover || p.thumb ? `url(${coverOf(p)})` : undefined }} /><span><b>{p.title}</b><small>Playlist de ta radio</small></span></button>)}</>}
@@ -325,6 +326,19 @@ function ArtFig({ b, term, si }) {
 }
 // Ajouter une vidéo YouTube à un chapitre, depuis la lecture : on colle le lien, on écrit la légende, on choisit le chapitre.
 const VSEARCH = [["beauty", "beauty"], ["analyse", "analysis"], ["lore", "lore"], ["musique", "soundtrack"], ["making-of", "making of"]];
+// Recherche YouTube intégrée : on tape, on clique sur une vignette, c'est choisi (plus besoin d'aller copier un lien).
+function YtPicker({ initial = "", onPick, pickedId }) {
+  const [q, setQ] = useState(initial); const [res, setRes] = useState(null); const [busy, setBusy] = useState(false);
+  const go = async (e) => { e?.preventDefault(); if (!q.trim()) return; setBusy(true); try { setRes(await atelierApi.ytSearch(q.trim())); } catch (_) { toast.error("Recherche impossible"); } setBusy(false); };
+  return (
+    <div className="ax-ytpick" data-testid="alex-ytpick">
+      <form onSubmit={go} className="ax-ytq"><IoLogoYoutube size={17} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher une vidéo sur YouTube…" data-testid="alex-ytpick-input" /><button type="submit" disabled={busy}>{busy ? "…" : "Chercher"}</button></form>
+      {res && (res.length ? <div className="ax-ytpick-res">{res.slice(0, 9).map((v) => (
+        <button type="button" key={v.id} className={"ax-ytr" + (pickedId === v.id ? " on" : "")} onClick={() => onPick(v)} data-testid={`alex-ytpick-${v.id}`}><i style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} /><span><b>{v.title}</b><small>{v.author}{v.length ? ` · ${v.length}` : ""}</small></span></button>
+      ))}</div> : <p className="ax-empty">Aucun résultat.</p>)}
+    </div>
+  );
+}
 function VideoAdd({ book, page, onAdd, onClose }) {
   const [v, setV] = useState(""); const [cap, setCap] = useState(""); const [busy, setBusy] = useState(false);
   const id = ytId(v.trim());
@@ -332,6 +346,7 @@ function VideoAdd({ book, page, onAdd, onClose }) {
   return (
     <aside className="ax-toc ax-vadd" data-testid="alex-vadd" onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); onClose(); } }}>
       <p className="mono">AJOUTER UNE VIDÉO</p>
+      <YtPicker initial={book.title} pickedId={id} onPick={(x) => { setV(`https://www.youtube.com/watch?v=${x.id}`); if (!cap.trim()) setCap(x.title); }} />
       <form onSubmit={submit}>
         <label><span className="mono">LIEN YOUTUBE</span><input autoFocus value={v} onChange={(e) => setV(e.target.value)} placeholder="https://www.youtube.com/watch?v=… ou youtu.be/…" data-testid="alex-vadd-url" /></label>
         {v.trim() && (id ? <span className="ax-vadd-thumb" style={{ backgroundImage: `url(https://i.ytimg.com/vi/${id}/mqdefault.jpg)` }}><IoPlay size={18} /></span> : <small className="ax-vadd-bad">Ce n'est pas un lien YouTube reconnu.</small>)}
@@ -351,12 +366,13 @@ function YtFig({ b, onSwap, onRemove, si }) {
       {on ? <iframe src={`https://www.youtube-nocookie.com/embed/${b.id}?autoplay=1&rel=0`} title={b.cap || "Vidéo"} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
         : <button type="button" onClick={() => setOn(true)} style={{ backgroundImage: `url(https://i.ytimg.com/vi/${b.id}/hqdefault.jpg)` }} aria-label={`Lire la vidéo : ${b.cap || ""}`}><IoPlay size={26} /></button>}
       <figcaption>{b.cap && inline(b.cap)}<small className="mono"><a href={`https://www.youtube.com/watch?v=${b.id}`} target="_blank" rel="noopener noreferrer">VOIR SUR YOUTUBE ↗</a>{onSwap && <button type="button" className="ax-yt-sw" onClick={() => { setEd((x) => !x); setV(""); }} data-testid={`alex-yt-swap-${b.id}`}><IoSwapHorizontal size={11} /> CHANGER</button>}{onRemove && <button type="button" className="ax-yt-sw" onClick={async () => { if (await labConfirm(`Supprimer cette vidéo du livre ?${b.cap ? `\n« ${b.cap} »` : ""}`)) onRemove(b.id); }} data-testid={`alex-yt-del-${b.id}`}><IoTrashOutline size={11} /> SUPPRIMER</button>}</small></figcaption>
+      {ed && <div className="ax-yt-ed ax-yt-edpick"><YtPicker initial={b.cap || ""} onPick={(x) => { onSwap(b.id, x.id); setEd(false); setOn(false); }} /></div>}
       {ed && <form className="ax-yt-ed" onSubmit={swap}><input ref={(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus({ preventScroll: true }))} value={v} onChange={(e) => setV(e.target.value)} onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); setEd(false); } }} placeholder="Colle le lien de la nouvelle vidéo YouTube" data-testid="alex-yt-swap-in" /><button className="at-btn" type="submit">OK</button></form>}
     </figure>
   );
 }
 
-function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes }) {
+function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover }) {
   const { sfx } = useApp();
   const flow = useRef(null);
   const [page, setPage] = useState(() => read(LS.prog, {})[book.id]?.page || 0);
@@ -510,6 +526,8 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
         {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.next} title="Morceau suivant" data-testid="alex-music-next"><IoPlaySkipForward size={15} /></button>}
         {onAddVideo && <button className={"ax-rb" + (vid ? " on" : "")} onClick={() => { setVid((v) => !v); setToc(false); setMusic(false); setNotes(false); }} aria-expanded={vid} title="Ajouter une vidéo YouTube à cette page" data-testid="alex-addvid"><IoLogoYoutube size={15} /> <span>Vidéo</span></button>}
         <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>
+        {onCover && <button className="ax-rb" onClick={onCover} title="Changer l'artwork du livre" data-testid="alex-reader-cover"><IoImageOutline size={15} /> <span>Artwork</span></button>}
+        <button className="ax-rb ax-rb-sq" onClick={() => { const el = document.querySelector(".ax-reader"); try { if (document.fullscreenElement) document.exitFullscreen(); else el?.requestFullscreen?.(); } catch (_) {} }} title="Lecture en plein écran" data-testid="alex-fullscreen"><IoExpandOutline size={15} /></button>
         <button className="ax-rb" onClick={() => { setToc((t) => !t); setMusic(false); setVid(false); }} aria-expanded={toc} data-testid="alex-toc"><IoList size={16} /> <span>Sommaire</span></button>
         <button className="ax-rb" onClick={() => { const v = !turnSound; setTurnSound(v); write("nx-alex-turn-sound", v); if (v) playPageTurn(fmt, 1); }} aria-pressed={!turnSound} title={turnSound ? "Couper le bruit des pages" : "Remettre le bruit des pages"} data-testid="alex-turn-sound">{turnSound ? <IoVolumeHighOutline size={16} /> : <IoVolumeMuteOutline size={16} />}</button>
         <button className={"ax-rb" + (mark ? " on" : "")} onClick={() => { setMark((m) => !m); sfx?.("select"); }} aria-pressed={mark} title="Marque-page">{mark ? <IoBookmark size={16} /> : <IoBookmarkOutline size={16} />}</button>
@@ -935,7 +953,16 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const mine = useMemo(() => at.items.filter((i) => i.fields?.alexandrie && !i.fields.alexandrie.of).map(itemToBook), [at.items]);
   const all = useMemo(() => [...books, ...mine], [books, mine]);
   // Un titre à paraître disparaît quand il est retiré, ou quand un de tes livres porte le même titre.
-  const upcoming = useMemo(() => { const own = new Set(mine.map((b) => normT(b.title))); return UPCOMING.filter((u) => !hidUp.includes(u.id) && !own.has(normT(u.title))); }, [hidUp, mine]);
+  // Titres à paraître ajoutés à la main (titre + sous-titre), gardés sur le serveur avec la bibliothèque
+  const customUp = useMemo(() => (at.config?.alexandrie?.customUp || []).map((u) => ({ ...u, type: u.type || "recit", format: u.format || (u.room === "lore" ? "vhs" : u.room === "musique" ? "vinyle" : "livre") })), [at.config]);
+  const upcoming = useMemo(() => { const own = new Set(mine.map((b) => normT(b.title))); return [...customUp, ...UPCOMING].filter((u) => !hidUp.includes(u.id) && !own.has(normT(u.title))); }, [hidUp, mine, customUp]);
+  const addUp = async (room) => {
+    const title = (await labPrompt("Titre du livre à paraître"))?.trim(); if (!title) return;
+    const sub = (await labPrompt("Sous-titre (facultatif)"))?.trim() || "";
+    const u = { id: "up-mine-" + Date.now().toString(36), room, title, sub };
+    await at.saveConfig({ alexandrie: { ...(at.config?.alexandrie || {}), customUp: [...(at.config?.alexandrie?.customUp || []), u] } });
+    setSel((x) => ({ ...x, [room]: u.id })); toast.success(`« ${title} » ajouté aux titres à paraître`); sfx?.("select");
+  };
   const readingBook = reading && (all.find((b) => b.id === reading.id) || reading);
   const match = (b) => (type === "all" || b.type === type) && (stf === "all" || shelf[stf].includes(b.id));
   const matchUp = (b) => (type === "all" || b.type === type) && (stf === "all" || (stf === "want" && wish.includes(b.id)));
@@ -1043,6 +1070,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
                 <button className={view === "grille" ? "on" : ""} aria-pressed={view === "grille"} onClick={() => pickView("grille")} data-testid="alex-view-grille"><IoGridOutline size={14} /> Grille</button>
               </div>
               {R.format === "vhs" && <button className="ax-ghost" onClick={() => dressRoom([...inRoom(R.key).here, ...inRoom(R.key).up])} disabled={dressing} data-testid="alex-dress"><IoImageOutline size={15} /> {dressing ? "Recherche…" : "Habiller la salle"}</button>}
+              <button className="ax-ghost" onClick={() => addUp(R.key)} data-testid="alex-up-add"><IoTimeOutline size={15} /> À paraître</button>
               <button className="ax-ghost" onClick={() => setPaste({ text: "" })} data-testid="alex-paste-open"><IoClipboardOutline size={15} /> Coller</button>
               <button className="at-btn" onClick={() => addBook(R.key)} data-testid="alex-add"><IoAdd size={16} /> Écrire</button>
             </div>
@@ -1058,7 +1086,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       {readingBook && (readingBook.preview
         ? <Reader key={readingBook.id + readingBook.words} book={readingBook} at={null} radio={radio} cover={readingBook.coverUrl} onClose={() => { sfx?.("close"); setReading(null); }} />
         : <Reader key={readingBook.id} book={readingBook} at={at} startNotes={readNotes} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); setReadNotes(false); }} onEdit={(id) => { setReading(null); open(id); }}
-          onModify={() => modifyBook(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} onRemoveVideo={(id) => removeVideo(readingBook, id)} onAddVideo={(si, id, cap) => addVideo(readingBook, si, id, cap)}
+          onCover={() => setCoverFor(readingBook)} onModify={() => modifyBook(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} onRemoveVideo={(id) => removeVideo(readingBook, id)} onAddVideo={(si, id, cap) => addVideo(readingBook, si, id, cap)}
           onDone={() => setStatus("read", readingBook.id, true)} />)}
     </section>
   );

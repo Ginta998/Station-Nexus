@@ -3,7 +3,7 @@ import {
   IoPlanetOutline, IoGridOutline, IoLibraryOutline, IoCheckboxOutline, IoAppsOutline,
   IoFilmOutline, IoRadioOutline, IoMoonOutline, IoFileTrayOutline, IoSparklesOutline,
   IoCodeSlashOutline, IoSettingsOutline, IoClose, IoCreateOutline,
-  IoArrowForward, IoAddOutline, IoAppsSharp,
+  IoArrowForward, IoAddOutline, IoAppsSharp, IoBookOutline,
 } from "react-icons/io5";
 import { PiRabbit } from "react-icons/pi";
 import { toast } from "sonner";
@@ -43,7 +43,7 @@ export default function MobileLauncher({ ctx, view, onLeave, onBunny, onFocus, o
     { k: "bureau", label: "Bureau", c: "#ff9f68", Icon: IoAppsOutline, act: () => ctx.go({ name: "bureau" }) },
     { k: "salon", label: "Salon", c: "#ff6b9d", Icon: IoFilmOutline, act: () => ctx.go({ name: "salon" }) },
     { k: "radio", label: "Radio", c: "#5fb0d9", Icon: IoRadioOutline, act: () => ctx.go({ name: "radio" }) },
-    { k: "alexandrie", label: "Alexandrie", c: "#d9b98c", Icon: IoLibraryOutline, act: () => ctx.go({ name: "alexandrie" }) },
+    { k: "alexandrie", label: "Alexandrie", c: "#d9b98c", Icon: IoBookOutline, act: () => ctx.go({ name: "alexandrie" }) },
     { k: "focus", label: "Focus", c: "#c9a86a", Icon: IoMoonOutline, act: onFocus },
     { k: "inbox", label: "Inbox", c: "#9ad0ff", Icon: IoFileTrayOutline, badge: inbox, act: () => ctx.go({ name: "inbox" }) },
     { k: "bunny", label: "Bunny", c: "#ffd36a", Icon: IoSparklesOutline, act: onBunny },

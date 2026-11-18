@@ -42,9 +42,13 @@ function Versions({ id, onRestore, onClose }) {
   );
 }
 
+// Brouillons gardés en mémoire pendant la session : si l'éditeur se recharge pendant qu'une sauvegarde est en route,
+// on repart de ce que tu viens d'écrire, pas de l'ancienne version du serveur (le texte effacé ne revient plus).
+const DRAFTS = new Map();
+
 export default function ItemEditor({ at, id, open, onClose }) {
   const src = at.items.find((i) => i.id === id);
-  const [it, setIt] = useState(src);
+  const [it, setIt] = useState(() => { const d = DRAFTS.get(id); return d && src && (!src.updated_at || d.t > Date.parse(src.updated_at)) ? { ...src, ...d.patch } : src; });
   const [status, setStatus] = useState("saved");
   const [rev, setRev] = useState(0);
   const [panel, setPanel] = useState(null);
@@ -67,6 +71,7 @@ export default function ItemEditor({ at, id, open, onClose }) {
   const [wide, setWide] = useState(() => { try { return localStorage.getItem("nx-doc-wide") === "1"; } catch (_) { return false; } });
   const toggleWide = () => setWide((v) => { const nv = !v; try { localStorage.setItem("nx-doc-wide", nv ? "1" : "0"); } catch (_) {} return nv; });
   const change = (patch) => {
+    DRAFTS.set(id, { t: Date.now(), patch: { ...(DRAFTS.get(id)?.patch || {}), ...patch } });
     setIt((x) => ({ ...x, ...patch })); setStatus("dirty");
     clearTimeout(timer.current);
     timer.current = setTimeout(async () => {

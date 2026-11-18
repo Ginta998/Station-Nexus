@@ -3056,3 +3056,6 @@ html[data-theme="abysse"] .cb-halo{opacity:.2}
 .gx-enter{font-family:var(--font-display);font-size:clamp(15px,2.2vmin,20px);letter-spacing:.32em;text-transform:uppercase;padding:14px 46px 14px calc(46px + .32em);color:#fff;background:color-mix(in srgb,var(--gx-a) 22%,transparent);border:1px solid var(--gx-a);border-radius:999px;box-shadow:0 0 34px color-mix(in srgb,var(--gx-a) 55%,transparent),inset 0 0 18px color-mix(in srgb,var(--gx-a) 35%,transparent);backdrop-filter:blur(6px);animation:introWord .6s ease both,gxBreath 2.6s ease-in-out .6s infinite;transition:transform .2s,background .2s}
 .gx-enter:hover{transform:scale(1.05);background:color-mix(in srgb,var(--gx-a) 40%,transparent)}
 @keyframes gxBreath{50%{box-shadow:0 0 60px var(--gx-a),inset 0 0 26px color-mix(in srgb,var(--gx-a) 50%,transparent)}}
+/* Vidéo YouTube insérée dans un texte : vignette cliquable avec un bouton lecture */
+a.sx-yt{position:relative;display:inline-block;line-height:0}
+a.sx-yt::after{content:"▶";position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;display:grid;place-items:center;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:22px;line-height:1;pointer-events:none}

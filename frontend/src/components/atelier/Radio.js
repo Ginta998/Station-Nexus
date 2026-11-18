@@ -12,6 +12,8 @@ const listOf = (u = "") => (u.match(/[?&]list=([\w-]+)/) || [])[1];
 const vidOf = (u = "") => (u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
 export const thumb = (v, q = "hqdefault") => (v ? `https://i.ytimg.com/vi/${v}/${q}.jpg` : "");
 export const coverOf = (p) => (p?.cover ? imgSrc(p.cover) : p?.thumb || thumb(vidOf(p?.url)));
+// La pochette choisie pour une station garde la priorité sur la vignette YouTube du morceau en cours
+export const artOf = (p, vid) => (p?.cover ? imgSrc(p.cover) : thumb(vid) || coverOf(p));
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
 // Tous les morceaux d'une playlist (fusion, playlist YouTube ou vidéo seule)
 const idsOf = async (p) => {
@@ -57,6 +59,14 @@ export function useRadio(at) {
     mute: () => { cmd(muted ? "unMute" : "mute"); setMuted(!muted); },
     stop: () => { setPl(null); setInfo({}); },
     save: (l) => at.saveConfig({ radio: l }),
+    // Le morceau en cours (lancé depuis une recherche, une lecture, ou au milieu d'une playlist) rejoint la radio
+    kept: () => { const v = info.vid || vidOf(pl?.url); return !pl || !v || list.some((x) => vidOf(x.url) === v && !/list=/.test(x.url || "")); },
+    keep: () => {
+      if (!pl) return; const v = info.vid || vidOf(pl.url); if (!v) return;
+      if (list.some((x) => vidOf(x.url) === v && !/list=/.test(x.url || ""))) return toast("Déjà dans ta radio");
+      at.saveConfig({ radio: [...list, { id: Date.now().toString(36), url: `https://www.youtube.com/watch?v=${v}`, title: info.title || pl.title, thumb: thumb(v) }] });
+      toast.success("Ajouté à ta radio");
+    },
   };
   Object.assign(live.current, r);
   useEffect(() => {
@@ -110,7 +120,7 @@ export function RadioMini({ radio: r, onOpen, onExpand }) {
   return (
     <div className="rd-mini" style={{ "--rc": r.pl.color || "var(--brand)" }} data-testid="radio-mini">
       <button className="rd-mini-now" onClick={onOpen} title={`${i.title || r.pl.title} : ouvrir la Radio`}>
-        <span className="rd-mini-art" style={{ backgroundImage: `url(${thumb(i.vid) || coverOf(r.pl)})` }}>{r.playing && <span className="sx-eq"><i /><i /><i /><i /></span>}</span>
+        <span className="rd-mini-art" style={{ backgroundImage: `url(${artOf(r.pl, i.vid)})` }}>{r.playing && <span className="sx-eq"><i /><i /><i /><i /></span>}</span>
         <span className="rd-mini-txt">{i.title || r.pl.title}</span>
       </button>
       <button className="rd-ic" onClick={r.toggle} title={r.playing ? "Pause" : "Lecture"} data-testid="radio-mini-toggle">{r.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>
@@ -128,7 +138,7 @@ export function RadioBar({ radio: r, onOpen, onMini }) {
     <div className="rd-bar" style={{ "--rc": r.pl.color || "var(--brand)" }} data-testid="radio-bar">
       {q && <div className="rd-qpop" data-testid="radio-queue-pop"><Queue r={r} /></div>}
       <button className="rd-bar-now" onClick={onOpen} data-testid="radio-bar-open">
-        <span className="rd-bar-art" style={{ backgroundImage: `url(${thumb(i.vid) || coverOf(r.pl)})` }} />
+        <span className="rd-bar-art" style={{ backgroundImage: `url(${artOf(r.pl, i.vid)})` }} />
         <span className="rd-bar-txt"><b>{i.title || r.pl.title}</b><small>{i.author ? `${i.author} · ` : ""}{r.pl.title}</small></span>
       </button>
       <div className="rd-bar-mid">
@@ -136,6 +146,7 @@ export function RadioBar({ radio: r, onOpen, onMini }) {
         <Progress r={r} />
       </div>
       <div className="rd-bar-r">
+        {!r.kept() && <button className="rd-ic" onClick={r.keep} title="Ajouter ce morceau à ta radio" data-testid="radio-keep"><IoAdd size={18} /></button>}
         <button className={"rd-ic" + (q ? " on" : "")} onClick={() => setQ(!q)} title="File d'attente" data-testid="radio-queue-toggle"><IoListOutline size={18} /></button>
         <button className="rd-ic" onClick={r.mute} data-testid="radio-mute">{r.muted ? <IoVolumeMute size={17} /> : <IoVolumeHigh size={17} />}</button>
         <input className="rd-vol" type="range" min="0" max="100" value={r.muted ? 0 : r.vol} onChange={(e) => r.setVol(+e.target.value)} style={{ "--p": (r.muted ? 0 : r.vol) + "%" }} data-testid="radio-volume" />
@@ -174,6 +185,7 @@ export default function RadioView({ radio: r }) {
   const [adding, setAdding] = useState(false);
   const [yt, setYt] = useState(false);
   const [edit, setEdit] = useState(null);
+  const [full, setFull] = useState(false);
   const sel = useSel();
   const cur = r.pl; const i = r.info;
   const picked = r.list.filter((p) => sel.has(p.id));
@@ -192,7 +204,7 @@ export default function RadioView({ radio: r }) {
     if (cur && sel.has(cur.id)) r.stop();
     r.save(r.list.filter((p) => !sel.has(p.id))); toast.success("Supprimées"); sel.clear();
   };
-  const hero = cur ? thumb(i.vid) || coverOf(cur) : coverOf(r.list[0]);
+  const hero = cur ? artOf(cur, i.vid) : coverOf(r.list[0]);
   return (
     <section className="at-view rd-view" style={{ "--rc": cur?.color || r.list[0]?.color || "var(--brand)" }} data-testid="radio-view">
       <div className="rd-hero" style={{ "--art": hero ? `url(${hero})` : "none" }}>
@@ -209,7 +221,10 @@ export default function RadioView({ radio: r }) {
             <p className="mono rd-eye"><span className={"rd-live" + (r.playing ? " on" : "")} /> {cur ? (r.playing ? "EN ONDE" : "EN PAUSE") : "RADIO NEXUS"}{r.station ? " · MODE STATION" : ""}</p>
             <h1 data-testid="radio-now-title">{cur ? i.title || cur.title : "Ta radio personnelle"}</h1>
             <p className="rd-sub">{cur ? `${i.author ? i.author + " · " : ""}${cur.title}${i.n ? ` · ${(i.i || 0) + 1}/${i.n}` : ""}` : `${r.list.length} playlist${r.list.length > 1 ? "s" : ""} · lance-en une ou laisse la Station choisir.`}</p>
-            {cur ? <><Controls r={r} /><Progress r={r} /></> : (
+            {cur ? <><Controls r={r} /><Progress r={r} /><div className="rd-hero-x">
+              <button className="rd-btn sm ghost" onClick={() => setFull(true)} data-testid="radio-full"><IoExpandOutline size={15} /> Plein écran</button>
+              {!r.kept() && <button className="rd-btn sm ghost" onClick={r.keep} data-testid="radio-hero-keep"><IoAdd size={15} /> Ajouter à ma radio</button>}
+            </div></> : (
               <div className="rd-hero-cta">
                 <button className="rd-btn" disabled={!r.list.length} onClick={() => r.play(r.list[0])} data-testid="radio-start"><IoPlay size={18} /> Écouter</button>
                 <button className="rd-btn ghost" disabled={!r.list.length} onClick={() => { r.setStation(true); r.setShuffle(true); r.play(r.list[Math.floor(Math.random() * r.list.length)]); }} data-testid="radio-start-station"><IoInfinite size={18} /> Mode Station</button>
@@ -233,6 +248,7 @@ export default function RadioView({ radio: r }) {
       </BulkBar>
       {cur && i.ids?.length > 1 && <><div className="rd-sec-h"><h2>À suivre</h2></div><Queue r={r} /></>}
       {edit && <PlEditor p={edit} r={r} onClose={() => setEdit(null)} />}
+      {full && cur && <RadioFull r={r} art={hero} onClose={() => setFull(false)} />}
     </section>
   );
 }
@@ -290,6 +306,32 @@ function RadioYt({ r }) {
         </div>))}
         {!res.length && <p className="rd-empty">Aucun résultat.</p>}
       </div>}
+    </div>
+  );
+}
+
+// Plein écran : le disque en grand qui tourne, la pochette en fond, les commandes. Échap pour sortir.
+function RadioFull({ r, art, onClose }) {
+  const i = r.info; const box = useRef(null);
+  useEffect(() => {
+    const k = (e) => { if (e.key === "Escape") onClose(); if (e.key === " ") { e.preventDefault(); r.toggle(); } if (e.key === "ArrowRight") r.next(); if (e.key === "ArrowLeft") r.prev(); };
+    window.addEventListener("keydown", k); try { box.current?.requestFullscreen?.().catch(() => {}); } catch (_) {}
+    return () => { window.removeEventListener("keydown", k); try { if (document.fullscreenElement) document.exitFullscreen?.(); } catch (_) {} };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <div className="rd-full" ref={box} style={{ "--art": art ? `url(${art})` : "none", "--rc": r.pl?.color || "var(--brand)" }} data-testid="radio-fullscreen">
+      <div className="rd-full-bg" />
+      <button className="rd-full-x" onClick={onClose} aria-label="Quitter le plein écran"><IoClose size={22} /></button>
+      <span className={"rd-full-disc rd-disc" + (r.playing ? " spin" : "")}>
+        {art && <span className={"rd-disc-art" + (/ytimg\.com/.test(art) ? " yt" : "")} style={{ backgroundImage: `url(${art})` }} />}
+        <span className="rd-disc-grooves" aria-hidden="true" /><span className="rd-disc-gloss" aria-hidden="true" /><span className="rd-disc-hole" aria-hidden="true" />
+      </span>
+      <div className="rd-full-txt">
+        <p className="mono rd-eye"><span className={"rd-live" + (r.playing ? " on" : "")} /> {r.playing ? "EN ONDE" : "EN PAUSE"}</p>
+        <h1>{i.title || r.pl?.title}</h1>
+        <p className="rd-sub">{i.author ? `${i.author} · ` : ""}{r.pl?.title}{i.n ? ` · ${(i.i || 0) + 1}/${i.n}` : ""}</p>
+        <Controls r={r} /><Progress r={r} />
+      </div>
     </div>
   );
 }

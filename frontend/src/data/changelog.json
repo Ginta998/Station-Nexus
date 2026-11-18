@@ -1,6 +1,29 @@
 {
-  "version": "0.15",
+  "version": "0.16",
   "patches": [
+    {
+      "v": "0.16",
+      "date": "2026-11-18",
+      "title": "Tes notes d'amélioration, corrigées",
+      "groups": {
+        "Nouveau": [
+          "Radio en plein écran : le disque en grand qui tourne, la pochette en fond, les commandes ; Espace pour lecture/pause, ← → pour changer de morceau, Échap pour sortir.",
+          "Ajouter à ta radio le morceau en cours, d'où qu'il vienne (recherche YouTube, musique lancée pendant une lecture, morceau d'une playlist) : bouton + dans la barre de la radio, dans la Radio et dans le panneau Musique du lecteur.",
+          "Son de l'Atelier (Réglages) : son activé ou coupé, volume de la musique et des ambiances, volume des sons de l'interface, chacun coupable à part.",
+          "Alexandrie : bouton « À paraître » dans chaque salle pour ajouter un titre à paraître avec son titre et son sous-titre (gardé sur le serveur).",
+          "Alexandrie : recherche YouTube intégrée pour ajouter une vidéo (on tape, on clique sur la vignette, la légende se remplit), et le bouton Changer d'une vidéo ouvre la même recherche.",
+          "Lecteur d'Alexandrie : bouton Artwork pour changer la couverture sans quitter la lecture, et lecture en plein écran.",
+          "Documents : insérer une vidéo YouTube (recherche ou lien, vignette cliquable dans le texte) et une image depuis l'appareil, par un lien, ou en cherchant (Wikipédia, SteamGridDB avec la clé du serveur), avec Pinterest et Google Images à portée.",
+          "Salon : bouton « Changer le lien » sur chaque intégration (et « Modifier le titre et le lien » sur chaque vidéo)."
+        ],
+        "Corrigé": [
+          "Menu de l'Atelier : plus de kanji pour Bunny, Alexandrie, Focus et Dev, mais des icônes distinctes (lapin, livre, lune, code) pour ne plus les confondre.",
+          "Radio : la pochette choisie pour une station reste sur le vinyle et dans les barres, au lieu d'être remplacée par la vignette YouTube du morceau.",
+          "Documents : l'image insérée ne fonctionnait pas dans l'Atelier (elle demandait d'enregistrer une création) ; elle s'envoie maintenant directement.",
+          "Rédaction : si l'éditeur se recharge pendant une sauvegarde, il repart de ce que tu viens d'écrire et non de l'ancienne version, pour qu'un texte effacé ne réapparaisse plus."
+        ]
+      }
+    },
     {
       "v": "0.15",
       "date": "2026-11-18",

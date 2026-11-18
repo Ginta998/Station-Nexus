@@ -591,3 +591,9 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
   .ax-book{animation:axFadeUp .32s ease both}
   .ax-turnfx{display:none}
 }
+/* Recherche YouTube intégrée (ajouter ou changer une vidéo) */
+.ax-ytpick{margin:6px 0 12px}
+.ax-ytpick-res{display:flex;flex-direction:column;gap:4px;max-height:280px;overflow-y:auto;margin-top:8px}
+.ax-yt-edpick{display:block;padding:10px;background:var(--lab-panel,rgba(0,0,0,.4));border:1px solid var(--lab-hair,rgba(255,255,255,.1))}
+.ax-reader:fullscreen{width:100vw;height:100vh}
+.ax-reader~.ax-fiche-wrap,.at-root:has(.ax-reader) .ax-fiche-wrap{z-index:1300}
