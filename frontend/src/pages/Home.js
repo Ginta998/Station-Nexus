@@ -186,11 +186,11 @@ export default function Home() {
 
   // clavier (navigation arcade)
   const onKey = useCallback((e) => {
-    if (editorOpen || view !== "arcade") return;
+    if (editorOpen || view !== "arcade" || experience === "nexus") return;
     if (e.key === "ArrowRight") { e.preventDefault(); sfx("nav"); setArcSel((i) => Math.min(i + 1, arcItems.length - 1)); }
     else if (e.key === "ArrowLeft") { e.preventDefault(); sfx("nav"); setArcSel((i) => Math.max(i - 1, 0)); }
     else if (e.key === "Enter" && arcCur) { sfx("select"); nav(`/oeuvre/${arcCur.id}`); }
-  }, [editorOpen, view, arcItems.length, arcCur, sfx, nav]);
+  }, [editorOpen, view, arcItems.length, arcCur, sfx, nav, experience]);
   useEffect(() => { window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [onKey]);
 
   useEffect(() => {
@@ -254,6 +254,48 @@ export default function Home() {
   const heroImg = hero ? (hero.has_bg ? bgUrl(hero.id, hero.updated_at) : (hero.has_poster ? posterUrl(hero.id, hero.updated_at) : null)) : null;
 
   let gi = 0; // compteur d'index global pour les affiches
+
+  // Barre de l'explorateur (recherche, thèmes, choix de la vue) : la même en Classique et en Nexus
+  const explorerBar = (<>
+        {/* EXPLORER */}
+        <div className="seclabel sx-explore-head">
+          <div className="lt"><h2>Explorer</h2><span className="kj">探</span></div>
+          <span className="all mono">{experience === "nexus" ? "RAYONS" : "RAILS"} · CARTE · ARCADE</span>
+        </div>
+
+        {/* RECHERCHE */}
+        <div className="sx-search">
+          <div className="field">
+            <IoSearch size={14} style={{ color: "var(--text-secondary)" }} />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher une création…" />
+          </div>
+          <button className="sbtn" data-testid="home-theme-toggle" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }}>
+            <IoColorPaletteOutline size={14} style={{ marginRight: 5 }} /> Thèmes
+          </button>
+          {themeOpen && (
+            <>
+              <div style={{ position: "fixed", inset: 0, zIndex: 89 }} onClick={() => setThemeOpen(false)} />
+              <div className="sx-themepick">
+                {THEMES.map((t) => (
+                  <button type="button" key={t.key} data-testid={`home-theme-pick-${t.key}`} className={"tp" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); setThemeOpen(false); }}>
+                    <span className="sw" style={{ background: `linear-gradient(135deg, ${t.swatch[0]}, ${t.swatch[1]} 55%, ${t.swatch[2]})` }} />
+                    <span className="nm">{t.name}</span>
+                    <span className="kj">{t.kanji}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* VIEW TOGGLE */}
+        <div className="vtog">
+          {[["rails", experience === "nexus" ? "⊞ Rayons" : "⊞ Rails"], ["map", "✦ Carte"], ["arcade", "▶ Arcade"]].map(([v, label]) => (
+            <button key={v} aria-pressed={view === v} onClick={() => { sfx("nav"); setView(v); }}>{label}</button>
+          ))}
+        </div>
+
+  </>);
 
 
   return (
@@ -356,46 +398,10 @@ export default function Home() {
         )}
 
         {/* NEXUS : accès rapide + rayons d'objets à la place de l'explorateur classique */}
-        {experience === "nexus" && <NexusHome all={all} cats={cats} settings={settings} />}
+        {experience === "nexus" && <NexusHome all={all} cats={cats} settings={settings} query={query} view={view} toolbar={explorerBar} />}
 
         {experience !== "nexus" && (<>
-        {/* EXPLORER */}
-        <div className="seclabel sx-explore-head">
-          <div className="lt"><h2>Explorer</h2><span className="kj">探</span></div>
-          <span className="all mono">RAILS · CARTE · ARCADE</span>
-        </div>
-
-        {/* RECHERCHE */}
-        <div className="sx-search">
-          <div className="field">
-            <IoSearch size={14} style={{ color: "var(--text-secondary)" }} />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher une création…" />
-          </div>
-          <button className="sbtn" data-testid="home-theme-toggle" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }}>
-            <IoColorPaletteOutline size={14} style={{ marginRight: 5 }} /> Thèmes
-          </button>
-          {themeOpen && (
-            <>
-              <div style={{ position: "fixed", inset: 0, zIndex: 89 }} onClick={() => setThemeOpen(false)} />
-              <div className="sx-themepick">
-                {THEMES.map((t) => (
-                  <button type="button" key={t.key} data-testid={`home-theme-pick-${t.key}`} className={"tp" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); setThemeOpen(false); }}>
-                    <span className="sw" style={{ background: `linear-gradient(135deg, ${t.swatch[0]}, ${t.swatch[1]} 55%, ${t.swatch[2]})` }} />
-                    <span className="nm">{t.name}</span>
-                    <span className="kj">{t.kanji}</span>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* VIEW TOGGLE */}
-        <div className="vtog">
-          {[["rails", "⊞ Rails"], ["map", "✦ Carte"], ["arcade", "▶ Arcade"]].map(([v, label]) => (
-            <button key={v} aria-pressed={view === v} onClick={() => { sfx("nav"); setView(v); }}>{label}</button>
-          ))}
-        </div>
+        {explorerBar}
 
         {isLoading && <div className="empty">Chargement…</div>}
         {!isLoading && filtered.length === 0 && <div className="empty">Aucune création{query ? " pour cette recherche." : "."}</div>}

@@ -9,19 +9,10 @@
   --lab-hair:color-mix(in srgb,var(--text-primary) 13%,transparent);--lab-hair-2:color-mix(in srgb,var(--text-primary) 26%,transparent);
   --lab-panel:color-mix(in srgb,var(--bg-primary) 90%,transparent);--lab-ease:cubic-bezier(.2,.8,.2,1);
   --warm:color-mix(in srgb,var(--brand) 30%,#ffc98a);--glass:color-mix(in srgb,var(--bg-primary) 66%,transparent);
-  position:relative;color:var(--lab-ink)
+  position:relative;color:var(--lab-ink);padding-inline:20px
 }
 .nx-root .mono{font-family:var(--lab-mono)}
 @keyframes nxFade{from{opacity:0}}
-
-/* Outils (recherche, retour au classique) */
-.nx-bar{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 18px}
-.nx-search{flex:1 1 260px;display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border:1px solid var(--lab-hair-2);background:var(--lab-panel);color:var(--lab-mute)}
-.nx-search input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--lab-ink);font:inherit;font-size:14px}
-.nx-search button{background:none;border:0;color:inherit;cursor:pointer;display:grid}
-.nx-search:focus-within{border-color:var(--lab-acc)}
-.nx-chip{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 12px;border:1px solid var(--lab-hair-2);background:var(--lab-panel);color:var(--lab-mute);font-size:10.5px;letter-spacing:.16em;cursor:pointer}
-.nx-chip:hover{color:var(--lab-acc);border-color:var(--lab-acc)}
 
 /* Accès rapide : une rangée de cartes, chacune avec l'objet en miniature */
 .nx-quick{margin-bottom:30px}
@@ -55,6 +46,42 @@
 @media (hover:none){.nx-keys{display:none}}
 @media (max-width:760px){.nx-qrow{grid-auto-columns:minmax(240px,84%)}.nx-qtx b{font-size:18px}}
 
+/* Arrivée : les volumes se posent un à un sur la planche */
+.nx-root .ax-rail>*{animation:nxDrop .55s var(--lab-ease) both}
+.nx-root .ax-rail>:nth-child(2){animation-delay:45ms}.nx-root .ax-rail>:nth-child(3){animation-delay:90ms}.nx-root .ax-rail>:nth-child(4){animation-delay:135ms}.nx-root .ax-rail>:nth-child(5){animation-delay:180ms}.nx-root .ax-rail>:nth-child(6){animation-delay:225ms}.nx-root .ax-rail>:nth-child(7){animation-delay:270ms}.nx-root .ax-rail>:nth-child(8){animation-delay:315ms}.nx-root .ax-rail>:nth-child(9){animation-delay:360ms}.nx-root .ax-rail>:nth-child(10){animation-delay:405ms}.nx-root .ax-rail>:nth-child(11){animation-delay:450ms}.nx-root .ax-rail>:nth-child(12){animation-delay:495ms}
+@keyframes nxDrop{from{opacity:0;translate:0 -26px}}
+
+/* Carte : la constellation, puis les œuvres du secteur en objets */
+.nx-root .nx-const{margin:16px 0 0;background:radial-gradient(120% 90% at 50% 10%,color-mix(in srgb,var(--lab-acc) 10%,var(--bg-primary)),color-mix(in srgb,var(--bg-primary) 70%,transparent));backdrop-filter:blur(8px)}
+.nx-mapres{margin-top:18px}
+.nx-grid{--gw:150px;--z:.64;--zv:.36;margin-top:18px}
+.nx-mapres .nx-notice{margin-bottom:6px}
+@media (max-width:640px){.nx-grid{--gw:104px;--z:.45;--zv:.25;grid-template-columns:repeat(3,minmax(0,1fr))}.nx-grid .ax-gc{width:auto;min-width:0}}
+
+/* Arcade : l'objet en grand sur sa scène */
+.nx-root .arc{padding:0;margin-top:16px}
+.nx-root>.seclabel,.nx-root .sx-search,.nx-root .vtog{margin-inline:-20px}
+.nx-arc-stage{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(18px,4vw,56px);align-items:center;padding:clamp(20px,4vw,48px);min-height:420px;overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--lab-acc) 25%,var(--lab-hair));background:radial-gradient(70% 90% at 22% 40%,color-mix(in srgb,var(--lab-acc) 16%,transparent),transparent 70%),color-mix(in srgb,var(--bg-primary) 70%,transparent);backdrop-filter:blur(10px);animation:nxFade .4s both}
+.nx-arc-stage::before{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;border:solid var(--lab-acc);border-width:1px 0 0 1px}
+.nx-arc-bg{position:absolute;inset:-20px;background-size:cover;background-position:center;filter:blur(30px) brightness(.4);opacity:.6}
+.nx-arc-obj{position:relative;--z:1;--zv:.62;cursor:pointer;perspective:900px}
+.nx-arc-obj .ax-face{animation:nxTilt .6s var(--lab-ease) both;filter:drop-shadow(0 30px 34px rgba(0,0,0,.6));transition:transform .3s var(--lab-ease)}
+.nx-arc-obj:hover .ax-face{transform:translateY(-6px) rotateY(-8deg)}
+@keyframes nxTilt{from{transform:rotateY(-28deg) translateX(-20px);opacity:0}}
+.nx-arc-info{position:relative;min-width:0;animation:nxFade .5s .1s both}
+.nx-arc-info .meta{font-size:10px;letter-spacing:.2em;color:var(--lab-mute)}
+.nx-arc-info h2{font-family:var(--ax-serif);font-weight:600;font-size:clamp(30px,4vw,54px);line-height:1;margin:8px 0 0}
+.nx-arc-info .sub{font-family:var(--ax-serif);font-style:italic;font-size:20px;color:var(--lab-acc);margin-top:6px}
+.nx-arc-info .ab{color:var(--lab-mute);font-size:14.5px;line-height:1.6;max-width:60ch;margin-top:10px}
+.nx-arc-info .ax-acts{margin-top:18px}
+.nx-arc-rail{align-items:flex-end;padding:18px 6px 10px}
+.nx-arc-tile{flex:0 0 auto;padding:0;border:0;background:none;cursor:pointer;--z:.32;--zv:.21;opacity:.55;transition:opacity .25s,transform .25s var(--lab-ease)}
+.nx-arc-tile.on{opacity:1;transform:translateY(-8px)}
+.nx-arc-tile.on .ax-face::after{content:"";position:absolute;left:-4px;right:-4px;bottom:-8px;height:2px;background:var(--lab-acc);box-shadow:0 0 10px var(--lab-acc)}
+.nx-arc-tile:hover{opacity:.9}
+@media (max-width:760px){.nx-arc-stage{grid-template-columns:1fr;justify-items:center;text-align:center;min-height:0}.nx-arc-obj{--z:.62;--zv:.42}.nx-arc-info .ax-acts{justify-content:center}.nx-arc-info .ab{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}}
+
 /* Lancement : l'objet vient au centre, puis la cassette entre dans le lecteur, le disque sort de sa pochette, le livre s'ouvre */
 .nx-launchfx{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;cursor:pointer;
   background:radial-gradient(ellipse at 50% 45%,color-mix(in srgb,var(--bg-secondary) 80%,var(--brand) 8%),var(--bg-primary) 70%);animation:nxFade .25s both}
@@ -77,3 +104,4 @@
 .nx-lf-skip{position:absolute;bottom:24px;font-size:9.5px;letter-spacing:.24em;color:var(--lab-mute);opacity:.6}
 /* La fiche et le lancement passent devant tout le reste (Bunny, contrôles flottants) */
 body:has(.nx-launchfx) :is(.cb-root,.nx-tools,.bn-fab){display:none}
+@media (prefers-reduced-motion:reduce){.nx-root .ax-rail>*{animation:none}}
