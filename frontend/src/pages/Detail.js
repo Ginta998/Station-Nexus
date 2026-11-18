@@ -24,6 +24,7 @@ import { useExperience, worldAmbientAuto } from "@/lib/experience";
 import { fmtOfCreation } from "@/components/nexus/NexusHome";
 import NexusWorld from "@/components/nexus/NexusWorld";
 import WorkReader, { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
+import ChapterQuickEdit, { deleteUnit } from "@/components/nexus/ChapterQuickEdit";
 import WorldComments from "@/components/nexus/WorldComments";
 import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { listJournal, getJournalEntry } from "@/lib/api";
@@ -57,6 +58,8 @@ export default function Detail() {
   const nexus = useExperience() === "nexus";
   const [editorSec, setEditorSec] = useState("id");
   const [workRead, setWorkRead] = useState(null); // Nexus : lecture dans le lecteur d'Alexandrie
+  const [quickEdit, setQuickEdit] = useState(null); // Nexus admin : modifier un chapitre sur place ({ key, i } ; i = null : nouveau)
+  const [toComments, setToComments] = useState(0);
   const [pvw, setPvw] = useState(null); // aperçu en direct : le monde suit les réglages de l'atelier ouvert
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
   const accentSrc = nexus && item ? (item.poster && item.poster.length > 4 ? item.poster : item.has_poster ? posterUrl(item.id, item.updated_at, 200) : null) : null;
@@ -246,7 +249,9 @@ export default function Detail() {
         locked={(i) => workRead.unitKey === "chapters" && chapterLocked(item, i)} onClose={() => setWorkRead(null)}
         next={nextWork} nextCover={nextWork ? (nextWork.has_poster ? posterUrl(nextWork.id, nextWork.updated_at, 360) : null) : null}
         onNext={(n) => { setWorkRead(null); stopAmbient(); nav(`/oeuvre/${n.id}`); }}
-        onComment={() => { setWorkRead(null); setTimeout(() => { const w = document.querySelector(".nw-homewrap"); const cm = w?.querySelector(".nw-cm"); if (w && cm) w.scrollTo({ top: cm.offsetTop - 10, behavior: "smooth" }); }, 350); }} />}
+        onComment={() => { setWorkRead(null); setToComments((n) => n + 1); }}
+        onEditUnit={isAdmin ? (i) => setQuickEdit({ key: workRead.unitKey || "chapters", i }) : undefined} noPdf={!isAdmin} />}
+      {quickEdit && <ChapterQuickEdit creationId={item.id} unitKey={quickEdit.key} index={quickEdit.i} onClose={() => setQuickEdit(null)} onSaved={() => refetch()} />}
       {gateOpen && <LaunchGate onClose={() => setGateOpen(false)} />}
 
       {readerOpen && (
@@ -314,7 +319,9 @@ export default function Detail() {
           onAmbient={item.has_audio ? () => { sfx("nav"); playAmbient(item.id); } : null} ambientOn={thisPlaying}
           onAmbientSetup={() => { setEditorSec("sound"); setEditorOpen(true); }}
           isAdmin={isAdmin} onEdit={() => { sfx("select"); setEditorSec("id"); setEditorOpen(true); }}
-          onExit={() => { stopAmbient(); if (window.history.length > 1) nav(-1); else nav("/"); }} onHome={() => { stopAmbient(); nav("/"); }} sfx={sfx} />
+          onExit={() => { stopAmbient(); if (window.history.length > 1) nav(-1); else nav("/"); }} onHome={() => { stopAmbient(); nav("/"); }} sfx={sfx} toComments={toComments}
+          onEditUnit={isAdmin ? (i) => setQuickEdit({ key: item.launch_type === "episodes" ? "episodes" : "chapters", i }) : undefined}
+          onDeleteUnit={isAdmin ? async (i) => { try { await deleteUnit(item.id, item.launch_type === "episodes" ? "episodes" : "chapters", i); toast.success("Supprimé"); refetch(); } catch (_) { toast.error("Suppression impossible"); } } : undefined} />
         {overlays}
       </>
     );

@@ -1,6 +1,36 @@
 {
-  "version": "0.21",
+  "version": "0.22",
   "patches": [
+    {
+      "v": "0.22",
+      "date": "2026-11-18",
+      "title": "Modifier sur place, entrer sans à-coup",
+      "groups": {
+        "Nouveau": [
+          "Lecture : bouton Aa pour agrandir ou réduire le texte (de 80 % à 150 %), gardé pour toutes les lectures.",
+          "Admin : « Modifier » dans la lecture ouvre le chapitre en cours pour le corriger sur place ; dans la liste des chapitres, un crayon, une corbeille (deuxième clic pour confirmer) et « Nouveau chapitre ».",
+          "Accueil Nexus : section « Coups de cœur » avec les œuvres marquées d'un cœur.",
+          "Atelier : « Chercher » sur l'affiche, le fond, le moodboard et les images de chapitres, avec la recherche d'Alexandrie (SteamGridDB, affiches, manga, livres, musique) et deux sources libres : domaine public (Art Institute of Chicago) et Wikimedia Commons ; liens Pinterest, Google Images, The Met, Rijksmuseum.",
+          "Nouvelles transitions d'entrée : Cinéma (l'image s'ouvre en écran large) et Sengoku (coup de pinceau et sceau)."
+        ],
+        "Changé": [
+          "Seul l'accès rapide reprend la lecture : depuis la bibliothèque, on entre dans l'univers, sur son accueil.",
+          "La maison ramène à l'accueil de l'œuvre ; seul « Quitter l'univers » sort du monde.",
+          "Cinéma sur ordinateur : le menu est à gauche, comme dans les autres thèmes.",
+          "Messages de Bunny au style Rhine Lab.",
+          "Lecture publique : plus d'export PDF.",
+          "Le thème de station Akira et l'ambiance Trait sont masqués (réactivables : Atelier des thèmes, et « Ambiances masquées » dans l'atelier)."
+        ],
+        "Corrigé": [
+          "Magnétoscope : le grain et « PLAY » ne clignotent plus sans arrêt.",
+          "Borne d'arcade : plus de cadre de couleur ; HI-SCORE ne chevauche plus le titre.",
+          "Lancement d'une œuvre : on ne revoit plus la station entre la pochette et l'entrée dans le monde.",
+          "« Laisser un mot à l'auteur » amène directement aux commentaires.",
+          "Les vignettes de chapitres, d'épisodes et du moodboard ne sont plus coupées en haut au survol ; les résumés sont lisibles sur tous les fonds.",
+          "Les tranches de livres bougent de nouveau au survol."
+        ]
+      }
+    },
     {
       "v": "0.21",
       "date": "2026-11-18",

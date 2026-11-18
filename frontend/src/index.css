@@ -3120,3 +3120,13 @@ a.sx-yt::after{content:"▶";position:absolute;left:50%;top:50%;width:56px;heigh
 /* Menu de la station : coins nets et repères en chasse fixe */
 .sx-menu-list button{border-radius:2px}
 .sx-menu .sx-menu-list button small,.sx-menu .sx-menu-list .sub{font-family:"JetBrains Mono",monospace;letter-spacing:.16em}
+/* 0.22 · Bunny en Rhine Lab : fiche nette, bords droits, étiquettes en mono, sans émoji */
+.cb-bubble{border-radius:0 !important;padding:16px 18px 14px !important;background:color-mix(in srgb,var(--bg-primary) 94%,transparent) !important;border:1px solid var(--border-c) !important;border-top:2px solid var(--brand) !important;box-shadow:0 18px 40px rgba(0,0,0,.45) !important;backdrop-filter:blur(14px)}
+.cb-bubble::after{background:color-mix(in srgb,var(--bg-primary) 94%,transparent) !important;border-radius:0 !important}
+.cb-name{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 22px 10px 0 !important;padding-bottom:8px;border-bottom:1px solid var(--border-c);font-family:"JetBrains Mono",ui-monospace,monospace !important;font-size:10px !important;letter-spacing:.2em !important;color:var(--brand)}
+.cb-name i{font-style:normal;color:var(--text-secondary);letter-spacing:.14em}
+.cb-text{font-size:.93rem !important;line-height:1.55}
+.cb-cta{border-radius:0 !important;border:1px solid color-mix(in srgb,var(--brand) 45%,transparent) !important;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.72rem !important;letter-spacing:.12em;text-transform:uppercase}
+.cb-next{border-radius:0 !important;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.7rem !important;letter-spacing:.14em;text-transform:uppercase;padding:9px 14px !important}
+.cb-mute{text-decoration:none !important;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.64rem !important;letter-spacing:.14em;text-transform:uppercase}
+.cb-close{border-radius:0 !important}

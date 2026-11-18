@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline } from "react-icons/io5";
+import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, mediaUrl } from "@/lib/api";
 import { JournalBlocks, fmtDate } from "@/components/journal/JournalParts";
@@ -33,7 +33,7 @@ const readView = () => { try { return localStorage.getItem(VIEW_KEY) === "list" 
 
 export default function NexusWorld(p) {
   const { item, ws, catLabel, cover, bg, making = [], trailer, launchLabel, progress, onLaunch, locked, unitLocked, onChapter, onEpisode,
-    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl } = p;
+    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl, toComments = 0, onEditUnit, onDeleteUnit } = p;
 
   const wide = useWide();
   const [view, setViewS] = useState(readView);
@@ -45,10 +45,11 @@ export default function NexusWorld(p) {
   // Transition d'entrée propre au thème (rideau, bande qui défile, encre qui se répand…)
   const [intro, setIntro] = useState(() => !(typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches));
   useEffect(() => { const t = setTimeout(() => setIntro(false), 1800); return () => clearTimeout(t); }, []);
-  const INTRO_TXT = { vhs: "▶ PLAY", arcade: "INSERT COIN", cinema: item.title, yorha: "CONNEXION", sengoku: item.kanji || "", cristal: "", hero: "", eve: "", cathedrale: "", couronne: "", trait: "", survivance: "" };
+  const INTRO_TXT = { vhs: "▶ PLAY", arcade: "INSERT COIN", cinema: item.title, yorha: "CONNEXION", sengoku: item.kanji || "始", cristal: "", hero: "", eve: "", cathedrale: "", couronne: "", trait: "", survivance: "" };
 
   // ---------- la pile d'écrans ----------
   const [stack, setStack] = useState([{ k: "home", sel: 0, n: 0 }]);
+  const [delAsk, setDelAsk] = useState(null); // suppression d'un chapitre : deuxième clic pour confirmer
   const [leaving, setLeaving] = useState(null); // l'écran qui s'en va, le temps de son animation
   const seq = useRef(1);
   const top = stack[stack.length - 1];
@@ -63,6 +64,14 @@ export default function NexusWorld(p) {
   const goto = (i) => { if (i >= stack.length - 1) return; sfx("back"); change(stack.slice(0, i + 1), "b"); };
   const replaceAt1 = (s) => { if (stack[1]?.k === s.k && stack.length === 2) return; sfx("select"); change([stack[0], { sel: 0, ...s, n: seq.current }], "f"); };
   const setSel = (i) => setStack((st) => (st[st.length - 1].sel === i ? st : [...st.slice(0, -1), { ...st[st.length - 1], sel: i }]));
+
+  // Le voile du lancement (posé par l'accueil Nexus) s'efface quand le monde est là : pas d'aperçu de la station entre les deux
+  useEffect(() => { const v = document.getElementById("nx-veil"); if (!v) return; v.classList.add("gone"); const t = setTimeout(() => v.remove(), 600); return () => clearTimeout(t); }, []);
+  // Maison : revenir à l'accueil de l'œuvre (pas quitter le monde)
+  const scrollHome = (to) => setTimeout(() => { const w = document.querySelector(".nw-homewrap"); if (!w) return; const cm = to === "cm" ? w.querySelector(".nw-cm") : null; w.scrollTo({ top: cm ? cm.offsetTop - 10 : 0, behavior: "smooth" }); }, stack.length > 1 ? 560 : 30);
+  const goWorldHome = (to) => { if (stack.length > 1) change([stack[0]], "b"); scrollHome(to); };
+  // « Laisser un mot à l'auteur » depuis la fin de lecture : retour à l'accueil, puis les commentaires
+  useEffect(() => { if (toComments) goWorldHome("cm"); }, [toComments]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---------- ce que contient le monde ----------
   const startLabel = item.coming_soon ? "Bientôt" : launchLabel;
@@ -227,8 +236,8 @@ export default function NexusWorld(p) {
     switch (ws) {
       case "cinema": return (
         <div className="nw-home h-cinema">
-          <div className="hc-txt">{Head()}{Win(c, "w-cinema")}{phoneResume}</div>
-          {Menu({ c, className: "m-dvd" })}
+          <div className="hc-txt">{Head()}{Menu({ c, className: "m-dvd" })}{phoneResume}</div>
+          <aside className="hc-side">{Win(c, "w-cinema")}</aside>
         </div>
       );
       case "vhs": return (
@@ -358,9 +367,23 @@ export default function NexusWorld(p) {
               </span>
               <span className="nw-u-t"><b>{it.label}</b>{it.desc && <small>{it.desc}</small>}</span>
               {More(it)}
+              {isAdmin && onEditUnit && (
+                <span className="nw-u-adm" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+                  <span role="button" tabIndex={0} className="nw-u-ab" title={`Modifier ce ${unitWord}`} aria-label={`Modifier ${it.label}`} onClick={() => onEditUnit(it.idx)} onKeyDown={(e) => e.key === "Enter" && onEditUnit(it.idx)} data-testid={`nw-uedit-${it.idx}`}><IoPencil size={14} /></span>
+                  {onDeleteUnit && (delAsk === it.idx
+                    ? <span role="button" tabIndex={0} className="nw-u-ab del sure" onClick={() => { setDelAsk(null); onDeleteUnit(it.idx); }} onKeyDown={(e) => e.key === "Enter" && onDeleteUnit(it.idx)} data-testid={`nw-udel-ok-${it.idx}`}>Supprimer ?</span>
+                    : <span role="button" tabIndex={0} className="nw-u-ab del" title={`Supprimer ce ${unitWord}`} aria-label={`Supprimer ${it.label}`} onClick={() => { setDelAsk(it.idx); setTimeout(() => setDelAsk((v) => (v === it.idx ? null : v)), 3500); }} data-testid={`nw-udel-${it.idx}`}><IoTrashOutline size={14} /></span>)}
+                </span>
+              )}
             </button>
           );
         })}
+        {isAdmin && onEditUnit && (
+          <button className="nw-u nw-u-new" onClick={() => onEditUnit(null)} data-testid="nw-unew">
+            <span className="nw-u-img"><IoAdd size={30} /></span>
+            <span className="nw-u-t"><b>Nouveau {unitWord}</b><small>Écrire la suite, tout de suite.</small></span>
+          </button>
+        )}
       </div>
     </div>
   );
@@ -500,7 +523,7 @@ export default function NexusWorld(p) {
           <button onClick={onFav} className={fav ? "on" : ""} title={fav ? "Retirer des favoris" : "Ajouter aux favoris"} aria-label="Favori" data-testid="nw-fav">{fav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}</button>
           {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
           <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
-          <button onClick={() => { sfx("back"); onHome(); }} title="Accueil de la station" aria-label="Accueil de la station" data-testid="nw-home"><IoHomeOutline size={17} /></button>
+          <button onClick={() => { sfx("back"); goWorldHome(); }} title="Accueil de l'œuvre" aria-label="Accueil de l'œuvre" data-testid="nw-home"><IoHomeOutline size={17} /></button>
           <button className="nw-quit" onClick={() => { sfx("back"); onExit(); }} title="Quitter l'univers (revenir où tu étais)" data-testid="nw-exit"><IoExitOutline size={16} /><span>Quitter l'univers</span></button>
         </div>
       </header>

@@ -384,9 +384,12 @@ function YtFig({ b, onSwap, onRemove, si }) {
   );
 }
 
-export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path }) {
+export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path, noPdf = false, onEditChapter }) {
   const { sfx } = useApp();
   const flow = useRef(null);
+  // Taille du texte (Aa) : gardée pour toutes les lectures de ce navigateur
+  const [fs, setFs] = useState(() => { const v = Number(read("nx-alex-fs", 1)); return v >= 0.8 && v <= 1.5 ? v : 1; });
+  const [aa, setAa] = useState(false);
   const [page, setPage] = useState(() => read(LS.prog, {})[book.id]?.page || 0);
   const [pages, setPages] = useState(1);
   const [per, setPer] = useState(2);
@@ -422,6 +425,13 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
     setPages(n); setPage((x) => Math.min(x, Math.max(0, n - 1)));
   };
   useEffect(() => { const el = flow.current; if (!el) return; const f = () => measure(); el.addEventListener("load", f, true); el.addEventListener("error", f, true); return () => { el.removeEventListener("load", f, true); el.removeEventListener("error", f, true); }; }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const fsFirst = useRef(true);
+  useEffect(() => {
+    if (fsFirst.current) { fsFirst.current = false; return; }
+    write("nx-alex-fs", fs);
+    const r = pages > 1 ? page / (pages - 1) : 0;
+    requestAnimationFrame(() => { try { measure(); const g = geom(); const n = Math.max(1, Math.round((g.el.scrollWidth - g.pad * 2 + g.gap) / g.step)); setPage(Math.round(r * (n - 1))); } catch (_) {} });
+  }, [fs]); // eslint-disable-line react-hooks/exhaustive-deps
   useLayoutEffect(() => { measure(); const t = setTimeout(measure, 350); document.fonts?.ready?.then(measure).catch(() => {}); window.addEventListener("resize", measure); return () => { clearTimeout(t); window.removeEventListener("resize", measure); }; }, [book]); // eslint-disable-line
   const spread = Math.floor(page / per) * per;
   useEffect(() => {
@@ -507,6 +517,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
     const k = (e) => { if (paused) return; if (e.key === "Escape") { e.stopPropagation(); vid ? setVid(false) : notes ? setNotes(false) : music ? setMusic(false) : toc ? setToc(false) : onClose(); return; } if (/^(INPUT|TEXTAREA)$/.test(e.target?.tagName) || e.target?.isContentEditable) return; if ((e.key === "n" || e.key === "N") && at && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); setNotes((x) => !x); setToc(false); setMusic(false); return; } if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); go(1); } if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(-1); } };
     window.addEventListener("keydown", k, true); return () => window.removeEventListener("keydown", k, true);
   });
+  const chIdxAt = () => { try { const g = geom(); const x = spread * g.step + g.pad + 2; let n = 0; flow.current.querySelectorAll("[data-ch]").forEach((el) => { if (/^\d+$/.test(el.dataset.ch) && el.offsetLeft <= x + g.step * (g.p - 1)) n = Number(el.dataset.ch); }); return n; } catch (_) { return 0; } };
   const chapterAt = () => { try { const g = geom(); const x = spread * g.step + g.pad + 2; let t = ""; flow.current.querySelectorAll("[data-ch]").forEach((el) => { if (el.offsetLeft <= x + g.step * (g.p - 1)) t = el.querySelector("h2")?.textContent || t; }); return t; } catch (_) { return ""; } };
   const jump = (i) => { const el = flow.current?.querySelector(`[data-ch="${i}"]`); if (!el) return; const g = geom(); setPage(Math.max(0, Math.round((el.offsetLeft - g.pad) / g.step))); setToc(false); };
   const T = TYPES[book.type] || TYPES.recit; const R = ROOMS.find((r) => r.key === book.room);
@@ -553,7 +564,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
   </>), [book, fmt, cover, swapS]); // eslint-disable-line react-hooks/exhaustive-deps
   const noteMarks = notesOf(notesItemOf(at, book.id)).map((n) => ({ id: n.id, t: n.t, at: Math.max(0, Math.min(pages - 1, n.n ? Math.round((n.p / n.n) * pages) : n.p)) }));
   return createPortal(
-    <div className={"ax-reader ax-view fmt-" + fmt + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
+    <div className={"ax-reader ax-view fmt-" + fmt + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), "--ax-fs": fs, ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
       <header className="ax-rbar">
         <button className="ax-rb" onClick={onClose} data-testid="alex-close"><IoArrowBack size={15} /> <span>{backLabel}</span></button>
         <p className="mono ax-rpath">{path || <>ALEXANDRIE / {(R?.label || "MES LIVRES").toUpperCase()} / <b>{book.cote}</b></>}</p>
@@ -566,7 +577,17 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
         {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.toggle} title={radio.playing ? "Pause" : "Lecture"} data-testid="alex-music-toggle">{radio.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>}
         {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.next} title="Morceau suivant" data-testid="alex-music-next"><IoPlaySkipForward size={15} /></button>}
         {onAddVideo && <button className={"ax-rb" + (vid ? " on" : "")} onClick={() => { setVid((v) => !v); setToc(false); setMusic(false); setNotes(false); }} aria-expanded={vid} title="Ajouter une vidéo YouTube à cette page" data-testid="alex-addvid"><IoLogoYoutube size={15} /> <span>Vidéo</span></button>}
-        <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>
+        {!noPdf && <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>}
+        {onEditChapter && <button className="ax-rb" onClick={() => onEditChapter(chIdxAt())} title="Modifier ce chapitre ici même" data-testid="alex-edit-chapter"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
+        <span className="ax-aa-wrap">
+          <button className={"ax-rb ax-rb-sq ax-aa-b" + (aa ? " on" : "")} onClick={() => setAa((v) => !v)} aria-expanded={aa} title="Taille du texte" data-testid="alex-aa">Aa</button>
+          {aa && <span className="ax-aa" role="group" aria-label="Taille du texte" data-testid="alex-aa-panel">
+            <button onClick={() => setFs((v) => Math.max(0.8, Math.round((v - 0.1) * 10) / 10))} disabled={fs <= 0.8} aria-label="Texte plus petit" data-testid="alex-aa-minus">A−</button>
+            <b className="mono">{Math.round(fs * 100)}%</b>
+            <button onClick={() => setFs((v) => Math.min(1.5, Math.round((v + 0.1) * 10) / 10))} disabled={fs >= 1.5} aria-label="Texte plus grand" data-testid="alex-aa-plus">A+</button>
+            {fs !== 1 && <button className="rst" onClick={() => setFs(1)}>Normal</button>}
+          </span>}
+        </span>
         {onCover && <button className="ax-rb" onClick={onCover} title="Changer l'artwork du livre" data-testid="alex-reader-cover"><IoImageOutline size={15} /> <span>Artwork</span></button>}
         <button className="ax-rb ax-rb-sq" onClick={() => { const el = document.querySelector(".ax-reader"); try { if (document.fullscreenElement) document.exitFullscreen(); else el?.requestFullscreen?.(); } catch (_) {} }} title="Lecture en plein écran" data-testid="alex-fullscreen"><IoExpandOutline size={15} /></button>
         <button className="ax-rb" onClick={() => { setToc((t) => !t); setMusic(false); setVid(false); }} aria-expanded={toc} data-testid="alex-toc"><IoList size={16} /> <span>Sommaire</span></button>
@@ -746,6 +767,12 @@ const ART_SOURCES = [
   { k: "ol", label: "Livres", hint: "Open Library", ph: "Titre du livre, auteur",
     run: async (q) => { const d = await getJson(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=20&fields=key,title,cover_i,author_name`);
       return (d.docs || []).filter((x) => x.cover_i).map((x) => ({ id: x.key, url: `https://covers.openlibrary.org/b/id/${x.cover_i}-L.jpg`, thumb: `https://covers.openlibrary.org/b/id/${x.cover_i}-M.jpg`, title: `${x.title}${x.author_name ? " · " + x.author_name[0] : ""}` })); } },
+  { k: "aic", label: "Domaine public", hint: "Art Institute of Chicago : œuvres du domaine public (CC0)", ph: "Thème, artiste, époque : samurai, Hokusai, nuit…",
+    run: async (q) => { const d = await getJson(`https://api.artic.edu/api/v1/artworks/search?q=${encodeURIComponent(q)}&query[term][is_public_domain]=true&fields=id,title,image_id,artist_title&limit=24`);
+      return (d.data || []).filter((x) => x.image_id).map((x) => ({ id: "a" + x.id, url: `https://www.artic.edu/iiif/2/${x.image_id}/full/1686,/0/default.jpg`, thumb: `https://www.artic.edu/iiif/2/${x.image_id}/full/400,/0/default.jpg`, title: `${x.title}${x.artist_title ? " · " + x.artist_title : ""} (domaine public)` })); } },
+  { k: "commons", label: "Commons", hint: "Wikimedia Commons : vérifie la licence de chaque image", ph: "Ce que tu cherches, en anglais de préférence",
+    run: async (q) => { const d = await getJson(`https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(q)}&gsrlimit=24&prop=imageinfo&iiprop=url%7Cextmetadata&iiurlwidth=420`);
+      return Object.values(d.query?.pages || {}).filter((x) => x.imageinfo?.[0]?.thumburl && /\.(jpe?g|png|webp)$/i.test(x.title)).map((x) => { const ii = x.imageinfo[0]; const lic = ii.extmetadata?.LicenseShortName?.value || "licence à vérifier"; return { id: "c" + x.pageid, url: ii.url, thumb: ii.thumburl, title: `${x.title.replace(/^File:/, "")} · ${lic}` }; }); } },
   { k: "itunes", label: "Musique", hint: "Pochettes d'albums", ph: "Artiste, album",
     run: async (q) => { const d = await getJson(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=album&limit=20`);
       return (d.results || []).map((x) => ({ id: "i" + x.collectionId, url: (x.artworkUrl100 || "").replace("100x100", "600x600"), thumb: (x.artworkUrl100 || "").replace("100x100", "200x200"), title: `${x.collectionName} · ${x.artistName}` })).filter((x) => x.url); } },
@@ -753,7 +780,7 @@ const ART_SOURCES = [
 const artDefault = (b) => (fmtOf(b) === "vhs" ? "sgdb" : fmtOf(b) === "vinyle" ? "itunes" : b.room === "cinema" ? "wiki" : b.room === "lore" ? "ol" : "wiki");
 
 // Choisir l'artwork d'un volume : recherche intégrée (jeux, affiches, manga, livres, musique), adresse, fichier, glisser-déposer ou coller.
-function CoverDialog({ b, current, def, onSave, onClose }) {
+export function CoverDialog({ b, current, def, onSave, onClose }) {
   const [url, setUrl] = useState(current || ""); const [busy, setBusy] = useState(false);
   const send = async (f) => { if (!f || !/^image\//.test(f.type)) return; setBusy(true); try { const r = await uploadJournalImage(f); setUrl(r.url); onSave(r.url); } catch (_) { toast.error("Envoi de l'image impossible"); } setBusy(false); };
   useEffect(() => {
@@ -789,6 +816,8 @@ function CoverDialog({ b, current, def, onSave, onClose }) {
               <a className="ax-ghost" href={`https://www.themoviedb.org/search?query=${term}`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> TMDB</a>
               <a className="ax-ghost" href={`https://www.steamgriddb.com/search/grids?term=${term}`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> SteamGridDB</a>
               <a className="ax-ghost" href={`https://www.pinterest.com/search/pins/?q=${term}+poster`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> Pinterest</a>
+              <a className="ax-ghost" href={`https://www.metmuseum.org/art/collection/search?q=${term}&showOnly=openAccess`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> The Met (libre)</a>
+              <a className="ax-ghost" href={`https://www.rijksmuseum.nl/en/search?q=${term}`} target="_blank" rel="noreferrer"><IoOpenOutline size={14} /> Rijksmuseum</a>
             </div>
           </div>
         </div>

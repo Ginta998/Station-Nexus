@@ -6,6 +6,8 @@ export const WORLD_STYLES = {
   cinema: "Salle de cinéma", vhs: "Magnétoscope", arcade: "Borne d'arcade", yorha: "Archives", eve: "Orbite", hero: "Arène",
   cathedrale: "Cathédrale", couronne: "Couronne", trait: "Trait", sengoku: "Sengoku", survivance: "Survivance", cristal: "Cristal",
 };
+// Masqués : gardés (une œuvre qui les utilise les garde), mais rangés à part dans l'atelier
+export const WORLD_MASKED = ["trait"];
 // Anciennes ambiances (avant la 0.17) : on les ramène vers les nouvelles
 const LEGACY = { manga: "hero", vinyle: "eve", roman: "yorha" };
 export function worldStyleOf(item, catLabel = "") {

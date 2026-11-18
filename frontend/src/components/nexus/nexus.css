@@ -127,3 +127,10 @@ body:has(.nx-launchfx) :is(.cb-root,.nx-tools,.bn-fab){display:none}
 .nx-toolbar .sx-search{margin:0;flex:1 1 auto}
 .nx-toolbar .vtog{margin:0 0 0 auto}
 @media (max-width:760px){.nx-toolbar{margin-bottom:30px}.nx-toolbar .vtog{margin:0;width:100%}}
+/* 0.22 · Lancement sans à-coup : le fond du lancement reste, seul son contenu s'efface ; puis un voile tient l'écran jusqu'au monde */
+.nx-launchfx.out{opacity:1;transition:none}
+.nx-launchfx.out>*{opacity:0;transition:opacity .3s ease-in}
+#nx-veil{position:fixed;inset:0;z-index:3000;pointer-events:none;background:radial-gradient(ellipse at 50% 42%,color-mix(in srgb,var(--brand) 14%,var(--bg-primary)),var(--bg-primary) 68%);transition:opacity .5s ease}
+#nx-veil.gone{opacity:0}
+.nx-favs .seclabel{display:flex;align-items:baseline;justify-content:space-between}
+.nx-favn{font-size:10px;letter-spacing:.2em;color:var(--lab-mute,var(--text-secondary))}

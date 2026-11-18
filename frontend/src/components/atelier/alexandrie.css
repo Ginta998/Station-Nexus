@@ -629,3 +629,19 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .wr-next-t b{font-family:"Cormorant Garamond",serif;font-weight:500;font-size:26px;line-height:1.05}
 .wr-next-t em{font-style:normal;font-size:13px;opacity:.7}
 .wr-next-go{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font:600 11px "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--brand)}
+/* 0.22 · Taille du texte (Aa) */
+.ax-reader .ax-flow{font-size:calc(clamp(15.5px,1.12vw,18px) * var(--ax-fs,1))}
+@media (max-width:900px){.ax-reader .ax-flow{font-size:calc(17px * var(--ax-fs,1))}}
+.ax-aa-wrap{position:relative;display:inline-flex}
+.ax-aa-b{font-family:var(--ax-serif,Georgia,serif);font-size:15px;font-weight:600;letter-spacing:0}
+.ax-aa{position:absolute;top:calc(100% + 8px);right:0;z-index:30;display:flex;align-items:center;gap:6px;padding:7px;border:1px solid var(--lab-hair-2,rgba(255,255,255,.18));background:var(--bg-primary,#15171c);color:var(--lab-ink,#eee);box-shadow:0 14px 30px rgba(0,0,0,.45);white-space:nowrap}
+.ax-aa button{min-width:38px;height:32px;border:1px solid var(--lab-hair-2,rgba(255,255,255,.18));background:transparent;color:inherit;font-family:var(--ax-serif,Georgia,serif);font-size:15px;cursor:pointer}
+.ax-aa button:hover:not(:disabled){border-color:var(--lab-acc,var(--brand))}
+.ax-aa button:disabled{opacity:.35;cursor:default}
+.ax-aa button.rst{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:0 9px}
+.ax-aa b{min-width:44px;text-align:center;font-size:11px}
+/* 0.22 · La tranche bouge au survol : l'animation d'arrivée ne bloque plus le mouvement (elle gardait sa position finale) */
+.ax-vol{animation-fill-mode:backwards}
+.ax-vol:hover,.ax-vol:focus-visible{transform:translateY(-18px) rotate(-1.2deg);box-shadow:inset -8px 0 10px -6px rgba(0,0,0,.5),inset 6px 0 8px -5px rgba(255,255,255,.16),inset 0 0 0 1px rgba(0,0,0,.25),10px 14px 18px -6px rgba(0,0,0,.65)}
+.ax-vol:active{transform:translateY(-24px) rotate(-1.6deg) scale(1.02);transition-duration:.12s}
+@media (prefers-reduced-motion:reduce){.ax-vol:hover{transform:translateY(-6px)}}

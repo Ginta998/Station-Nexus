@@ -40,7 +40,7 @@ function progressOf(it) {
 // La barre d'outils (recherche, thèmes, choix de la vue) est celle de l'accueil, passée telle quelle.
 export default function NexusHome({ all = [], cats = [], settings, query = "", view = "rails", toolbar }) {
   const nav = useNavigate();
-  const { sfx, playAmbient, isAdmin } = useApp();
+  const { sfx, playAmbient, isAdmin, favorites = [] } = useApp();
   const qc = useQueryClient();
   const [sel, setSel] = useState(null);       // œuvre choisie : sa notice est ouverte
   const [launch, setLaunch] = useState(null);
@@ -66,12 +66,21 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
     return [...new Set([...books.filter((x) => progressOf(x.it)).map((x) => x.id), ...(readJ("sx_recent") || []), ...feat])].map((id) => byId[id]).filter(Boolean).slice(0, 6);
   }, [books, settings]);
 
+  // Coups de cœur : les œuvres marquées d'un cœur, de la plus récente à la plus ancienne
+  const favs = useMemo(() => { const byId = Object.fromEntries(books.map((x) => [x.id, x])); return [...favorites].reverse().map((id) => byId[id]).filter(Boolean); }, [books, favorites]);
   const cur = sel && books.find((x) => x.id === sel);
   const arcCur = (cur && arcList.includes(cur) && cur) || arcList[0];
   const pick = (id) => { sfx?.("nav"); setSel(id); };
   const remember = (id) => { const r = readJ("sx_recent") || []; try { localStorage.setItem("sx_recent", JSON.stringify([id, ...r.filter((x) => x !== id)].slice(0, 8))); } catch (_) {} };
-  const go = useCallback((x) => { setLaunch(null); nav(`/oeuvre/${x.id}`, { state: progressOf(x.it)?.resume ? { resume: true } : undefined }); }, [nav]);
-  const start = useCallback((x) => { if (!x) return; sfx?.("select"); remember(x.id); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Seul l'accès rapide reprend la lecture ; partout ailleurs (rayons, carte, arcade) on entre dans l'univers, sur son accueil.
+  const quickR = useRef(false);
+  const go = useCallback((x) => {
+    setLaunch(null);
+    // Un voile reste posé le temps que le monde se charge : on ne revoit pas la station entre la pochette et l'entrée
+    if (!document.getElementById("nx-veil")) { const v = document.createElement("div"); v.id = "nx-veil"; v.setAttribute("aria-hidden", "true"); document.body.appendChild(v); setTimeout(() => v.remove(), 4000); }
+    nav(`/oeuvre/${x.id}`, { state: quickR.current && progressOf(x.it)?.resume ? { resume: true } : undefined });
+  }, [nav]);
+  const start = useCallback((x, quick = false) => { if (!x) return; quickR.current = quick; sfx?.("select"); remember(x.id); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
   const [leaving, setLeaving] = useState(false);
   useEffect(() => { if (!launch) return; setLeaving(false); const a = setTimeout(() => setLeaving(true), 1500); const t = setTimeout(() => go(launch), 1820); return () => { clearTimeout(a); clearTimeout(t); }; }, [launch, go]);
   useEffect(() => { setSel(null); }, [view]);
@@ -131,7 +140,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
       {x.it.synopsis && <p className="ab">{x.it.synopsis}</p>}
       {progressOf(x.it) && <p className="mono nx-prog">{progressOf(x.it).label}<span className="nx-qbar"><i style={{ width: `${Math.round(progressOf(x.it).ratio * 100)}%` }} /></span></p>}
       <div className="ax-acts">
-        <button className="at-btn" onClick={() => start(x)} data-testid="nx-launch"><IoPlay size={14} /> {progressOf(x.it) ? "Reprendre" : x.up ? "Découvrir" : "Lancer"}</button>
+        <button className="at-btn" onClick={() => start(x)} data-testid="nx-launch"><IoPlay size={14} /> {x.up ? "Découvrir" : "Lancer"}</button>
         {playAmbient && <button className="ax-ghost" onClick={() => playAmbient(x.id)}><IoMusicalNotes size={15} /> Ambiance</button>}
         <button className="ax-ghost" onClick={() => setSel(null)}><IoClose size={15} /> Fermer</button>
       </div>
@@ -155,11 +164,25 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
           <div className="seclabel"><div className="lt"><h2>Accès rapide</h2><span className="kj">続</span></div></div>
           <div className="nx-qrow">
             {quick.map((x) => { const p = progressOf(x.it); return (
-              <button key={x.id} className="nx-qcard" onClick={() => start(x)} {...pressMenu(menuFor(x))} data-testid={`nx-quick-${x.id}`}>
+              <button key={x.id} className="nx-qcard" onClick={() => start(x, true)} {...pressMenu(menuFor(x))} data-testid={`nx-quick-${x.id}`}>
                 <span className="nx-qart"><Face b={x} cover={covers[x.id]} upcoming={x.up} /><em><IoPlay size={16} /></em></span>
                 <span className="nx-qtx"><small className="mono">{FMT_LABEL[x.format]} · {x.roomLabel.toUpperCase()}</small><b>{x.title}</b><small className="mono nx-qp">{p ? p.label : x.up ? "À VENIR" : "LANCER"}</small>{p && <span className="nx-qbar"><i style={{ width: `${Math.round(p.ratio * 100)}%` }} /></span>}</span>
               </button>
             ); })}
+          </div>
+        </section>
+      )}
+
+      {favs.length > 0 && !query && (
+        <section className="nx-quick nx-favs" data-testid="nx-favs">
+          <div className="seclabel"><div className="lt"><h2>Coups de cœur</h2><span className="kj">愛</span></div><span className="mono nx-favn">{favs.length} ŒUVRE{favs.length > 1 ? "S" : ""}</span></div>
+          <div className="nx-qrow">
+            {favs.map((x) => (
+              <button key={x.id} className="nx-qcard" onClick={() => start(x)} {...pressMenu(menuFor(x))} data-testid={`nx-fav-${x.id}`}>
+                <span className="nx-qart"><Face b={x} cover={covers[x.id]} upcoming={x.up} /><em><IoPlay size={16} /></em></span>
+                <span className="nx-qtx"><small className="mono">{FMT_LABEL[x.format]} · {x.roomLabel.toUpperCase()}</small><b>{x.title}</b><small className="mono nx-qp">♥ COUP DE CŒUR</small></span>
+              </button>
+            ))}
           </div>
         </section>
       )}
@@ -216,7 +239,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
                 {arcCur.sub && <p className="sub">{arcCur.sub}</p>}
                 {arcCur.it.synopsis && <p className="ab">{arcCur.it.synopsis}</p>}
                 {progressOf(arcCur.it) && <p className="mono nx-prog">{progressOf(arcCur.it).label}<span className="nx-qbar"><i style={{ width: `${Math.round(progressOf(arcCur.it).ratio * 100)}%` }} /></span></p>}
-                <div className="ax-acts"><button className="at-btn" onClick={() => start(arcCur)} data-testid="nx-arc-launch"><IoPlay size={14} /> {progressOf(arcCur.it) ? "Reprendre" : "Lancer"}</button>{playAmbient && <button className="ax-ghost" onClick={() => playAmbient(arcCur.id)}><IoMusicalNotes size={15} /> Ambiance</button>}</div>
+                <div className="ax-acts"><button className="at-btn" onClick={() => start(arcCur)} data-testid="nx-arc-launch"><IoPlay size={14} /> Lancer</button>{playAmbient && <button className="ax-ghost" onClick={() => playAmbient(arcCur.id)}><IoMusicalNotes size={15} /> Ambiance</button>}</div>
               </div>
             </div>
           )}

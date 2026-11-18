@@ -198,18 +198,18 @@ export default function CosmicBunny() {
       {open && tips.length > 0 && (
         <div className="cb-bubble" data-testid="cb-bubble">
           <button className="cb-close" onClick={closeTips} data-testid="cb-close" aria-label="Fermer les conseils"><IoClose size={18} /></button>
-          <p className="cb-name">Cosmic Bunny 🐰</p>
+          <p className="cb-name"><span>COSMIC BUNNY</span><i>CONSEIL{tips.length > 1 ? ` ${String(idx + 1).padStart(2, "0")} / ${String(tips.length).padStart(2, "0")}` : ""}</i></p>
           <p className="cb-text" data-testid="cb-text">{cur.text}</p>
           {cur.button_label && cur.button_target && (
             <button className="cb-cta" data-testid="cb-cta" onClick={() => goTo(cur.button_target)}>{cur.button_label}</button>
           )}
           <div className="cb-actions">
             <button className="cb-next" onClick={next} data-testid="cb-next">
-              {idx < tips.length - 1 ? (<>Conseil suivant <IoArrowForward size={14} /></>) : "Compris ! 🎉"}
+              {idx < tips.length - 1 ? (<>Conseil suivant <IoArrowForward size={14} /></>) : "Compris"}
             </button>
-            {tips.length > 1 && <span className="cb-count">{idx + 1}/{tips.length}</span>}
+            
           </div>
-          <button className="cb-mute" onClick={talkLess} data-testid="cb-talk-less">Je parle trop ? 🙉 Chut !</button>
+          <button className="cb-mute" onClick={talkLess} data-testid="cb-talk-less">Moins de conseils</button>
         </div>
       )}
       <div className="cb-mascot-wrap">

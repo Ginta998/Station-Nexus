@@ -47,7 +47,7 @@ export function bookOfEntry(e) {
     format: e.format || "livre", house: "JOURNAL DE BORD", chapters, words: words(chapters), links: [], look: { theme: e.look || "presse" } };
 }
 
-export default function WorkReader({ item, entry, unitKey = "chapters", catLabel, format = "livre", look, cover, startUnit = null, resume = false, locked, onClose, next, nextCover, onNext, onComment }) {
+export default function WorkReader({ item, entry, unitKey = "chapters", catLabel, format = "livre", look, cover, startUnit = null, resume = false, locked, onClose, next, nextCover, onNext, onComment, onEditUnit, noPdf = true }) {
   const [ended, setEnded] = useState(false); // fin de l'œuvre : écran de fin et œuvre suivante
   const { playReadingUrl, toggleReadingUrl, pauseReading, endReading, isPlaying, playingId } = useApp();
   const built = useMemo(() => (entry ? { book: bookOfEntry(entry), map: [0] } : bookOfCreation(item, { unitKey, catLabel, format, locked, look })), [item, entry, unitKey, catLabel, format, look]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -109,7 +109,8 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
   return (<>
     {endCard}
     <Reader book={book} cover={cover || (entry?.cover ? mediaUrl(entry.cover) : null)} onClose={onClose} backLabel={entry ? "Retour" : "Retour au monde"} path={where}
-      startCh={startCh} keepSaved={resume} onProgress={onProgress} workMusic={music}
+      startCh={startCh} keepSaved={resume} onProgress={onProgress} workMusic={music} noPdf={noPdf}
+      onEditChapter={onEditUnit && !entry ? (c) => onEditUnit(map[c] ?? map[0] ?? 0) : undefined}
       onCue={(url, t) => { setTitle(t || "Musique"); toggleReadingUrl(mediaUrl(url), "cue:" + url, { loop: false }); }}
       onDone={() => { if (!entry) setTimeout(() => setEnded(true), 900); }} />
   </>);

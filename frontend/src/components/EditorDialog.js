@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import VersionHistory from "@/components/VersionHistory";
-import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoCreateOutline, IoChevronUp, IoChevronDown, IoEyeOutline, IoTimeOutline, IoFilmOutline, IoLinkOutline, IoGameControllerOutline, IoInformationCircleOutline, IoListOutline, IoReaderOutline, IoCheckmark, IoArrowBack, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+import { IoSearch, IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoCreateOutline, IoChevronUp, IoChevronDown, IoEyeOutline, IoTimeOutline, IoFilmOutline, IoLinkOutline, IoGameControllerOutline, IoInformationCircleOutline, IoListOutline, IoReaderOutline, IoCheckmark, IoArrowBack, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset, assetUrl, createJournalEntry } from "@/lib/api";
 import PageWriter from "@/components/PageWriter";
-import { WORLD_STYLES, worldStyleOf, usePosterAccent } from "@/components/nexus/world";
+import { WORLD_STYLES, WORLD_MASKED, worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexandrie/looks";
 import { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
+import { CoverDialog } from "@/components/atelier/Alexandrie";
 import "@/components/editor.css";
 
 /*
@@ -94,7 +95,7 @@ const Toggle = ({ on, onChange, children, testid }) => (
 const Seg = ({ value, onChange, options, testid }) => (
   <div className="rl-seg" role="radiogroup" data-testid={testid}>{options.map(([v, l]) => <button type="button" key={v} role="radio" aria-checked={value === v} className={value === v ? "on" : ""} onClick={() => onChange(v)}>{l}</button>)}</div>
 );
-const Drop = ({ img, ratio = "2/3", label, onFile, onClear, testid, multiple }) => {
+const Drop = ({ img, ratio = "2/3", label, onFile, onClear, testid, multiple, onSearch }) => {
   const [over, setOver] = useState(false);
   return (
     <div className={"rl-drop" + (over ? " over" : "") + (img ? " has" : "")} style={{ aspectRatio: ratio }} data-testid={testid}
@@ -106,6 +107,7 @@ const Drop = ({ img, ratio = "2/3", label, onFile, onClear, testid, multiple }) 
         <input type="file" accept="image/*" multiple={multiple} hidden onChange={(e) => { const fl = [...(e.target.files || [])]; e.target.value = ""; if (fl.length) multiple ? onFile(fl) : onFile(fl[0]); }} />
       </label>
       {img && onClear && <button type="button" className="rl-drop-x" onClick={onClear} aria-label="Retirer"><IoTrashOutline size={14} /></button>}
+      {onSearch && <button type="button" className="rl-drop-s" onClick={onSearch} title="Chercher une image : SteamGridDB, affiches, manga, livres, domaine public, Pinterest…" data-testid={testid ? testid + "-search" : undefined}><IoSearch size={13} /> Chercher</button>}
     </div>
   );
 };
@@ -139,6 +141,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const [intentionFile, setIntentionFile] = useState(null);
   const [videoProg, setVideoProg] = useState({ film: 0, trailer: 0 });
   const [writing, setWriting] = useState(null); // { key: "chapters" | "episodes", i }
+  const [pick, setPick] = useState(null); // recherche d'image façon Alexandrie : { label, cur, put }
   const autoAccent = usePosterAccent(!open ? null : form.poster && form.poster.length > 4 ? form.poster : coverHint || null);
   const keyRef = useRef(null);
 
@@ -284,10 +287,11 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
         {list.map((u, i) => (
           <article key={i} className="rl-unit" data-testid={isCh ? `editor-chapter-${i}` : `editor-episode-${i}`}>
             <span className="rl-unit-n">{String(i + 1).padStart(2, "0")}</span>
-            <label className="rl-thumb" title="Image">
+            <span className="rl-thumbw"><label className="rl-thumb" title="Image">
               {u.image ? <img src={u.image} alt="" /> : <IoImageOutline size={18} />}
               <input type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) takeImage(f, (d) => (isCh ? updCh(i, "image", d) : updEp(i, "image", d)), 1280); }} />
             </label>
+            <button type="button" className="rl-thumb-s" onClick={() => setPick({ label: `${isCh ? "Chapitre" : "Épisode"} ${i + 1}`, cur: u.image, put: (url) => (isCh ? updCh(i, "image", url) : updEp(i, "image", url)) })} title="Chercher une image" aria-label="Chercher une image" data-testid={`editor-unit-search-${i}`}><IoSearch size={12} /></button></span>
             <div className="rl-unit-b">
               <input className="rl-in" value={u.title || ""} onChange={(e) => (isCh ? updCh(i, "title", e.target.value) : updEp(i, "title", e.target.value))} placeholder={`${isCh ? "Chapitre" : "Épisode"} ${i + 1}`} />
               <textarea className="rl-in" rows={2} value={u.description || ""} onChange={(e) => (isCh ? updCh(i, "description", e.target.value) : updEp(i, "description", e.target.value))} placeholder="Résumé affiché dans la liste" data-testid={isCh ? `editor-chapter-desc-${i}` : undefined} />
@@ -322,7 +326,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           </figcaption>
         </figure>
       ))}
-      <div className="rl-gi add"><Drop ratio="1/1" label="Ajouter" multiple onFile={(fl) => addImages(k, fl)} testid={testid} /></div>
+      <div className="rl-gi add"><Drop ratio="1/1" label="Ajouter" multiple onFile={(fl) => addImages(k, fl)} testid={testid} onSearch={() => setPick({ label: "Moodboard", cur: "", put: (u) => set(k, [...(form[k] || []), u]) })} /></div>
     </div>
   );
 
@@ -330,7 +334,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
     id: (
       <>
         <div className="rl-two">
-          <Drop img={cover} label="Affiche" onFile={(f) => takeImage(f, (d) => set("poster", d), 1400)} onClear={form.poster ? () => set("poster", "") : null} testid="editor-poster-upload" />
+          <Drop img={cover} label="Affiche" onFile={(f) => takeImage(f, (d) => set("poster", d), 1400)} onClear={form.poster ? () => set("poster", "") : null} testid="editor-poster-upload" onSearch={() => setPick({ label: "Affiche", cur: form.poster, put: (u) => set("poster", u) })} />
           <div className="rl-stack">
             <Field label="Titre"><input className="rl-in big" data-testid="editor-title" value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="Le nom de l'œuvre" autoFocus={!isEdit} /></Field>
             <Field label="Accroche" hint="Une ligne sous le titre (auteur, slogan, sous-titre)."><input className="rl-in" data-testid="editor-tagline" value={form.tagline} onChange={(e) => set("tagline", e.target.value)} /></Field>
@@ -351,13 +355,26 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             <span className={"rl-mini m-" + wsAuto} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
             <strong>Automatique</strong><small>{WORLD_STYLES[wsAuto]}, d'après le type</small>
           </button>
-          {Object.entries(WORLD_STYLES).map(([k, label]) => (
+          {Object.entries(WORLD_STYLES).filter(([k]) => !WORLD_MASKED.includes(k) || wsCur === k).map(([k, label]) => (
             <button type="button" key={k} className={"rl-wsc" + (wsCur === k ? " on" : "")} onClick={() => set("world_style", k)} data-testid={`wst-style-${k}`}>
               <span className={"rl-mini m-" + k} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
               <strong>{label}</strong><small>{STYLE_HINT[k]}</small>
             </button>
           ))}
         </div>
+        {WORLD_MASKED.some((k) => k !== wsCur) && (
+          <details className="rl-masked">
+            <summary>Ambiances masquées ({WORLD_MASKED.filter((k) => k !== wsCur).length})</summary>
+            <div className="rl-ws">
+              {WORLD_MASKED.filter((k) => k !== wsCur).map((k) => (
+                <button type="button" key={k} className="rl-wsc" onClick={() => set("world_style", k)} data-testid={`wst-style-${k}`}>
+                  <span className={"rl-mini m-" + k} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
+                  <strong>{WORLD_STYLES[k]}</strong><small>{STYLE_HINT[k]}</small>
+                </button>
+              ))}
+            </div>
+          </details>
+        )}
         <p className="rl-sub"><b>Couleur</b><span>Les menus, les reflets, la barre de progression.</span></p>
         <div className="rl-colors">
           <button type="button" className={"rl-sw auto" + (!form.accent ? " on" : "")} onClick={() => set("accent", "")} title="Tirée de l'affiche"><i style={{ background: autoAccent || "var(--brand)" }} /><span>Affiche</span></button>
@@ -366,7 +383,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             <input type="color" value={form.accent || "#4d8dff"} onChange={(e) => set("accent", e.target.value)} /></label>
         </div>
         <p className="rl-sub"><b>Fond du monde</b><span>Sans image, l'affiche sert de fond.</span></p>
-        <Drop img={form.bg_image && form.bg_image.length > 4 ? form.bg_image : null} ratio="16/7" label="Image de fond" onFile={(f) => takeImage(f, (d) => set("bg_image", d), 1920)} onClear={() => set("bg_image", "")} testid="editor-bg-upload" />
+        <Drop img={form.bg_image && form.bg_image.length > 4 ? form.bg_image : null} ratio="16/7" label="Image de fond" onFile={(f) => takeImage(f, (d) => set("bg_image", d), 1920)} onClear={() => set("bg_image", "")} onSearch={() => setPick({ label: "Image de fond", cur: form.bg_image, put: (u) => set("bg_image", u) })} testid="editor-bg-upload" />
         <details className="rl-more">
           <summary>Réglages de la fiche Classique</summary>
           <div className="rl-row">
@@ -557,6 +574,8 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
         </div>
       )}
 
+      {pick && <CoverDialog b={{ id: "sn-" + (form.id || "new"), title: form.title || pick.label, room: /manga|anime/i.test(catLabel) ? "manga" : form.launch_type === "game" ? "jeux" : "cinema", format: form.launch_type === "game" || form.launch_type === "episodes" ? "vhs" : /musique|music|album/i.test(catLabel) ? "vinyle" : "livre" }}
+        current={pick.cur && pick.cur.length > 4 && !/^data:/.test(pick.cur) ? pick.cur : ""} onSave={(u) => { if (u) pick.put(u); setPick(null); }} onClose={() => setPick(null)} />}
       {wUnit && (
         <PageWriter kicker={`${form.title || "Création"} · ${writing.key === "episodes" ? "Épisode" : "Chapitre"} ${writing.i + 1}`}
           title={wUnit.title} onTitle={(v) => updUnit({ title: v })}

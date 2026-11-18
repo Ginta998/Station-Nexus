@@ -309,3 +309,15 @@ textarea.rl-in{resize:vertical;line-height:1.6}
 .rl-look-pg i{display:block;height:3px;background:currentColor;opacity:.45}
 .rl-look-pg i:nth-of-type(2){width:80%}.rl-look-pg i:nth-of-type(3){width:60%;background:var(--la);opacity:.9}
 .rl-look small{font:600 10px/1.2 var(--rl-mono);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-masked{margin:4px 0 18px}
+.rl-masked summary{cursor:pointer;font:500 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--rl-mute,#888);padding:8px 0}
+.rl-masked[open] summary{margin-bottom:10px}
+/* 0.22 · Chercher une image comme dans Alexandrie */
+.rl-drop-s{position:absolute;left:8px;bottom:8px;z-index:3;display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border:1px solid rgba(255,255,255,.3);background:rgba(21,23,26,.78);color:#fff;font:600 9.5px/1 "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(6px)}
+.rl-drop-s:hover{border-color:var(--rl-acc);color:var(--rl-acc)}
+.rl-unit{position:relative}
+.rl-thumbw{position:relative;display:block;min-width:0}.rl-thumbw .rl-thumb{width:100%}
+.rl-thumb-s{position:absolute;right:4px;bottom:4px;z-index:2;width:22px;height:22px;display:grid;place-items:center;border:1px solid var(--rl-line,rgba(0,0,0,.2));background:var(--rl-card,#fff);color:var(--rl-ink,#111);cursor:pointer}
+.rl-thumb-s:hover{color:var(--rl-acc);border-color:var(--rl-acc)}
+.ax-fiche-wrap{z-index:1250}
+body:has(.rl) .ax-fiche-wrap{z-index:2700}
