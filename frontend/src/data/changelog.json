@@ -1,6 +1,25 @@
 {
-  "version": "0.22",
+  "version": "0.23",
   "patches": [
+    {
+      "v": "0.23",
+      "date": "2026-11-18",
+      "title": "Plein écran, bois et papier",
+      "groups": {
+        "Nouveau": [
+          "Atelier › Monde : « Grille des chapitres », de 1 à 5 vignettes par ligne sur ordinateur (ou Automatique). Peu de chapitres : grandes vignettes ; beaucoup : plus compact.",
+          "Lecture en plein écran : le livre ou la cassette prend tout l'écran ; les barres et les flèches se cachent quand on ne bouge plus et reviennent au moindre mouvement (ou en touchant l'écran).",
+          "Écrire un chapitre en Rhine Lab : barre d'atelier, vraie feuille de papier, compteur de mots et temps de lecture, Ctrl + S pour enregistrer."
+        ],
+        "Changé": [
+          "Rayons de l'accueil Nexus : un vrai meuble (bois sombre, planche en noyer, baguette de laiton) avec un fin filet de lumière ; plus de reflet de vitrine, une ombre d'objet posé.",
+          "Livres et cassettes plus usés : grain, éraflures, coins frottés, charnière du livre relié, couleurs légèrement patinées."
+        ],
+        "Corrigé": [
+          "Après un changement de taille de fenêtre, du texte ou un passage en plein écran, la page restait décalée (on voyait le bord de la page précédente)."
+        ]
+      }
+    },
     {
       "v": "0.22",
       "date": "2026-11-18",

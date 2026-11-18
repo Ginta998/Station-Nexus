@@ -18,7 +18,7 @@ import "@/components/editor.css";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
-  poster: "", accent: "", world_style: "", reader_format: "", reader_look: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
+  poster: "", accent: "", world_style: "", reader_format: "", reader_look: "", units_cols: 0, bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
   launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
   intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
@@ -375,6 +375,17 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             </div>
           </details>
         )}
+        {(form.launch_type === "chapters" || form.launch_type === "episodes") && (<>
+          <p className="rl-sub"><b>Grille des {form.launch_type === "chapters" ? "chapitres" : "épisodes"}</b><span>Combien de vignettes par ligne sur ordinateur. Peu de chapitres : grandes vignettes ; beaucoup : plus compact.</span></p>
+          <div className="rl-cols" role="radiogroup" data-testid="editor-units-cols">
+            {[0, 1, 2, 3, 4, 5].map((n) => (
+              <button type="button" key={n} role="radio" aria-checked={(Number(form.units_cols) || 0) === n} className={(Number(form.units_cols) || 0) === n ? "on" : ""} onClick={() => set("units_cols", n)} data-testid={`editor-cols-${n}`}>
+                <span className="rl-cols-m" aria-hidden="true">{n === 0 ? <em>A</em> : Array.from({ length: n }, (_, i) => <i key={i} />)}</span>
+                <small>{n === 0 ? "Auto" : n}</small>
+              </button>
+            ))}
+          </div>
+        </>)}
         <p className="rl-sub"><b>Couleur</b><span>Les menus, les reflets, la barre de progression.</span></p>
         <div className="rl-colors">
           <button type="button" className={"rl-sw auto" + (!form.accent ? " on" : "")} onClick={() => set("accent", "")} title="Tirée de l'affiche"><i style={{ background: autoAccent || "var(--brand)" }} /><span>Affiche</span></button>

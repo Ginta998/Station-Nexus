@@ -645,3 +645,17 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .ax-vol:hover,.ax-vol:focus-visible{transform:translateY(-18px) rotate(-1.2deg);box-shadow:inset -8px 0 10px -6px rgba(0,0,0,.5),inset 6px 0 8px -5px rgba(255,255,255,.16),inset 0 0 0 1px rgba(0,0,0,.25),10px 14px 18px -6px rgba(0,0,0,.65)}
 .ax-vol:active{transform:translateY(-24px) rotate(-1.6deg) scale(1.02);transition-duration:.12s}
 @media (prefers-reduced-motion:reduce){.ax-vol:hover{transform:translateY(-6px)}}
+/* 0.23 · Plein écran : le livre ou la cassette prend tout l'écran ; les barres flottent et se cachent quand on ne bouge plus */
+.ax-reader.ax-full{background:#050505}
+.ax-full .ax-rbar,.ax-full .ax-rfoot{position:absolute;left:0;right:0;z-index:20;background:color-mix(in srgb,var(--bg-primary) 86%,transparent);backdrop-filter:blur(12px);transition:opacity .35s,transform .35s}
+.ax-full .ax-rbar{top:0}.ax-full .ax-rfoot{bottom:0}
+.ax-full:not(.ui) .ax-rbar{opacity:0;transform:translateY(-100%);pointer-events:none}
+.ax-full:not(.ui) .ax-rfoot{opacity:0;transform:translateY(100%);pointer-events:none}
+.ax-full:not(.ui){cursor:none}
+.ax-full .ax-stage{padding:0;gap:0;position:relative}
+.ax-full .ax-book{max-width:none;max-height:none;height:100%;border-radius:0}
+.ax-full .ax-turn{position:absolute;top:50%;z-index:10;translate:0 -50%;background:color-mix(in srgb,var(--bg-primary) 70%,transparent);transition:opacity .3s}
+.ax-full .ax-turn.l{left:12px}.ax-full .ax-turn.r{right:12px}
+.ax-full:not(.ui) .ax-turn{opacity:0}
+.ax-full .ax-flow{padding-left:clamp(40px,6vw,110px);padding-right:clamp(40px,6vw,110px)}
+.ax-full .ax-flow{padding-top:max(60px,7vh);padding-bottom:max(50px,6vh)}

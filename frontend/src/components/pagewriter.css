@@ -1,0 +1,35 @@
+/* Écrire un chapitre, en Rhine Lab : barre d'atelier sombre, une vraie feuille de papier au centre */
+.pw{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;color:#e9e6df;
+  background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px) 0 0/28px 28px,#121315;
+  --pw-acc:var(--brand,#2bb3a3);font-family:"Inter",system-ui,sans-serif}
+body:has(.ax-reader) .pw,body:has(.nw) .pw{z-index:2600}
+.pw-bar{display:flex;align-items:center;gap:12px;padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));border-bottom:1px solid rgba(255,255,255,.1);background:#16171a}
+.pw-grow{flex:1}
+.pw-b{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border:1px solid rgba(255,255,255,.16);background:transparent;color:inherit;font:600 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.pw-b:hover:not(:disabled){border-color:var(--pw-acc);color:var(--pw-acc)}
+.pw-b.go{background:var(--pw-acc);border-color:var(--pw-acc);color:#0b0c0d}
+.pw-b.go:hover:not(:disabled){filter:brightness(1.08);color:#0b0c0d}
+.pw-b:disabled{opacity:.5;cursor:default}
+.pw-path{display:flex;gap:8px;align-items:center;margin:0;min-width:0;font:500 10px/1 "JetBrains Mono",monospace;letter-spacing:.18em;color:rgba(233,230,223,.55);white-space:nowrap;overflow:hidden}
+.pw-path b{color:#e9e6df;font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.pw-path i{font-style:normal;opacity:.4}
+.pw-seg{display:flex;border:1px solid rgba(255,255,255,.16)}
+.pw-seg button{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;background:none;color:rgba(233,230,223,.7);font:600 10px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.pw-seg button.on{background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 0 -2px 0 var(--pw-acc)}
+.pw-desk{flex:1;min-height:0;overflow-y:auto;padding:34px 16px 70px}
+/* la feuille : papier crème, grain, ombre portée ; l'éditeur prend les couleurs du papier */
+.pw-sheet{position:relative;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(22px,5vw,72px) 60px;color:#211d18;
+  background:radial-gradient(60% 40% at 90% 0,rgba(140,100,40,.08),transparent),radial-gradient(50% 35% at 5% 100%,rgba(140,100,40,.07),transparent),#f2ece0;
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 30px 60px -20px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.3);
+  --text-primary:#211d18;--text-secondary:#5d554a;--bg-primary:#f2ece0;--bg-secondary:#e8e0d0;--border-c:rgba(33,29,24,.18);--brand:var(--pw-acc);font-size:18px;line-height:1.7}
+.pw-sheet::before{content:"";position:absolute;top:0;bottom:0;left:clamp(12px,2.4vw,30px);width:1px;background:rgba(170,60,50,.25)}
+.pw-k{margin:0 0 10px;font:500 10px/1.3 "JetBrains Mono",monospace;letter-spacing:.2em;text-transform:uppercase;color:#8a6b3e}
+.pw-title{display:block;width:100%;margin:0;font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:clamp(30px,4vw,44px);line-height:1.1;color:#16130f;background:none;border:0;outline:0;padding:0}
+.pw-title-in::placeholder{color:rgba(33,29,24,.35)}
+.pw-rule{display:block;width:56px;height:2px;margin:18px 0 26px;background:var(--pw-acc)}
+.pw-img{display:block;width:100%;margin:0 0 30px;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.pw-prev{color:#211d18}
+.pw-empty{color:#7a7166}
+.pw-note{margin-top:40px;font:500 10px/1.5 "JetBrains Mono",monospace;letter-spacing:.08em;color:#7a7166}
+.pw-foot{display:flex;gap:18px;padding:9px 18px;border-top:1px solid rgba(255,255,255,.1);background:#16171a;font:500 9.5px/1 "JetBrains Mono",monospace;letter-spacing:.18em;color:rgba(233,230,223,.5)}
+@media (max-width:700px){.pw-b span,.pw-seg span,.pw-path{display:none}.pw-desk{padding:14px 8px 60px}.pw-sheet{font-size:17px}.pw-foot span:last-child{display:none}}

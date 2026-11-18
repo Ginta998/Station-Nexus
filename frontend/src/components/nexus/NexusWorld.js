@@ -40,6 +40,7 @@ export default function NexusWorld(p) {
   const setView = (v) => { setViewS(v); sfx("nav"); try { localStorage.setItem(VIEW_KEY, v); } catch (_) {} };
   const isUnits = (item.launch_type === "chapters" && item.chapters?.length > 0) || (item.launch_type === "episodes" && item.episodes?.length > 0);
   const unitWord = item.launch_type === "chapters" ? "chapitre" : "épisode";
+  const cols = Math.max(0, Math.min(5, Number(item.units_cols) || 0)); // vignettes par ligne choisies dans l'atelier (0 = automatique)
   const unitsLabel = item.unit_label || (item.launch_type === "chapters" ? "Chapitres" : "Épisodes");
 
   // Transition d'entrée propre au thème (rideau, bande qui défile, encre qui se répand…)
@@ -353,7 +354,7 @@ export default function NexusWorld(p) {
           <button role="radio" aria-checked={view === "list"} className={view === "list" ? "on" : ""} onClick={() => setView("list")} data-testid="nw-view-list" title="Liste"><IoListOutline size={16} /><span>Liste</span></button>
         </div>
       </div>
-      <div className={view === "grid" ? "nw-ugrid" : "nw-ulist"}>
+      <div className={view === "grid" ? "nw-ugrid" + (cols ? " fixed c" + cols : "") : "nw-ulist"} style={view === "grid" && cols ? { "--cols": cols } : undefined}>
         {c.its.map((it, i) => {
           const n = ws === "yorha" ? roman(i) : String(i + 1).padStart(2, "0"); const img = it.img || cover;
           return (

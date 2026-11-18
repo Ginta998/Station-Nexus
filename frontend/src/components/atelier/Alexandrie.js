@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { playPageTurn } from "@/lib/sound";
 import { createPortal } from "react-dom";
-import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline, IoExpandOutline } from "react-icons/io5";
+import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
@@ -387,9 +387,15 @@ function YtFig({ b, onSwap, onRemove, si }) {
 export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path, noPdf = false, onEditChapter }) {
   const { sfx } = useApp();
   const flow = useRef(null);
+  const spreadR = useRef(0);
   // Taille du texte (Aa) : gardée pour toutes les lectures de ce navigateur
   const [fs, setFs] = useState(() => { const v = Number(read("nx-alex-fs", 1)); return v >= 0.8 && v <= 1.5 ? v : 1; });
   const [aa, setAa] = useState(false);
+  // Plein écran : le livre (ou la cassette) prend tout l'écran, les barres se cachent et reviennent quand on bouge
+  const [full, setFull] = useState(false);
+  const [ui, setUi] = useState(true);
+  const uiT = useRef(null);
+  const wake = () => { setUi(true); clearTimeout(uiT.current); uiT.current = setTimeout(() => setUi(false), 2300); };
   const [page, setPage] = useState(() => read(LS.prog, {})[book.id]?.page || 0);
   const [pages, setPages] = useState(1);
   const [per, setPer] = useState(2);
@@ -423,17 +429,35 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
     const g = geom(); setPer(g.p);
     const n = Math.max(1, Math.round((g.el.scrollWidth - g.pad * 2 + g.gap) / g.step));
     setPages(n); setPage((x) => Math.min(x, Math.max(0, n - 1)));
+    // la largeur d'une page a pu changer (fenêtre, plein écran, taille du texte) : on se recale sur la page affichée
+    try { if (!drag.current?.on && !anim.current) g.el.scrollLeft = Math.round(spreadR.current * g.step); } catch (_) {}
   };
   useEffect(() => { const el = flow.current; if (!el) return; const f = () => measure(); el.addEventListener("load", f, true); el.addEventListener("error", f, true); return () => { el.removeEventListener("load", f, true); el.removeEventListener("error", f, true); }; }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Taille du texte ou plein écran : la mise en page change, on garde l'endroit où l'on en était
+  const relayout = () => {
+    const r = pages > 1 ? page / (pages - 1) : 0;
+    const run = () => { try { measure(); const g = geom(); const n = Math.max(1, Math.round((g.el.scrollWidth - g.pad * 2 + g.gap) / g.step)); setPage(Math.round(r * (n - 1))); } catch (_) {} };
+    requestAnimationFrame(run); setTimeout(run, 380);
+  };
   const fsFirst = useRef(true);
   useEffect(() => {
     if (fsFirst.current) { fsFirst.current = false; return; }
-    write("nx-alex-fs", fs);
-    const r = pages > 1 ? page / (pages - 1) : 0;
-    requestAnimationFrame(() => { try { measure(); const g = geom(); const n = Math.max(1, Math.round((g.el.scrollWidth - g.pad * 2 + g.gap) / g.step)); setPage(Math.round(r * (n - 1))); } catch (_) {} });
+    write("nx-alex-fs", fs); relayout();
   }, [fs]); // eslint-disable-line react-hooks/exhaustive-deps
+  const fullFirst = useRef(true);
+  useEffect(() => {
+    if (fullFirst.current) { fullFirst.current = false; return; }
+    relayout(); if (full) wake(); else { clearTimeout(uiT.current); setUi(true); }
+  }, [full]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const f = () => { if (!document.fullscreenElement) setFull(false); }; document.addEventListener("fullscreenchange", f); return () => { document.removeEventListener("fullscreenchange", f); clearTimeout(uiT.current); }; }, []);
+  const toggleFull = () => {
+    const el = document.querySelector(".ax-reader");
+    if (full) { setFull(false); try { if (document.fullscreenElement) document.exitFullscreen(); } catch (_) {} return; }
+    setFull(true); try { el?.requestFullscreen?.()?.catch?.(() => {}); } catch (_) {}
+  };
   useLayoutEffect(() => { measure(); const t = setTimeout(measure, 350); document.fonts?.ready?.then(measure).catch(() => {}); window.addEventListener("resize", measure); return () => { clearTimeout(t); window.removeEventListener("resize", measure); }; }, [book]); // eslint-disable-line
   const spread = Math.floor(page / per) * per;
+  spreadR.current = spread;
   useEffect(() => {
     if (!flow.current) return;
     const g = geom(); const left = Math.round(spread * g.step);
@@ -564,7 +588,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
   </>), [book, fmt, cover, swapS]); // eslint-disable-line react-hooks/exhaustive-deps
   const noteMarks = notesOf(notesItemOf(at, book.id)).map((n) => ({ id: n.id, t: n.t, at: Math.max(0, Math.min(pages - 1, n.n ? Math.round((n.p / n.n) * pages) : n.p)) }));
   return createPortal(
-    <div className={"ax-reader ax-view fmt-" + fmt + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), "--ax-fs": fs, ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
+    <div onMouseMove={full ? wake : undefined} onTouchStart={full ? wake : undefined} className={(full ? "ax-full" + (ui ? " ui" : "") + " " : "") + "ax-reader ax-view fmt-" + fmt + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), "--ax-fs": fs, ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
       <header className="ax-rbar">
         <button className="ax-rb" onClick={onClose} data-testid="alex-close"><IoArrowBack size={15} /> <span>{backLabel}</span></button>
         <p className="mono ax-rpath">{path || <>ALEXANDRIE / {(R?.label || "MES LIVRES").toUpperCase()} / <b>{book.cote}</b></>}</p>
@@ -589,7 +613,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
           </span>}
         </span>
         {onCover && <button className="ax-rb" onClick={onCover} title="Changer l'artwork du livre" data-testid="alex-reader-cover"><IoImageOutline size={15} /> <span>Artwork</span></button>}
-        <button className="ax-rb ax-rb-sq" onClick={() => { const el = document.querySelector(".ax-reader"); try { if (document.fullscreenElement) document.exitFullscreen(); else el?.requestFullscreen?.(); } catch (_) {} }} title="Lecture en plein écran" data-testid="alex-fullscreen"><IoExpandOutline size={15} /></button>
+        <button className={"ax-rb ax-rb-sq" + (full ? " on" : "")} onClick={toggleFull} title={full ? "Quitter le plein écran" : "Plein écran : le livre prend tout l'écran"} aria-pressed={full} data-testid="alex-fullscreen">{full ? <IoContractOutline size={15} /> : <IoExpandOutline size={15} />}</button>
         <button className="ax-rb" onClick={() => { setToc((t) => !t); setMusic(false); setVid(false); }} aria-expanded={toc} data-testid="alex-toc"><IoList size={16} /> <span>Sommaire</span></button>
         <button className="ax-rb" onClick={() => { const v = !turnSound; setTurnSound(v); write("nx-alex-turn-sound", v); if (v) playPageTurn(fmt, 1); }} aria-pressed={!turnSound} title={turnSound ? "Couper le bruit des pages" : "Remettre le bruit des pages"} data-testid="alex-turn-sound">{turnSound ? <IoVolumeHighOutline size={16} /> : <IoVolumeMuteOutline size={16} />}</button>
         <button className={"ax-rb" + (mark ? " on" : "")} onClick={() => { setMark((m) => !m); sfx?.("select"); }} aria-pressed={mark} title="Marque-page">{mark ? <IoBookmark size={16} /> : <IoBookmarkOutline size={16} />}</button>

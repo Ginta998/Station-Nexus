@@ -1150,3 +1150,11 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
 /* Arcade : HI-SCORE descend en bas à gauche de l'écran (il chevauchait le titre) */
 .ws-arcade .nw-osd.r{top:auto;bottom:16px;right:auto;left:clamp(22px,5vw,70px);font-size:clamp(16px,1.6vw,22px);opacity:.8}
 @media (max-width:760px){.nw-ulist .nw-u-adm{top:6px;left:6px;right:auto;transform:none}.nw-u-ab{min-width:28px;height:28px}}
+/* 0.23 · Grille réglée dans l'atelier : 1 à 5 vignettes par ligne (sur ordinateur) */
+@media (min-width:761px){
+  .nw-ugrid.fixed{grid-template-columns:repeat(var(--cols),minmax(0,1fr))}
+  .nw-ugrid.c1 .nw-u-t small,.nw-ugrid.c2 .nw-u-t small{-webkit-line-clamp:4;font-size:14px}
+  .nw-ugrid.c1 .nw-u-t b,.nw-ugrid.c2 .nw-u-t b{font-size:1.25em}
+  .nw-ugrid.c1 .nw-u-img{aspect-ratio:21/9}
+  .nw-ugrid.c1 .nw-u-n,.nw-ugrid.c2 .nw-u-n{font-size:64px}
+}

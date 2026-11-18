@@ -163,6 +163,7 @@ class Creation(BaseModel):
     world_style: Optional[str] = ""
     reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
     reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
+    units_cols: Optional[int] = 0      # vignettes de chapitres par ligne sur ordinateur (0 = automatique, 1 à 5)
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     chapters_count: int = 0
@@ -218,6 +219,7 @@ class CreationInput(BaseModel):
     world_style: Optional[str] = ""
     reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
     reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
+    units_cols: Optional[int] = 0      # vignettes de chapitres par ligne sur ordinateur (0 = automatique, 1 à 5)
     unit_display: str = "movix"
     unit_label: Optional[str] = ""
     episodes: List[Episode] = Field(default_factory=list)
