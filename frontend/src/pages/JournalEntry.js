@@ -15,7 +15,7 @@ export default function JournalEntry() {
   const nav = useNavigate();
   const qc = useQueryClient();
   const { sfx, isAdmin, toggleReadingUrl, playingId, isPlaying } = useApp();
-  const onMusic = (url) => { sfx("select"); toggleReadingUrl(url, "cue:" + url, { loop: false }); };
+  const onMusic = (url, title) => { sfx("select"); toggleReadingUrl(url, "cue:" + url, { loop: false, title }); };
   const playingUrl = isPlaying && playingId?.startsWith("cue:") ? playingId.slice(4) : "";
   const [lightbox, setLightbox] = useState("");
   const nexus = useExperience() === "nexus";

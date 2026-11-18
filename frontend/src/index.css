@@ -3130,3 +3130,15 @@ a.sx-yt::after{content:"▶";position:absolute;left:50%;top:50%;width:56px;heigh
 .cb-next{border-radius:0 !important;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.7rem !important;letter-spacing:.14em;text-transform:uppercase;padding:9px 14px !important}
 .cb-mute{text-decoration:none !important;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.64rem !important;letter-spacing:.14em;text-transform:uppercase}
 .cb-close{border-radius:0 !important}
+/* Musique YouTube : petite fenêtre du lecteur intégré, au-dessus de tout (lecture comprise) */
+.yt-mini{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(70px,calc(env(safe-area-inset-bottom) + 70px));z-index:3200;width:min(260px,62vw);background:#0d0e10;border:1px solid rgba(255,255,255,.16);border-top:2px solid var(--brand);box-shadow:0 18px 40px rgba(0,0,0,.55)}
+.yt-mini-h{display:flex;align-items:center;gap:7px;padding:6px 6px 6px 9px;color:#e9e6df;font:600 9.5px/1.2 "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase}
+.yt-mini-h b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.yt-mini-h svg:first-child{color:var(--brand);flex:none}
+.yt-mini-h button{display:grid;place-items:center;width:26px;height:26px;border:0;background:none;color:inherit;cursor:pointer}
+.yt-mini iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+body:has(.pw) .ax-fiche-wrap,body:has(.rl) .ax-fiche-wrap{z-index:2700}
+.jr-pick-s{border-color:var(--brand) !important;color:var(--brand) !important}
+.jr-ytfind{display:flex;flex-direction:column;gap:8px;padding:10px;border:1px solid var(--border-c)}
+.jr-yt-note{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary)}
+@media (max-width:700px){.yt-mini{width:190px}}

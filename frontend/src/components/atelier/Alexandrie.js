@@ -387,7 +387,7 @@ function YtFig({ b, onSwap, onRemove, si }) {
 export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path, noPdf = false, onEditChapter }) {
   const { sfx } = useApp();
   const flow = useRef(null);
-  const spreadR = useRef(0);
+  const spreadR = useRef(0); const stepR = useRef(0);
   // Taille du texte (Aa) : gardée pour toutes les lectures de ce navigateur
   const [fs, setFs] = useState(() => { const v = Number(read("nx-alex-fs", 1)); return v >= 0.8 && v <= 1.5 ? v : 1; });
   const [aa, setAa] = useState(false);
@@ -430,7 +430,8 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
     const n = Math.max(1, Math.round((g.el.scrollWidth - g.pad * 2 + g.gap) / g.step));
     setPages(n); setPage((x) => Math.min(x, Math.max(0, n - 1)));
     // la largeur d'une page a pu changer (fenêtre, plein écran, taille du texte) : on se recale sur la page affichée
-    try { if (!drag.current?.on && !anim.current) g.el.scrollLeft = Math.round(spreadR.current * g.step); } catch (_) {}
+    // (seulement si la largeur d'une page a réellement changé : sinon on ne touche à rien pendant qu'on tourne les pages)
+    try { if (stepR.current && Math.abs(stepR.current - g.step) > 1 && !drag.current?.on && !anim.current) g.el.scrollLeft = Math.round(spreadR.current * g.step); stepR.current = g.step; } catch (_) {}
   };
   useEffect(() => { const el = flow.current; if (!el) return; const f = () => measure(); el.addEventListener("load", f, true); el.addEventListener("error", f, true); return () => { el.removeEventListener("load", f, true); el.removeEventListener("error", f, true); }; }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // Taille du texte ou plein écran : la mise en page change, on garde l'endroit où l'on en était
@@ -479,7 +480,8 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
   // On donne : le chapitre affiché, la part lue du livre, la part lue du chapitre et la première phrase de la page.
   useEffect(() => {
     if (!progR.current || !flow.current) return;
-    try {
+    // calculé après l'animation de la page (lire la position des paragraphes force une mise en page : ça saccadait sur téléphone)
+    const t = setTimeout(() => { if (!flow.current) return; try {
       const g = geom(); const pg = (el) => Math.max(0, Math.round((el.offsetLeft - g.pad) / g.step));
       const x = spread * g.step + g.pad + 2 + g.step * (g.p - 1);
       const chs = [...flow.current.querySelectorAll("[data-ch]")].filter((el) => !Number.isNaN(Number(el.dataset.ch)));
@@ -489,7 +491,8 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
       const left = spread * g.step + g.pad - 4; const first = [...flow.current.querySelectorAll(".ax-ch p")].find((el) => el.offsetLeft >= left && el.textContent.trim());
       const excerpt = first ? first.textContent.trim().split(/(?<=[.!?…])\s/)[0].slice(0, 160) : "";
       progR.current(ci, Math.min(1, (spread + per) / Math.max(1, pages)), { inCh, excerpt, page: spread });
-    } catch (_) {}
+    } catch (_) {} }, 650);
+    return () => clearTimeout(t);
   }, [spread, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
   const cueR = useRef(onCue); cueR.current = onCue;
   const doneR = useRef(false); // arrivé à la dernière page : le livre passe dans « Lus »
@@ -824,8 +827,8 @@ export function CoverDialog({ b, current, def, onSave, onClose }) {
   };
   useEffect(() => { go(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const pickSrc = (k) => { setSrc(k); go(undefined, k); };
-  return (
-    <div className="ax-fiche-wrap" onClick={onClose}>
+  return createPortal(
+    <div className="ax-fiche-wrap sx-pal" onClick={onClose}>
       <form className="ax-fiche ax-coverdlg" onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); onSave(url.trim()); }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) send(f); else { const u = e.dataTransfer.getData("text/uri-list") || e.dataTransfer.getData("text/plain"); if (/^https?:/.test(u)) setUrl(u.trim()); } }} role="dialog" aria-modal="true" aria-label="Artwork">
         <p className="mono ax-fiche-top"><span>ARTWORK · 表紙</span><button type="button" onClick={onClose} aria-label="Fermer"><IoClose size={15} /></button></p>
         <div className="ax-cd">
@@ -863,7 +866,8 @@ export function CoverDialog({ b, current, def, onSave, onClose }) {
           {def && current !== def && <button type="button" className="ax-ghost" onClick={() => onSave(null)} data-testid="alex-cover-default"><IoArrowUndo size={15} /> Artwork d'origine</button>}
         </div>
       </form>
-    </div>
+    </div>,
+    document.querySelector(".at-root") || document.body
   );
 }
 

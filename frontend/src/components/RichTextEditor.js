@@ -6,10 +6,11 @@ import {
 import { MdFormatAlignLeft, MdFormatAlignCenter, MdFormatAlignRight, MdFormatAlignJustify, MdFormatListNumbered, MdFormatIndentIncrease, MdFormatIndentDecrease, MdFormatClear, MdStrikethroughS } from "react-icons/md";
 import { uploadAsset, listAssets, assetUrl, listAmbiences, ambienceUrl, uploadJournalImage } from "@/lib/api";
 import { atelierApi } from "@/lib/atelier";
+import { CoverDialog } from "@/components/atelier/Alexandrie";
 import { IoLogoYoutube, IoSearch } from "react-icons/io5";
 
 // Insérer une image : depuis l'appareil, par un lien, ou en cherchant (Wikipédia, SteamGridDB avec ta clé du serveur), avec Pinterest et Google Images à portée.
-function ImageMenu({ onFile, onUrl }) {
+function ImageMenu({ onFile, onUrl, onFull }) {
   const [url, setUrl] = useState(""); const [q, setQ] = useState(""); const [src, setSrc] = useState("wiki"); const [res, setRes] = useState(null); const [busy, setBusy] = useState(false);
   const search = async (e) => {
     e?.preventDefault(); if (!q.trim()) return; setBusy(true); setRes(null);
@@ -23,6 +24,7 @@ function ImageMenu({ onFile, onUrl }) {
   return (
     <div className="absolute z-30 mt-1 p-3 border rte-pop" style={{ width: 320, background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} data-testid="rte-image-menu">
       <button type="button" className="w-full px-3 py-2 border text-sm mb-2" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }} onMouseDown={(e) => e.preventDefault()} onClick={onFile}>Depuis l'appareil…</button>
+      {onFull && <button type="button" className="w-full px-3 py-2 border text-sm mb-2 font-semibold" style={{ borderColor: "var(--brand)", color: "var(--brand)" }} onMouseDown={(e) => e.preventDefault()} onClick={onFull} data-testid="rte-image-full">Chercher un artwork (SteamGridDB, affiches, manga, domaine public…)</button>}
       <form className="flex gap-1 mb-2" onSubmit={(e) => { e.preventDefault(); if (/^https?:\/\//.test(url.trim())) onUrl(url.trim()); }}>
         <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Coller le lien d'une image" className="flex-1 min-w-0 px-2 py-1.5 border text-sm outline-none" style={{ borderColor: "var(--border-c)", background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid="rte-image-url" />
         <button type="submit" className="px-2 border text-sm" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }}>OK</button>
@@ -39,23 +41,31 @@ function ImageMenu({ onFile, onUrl }) {
 }
 
 // Insérer une vidéo YouTube : on cherche, on clique, elle se place dans le texte (vignette cliquable).
-function YoutubeMenu({ onPick }) {
+// Recherche YouTube (ou lien collé) : réutilisée pour les vidéos et pour les musiques
+export function YtSearchBox({ onPick, placeholder = "Chercher sur YouTube ou coller un lien", testid }) {
   const [q, setQ] = useState(""); const [res, setRes] = useState(null); const [busy, setBusy] = useState(false);
   const go = async (e) => {
-    e.preventDefault(); const t = q.trim(); if (!t) return;
+    e?.preventDefault(); const t = q.trim(); if (!t) return;
     const id = (t.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1]; if (id) return onPick({ id, title: "" });
     setBusy(true); try { setRes(await atelierApi.ytSearch(t)); } catch (_) { setRes([]); } setBusy(false);
   };
   return (
-    <div className="absolute z-30 mt-1 p-3 border rte-pop" style={{ width: 340, background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} data-testid="rte-yt-menu">
-      <form className="flex gap-1" onSubmit={go}>
-        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher sur YouTube ou coller un lien" className="flex-1 min-w-0 px-2 py-1.5 border text-sm outline-none" style={{ borderColor: "var(--border-c)", background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid="rte-yt-q" />
-        <button type="submit" className="px-2 border" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }}>{busy ? "…" : <IoSearch size={14} />}</button>
-      </form>
+    <div data-testid={testid}>
+      <div className="flex gap-1">
+        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") go(e); }} placeholder={placeholder} className="flex-1 min-w-0 px-2 py-1.5 border text-sm outline-none" style={{ borderColor: "var(--border-c)", background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid={testid ? testid + "-q" : undefined} />
+        <button type="button" onClick={go} className="px-2 border" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }} aria-label="Chercher">{busy ? "…" : <IoSearch size={14} />}</button>
+      </div>
       {res && <div className="flex flex-col gap-1 mt-2 max-h-60 overflow-y-auto">{res.length ? res.slice(0, 10).map((v) => (
-        <button type="button" key={v.id} onMouseDown={(e) => e.preventDefault()} onClick={() => onPick(v)} className="flex gap-2 items-center text-left p-1 border" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }}>
-          <span className="flex-shrink-0 w-20 aspect-video bg-cover bg-center" style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} /><span className="text-xs line-clamp-2">{v.title}</span>
+        <button type="button" key={v.id} onMouseDown={(e) => e.preventDefault()} onClick={() => onPick(v)} className="flex gap-2 items-center text-left p-1 border" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }} data-testid={testid ? `${testid}-r-${v.id}` : undefined}>
+          <span className="flex-shrink-0 w-20 aspect-video bg-cover bg-center" style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} /><span className="text-xs line-clamp-2">{v.title}{v.length ? <em className="block opacity-60 not-italic">{v.length}</em> : null}</span>
         </button>)) : <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Aucun résultat.</p>}</div>}
+    </div>
+  );
+}
+function YoutubeMenu({ onPick }) {
+  return (
+    <div className="absolute z-30 mt-1 p-3 border rte-pop" style={{ width: 340, background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} data-testid="rte-yt-menu">
+      <YtSearchBox onPick={onPick} />
     </div>
   );
 }
@@ -152,6 +162,8 @@ function MusicMenu({ creationId, onInsert }) {
     <div className="absolute z-30 mt-1 right-0 p-3 border w-72" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="rte-music-menu" onMouseDown={(e) => e.target.tagName !== "INPUT" && e.preventDefault()}>
       <p className="text-[10px] uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Repère musique (le lecteur le lance d'un toucher)</p>
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre affiché (ex : Thème de bataille)" className="w-full px-2 py-1.5 border outline-none text-sm mb-2" style={fs} data-testid="rte-cue-title" />
+      <p className="text-[10px] uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>Depuis YouTube (lu par le lecteur intégré)</p>
+      <div className="mb-3"><YtSearchBox placeholder="Chercher une musique : Hisaishi, lo-fi, OST…" testid="rte-cue-yt" onPick={(v) => onInsert(`https://www.youtube.com/watch?v=${v.id}`, title.trim() || v.title || "Musique")} /></div>
       <div className="mb-2 max-h-40 overflow-y-auto flex flex-col gap-1">
         {assets.length > 0 && <p className="text-[10px]" style={{ color: "var(--text-secondary)" }}>Pistes de cette création :</p>}
         {assets.map((a) => item(a.id, a.name, () => onInsert(assetUrl(a.id), title || a.name), `rte-cue-existing-${a.id}`))}
@@ -170,6 +182,7 @@ function MusicMenu({ creationId, onInsert }) {
 
 // Éditeur complet façon traitement de texte. `page` : écriture directement dans la mise en page du lecteur.
 export default function RichTextEditor({ value, onChange, placeholder = "Écris ton chapitre…", creationId, page = false, title, eyebrow, onTitle }) {
+  const [artPick, setArtPick] = useState(false); // la recherche d'artworks d'Alexandrie
   const ref = useRef(null);
   const [menu, setMenu] = useState(null); // color | hilite | music
   const [busy, setBusy] = useState(false);
@@ -297,7 +310,8 @@ export default function RichTextEditor({ value, onChange, placeholder = "Écris 
       <Sep />
       <div className="relative">
         <Btn testid="rte-image" title="Insérer une image ici" onClick={() => toggle("image")}>{busy ? "…" : <IoImageOutline size={16} />}</Btn>
-        {menu === "image" && <ImageMenu onFile={() => { setMenu(null); imgInput.current?.click(); }} onUrl={insertImageUrl} />}
+        {menu === "image" && <ImageMenu onFile={() => { setMenu(null); imgInput.current?.click(); }} onUrl={insertImageUrl} onFull={() => { setMenu(null); setArtPick(true); }} />}
+        {artPick && <CoverDialog b={{ id: "rte", title: title || eyebrow || "Artwork", room: "cinema", format: "livre" }} current="" onSave={(u) => { setArtPick(false); if (u) insertImageUrl(u); }} onClose={() => setArtPick(false)} />}
       </div>
       <div className="relative">
         <Btn testid="rte-youtube" title="Insérer une vidéo YouTube" onClick={() => toggle("yt")}><IoLogoYoutube size={16} /></Btn>

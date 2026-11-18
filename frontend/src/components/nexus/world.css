@@ -1158,3 +1158,9 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
   .nw-ugrid.c1 .nw-u-img{aspect-ratio:21/9}
   .nw-ugrid.c1 .nw-u-n,.nw-ugrid.c2 .nw-u-n{font-size:64px}
 }
+/* 0.24 · Grille réglée pour le téléphone : 1 à 3 vignettes par ligne ; à 1 par ligne, le résumé s'affiche */
+@media (max-width:760px){
+  .nw-ugrid.pfixed{grid-template-columns:repeat(var(--pcols),minmax(0,1fr))}
+  .nw-ugrid.p1 .nw-u-t small{display:-webkit-box;-webkit-line-clamp:3}
+  .nw-ugrid.p3 .nw-u-t b{font-size:.85em}.nw-ugrid.p3 .nw-u-n{font-size:20px}
+}

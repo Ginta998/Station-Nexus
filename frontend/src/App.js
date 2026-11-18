@@ -34,6 +34,7 @@ import BootIntro from "@/components/BootIntro";
 import CosmicBunny from "@/components/CosmicBunny";
 import GlobalSound from "@/components/GlobalSound";
 import SpectatorBadge from "@/components/SpectatorBadge";
+import YtMini from "@/components/YtMini";
 import PortalListener from "@/components/atelier/PortalListener";
 import Atelier from "@/pages/Atelier";
 import SharedDoc from "@/pages/SharedDoc";
@@ -157,6 +158,7 @@ function App() {
           <CosmicBunny />
           <GlobalSound />
           <SpectatorBadge />
+          <YtMini />
           <PortalListener />
           <PushClickNav />
           <GuidedTour />

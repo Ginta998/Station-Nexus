@@ -135,41 +135,9 @@ body:has(.nx-launchfx) :is(.cb-root,.nx-tools,.bn-fab){display:none}
 .nx-favs .seclabel{display:flex;align-items:baseline;justify-content:space-between}
 .nx-favn{font-size:10px;letter-spacing:.2em;color:var(--lab-mute,var(--text-secondary))}
 
-/* =====================================================================
-   0.23 · Le retour du physique (rétro-futuriste) : un vrai meuble, des livres qui ont vécu.
-   Bois sombre et laiton sous une lumière d'ambiance ; un fin filet de lumière rappelle qu'on est dans le futur.
-   ===================================================================== */
-.nx-root .ax-rack{
-  backdrop-filter:none;
-  background:
-    radial-gradient(70% 120% at 50% -10%,color-mix(in srgb,var(--lab-acc) 14%,transparent),transparent 65%),
-    var(--ax-grain-soft),
-    repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0 2px,transparent 2px 7px,rgba(0,0,0,.05) 7px 9px,transparent 9px 17px),
-    linear-gradient(180deg,color-mix(in srgb,#1d140e 62%,var(--bg-primary)),color-mix(in srgb,#120c08 75%,var(--bg-primary)));
-  border:1px solid rgba(0,0,0,.6);border-top:0;
-  box-shadow:inset 0 30px 40px -24px rgba(0,0,0,.85),inset 18px 0 30px -20px rgba(0,0,0,.8),inset -18px 0 30px -20px rgba(0,0,0,.8),0 20px 40px -18px rgba(0,0,0,.8)}
-.nx-root .ax-rack::before{background:radial-gradient(40% 70% at 50% 0%,color-mix(in srgb,#ffd9a0 10%,transparent),transparent 70%)}
-/* la planche : noyer sombre, chant éclairé, baguette de laiton, et le filet de lumière du futur */
-.nx-root .ax-rack::after{height:14px;bottom:22px;
-  background:
-    linear-gradient(180deg,rgba(255,236,200,.22) 0 1px,transparent 1px),
-    repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 1px,transparent 1px 23px,rgba(255,255,255,.04) 23px 24px,transparent 24px 61px),
-    linear-gradient(180deg,#5a3d27,#3a2617 55%,#24170d);
-  box-shadow:0 1px 0 #b08a4a,0 3px 0 #6d532c,0 4px 12px 1px color-mix(in srgb,var(--lab-acc) 45%,transparent),0 16px 22px -8px rgba(0,0,0,.85)}
-/* plus de reflet de vitrine : une ombre de contact, comme un objet posé */
-.nx-root .ax-vol,.nx-root .ax-cover{-webkit-box-reflect:none;filter:drop-shadow(0 6px 5px rgba(0,0,0,.5))}
-/* des livres qui ont vécu : grain, éraflures, usure des coins, plus visibles sur les couvertures illustrées */
-.nx-root .ax-cover.img .ax-wear,.nx-lf-obj .ax-cover.img .ax-wear{opacity:.9}
-.nx-root .ax-cover.img .ax-wear::before,.nx-lf-obj .ax-cover.img .ax-wear::before{opacity:.42}
-.nx-root .ax-cover.img .ax-wear::after,.nx-lf-obj .ax-cover.img .ax-wear::after{opacity:.75}
-.nx-root .ax-cover-img,.nx-lf-obj .ax-cover-img{filter:saturate(.9) contrast(1.04) sepia(.06)}
-.nx-root .ax-cover.f-livre,.nx-lf-obj .ax-cover.f-livre{box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 0 22px rgba(60,35,10,.35),inset 0 0 3px 1px rgba(0,0,0,.35)}
-/* la charnière du livre relié, près du dos */
-.nx-root .ax-cover.f-livre .ax-wear{background:linear-gradient(90deg,transparent 0 9px,rgba(0,0,0,.35) 9px 10px,rgba(255,255,255,.16) 10px 12px,rgba(0,0,0,.22) 12px 14px,transparent 14px),
-  linear-gradient(90deg,rgba(255,255,255,.36),transparent 2px),linear-gradient(270deg,rgba(255,255,255,.24),transparent 2px),linear-gradient(180deg,rgba(255,255,255,.42),transparent 3px),linear-gradient(0deg,rgba(255,255,255,.3),transparent 3px),
-  radial-gradient(circle at 0 0,rgba(255,255,255,.55),transparent 10px),radial-gradient(circle at 100% 0,rgba(255,255,255,.5),transparent 12px),radial-gradient(circle at 0 100%,rgba(255,255,255,.45),transparent 11px),radial-gradient(circle at 100% 100%,rgba(255,255,255,.55),transparent 13px)}
-.nx-root .ax-vol .ax-wear{opacity:.8}
-.nx-root .ax-vol .ax-wear::before{opacity:.45}
-.nx-root .ax-vol-art{filter:saturate(.85) sepia(.1)}
-/* les cassettes : plastique un peu rayé */
-.nx-root .ax-cover.f-vhs .ax-wear{opacity:.7;mix-blend-mode:normal}
+/* 0.24 · Un peu plus de physique sur les livres, sans toucher à la vitrine : la charnière près du dos et un léger grain.
+   (pas de filtre sur les objets : il aplatissait la 3D et cassait la rotation du livre et de la cassette au lancement) */
+.nx-root .ax-cover.img .ax-wear{opacity:.7}
+.nx-root .ax-cover.img .ax-wear::after{opacity:.6}
+.nx-root .ax-cover.f-livre.img .ax-cover-img::after{content:"";position:absolute;top:0;bottom:0;left:8px;width:5px;pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,.32),rgba(255,255,255,.16) 40%,rgba(0,0,0,.18))}

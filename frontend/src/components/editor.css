@@ -313,7 +313,7 @@ textarea.rl-in{resize:vertical;line-height:1.6}
 .rl-masked summary{cursor:pointer;font:500 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--rl-mute,#888);padding:8px 0}
 .rl-masked[open] summary{margin-bottom:10px}
 /* 0.22 · Chercher une image comme dans Alexandrie */
-.rl-drop-s{position:absolute;left:8px;bottom:8px;z-index:3;display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border:1px solid rgba(255,255,255,.3);background:rgba(21,23,26,.78);color:#fff;font:600 9.5px/1 "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(6px)}
+.rl-drop-s{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;display:flex;align-items:center;justify-content:center;gap:7px;height:34px;padding:0 9px;border:1px solid var(--rl-acc);background:color-mix(in srgb,var(--rl-acc) 88%,#000);color:#fff;font:600 9.5px/1 "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(6px)}
 .rl-drop-s:hover{border-color:var(--rl-acc);color:var(--rl-acc)}
 .rl-unit{position:relative}
 .rl-thumbw{position:relative;display:block;min-width:0}.rl-thumbw .rl-thumb{width:100%}
@@ -330,3 +330,6 @@ body:has(.rl) .ax-fiche-wrap{z-index:2700}
 .rl-cols button.on .rl-cols-m i{background:var(--rl-acc)}
 .rl-cols-m em{font:600 13px/28px "JetBrains Mono",monospace;font-style:normal;color:var(--rl-mute)}
 .rl-cols small{font:500 9.5px/1 "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--rl-mute)}
+.rl-colsrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.rl-cols-l{width:92px;font:500 10px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--rl-mute)}
+.rl-colsrow .rl-cols{margin:0 0 12px}

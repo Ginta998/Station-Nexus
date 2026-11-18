@@ -659,3 +659,14 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .ax-full:not(.ui) .ax-turn{opacity:0}
 .ax-full .ax-flow{padding-left:clamp(40px,6vw,110px);padding-right:clamp(40px,6vw,110px)}
 .ax-full .ax-flow{padding-top:max(60px,7vh);padding-bottom:max(50px,6vh)}
+/* 0.24 · Choisir un artwork sur téléphone : la recherche d'abord (elle était cachée tout en bas) */
+.ax-coverdlg .ax-sg{align-self:stretch}
+@media (max-width:700px){
+  .ax-coverdlg .ax-fiche-top{order:0}
+  .ax-coverdlg .ax-sg{order:1}
+  .ax-coverdlg .ax-cd{order:2}
+  .ax-coverdlg>.ax-acts{order:3}
+  .ax-coverdlg .ax-cd .ab{display:none}
+  .ax-coverdlg .ax-cd-prev{width:96px!important;height:140px!important}
+  .ax-coverdlg .ax-sg-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}

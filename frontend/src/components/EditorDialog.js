@@ -18,7 +18,7 @@ import "@/components/editor.css";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
-  poster: "", accent: "", world_style: "", reader_format: "", reader_look: "", units_cols: 0, bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
+  poster: "", accent: "", world_style: "", reader_format: "", reader_look: "", units_cols: 0, units_cols_phone: 0, bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
   launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
   intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
@@ -107,7 +107,7 @@ const Drop = ({ img, ratio = "2/3", label, onFile, onClear, testid, multiple, on
         <input type="file" accept="image/*" multiple={multiple} hidden onChange={(e) => { const fl = [...(e.target.files || [])]; e.target.value = ""; if (fl.length) multiple ? onFile(fl) : onFile(fl[0]); }} />
       </label>
       {img && onClear && <button type="button" className="rl-drop-x" onClick={onClear} aria-label="Retirer"><IoTrashOutline size={14} /></button>}
-      {onSearch && <button type="button" className="rl-drop-s" onClick={onSearch} title="Chercher une image : SteamGridDB, affiches, manga, livres, domaine public, Pinterest…" data-testid={testid ? testid + "-search" : undefined}><IoSearch size={13} /> Chercher</button>}
+      {onSearch && <button type="button" className="rl-drop-s" onClick={onSearch} title="Chercher une image : SteamGridDB, affiches, manga, livres, domaine public, Pinterest…" data-testid={testid ? testid + "-search" : undefined}><IoSearch size={14} /> Chercher un artwork</button>}
     </div>
   );
 };
@@ -377,14 +377,19 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
         )}
         {(form.launch_type === "chapters" || form.launch_type === "episodes") && (<>
           <p className="rl-sub"><b>Grille des {form.launch_type === "chapters" ? "chapitres" : "épisodes"}</b><span>Combien de vignettes par ligne sur ordinateur. Peu de chapitres : grandes vignettes ; beaucoup : plus compact.</span></p>
-          <div className="rl-cols" role="radiogroup" data-testid="editor-units-cols">
-            {[0, 1, 2, 3, 4, 5].map((n) => (
-              <button type="button" key={n} role="radio" aria-checked={(Number(form.units_cols) || 0) === n} className={(Number(form.units_cols) || 0) === n ? "on" : ""} onClick={() => set("units_cols", n)} data-testid={`editor-cols-${n}`}>
-                <span className="rl-cols-m" aria-hidden="true">{n === 0 ? <em>A</em> : Array.from({ length: n }, (_, i) => <i key={i} />)}</span>
-                <small>{n === 0 ? "Auto" : n}</small>
-              </button>
-            ))}
-          </div>
+          {[["units_cols", "Ordinateur", [0, 1, 2, 3, 4, 5], "editor-cols-"], ["units_cols_phone", "Téléphone", [0, 1, 2, 3], "editor-pcols-"]].map(([key, lab, opts, tid]) => (
+            <div className="rl-colsrow" key={key}>
+              <span className="rl-cols-l">{lab}</span>
+              <div className="rl-cols" role="radiogroup" aria-label={lab} data-testid={key === "units_cols" ? "editor-units-cols" : "editor-units-cols-phone"}>
+                {opts.map((n) => (
+                  <button type="button" key={n} role="radio" aria-checked={(Number(form[key]) || 0) === n} className={(Number(form[key]) || 0) === n ? "on" : ""} onClick={() => set(key, n)} data-testid={`${tid}${n}`}>
+                    <span className="rl-cols-m" aria-hidden="true">{n === 0 ? <em>A</em> : Array.from({ length: n }, (_, i) => <i key={i} />)}</span>
+                    <small>{n === 0 ? "Auto" : n}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </>)}
         <p className="rl-sub"><b>Couleur</b><span>Les menus, les reflets, la barre de progression.</span></p>
         <div className="rl-colors">

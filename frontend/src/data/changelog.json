@@ -1,6 +1,27 @@
 {
-  "version": "0.23",
+  "version": "0.24",
   "patches": [
+    {
+      "v": "0.24",
+      "date": "2026-11-18",
+      "title": "Comme dans Alexandrie, pour tout",
+      "groups": {
+        "Nouveau": [
+          "Musique YouTube partout : dans l'éditeur de chapitre (bouton musique) et dans le journal de bord (bloc Musique), on cherche sur YouTube et le repère se place là où est le curseur. Le lecteur le lance d'un toucher, dans une petite fenêtre du lecteur YouTube intégré ; une seule musique à la fois.",
+          "Images comme dans Alexandrie : « Chercher un artwork » (SteamGridDB, affiches, manga, livres, musique, domaine public, Commons, Pinterest…) dans l'éditeur de chapitre, dans le journal (image, croquis, galerie, couverture) et dans l'atelier de l'œuvre.",
+          "Journal de bord : recherche YouTube pour les blocs vidéo et musique.",
+          "Grille des chapitres sur téléphone : 1, 2 ou 3 vignettes par ligne (Atelier › Monde) ; à une par ligne, le résumé s'affiche."
+        ],
+        "Changé": [
+          "Retour de la vitrine d'avant sur les rayons (la version bois est retirée) ; les livres gardent seulement un peu plus de grain et la charnière près du dos.",
+          "Le bouton « Chercher un artwork » de l'atelier est plus grand et coloré ; sur téléphone, la recherche passe en haut de la fenêtre."
+        ],
+        "Corrigé": [
+          "La rotation du livre et de la cassette au lancement était cassée (un effet d'ombre aplatissait la 3D).",
+          "Lecture sur téléphone : les pages saccadaient en tournant (le calcul de « Reprendre » se fait maintenant après l'animation, et la page ne se recale plus pendant qu'on la tourne)."
+        ]
+      }
+    },
     {
       "v": "0.23",
       "date": "2026-11-18",

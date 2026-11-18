@@ -7,7 +7,7 @@ import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexa
 import { getJournalEntry, createJournalEntry, updateJournalEntry, listJournalCategories, listCreations, mediaUrl,
   createJournalCategory, updateJournalCategory, deleteJournalCategory } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
-import { BlocksEditor, ImagePick } from "@/components/journal/BlocksEditor";
+import { BlocksEditor, ImagePick, ArtSearch } from "@/components/journal/BlocksEditor";
 
 const today = () => new Date().toISOString().slice(0, 10);
 const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre", look: "presse" };
@@ -67,6 +67,7 @@ export default function JournalEditor() {
 
         <div className="jr-cover-edit" style={f.cover ? { backgroundImage: `url(${mediaUrl(f.cover)})` } : undefined}>
           <ImagePick label={f.cover ? "Changer la couverture" : "Ajouter une image de couverture"} onDone={([u]) => set({ cover: u })} testid="journal-cover-pick" />
+          <ArtSearch term={f.title} label="Chercher une couverture" onPick={(u) => set({ cover: u })} />
           {f.cover && <button className="jr-pick" onClick={() => set({ cover: "" })}>Retirer</button>}
         </div>
 

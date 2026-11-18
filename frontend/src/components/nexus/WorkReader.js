@@ -111,7 +111,7 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
     <Reader book={book} cover={cover || (entry?.cover ? mediaUrl(entry.cover) : null)} onClose={onClose} backLabel={entry ? "Retour" : "Retour au monde"} path={where}
       startCh={startCh} keepSaved={resume} onProgress={onProgress} workMusic={music} noPdf={noPdf}
       onEditChapter={onEditUnit && !entry ? (c) => onEditUnit(map[c] ?? map[0] ?? 0) : undefined}
-      onCue={(url, t) => { setTitle(t || "Musique"); toggleReadingUrl(mediaUrl(url), "cue:" + url, { loop: false }); }}
+      onCue={(url, t) => { setTitle(t || "Musique"); toggleReadingUrl(mediaUrl(url), "cue:" + url, { loop: false, title: t || "Musique" }); }}
       onDone={() => { if (!entry) setTimeout(() => setEnded(true), 900); }} />
   </>);
 }
