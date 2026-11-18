@@ -3,6 +3,7 @@ import { IoArrowBack, IoAdd, IoCopyOutline, IoPencil, IoTrashOutline, IoCheckmar
 import { toast } from "sonner";
 import { WORLD_STYLES } from "@/components/nexus/world";
 import CursorFx from "@/components/CursorFx";
+import WorldPreview from "@/components/nexus/WorldPreview";
 import { WT_BLANK, WT_FONTS, WT_CURSORS, WT_BASE, WT_PALETTES, WT_PRESETS, newWorldKey, setWorldDraft, useWorldThemes, saveWorldTheme, deleteWorldTheme, isWorldKey } from "@/lib/worldThemes";
 import "@/components/nexus/wtlab.css";
 
@@ -13,29 +14,36 @@ import "@/components/nexus/wtlab.css";
 */
 const PT_NAMES = { cinema: ["Poussière de pellicule", "Fines rayures qui passent"], vhs: ["Parasites", "Neige et bande qui roule"], arcade: ["Étoiles pixel", "Points nets qui scintillent"], yorha: ["Poussière d'archive", "Particules lentes"], eve: ["Étoiles", "Points froids qui dérivent"], hero: ["Étincelles", "Éclats rapides"], cathedrale: ["Braises", "Points rouges qui montent"], couronne: ["Cendres d'or", "Or qui tombe doucement"], trait: ["Taches d'encre", "Points noirs"], sengoku: ["Cendres", "Flocons pâles"], survivance: ["Spores", "Poussière en suspension"], cristal: ["Éclats de givre", "Scintillements froids"] };
 const IN_NAMES = { cinema: "Écran large", vhs: "Bande qui défile", arcade: "Insert coin", yorha: "Connexion", eve: "Anneau", hero: "Balayage", cathedrale: "Sceau de cire", couronne: "Éclat doré", trait: "Encre", sengoku: "Pinceau et sceau", survivance: "La lumière revient", cristal: "Éclats de verre" };
-const TABS = [["colors", "Couleurs"], ["type", "Typo"], ["layout", "Disposition"], ["matter", "Matière"], ["fx", "Effets"], ["mouse", "Souris"]];
+const TABS = [["structure", "Structure"], ["colors", "Couleurs"], ["type", "Typo"], ["layout", "Disposition"], ["matter", "Matière"], ["fx", "Effets"], ["mouse", "Souris"]];
 const B = (t) => WT_BASE[t.base] || WT_BASE.cinema;
 
 // L'aperçu : une petite fenêtre du monde, avec tout ce que le thème change
+const LAYOUT = { cinema: "left", yorha: "left", eve: "left", hero: "slant", survivance: "left", trait: "left", arcade: "center", cathedrale: "center", couronne: "center", cristal: "center", vhs: "screen", sengoku: "vertical" };
+const IMG_F = { bw: "grayscale(1) contrast(1.1)", sepia: "sepia(.75) saturate(.8)", duo: "grayscale(1) contrast(1.2) brightness(.85)" };
 export function WorldMini({ t, title = "Titre", sub = "", bg, cover, big, onHover }) {
   const b = B(t);
   const st = {
     "--p": t.paper || b.paper, "--k": t.ink || b.ink, "--h": t.hl || b.hl,
     "--ft": `"${t.font_title || b.ft}",sans-serif`, "--fu": `"${t.font_ui || b.fu}",sans-serif`,
-    "--r": t.radius === "auto" || t.radius == null ? "2px" : `${t.radius}px`,
+    "--r": t.radius === "auto" || t.radius == null ? "2px" : `${t.radius}px`, "--tz": t.title_size && t.title_size !== "auto" ? t.title_size : 1,
   };
   const up = t.title_case === "upper" ? "upper" : t.title_case === "none" ? "low" : "";
+  const lay = LAYOUT[t.base] || "left";
+  const cls = ["wtm", "lay-" + lay, big && "big", t.mirror && "mir", up, t.title_fx && t.title_fx !== "none" && "tfx-" + t.title_fx, t.menu_style && t.menu_style !== "auto" && "mn-" + t.menu_style].filter(Boolean).join(" ");
   return (
-    <div className={"wtm" + (big ? " big" : "") + (t.mirror ? " mir" : "") + (up ? " " + up : "")} style={st} onMouseEnter={() => onHover?.(true)} onMouseLeave={() => onHover?.(false)} data-testid={big ? "wt-preview" : undefined}>
-      {bg && <span className="wtm-bg" style={{ backgroundImage: `url(${bg})`, opacity: 1 - (t.bg_dim ?? 0.45), filter: t.bg_blur ? `blur(${Math.round(t.bg_blur / (big ? 2 : 4))}px)` : undefined }} />}
+    <div className={cls} style={st} onMouseEnter={() => onHover?.(true)} onMouseLeave={() => onHover?.(false)}>
+      {bg && t.img !== "none" && <span className="wtm-bg" style={{ backgroundImage: `url(${bg})`, opacity: 1 - (t.bg_dim ?? 0.45), filter: [IMG_F[t.img], t.bg_blur ? `blur(${Math.round(t.bg_blur / (big ? 2 : 4))}px)` : ""].filter(Boolean).join(" ") || undefined }} />}
+      {t.img === "duo" && <span className="wtm-duo" />}
       <span className="wtm-in">
         <span className="wtm-txt">
           <small>{sub || WORLD_STYLES[t.base]}</small>
           <b className="wtm-t">{title}</b>
           <span className="wtm-menu">{["Reprendre", "Chapitres", "Moodboard", "Making of"].map((x, i) => <i key={x} className={i === 0 ? "on" : ""}>{x}</i>)}</span>
         </span>
-        {t.win !== false && <span className="wtm-win"><span className="wtm-wimg" style={cover ? { backgroundImage: `url(${cover})` } : undefined} /><em>Reprendre là où tu t'étais arrêté</em></span>}
+        {t.win !== false && <span className="wtm-win"><span className="wtm-wimg" style={cover ? { backgroundImage: `url(${cover})`, filter: IMG_F[t.img] } : undefined} /><em>Reprendre là où tu t'étais arrêté</em></span>}
       </span>
+      {t.deco && t.deco !== "none" && <span className={"wtm-deco " + t.deco} />}
+      {t.frame && t.frame !== "none" && <span className={"wtm-frame " + t.frame} />}
       {t.grain > 0 && <span className="wtm-grain" style={{ opacity: t.grain * 0.55 }} />}
       {t.scan > 0 && <span className="wtm-scan" style={{ opacity: t.scan }} />}
       {t.vignette > 0 && <span className="wtm-vig" style={{ opacity: t.vignette }} />}
@@ -74,7 +82,7 @@ export default function WorldThemeLab({ form, set, creationId, bg, cover, onPeek
   const used = form.world_style;
   const title = form.title || "Titre de l'œuvre";
 
-  const edit = (x) => { setT({ ...WT_BLANK, ...x }); setTab("colors"); };
+  const edit = (x) => { setT({ ...WT_BLANK, ...x }); setTab("structure"); };
   const fromBase = (k) => edit({ base: k, name: `Mon ${WORLD_STYLES[k]}` });
   const fromPreset = (p) => edit({ ...p, key: undefined, about: undefined });
   const save = async (use) => {
@@ -156,6 +164,19 @@ export default function WorldThemeLab({ form, set, creationId, bg, cover, onPeek
         <div className="wtl-ctrl">
           <nav className="wtl-tabs">{TABS.map(([k, l]) => <button type="button" key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)} data-testid={`wt-tab-${k}`}>{l}</button>)}</nav>
           <div className="wtl-pane">
+            {tab === "structure" && <>
+              <h4>Titre</h4>
+              <div className="wtl-tiles">{[["none", "Simple", "Le titre tel quel"], ["neon", "Néon", "Il brille de la couleur d'accent"], ["outline", "Contour", "Seulement le trait des lettres"], ["shadow", "Ombre décalée", "Une ombre pleine d'accent"], ["glitch", "Glitch", "Décalage rouge et bleu, sursauts"], ["stamp", "Tampon", "Encadré et penché, comme tamponné"]].map(([k, n, d]) => <button type="button" key={k} className={(t.title_fx || "none") === k ? "on" : ""} onClick={() => patch({ title_fx: k })} data-testid={`wt-tfx-${k}`}><b className={"wtl-tfx " + k}>{n}</b><small>{d}</small></button>)}</div>
+              <div className="wtl-chips">{[["auto", "Taille du thème"], [0.8, "Petit"], [1.15, "Grand"], [1.4, "Très grand"], [1.7, "Énorme"]].map(([v, l]) => <Chip key={String(v)} on={(t.title_size ?? "auto") === v} onClick={() => patch({ title_size: v })}>{l}</Chip>)}</div>
+              <h4>Cadre de l'écran</h4>
+              <div className="wtl-tiles">{[["none", "Aucun", "Le monde jusqu'aux bords"], ["screen", "Écran", "Comme un vieux téléviseur"], ["corners", "Coins de visée", "Quatre angles, comme un viseur"], ["double", "Double filet", "Deux traits fins d'accent"]].map(([k, n, d]) => <button type="button" key={k} className={(t.frame || "none") === k ? "on" : ""} onClick={() => patch({ frame: k })} data-testid={`wt-frame-${k}`}><span className={"wtl-fr " + k} /><b>{n}</b><small>{d}</small></button>)}</div>
+              <h4>Décor</h4>
+              <div className="wtl-tiles">{[["none", "Aucun", ""], ["grid", "Grille", "Un quadrillage qui monte du bas"], ["hud", "HUD", "Informations aux quatre coins"], ["lines", "Lignes", "Comme une feuille réglée"]].map(([k, n, d]) => <button type="button" key={k} className={(t.deco || "none") === k ? "on" : ""} onClick={() => patch({ deco: k })} data-testid={`wt-deco-${k}`}><b>{n}</b>{d && <small>{d}</small>}</button>)}</div>
+              <h4>Image de fond</h4>
+              <div className="wtl-tiles">{[["auto", "Comme le thème", ""], ["bw", "Noir et blanc", "Contrastée"], ["sepia", "Sépia", "Photo ancienne"], ["duo", "Bichromie", "Teintée de la couleur d'accent"], ["none", "Sans image", "Le fond seul"]].map(([k, n, d]) => <button type="button" key={k} className={(t.img || "auto") === k ? "on" : ""} onClick={() => patch({ img: k })} data-testid={`wt-img-${k}`}><span className={"wtl-imgs " + k} style={bg ? { backgroundImage: `url(${bg})` } : undefined} /><b>{n}</b>{d && <small>{d}</small>}</button>)}</div>
+              <h4>Boutons du menu</h4>
+              <div className="wtl-tiles">{[["auto", "Comme le thème"], ["underline", "Soulignés"], ["pill", "Pilules"], ["block", "Blocs pleins"], ["box", "Encadrés"]].map(([k, n]) => <button type="button" key={k} className={(t.menu_style || "auto") === k ? "on" : ""} onClick={() => patch({ menu_style: k })} data-testid={`wt-mn-${k}`}><span className={"wtl-mn " + k}><i /><i className="on" /><i /></span><b>{n}</b></button>)}</div>
+            </>}
             {tab === "colors" && <>
               <h4>Palettes</h4>
               <div className="wtl-pals">{WT_PALETTES.map(([n, p, k, h]) => (
@@ -216,7 +237,8 @@ export default function WorldThemeLab({ form, set, creationId, bg, cover, onPeek
         </div>
         <div className="wtl-look">
           <p className="rl-lbl">APERÇU EN DIRECT</p>
-          <WorldMini t={t} title={title} sub={form.tagline} bg={bg} cover={cover} big onHover={setTryCur} />
+          <div onMouseEnter={() => setTryCur(true)} onMouseLeave={() => setTryCur(false)}><WorldPreview t={t} form={form} cover={cover} bg={bg} replay={replay} /></div>
+          <div className="wtl-chips"><Chip onClick={() => setReplay((r) => r + 1)}><IoRefresh /> Rejouer l'entrée</Chip></div>
           <p className="wtl-hint">{onPeek ? "« Voir dans le monde » montre le vrai monde habillé de ce thème (rien n'est enregistré)." : "Enregistre d'abord l'œuvre pour voir le thème dans son monde."}</p>
           {tryCur && t.cursor && t.cursor !== "none" && <CursorFx type={t.cursor} color={t.hl || b.hl} />}
         </div>

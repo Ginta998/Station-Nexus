@@ -1,3 +1,4 @@
+import TapeObject from "@/components/journal/TapeObject";
 import { mediaUrl } from "@/lib/api";
 import { inlineMd } from "@/lib/blocks";
 import { IoMusicalNotes, IoPause } from "react-icons/io5";
@@ -23,8 +24,8 @@ export function CategoryTag({ cat }) {
 export function JournalCard({ e, cat, creation, onOpen, idx = 0 }) {
   return (
     <article className="jr-card" style={{ animationDelay: `${idx * 50}ms` }} onClick={onOpen} data-testid={`journal-card-${e.id}`}>
-      <div className="jr-card-img" style={e.cover ? { backgroundImage: `url(${mediaUrl(e.cover)})` } : { "--jc": cat?.color || "var(--brand)" }}>
-        {!e.cover && <span className="jr-card-kj">録</span>}
+      <div className={"jr-card-img" + (e.format === "cassette" ? " is-tape" : "")} style={e.format === "cassette" ? undefined : e.cover ? { backgroundImage: `url(${mediaUrl(e.cover)})` } : { "--jc": cat?.color || "var(--brand)" }}>
+        {e.format === "cassette" ? <TapeObject e={e} small /> : !e.cover && <span className="jr-card-kj">録</span>}
         {!e.published && <span className="jr-draft">Brouillon</span>}
       </div>
       <div className="jr-card-body">

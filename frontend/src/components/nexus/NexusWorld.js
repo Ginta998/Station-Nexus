@@ -9,6 +9,7 @@ import StationMenu, { SoundBtn } from "@/components/StationMenu";
 import { Face } from "@/components/atelier/Alexandrie";
 import "@/components/nexus/world.css";
 import CursorFx from "@/components/CursorFx";
+import TapeObject from "@/components/journal/TapeObject";
 import { wtLook } from "@/lib/worldThemes";
 
 /*
@@ -118,7 +119,7 @@ export default function NexusWorld(p) {
       case "home": return homeItems;
       case "units": return units.map((u, i) => ({ id: "u" + i, idx: i, label: u.title || `${unitWord[0].toUpperCase() + unitWord.slice(1)} ${i + 1}`, sub: item.launch_type === "chapters" ? `CH. ${String(i + 1).padStart(2, "0")}` : `EP. ${String(i + 1).padStart(2, "0")}`, desc: u.description || "", img: u.image, lock: unitLocked(i), mark: current === i, go: () => openUnit(i) }));
       case "gallery": return (item.gallery || []).map((g, i) => ({ id: "g" + i, img: g, go: () => push({ k: "image", list: item.gallery, i }) }));
-      case "making": return making.map((e) => ({ id: e.id, label: e.title, sub: fmtDate(e.date), desc: e.subtitle || e.excerpt || "", img: e.cover ? mediaUrl(e.cover) : null, go: () => (onEntry ? onEntry(e) : push({ k: "entry", e })) }));
+      case "making": return making.map((e) => ({ id: e.id, tape: e.format === "cassette" ? e : null, label: e.title, sub: fmtDate(e.date), desc: e.subtitle || e.excerpt || "", img: e.cover ? mediaUrl(e.cover) : null, go: () => (onEntry ? onEntry(e) : push({ k: "entry", e })) }));
       case "embeds": return (item.embeds || []).map((em, i) => ({ id: "e" + i, label: em.label || (em.platform === "youtube" ? "Voir sur YouTube" : em.platform === "wattpad" ? "Lire sur Wattpad" : "Ouvrir le lien"), sub: (em.platform || "lien").toUpperCase(), desc: em.url, go: () => window.open(em.url, "_blank", "noopener,noreferrer") }));
       case "neighbors": return neighbors.map((c) => ({ id: c.id, label: c.title, sub: c.catLabel || "", desc: c.tagline || c.synopsis || "", img: coverOf(c), box: c, go: () => { sfx("select"); onNeighbor(c.id); } }));
       default: return [];
@@ -190,7 +191,7 @@ export default function NexusWorld(p) {
           onClick={() => { if (col) { col(it); return; } setSel(i); it.go(); }} {...pressMenu(menuFor(it))} data-testid={`nw-${col ? "col-" : ""}${it.id}`}>
           {it.img && <span className="nw-th" style={{ backgroundImage: `url(${it.img})` }} />}
           {num && <i className="nw-n">{num(i)}</i>}
-          <span className="nw-l">{it.label}</span>
+          <span className="nw-l">{it.tape && <i className="nw-tapei" aria-label="Cassette audio" />}{it.label}</span>
           {it.sub && <small className="nw-s">{it.sub}</small>}
           {it.lock && <IoLockClosed className="nw-lk" size={13} />}
           {it.mark && <em className="nw-mk">EN COURS</em>}
@@ -341,11 +342,12 @@ export default function NexusWorld(p) {
       {Menu({ c, className: "nw-list", num: num })}
       <aside className="nw-pane" key={cur?.id}>
         {cur?.box ? <div className="nw-pane-box"><Face b={{ id: cur.box.id, title: cur.box.title, sub: cur.box.tagline || "", format: cur.box.fmt || "livre", emblem: cur.box.kanji || "核", cote: "SN", roomLabel: cur.box.catLabel || "Station", house: "STATION NEXUS" }} cover={cur.img} /></div>
+          : cur?.tape ? <span className="nw-pane-img nw-pane-tape"><TapeObject e={cur.tape} /></span>
           : cur?.img ? <span className="nw-pane-img" style={{ backgroundImage: `url(${cur.img})` }} /> : <span className="nw-pane-img none"><b>{cur?.sub}</b></span>}
         <p className="nw-k">{cur?.sub}</p>
         <h2>{cur?.label}</h2>
         {cur?.desc && <p className="nw-desc">{cur.desc}</p>}
-        {cur && <button className="nw-act" onClick={cur.go}>{cur.lock ? <><IoLockClosed /> Débloquer</> : kind === "units" ? <><IoPlay /> {item.launch_type === "chapters" ? "Lire" : "Regarder"}</> : kind === "neighbors" ? <>Entrer dans ce monde</> : kind === "embeds" ? <><IoOpenOutline /> Ouvrir</> : <>Ouvrir</>}</button>}
+        {cur && <button className="nw-act" onClick={cur.go}>{cur.lock ? <><IoLockClosed /> Débloquer</> : cur.tape ? <><IoPlay /> Écouter</> : kind === "units" ? <><IoPlay /> {item.launch_type === "chapters" ? "Lire" : "Regarder"}</> : kind === "neighbors" ? <>Entrer dans ce monde</> : kind === "embeds" ? <><IoOpenOutline /> Ouvrir</> : <>Ouvrir</>}</button>}
       </aside>
     </div>
   ); };
@@ -515,7 +517,9 @@ export default function NexusWorld(p) {
       {wt?.pt && wt.pt !== "auto" && wt.pt !== "none"
         ? <div className={"nw-ptw ws-" + wt.pt} aria-hidden="true"><div className="nw-pt" /></div>
         : <div className="nw-pt" aria-hidden="true" />}
+      {wt?.img === "duo" && <div className="nw-wtduo" aria-hidden="true" />}
       {(wt?.grain || wt?.scan || wt?.vignette) ? <div className="nw-wtfx" aria-hidden="true" /> : null}
+      {((wt?.frame && wt.frame !== "none") || (wt?.deco && wt.deco !== "none")) && <div className={"nw-wtfr fr-" + (wt.frame || "none") + " dc-" + (wt.deco || "none")} aria-hidden="true">{wt.deco === "hud" && <><span className="hud tl">SYS · NEXUS</span><span className="hud tr">● REC</span><span className="hud bl">{(item.title || "").toUpperCase().slice(0, 24)}</span><span className="hud br">{new Date().getFullYear()}</span></>}</div>}
       <CursorFx type={wt?.cursor} color={wt?.hl || undefined} />
 
       <header className="nw-hud">

@@ -387,7 +387,7 @@ function YtFig({ b, onSwap, onRemove, si }) {
 export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path, noPdf = false, onEditChapter }) {
   const { sfx } = useApp();
   const flow = useRef(null);
-  const spreadR = useRef(0); const stepR = useRef(0);
+  const spreadR = useRef(0); const stepR = useRef(0); const glide = useRef(0);
   // Taille du texte (Aa) : gardée pour toutes les lectures de ce navigateur
   const [fs, setFs] = useState(() => { const v = Number(read("nx-alex-fs", 1)); return v >= 0.8 && v <= 1.5 ? v : 1; });
   const [aa, setAa] = useState(false);
@@ -462,7 +462,15 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
   useEffect(() => {
     if (!flow.current) return;
     const g = geom(); const left = Math.round(spread * g.step);
-    if (anim.current && Math.abs(g.el.scrollLeft - left) < g.step * 2.2) { clearTimeout(anim.current); g.el.scrollTo({ left, behavior: "smooth" }); anim.current = setTimeout(() => { anim.current = 0; if (flow.current) flow.current.scrollLeft = left; }, 420); }
+    if (anim.current && Math.abs(g.el.scrollLeft - left) < g.step * 2.2) {
+      // la page finit sa course sous le doigt : glissement court et net (on ne laisse plus le navigateur décider de la durée)
+      clearTimeout(anim.current); cancelAnimationFrame(glide.current);
+      const el = g.el; const from = el.scrollLeft; const d = left - from; const T = Math.max(160, Math.min(300, Math.abs(d) * 0.55)); const t0 = performance.now();
+      const ease = (x) => 1 - Math.pow(1 - x, 3);
+      const step = (now) => { const k = Math.min(1, (now - t0) / T); el.scrollLeft = from + d * ease(k); if (k < 1) glide.current = requestAnimationFrame(step); else { el.scrollLeft = left; anim.current = 0; } };
+      anim.current = setTimeout(() => { anim.current = 0; }, T + 120);
+      glide.current = requestAnimationFrame(step);
+    }
     else { clearTimeout(anim.current); anim.current = 0; g.el.scrollLeft = left; }
   }, [spread, per, pages, book]); // eslint-disable-line
   useEffect(() => { if (book.preview) return; const all = read(LS.prog, {}); all[book.id] = { page, pages, mark, at: Date.now() }; write(LS.prog, all); }, [page, pages, mark, book.id]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -491,7 +499,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
       const left = spread * g.step + g.pad - 4; const first = [...flow.current.querySelectorAll(".ax-ch p")].find((el) => el.offsetLeft >= left && el.textContent.trim());
       const excerpt = first ? first.textContent.trim().split(/(?<=[.!?…])\s/)[0].slice(0, 160) : "";
       progR.current(ci, Math.min(1, (spread + per) / Math.max(1, pages)), { inCh, excerpt, page: spread });
-    } catch (_) {} }, 650);
+    } catch (_) {} }, 1400);
     return () => clearTimeout(t);
   }, [spread, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
   const cueR = useRef(onCue); cueR.current = onCue;
@@ -528,7 +536,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
     if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; const w = wheel.current; const now = Date.now();
     if (now < w.lock) return; w.x += e.deltaX; if (Math.abs(w.x) > 70) { go(w.x > 0 ? 1 : -1); w.x = 0; w.lock = now + 550; }
   };
-  const onTouchStart = (e) => { const t = e.touches[0]; drag.current = { x: t.clientX, y: t.clientY, t: Date.now(), base: flow.current?.scrollLeft || 0, on: false }; };
+  const onTouchStart = (e) => { cancelAnimationFrame(glide.current); if (anim.current) { clearTimeout(anim.current); anim.current = 0; } const t = e.touches[0]; drag.current = { x: t.clientX, y: t.clientY, t: Date.now(), base: flow.current?.scrollLeft || 0, on: false }; };
   const onTouchMove = (e) => {
     const d = drag.current; if (!d || !flow.current) return; const t = e.touches[0]; const dx = t.clientX - d.x, dy = t.clientY - d.y;
     if (!d.on && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.2) d.on = true;

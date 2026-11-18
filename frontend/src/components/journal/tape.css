@@ -54,3 +54,23 @@
 .tp-text *::first-letter{font:inherit!important;color:inherit!important;float:none!important;font-size:inherit!important;margin:0!important;padding:0!important;line-height:inherit!important}
 .tp-text *{border-left:0!important}
 .tp-reel::before{background:radial-gradient(circle,#7a5235 0 30%,#4a3020 75%)!important;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+/* sans transcription : la cassette seule, au centre */
+.tp.solo{grid-template-columns:1fr;justify-items:center;align-content:center}
+.tp.solo .tp-cass{width:min(620px,100%)}
+.tp-solo-t{display:flex;flex-direction:column;align-items:center;gap:6px;margin:0;text-align:center}
+.tp-solo-t b{font-family:"Special Elite","Courier Prime",monospace;font-weight:400;font-size:clamp(18px,2.4vw,26px)}
+.tp-solo-t small{opacity:.7;font-style:italic}
+.tp.solo .tp-solo-t{order:-1}
+/* la cassette-objet (vignette) */
+.tpo{position:relative;display:block;width:100%;max-width:340px;aspect-ratio:1.58;border-radius:8px 8px 6px 6px;padding:6% 5.5% 13%;
+  background:linear-gradient(180deg,#3a3633,#24211f);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 14px 26px -10px rgba(0,0,0,.8),0 0 0 1px #0d0c0b;transform:rotate(-2deg);margin:auto}
+.tpo-label{display:flex;flex-direction:column;gap:6%;height:100%;padding:6% 7%;border-radius:4px;background:linear-gradient(180deg,#efe5cf 0 30%,#d9a441 30% 36%,#efe5cf 36%);color:#2a2219}
+.tpo-label b{font-family:"Special Elite","Courier Prime",monospace;font-weight:400;font-size:clamp(10px,1.4vw,15px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tpo-win{flex:1;display:flex;align-items:center;justify-content:space-around;border-radius:30px;background:#2a231f}
+.tpo-win i{width:22%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#f2eadb 0 22%,#4a3020 24% 60%,#2c1c12 62%)}
+.tpo-mouth{position:absolute;left:22%;right:22%;bottom:0;height:10%;border-radius:3px 3px 0 0;background:#141210}
+.tpo.sm{max-width:none}
+/* sur la carte du journal : la cassette posée sur un fond chaud */
+.jr-card-img.is-tape{display:grid;place-items:center;padding:8% 12%;background:radial-gradient(70% 70% at 50% 40%,#2a2118,#120e0b) !important}
+.nw-pane-tape{display:grid;place-items:center;padding:10% 8%;background:radial-gradient(70% 70% at 50% 40%,#2a2118,#120e0b)}
+.nw-tapei{display:inline-block;width:16px;height:11px;margin-right:6px;vertical-align:-1px;border-radius:2px;background:linear-gradient(180deg,#efe5cf 0 40%,#d9a441 40% 55%,#efe5cf 55%);box-shadow:0 0 0 1.5px currentColor}

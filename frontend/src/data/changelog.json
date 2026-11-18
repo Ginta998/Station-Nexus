@@ -1,6 +1,23 @@
 {
-  "version": "0.26",
+  "version": "0.27",
   "patches": [
+    {
+      "v": "0.27",
+      "date": "2026-11-18",
+      "title": "Des thèmes qui changent vraiment le monde",
+      "groups": {
+        "Nouveau": [
+          "Atelier des thèmes de monde › Structure : effet du titre (néon, contour, ombre décalée, glitch, tampon) et sa taille, cadre de l'écran (écran, coins de visée, double filet), décor (grille, HUD, lignes), image de fond (noir et blanc, sépia, bichromie, sans image), style des boutons du menu (soulignés, pilules, blocs, encadrés).",
+          "L'aperçu de l'atelier montre le vrai monde de l'œuvre en miniature ; les vignettes suivent la mise en page de chaque thème de base.",
+          "Cinq modèles refaits, chacun sur une base et une structure différentes : Jazz bar 2499 (Cathédrale), Terminal 1999 (Magnétoscope), Dossier classé (Archives, en miroir), Néon de minuit (Orbite), Encre et papier (Sengoku, sans image).",
+          "Les cassettes se reconnaissent avant de les ouvrir : petite cassette dans la liste du Making of, la cassette en grand dans l'aperçu (bouton « Écouter »), et sur les cartes du journal."
+        ],
+        "Changé": [
+          "Une cassette sans texte s'affiche seule, au centre, sans transcription vide.",
+          "Tourner une page sur téléphone : la page finit sa course en un glissement court et net (au lieu du défilement du navigateur) ; « Reprendre » n'est plus calculé qu'une fois qu'on s'arrête de tourner."
+        ]
+      }
+    },
     {
       "v": "0.26",
       "date": "2026-11-18",

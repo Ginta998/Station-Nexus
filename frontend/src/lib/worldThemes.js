@@ -16,6 +16,8 @@ export const WT_BLANK = {
   mirror: false, win: true, radius: "auto",
   grain: 0, scan: 0, vignette: 0, bg_dim: null, bg_blur: null,
   pt: "auto", intro: "auto", cursor: "none",
+  // structure : ce qui change vraiment l'allure du monde
+  title_size: "auto", title_fx: "none", frame: "none", deco: "none", img: "auto", menu_style: "auto",
 };
 
 // Les polices proposées : uniquement celles hébergées par la Station (rien n'est demandé à Google côté public)
@@ -69,7 +71,10 @@ export function wtLook(t) {
     t.title_case === "upper" && "wt-up", t.title_case === "none" && "wt-low",
     t.mirror && "wt-mirror", t.win === false && "wt-nowin", t.radius !== "auto" && t.radius != null && "wt-rad",
     t.grain && "wt-grain", t.scan && "wt-scan", t.vignette && "wt-vig", (t.bg_dim != null || t.bg_blur != null) && "wt-bgfx",
-    t.pt === "none" && "wt-nopt"].filter(Boolean).join(" ");
+    t.pt === "none" && "wt-nopt",
+    t.title_size && t.title_size !== "auto" && "wt-tz", t.title_fx && t.title_fx !== "none" && "wt-tfx-" + t.title_fx,
+    t.img && t.img !== "auto" && "wt-img-" + t.img, t.menu_style && t.menu_style !== "auto" && "wt-mn-" + t.menu_style].filter(Boolean).join(" ");
+  if (t.title_size && t.title_size !== "auto") style["--wt-tz"] = t.title_size;
   return { cls, style };
 }
 
@@ -95,16 +100,21 @@ export const WT_PALETTES = [
   ["Or noir", "#0b0a08", "#efe6cf", "#d4b062"], ["Givre", "#08101a", "#eaf4ff", "#8fd3ff"], ["Forêt", "#0e130e", "#e2e6d6", "#8fb46a"],
   ["Rouille", "#16100c", "#eadfd2", "#d0652c"], ["Papier crème", "#f3ecdf", "#24201a", "#3b5bdb"], ["Brume", "#1a1d22", "#d8dde3", "#9fb4c8"],
 ];
-// Cinq modèles pour démarrer
+// Cinq modèles pour démarrer : chacun part d'une base différente et change la structure, pas seulement les couleurs
 export const WT_PRESETS = [
-  { name: "Jazz bar 2499", about: "Bois sombre, lumière ambrée, grain de pellicule. Rétro-futur feutré.", base: "couronne", paper: "#120d09", ink: "#f1e4cc", hl: "#e0a24a",
-    font_title: "DM Serif Display", font_ui: "Josefin Sans", font_body: "EB Garamond", title_case: "auto", grain: 0.5, vignette: 0.6, scan: 0, pt: "couronne", intro: "cinema", cursor: "spot", win: true, mirror: false, radius: "auto" },
-  { name: "Terminal 1999", about: "Écran cathodique vert, lignes d'écran, coordonnées du labo.", base: "vhs", paper: "#050a06", ink: "#a8ffb0", hl: "#39ff6a",
-    font_title: "VT323", font_ui: "Courier Prime", font_body: "Courier Prime", title_case: "upper", grain: 0.3, scan: 0.7, vignette: 0.5, pt: "vhs", intro: "vhs", cursor: "lab", win: true, mirror: false, radius: 0 },
-  { name: "Dossier classé", about: "Papier, machine à écrire, tampon rouge. Comme un rapport retrouvé.", base: "yorha", paper: "#e9e1cf", ink: "#2a2620", hl: "#b3261e",
-    font_title: "Special Elite", font_ui: "Courier Prime", font_body: "Courier Prime", title_case: "upper", grain: 0.45, vignette: 0.3, scan: 0, pt: "yorha", intro: "yorha", cursor: "cross", win: true, mirror: true, radius: 0 },
-  { name: "Néon de minuit", about: "Ville la nuit, rose néon, halo sous la souris.", base: "eve", paper: "#07051a", ink: "#f2eaff", hl: "#ff3fa4",
-    font_title: "Audiowide", font_ui: "Orbitron", font_body: "Sora", title_case: "upper", grain: 0.15, scan: 0.2, vignette: 0.5, pt: "eve", intro: "eve", cursor: "glow", win: true, mirror: false, radius: 14 },
-  { name: "Encre et papier", about: "Washi, encre noire, un sceau rouge. Calme et précis.", base: "sengoku", paper: "#efe7d6", ink: "#1b1712", hl: "#c0262d",
-    font_title: "Shippori Mincho", font_ui: "Zen Kaku Gothic New", font_body: "Shippori Mincho", title_case: "none", grain: 0.35, vignette: 0.2, scan: 0, pt: "sengoku", intro: "sengoku", cursor: "trail", win: true, mirror: false, radius: 0 },
+  { name: "Jazz bar 2499", about: "Lumière ambrée, titre en néon chaud, double filet, photo sépia. Rétro-futur feutré.", base: "cathedrale", paper: "#120d09", ink: "#f1e4cc", hl: "#e0a24a",
+    font_title: "DM Serif Display", font_ui: "Josefin Sans", font_body: "EB Garamond", title_case: "none", title_size: 1.15, title_fx: "neon", frame: "double", deco: "none", img: "sepia", menu_style: "underline",
+    grain: 0.5, vignette: 0.6, scan: 0, pt: "couronne", intro: "cinema", cursor: "spot", win: true, mirror: false, radius: "auto" },
+  { name: "Terminal 1999", about: "Écran cathodique vert, titre qui glitche, HUD, image en noir et blanc.", base: "vhs", paper: "#030805", ink: "#a8ffb0", hl: "#39ff6a",
+    font_title: "VT323", font_ui: "Courier Prime", font_body: "Courier Prime", title_case: "upper", title_size: 1.3, title_fx: "glitch", frame: "screen", deco: "hud", img: "bw", menu_style: "block",
+    grain: 0.3, scan: 0.7, vignette: 0.5, pt: "vhs", intro: "vhs", cursor: "lab", win: true, mirror: false, radius: 0 },
+  { name: "Dossier classé", about: "Papier, machine à écrire, titre tamponné, coins de visée, menu à droite.", base: "yorha", paper: "#e9e1cf", ink: "#2a2620", hl: "#b3261e",
+    font_title: "Special Elite", font_ui: "Courier Prime", font_body: "Courier Prime", title_case: "upper", title_size: 1, title_fx: "stamp", frame: "corners", deco: "lines", img: "bw", menu_style: "box",
+    grain: 0.45, vignette: 0.3, scan: 0, pt: "yorha", intro: "yorha", cursor: "cross", win: true, mirror: true, radius: 0 },
+  { name: "Néon de minuit", about: "Ville la nuit : grille, bichromie rose, boutons en pilule, halo sous la souris.", base: "eve", paper: "#07051a", ink: "#f2eaff", hl: "#ff3fa4",
+    font_title: "Audiowide", font_ui: "Orbitron", font_body: "Sora", title_case: "upper", title_size: 1.1, title_fx: "neon", frame: "none", deco: "grid", img: "duo", menu_style: "pill",
+    grain: 0.15, scan: 0.2, vignette: 0.5, pt: "eve", intro: "eve", cursor: "glow", win: true, mirror: false, radius: 14 },
+  { name: "Encre et papier", about: "Washi clair, grand titre vertical, sans fenêtre ni image : le texte et le sceau.", base: "sengoku", paper: "#efe7d6", ink: "#1b1712", hl: "#c0262d",
+    font_title: "Shippori Mincho", font_ui: "Zen Kaku Gothic New", font_body: "Shippori Mincho", title_case: "none", title_size: 1.4, title_fx: "none", frame: "none", deco: "none", img: "none", menu_style: "underline",
+    grain: 0.35, vignette: 0.15, scan: 0, pt: "sengoku", intro: "sengoku", cursor: "trail", win: false, mirror: false, radius: 0 },
 ];

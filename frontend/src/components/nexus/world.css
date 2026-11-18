@@ -1199,3 +1199,44 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
    l'écran qui arrive et celui qui part ont chacun leur calque pendant l'animation */
 .nw-scr.in-f,.nw-scr.in-b,.nw-scr.out-f,.nw-scr.out-b{will-change:transform,opacity;backface-visibility:hidden}
 .nw-scr.in-f{animation-duration:.42s}.nw-scr.in-b{animation-duration:.4s}.nw-scr.out-f,.nw-scr.out-b{animation-duration:.3s}
+
+/* =====================================================================
+   0.27 · Structure des thèmes de monde : ce qui change vraiment l'allure
+   ===================================================================== */
+/* taille du titre */
+.nw.wt-tz .nw-title{zoom:var(--wt-tz,1)}
+/* effets de titre */
+.nw.wt-tfx-neon .nw-title{color:color-mix(in srgb,#fff 70%,var(--hl))!important;text-shadow:0 0 4px var(--hl),0 0 16px var(--hl),0 0 42px color-mix(in srgb,var(--hl) 70%,transparent)!important}
+.nw.wt-tfx-outline .nw-title{color:transparent!important;-webkit-text-stroke:1.5px var(--ink);text-shadow:none!important}
+.nw.wt-tfx-shadow .nw-title{text-shadow:.06em .06em 0 var(--hl)!important}
+.nw.wt-tfx-glitch .nw-title{text-shadow:.03em 0 #ff2e63,-.03em 0 #08d9d6!important;animation:wtGlitch 4s steps(1) infinite}
+@keyframes wtGlitch{0%,92%,100%{transform:none;clip-path:none}93%{transform:translateX(3px);clip-path:inset(20% 0 45% 0)}95%{transform:translateX(-4px);clip-path:inset(60% 0 10% 0)}97%{transform:translateX(2px)}}
+.nw.wt-tfx-stamp .nw-title{display:inline-block;width:auto;padding:.08em .28em;border:.08em solid var(--hl);color:var(--hl)!important;transform:rotate(-2.5deg);text-shadow:none!important;mix-blend-mode:multiply}
+@media (prefers-reduced-motion:reduce){.nw.wt-tfx-glitch .nw-title{animation:none}}
+/* traitement de l'image de fond */
+.nw.wt-img-bw .nw-bg{filter:grayscale(1) contrast(1.12)!important}
+.nw.wt-img-sepia .nw-bg{filter:sepia(.75) saturate(.8) contrast(1.05)!important}
+.nw.wt-img-duo .nw-bg{filter:grayscale(1) contrast(1.2) brightness(.85)!important}
+.nw-wtduo{position:absolute;inset:0;z-index:0;pointer-events:none;background:var(--hl);mix-blend-mode:color;opacity:.6}
+.nw.wt-img-none .nw-bg{display:none}
+/* cadre et décor */
+.nw-wtfr{position:absolute;inset:0;z-index:5;pointer-events:none}
+.nw-wtfr.fr-screen::before{content:"";position:absolute;inset:clamp(8px,1.4vw,18px);border:2px solid color-mix(in srgb,var(--ink) 30%,transparent);border-radius:28px/22px;box-shadow:inset 0 0 70px rgba(0,0,0,.65),0 0 0 999px rgba(0,0,0,.35)}
+.nw-wtfr.fr-double::before{content:"";position:absolute;inset:14px;border:1px solid color-mix(in srgb,var(--hl) 70%,transparent);outline:1px solid color-mix(in srgb,var(--hl) 40%,transparent);outline-offset:5px}
+.nw-wtfr.fr-corners::before{content:"";position:absolute;inset:16px;--c:color-mix(in srgb,var(--ink) 70%,transparent);
+  background:linear-gradient(var(--c),var(--c)) 0 0/28px 2px no-repeat,linear-gradient(var(--c),var(--c)) 0 0/2px 28px no-repeat,linear-gradient(var(--c),var(--c)) 100% 0/28px 2px no-repeat,linear-gradient(var(--c),var(--c)) 100% 0/2px 28px no-repeat,
+    linear-gradient(var(--c),var(--c)) 0 100%/28px 2px no-repeat,linear-gradient(var(--c),var(--c)) 0 100%/2px 28px no-repeat,linear-gradient(var(--c),var(--c)) 100% 100%/28px 2px no-repeat,linear-gradient(var(--c),var(--c)) 100% 100%/2px 28px no-repeat}
+.nw-wtfr.dc-grid::after{content:"";position:absolute;inset:0;opacity:.18;background:linear-gradient(color-mix(in srgb,var(--hl) 60%,transparent) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,color-mix(in srgb,var(--hl) 60%,transparent) 1px,transparent 1px) 0 0/48px 48px;mask-image:linear-gradient(0deg,#000,transparent 70%)}
+.nw-wtfr.dc-lines::after{content:"";position:absolute;inset:0;opacity:.2;background:repeating-linear-gradient(180deg,transparent 0 33px,color-mix(in srgb,var(--ink) 60%,transparent) 33px 34px)}
+.nw-wtfr .hud{position:absolute;font:500 10px/1 "JetBrains Mono",monospace;letter-spacing:.2em;color:color-mix(in srgb,var(--hl) 80%,transparent)}
+.nw-wtfr .hud.tl{top:62px;left:24px}.nw-wtfr .hud.tr{top:62px;right:24px;animation:nwBlink 1.4s steps(1) infinite}.nw-wtfr .hud.bl{bottom:20px;left:60px}.nw-wtfr .hud.br{bottom:20px;right:24px}
+/* style des boutons du menu (passe devant celui du thème) */
+.nw.wt-mn-underline .nw-menu button{background:none!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;clip-path:none!important;box-shadow:none!important;transform:none!important;color:var(--ink)!important}
+.nw.wt-mn-underline .nw-menu button.on{border-bottom:2px solid var(--hl)!important;color:var(--hl)!important}
+.nw.wt-mn-pill .nw-menu button{background:transparent!important;border:1px solid color-mix(in srgb,var(--ink) 35%,transparent)!important;border-radius:999px!important;clip-path:none!important;box-shadow:none!important;transform:none!important;color:var(--ink)!important;padding-left:18px!important;padding-right:18px!important;margin-bottom:6px}
+.nw.wt-mn-pill .nw-menu button.on{background:var(--hl)!important;border-color:var(--hl)!important;color:var(--paper)!important}
+.nw.wt-mn-block .nw-menu button{background:color-mix(in srgb,var(--ink) 9%,transparent)!important;border:0!important;border-radius:0!important;clip-path:none!important;box-shadow:none!important;transform:none!important;color:var(--ink)!important;margin-bottom:4px}
+.nw.wt-mn-block .nw-menu button.on{background:var(--hl)!important;color:var(--paper)!important}
+.nw.wt-mn-box .nw-menu button{background:transparent!important;border:1px solid color-mix(in srgb,var(--ink) 40%,transparent)!important;border-radius:0!important;clip-path:none!important;box-shadow:none!important;transform:none!important;color:var(--ink)!important;margin-bottom:5px}
+.nw.wt-mn-box .nw-menu button.on{border-color:var(--hl)!important;box-shadow:inset 3px 0 0 var(--hl)!important;color:var(--hl)!important}
+.nw[class*="wt-mn-"] .nw-menu button::before{display:none!important}

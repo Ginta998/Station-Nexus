@@ -45,8 +45,10 @@ export default function TapePlayer({ entry: e, onClose }) {
   // bobines : la gauche se vide, la droite se remplit
   const rl = 44 - 22 * p, rr = 22 + 22 * p;
   const label = e.tape_label || e.title;
+  // un enregistrement n'a pas forcément de texte : alors seule la cassette s'affiche, au centre
+  const hasText = (e.blocks || []).some((b) => (b.text || "").trim() || b.url || (b.urls || []).length) || (e.body || "").trim();
   return createPortal(
-    <div className={"tp" + (on ? " on" : "") + (starting ? " starting" : "")} role="dialog" aria-label={`Cassette : ${e.title}`} data-testid="tape-player">
+    <div className={"tp" + (on ? " on" : "") + (starting ? " starting" : "") + (hasText ? "" : " solo")} role="dialog" aria-label={`Cassette : ${e.title}`} data-testid="tape-player">
       <button className="tp-x" onClick={close} aria-label="Fermer" data-testid="tape-close"><IoClose size={18} /></button>
       <div className="tp-deck">
         <div className="tp-cass" aria-hidden="true">
@@ -76,12 +78,13 @@ export default function TapePlayer({ entry: e, onClose }) {
         <div className="tp-bar" onClick={(ev) => { const r = ev.currentTarget.getBoundingClientRect(); const el = a.current; if (el && dur) { el.currentTime = ((ev.clientX - r.left) / r.width) * dur; setPos(el.currentTime); } }} role="slider" aria-valuemin={0} aria-valuemax={Math.round(dur)} aria-valuenow={Math.round(pos)} aria-label="Position"><i style={{ width: `${p * 100}%` }} /></div>
         {!e.tape_url && <p className="tp-none">Pas encore d'enregistrement sur cette cassette.</p>}
       </div>
-      <article className="tp-script">
+      {!hasText && <p className="tp-solo-t"><b>{e.title}</b>{e.subtitle && <small>{e.subtitle}</small>}</p>}
+      {hasText && <article className="tp-script">
         <p className="mono tp-k">TRANSCRIPTION</p>
         <h1>{e.title}</h1>
         {e.subtitle && <p className="tp-sub">{e.subtitle}</p>}
         <div className="tp-text"><JournalBlocks blocks={e.blocks || []} /></div>
-      </article>
+      </article>}
       {e.tape_url && <audio ref={a} src={mediaUrl(e.tape_url)} preload="metadata" onLoadedMetadata={(ev) => setDur(ev.currentTarget.duration)} onTimeUpdate={(ev) => setPos(ev.currentTarget.currentTime)} onEnded={() => { stopFx(); tapeRelease(vol); setOn(false); }} />}
     </div>,
     document.body
