@@ -140,3 +140,44 @@
 @keyframes tpUp{from{opacity:0;transform:translateY(18px)}}
 @media (prefers-reduced-motion:reduce){.tp-cassw,.tp-ctl,.tp-bar,.tp-script,.tp-solo-t{animation:none}}
 .cs-disc{top:30%;left:-16%;width:42%}.cs-brand{z-index:1}
+
+/* =====================================================================
+   0.29 · La cassette comme les VHS d'Alexandrie : plastique noir mat, étiquette usée, rayures, grain
+   ===================================================================== */
+.cs{--ax-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --ax-grain-soft:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' seed='9'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 .5 0 0 0 -.14'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --ax-scuff:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='600'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.16 .012' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 9 0 0 0 -6.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.cs-shell{background:radial-gradient(120% 70% at 25% 0%,rgba(255,255,255,.08),transparent 55%),linear-gradient(180deg,#24211e,#171513 60%,#100f0e)!important;
+  box-shadow:inset 0 0 0 .4cqw rgba(255,255,255,.06),inset 0 .5cqw 0 rgba(255,255,255,.07),inset 0 -1.2cqw 2cqw rgba(0,0,0,.5),0 0 0 .3cqw #0a0908!important;backdrop-filter:none!important}
+.cs-shell::after{background-image:var(--ax-grain)!important;opacity:.55!important;mix-blend-mode:soft-light!important}
+.cs-gear{opacity:.25}
+.cs-screw{background:radial-gradient(circle at 35% 30%,#b9b6b0,#5e5b57 55%,#2c2a28)}
+.cs-label{background:#e4d8bf!important;box-shadow:inset 0 0 0 .3cqw rgba(60,40,10,.12),inset 0 0 4cqw rgba(110,80,30,.28),0 .2cqw .4cqw rgba(0,0,0,.35)!important}
+.cs-label::after{background-image:var(--ax-grain-soft),radial-gradient(40% 30% at 85% 20%,rgba(120,80,20,.22),transparent),radial-gradient(30% 25% at 12% 85%,rgba(90,60,20,.18),transparent)!important;opacity:.9!important}
+.cs-disc,.cs-brand,.cs-side,.cs-type,.cs-len{display:none!important}
+.cs-band{position:absolute;left:0;right:0;top:0;height:16%;display:flex;align-items:center;gap:1.6cqw;padding:0 2.4cqw;background:hsl(var(--h) 45% 26%);color:#f1e8d6;font:600 1.8cqw/1 "Josefin Sans","Inter",sans-serif;letter-spacing:.2em;box-shadow:0 .2cqw 0 rgba(0,0,0,.35)}
+.cs-band b{padding:.4cqw 1cqw;background:#f1e8d6;color:#111;font:italic 800 2.6cqw/1 "Archivo Black","Arial Black",sans-serif;letter-spacing:0}
+.cs-band span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-band i{display:grid;place-items:center;width:4.6cqw;height:4.6cqw;border:.4cqw solid #f1e8d6;border-radius:50%;font:800 2.4cqw/1 "Archivo Black",sans-serif;font-style:normal}
+.cs-title{left:5%!important;right:5%!important;top:21%!important;color:#1d1a16!important;font-size:4.2cqw!important;border-bottom:.25cqw solid rgba(30,25,20,.3)!important;transform:rotate(-.8deg)}
+.cs-sub{left:5%!important;right:5%!important;top:32%!important;color:#3d3830!important}
+.cs-stripes{position:absolute;left:0;right:0;bottom:8%;height:9%;background:linear-gradient(180deg,hsl(var(--h) 60% 42%) 0 30%,transparent 30% 40%,hsl(calc(var(--h) + 28) 60% 46%) 40% 70%,transparent 70% 78%,hsl(calc(var(--h) + 56) 55% 50%) 78%);opacity:.85}
+.cs-win{left:24%!important;right:24%!important;top:44%!important;height:30%!important;background:linear-gradient(180deg,rgba(18,17,16,.92),rgba(40,38,36,.9))!important;box-shadow:inset 0 .6cqw 1.2cqw rgba(0,0,0,.8),0 0 0 .4cqw #0f0e0d!important}
+.cs-mouth{background:linear-gradient(180deg,#1f1d1b,#121110)!important}
+/* l'usure, comme sur les VHS : éraflures, coins frottés, grain */
+.cs-wear{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;
+  background:var(--ax-scuff) -40px -80px,linear-gradient(90deg,rgba(255,255,255,.22),transparent 1.2cqw),linear-gradient(270deg,rgba(255,255,255,.14),transparent 1.2cqw),linear-gradient(180deg,rgba(255,255,255,.2),transparent 1.4cqw),
+    radial-gradient(circle at 0 0,rgba(255,255,255,.35),transparent 5cqw),radial-gradient(circle at 100% 100%,rgba(255,255,255,.3),transparent 5cqw),radial-gradient(circle at 100% 0,rgba(255,255,255,.22),transparent 4cqw);opacity:.6;mix-blend-mode:screen}
+.cs-gloss{background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.08) 45%,transparent 52%)!important}
+/* l'ouverture : la cassette arrive de face en se redressant, un reflet passe sur le plastique */
+.tp{background:radial-gradient(70% 60% at 50% 42%,color-mix(in srgb,var(--bg-secondary,#1b1c20) 80%,#000),#040405 78%)!important}
+.tp-cassw{perspective:1400px;animation:none!important}
+.tp-cassw .cs{animation:csIn 1.15s cubic-bezier(.16,1,.3,1) both}
+@keyframes csIn{0%{opacity:0;transform:translateY(30px) rotateX(58deg) rotateZ(-9deg) scale(.86)}35%{opacity:1}100%{opacity:1;transform:rotate(-1.5deg)}}
+.tp-cassw .cs-gloss{background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.28) 45%,transparent 55%) -150% 0/250% 100% no-repeat!important;animation:csSheen 1.2s .7s cubic-bezier(.4,0,.2,1) both}
+@keyframes csSheen{to{background-position:150% 0}}
+.tp-ctl,.tp-bar{animation:tpUp .55s .9s cubic-bezier(.2,.8,.2,1) both!important}
+.tp-script,.tp-solo-t{animation:tpUp .6s 1s cubic-bezier(.2,.8,.2,1) both!important}
+.jr-card-img.is-tape,.nw-pane-tape{background:radial-gradient(70% 70% at 50% 40%,#202124,#0b0b0c)!important}
+@media (prefers-reduced-motion:reduce){.tp-cassw .cs,.tp-cassw .cs-gloss{animation:none}}
+.cs-wear{opacity:.32!important}

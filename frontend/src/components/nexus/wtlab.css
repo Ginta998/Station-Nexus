@@ -180,3 +180,6 @@
 .wtp.thumb{border:0}
 .wtp.thumb *{animation:none!important;transition:none!important}
 .wtp.thumb .nw-hud,.wtp.thumb .nw-keys,.wtp.thumb .nw-tocm{visibility:hidden}
+/* la miniature ne peut jamais défiler (un défilement automatique du monde la décalait) */
+.wtp,.wtp-in,.wtp-in .nw{overflow:clip!important}
+@media (max-width:760px){.wtl-split{grid-template-columns:minmax(0,1fr)}.wtl-look{max-width:300px;margin:0 auto;width:100%}}

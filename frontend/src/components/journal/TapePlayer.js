@@ -43,7 +43,7 @@ export default function TapePlayer({ entry: e, onClose }) {
   });
   useEffect(() => () => { a.current?.pause(); stopFx(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // à l'ouverture, la cassette glisse dans le lecteur et s'enclenche
-  useEffect(() => { const t = setTimeout(() => tapeInsert(vol), 520); return () => clearTimeout(t); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const t = setTimeout(() => tapeInsert(vol), 650); return () => clearTimeout(t); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // bobines : la gauche se vide, la droite se remplit
   const label = e.tape_label || e.title;

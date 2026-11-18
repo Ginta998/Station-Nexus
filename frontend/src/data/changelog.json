@@ -1,6 +1,22 @@
 {
-  "version": "0.28",
+  "version": "0.29",
   "patches": [
+    {
+      "v": "0.29",
+      "date": "2026-11-18",
+      "title": "La cassette, comme une VHS",
+      "groups": {
+        "Changé": [
+          "La cassette prend l'allure des VHS d'Alexandrie : plastique noir mat, rayures et coins frottés, étiquette de papier usée et tachée, bandeau « C-46 », titre écrit à la main, bandes de couleur tirées du titre. Fini le bleu et l'orange.",
+          "Ouverture plus soignée : la cassette arrive de face en se redressant, un reflet passe sur le plastique, puis les touches et le texte apparaissent.",
+          "Fond du lecteur de cassette : neutre et sombre (le fond marron est retiré).",
+          "Son du magnéto retravaillé : clacs secs de plastique et de métal, petit sifflement de moteur qui oscille, bande qui glisse ; plus de grave qui traîne."
+        ],
+        "Corrigé": [
+          "Atelier des thèmes sur téléphone : les miniatures sont rendues à la taille d'un téléphone (elles s'affichaient de travers) et ne peuvent plus se décaler."
+        ]
+      }
+    },
     {
       "v": "0.28",
       "date": "2026-11-18",
