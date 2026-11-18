@@ -24,10 +24,11 @@ import {
   getLibrary, getMembershipPlan, pushTest,
 } from "@/lib/api";
 import { pushSupported, getPermission, getNotifPref, getSoundPref, setSoundPref, enablePush, updatePref, disablePush, isSubscribed } from "@/lib/push";
-import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles } from "react-icons/io5";
+import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 import Celebration from "@/components/Celebration";
 import { StartupSetting } from "@/components/Startup";
 import { TOUR_STEPS } from "@/lib/tourSteps";
+import "@/components/editor.css";
 import { EXPERIENCES, useExperience, setExperience, worldAmbientAuto, setWorldAmbientAuto } from "@/lib/experience";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
@@ -885,6 +886,8 @@ export default function Settings() {
   const TEXT_SCALE_SIZE = { petit: 12, normal: 15, grand: 17, xl: 20, max: 23, ultra: 27 };
 
   const [tab, setTab] = useState("apparence");
+  const [setDark, setSetDark] = useState(() => { try { return localStorage.getItem("sx_atelier_dark") !== "0"; } catch (_) { return true; } });
+  const toggleSetDark = () => setSetDark((d) => { try { localStorage.setItem("sx_atelier_dark", d ? "0" : "1"); } catch (_) {} return !d; });
   const experience = useExperience();
   const TABS = [
     { key: "apparence", label: "Apparence", icon: <IoColorPaletteOutline size={15} /> },
@@ -894,24 +897,30 @@ export default function Settings() {
     { key: "legal", label: "Légal", icon: <IoDocumentTextOutline size={15} /> },
     { key: "admin", label: "Admin", icon: <IoShieldHalfOutline size={15} />, admin: true },
   ];
+  const tabs = TABS.filter((t) => !t.admin || isAdmin);
+  const ti = Math.max(0, tabs.findIndex((t) => t.key === tab));
   return (
-    <div className="relative min-h-screen w-full" style={{ background: "transparent" }}>
-      <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
-        <div className="flex items-center justify-between gap-2 mb-8">
-          <button data-testid="settings-back" onClick={() => { sfx("back"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+    // Les paramètres de la station, rangés comme l'atelier de l'œuvre (esprit Rhine Lab) : sections numérotées à gauche
+    <div className={"rl rl-set" + (setDark ? " rl-dark" : "")} data-testid="settings-page">
+      <header className="rl-top">
+        <button type="button" className="rl-ico" data-testid="settings-back" onClick={() => { sfx("back"); nav("/"); }} aria-label="Retour à l'accueil"><IoArrowBack size={18} /></button>
+        <div className="rl-brand"><small>RHINE LAB · PARAMÈTRES DE LA STATION</small><b>Paramètres</b></div>
+        <div className="rl-top-acts">
+          <button type="button" className="rl-ico" onClick={toggleSetDark} title={setDark ? "Mode clair" : "Mode sombre"} aria-label={setDark ? "Mode clair" : "Mode sombre"} data-testid="settings-dark">{setDark ? <IoSunnyOutline size={17} /> : <IoMoonOutline size={17} />}</button>
           <MobileMenu />
         </div>
-        <h1 className="font-display text-4xl md:text-5xl mb-2" style={{ color: "var(--text-primary)" }}>Paramètres</h1>
-        <p className="mb-10" style={{ color: "var(--text-secondary)" }}>Personnalise ta station.</p>
-
-        <div className="sx-set-tabs" data-testid="settings-tabs">
-          {TABS.filter((t) => !t.admin || isAdmin).map((t) => (
-            <button key={t.key} data-testid={`settings-tab-${t.key}`} className={"sx-set-tab" + (tab === t.key ? " on" : "")} onClick={() => { setTab(t.key); sfx("nav"); }}>
-              <span className="ic">{t.icon}</span>{t.label}
-            </button>
-          ))}
-        </div>
-
+      </header>
+      <nav className="rl-nav" aria-label="Sections" data-testid="settings-tabs">
+        {tabs.map((t, i) => (
+          <button type="button" key={t.key} data-testid={`settings-tab-${t.key}`} className={tab === t.key ? "on" : ""} onClick={() => { setTab(t.key); sfx("nav"); }}>
+            <i>{String(i + 1).padStart(2, "0")}</i><span>{t.label}</span>
+          </button>
+        ))}
+        <p className="rl-keys">Personnalise ta station : apparence, son, compte.</p>
+      </nav>
+      <main className="rl-main" key={tab}>
+       <section className="rl-sec rl-set-sec">
+        <header className="rl-sec-h"><i>{String(ti + 1).padStart(2, "0")}</i><h2>{tabs[ti]?.label}</h2></header>
         {tab === "apparence" && (<>
         <Section title="Expérience" extra="— la manière de parcourir la station">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-testid="experience-grid">
@@ -927,7 +936,7 @@ export default function Settings() {
           {experience === "nexus" && (
             <label className="flex items-center justify-between gap-4 mt-3 p-4 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="world-amb-auto">
               <span><span className="block font-semibold" style={{ color: "var(--text-primary)" }}>Lancer l'ambiance sonore en entrant dans une œuvre</span>
-                <span className="block text-sm" style={{ color: "var(--text-secondary)" }}>Sinon, elle se lance avec le bouton note de musique, en haut à droite du monde.</span></span>
+                <span className="block text-sm" style={{ color: "var(--text-secondary)" }}>Sinon, elle se lance avec le bouton disque, en haut à droite du monde.</span></span>
               <input type="checkbox" defaultChecked={worldAmbientAuto()} onChange={(e) => { setWorldAmbientAuto(e.target.checked); sfx("select"); }} style={{ width: 20, height: 20, accentColor: "var(--brand)" }} />
             </label>
           )}
@@ -1107,7 +1116,8 @@ export default function Settings() {
         </>)}
 
         <p className="mt-4 text-xs text-center" style={{ color: "var(--text-secondary)" }}>Astuce : installe Stationexus via « Ajouter à l'écran d'accueil ».</p>
-      </div>
+       </section>
+      </main>
     </div>
   );
 }

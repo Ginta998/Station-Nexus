@@ -468,7 +468,6 @@ body:has(.nw) :is(.cb-root,.bn-fab,.sx-global-sound,.nx-tools){display:none!impo
 
 /* braises qui montent (Cathédrale, Couronne) */
 @keyframes nwRise{from{transform:translateY(20px);opacity:0}20%{opacity:1}to{transform:translateY(-120px);opacity:0}}
-.ws-cathedrale .nw-fx::before,.ws-couronne .nw-fx::before{content:"";position:absolute;inset:0;background-image:radial-gradient(2px 2px at 12% 88%,var(--ember),transparent),radial-gradient(1.5px 1.5px at 34% 76%,var(--ember),transparent),radial-gradient(2px 2px at 58% 92%,var(--ember),transparent),radial-gradient(1.5px 1.5px at 76% 82%,var(--ember),transparent),radial-gradient(1px 1px at 88% 95%,var(--ember),transparent),radial-gradient(1.5px 1.5px at 46% 98%,var(--ember),transparent);animation:nwRise 9s linear infinite}
 
 /* =====================================================================
    7. CATHÉDRALE — noir et rouge sang, gothique, cadre gravé
@@ -628,38 +627,7 @@ body:has(.nw) :is(.cb-root,.bn-fab,.sx-global-sound,.nx-tools){display:none!impo
 .ws-survivance .nw-u.on .nw-u-img{filter:none;outline-color:var(--hl)}
 @media (max-width:760px){.h-surv{grid-template-columns:1fr}.hv2-note{display:none}}
 
-/* =====================================================================
-   12. CRISTAL — bleu nuit, filigrane d'or, fenêtres
-   ===================================================================== */
-.ws-cristal{--paper:#060b1c;--ink:#e9eefb;--hl:#e3cf92;--line:rgba(227,207,146,.3);--ft:"Marcellus","Cinzel",serif;--fu:"Marcellus",serif;--fb:"Spectral",serif}
-.ws-cristal .nw-bg{opacity:.72}
-.ws-cristal .nw-fx{background:linear-gradient(180deg,rgba(6,11,28,.3),rgba(6,11,28,.86) 78%),radial-gradient(circle at 80% 14%,rgba(140,190,255,.2),transparent 40%)}
-.ws-cristal .nw-back,.ws-cristal .nw-tools button{border-color:rgba(227,207,146,.45);background:rgba(9,18,46,.6)}
-.h-crys{display:flex;flex-direction:column;justify-content:space-between;gap:24px}
-.hc2-head{text-align:center;padding-top:1vh}
-.hc2-head>span{display:block;color:#9fd0ff;font-size:16px;text-shadow:0 0 14px #9fd0ff;animation:nwFloatY 3s ease-in-out infinite alternate}
-@keyframes nwFloatY{to{transform:translateY(-6px)}}
-.ws-cristal .nw-title{font-weight:400;font-size:clamp(40px,6vw,88px);letter-spacing:.1em;background:linear-gradient(180deg,#fff 30%,#c9d8ff 62%,#e3cf92);-webkit-background-clip:text;background-clip:text;color:transparent}
-.ws-cristal .nw-tag{font-family:var(--fb);font-style:italic;opacity:.8}
-.hc2-wins{display:grid;grid-template-columns:minmax(260px,360px) minmax(0,1fr);gap:18px;align-items:end}
-.hc2-win{position:relative;padding:14px 16px;background:linear-gradient(180deg,rgba(28,48,104,.8),rgba(9,18,46,.88));border:1px solid rgba(227,207,146,.55);border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 20px 50px rgba(0,0,0,.5);backdrop-filter:blur(6px);animation:nwUp .6s both}
-.hc2-win::before{content:"";position:absolute;inset:4px;border:1px solid rgba(227,207,146,.18);border-radius:4px;pointer-events:none}
-.hc2-win.info{animation-delay:.08s}
-.hc2-win.info h2{margin:6px 0 0;font-family:var(--ft);font-weight:400;font-size:24px;letter-spacing:.06em}
-.ws-cristal .nw-k{color:var(--hl)}
-.ws-cristal .nw-menu button{font-family:var(--fu);font-size:17px;letter-spacing:.06em;color:rgba(233,238,251,.75);padding:7px 10px 7px 32px}
-.ws-cristal .nw-menu button.on{color:#fff;background:linear-gradient(90deg,rgba(159,208,255,.22),transparent)}
-.ws-cristal .nw-menu button.on::before{content:"◆";position:absolute;left:10px;color:#9fd0ff;text-shadow:0 0 10px #9fd0ff;font-size:11px;animation:nwPoint .7s ease-in-out infinite alternate}
-@keyframes nwPoint{to{transform:translateX(3px)}}
-.ws-cristal .nw-colmenu button.on{outline:0}
-.ws-cristal .nw-act{background:linear-gradient(180deg,#eadcab,#b99b52);color:#0b1330;border-color:#eadcab;border-radius:4px}
-.ws-cristal .nw-pane,.ws-cristal .nw-read{background:linear-gradient(180deg,rgba(28,48,104,.82),rgba(9,18,46,.92));border:1px solid rgba(227,207,146,.45);border-radius:6px}
-.ws-cristal .nw-pane{padding:18px}
-.ws-cristal .nw-ph h1{text-transform:none;letter-spacing:.08em;font-weight:400}
-.ws-cristal .nw-u-img{border-radius:4px;outline:0;box-shadow:0 0 0 1px rgba(227,207,146,.35)}
-.ws-cristal .nw-u.on .nw-u-img{box-shadow:0 0 0 2px var(--hl),0 0 22px rgba(159,208,255,.45)}
-.ws-cristal .nw-u-t b{font-family:var(--fu);font-weight:400}
-@media (max-width:760px){.hc2-wins{grid-template-columns:1fr}.hc2-win.info{display:none}}
+
 /* la barre du haut passe au-dessus de la scène : ses menus (son…) se ferment d'un clic ailleurs */
 .nw-hud{z-index:5}
 
@@ -670,3 +638,194 @@ body:has(.nw) :is(.cb-root,.bn-fab,.sx-global-sound,.nx-tools){display:none!impo
 .ws-hero .nw-split{grid-template-columns:clamp(280px,23vw,360px) minmax(0,1fr)}
 .ws-hero .nw-colmenu button,.ws-hero .nw-colmenu button.go{font-size:17px;min-height:42px}
 .nw-colmenu .nw-s{display:none}
+
+/* =====================================================================
+   0.20 — fenêtre façon Nier partout, effets de fond, sortie claire, commentaires sous le menu
+   ===================================================================== */
+/* sortie : maison (accueil de la station) + « Quitter l'univers » */
+.nw-tools .nw-quit{width:auto;padding:0 14px 0 12px;gap:7px;display:inline-flex;align-items:center;border-radius:999px;font:600 11px/1 var(--fu);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.ws-yorha .nw-tools .nw-quit,.ws-arcade .nw-tools .nw-quit,.ws-cathedrale .nw-tools .nw-quit,.ws-sengoku .nw-tools .nw-quit{border-radius:0}
+.ws-hero .nw-tools .nw-quit span{display:inline-block;transform:skewX(12deg)}
+@media (max-width:760px){.nw-tools .nw-quit{padding:0 10px;font-size:10px;letter-spacing:.06em}.nw-tools .nw-quit span::after{content:""}}
+@media (max-width:420px){.nw-tools .nw-quit span{font-size:0}.nw-tools .nw-quit span::before{content:"Quitter";font-size:10px}}
+
+/* accueil + commentaires en dessous : on fait défiler, sans changer d'écran */
+.nw-homewrap{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;padding:inherit}
+.nw-scr>.nw-homewrap{padding:6px max(18px,4vw) 0}
+.nw-homefill{position:relative;min-height:100%;display:flex;flex-direction:column;padding-bottom:46px}
+.nw-homefill>.nw-home{flex:1}
+.nw-tocm{position:absolute;left:50%;bottom:8px;translate:-50% 0;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--paper) 60%,transparent);color:inherit;font:inherit;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;opacity:.8;backdrop-filter:blur(8px);animation:nwBob 2.4s ease-in-out infinite}
+.nw-tocm:hover{opacity:1;border-color:var(--hl)}
+@keyframes nwBob{50%{transform:translateY(3px)}}
+.nw-cm{max-width:900px;margin:0 auto 40px;padding:24px clamp(16px,3vw,36px) 30px;background:color-mix(in srgb,var(--paper) 84%,transparent);border:1px solid var(--line);backdrop-filter:blur(14px)}
+.ws-yorha .nw-cm{background:var(--cream);border:0;box-shadow:6px 6px 0 rgba(78,75,66,.22)}
+.ws-trait .nw-cm{background:#fff;border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink)}
+.ws-hero .nw-cm{background:rgba(255,255,255,.9)}
+.ws-vhs .nw-cm{font-family:"JetBrains Mono",monospace}
+
+/* articles et listes sur téléphone : le titre passe sur deux lignes au lieu d'être coupé */
+@media (max-width:760px){
+  .nw-list .nw-l{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25}
+  .nw-list button{min-width:0;max-width:100%}
+  .ws-hero .nw-list{padding-left:10px;padding-right:18px}
+  .ws-hero .nw-list button{font-size:16px}
+  .nw-list .nw-th{width:64px}
+}
+
+/* La fenêtre (esprit Nier) : image et texte suivent le bouton choisi */
+.nw-win{position:relative;display:flex;flex-direction:column;min-width:0;width:100%;max-width:560px;border:1px solid var(--line);background:color-mix(in srgb,var(--paper) 60%,transparent);backdrop-filter:blur(12px);animation:nwWin .4s cubic-bezier(.16,1,.3,1) both}
+@keyframes nwWin{from{opacity:.2;transform:translateY(6px)}}
+.nw-win>header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:9px 16px;background:color-mix(in srgb,var(--ink) 90%,transparent);color:var(--paper);font-size:12px;letter-spacing:.24em;text-transform:uppercase}
+.nw-win>header span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nw-win>header small{flex:0 0 auto;opacity:.7;letter-spacing:.14em;font-size:10px}
+.nw-win-img{display:block;aspect-ratio:16/9;max-height:32vh;background:center/cover no-repeat;animation:nwFade .5s both}
+.nw-win-txt{padding:14px 16px 16px}
+.nw-win .nw-desc{margin:0;font-size:14.5px;max-width:none;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.nw-win .nw-resume{width:100%;margin-top:14px;animation:none}
+.nw-phone-resume{display:none}
+@media (max-width:760px){.nw-win{display:none}.nw-phone-resume{display:block}}
+/* par thème */
+.w-cinema{margin-top:20px;max-width:540px;background:rgba(0,0,0,.5);border:0;border-top:1px solid var(--line)}
+.w-cinema>header{background:none;color:var(--ink);padding:10px 0;font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:.1em}
+.w-cinema .nw-win-img{aspect-ratio:2.39/1}
+.w-cinema .nw-win-txt{padding:12px 0 0}
+.h-cinema .hc-txt .nw-desc{min-height:0}
+.hv-side{width:min(380px,32vw)}
+.w-vhs{background:rgba(4,8,14,.55);border:2px solid #cfe3ff;backdrop-filter:none}
+.w-vhs>header{background:#e8f1ff;color:#0a0f18;font-family:"VT323",monospace;font-size:20px;letter-spacing:.06em}
+.w-vhs .nw-desc{font-size:19px;line-height:1.25}
+.w-vhs .nw-win-img{filter:saturate(.85) contrast(1.1)}
+.ha-row{display:flex;align-items:flex-start;justify-content:center;gap:34px;margin-top:22px;width:100%}
+.ha-row .m-pix{margin-top:0}
+.w-arcade{max-width:400px;background:#000;border:4px solid #fff;box-shadow:8px 8px 0 color-mix(in srgb,var(--brand,#ff3d6b) 70%,#000);backdrop-filter:none;text-align:left}
+.w-arcade>header{background:var(--hl);color:#000;font-size:9px;letter-spacing:.06em}
+.w-arcade .nw-win-img{image-rendering:pixelated}
+.w-arcade .nw-desc{font-family:"VT323",monospace;font-size:20px;line-height:1.15}
+.hy-grid{grid-template-columns:minmax(240px,360px) minmax(0,1fr)}
+.w-yorha{max-width:none;background:var(--cream);border:0;box-shadow:6px 6px 0 rgba(78,75,66,.22);backdrop-filter:none}
+.w-yorha>header{background:var(--ink);color:var(--cream);letter-spacing:.3em}
+.w-yorha .nw-win-in{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:18px;padding:18px}
+.w-yorha .nw-win-img{aspect-ratio:3/4;max-height:48vh;filter:grayscale(.65) sepia(.35) contrast(1.05);border:1px solid var(--line)}
+.w-yorha .nw-win-txt{padding:0}
+.w-eve{max-width:440px;background:rgba(8,14,24,.42);backdrop-filter:blur(18px) saturate(1.3);clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px)}
+.w-eve>header{background:none;color:var(--ink);border-bottom:1px solid var(--line);font-weight:300;letter-spacing:.32em;padding:14px 20px}
+.w-eve>header small{color:var(--gold)}
+.w-eve .nw-win-img{margin:14px 20px 0;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.w-eve .nw-win-txt{padding:14px 20px 20px}
+.h-cath{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,440px);gap:clamp(24px,4vw,64px);align-items:center;text-align:center}
+.hk-col{display:flex;flex-direction:column;align-items:center}
+.w-cath{background:rgba(7,5,6,.72);border:1px solid rgba(179,18,30,.45);text-align:left}
+.w-cath>header{background:linear-gradient(90deg,rgba(179,18,30,.55),transparent);color:#f6ecdc;font-family:var(--fu);letter-spacing:.3em}
+.w-cath .nw-win-img{filter:contrast(1.1) brightness(.85);border-bottom:1px solid rgba(179,18,30,.4)}
+.w-cath .nw-desc{font-family:var(--fb);font-size:15.5px}
+.w-crown{background:rgba(8,7,10,.55);border:1px solid var(--line)}
+.w-crown::before,.w-crown::after{content:"";position:absolute;width:22px;height:22px;border:1px solid var(--hl);pointer-events:none}
+.w-crown::before{top:-6px;left:-6px;border-right:0;border-bottom:0}.w-crown::after{bottom:-6px;right:-6px;border-left:0;border-top:0}
+.w-crown>header{background:none;color:#f6e9c6;font-family:var(--fu);letter-spacing:.16em;text-transform:none;font-size:18px;border-bottom:1px solid var(--line)}
+.w-crown .nw-win-img{filter:sepia(.2)}
+.w-crown .nw-desc{font-family:var(--fb);font-size:17px}
+.ht-art{transition:background-image .3s}
+.h-sengoku{grid-template-columns:minmax(0,1fr) minmax(280px,400px) auto}
+.w-sengoku{align-self:end;background:rgba(13,12,10,.78);border:0;border-left:3px solid var(--hl)}
+.w-sengoku>header{background:none;color:var(--ink);font-family:var(--fu);letter-spacing:.3em}
+.w-sengoku .nw-win-img{filter:grayscale(.45)}
+.hv2-note{padding:20px 18px 16px}
+.w-surv{max-width:none;background:none;border:0;backdrop-filter:none;color:#1e1f19}
+.w-surv>header{background:none;color:#1e1f19;padding:0 0 8px;font-weight:600;letter-spacing:.1em;border-bottom:1px solid rgba(0,0,0,.2)}
+.w-surv .nw-win-img{margin-top:12px;border:6px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.25);transform:rotate(-1.5deg);filter:saturate(.7) sepia(.15)}
+.w-surv .nw-win-txt{padding:12px 0 0}
+.w-surv .nw-desc{font-family:var(--fb);color:#2a2b24;opacity:1;font-size:15px}
+.w-surv .nw-resume{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.2);color:#1e1f19;backdrop-filter:none}
+.w-hero{max-width:480px;background:rgba(255,255,255,.9);border:0;border-top:6px solid var(--hl);box-shadow:0 20px 50px rgba(28,35,51,.2);backdrop-filter:none;transform:skewX(-4deg)}
+.w-hero>*{transform:skewX(4deg)}
+.w-hero>header{background:none;color:var(--ink);font-weight:700;font-size:20px;letter-spacing:.06em}
+.w-hero .nw-desc{font-family:"Manrope",sans-serif;font-weight:500}
+
+/* =====================================================================
+   12. CRISTAL (refait) — verre, lumière, typographie fine
+   ===================================================================== */
+.ws-cristal{--paper:#070a12;--ink:#eef3ff;--hl:#8fd3ff;--line:rgba(200,225,255,.18);--ft:"Cormorant Garamond","Marcellus",serif;--fu:"Sora","Outfit",sans-serif;--fb:"Sora",sans-serif}
+.ws-cristal .nw-bg{opacity:.85;filter:saturate(.85) brightness(.9)}
+.ws-cristal .nw-fx{background:linear-gradient(90deg,rgba(7,10,18,.9) 0,rgba(7,10,18,.55) 42%,rgba(7,10,18,.15) 70%,rgba(7,10,18,.5)),radial-gradient(ellipse at 70% 20%,rgba(143,211,255,.16),transparent 50%)}
+.ws-cristal .nw-back,.ws-cristal .nw-tools button{border-color:rgba(200,225,255,.3);background:rgba(10,16,30,.4)}
+.h-crys{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,440px);gap:clamp(24px,5vw,80px);align-items:center}
+.ws-cristal .nw-k{font-family:var(--fu);font-weight:300;letter-spacing:.5em;color:var(--hl)}
+.ws-cristal .nw-title{font-weight:500;font-size:clamp(44px,6.4vw,100px);letter-spacing:.14em;text-transform:uppercase;line-height:1;color:#f4f8ff;text-shadow:0 0 40px rgba(143,211,255,.35)}
+.ws-cristal .nw-tag{font-family:var(--fu);font-weight:300;letter-spacing:.2em;text-transform:uppercase;font-size:13px;opacity:.75}
+.hc3-menu{position:relative;margin-top:34px;padding-left:22px;max-width:380px}
+.hc3-line{position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:linear-gradient(180deg,transparent,rgba(143,211,255,.65),transparent)}
+.ws-cristal .nw-menu button{font-family:var(--fu);font-weight:300;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:rgba(238,243,255,.55);padding:11px 12px;overflow:hidden}
+.ws-cristal .nw-menu button::before{content:"";position:absolute;left:4px;top:50%;width:7px;height:7px;translate:0 -50%;rotate:45deg;border:1px solid rgba(143,211,255,.5);background:#070a12;transition:.3s}
+.ws-cristal .hc3-menu .nw-menu button{overflow:visible}
+.ws-cristal .hc3-menu .nw-menu button::before{left:-21px}
+.ws-cristal .nw-list button,.ws-cristal .nw-colmenu button{padding-left:24px}
+.ws-cristal .nw-menu button.on{color:#fff;background:linear-gradient(90deg,rgba(143,211,255,.14),transparent 70%)}
+.ws-cristal .nw-menu button.on::before{background:var(--hl);border-color:#fff;box-shadow:0 0 12px var(--hl),0 0 24px var(--hl)}
+.ws-cristal .nw-menu button.on::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.16) 50%,transparent 70%);background-size:250% 100%;animation:nwSweep 2.6s ease-in-out infinite}
+@keyframes nwSweep{from{background-position:120% 0}to{background-position:-120% 0}}
+.ws-cristal .nw-colmenu button.on{outline:0}
+.w-crys{background:rgba(10,16,30,.42);backdrop-filter:blur(20px) saturate(1.2);border:1px solid rgba(200,225,255,.22);border-radius:2px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.w-crys>header{background:none;color:var(--ink);border-bottom:1px solid var(--line);font-family:var(--fu);font-weight:300;letter-spacing:.32em;padding:14px 18px}
+.w-crys .nw-win-img{clip-path:polygon(0 0,100% 0,100% 86%,93% 100%,0 100%)}
+.w-crys .nw-desc{font-family:var(--fu);font-weight:300}
+.ws-cristal .nw-act{background:transparent;border:1px solid var(--hl);color:#fff;font-family:var(--fu);font-weight:300;letter-spacing:.3em;box-shadow:0 0 18px rgba(143,211,255,.25)}
+.ws-cristal .nw-act:hover{background:rgba(143,211,255,.2)}
+.ws-cristal .nw-pane,.ws-cristal .nw-read{background:rgba(10,16,30,.6);backdrop-filter:blur(18px);border:1px solid var(--line)}
+.ws-cristal .nw-pane{padding:20px}
+.ws-cristal .nw-ph h1{font-weight:500;letter-spacing:.14em}
+.ws-cristal .nw-u-img{outline:0;box-shadow:0 0 0 1px var(--line)}
+.ws-cristal .nw-u.on .nw-u-img{box-shadow:0 0 0 1px #fff,0 0 26px rgba(143,211,255,.45)}
+.ws-cristal .nw-u-t b{font-family:var(--fu);font-weight:300;letter-spacing:.14em;text-transform:uppercase;font-size:13px}
+@media (max-width:760px){.h-crys{grid-template-columns:1fr;align-content:end}.ws-cristal .nw-fx{background:linear-gradient(0deg,rgba(7,10,18,.95) 20%,rgba(7,10,18,.35) 80%)}}
+
+/* =====================================================================
+   Effets de fond : chaque thème a sa matière qui vit (braises, cendres, étoiles…)
+   ===================================================================== */
+.nw-pt{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;--pc:rgba(255,255,255,.5);--ps:2px;--pdur:14s}
+.nw-pt::before,.nw-pt::after{content:"";position:absolute;left:0;right:0;top:-20%;height:140%;
+  background-image:radial-gradient(var(--ps) var(--ps) at 8% 82%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 22% 64%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 37% 91%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 51% 72%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 66% 88%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 79% 60%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 91% 84%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 15% 40%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 44% 30%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 72% 22%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 86% 38%,var(--pc),transparent),radial-gradient(var(--ps) var(--ps) at 30% 12%,var(--pc),transparent);
+  animation:nwPtRise var(--pdur) linear infinite}
+.nw-pt::after{left:13%;right:-13%;opacity:.7;animation-delay:calc(var(--pdur) / -2)}
+@keyframes nwPtRise{from{transform:translateY(10%);opacity:0}15%{opacity:1}85%{opacity:1}to{transform:translateY(-12%);opacity:0}}
+@keyframes nwPtFall{from{transform:translateY(-12%) translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}to{transform:translateY(10%) translateX(3%);opacity:0}}
+@keyframes nwPtDrift{from{transform:translateX(-4%)}50%{transform:translateX(4%) translateY(-2%)}to{transform:translateX(-4%)}}
+@keyframes nwPtTwinkle{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes nwPtFlick{0%{opacity:.6;transform:translate(0,0)}33%{opacity:.25;transform:translate(-3%,2%)}66%{opacity:.5;transform:translate(2%,-3%)}}
+.ws-cinema .nw-pt{--pc:rgba(255,255,255,.4);--ps:1.5px;--pdur:.6s}
+.ws-cinema .nw-pt::before{animation:nwPtFlick .6s steps(3) infinite}
+.ws-cinema .nw-pt::after{top:0;height:100%;left:0;right:0;background:linear-gradient(90deg,transparent 31.9%,rgba(255,255,255,.18) 32%,transparent 32.1%),linear-gradient(90deg,transparent 73.9%,rgba(255,255,255,.1) 74%,transparent 74.1%);animation:nwPtFlick 1.4s steps(2) infinite}
+.ws-vhs .nw-pt{z-index:3}
+.ws-vhs .nw-pt::before{top:0;height:6px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.18),transparent);animation:nwTrack 7s linear infinite}
+.ws-vhs .nw-pt::after{top:0;height:100%;left:0;right:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");animation:nwPtFlick .25s steps(2) infinite}
+@keyframes nwTrack{from{transform:translateY(-10vh)}to{transform:translateY(110vh)}}
+.ws-arcade .nw-pt{--pc:#fff;--ps:2px}
+.ws-arcade .nw-pt::before,.ws-arcade .nw-pt::after{top:0;height:100%;animation:nwPtTwinkle 2.4s steps(2) infinite}
+.ws-arcade .nw-pt::after{animation-delay:-1.2s}
+.ws-yorha .nw-pt{--pc:rgba(78,75,66,.45);--ps:3px;--pdur:28s}
+.ws-eve .nw-pt{--pc:rgba(200,240,255,.75);--ps:2px;--pdur:20s}
+.ws-hero .nw-pt{--pc:rgba(249,158,26,.75);--ps:2.5px;--pdur:9s}
+.ws-cathedrale .nw-pt{--pc:rgba(255,70,50,.8);--ps:2px;--pdur:9s}
+.ws-couronne .nw-pt{--pc:rgba(255,214,130,.85);--ps:2px;--pdur:12s}
+.ws-trait .nw-pt{--pc:rgba(20,20,20,.35);--ps:3px;--pdur:18s}
+.ws-trait .nw-pt::before,.ws-trait .nw-pt::after{animation-name:nwPtDrift}
+.ws-sengoku .nw-pt{--pc:rgba(236,229,214,.55);--ps:2px;--pdur:16s}
+.ws-sengoku .nw-pt::before{animation-name:nwPtFall}
+.ws-sengoku .nw-pt::after{--pc:rgba(192,38,45,.75);--ps:3px;animation-name:nwPtFall;animation-duration:22s}
+.ws-survivance .nw-pt{--pc:rgba(220,230,180,.5);--ps:2px;--pdur:30s}
+.ws-cristal .nw-pt{--pc:rgba(210,238,255,.9);--ps:1.5px;--pdur:20s}
+.ws-cristal .nw-pt::after{animation:nwPtTwinkle 3s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.nw-pt{display:none}}
+
+.w-cinema .nw-win-img{max-height:17vh}
+.h-cinema .nw-title{font-size:clamp(56px,8.4vw,140px)}
+.w-cinema .nw-desc{-webkit-line-clamp:3}
+.w-yorha{max-width:820px}
+.w-yorha .nw-win-img{max-height:40vh}
+.ws-sengoku .hs-title{font-size:clamp(40px,5vw,84px);height:calc(100dvh - 230px);max-height:none;overflow:hidden}
+@media (max-width:760px){.ws-sengoku .hs-title{height:auto}}
+/* commentaires : toujours sur un panneau sombre (le bloc de la station écrit en clair) */
+.nw .nw-cm{--text-primary:#eef1f6;--text-secondary:rgba(238,241,246,.66);--bg-primary:#0d1016;--bg-secondary:#151922;--border-c:rgba(238,241,246,.16);color:#eef1f6;background:rgba(10,12,18,.84);border:1px solid rgba(255,255,255,.1);box-shadow:none}
+.ws-yorha .nw-cm{background:#4e4b42;--bg-primary:#3f3c35;--text-secondary:rgba(218,212,187,.75);color:#dad4bb;box-shadow:6px 6px 0 rgba(78,75,66,.25)}
+.ws-trait .nw-cm{background:#141414;border:3px solid #141414;box-shadow:8px 8px 0 var(--hl)}
+.ws-hero .nw-cm{background:#1c2333;border-top:6px solid var(--hl)}
+.ws-cristal .nw-cm{background:rgba(10,16,30,.75);backdrop-filter:blur(18px)}

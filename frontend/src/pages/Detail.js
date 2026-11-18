@@ -23,8 +23,9 @@ import CreationJournal from "@/components/journal/CreationJournal";
 import { useExperience, worldAmbientAuto } from "@/lib/experience";
 import { fmtOfCreation } from "@/components/nexus/NexusHome";
 import NexusWorld from "@/components/nexus/NexusWorld";
+import WorkReader from "@/components/nexus/WorkReader";
 import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
-import { listJournal } from "@/lib/api";
+import { listJournal, getJournalEntry } from "@/lib/api";
 
 export default function Detail() {
   const { id } = useParams();
@@ -54,6 +55,7 @@ export default function Detail() {
   // Expérience Nexus : la fiche devient le « monde » de l'œuvre (l'objet en grand, puis des onglets)
   const nexus = useExperience() === "nexus";
   const [editorSec, setEditorSec] = useState("id");
+  const [workRead, setWorkRead] = useState(null); // Nexus : lecture dans le lecteur d'Alexandrie
   const [pvw, setPvw] = useState(null); // aperçu en direct : le monde suit les réglages de l'atelier ouvert
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
   const accentSrc = nexus && item ? (item.poster && item.poster.length > 4 ? item.poster : item.has_poster ? posterUrl(item.id, item.updated_at, 200) : null) : null;
@@ -232,7 +234,11 @@ export default function Detail() {
 
   const btn = { borderColor: "color-mix(in srgb, var(--brand) 30%, var(--border-c))", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "color-mix(in srgb, var(--bg-primary) 42%, transparent)" };
 
+  const readerFormat = ["livre", "vhs", "vinyle"].includes(item.reader_format) ? item.reader_format : ({ vinyle: "vinyle", vhs: "vhs" })[fmtOfCreation(item, catLabel)] || "livre";
   const overlays = (<>
+      {workRead && <WorkReader key={(workRead.entry?.id || workRead.unitKey || "t") + (workRead.start ?? "")} item={item} entry={workRead.entry} unitKey={workRead.unitKey} catLabel={catLabel}
+        format={readerFormat} cover={hasImg ? posterSrc : null} startUnit={workRead.start ?? null} resume={!!workRead.resume}
+        locked={(i) => workRead.unitKey === "chapters" && chapterLocked(item, i)} onClose={() => setWorkRead(null)} />}
       {gateOpen && <LaunchGate onClose={() => setGateOpen(false)} />}
 
       {readerOpen && (
@@ -279,10 +285,12 @@ export default function Detail() {
           cover={viewCover} bg={viewBg}
           box={{ id: item.id, title: view.title, sub: view.tagline || "", format: fmtOfCreation(view, catLabel), emblem: view.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }}
           making={making} trailer={trailerSource}
-          launchLabel={item.launch_label && item.launch_label !== "Lancer" ? item.launch_label : "Lancer"} onLaunch={launch}
+          launchLabel={item.launch_label && item.launch_label !== "Lancer" ? item.launch_label : "Lancer"} onLaunch={() => (item.launch_type === "reader" && item.launch_content ? (sfx("select"), setWorkRead({ unitKey: null })) : launch())}
           current={current} progress={progress}
           locked={isPaidLocked} unitLocked={(i) => item.launch_type === "chapters" && chapterLocked(item, i)}
-          onChapter={openChapter} onEpisode={openEpisode}
+          onChapter={(i, o) => { sfx("select"); setWorkRead({ unitKey: "chapters", start: i, resume: !!o?.resume }); }}
+          onEpisode={(i, o) => { const ep = item.episodes?.[i]; try { localStorage.setItem("sx_eplast_" + item.id, String(i)); } catch (_) {} if (ep?.content) { sfx("select"); setWorkRead({ unitKey: "episodes", start: i, resume: !!o?.resume }); } else openEpisode(i); }}
+          onEntry={async (e) => { sfx("select"); try { setWorkRead({ entry: await getJournalEntry(e.id) }); } catch (_) { toast.error("Entrée introuvable"); } }}
           unlock={{ price: `${Number(item.price_eur || 0).toFixed(2)} €`, buying, onBuy: buyThis, onSubscribe: plan?.enabled ? subscribe : null,
             subLabel: plan?.enabled ? `S'abonner · dès ${Math.min(...((plan.tiers && plan.tiers.length ? plan.tiers.map((t) => t.price_eur) : [plan.price_eur || 5])))} €/mois` : "",
             note: item.launch_type === "chapters" && (item.free_chapters || 0) > 0 ? `Les ${item.free_chapters} premiers chapitres sont libres. Pour la suite : accès définitif à l'œuvre, ou l'abonnement pour tout le catalogue.` : null }}
@@ -295,7 +303,7 @@ export default function Detail() {
           onAmbient={item.has_audio ? () => { sfx("nav"); playAmbient(item.id); } : null} ambientOn={thisPlaying}
           onAmbientSetup={() => { setEditorSec("sound"); setEditorOpen(true); }}
           isAdmin={isAdmin} onEdit={() => { sfx("select"); setEditorSec("id"); setEditorOpen(true); }}
-          onExit={() => { stopAmbient(); if (window.history.length > 1) nav(-1); else nav("/"); }} sfx={sfx} />
+          onExit={() => { stopAmbient(); if (window.history.length > 1) nav(-1); else nav("/"); }} onHome={() => { stopAmbient(); nav("/"); }} sfx={sfx} />
         {overlays}
       </>
     );

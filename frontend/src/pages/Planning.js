@@ -1,4 +1,5 @@
 import { useMemo, useState, useRef, useEffect } from "react";
+import LabHead from "@/components/LabHead";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -182,10 +183,7 @@ export default function Planning() {
           </div>
         ) : (
           <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <IoRocketOutline size={30} style={{ color: "var(--brand)" }} />
-              <h1 className="font-display text-4xl md:text-5xl" style={{ color: "var(--text-primary)" }} data-testid="planning-title">{title}</h1>
-            </div>
+            <LabHead label="SORTIES" code="P-01" title={title} icon={<IoRocketOutline />} testid="planning-title" />
             {intro && <p className="max-w-2xl leading-relaxed" style={{ color: "var(--text-secondary)" }} data-testid="planning-intro">{intro}</p>}
             {isAdmin && (
               <button data-testid="planning-edit-intro" onClick={startEditIntro} className="mt-3 flex items-center gap-1.5 px-3 py-1.5 border text-xs" style={fs}><IoCreateOutline size={13} /> Modifier l'intro</button>

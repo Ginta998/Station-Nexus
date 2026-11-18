@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import TopBar from "@/components/TopBar";
 import EditorDialog from "@/components/EditorDialog";
+import StationSearch from "@/components/StationSearch";
 import ProfileDialog from "@/components/ProfileDialog";
 import HomeCountdown from "@/components/HomeCountdown";
 import HomeCustomizer from "@/components/home/HomeCustomizer";
@@ -105,7 +106,10 @@ export default function Home() {
   const { data: journalCats = [] } = useQuery({ queryKey: ["journal-cats"], queryFn: listJournalCategories });
 
   const [view, setView] = useState("rails");      // rails | map | arcade
-  const [query, setQuery] = useState("");
+  const [query] = useState(""); // la recherche passe par le panneau (StationSearch)
+  const [searchOpen, setSearchOpen] = useState(false);
+  // Ctrl/Cmd + K : la recherche de la station
+  useEffect(() => { const k = (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setSearchOpen(true); } }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, []);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -265,10 +269,11 @@ export default function Home() {
 
         {/* RECHERCHE */}
         <div className="sx-search">
-          <div className="field">
+          <button type="button" className="field sx-search-open" onClick={() => { sfx("nav"); setSearchOpen(true); }} data-testid="home-search-open">
             <IoSearch size={14} style={{ color: "var(--text-secondary)" }} />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher une création…" />
-          </div>
+            <span>Rechercher une œuvre, un chapitre, le journal…</span>
+            <kbd>Ctrl K</kbd>
+          </button>
           <button className="sbtn" data-testid="home-theme-toggle" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }}>
             <IoColorPaletteOutline size={14} style={{ marginRight: 5 }} /> Thèmes
           </button>
@@ -302,6 +307,7 @@ export default function Home() {
     <div style={{ minHeight: "calc(100vh / var(--uiz, 1))", background: "transparent", color: "var(--text-primary)", position: "relative" }}>
       <div style={{ position: "relative", zIndex: 1 }}>
       <TopBar onAdd={openCreate} onProfile={requireProfile} />
+      {searchOpen && <StationSearch onClose={() => setSearchOpen(false)} />}
       <HomeCountdown />
 
       <div className="sx-exp">

@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoClose, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoSettingsOutline, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline } from "react-icons/io5";
+import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, mediaUrl } from "@/lib/api";
 import { JournalBlocks, fmtDate } from "@/components/journal/JournalParts";
 import { ContextMenuHost, pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 import StationMenu, { SoundBtn } from "@/components/StationMenu";
-import Box3D from "@/components/nexus/Box3D";
 import { Face } from "@/components/atelier/Alexandrie";
 import "@/components/nexus/world.css";
 
@@ -17,7 +15,7 @@ import "@/components/nexus/world.css";
   Le fil d'Ariane en haut montre toujours où l'on est ; Échap ou ← remonte d'un cran.
 */
 
-const OVERLAYS = '[data-testid="chapter-reader"],[data-testid="cinema-player"],[data-testid="cosmic-bunny-game"],[data-testid="reader-modal"],[data-testid="world-studio"],[data-testid="editor-dialog"],[role="menu"],.sx-menu-scrim,.sx-sound-menu';
+const OVERLAYS = '[data-testid="chapter-reader"],[data-testid="cinema-player"],[data-testid="cosmic-bunny-game"],[data-testid="reader-modal"],[data-testid="world-studio"],[data-testid="editor-dialog"],[data-testid="alex-reader"],[role="menu"],.sx-menu-scrim,.sx-sound-menu';
 const typing = (t) => /^(INPUT|TEXTAREA|SELECT)$/.test(t?.tagName) || t?.isContentEditable;
 const plural = (n, one, many) => `${n} ${n > 1 ? many : one}`;
 const roman = (i) => ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][i] || String(i + 1);
@@ -34,11 +32,10 @@ const VIEW_KEY = "sx_units_view";
 const readView = () => { try { return localStorage.getItem(VIEW_KEY) === "list" ? "list" : "grid"; } catch (_) { return "grid"; } };
 
 export default function NexusWorld(p) {
-  const { item, ws, catLabel, cover, bg, box, making = [], trailer, launchLabel, progress, onLaunch, locked, unitLocked, onChapter, onEpisode,
-    current, unlock, comments, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, sfx = () => {}, intentionUrl } = p;
+  const { item, ws, catLabel, cover, bg, making = [], trailer, launchLabel, progress, onLaunch, locked, unitLocked, onChapter, onEpisode,
+    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl } = p;
 
   const wide = useWide();
-  const navTo = useNavigate();
   const [view, setViewS] = useState(readView);
   const setView = (v) => { setViewS(v); sfx("nav"); try { localStorage.setItem(VIEW_KEY, v); } catch (_) {} };
   const isUnits = (item.launch_type === "chapters" && item.chapters?.length > 0) || (item.launch_type === "episodes" && item.episodes?.length > 0);
@@ -65,19 +62,17 @@ export default function NexusWorld(p) {
   // ---------- ce que contient le monde ----------
   const startLabel = item.coming_soon ? "Bientôt" : launchLabel;
   const sections = useMemo(() => [
-    trailer && { k: "trailer", label: "Bande-annonce", desc: "Regarder la bande-annonce dans le monde." },
-    item.gallery?.length > 0 && { k: "gallery", label: "Moodboard", desc: `${plural(item.gallery.length, "image", "images")} : les visuels, les recherches, l'atmosphère.` },
-    making.length > 0 && { k: "making", label: "Making of", desc: `${plural(making.length, "entrée", "entrées")} du journal de bord liée${making.length > 1 ? "s" : ""} à l'œuvre.` },
-    item.intention_enabled && (item.intention_text || item.intention_images?.length > 0 || item.intention_file_id) && { k: "intention", label: item.intention_title || "Intentions", desc: (item.intention_text || "Ce que l'auteur a voulu faire.").split(/(?<=[.!?])\s/)[0] },
+    trailer && { k: "trailer", label: "Bande-annonce", desc: "Regarder la bande-annonce dans le monde.", img: bg || cover },
+    item.gallery?.length > 0 && { k: "gallery", label: "Moodboard", desc: `${plural(item.gallery.length, "image", "images")} : les visuels, les recherches, l'atmosphère.`, img: item.gallery[0] },
+    making.length > 0 && { k: "making", label: "Making of", desc: `${plural(making.length, "entrée", "entrées")} du journal de bord : les coulisses, les intentions, la fabrication.`, img: making.find((e) => e.cover)?.cover ? mediaUrl(making.find((e) => e.cover).cover) : null },
     item.embeds?.length > 0 && { k: "embeds", label: "Réseaux", desc: `${plural(item.embeds.length, "lien", "liens")} vers l'œuvre ailleurs.` },
-    { k: "comments", label: "Commentaires", desc: "Lire les messages et laisser un mot à l'auteur." },
-    neighbors.length > 0 && { k: "neighbors", label: "Autres mondes", desc: "Passer directement dans l'univers d'une autre œuvre." },
-  ].filter(Boolean), [item, making.length, trailer, neighbors.length]);
+    neighbors.length > 0 && { k: "neighbors", label: "Autres mondes", desc: "Passer directement dans l'univers d'une autre œuvre.", img: coverOf(neighbors[0]) },
+  ].filter(Boolean), [item, making, trailer, neighbors, bg, cover]); // eslint-disable-line
 
   const units = item.launch_type === "chapters" ? (item.chapters || []) : (item.episodes || []);
-  const openUnit = (i) => {
+  const openUnit = (i, opts) => {
     if (unitLocked(i)) { sfx("nav"); push({ k: "unlock" }); return; }
-    item.launch_type === "chapters" ? onChapter(i) : onEpisode(i);
+    item.launch_type === "chapters" ? onChapter(i, opts) : onEpisode(i, opts);
   };
   const start = () => {
     if (item.coming_soon) { toast.info("Bientôt disponible"); return; }
@@ -87,10 +82,10 @@ export default function NexusWorld(p) {
   };
 
   const homeItems = [
-    current != null && progress && { id: "resume", label: "Reprendre", sub: progress.label, desc: `Reprendre là où tu t'étais arrêté : ${progress.label.toLowerCase()}.`, go: () => openUnit(current), main: true },
-    { id: "launch", label: isUnits ? (current != null && progress ? unitsLabel : startLabel) : startLabel, sub: isUnits ? plural(units.length, unitWord, unitWord + "s") : "", desc: isUnits ? `Choisir parmi ${plural(units.length, unitWord, unitWord + "s")}.` : (item.synopsis || ""), go: start, main: !(current != null && progress) },
+    current != null && progress && { id: "resume", label: "Reprendre", sub: progress.label, desc: `Reprendre là où tu t'étais arrêté : ${progress.label.toLowerCase()}.`, go: () => openUnit(current, { resume: true }), main: true, win: units[current]?.image || cover },
+    { id: "launch", label: isUnits ? (current != null && progress ? unitsLabel : startLabel) : startLabel, sub: isUnits ? plural(units.length, unitWord, unitWord + "s") : "", desc: isUnits ? `Choisir parmi ${plural(units.length, unitWord, unitWord + "s")}.` : (item.synopsis || ""), go: start, main: !(current != null && progress), win: cover || bg },
     locked && !item.coming_soon && { id: "unlock", label: "Débloquer", sub: unlock?.price, desc: "Accès définitif à l'œuvre, ou l'abonnement pour tout le catalogue.", go: () => push({ k: "unlock" }) },
-    ...sections.map((s) => ({ id: s.k, label: s.label, desc: s.desc, go: () => push({ k: s.k }) })),
+    ...sections.map((s) => ({ id: s.k, label: s.label, desc: s.desc, win: s.img, go: () => push({ k: s.k }) })),
   ].filter(Boolean);
 
   // ---------- chaque écran : son titre (fil d'Ariane), ses éléments (clavier) ----------
@@ -101,7 +96,7 @@ export default function NexusWorld(p) {
       case "home": return homeItems;
       case "units": return units.map((u, i) => ({ id: "u" + i, idx: i, label: u.title || `${unitWord[0].toUpperCase() + unitWord.slice(1)} ${i + 1}`, sub: item.launch_type === "chapters" ? `CH. ${String(i + 1).padStart(2, "0")}` : `EP. ${String(i + 1).padStart(2, "0")}`, desc: u.description || "", img: u.image, lock: unitLocked(i), mark: current === i, go: () => openUnit(i) }));
       case "gallery": return (item.gallery || []).map((g, i) => ({ id: "g" + i, img: g, go: () => push({ k: "image", list: item.gallery, i }) }));
-      case "making": return making.map((e) => ({ id: e.id, label: e.title, sub: fmtDate(e.date), desc: e.subtitle || e.excerpt || "", img: e.cover ? mediaUrl(e.cover) : null, go: () => push({ k: "entry", e }) }));
+      case "making": return making.map((e) => ({ id: e.id, label: e.title, sub: fmtDate(e.date), desc: e.subtitle || e.excerpt || "", img: e.cover ? mediaUrl(e.cover) : null, go: () => (onEntry ? onEntry(e) : push({ k: "entry", e })) }));
       case "embeds": return (item.embeds || []).map((em, i) => ({ id: "e" + i, label: em.label || (em.platform === "youtube" ? "Voir sur YouTube" : em.platform === "wattpad" ? "Lire sur Wattpad" : "Ouvrir le lien"), sub: (em.platform || "lien").toUpperCase(), desc: em.url, go: () => window.open(em.url, "_blank", "noopener,noreferrer") }));
       case "neighbors": return neighbors.map((c) => ({ id: c.id, label: c.title, sub: c.catLabel || "", desc: c.tagline || c.synopsis || "", img: coverOf(c), box: c, go: () => { sfx("select"); onNeighbor(c.id); } }));
       default: return [];
@@ -142,12 +137,13 @@ export default function NexusWorld(p) {
   const stage = useRef(null);
   // (on fait défiler la liste elle-même, jamais la page : sur téléphone, la page ne doit pas bouger)
   useEffect(() => {
+    if (top.k === "home") return; // l'accueil tient dans l'écran : on ne le fait pas défiler tout seul
     const el = stage.current?.querySelector(".nw-cur .on"); if (!el) return;
     let box = el.parentElement; while (box && box !== stage.current && !(box.scrollHeight > box.clientHeight + 2 && /(auto|scroll)/.test(getComputedStyle(box).overflowY))) box = box.parentElement;
     if (!box || box === stage.current) return;
     const r = el.getBoundingClientRect(); const b = box.getBoundingClientRect();
     if (r.top < b.top) box.scrollBy({ top: r.top - b.top - 8, behavior: "smooth" }); else if (r.bottom > b.bottom) box.scrollBy({ top: r.bottom - b.bottom + 8, behavior: "smooth" });
-  }, [sel, top.n]);
+  }, [sel, top.n, top.k]);
 
   // ---------- menu contextuel ----------
   const link = (hash = "") => { navigator.clipboard?.writeText(`${window.location.origin}/oeuvre/${item.id}${hash}`).catch(() => {}); toast.success("Lien copié"); };
@@ -181,7 +177,6 @@ export default function NexusWorld(p) {
       ))}
     </nav>
   );
-  const Desc = ({ c, fallback }) => <p className="nw-desc" key={c.cur?.id}>{c.cur?.desc || fallback}</p>;
   const Prog = () => (progress ? <div className="nw-prog"><span>{progress.label}</span><b><i style={{ width: `${Math.round(progress.ratio * 100)}%` }} /></b></div> : null);
   const year = new Date(item.created_at || Date.now()).getFullYear();
   // « Reprendre » avec le visuel du chapitre ou de l'épisode en cours : le menu vit
@@ -189,7 +184,7 @@ export default function NexusWorld(p) {
     if (current == null || !progress) return Prog();
     const u = units[current] || {}; const img = u.image || cover || bg;
     return (
-      <button className="nw-resume" onClick={() => openUnit(current)} data-testid="nw-resume-card">
+      <button className="nw-resume" onClick={() => openUnit(current, { resume: true })} data-testid="nw-resume-card">
         <span className="nw-resume-img" style={img ? { backgroundImage: `url(${img})` } : undefined} />
         <span className="nw-resume-t"><small>REPRENDRE</small><b>{u.title || progress.label}</b><em>{progress.label}</em><i><u style={{ width: `${Math.round(progress.ratio * 100)}%` }} /></i></span>
       </button>
@@ -197,170 +192,122 @@ export default function NexusWorld(p) {
   };
 
   // ---------- l'écran d'accueil : une mise en page par ambiance ----------
-  const Home = (c) => {
-    if (ws === "cinema") return (
-      <div className="nw-home h-cinema">
-        <div className="hc-txt">
-          <p className="nw-k">{catLabel} · {year}</p>
-          <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
-          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-          {Desc({ c, fallback: item.synopsis })}
-          {Resume()}
-        </div>
-        {Menu({ c, className: "m-dvd" })}
-      </div>
-    );
-    if (ws === "vhs") return (
-      <div className="nw-home h-vhs">
-        <div className="hv-main">
-          <p className="nw-k">CH 03 · {catLabel}</p>
-          <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
-          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-          {Menu({ c, className: "m-osd", num: (i) => String(i + 1).padStart(2, "0") })}
-        </div>
-        <aside className="hv-side">
-          <Box3D b={box} cover={cover} />
-          {Desc({ c, fallback: item.synopsis })}
-          {Resume()}
-        </aside>
-      </div>
-    );
-    if (ws === "arcade") return (
-      <div className="nw-home h-arcade">
-        <p className="nw-k">© {year} STATION NEXUS</p>
-        <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
-        {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-        {Menu({ c, className: "m-pix" })}
-        {Desc({ c, fallback: "" })}
-        {Resume()}
-        <p className="ha-credit">CREDIT 01 · PLAYER 1</p>
-      </div>
-    );
-    if (ws === "yorha") return (
-      <div className="nw-home h-yorha">
-        <header className="hy-head"><h1 className="nw-title" data-testid="detail-title">{item.title}</h1><span>{catLabel}</span></header>
-        <div className="hy-grid">
-          {Menu({ c, className: "m-sq" })}
-          <section className="hy-win">
-            <header>{c.cur?.label || item.title}</header>
-            <div className="hy-win-in">
-              {cover && <span className="hy-img" style={{ backgroundImage: `url(${cover})` }} />}
-              <div>
-                {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-                {Desc({ c, fallback: item.synopsis })}
-                {Resume()}
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-    );
-    if (ws === "eve") return (
-      <div className="nw-home h-eve">
-        <div className="he-col">
-          <p className="nw-k"><i />{catLabel}<i /></p>
-          <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
-          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-          {Menu({ c, className: "m-line" })}
-        </div>
-        <aside className="he-card">
-          <span className="he-corner tl" /><span className="he-corner br" />
-          <p className="nw-k">{String(c.sel + 1).padStart(2, "0")} / {String(c.its.length).padStart(2, "0")}</p>
-          <h2>{c.cur?.label}</h2>
-          {Desc({ c, fallback: item.synopsis })}
-          {Resume()}
-        </aside>
-      </div>
-    );
-    if (ws === "cathedrale") return (
-      <div className="nw-home h-cath">
-        <span className="hk-sigil" aria-hidden="true" />
-        <p className="nw-k">{catLabel}</p>
-        <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
-        {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-        {Menu({ c, className: "m-cath" })}
-        <div className="hk-foot">{Desc({ c, fallback: item.synopsis })}{Resume()}</div>
-      </div>
-    );
-    if (ws === "couronne") return (
-      <div className="nw-home h-crown">
-        <div className="hr-col">
-          <span className="hr-halo" aria-hidden="true" />
-          <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
-          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-          {Menu({ c, className: "m-crown" })}
-        </div>
-        <aside className="hr-panel">
-          <p className="nw-k">{catLabel}</p>
-          <h2>{c.cur?.label}</h2>
-          {Desc({ c, fallback: item.synopsis })}
-          {Resume()}
-        </aside>
-      </div>
-    );
-    if (ws === "trait") return (
-      <div className="nw-home h-trait">
-        <div className="ht-art" style={cover ? { backgroundImage: `url(${cover})` } : undefined}><span className="ht-sticker">{catLabel}</span></div>
-        <div className="ht-col">
-          <h1 className="nw-title" data-testid="detail-title"><span>{item.title}</span></h1>
-          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-          {Menu({ c, className: "m-pill" })}
-          <div className="ht-bubble">{Desc({ c, fallback: item.synopsis })}</div>
-          {Resume()}
-        </div>
-      </div>
-    );
-    if (ws === "sengoku") return (
-      <div className="nw-home h-sengoku">
-        <div className="hs-col">
-          <span className="hs-seal" aria-hidden="true">{item.kanji || "忍"}</span>
-          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-          {Menu({ c, className: "m-brush" })}
-          {Desc({ c, fallback: item.synopsis })}
-          {Resume()}
-        </div>
-        <h1 className="nw-title hs-title" data-testid="detail-title">{item.title}</h1>
-      </div>
-    );
-    if (ws === "survivance") return (
-      <div className="nw-home h-surv">
-        <div className="hv2-col">
-          <p className="nw-k">{catLabel} · {year}</p>
-          <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
-          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-          {Menu({ c, className: "m-surv" })}
-        </div>
-        <aside className="hv2-note">
-          <span className="hv2-tape" aria-hidden="true" />
-          <h2>{c.cur?.label}</h2>
-          {Desc({ c, fallback: item.synopsis })}
-          {Resume()}
-        </aside>
-      </div>
-    );
-    if (ws === "cristal") return (
-      <div className="nw-home h-crys">
-        <header className="hc2-head"><span aria-hidden="true">◆</span><h1 className="nw-title" data-testid="detail-title">{item.title}</h1>{item.tagline && <p className="nw-tag">{item.tagline}</p>}</header>
-        <div className="hc2-wins">
-          <section className="hc2-win">{Menu({ c, className: "m-crys" })}</section>
-          <section className="hc2-win info"><p className="nw-k">{catLabel}</p><h2>{c.cur?.label}</h2>{Desc({ c, fallback: item.synopsis })}{Resume()}</section>
-        </div>
-      </div>
-    );
-    // hero
+  // La fenêtre façon Nier : l'image et le texte suivent le bouton choisi ; « Reprendre » y montre son visuel
+  const Win = (c, cls = "") => {
+    const cur = c.cur || {}; const img = cur.win || cover || bg;
     return (
-      <div className="nw-home h-hero">
-        <div className="hh-left">
+      <section className={"nw-win " + cls} key={"w" + (cur.id || "")} data-testid="nw-win">
+        <header><span>{cur.label || item.title}</span>{cur.sub && <small>{cur.sub}</small>}</header>
+        <div className="nw-win-in">
+          {img && <span className="nw-win-img" style={{ backgroundImage: `url(${img})` }} />}
+          <div className="nw-win-txt">
+            <p className="nw-desc">{cur.desc || item.synopsis}</p>
+            {(cur.id === "resume" || cur.id === "launch") && Resume()}
+          </div>
+        </div>
+      </section>
+    );
+  };
+  const Head = ({ k = true, tag = true } = {}) => (<>
+    {k && <p className="nw-k">{catLabel} · {year}</p>}
+    <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
+    {tag && item.tagline && <p className="nw-tag">{item.tagline}</p>}
+  </>);
+  // l'écran d'accueil : une mise en page par thème, la même fenêtre partout
+  const Home = (c) => {
+    const phoneResume = <div className="nw-phone-resume">{Resume()}</div>;
+    switch (ws) {
+      case "cinema": return (
+        <div className="nw-home h-cinema">
+          <div className="hc-txt">{Head()}{Win(c, "w-cinema")}{phoneResume}</div>
+          {Menu({ c, className: "m-dvd" })}
+        </div>
+      );
+      case "vhs": return (
+        <div className="nw-home h-vhs">
+          <div className="hv-main">{Head({ k: false })}{Menu({ c, className: "m-osd", num: (i) => String(i + 1).padStart(2, "0") })}{phoneResume}</div>
+          <aside className="hv-side">{Win(c, "w-vhs")}</aside>
+        </div>
+      );
+      case "arcade": return (
+        <div className="nw-home h-arcade">
+          <p className="nw-k">© {year} STATION NEXUS</p>
           <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
           {item.tagline && <p className="nw-tag">{item.tagline}</p>}
-          {Menu({ c, className: "m-skew" })}
+          <div className="ha-row">{Menu({ c, className: "m-pix" })}{Win(c, "w-arcade")}</div>
+          {phoneResume}
+          <p className="ha-credit">CREDIT 01 · PLAYER 1</p>
         </div>
-        <div className="hh-right">
-          <Box3D b={box} cover={cover} />
-          <div className="hh-card"><b>{c.cur?.label}</b>{Desc({ c, fallback: item.synopsis })}{Resume()}</div>
+      );
+      case "yorha": return (
+        <div className="nw-home h-yorha">
+          <header className="hy-head"><h1 className="nw-title" data-testid="detail-title">{item.title}</h1><span>{catLabel}</span></header>
+          <div className="hy-grid">{Menu({ c, className: "m-sq" })}{Win(c, "w-yorha")}</div>
+          {phoneResume}
         </div>
-      </div>
-    );
+      );
+      case "eve": return (
+        <div className="nw-home h-eve">
+          <div className="he-col"><p className="nw-k"><i />{catLabel}<i /></p><h1 className="nw-title" data-testid="detail-title">{item.title}</h1>{item.tagline && <p className="nw-tag">{item.tagline}</p>}{Menu({ c, className: "m-line" })}{phoneResume}</div>
+          {Win(c, "w-eve")}
+        </div>
+      );
+      case "cathedrale": return (
+        <div className="nw-home h-cath">
+          <div className="hk-col"><span className="hk-sigil" aria-hidden="true" />{Head()}{Menu({ c, className: "m-cath" })}{phoneResume}</div>
+          {Win(c, "w-cath")}
+        </div>
+      );
+      case "couronne": return (
+        <div className="nw-home h-crown">
+          <div className="hr-col"><span className="hr-halo" aria-hidden="true" />{Head({ k: false })}{Menu({ c, className: "m-crown" })}{phoneResume}</div>
+          {Win(c, "w-crown")}
+        </div>
+      );
+      case "trait": return (
+        <div className="nw-home h-trait">
+          <div className="ht-art" key={"a" + (c.cur?.id || "")} style={(c.cur?.win || cover) ? { backgroundImage: `url(${c.cur?.win || cover})` } : undefined}><span className="ht-sticker">{c.cur?.label || catLabel}</span></div>
+          <div className="ht-col">
+            <h1 className="nw-title" data-testid="detail-title"><span>{item.title}</span></h1>
+            {item.tagline && <p className="nw-tag">{item.tagline}</p>}
+            {Menu({ c, className: "m-pill" })}
+            <div className="ht-bubble"><p className="nw-desc" key={c.cur?.id}>{c.cur?.desc || item.synopsis}</p></div>
+            {Resume()}
+          </div>
+        </div>
+      );
+      case "sengoku": return (
+        <div className="nw-home h-sengoku">
+          <div className="hs-col"><span className="hs-seal" aria-hidden="true">{item.kanji || "忍"}</span>{item.tagline && <p className="nw-tag">{item.tagline}</p>}{Menu({ c, className: "m-brush" })}{phoneResume}</div>
+          {Win(c, "w-sengoku")}
+          <h1 className="nw-title hs-title" data-testid="detail-title">{item.title}</h1>
+        </div>
+      );
+      case "survivance": return (
+        <div className="nw-home h-surv">
+          <div className="hv2-col">{Head()}{Menu({ c, className: "m-surv" })}{phoneResume}</div>
+          <div className="hv2-note"><span className="hv2-tape" aria-hidden="true" />{Win(c, "w-surv")}</div>
+        </div>
+      );
+      case "cristal": return (
+        <div className="nw-home h-crys">
+          <div className="hc3-col">
+            <p className="nw-k">{catLabel}</p>
+            <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
+            {item.tagline && <p className="nw-tag">{item.tagline}</p>}
+            <div className="hc3-menu"><span className="hc3-line" aria-hidden="true" />{Menu({ c, className: "m-crys" })}</div>
+            {phoneResume}
+          </div>
+          {Win(c, "w-crys")}
+        </div>
+      );
+      default: return ( // hero
+        <div className="nw-home h-hero">
+          <div className="hh-left">{Head({ k: false })}{Menu({ c, className: "m-skew" })}{phoneResume}</div>
+          {Win(c, "w-hero")}
+        </div>
+      );
+    }
   };
 
   // ---------- un sélecteur : la liste à gauche, l'aperçu à droite ----------
@@ -414,7 +361,16 @@ export default function NexusWorld(p) {
   const screen = (s) => {
     const c = ctxOf(s);
     switch (s.k) {
-      case "home": return Home(c);
+      case "home": return (
+        <div className="nw-homewrap nw-scroll" data-testid="nw-homewrap">
+          <div className="nw-homefill">{Home(c)}
+            <button className="nw-tocm" onClick={(e) => { const w = e.currentTarget.closest(".nw-homewrap"); const cm = w?.querySelector(".nw-cm"); if (cm) w.scrollTo({ top: cm.offsetTop - 10, behavior: "smooth" }); }} data-testid="nw-to-comments">
+              <IoChevronDown size={14} /> Commentaires{commentsCount ? ` · ${commentsCount}` : ""}
+            </button>
+          </div>
+          <section className="nw-cm" data-testid="nw-comments">{comments}</section>
+        </div>
+      );
       case "units": return Units(c);
       case "making": return Selector({ c, kind: "making" });
       case "embeds": return Selector({ c, kind: "embeds" });
@@ -517,6 +473,7 @@ export default function NexusWorld(p) {
     <div className={"nw ws-" + ws + " at-" + top.k + (splitMode ? " is-split" : "")} data-ws={ws} data-testid="nexus-world" style={{ ...p.style, "--bgimg": bg ? `url(${bg})` : undefined }}>
       {bg && <div className="nw-bg" aria-hidden="true" style={{ backgroundImage: `url(${bg})` }} />}
       <div className="nw-fx" aria-hidden="true" />
+      <div className="nw-pt" aria-hidden="true" />
 
       <header className="nw-hud">
         <button className="nw-back" onClick={pop} aria-label={stack.length > 1 ? "Retour" : "Quitter le monde"} data-testid="nw-back"><IoArrowBack size={18} /></button>
@@ -534,9 +491,9 @@ export default function NexusWorld(p) {
           <SoundBtn className="nw-tb" />
           <button onClick={onFav} className={fav ? "on" : ""} title={fav ? "Retirer des favoris" : "Ajouter aux favoris"} aria-label="Favori" data-testid="nw-fav">{fav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}</button>
           {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
-          <button onClick={() => { sfx("nav"); navTo("/parametres"); }} title="Paramètres" aria-label="Paramètres" data-testid="nw-settings"><IoSettingsOutline size={16} /></button>
           <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
-          <button onClick={() => { sfx("back"); onExit(); }} title="Quitter le monde" aria-label="Quitter le monde" data-testid="nw-exit"><IoClose size={18} /></button>
+          <button onClick={() => { sfx("back"); onHome(); }} title="Accueil de la station" aria-label="Accueil de la station" data-testid="nw-home"><IoHomeOutline size={17} /></button>
+          <button className="nw-quit" onClick={() => { sfx("back"); onExit(); }} title="Quitter l'univers (revenir où tu étais)" data-testid="nw-exit"><IoExitOutline size={16} /><span>Quitter l'univers</span></button>
         </div>
       </header>
 

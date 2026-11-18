@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import VersionHistory from "@/components/VersionHistory";
-import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoCreateOutline, IoChevronUp, IoChevronDown, IoEyeOutline, IoTimeOutline, IoFilmOutline, IoLinkOutline, IoGameControllerOutline, IoInformationCircleOutline, IoListOutline, IoReaderOutline, IoCheckmark, IoArrowBack } from "react-icons/io5";
+import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoCreateOutline, IoChevronUp, IoChevronDown, IoEyeOutline, IoTimeOutline, IoFilmOutline, IoLinkOutline, IoGameControllerOutline, IoInformationCircleOutline, IoListOutline, IoReaderOutline, IoCheckmark, IoArrowBack, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset, assetUrl } from "@/lib/api";
+import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset, assetUrl, createJournalEntry } from "@/lib/api";
 import PageWriter from "@/components/PageWriter";
 import { WORLD_STYLES, worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import "@/components/editor.css";
@@ -15,7 +15,7 @@ import "@/components/editor.css";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
-  poster: "", accent: "", world_style: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
+  poster: "", accent: "", world_style: "", reader_format: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
   launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
   intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
@@ -29,7 +29,7 @@ const STYLE_HINT = {
   eve: "Verre sombre, lignes fines, losanges", hero: "Panneaux inclinés, couleurs vives",
   cathedrale: "Noir et rouge sang, gothique, cadre gravé", couronne: "Noir et or, halo, filets dorés",
   trait: "Aplats, contours encrés, trames", sengoku: "Encre, coup de pinceau, sceau rouge",
-  survivance: "Tons sourds, notes scotchées, sobriété", cristal: "Bleu nuit, filigrane d'or, fenêtres",
+  survivance: "Tons sourds, notes scotchées, sobriété", cristal: "Verre, lumière, typographie fine",
 };
 const LAUNCH = [
   ["chapters", "Chapitres", "Un lecteur page par page", IoBookOutline],
@@ -41,7 +41,7 @@ const LAUNCH = [
   ["info", "Info", "Présentation seulement", IoInformationCircleOutline],
 ];
 const SECTIONS = [
-  ["id", "Identité"], ["world", "Monde"], ["content", "Contenu"], ["media", "Médias"], ["intent", "Intentions"], ["sound", "Son"], ["publish", "Publication"],
+  ["id", "Identité"], ["world", "Monde"], ["content", "Contenu"], ["media", "Médias"], ["sound", "Son"], ["publish", "Publication"],
 ];
 const SWATCHES = ["#e8473f", "#f99e1a", "#e3c48d", "#3fbf7f", "#2bb3c0", "#4d8dff", "#9b6bff", "#f2f2f2"];
 
@@ -124,6 +124,8 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const [askLeave, setAskLeave] = useState(false);
   const [peek, setPeek] = useState(false);
   const [draft, setDraft] = useState(null); // brouillon trouvé à l'ouverture
+  const [dark, setDark] = useState(() => { try { return localStorage.getItem("sx_atelier_dark") !== "0"; } catch (_) { return true; } });
+  const toggleDark = () => setDark((d) => { try { localStorage.setItem("sx_atelier_dark", d ? "0" : "1"); } catch (_) {} return !d; });
   const [showHistory, setShowHistory] = useState(false);
   const [fullState, setFullState] = useState("ok"); // ok | loading | error — on n'enregistre jamais une version incomplète
   const [saving, setSaving] = useState(false);
@@ -196,11 +198,6 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const addImages = (key, files) => [...files].slice(0, 12).forEach((f) => takeImage(f, (d) => upd((p) => ({ ...p, [key]: [...(p[key] || []), d] })), 1600));
   const delImage = (key, i) => set(key, (form[key] || []).filter((_, x) => x !== i));
   const moveImage = (key, i, d) => { const l = [...(form[key] || [])]; const j = i + d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; set(key, l); };
-  const pickIntentionFile = (file) => {
-    if (file.size > 12 * 1024 * 1024) return toast.error("Dossier trop lourd (max 12 Mo)");
-    setDirty(true); setIntentionFile(file);
-  };
-  const removeIntentionFile = () => { setIntentionFile(null); upd((f) => ({ ...f, intention_file_id: "", intention_file_name: "" })); };
 
   const addEmbed = () => set("embeds", [...(form.embeds || []), { platform: "youtube", url: "", label: "" }]);
   const updEmbed = (i, k, v) => set("embeds", form.embeds.map((e, x) => (x === i ? { ...e, [k]: v } : e)));
@@ -213,6 +210,17 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
     setSaving(true);
     try {
       let payload = { ...form, order: Number(form.order) || 0 };
+      // Les Intentions rejoignent le Making of : elles deviennent une entrée du journal de bord liée à l'œuvre
+      if (isEdit && payload.intention_enabled && (payload.intention_text || (payload.intention_images || []).length)) {
+        try {
+          if (hasData(payload)) payload = await offloadImages(initial.id, payload);
+          const imgs = payload.intention_images || [];
+          await createJournalEntry({ title: payload.intention_title || "Intentions de l'auteur", subtitle: "", creation_id: initial.id, date: new Date().toISOString().slice(0, 10), cover: imgs[0] || "", published: true, show_home: false,
+            blocks: [{ type: "text", text: payload.intention_text || "" }, ...imgs.map((url) => ({ type: "image", url }))] });
+          payload = { ...payload, intention_enabled: false };
+          toast.success("Tes Intentions sont maintenant une entrée du Making of");
+        } catch (_) { toast.error("Les Intentions n'ont pas pu passer dans le Making of (elles restent enregistrées)"); }
+      }
       if (isEdit && hasData(payload)) payload = await offloadImages(initial.id, payload);
       let saved = isEdit ? await updateCreation(initial.id, payload, true) : await createCreation(payload);
       if (!isEdit && hasData(payload)) { payload = await offloadImages(saved.id, payload); saved = await updateCreation(saved.id, payload, true); }
@@ -260,7 +268,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
     ["Contenu", units ? units.length > 0 : form.launch_type === "film" ? !!(form.film_url || form.has_film || filmFile) : form.launch_type === "link" ? !!form.launch_url : form.launch_type === "reader" ? !!form.launch_content : true, "content"],
     ["Fond du monde", !!(form.bg_image && form.bg_image.length > 4) || !!form.has_bg, "world"],
   ];
-  const count = { content: units ? units.length : null, media: (form.gallery || []).length + (form.embeds || []).length + (form.trailer_url || form.has_trailer || trailerFile ? 1 : 0), intent: form.intention_enabled ? "ON" : null };
+  const count = { content: units ? units.length : null, media: (form.gallery || []).length + (form.embeds || []).length + (form.trailer_url || form.has_trailer || trailerFile ? 1 : 0) };
   const cover = form.poster && form.poster.length > 4 ? form.poster : coverHint || null;
   const bgPrev = form.bg_image && form.bg_image.length > 4 ? form.bg_image : cover;
 
@@ -383,6 +391,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           <Field label="Texte du bouton"><input className="rl-in" data-testid="editor-launch-label" value={form.launch_label} onChange={(e) => set("launch_label", e.target.value)} placeholder="Lancer" /></Field>
           {units && <Field label="Nom de la liste" hint="Chapitres, Tomes, Saisons…"><input className="rl-in" data-testid="editor-unit-label" value={form.unit_label || ""} onChange={(e) => set("unit_label", e.target.value)} placeholder={form.launch_type === "episodes" ? "Épisodes" : "Chapitres"} /></Field>}
         </div>
+        {(units || form.launch_type === "reader") && <Field label="Lecture (expérience Nexus)" hint="Le lecteur d'Alexandrie habille les chapitres en livre, en cassette ou en disque. Auto : selon le type de l'œuvre."><Seg value={form.reader_format || ""} onChange={(v) => set("reader_format", v)} options={[["", "Auto"], ["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]]} testid="editor-reader-format" /></Field>}
         {form.launch_type === "reader" && <Field label="Texte à lire" wide><textarea className="rl-in" rows={8} data-testid="editor-launch-content" value={form.launch_content} onChange={(e) => set("launch_content", e.target.value)} /></Field>}
         {form.launch_type === "link" && <Field label="Adresse" wide><input className="rl-in" data-testid="editor-launch-url" value={form.launch_url} onChange={(e) => set("launch_url", e.target.value)} placeholder="https://…" /></Field>}
         {form.launch_type === "film" && (
@@ -416,20 +425,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             <button type="button" className="rl-ico danger" onClick={() => delEmbed(i)} aria-label="Retirer"><IoTrashOutline /></button>
           </div>
         ))}
-        <p className="rl-hint">Le Making of se compose depuis le journal de bord : chaque entrée liée à l'œuvre y apparaît.</p>
-      </>
-    ),
-    intent: (
-      <>
-        <Toggle on={form.intention_enabled} onChange={(v) => set("intention_enabled", v)} testid="editor-intention-enabled">Afficher la section Intentions (mot de l'auteur, coulisses, dossier)</Toggle>
-        <div className={"rl-stack" + (form.intention_enabled ? "" : " off")}>
-          <Field label="Titre de la section"><input className="rl-in" data-testid="editor-intention-title" value={form.intention_title || ""} onChange={(e) => set("intention_title", e.target.value)} placeholder="Intentions de l'auteur" /></Field>
-          <Field label="Texte" wide><textarea className="rl-in" rows={7} data-testid="editor-intention-text" value={form.intention_text || ""} onChange={(e) => set("intention_text", e.target.value)} placeholder="Pourquoi cette œuvre, ce que tu as voulu raconter…" /></Field>
-          <p className="rl-sub"><b>Images</b></p>
-          {ImageGrid({ k: "intention_images", testid: "editor-intention-img-add" })}
-          <p className="rl-sub"><b>Dossier à télécharger</b><span>PDF, ZIP… max 12 Mo</span></p>
-          <FilePick icon={<IoCloudUploadOutline />} label={form.intention_file_name || "Choisir un fichier"} present={!!form.intention_file_id} file={intentionFile} testid="editor-intention-file-upload" removeTestid="editor-intention-file-remove" onPick={pickIntentionFile} onRemove={removeIntentionFile} />
-        </div>
+        <p className="rl-sub"><b>Making of</b><span>Il se compose depuis le journal de bord : chaque entrée liée à l'œuvre y apparaît, intentions comprises.</span></p>
       </>
     ),
     sound: (
@@ -469,12 +465,13 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
 
   return (
     <>
-      <div className={"rl" + (peek ? " rl-peeking" : "")} style={{ "--rl-acc": acc }} data-testid={peek ? "editor-dialog-peek" : "editor-dialog"} role="dialog" aria-label={isEdit ? "Modifier la création" : "Nouvelle création"}>
+      <div className={"rl" + (dark ? " rl-dark" : "") + (peek ? " rl-peeking" : "")} style={{ "--rl-acc": acc }} data-testid={peek ? "editor-dialog-peek" : "editor-dialog"} role="dialog" aria-label={isEdit ? "Modifier la création" : "Nouvelle création"}>
         <header className="rl-top">
           <button type="button" className="rl-ico" onClick={tryClose} aria-label="Fermer" data-testid="editor-close"><IoClose size={20} /></button>
           <div className="rl-brand"><small>RHINE LAB · ATELIER DE L'ŒUVRE</small><b>{form.title || (isEdit ? "Sans titre" : "Nouvelle création")}</b></div>
           <span className={"rl-state" + (fullState === "loading" ? " load" : dirty ? " dirty" : "")}>{fullState === "loading" ? "CHARGEMENT…" : fullState === "error" ? "INCOMPLET" : dirty ? "NON ENREGISTRÉ" : "À JOUR"}</span>
           <div className="rl-top-acts">
+            <button type="button" className="rl-ico" onClick={toggleDark} title={dark ? "Mode clair" : "Mode sombre"} aria-label={dark ? "Mode clair" : "Mode sombre"} data-testid="editor-dark">{dark ? <IoSunnyOutline size={17} /> : <IoMoonOutline size={17} />}</button>
             {isEdit && <button type="button" className={"rl-btn ghost" + (showHistory ? " set" : "")} onClick={() => setShowHistory((v) => !v)} data-testid="editor-history"><IoTimeOutline /> <span>Historique</span></button>}
             {onPeek && <button type="button" className="rl-btn ghost" onClick={() => setPeek(true)} data-testid="editor-peek"><IoEyeOutline /> <span>Voir dans le monde</span></button>}
             <button type="button" className="rl-btn go" onClick={save} disabled={saving} data-testid="editor-save">{saving ? "Enregistrement…" : <><IoCheckmark /> Enregistrer</>}</button>

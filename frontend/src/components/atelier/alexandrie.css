@@ -597,3 +597,11 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .ax-yt-edpick{display:block;padding:10px;background:var(--lab-panel,rgba(0,0,0,.4));border:1px solid var(--lab-hair,rgba(255,255,255,.1))}
 .ax-reader:fullscreen{width:100vw;height:100vh}
 .ax-reader~.ax-fiche-wrap,.at-root:has(.ax-reader) .ax-fiche-wrap{z-index:1300}
+
+/* Le lecteur sert aussi hors de l'Atelier (œuvres, journal de bord) : il porte lui-même les réglages du labo */
+.ax-reader{--lab-mono:"JetBrains Mono","Space Mono",ui-monospace,monospace;--lab-ink:var(--text-primary);--lab-mute:var(--text-secondary);--lab-acc:var(--brand);--lab-hair:color-mix(in srgb,var(--text-primary) 13%,transparent);--lab-hair-2:color-mix(in srgb,var(--text-primary) 26%,transparent);--lab-panel:color-mix(in srgb,var(--bg-primary) 88%,transparent);--lab-ease:cubic-bezier(.2,.8,.2,1)}
+/* Musique insérée dans le texte : un bouton dans la page */
+.ax-cue-p{text-indent:0!important;margin:1.1em 0!important}
+.ax-cue{display:inline-flex;align-items:center;gap:8px;max-width:100%;padding:8px 14px;border:1px solid color-mix(in srgb,var(--ink,#222) 30%,transparent);border-radius:999px;background:color-mix(in srgb,var(--acc,var(--brand)) 12%,transparent);color:var(--ink,inherit);font:600 12px/1.2 var(--lab-mono);letter-spacing:.06em;cursor:pointer;break-inside:avoid;transition:background .2s,border-color .2s}
+.ax-cue:hover,.ax-cue.on{border-color:var(--acc,var(--brand));background:color-mix(in srgb,var(--acc,var(--brand)) 26%,transparent)}
+.ax-cue span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

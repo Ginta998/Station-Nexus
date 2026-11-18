@@ -1,0 +1,88 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Reader, htmlToAlexBlocks } from "@/components/atelier/Alexandrie";
+import { useApp } from "@/context/AppContext";
+import { chapterAudioUrl, readingAudioUrl, mediaUrl } from "@/lib/api";
+import { blocksToHtml } from "@/lib/blocks";
+
+/*
+  Un seul lecteur pour toute la station en Nexus : celui d'Alexandrie.
+  Chapitres, épisodes en texte, extraits et entrées du journal de bord s'y lisent en livre, en cassette ou en disque.
+  Améliorer le lecteur d'Alexandrie améliore donc toutes les lectures.
+  Musique : celle du chapitre, sinon celle de l'œuvre, et les musiques insérées dans le texte ; jamais deux à la fois.
+*/
+
+const esc = (s = "") => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const unitHtml = (u) => (u.rich ? u.content || "" : String(u.content || "").split(/\n{2,}/).filter((p) => p.trim()).map((p) => `<p>${esc(p).replace(/\n/g, "<br/>")}</p>`).join(""));
+const words = (chs) => chs.reduce((n, c) => n + c.blocks.reduce((m, b) => m + String(b.x || "").split(/\s+/).filter(Boolean).length, 0), 0);
+export const READER_FORMATS = [["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]];
+
+// Œuvre → livre d'Alexandrie (un chapitre du livre par chapitre ou épisode lisible)
+export function bookOfCreation(item, { unitKey, catLabel, format, locked }) {
+  const word = unitKey === "episodes" ? "Épisode" : "Chapitre";
+  const units = unitKey ? item[unitKey] || [] : [{ title: "", content: item.launch_content, rich: false }];
+  const map = []; const chapters = []; let held = false;
+  units.forEach((u, i) => {
+    if (unitKey === "episodes" && !String(u.content || "").trim()) return; // un épisode vidéo garde son lecteur vidéo
+    if (locked?.(i)) { held = true; return; }
+    const blocks = htmlToAlexBlocks(unitHtml(u));
+    map.push(i); chapters.push({ title: unitKey ? u.title || `${word} ${i + 1}` : "", blocks: blocks.length ? blocks : [{ t: "p", x: "Ce texte est encore vide." }] });
+  });
+  if (held) chapters.push({ title: "La suite", blocks: [{ t: "box", label: "RÉSERVÉ", x: "Les chapitres suivants se débloquent avec l'achat de l'œuvre ou l'abonnement : « Débloquer », dans le menu de l'œuvre." }] });
+  return {
+    map,
+    book: { id: `sn:${item.id}:${unitKey || "texte"}`, title: item.title, sub: item.tagline || "", room: "station", roomLabel: catLabel || "Station", type: "recit", about: item.synopsis || "",
+      cote: `SN-${String((item.order ?? 0) + 1).padStart(3, "0")}`, format, house: "STATION NEXUS", chapters, words: words(chapters), links: [] },
+  };
+}
+// Entrée du journal de bord → livre d'Alexandrie
+export function bookOfEntry(e) {
+  const html = (e.blocks || []).length ? blocksToHtml(e.blocks) : String(e.body || "").split(/\n{2,}/).map((p) => `<p>${esc(p)}</p>`).join("");
+  const blocks = htmlToAlexBlocks(html);
+  const chapters = [{ title: "", blocks: blocks.length ? blocks : [{ t: "p", x: "Cette entrée est encore vide." }] }];
+  return { id: `jr:${e.id}`, title: e.title, sub: e.subtitle || "", room: "journal", roomLabel: "Journal de bord", type: "recit", about: "", cote: String(e.date || "").slice(0, 10) || "JOURNAL",
+    format: e.format || "livre", house: "JOURNAL DE BORD", chapters, words: words(chapters), links: [] };
+}
+
+export default function WorkReader({ item, entry, unitKey = "chapters", catLabel, format = "livre", cover, startUnit = null, resume = false, locked, onClose }) {
+  const { playReadingUrl, toggleReadingUrl, pauseReading, endReading, isPlaying, playingId } = useApp();
+  const built = useMemo(() => (entry ? { book: bookOfEntry(entry), map: [0] } : bookOfCreation(item, { unitKey, catLabel, format, locked })), [item, entry, unitKey, catLabel, format]); // eslint-disable-line react-hooks/exhaustive-deps
+  const { book, map } = built;
+  const owner = entry ? entry.id : item.id;
+  const readingKey = "reading:" + owner;
+  const startCh = startUnit == null ? null : Math.max(0, map.indexOf(startUnit));
+  const [ci, setCi] = useState(startCh ?? 0);
+  const [title, setTitle] = useState("Musique de lecture");
+  const trackFor = (c) => {
+    if (entry || !item) return null;
+    const u = unitKey ? item[unitKey]?.[map[c]] : null;
+    if (unitKey === "chapters" && u?.has_music && u?.id) return chapterAudioUrl(item.id, u.id);
+    if (item.has_reading_audio) return readingAudioUrl(item.id);
+    return null;
+  };
+  // La musique du chapitre démarre à l'ouverture et change avec le chapitre (une seule à la fois)
+  useEffect(() => { const t = trackFor(ci); if (t) { setTitle("Musique de lecture"); playReadingUrl(t, readingKey); } }, [ci]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => endReading(owner, !!item?.has_audio), []); // eslint-disable-line react-hooks/exhaustive-deps
+  const on = isPlaying && (playingId === readingKey || (typeof playingId === "string" && playingId.startsWith("cue:")));
+  const hasCue = book.chapters.some((c) => c.blocks.some((b) => b.t === "mus"));
+  const music = trackFor(ci) || hasCue || on ? {
+    playing: on, title,
+    toggle: () => { if (on) pauseReading(); else { const t = trackFor(ci); if (t) { setTitle("Musique de lecture"); toggleReadingUrl(t, readingKey); } } },
+  } : null;
+  // Où l'on en est : « Reprendre » sur le menu de l'œuvre
+  const last = useRef(-1);
+  const onProgress = (c, ratio) => {
+    if (c !== ci) setCi(c);
+    if (entry || !item || !unitKey) return;
+    const u = map[c]; if (u == null || (u === last.current && ratio < 1)) return; last.current = u;
+    try {
+      if (unitKey === "chapters") localStorage.setItem("sx_progress_" + item.id, JSON.stringify({ chapter: u, ratio: 0, t: Date.now() }));
+      else localStorage.setItem("sx_eplast_" + item.id, String(u));
+    } catch (_) {}
+  };
+  const where = entry ? "STATION NEXUS / JOURNAL DE BORD" : `STATION NEXUS / ${(catLabel || "ŒUVRE").toUpperCase()} / ${item.title.toUpperCase()}`;
+  return (
+    <Reader book={book} cover={cover || (entry?.cover ? mediaUrl(entry.cover) : null)} onClose={onClose} backLabel={entry ? "Retour" : "Retour au monde"} path={where}
+      startCh={startCh} keepSaved={resume} onProgress={onProgress} workMusic={music}
+      onCue={(url, t) => { setTitle(t || "Musique"); toggleReadingUrl(mediaUrl(url), "cue:" + url, { loop: false }); }} />
+  );
+}

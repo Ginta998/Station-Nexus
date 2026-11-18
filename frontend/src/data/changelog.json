@@ -1,6 +1,35 @@
 {
-  "version": "0.19",
+  "version": "0.20",
   "patches": [
+    {
+      "v": "0.20",
+      "date": "2026-11-18",
+      "title": "Un seul lecteur, des mondes plus vivants",
+      "groups": {
+        "Nouveau": [
+          "Nexus : chapitres, épisodes en texte, extraits et entrées du journal de bord se lisent dans le lecteur d'Alexandrie, en livre, en cassette VHS ou en disque. Améliorer le lecteur améliore toutes les lectures.",
+          "Musique de lecture : celle du chapitre, sinon celle de l'œuvre ; les musiques insérées dans un texte deviennent un bouton dans la page. Jamais deux musiques à la fois.",
+          "Atelier › Contenu : choisir l'habillage de lecture (Auto, Livre, VHS, Vinyle). Journal : même choix pour chaque entrée, et bouton « Lire » sur l'entrée en Nexus.",
+          "Dans tous les thèmes, une fenêtre façon Nier : l'image et le texte suivent le bouton choisi, avec « Reprendre » et son visuel.",
+          "Chaque thème a son effet de fond animé (braises, cendres, étoiles pixel, poussière de pellicule, parasites, spores, éclats…).",
+          "Thème Cristal refait : verre, lumière, typographie fine.",
+          "Monde : une maison pour revenir à l'accueil de la station et un bouton « Quitter l'univers ».",
+          "Les commentaires sont sous le menu de l'œuvre : on fait défiler, on lit, on écrit.",
+          "Recherche de la station : un panneau d'index façon Rhine Lab (œuvres, chapitres, journal, pages), au clavier, aussi avec Ctrl/Cmd + K.",
+          "Paramètres de la station rangés comme l'atelier : sections numérotées, mode clair ou sombre.",
+          "Atelier de l'œuvre : mode sombre (bouton lune)."
+        ],
+        "Amélioré": [
+          "Intentions et Making of ne font plus qu'un : à l'enregistrement, les Intentions deviennent une entrée du journal liée à l'œuvre.",
+          "Le bouton Thèmes de l'accueil prend la couleur du thème actif.",
+          "En-têtes Rhine Lab sur Membres, Planning et Bibliothèque.",
+          "Téléphone : les titres d'articles passent sur deux lignes au lieu d'être coupés."
+        ],
+        "Retiré": [
+          "Le bouton Paramètres dans le monde (il faisait quitter l'univers) ; la page Commentaires et la section Intentions."
+        ]
+      }
+    },
     {
       "v": "0.19",
       "date": "2026-11-18",

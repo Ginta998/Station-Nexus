@@ -1,4 +1,5 @@
 import { useState } from "react";
+import LabHead from "@/components/LabHead";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoHome, IoLibraryOutline, IoSparkles, IoCheckmarkCircle } from "react-icons/io5";
@@ -38,7 +39,7 @@ export default function Library() {
       </div>
 
       <div className="max-w-5xl mx-auto px-5 md:px-12 py-8">
-        <h1 className="font-display text-4xl md:text-5xl flex items-center gap-3 mb-2"><IoLibraryOutline style={{ color: "var(--brand)" }} /> Ma bibliothèque</h1>
+        <LabHead label="BIBLIOTHÈQUE" code="B-01" title="Ma bibliothèque" icon={<IoLibraryOutline />} />
         <p className="text-sm mb-8" style={{ color: "var(--text-secondary)" }}>Tes créations débloquées et ton abonnement au même endroit.</p>
 
         {!user && (

@@ -50,6 +50,11 @@ function itemToBookRaw(it) {
     const fr = n.nodeType === 1 && (tag === "IFRAME" ? n : n.querySelector?.("iframe"));
     const frId = fr && (fr.getAttribute("src") || "").match(YT_RE);
     if (frId) { cur.blocks.push({ t: "yt", id: frId[1], cap: txt.replace(/^▶\s*/, "") }); return; }
+    // Une musique insérée dans le texte (journal, chapitre) : un bouton dans la page, une seule musique à la fois
+    const cue = n.nodeType === 1 && (n.classList?.contains("sx-music-cue") ? n : n.querySelector?.(".sx-music-cue"));
+    if (cue) { cur.blocks.push({ t: "mus", url: cue.getAttribute("data-track") || "", x: cue.getAttribute("data-title") || txt || "Musique" }); return; }
+    // Une galerie : chaque image devient une illustration
+    if (n.nodeType === 1 && tag === "FIGURE" && (n.querySelectorAll?.("img").length || 0) > 1) { const cap = n.querySelector("figcaption")?.textContent?.trim() || ""; [...n.querySelectorAll("img")].forEach((im, k, all) => cur.blocks.push({ t: "img", src: im.getAttribute("src"), cap: k === all.length - 1 ? cap : "" })); return; }
     const img = n.nodeType === 1 && (tag === "IMG" ? n : n.querySelector?.("img"));
     if (img && (tag === "FIGURE" || tag === "IMG" || !txt)) { const [cap, credit] = (n.querySelector?.("figcaption")?.textContent || img.alt || "").split(" | ").map((x) => x.trim()); cur.blocks.push({ t: "img", src: img.getAttribute("src"), cap, credit }); return; }
     if (!txt) return;
@@ -76,6 +81,13 @@ function itemToBookRaw(it) {
   if (cur.blocks.length || cur.title) chapters.push(cur);
   const a = it.fields?.alexandrie || {};
   return { id: "item:" + it.id, itemId: it.id, mine: true, title: String(it.title || "Sans titre"), sub: a.sub || "", room: a.room || "atelier", type: a.type || "recit", about: a.about || "", color: a.color, cote: "PERS.", chapters: chapters.length ? chapters : [{ title: "", blocks: [{ t: "p", x: "Ce livre est encore vide. Ouvre-le dans l'éditeur pour l'écrire." }] }], links: [], text: stripHtml(it.content || ""), words: stripHtml(it.content || "").split(/\s+/).filter(Boolean).length };
+}
+// Un texte HTML de la station (chapitre, épisode, entrée du journal) → blocs d'une page d'Alexandrie.
+// Ses propres titres deviennent des intertitres : le chapitre reste un seul chapitre du livre.
+export function htmlToAlexBlocks(html) {
+  let chs = [];
+  try { chs = itemToBookRaw({ id: "x", title: "", content: html || "" }).chapters; } catch (_) { chs = []; }
+  return chs.flatMap((c, k) => [...(c.title && (k > 0 || c.blocks.length) ? [{ t: "h", x: c.title }] : []), ...c.blocks.filter((b) => !(b.t === "p" && /^Ce livre est encore vide/.test(b.x)))]);
 }
 // Livre de la bibliothèque → document de l'éditeur (pour le modifier avec le même éditeur que tes livres)
 const hEsc = (x) => String(x || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -372,7 +384,7 @@ function YtFig({ b, onSwap, onRemove, si }) {
   );
 }
 
-function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover }) {
+export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path }) {
   const { sfx } = useApp();
   const flow = useRef(null);
   const [page, setPage] = useState(() => read(LS.prog, {})[book.id]?.page || 0);
@@ -419,6 +431,13 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
     else { clearTimeout(anim.current); anim.current = 0; g.el.scrollLeft = left; }
   }, [spread, per, pages, book]); // eslint-disable-line
   useEffect(() => { if (book.preview) return; const all = read(LS.prog, {}); all[book.id] = { page, pages, mark, at: Date.now() }; write(LS.prog, all); }, [page, pages, mark, book.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Ouvrir directement au chapitre demandé (sauf si on reprend une page déjà gardée)
+  const startedR = useRef(startCh == null || (keepSaved && read(LS.prog, {})[book.id]?.page > 0));
+  useEffect(() => { if (startedR.current || pages < 2) return; startedR.current = true; const t = setTimeout(() => jump(startCh), 60); return () => clearTimeout(t); }, [pages]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Où en est le lecteur : le chapitre affiché et la part lue (pour « Reprendre » et la musique du chapitre)
+  const progR = useRef(onProgress); progR.current = onProgress;
+  useEffect(() => { if (!progR.current || !flow.current) return; try { const g = geom(); const x = spread * g.step + g.pad + 2 + g.step * (g.p - 1); let ci = 0; flow.current.querySelectorAll("[data-ch]").forEach((el) => { const n = Number(el.dataset.ch); if (!Number.isNaN(n) && el.offsetLeft <= x) ci = n; }); progR.current(ci, Math.min(1, (spread + per) / Math.max(1, pages))); } catch (_) {} }, [spread, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
+  const cueR = useRef(onCue); cueR.current = onCue;
   const doneR = useRef(false); // arrivé à la dernière page : le livre passe dans « Lus »
   useEffect(() => { if (!doneR.current && pages > 2 && page + per >= pages && onDone) { doneR.current = true; onDone(); } }, [page, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
   const go = (d) => {
@@ -484,13 +503,13 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
   const body = useMemo(() => (<>
             <section className="ax-titlepage">
               {fmt === "vinyle" ? <span className="ax-tp-sleeve"><span className="ax-tp-disc" />{cover ? <span className="ax-tp-art" style={{ backgroundImage: `url(${cover})` }} /> : <span className="ax-tp-art blank" />}</span> : cover && <span className="ax-tp-art" style={{ backgroundImage: `url(${cover})` }} />}
-              <p className="mono ax-tp-room">{R ? `${R.kanji} ${R.label.toUpperCase()}` : "MES LIVRES"}</p>
+              <p className="mono ax-tp-room">{book.roomLabel ? book.roomLabel.toUpperCase() : R ? `${R.kanji} ${R.label.toUpperCase()}` : "MES LIVRES"}</p>
               <h1>{book.title}</h1>
               {book.sub && <p className="ax-tp-sub">{book.sub}</p>}
               <span className="ax-rule" />
               <p className="mono ax-tp-type">{T.label.toUpperCase()} · {readingTime(book.words)}</p>
               {book.about && <p className="ax-tp-about">{book.about}</p>}
-              <p className="mono ax-tp-foot">BIBLIOTHÈQUE D'ALEXANDRIE · COTE {book.cote}</p>
+              <p className="mono ax-tp-foot">{book.house || "BIBLIOTHÈQUE D'ALEXANDRIE"} · COTE {book.cote}</p>
             </section>
             {book.chapters.map((c, i) => (
               <section className="ax-ch" key={i} data-ch={i}>
@@ -501,6 +520,7 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
                   : b.t === "yt" ? <YtFig key={j} b={b} si={b.si} onSwap={swapS} onRemove={removeS} />
                   : b.t === "art" ? <ArtFig key={j} b={b} si={b.si} term={book.art || sgdbTerm(book)} />
                   : b.t === "box" ? <aside className="ax-box" key={j} data-si={b.si}><b className="mono">{b.label || "À RETENIR"}</b><p>{inline(b.x)}</p></aside>
+                  : b.t === "mus" ? <p key={j} data-si={b.si} className="ax-cue-p"><button type="button" className="ax-cue" data-url={b.url} onClick={() => cueR.current?.(b.url, b.x)} data-testid="alex-cue"><IoMusicalNotes size={14} /> <span>{b.x}</span></button></p>
                   : <p key={j} data-si={b.si} className={j === 0 && c.title ? "first" : ""}>{inline(b.x)}</p>)}
               </section>
             ))}
@@ -515,13 +535,14 @@ function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddV
   return createPortal(
     <div className={"ax-reader ax-view fmt-" + fmt + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
       <header className="ax-rbar">
-        <button className="ax-rb" onClick={onClose} data-testid="alex-close"><IoArrowBack size={15} /> <span>Rayonnages</span></button>
-        <p className="mono ax-rpath">ALEXANDRIE / {(R?.label || "MES LIVRES").toUpperCase()} / <b>{book.cote}</b></p>
+        <button className="ax-rb" onClick={onClose} data-testid="alex-close"><IoArrowBack size={15} /> <span>{backLabel}</span></button>
+        <p className="mono ax-rpath">{path || <>ALEXANDRIE / {(R?.label || "MES LIVRES").toUpperCase()} / <b>{book.cote}</b></>}</p>
         <span className="grow" />
         {book.mine && !book.src ? onEdit && <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
           : onModify && <button className="ax-rb" onClick={onModify} title="Modifier le texte, les images, les vidéos" data-testid="alex-modify"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
         {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} title="Notes (touche N)" data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
         {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music" title={radio.pl ? radio.info?.title || radio.pl.title : "Musique"}><IoMusicalNotes size={15} /> <span>{radio.pl ? <span className="ax-rb-now">{radio.info?.title || radio.pl.title}</span> : "Musique"}</span></button>}
+        {!radio && workMusic && <button className={"ax-rb" + (workMusic.playing ? " on" : "")} onClick={workMusic.toggle} title={workMusic.playing ? "Mettre la musique en pause" : "Lancer la musique de lecture"} data-testid="alex-work-music">{workMusic.playing ? <IoPause size={15} /> : <IoMusicalNotes size={15} />} <span>{workMusic.playing ? <span className="ax-rb-now">{workMusic.title || "Musique"}</span> : "Musique"}</span></button>}
         {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.toggle} title={radio.playing ? "Pause" : "Lecture"} data-testid="alex-music-toggle">{radio.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>}
         {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.next} title="Morceau suivant" data-testid="alex-music-next"><IoPlaySkipForward size={15} /></button>}
         {onAddVideo && <button className={"ax-rb" + (vid ? " on" : "")} onClick={() => { setVid((v) => !v); setToc(false); setMusic(false); setNotes(false); }} aria-expanded={vid} title="Ajouter une vidéo YouTube à cette page" data-testid="alex-addvid"><IoLogoYoutube size={15} /> <span>Vidéo</span></button>}

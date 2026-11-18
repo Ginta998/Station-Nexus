@@ -9,7 +9,7 @@ import { useApp } from "@/context/AppContext";
 import { BlocksEditor, ImagePick } from "@/components/journal/BlocksEditor";
 
 const today = () => new Date().toISOString().slice(0, 10);
-const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true };
+const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre" };
 
 function CategoryManager({ cats, refetch }) {
   const [name, setName] = useState(""); const [color, setColor] = useState("#3f86ff");
@@ -82,6 +82,11 @@ export default function JournalEditor() {
           <label>Création associée
             <select className="jr-in" value={f.creation_id} onChange={(e) => set({ creation_id: e.target.value })} data-testid="journal-creation-select">
               <option value="">Aucune</option>{creations.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+            </select>
+          </label>
+          <label>Lecture (Nexus)
+            <select className="jr-in" value={f.format || "livre"} onChange={(e) => set({ format: e.target.value })} data-testid="journal-format-select">
+              <option value="livre">Livre</option><option value="vhs">Cassette VHS</option><option value="vinyle">Vinyle</option>
             </select>
           </label>
         </div>

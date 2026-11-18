@@ -161,6 +161,7 @@ class Creation(BaseModel):
     chapter_size: str = "md"         # sm | md | lg | xl — size of chapter/episode cards on the fiche
     button_size: str = "md"          # md | lg — size of the main action buttons
     world_style: Optional[str] = ""
+    reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     chapters_count: int = 0
@@ -214,6 +215,7 @@ class CreationInput(BaseModel):
     button_size: str = "md"
     # Expérience Nexus : ambiance du monde de l'œuvre (cinema, vhs, arcade, manga, vinyle, roman ; vide = automatique)
     world_style: Optional[str] = ""
+    reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
     unit_display: str = "movix"
     unit_label: Optional[str] = ""
     episodes: List[Episode] = Field(default_factory=list)
@@ -2631,6 +2633,7 @@ class JournalEntryInput(BaseModel):
     blocks: List[Dict[str, Any]] = Field(default_factory=list)
     show_home: bool = False
     published: bool = True
+    format: str = ""          # lecture en Nexus : "livre", "vhs" ou "vinyle" ("" = livre)
 
 
 class JournalEntry(JournalEntryInput):
