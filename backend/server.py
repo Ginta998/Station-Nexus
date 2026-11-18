@@ -160,6 +160,7 @@ class Creation(BaseModel):
     unit_label: Optional[str] = ""   # libellé de section personnalisable (Épisodes, Saisons, Tomes, Volumes…)
     chapter_size: str = "md"         # sm | md | lg | xl — size of chapter/episode cards on the fiche
     button_size: str = "md"          # md | lg — size of the main action buttons
+    world_style: Optional[str] = ""
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     chapters_count: int = 0
@@ -211,6 +212,8 @@ class CreationInput(BaseModel):
     chapter_display: str = "button"
     chapter_size: str = "md"
     button_size: str = "md"
+    # Expérience Nexus : ambiance du monde de l'œuvre (cinema, vhs, arcade, manga, vinyle, roman ; vide = automatique)
+    world_style: Optional[str] = ""
     unit_display: str = "movix"
     unit_label: Optional[str] = ""
     episodes: List[Episode] = Field(default_factory=list)

@@ -6,6 +6,7 @@ export const WORLD_STYLES = {
   cinema: "Salle de cinéma", vhs: "Magnétoscope", arcade: "Borne d'arcade", manga: "Planche de manga", vinyle: "Platine", roman: "Bibliothèque",
 };
 export function worldStyleOf(item, catLabel = "") {
+  if (item.world_style && WORLD_STYLES[item.world_style]) return item.world_style;
   if (item.launch_type === "game") return "arcade";
   const f = fmtOfCreation(item, catLabel);
   if (f === "vinyle") return "vinyle";

@@ -40,7 +40,9 @@
           "La notice de l'œuvre choisie s'ouvre sous son rayon : cote, format, nombre de chapitres ou d'épisodes, résumé, progression, Lancer ou Reprendre, Ambiance.",
           "Accès rapide (remplace « Reprendre ») : les œuvres commencées d'abord, avec chapitre ou épisode en cours et barre de progression, puis les œuvres ouvertes récemment et la une. Chaque carte montre l'objet en miniature.",
           "Clavier ou manette : ← → dans un rayon, ↑ ↓ d'un rayon à l'autre, Entrée pour lancer, Échap pour refermer. Clic droit (ou appui long) : lancer, voir la notice, ambiance, copier le lien.",
-          "Paramètres › Apparence › Expérience : Classique (la station d'origine, inchangée) ou Nexus. Le choix est propre à chaque visiteur ; Classique par défaut."
+          "Paramètres › Apparence › Expérience : Classique (la station d'origine, inchangée) ou Nexus. Le choix est propre à chaque visiteur ; Classique par défaut.",
+          "Chaque monde a maintenant sa propre mise en page, comme l'écran titre d'un jeu : Salle de cinéma (plein cadre, titre géant, menu de DVD), Magnétoscope (un téléviseur cathodique avec le menu à l'écran, la cassette posée à côté), Borne d'arcade (écran titre centré, menu pixel, PRESS START), Planche de manga (des cases, une bulle, une onomatopée), Platine (la pochette et le disque qui tourne, la liste des pistes), Bibliothèque (un livre ouvert, page de titre et sommaire). ↑ ↓ et Entrée naviguent dans le menu.",
+          "Habiller ce monde (admin, dans l'œuvre elle-même) : choisir l'ambiance (ou automatique), la couleur (tirée de l'affiche ou choisie), l'image de fond, le titre, l'accroche et le résumé, avec un aperçu en direct derrière le panneau ; l'éditeur complet reste à un clic."
         ]
       }
     },

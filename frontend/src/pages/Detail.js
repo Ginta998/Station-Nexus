@@ -22,7 +22,9 @@ import { confirmCheckout } from "@/components/CheckoutConfirm";
 import CreationJournal from "@/components/journal/CreationJournal";
 import { useExperience } from "@/lib/experience";
 import { fmtOfCreation } from "@/components/nexus/NexusHome";
-import Box3D from "@/components/nexus/Box3D";
+import WorldHero from "@/components/nexus/WorldHero";
+import WorldStudio from "@/components/nexus/WorldStudio";
+import { IoBrushOutline } from "react-icons/io5";
 import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { listJournal } from "@/lib/api";
 
@@ -54,6 +56,8 @@ export default function Detail() {
   // Expérience Nexus : la fiche devient le « monde » de l'œuvre (l'objet en grand, puis des onglets)
   const nexus = useExperience() === "nexus";
   const [wtab, setWtab] = useState(null);
+  const [studio, setStudio] = useState(false);
+  const [pvw, setPvw] = useState(null); // aperçu en direct depuis le panneau « Habiller ce monde »
   useEffect(() => { window.scrollTo(0, 0); setWtab(null); }, [id]);
   const accentSrc = nexus && item ? (item.poster && item.poster.length > 4 ? item.poster : item.has_poster ? posterUrl(item.id, item.updated_at, 200) : null) : null;
   const accent = usePosterAccent(accentSrc);
@@ -110,6 +114,8 @@ export default function Detail() {
   const thisPlaying = isPlaying && playingId === item.id;
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
   const savedProgress = item.launch_type === "chapters" ? (() => { try { return JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) { return null; } })() : null;
+  const wsNow = pvw ? (pvw.ws || worldStyleOf({ ...item, world_style: "" }, catLabel)) : worldStyleOf(item, catLabel);
+  const accNow = pvw ? (pvw.accent || accent) : (item.accent || accent);
   const worldTabs = [
     (item.launch_type === "chapters" && item.chapters?.length > 0) && ["units", item.unit_label || "Chapitres"],
     (item.launch_type === "episodes" && item.episodes?.length > 0) && ["units", item.unit_label || "Épisodes"],
@@ -237,8 +243,8 @@ export default function Detail() {
   const btn = { borderColor: "color-mix(in srgb, var(--brand) 30%, var(--border-c))", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "color-mix(in srgb, var(--bg-primary) 42%, transparent)" };
 
   return (
-    <div className={"relative min-h-screen w-full overflow-x-hidden" + (nexus ? " nx-wroot" : "")} data-ws={nexus ? worldStyleOf(item, catLabel) : undefined}
-      style={{ background: "transparent", color: "var(--text-primary)", ...(nexus && accent ? { "--brand": accent } : {}) }}>
+    <div className={"relative min-h-screen w-full overflow-x-hidden" + (nexus ? " nx-wroot" : "")} data-ws={nexus ? wsNow : undefined}
+      style={{ background: "transparent", color: "var(--text-primary)", ...(nexus && accNow ? { "--brand": accNow } : {}) }}>
       {/* Nexus : le fond du monde (l'image de l'œuvre en grand) et l'habillage de son ambiance */}
       {nexus && bgSrc && <div className="nx-wbg" aria-hidden="true" style={{ backgroundImage: `url(${bgSrc})` }} />}
       {nexus && <div className="nx-wfx" aria-hidden="true" />}
@@ -271,12 +277,21 @@ export default function Detail() {
           </div>
         </div>
 
+        {nexus && (
+          <WorldHero ref={cardRef} ws={wsNow} item={item} catLabel={catLabel}
+            box={{ id: item.id, title: item.title, sub: item.tagline || "", format: fmtOfCreation(item, catLabel), emblem: item.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }}
+            cover={hasImg ? posterSrc : null} bg={bgSrc} tabs={worldTabs}
+            onTab={(k) => { sfx("nav"); setWtab(k); setTimeout(() => document.querySelector(".nx-wtabs")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40); }}
+            onLaunch={item.coming_soon ? () => toast.info("Bientôt disponible") : launch}
+            launchLabel={item.coming_soon ? "Bientôt" : canResume ? "Reprendre" : (item.launch_label && item.launch_label !== "Lancer" ? item.launch_label : "Lancer")}
+            progress={canResume && savedProgress ? { label: `Chapitre ${(savedProgress.chapter || 0) + 1} / ${item.chapters?.length || 1}`, ratio: ((savedProgress.chapter || 0) + (savedProgress.ratio || 0)) / (item.chapters?.length || 1) } : null}
+            onAmbient={item.has_audio ? () => { sfx("nav"); playAmbient(item.id); } : null}
+            fav={isFavorite(item.id)} onFav={() => { sfx("nav"); toggleFavorite(item.id); }} />
+        )}
+        {nexus && isAdmin && <button className="wst-open" onClick={() => { sfx("select"); setStudio(true); }} data-testid="world-studio-open"><IoBrushOutline size={15} /> <span>Habiller ce monde</span></button>}
+        {nexus && studio && <WorldStudio item={item} catLabel={catLabel} onPreview={setPvw} onClose={() => { setStudio(false); setPvw(null); }} onSaved={refetch} onFullEditor={() => { setStudio(false); setPvw(null); setEditorOpen(true); }} />}
         <div className="max-w-7xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
-          {nexus ? (
-            <div ref={cardRef} className="ax-view nx-world-obj" data-testid="detail-object">
-              <Box3D b={{ id: item.id, title: item.title, sub: item.tagline || "", format: fmtOfCreation(item, catLabel), emblem: item.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }} cover={hasImg ? posterSrc : null} />
-            </div>
-          ) : (
+          {nexus ? null : (
           <div ref={cardRef} className="group flex-shrink-0 w-72 sm:w-96 md:w-[28rem] lg:w-[34rem] aspect-[2/3] overflow-hidden border relative poster-in sx-fxcard"
             style={{ borderColor: "var(--card-bd, color-mix(in srgb, var(--brand) 40%, var(--border-c)))", borderRadius: "var(--card-r, calc(var(--radius-base)*1.3))", boxShadow: "0 30px 80px rgba(0,0,0,0.6), var(--card-sh, 0 0 60px -14px color-mix(in srgb, var(--brand) 55%, transparent))" }} data-testid="detail-poster">
             <span className="poster-scan" aria-hidden="true" />
@@ -301,6 +316,7 @@ export default function Detail() {
           )}
 
           <div className="w-full md:flex-1 min-w-0 fade-up" style={{ animationDelay: ".12s" }}>
+            {!nexus && (<>
             <div className="mb-3" style={{ fontSize: 10, letterSpacing: "0.3em", color: "var(--brand)", fontFamily: "var(--font-mono, monospace)" }}>// FICHE DE CRÉATION</div>
             <div className="flex items-center gap-3 mb-3 flex-wrap">
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="detail-category">{catLabel}</span>
@@ -354,6 +370,7 @@ export default function Detail() {
                 {isFavorite(item.id) ? <IoHeart size={18} /> : <IoHeartOutline size={18} />} {isFavorite(item.id) ? "Favori" : "Favoris"}
               </button>
             </div>
+            </>)}
 
             {/* Reprise de lecture — prochain chapitre/épisode à regarder */}
             {continueTarget && (
