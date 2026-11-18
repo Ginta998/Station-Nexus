@@ -164,7 +164,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
         </section>
       )}
 
-      {toolbar}
+      <div className="nx-toolbar">{toolbar}</div>
       {!shown.length && <div className="empty">Aucune création{query ? " pour cette recherche." : "."}</div>}
 
       {/* RAYONS : la première œuvre de chaque rayon est de face, les autres en tranche */}

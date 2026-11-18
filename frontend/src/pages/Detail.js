@@ -20,7 +20,7 @@ import ShareMenu from "@/components/ShareMenu";
 import MobileMenu from "@/components/MobileMenu";
 import { confirmCheckout } from "@/components/CheckoutConfirm";
 import CreationJournal from "@/components/journal/CreationJournal";
-import { useExperience } from "@/lib/experience";
+import { useExperience, worldAmbientAuto } from "@/lib/experience";
 import { fmtOfCreation } from "@/components/nexus/NexusHome";
 import NexusWorld from "@/components/nexus/NexusWorld";
 import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
@@ -53,6 +53,7 @@ export default function Detail() {
   const cardRef = useRef(null);
   // Expérience Nexus : la fiche devient le « monde » de l'œuvre (l'objet en grand, puis des onglets)
   const nexus = useExperience() === "nexus";
+  const [editorSec, setEditorSec] = useState("id");
   const [pvw, setPvw] = useState(null); // aperçu en direct : le monde suit les réglages de l'atelier ouvert
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
   const accentSrc = nexus && item ? (item.poster && item.poster.length > 4 ? item.poster : item.has_poster ? posterUrl(item.id, item.updated_at, 200) : null) : null;
@@ -61,6 +62,8 @@ export default function Detail() {
 
   // l'ambiance de la création ne démarre qu'au bouton ; on la coupe en quittant la fiche
   useEffect(() => () => stopAmbient(), [item?.id]); // eslint-disable-line
+  // Nexus : l'ambiance sonore démarre seule en entrant dans le monde (réglable dans Paramètres)
+  useEffect(() => { if (nexus && item?.has_audio && worldAmbientAuto()) { const t = setTimeout(() => playAmbient(item.id), 600); return () => clearTimeout(t); } }, [item?.id, nexus]); // eslint-disable-line
 
   // Cosmic Bunny special context on her own creation page ("Cosmic Bunny")
   useEffect(() => {
@@ -257,7 +260,7 @@ export default function Detail() {
         </div>
       )}
 
-      <EditorDialog open={editorOpen} onClose={() => { setEditorOpen(false); setPvw(null); }} initial={item} categories={cats} onSaved={refetch} cover={hasImg ? posterSrc : null} onPeek={nexus ? setPvw : undefined} />
+      <EditorDialog open={editorOpen} onClose={() => { setEditorOpen(false); setPvw(null); }} initial={item} categories={cats} onSaved={refetch} cover={hasImg ? posterSrc : null} onPeek={nexus ? setPvw : undefined} section={editorSec} />
   </>);
 
   // Expérience Nexus : l'œuvre devient un monde en plein écran, avec ses écrans imbriqués
@@ -290,7 +293,8 @@ export default function Detail() {
           intentionUrl={item.intention_file_id ? assetDownloadUrl(item.intention_file_id) : null}
           fav={isFavorite(item.id)} onFav={() => { sfx("nav"); toggleFavorite(item.id); }}
           onAmbient={item.has_audio ? () => { sfx("nav"); playAmbient(item.id); } : null} ambientOn={thisPlaying}
-          isAdmin={isAdmin} onEdit={() => { sfx("select"); setEditorOpen(true); }}
+          onAmbientSetup={() => { setEditorSec("sound"); setEditorOpen(true); }}
+          isAdmin={isAdmin} onEdit={() => { sfx("select"); setEditorSec("id"); setEditorOpen(true); }}
           onExit={() => { stopAmbient(); if (window.history.length > 1) nav(-1); else nav("/"); }} sfx={sfx} />
         {overlays}
       </>

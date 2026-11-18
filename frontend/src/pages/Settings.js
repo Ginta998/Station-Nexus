@@ -28,7 +28,7 @@ import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles } from "react-icons/i
 import Celebration from "@/components/Celebration";
 import { StartupSetting } from "@/components/Startup";
 import { TOUR_STEPS } from "@/lib/tourSteps";
-import { EXPERIENCES, useExperience, setExperience } from "@/lib/experience";
+import { EXPERIENCES, useExperience, setExperience, worldAmbientAuto, setWorldAmbientAuto } from "@/lib/experience";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const Section = ({ title, extra, children }) => (
@@ -924,6 +924,13 @@ export default function Settings() {
               </button>
             ))}
           </div>
+          {experience === "nexus" && (
+            <label className="flex items-center justify-between gap-4 mt-3 p-4 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="world-amb-auto">
+              <span><span className="block font-semibold" style={{ color: "var(--text-primary)" }}>Lancer l'ambiance sonore en entrant dans une œuvre</span>
+                <span className="block text-sm" style={{ color: "var(--text-secondary)" }}>Sinon, elle se lance avec le bouton note de musique, en haut à droite du monde.</span></span>
+              <input type="checkbox" defaultChecked={worldAmbientAuto()} onChange={(e) => { setWorldAmbientAuto(e.target.checked); sfx("select"); }} style={{ width: 20, height: 20, accentColor: "var(--brand)" }} />
+            </label>
+          )}
         </Section>
 
         <Section title="Thèmes" extra={`— ${THEMES.length} ambiances`}>

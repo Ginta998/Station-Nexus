@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import VersionHistory from "@/components/VersionHistory";
 import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoCreateOutline, IoChevronUp, IoChevronDown, IoEyeOutline, IoTimeOutline, IoFilmOutline, IoLinkOutline, IoGameControllerOutline, IoInformationCircleOutline, IoListOutline, IoReaderOutline, IoCheckmark, IoArrowBack } from "react-icons/io5";
 import { toast } from "sonner";
-import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset } from "@/lib/api";
+import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset, assetUrl } from "@/lib/api";
 import PageWriter from "@/components/PageWriter";
 import { WORLD_STYLES, worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import "@/components/editor.css";
@@ -27,6 +27,9 @@ const STYLE_HINT = {
   cinema: "Bandes noires, grand titre, menu de DVD", vhs: "Écran cathodique, menus d'affichage",
   arcade: "Écran titre, police pixel, PRESS START", yorha: "Papier crème, menus carrés",
   eve: "Verre sombre, lignes fines, losanges", hero: "Panneaux inclinés, couleurs vives",
+  cathedrale: "Noir et rouge sang, gothique, cadre gravé", couronne: "Noir et or, halo, filets dorés",
+  trait: "Aplats, contours encrés, trames", sengoku: "Encre, coup de pinceau, sceau rouge",
+  survivance: "Tons sourds, notes scotchées, sobriété", cristal: "Bleu nuit, filigrane d'or, fenêtres",
 };
 const LAUNCH = [
   ["chapters", "Chapitres", "Un lecteur page par page", IoBookOutline],
@@ -57,6 +60,27 @@ const shrink = (file, max = 1600) => new Promise((res, rej) => {
   r.readAsDataURL(file);
 });
 const takeImage = (file, cb, max) => shrink(file, max).then(cb).catch(() => toast.error("Image illisible"));
+
+
+// Images plus légères : celles du moodboard, des intentions, des chapitres et des épisodes partent en fichiers
+// (servis à part et gardés en cache par le navigateur) au lieu d'alourdir la fiche de l'œuvre.
+const isData = (v) => typeof v === "string" && v.startsWith("data:image");
+const toBlob = (d) => { const [h, b] = d.split(","); const mime = h.match(/data:([^;]+)/)?.[1] || "image/jpeg"; const bin = atob(b); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: mime }); };
+async function offloadImages(cid, f) {
+  const up = async (v) => { if (!isData(v)) return v; try { const a = await uploadAsset(cid, toBlob(v), "image", "image.jpg"); return a?.id ? assetUrl(a.id) : v; } catch (_) { return v; } };
+  const list = async (arr) => { const out = []; for (const v of arr || []) out.push(await up(v)); return out; };
+  const units = async (arr) => { const out = []; for (const u of arr || []) out.push(isData(u.image) ? { ...u, image: await up(u.image) } : u); return out; };
+  return { ...f, gallery: await list(f.gallery), intention_images: await list(f.intention_images), chapters: await units(f.chapters), episodes: await units(f.episodes) };
+}
+const hasData = (f) => [...(f.gallery || []), ...(f.intention_images || []), ...(f.chapters || []).map((u) => u.image), ...(f.episodes || []).map((u) => u.image)].some(isData);
+// Brouillon : ce qui n'est pas enregistré survit à un onglet fermé (gardé dans ce navigateur)
+const DRAFT = (id) => `sx_draft_creation_${id || "new"}`;
+const saveDraft = (id, f) => {
+  try { localStorage.setItem(DRAFT(id), JSON.stringify({ at: Date.now(), form: f })); }
+  catch (_) { try { const { poster, bg_image, gallery, intention_images, ...light } = f; localStorage.setItem(DRAFT(id), JSON.stringify({ at: Date.now(), form: light, light: true })); } catch (__) {} }
+};
+const readDraft = (id) => { try { return JSON.parse(localStorage.getItem(DRAFT(id)) || "null"); } catch (_) { return null; } };
+const dropDraft = (id) => { try { localStorage.removeItem(DRAFT(id)); } catch (_) {} };
 
 // Petits éléments de l'atelier
 const Field = ({ label, hint, children, wide }) => (
@@ -93,12 +117,13 @@ const FilePick = ({ icon, label, present, file, onPick, onRemove, accept, testid
   </div>
 );
 
-export default function EditorDialog({ open, onClose, initial, categories = [], onSaved, onPeek, cover: coverHint }) {
+export default function EditorDialog({ open, onClose, initial, categories = [], onSaved, onPeek, cover: coverHint, section }) {
   const [form, setForm] = useState(empty);
   const [sec, setSec] = useState("id");
   const [dirty, setDirty] = useState(false);
   const [askLeave, setAskLeave] = useState(false);
   const [peek, setPeek] = useState(false);
+  const [draft, setDraft] = useState(null); // brouillon trouvé à l'ouverture
   const [showHistory, setShowHistory] = useState(false);
   const [fullState, setFullState] = useState("ok"); // ok | loading | error — on n'enregistre jamais une version incomplète
   const [saving, setSaving] = useState(false);
@@ -116,7 +141,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   useEffect(() => {
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
-      setFullState("ok"); setSec("id"); setDirty(false); setAskLeave(false); setPeek(false); setShowHistory(false);
+      setFullState("ok"); setSec(section || "id"); setDraft(readDraft(initial?.id)); setDirty(false); setAskLeave(false); setPeek(false); setShowHistory(false);
       setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFilmFile(null); setTrailerFile(null); setIntentionFile(null); setVideoProg({ film: 0, trailer: 0 }); setWriting(null);
       // on charge la version complète (images comprises) pour ne rien perdre en enregistrant
       if (initial && initial.id) {
@@ -127,6 +152,8 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
     }
   }, [open, initial]); // eslint-disable-line
 
+  // Brouillon : gardé quelques instants après chaque modification
+  useEffect(() => { if (!open || !dirty) return; const t = setTimeout(() => saveDraft(initial?.id, form), 900); return () => clearTimeout(t); }, [open, dirty, form]); // eslint-disable-line
   // Aperçu en direct : le monde derrière l'atelier suit tes réglages
   useEffect(() => { if (open && onPeek) onPeek(form); }, [open, form]); // eslint-disable-line
   useEffect(() => () => onPeek?.(null), []); // eslint-disable-line
@@ -185,8 +212,10 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
     if (isEdit && fullState !== "ok") return toast.error(fullState === "loading" ? "Chargement de la création en cours… réessaie dans un instant" : "La création complète n'a pas pu être chargée : ferme et rouvre l'éditeur");
     setSaving(true);
     try {
-      const payload = { ...form, order: Number(form.order) || 0 };
-      const saved = isEdit ? await updateCreation(initial.id, payload, true) : await createCreation(payload);
+      let payload = { ...form, order: Number(form.order) || 0 };
+      if (isEdit && hasData(payload)) payload = await offloadImages(initial.id, payload);
+      let saved = isEdit ? await updateCreation(initial.id, payload, true) : await createCreation(payload);
+      if (!isEdit && hasData(payload)) { payload = await offloadImages(saved.id, payload); saved = await updateCreation(saved.id, payload, true); }
       if (audioFile) await uploadAudio(saved.id, audioFile);
       if (readingFile) await uploadReadingAudio(saved.id, readingFile);
       if (filmFile) await uploadVideo(saved.id, "film", filmFile, (p) => setVideoProg((s) => ({ ...s, film: p })));
@@ -203,7 +232,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
         if (ch && file) { try { await uploadChapterAudio(saved.id, ch.id, file); } catch (_) { toast.error(`Musique du chapitre ${Number(i) + 1} trop lourde (max 12 Mo) ?`); } }
       }
       toast.success(isEdit ? "Création mise à jour" : "Création ajoutée");
-      setDirty(false); onSaved?.(); close();
+      dropDraft(isEdit ? initial.id : null); setDirty(false); onSaved?.(); close();
     } catch { toast.error("Erreur lors de l'enregistrement"); } finally { setSaving(false); }
   };
 
@@ -452,6 +481,13 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           </div>
         </header>
 
+        {draft && fullState === "ok" && (
+          <div className="rl-draft" data-testid="editor-draft">
+            <span>Un brouillon non enregistré du {new Date(draft.at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} existe{draft.light ? " (sans les images)" : ""}.</span>
+            <button type="button" className="rl-btn go" onClick={() => { setForm((f) => ({ ...f, ...draft.form })); setDirty(true); setDraft(null); toast.success("Brouillon repris"); }} data-testid="editor-draft-restore">Reprendre le brouillon</button>
+            <button type="button" className="rl-btn ghost" onClick={() => { dropDraft(initial?.id); setDraft(null); }}>Ignorer</button>
+          </div>
+        )}
         <nav className="rl-nav" aria-label="Sections">
           {SECTIONS.map(([k, l], i) => (
             <button type="button" key={k} className={sec === k ? "on" : ""} onClick={() => setSec(k)} data-testid={`editor-sec-${k}`}>
@@ -495,7 +531,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           <div className="rl-ask" role="alertdialog">
             <p><b>Des modifications ne sont pas enregistrées.</b> Les garder ?</p>
             <button type="button" className="rl-btn go" onClick={() => { setAskLeave(false); save(); }}>Enregistrer</button>
-            <button type="button" className="rl-btn ghost" onClick={close} data-testid="editor-discard">Quitter sans enregistrer</button>
+            <button type="button" className="rl-btn ghost" onClick={() => { dropDraft(initial?.id); close(); }} data-testid="editor-discard">Quitter sans enregistrer</button>
             <button type="button" className="rl-btn ghost" onClick={() => setAskLeave(false)}>Rester</button>
           </div>
         )}

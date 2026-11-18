@@ -17,3 +17,8 @@ export function useExperience() {
   useEffect(() => { const on = () => setV(get()); window.addEventListener("sx-experience", on); window.addEventListener("storage", on); return () => { window.removeEventListener("sx-experience", on); window.removeEventListener("storage", on); }; }, []);
   return v;
 }
+
+// Nexus : l'ambiance sonore d'une œuvre démarre seule en entrant dans son monde (oui par défaut)
+const AMB = "sx_world_amb_auto";
+export const worldAmbientAuto = () => { try { return localStorage.getItem(AMB) !== "0"; } catch (_) { return true; } };
+export function setWorldAmbientAuto(on) { try { localStorage.setItem(AMB, on ? "1" : "0"); } catch (_) {} window.dispatchEvent(new CustomEvent("sx-experience")); }

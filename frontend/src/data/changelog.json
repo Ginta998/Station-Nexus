@@ -1,6 +1,28 @@
 {
-  "version": "0.18",
+  "version": "0.19",
   "patches": [
+    {
+      "v": "0.19",
+      "date": "2026-11-18",
+      "title": "Douze mondes, grand écran et outils de la station",
+      "groups": {
+        "Nouveau": [
+          "Six nouveaux thèmes d'œuvre : Cathédrale (noir et rouge sang), Couronne (noir et or), Trait (aplats et contours encrés), Sengoku (encre et sceau rouge), Survivance (tons sourds, notes scotchées), Cristal (bleu nuit et filigrane d'or). Douze au total.",
+          "Sur ordinateur, le menu de l'œuvre reste en colonne à gauche et chaque section s'ouvre dans un grand panneau, avec son titre, un filet et « Retour ».",
+          "Chapitres et épisodes en grille de vignettes, ou en liste avec visuel (le choix est gardé).",
+          "« Reprendre » montre le visuel du chapitre ou de l'épisode en cours, avec sa progression, dans tous les thèmes.",
+          "En haut à droite du monde : ambiance sonore de l'œuvre, son de la station, favori, modifier, paramètres, menu de la station, quitter.",
+          "Paramètres › Expérience : lancer ou non l'ambiance sonore en entrant dans une œuvre.",
+          "Sur téléphone, un bouton « ⋯ » sur chaque chapitre, épisode et image ouvre ses options.",
+          "Atelier : brouillon automatique, proposé à la réouverture si un onglet s'est fermé sans enregistrer."
+        ],
+        "Amélioré": [
+          "Images plus légères : moodboard, intentions, chapitres et épisodes partent en fichiers servis à part (et gardés en cache) ; les anciennes images sont converties au prochain enregistrement.",
+          "Accueil Nexus : recherche, thèmes et choix de vue sur une même ligne, bien séparés des rayons.",
+          "Le menu du son se ferme d'un clic ailleurs dans le monde ; la page ne bouge plus quand on parcourt une liste sur téléphone."
+        ]
+      }
+    },
     {
       "v": "0.18",
       "date": "2026-11-18",

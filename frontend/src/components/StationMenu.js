@@ -27,7 +27,7 @@ function Cov({ id, playing, small }) {
 
 const MODES = [["loop", "En boucle", IoRepeat], ["sequence", "À la suite", IoListOutline], ["shuffle", "Aléatoire", IoShuffle]];
 
-export function SoundBtn({ btn: bstyle = btn, up = false }) {
+export function SoundBtn({ btn: bstyle = btn, up = false, className }) {
   const nav = useNavigate();
   const { muted, toggleMute, ambienceId, selectAmbience, appPlaying, sfx, playMode, setPlayMode, nextAmbience, muteSfx, muteMusic, toggleSfx, toggleMusic } = useApp();
   const amb = useAmbient();
@@ -42,7 +42,7 @@ export function SoundBtn({ btn: bstyle = btn, up = false }) {
   return (
     <div className="relative">
       <button data-testid="sound-btn" onClick={() => { sfx("nav"); setOpen((o) => !o); }} title="Musique / ambiance"
-        className="p-2.5 border transition-colors" style={{ ...bstyle, color: playing ? "var(--brand)" : "var(--on-media-2)" }}>
+        className={className ? className + (playing ? " on" : "") : "p-2.5 border transition-colors"} style={className ? undefined : { ...bstyle, color: playing ? "var(--brand)" : "var(--on-media-2)" }}>
         {playing ? <span className="sx-eq"><i /><i /><i /><i /></span> : (muted ? <IoVolumeMute size={18} /> : <IoMusicalNotes size={18} />)}
       </button>
       {open && (<>
@@ -135,7 +135,7 @@ function FsBtn({ style }) {
  *   onAdd     : (admin) ouvre la création d'une œuvre — optionnel
  *   onProfile : ouvre l'édition du profil — si absent, renvoie vers /parametres
  */
-export default function StationMenu({ onAdd, onProfile }) {
+export default function StationMenu({ onAdd, onProfile, trigger }) {
   const nav = useNavigate();
   const { isAdmin, sfx, profile, seenAnnouncements } = useApp();
   const { user, openAuth, logout } = useAuth();
@@ -161,12 +161,14 @@ export default function StationMenu({ onAdd, onProfile }) {
 
   return (
     <>
+      {trigger ? trigger(() => { sfx("nav"); setMenuOpen(true); }, unread + salonUnread) : (
       <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }}
-        className="relative flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105 flex-shrink-0"
-        style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-        <IoMenu size={18} /> Menu
-        {(unread > 0 || salonUnread > 0) && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{(unread + salonUnread) > 9 ? "9+" : (unread + salonUnread)}</span>}
-      </button>
+          className="relative flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105 flex-shrink-0"
+          style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+          <IoMenu size={18} /> Menu
+          {(unread > 0 || salonUnread > 0) && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{(unread + salonUnread) > 9 ? "9+" : (unread + salonUnread)}</span>}
+        </button>
+      )}
 
       {menuOpen && createPortal(
         <div className="sx-menu-scrim" onClick={() => setMenuOpen(false)} data-testid="mobile-menu">

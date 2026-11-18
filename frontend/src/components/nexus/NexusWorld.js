@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoClose, IoHeart, IoHeartOutline, IoMusicalNotes, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay } from "react-icons/io5";
+import { IoArrowBack, IoClose, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoSettingsOutline, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, mediaUrl } from "@/lib/api";
 import { JournalBlocks, fmtDate } from "@/components/journal/JournalParts";
-import { ContextMenuHost, pressMenu } from "@/components/atelier/ContextMenu";
+import { ContextMenuHost, pressMenu, showMenu } from "@/components/atelier/ContextMenu";
+import StationMenu, { SoundBtn } from "@/components/StationMenu";
 import Box3D from "@/components/nexus/Box3D";
 import { Face } from "@/components/atelier/Alexandrie";
 import "@/components/nexus/world.css";
@@ -15,15 +17,30 @@ import "@/components/nexus/world.css";
   Le fil d'Ariane en haut montre toujours où l'on est ; Échap ou ← remonte d'un cran.
 */
 
-const OVERLAYS = '[data-testid="chapter-reader"],[data-testid="cinema-player"],[data-testid="cosmic-bunny-game"],[data-testid="reader-modal"],[data-testid="world-studio"],[data-testid="editor-dialog"],[role="menu"]';
+const OVERLAYS = '[data-testid="chapter-reader"],[data-testid="cinema-player"],[data-testid="cosmic-bunny-game"],[data-testid="reader-modal"],[data-testid="world-studio"],[data-testid="editor-dialog"],[role="menu"],.sx-menu-scrim,.sx-sound-menu';
 const typing = (t) => /^(INPUT|TEXTAREA|SELECT)$/.test(t?.tagName) || t?.isContentEditable;
 const plural = (n, one, many) => `${n} ${n > 1 ? many : one}`;
 const roman = (i) => ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][i] || String(i + 1);
+// Écran large : le menu de l'œuvre reste en colonne à gauche, la section s'ouvre dans le grand panneau
+const WIDE = "(min-width: 1100px)";
+function useWide() {
+  const [w, setW] = useState(() => typeof window !== "undefined" && window.matchMedia?.(WIDE).matches);
+  useEffect(() => { const m = window.matchMedia?.(WIDE); if (!m) return; const h = () => setW(m.matches); m.addEventListener?.("change", h); return () => m.removeEventListener?.("change", h); }, []);
+  return w;
+}
+// Nombre de colonnes réellement affichées par une grille (pour les flèches du clavier)
+const colsOf = (el) => { if (!el) return 1; const t = getComputedStyle(el).gridTemplateColumns; return t && t !== "none" ? t.split(" ").length : 1; };
+const VIEW_KEY = "sx_units_view";
+const readView = () => { try { return localStorage.getItem(VIEW_KEY) === "list" ? "list" : "grid"; } catch (_) { return "grid"; } };
 
 export default function NexusWorld(p) {
   const { item, ws, catLabel, cover, bg, box, making = [], trailer, launchLabel, progress, onLaunch, locked, unitLocked, onChapter, onEpisode,
-    current, unlock, comments, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, isAdmin, onEdit, onExit, sfx = () => {}, intentionUrl } = p;
+    current, unlock, comments, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, sfx = () => {}, intentionUrl } = p;
 
+  const wide = useWide();
+  const navTo = useNavigate();
+  const [view, setViewS] = useState(readView);
+  const setView = (v) => { setViewS(v); sfx("nav"); try { localStorage.setItem(VIEW_KEY, v); } catch (_) {} };
   const isUnits = (item.launch_type === "chapters" && item.chapters?.length > 0) || (item.launch_type === "episodes" && item.episodes?.length > 0);
   const unitWord = item.launch_type === "chapters" ? "chapitre" : "épisode";
   const unitsLabel = item.unit_label || (item.launch_type === "chapters" ? "Chapitres" : "Épisodes");
@@ -34,7 +51,7 @@ export default function NexusWorld(p) {
   const seq = useRef(1);
   const top = stack[stack.length - 1];
   const change = (next, dir) => {
-    setLeaving({ s: top, dir, n: seq.current });
+    setLeaving({ s: top, dir, n: seq.current, depth: stack.length });
     seq.current += 1;
     setStack(next);
   };
@@ -42,6 +59,7 @@ export default function NexusWorld(p) {
   const push = (s) => { sfx("select"); change([...stack, { sel: 0, ...s, n: seq.current }], "f"); };
   const pop = () => { if (stack.length === 1) { sfx("back"); onExit(); return; } sfx("back"); change(stack.slice(0, -1), "b"); };
   const goto = (i) => { if (i >= stack.length - 1) return; sfx("back"); change(stack.slice(0, i + 1), "b"); };
+  const replaceAt1 = (s) => { if (stack[1]?.k === s.k && stack.length === 2) return; sfx("select"); change([stack[0], { sel: 0, ...s, n: seq.current }], "f"); };
   const setSel = (i) => setStack((st) => (st[st.length - 1].sel === i ? st : [...st.slice(0, -1), { ...st[st.length - 1], sel: i }]));
 
   // ---------- ce que contient le monde ----------
@@ -110,7 +128,8 @@ export default function NexusWorld(p) {
       return;
     }
     if (!items.length) return;
-    const grid = top.k === "gallery" ? 4 : 1;
+    const gridEl = stage.current?.querySelector(".nw-cur .nw-ugrid, .nw-cur .nw-gal");
+    const grid = gridEl ? colsOf(gridEl) : 1;
     let d = 0;
     if (k === "ArrowDown") d = grid; if (k === "ArrowUp") d = -grid;
     if (k === "ArrowRight" && grid > 1) d = 1; if (k === "ArrowLeft" && grid > 1) d = -1;
@@ -121,7 +140,14 @@ export default function NexusWorld(p) {
   useEffect(() => { const h = (e) => keyRef.current(e); window.addEventListener("keydown", h); return () => window.removeEventListener("keydown", h); }, []);
   // L'élément choisi reste visible quand on descend la liste
   const stage = useRef(null);
-  useEffect(() => { stage.current?.querySelector(".nw-cur .on")?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [sel, top.n]);
+  // (on fait défiler la liste elle-même, jamais la page : sur téléphone, la page ne doit pas bouger)
+  useEffect(() => {
+    const el = stage.current?.querySelector(".nw-cur .on"); if (!el) return;
+    let box = el.parentElement; while (box && box !== stage.current && !(box.scrollHeight > box.clientHeight + 2 && /(auto|scroll)/.test(getComputedStyle(box).overflowY))) box = box.parentElement;
+    if (!box || box === stage.current) return;
+    const r = el.getBoundingClientRect(); const b = box.getBoundingClientRect();
+    if (r.top < b.top) box.scrollBy({ top: r.top - b.top - 8, behavior: "smooth" }); else if (r.bottom > b.bottom) box.scrollBy({ top: r.bottom - b.bottom + 8, behavior: "smooth" });
+  }, [sel, top.n]);
 
   // ---------- menu contextuel ----------
   const link = (hash = "") => { navigator.clipboard?.writeText(`${window.location.origin}/oeuvre/${item.id}${hash}`).catch(() => {}); toast.success("Lien copié"); };
@@ -134,17 +160,23 @@ export default function NexusWorld(p) {
   ].filter(Boolean) });
 
   // ---------- briques communes ----------
-  const Menu = ({ c, className = "", num }) => (
+  // Sur téléphone, le menu d'options d'un élément s'ouvre avec ce bouton « ⋯ » (au lieu d'un appui long invisible)
+  const More = (it) => (
+    <span className="nw-more" role="button" tabIndex={-1} aria-label="Plus d'options" data-testid={`nw-more-${it.id}`}
+      onClick={(e) => { e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); const b = menuFor(it)(); showMenu(r.left, r.bottom, b.entries, b.title); }}><IoEllipsisHorizontal size={16} /></span>
+  );
+  const Menu = ({ c, className = "", num, col }) => (
     <nav className={"nw-menu " + className} aria-label={titleOf(c.s)}>
       {c.its.map((it, i) => (
-        <button key={it.id} className={(i === c.sel ? "on " : "") + (it.main ? "go " : "") + (it.lock ? "lock" : "")} onMouseMove={() => c.sel !== i && setSel(i)} onFocus={() => setSel(i)}
-          onClick={() => { setSel(i); it.go(); }} {...pressMenu(menuFor(it))} data-testid={`nw-${it.id}`}>
+        <button key={it.id} className={(i === c.sel ? "on " : "") + (it.main ? "go " : "") + (it.lock ? "lock" : "")} onMouseMove={col ? undefined : () => c.sel !== i && setSel(i)} onFocus={col ? undefined : () => setSel(i)}
+          onClick={() => { if (col) { col(it); return; } setSel(i); it.go(); }} {...pressMenu(menuFor(it))} data-testid={`nw-${col ? "col-" : ""}${it.id}`}>
           {it.img && <span className="nw-th" style={{ backgroundImage: `url(${it.img})` }} />}
           {num && <i className="nw-n">{num(i)}</i>}
           <span className="nw-l">{it.label}</span>
           {it.sub && <small className="nw-s">{it.sub}</small>}
           {it.lock && <IoLockClosed className="nw-lk" size={13} />}
           {it.mark && <em className="nw-mk">EN COURS</em>}
+          {!col && c.s.k !== "home" && More(it)}
         </button>
       ))}
     </nav>
@@ -152,6 +184,17 @@ export default function NexusWorld(p) {
   const Desc = ({ c, fallback }) => <p className="nw-desc" key={c.cur?.id}>{c.cur?.desc || fallback}</p>;
   const Prog = () => (progress ? <div className="nw-prog"><span>{progress.label}</span><b><i style={{ width: `${Math.round(progress.ratio * 100)}%` }} /></b></div> : null);
   const year = new Date(item.created_at || Date.now()).getFullYear();
+  // « Reprendre » avec le visuel du chapitre ou de l'épisode en cours : le menu vit
+  const Resume = () => {
+    if (current == null || !progress) return Prog();
+    const u = units[current] || {}; const img = u.image || cover || bg;
+    return (
+      <button className="nw-resume" onClick={() => openUnit(current)} data-testid="nw-resume-card">
+        <span className="nw-resume-img" style={img ? { backgroundImage: `url(${img})` } : undefined} />
+        <span className="nw-resume-t"><small>REPRENDRE</small><b>{u.title || progress.label}</b><em>{progress.label}</em><i><u style={{ width: `${Math.round(progress.ratio * 100)}%` }} /></i></span>
+      </button>
+    );
+  };
 
   // ---------- l'écran d'accueil : une mise en page par ambiance ----------
   const Home = (c) => {
@@ -162,7 +205,7 @@ export default function NexusWorld(p) {
           <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
           {item.tagline && <p className="nw-tag">{item.tagline}</p>}
           {Desc({ c, fallback: item.synopsis })}
-          {Prog()}
+          {Resume()}
         </div>
         {Menu({ c, className: "m-dvd" })}
       </div>
@@ -178,7 +221,7 @@ export default function NexusWorld(p) {
         <aside className="hv-side">
           <Box3D b={box} cover={cover} />
           {Desc({ c, fallback: item.synopsis })}
-          {Prog()}
+          {Resume()}
         </aside>
       </div>
     );
@@ -189,6 +232,7 @@ export default function NexusWorld(p) {
         {item.tagline && <p className="nw-tag">{item.tagline}</p>}
         {Menu({ c, className: "m-pix" })}
         {Desc({ c, fallback: "" })}
+        {Resume()}
         <p className="ha-credit">CREDIT 01 · PLAYER 1</p>
       </div>
     );
@@ -204,7 +248,7 @@ export default function NexusWorld(p) {
               <div>
                 {item.tagline && <p className="nw-tag">{item.tagline}</p>}
                 {Desc({ c, fallback: item.synopsis })}
-                {Prog()}
+                {Resume()}
               </div>
             </div>
           </section>
@@ -224,8 +268,83 @@ export default function NexusWorld(p) {
           <p className="nw-k">{String(c.sel + 1).padStart(2, "0")} / {String(c.its.length).padStart(2, "0")}</p>
           <h2>{c.cur?.label}</h2>
           {Desc({ c, fallback: item.synopsis })}
-          {Prog()}
+          {Resume()}
         </aside>
+      </div>
+    );
+    if (ws === "cathedrale") return (
+      <div className="nw-home h-cath">
+        <span className="hk-sigil" aria-hidden="true" />
+        <p className="nw-k">{catLabel}</p>
+        <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
+        {item.tagline && <p className="nw-tag">{item.tagline}</p>}
+        {Menu({ c, className: "m-cath" })}
+        <div className="hk-foot">{Desc({ c, fallback: item.synopsis })}{Resume()}</div>
+      </div>
+    );
+    if (ws === "couronne") return (
+      <div className="nw-home h-crown">
+        <div className="hr-col">
+          <span className="hr-halo" aria-hidden="true" />
+          <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
+          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
+          {Menu({ c, className: "m-crown" })}
+        </div>
+        <aside className="hr-panel">
+          <p className="nw-k">{catLabel}</p>
+          <h2>{c.cur?.label}</h2>
+          {Desc({ c, fallback: item.synopsis })}
+          {Resume()}
+        </aside>
+      </div>
+    );
+    if (ws === "trait") return (
+      <div className="nw-home h-trait">
+        <div className="ht-art" style={cover ? { backgroundImage: `url(${cover})` } : undefined}><span className="ht-sticker">{catLabel}</span></div>
+        <div className="ht-col">
+          <h1 className="nw-title" data-testid="detail-title"><span>{item.title}</span></h1>
+          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
+          {Menu({ c, className: "m-pill" })}
+          <div className="ht-bubble">{Desc({ c, fallback: item.synopsis })}</div>
+          {Resume()}
+        </div>
+      </div>
+    );
+    if (ws === "sengoku") return (
+      <div className="nw-home h-sengoku">
+        <div className="hs-col">
+          <span className="hs-seal" aria-hidden="true">{item.kanji || "忍"}</span>
+          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
+          {Menu({ c, className: "m-brush" })}
+          {Desc({ c, fallback: item.synopsis })}
+          {Resume()}
+        </div>
+        <h1 className="nw-title hs-title" data-testid="detail-title">{item.title}</h1>
+      </div>
+    );
+    if (ws === "survivance") return (
+      <div className="nw-home h-surv">
+        <div className="hv2-col">
+          <p className="nw-k">{catLabel} · {year}</p>
+          <h1 className="nw-title" data-testid="detail-title">{item.title}</h1>
+          {item.tagline && <p className="nw-tag">{item.tagline}</p>}
+          {Menu({ c, className: "m-surv" })}
+        </div>
+        <aside className="hv2-note">
+          <span className="hv2-tape" aria-hidden="true" />
+          <h2>{c.cur?.label}</h2>
+          {Desc({ c, fallback: item.synopsis })}
+          {Resume()}
+        </aside>
+      </div>
+    );
+    if (ws === "cristal") return (
+      <div className="nw-home h-crys">
+        <header className="hc2-head"><span aria-hidden="true">◆</span><h1 className="nw-title" data-testid="detail-title">{item.title}</h1>{item.tagline && <p className="nw-tag">{item.tagline}</p>}</header>
+        <div className="hc2-wins">
+          <section className="hc2-win">{Menu({ c, className: "m-crys" })}</section>
+          <section className="hc2-win info"><p className="nw-k">{catLabel}</p><h2>{c.cur?.label}</h2>{Desc({ c, fallback: item.synopsis })}{Resume()}</section>
+        </div>
       </div>
     );
     // hero
@@ -238,7 +357,7 @@ export default function NexusWorld(p) {
         </div>
         <div className="hh-right">
           <Box3D b={box} cover={cover} />
-          <div className="hh-card"><b>{c.cur?.label}</b>{Desc({ c, fallback: item.synopsis })}{Prog()}</div>
+          <div className="hh-card"><b>{c.cur?.label}</b>{Desc({ c, fallback: item.synopsis })}{Resume()}</div>
         </div>
       </div>
     );
@@ -259,19 +378,51 @@ export default function NexusWorld(p) {
     </div>
   ); };
 
+
+  // ---------- chapitres / épisodes : grille de vignettes ou liste avec visuel ----------
+  const Units = (c) => (
+    <div className={"nw-units v-" + view} data-testid="nw-units">
+      <div className="nw-utools">
+        <p className="nw-k">{plural(units.length, unitWord, unitWord + "s")}{current != null ? ` · en cours : ${unitWord} ${current + 1}` : ""}</p>
+        <div className="nw-vt" role="radiogroup" aria-label="Affichage">
+          <button role="radio" aria-checked={view === "grid"} className={view === "grid" ? "on" : ""} onClick={() => setView("grid")} data-testid="nw-view-grid" title="Grille"><IoGridOutline size={15} /><span>Grille</span></button>
+          <button role="radio" aria-checked={view === "list"} className={view === "list" ? "on" : ""} onClick={() => setView("list")} data-testid="nw-view-list" title="Liste"><IoListOutline size={16} /><span>Liste</span></button>
+        </div>
+      </div>
+      <div className={view === "grid" ? "nw-ugrid" : "nw-ulist"}>
+        {c.its.map((it, i) => {
+          const n = ws === "yorha" ? roman(i) : String(i + 1).padStart(2, "0"); const img = it.img || cover;
+          return (
+            <button key={it.id} className={"nw-u" + (i === c.sel ? " on" : "") + (it.lock ? " lock" : "") + (it.mark ? " cur" : "") + (it.img ? "" : " noimg")} style={{ animationDelay: `${Math.min(i, 16) * 30}ms` }}
+              onMouseMove={() => c.sel !== i && setSel(i)} onFocus={() => setSel(i)} onClick={() => { setSel(i); it.go(); }} {...pressMenu(menuFor(it))} data-testid={`nw-${it.id}`}>
+              <span className="nw-u-img" style={img ? { backgroundImage: `url(${img})` } : undefined}>
+                <i className="nw-u-n">{n}</i>
+                {it.lock && <span className="nw-u-lk"><IoLockClosed size={14} /></span>}
+                {it.mark && <em className="nw-mk">EN COURS</em>}
+                <span className="nw-u-play"><IoPlay size={18} /></span>
+              </span>
+              <span className="nw-u-t"><b>{it.label}</b>{it.desc && <small>{it.desc}</small>}</span>
+              {More(it)}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   const ctxOf = (s) => { const its = itemsOf(s); const sl = Math.min(s.sel || 0, Math.max(0, its.length - 1)); return { s, its, sel: sl, cur: its[sl] }; };
   const screen = (s) => {
     const c = ctxOf(s);
     switch (s.k) {
       case "home": return Home(c);
-      case "units": return Selector({ c, kind: "units", num: (i) => (ws === "yorha" ? roman(i) : String(i + 1).padStart(2, "0")) });
+      case "units": return Units(c);
       case "making": return Selector({ c, kind: "making" });
       case "embeds": return Selector({ c, kind: "embeds" });
       case "neighbors": return Selector({ c, kind: "neighbors" });
       case "gallery": return (
         <div className="nw-gal">
           {(item.gallery || []).map((g, i) => (
-            <button key={i} className={i === c.sel ? "on" : ""} style={{ backgroundImage: `url(${g})`, animationDelay: `${i * 40}ms` }} onMouseMove={() => c.sel !== i && setSel(i)} onClick={() => push({ k: "image", list: item.gallery, i })} {...pressMenu(menuFor(c.its[i]))} data-testid={`nw-g${i}`} aria-label={`Image ${i + 1}`} />
+            <button key={i} className={i === c.sel ? "on" : ""} style={{ backgroundImage: `url(${g})`, animationDelay: `${i * 40}ms` }} onMouseMove={() => c.sel !== i && setSel(i)} onClick={() => push({ k: "image", list: item.gallery, i })} {...pressMenu(menuFor(c.its[i]))} data-testid={`nw-g${i}`} aria-label={`Image ${i + 1}`}>{More(c.its[i])}</button>
           ))}
         </div>
       );
@@ -333,8 +484,37 @@ export default function NexusWorld(p) {
   // Habillage propre à l'ambiance autour de tous les écrans
   const chrome = { vhs: <><span className="nw-osd l">▶ PLAY<em>SP</em></span><span className="nw-osd r">{titleOf(top).toUpperCase().slice(0, 22)}</span></>, arcade: <span className="nw-osd r">HI-SCORE 099999</span> }[ws];
 
+  // Grand écran : colonne du menu de l'œuvre + grand panneau de la section (comme un menu de jeu sur PC)
+  const splitMode = wide && stack.length > 1;
+  const colPick = (it) => {
+    if (it.id === "resume") { it.go(); return; }
+    if (it.id === "launch") { if (isUnits) replaceAt1({ k: "units", sel: current ?? 0 }); else start(); return; }
+    replaceAt1({ k: it.id });
+  };
+  const colCtx = () => { const its = homeItems; const key = stack[1]?.k === "units" ? "launch" : stack[1]?.k; const i = Math.max(0, its.findIndex((x) => x.id === key)); return { s: stack[0], its, sel: i, cur: its[i] }; };
+  const Split = (body, cls = "") => (
+    <div className={"nw-split " + cls}>
+      <aside className="nw-col">
+        <p className="nw-k">{catLabel}</p>
+        <h2 className="nw-col-t">{item.title}</h2>
+        {Menu({ c: colCtx(), className: "nw-colmenu", col: colPick })}
+      </aside>
+      <section className="nw-panel">
+        <header className="nw-ph">
+          <h1>{titleOf(stack[1] || top)}</h1>
+          {stack.length > 2 && <p className="nw-ph-sub">› {titleOf(top)}</p>}
+        </header>
+        <div className="nw-pbody">{body}</div>
+        <footer className="nw-pf"><button onClick={pop} data-testid="nw-panel-back"><IoArrowBack size={15} /> {stack.length > 2 ? "Retour" : "Retour au menu"}</button></footer>
+      </section>
+    </div>
+  );
+  const leavingWasSplit = !!leaving && wide && leaving.depth > 1;
+  const curLayer = <div className={"nw-scr nw-cur in-" + (leaving?.dir || "f")} key={"c" + top.n}>{screen(top)}</div>;
+  const leaveLayer = leaving && <div className={"nw-scr out-" + leaving.dir} key={"l" + leaving.n} aria-hidden="true">{screen(leaving.s)}</div>;
+
   return (
-    <div className={"nw ws-" + ws + " at-" + top.k} data-ws={ws} data-testid="nexus-world" style={{ ...p.style, "--bgimg": bg ? `url(${bg})` : undefined }}>
+    <div className={"nw ws-" + ws + " at-" + top.k + (splitMode ? " is-split" : "")} data-ws={ws} data-testid="nexus-world" style={{ ...p.style, "--bgimg": bg ? `url(${bg})` : undefined }}>
       {bg && <div className="nw-bg" aria-hidden="true" style={{ backgroundImage: `url(${bg})` }} />}
       <div className="nw-fx" aria-hidden="true" />
 
@@ -345,17 +525,32 @@ export default function NexusWorld(p) {
           {stack.map((s, i) => <button key={i} onClick={() => goto(i)} className={i === stack.length - 1 ? "here" : ""} aria-current={i === stack.length - 1 ? "page" : undefined}>{titleOf(s)}</button>)}
         </nav>
         <div className="nw-tools">
-          {onAmbient && <button onClick={onAmbient} className={ambientOn ? "on" : ""} title="Ambiance sonore" aria-label="Ambiance sonore"><IoMusicalNotes size={16} /></button>}
+          {(onAmbient || isAdmin) && (
+            <button onClick={onAmbient || onAmbientSetup} className={(ambientOn ? "on" : "") + (onAmbient ? "" : " off")} data-testid="nw-ambient"
+              title={onAmbient ? (ambientOn ? "Couper l'ambiance de l'œuvre" : "Lancer l'ambiance de l'œuvre") : "Pas encore de musique : l'ajouter (atelier › Son)"} aria-label="Ambiance sonore de l'œuvre">
+              {ambientOn ? <span className="sx-eq"><i /><i /><i /><i /></span> : <IoDiscOutline size={17} />}
+            </button>
+          )}
+          <SoundBtn className="nw-tb" />
           <button onClick={onFav} className={fav ? "on" : ""} title={fav ? "Retirer des favoris" : "Ajouter aux favoris"} aria-label="Favori" data-testid="nw-fav">{fav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}</button>
-          {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (tout : identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
+          {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
+          <button onClick={() => { sfx("nav"); navTo("/parametres"); }} title="Paramètres" aria-label="Paramètres" data-testid="nw-settings"><IoSettingsOutline size={16} /></button>
+          <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
           <button onClick={() => { sfx("back"); onExit(); }} title="Quitter le monde" aria-label="Quitter le monde" data-testid="nw-exit"><IoClose size={18} /></button>
         </div>
       </header>
 
       <main className="nw-stage" ref={stage}>
         {chrome}
-        {leaving && <div className={"nw-scr out-" + leaving.dir} key={"l" + leaving.n} aria-hidden="true">{screen(leaving.s)}</div>}
-        <div className={"nw-scr nw-cur in-" + (leaving?.dir || "f")} key={"c" + top.n}>{screen(top)}</div>
+        {splitMode ? (<>
+          {leaving && !leavingWasSplit && leaveLayer}
+          {Split(<>{leavingWasSplit && leaveLayer}{curLayer}</>, leaving && !leavingWasSplit ? "in-f" : "")}
+        </>) : (<>
+          {leaving && (leavingWasSplit
+            ? <div className={"nw-scr out-" + leaving.dir} key={"l" + leaving.n} aria-hidden="true">{Split(<div className="nw-scr">{screen(leaving.s)}</div>)}</div>
+            : leaveLayer)}
+          {curLayer}
+        </>)}
       </main>
 
       <footer className="nw-keys" aria-hidden="true">

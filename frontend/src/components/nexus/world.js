@@ -4,6 +4,7 @@ import { fmtOfCreation } from "@/components/nexus/NexusHome";
 // Chaque œuvre a son propre « menu de jeu » : une ambiance choisie d'après ce qu'elle est.
 export const WORLD_STYLES = {
   cinema: "Salle de cinéma", vhs: "Magnétoscope", arcade: "Borne d'arcade", yorha: "Archives", eve: "Orbite", hero: "Arène",
+  cathedrale: "Cathédrale", couronne: "Couronne", trait: "Trait", sengoku: "Sengoku", survivance: "Survivance", cristal: "Cristal",
 };
 // Anciennes ambiances (avant la 0.17) : on les ramène vers les nouvelles
 const LEGACY = { manga: "hero", vinyle: "eve", roman: "yorha" };
