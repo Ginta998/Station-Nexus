@@ -7,6 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useApp } from "@/context/AppContext";
 import { Face, Rail } from "@/components/atelier/Alexandrie";
 import { ContextMenuHost, pressMenu } from "@/components/atelier/ContextMenu";
+import Box3D from "@/components/nexus/Box3D";
 import "@/components/atelier/alexandrie.css";
 import "@/components/nexus/nexus.css";
 
@@ -72,7 +73,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
   const go = useCallback((x) => { setLaunch(null); nav(`/oeuvre/${x.id}`, { state: progressOf(x.it)?.resume ? { resume: true } : undefined }); }, [nav]);
   const start = useCallback((x) => { if (!x) return; sfx?.("select"); remember(x.id); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
   const [leaving, setLeaving] = useState(false);
-  useEffect(() => { if (!launch) return; setLeaving(false); const a = setTimeout(() => setLeaving(true), 1250); const t = setTimeout(() => go(launch), 1560); return () => { clearTimeout(a); clearTimeout(t); }; }, [launch, go]);
+  useEffect(() => { if (!launch) return; setLeaving(false); const a = setTimeout(() => setLeaving(true), 1500); const t = setTimeout(() => go(launch), 1820); return () => { clearTimeout(a); clearTimeout(t); }; }, [launch, go]);
   useEffect(() => { setSel(null); }, [view]);
 
   const menuFor = (x) => () => ({ title: x.title, entries: [
@@ -233,7 +234,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
       {launch && (
         <div className={"nx-launchfx f-" + launch.format + (leaving ? " out" : "")} onClick={() => go(launch)} data-testid="nx-launchfx" role="status" aria-label={`Lancement de ${launch.title}`}>
           <i className="nx-lf-glow" aria-hidden="true" />
-          <div className="nx-lf-obj"><Face b={launch} cover={covers[launch.id]} /></div>
+          <div className="nx-lf-obj"><Box3D b={launch} cover={covers[launch.id]} /></div>
           <p className="nx-lf-t"><span className="mono">{launch.format === "vhs" ? "▶ PLAY" : launch.format === "vinyle" ? "◉ FACE A" : "OUVERTURE"}</span>{launch.title}</p>
           <small className="mono nx-lf-skip">TOUCHE OU CLIC POUR PASSER</small>
         </div>

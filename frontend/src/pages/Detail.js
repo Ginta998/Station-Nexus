@@ -21,8 +21,9 @@ import MobileMenu from "@/components/MobileMenu";
 import { confirmCheckout } from "@/components/CheckoutConfirm";
 import CreationJournal from "@/components/journal/CreationJournal";
 import { useExperience } from "@/lib/experience";
-import { Face } from "@/components/atelier/Alexandrie";
 import { fmtOfCreation } from "@/components/nexus/NexusHome";
+import Box3D from "@/components/nexus/Box3D";
+import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { listJournal } from "@/lib/api";
 
 export default function Detail() {
@@ -54,6 +55,8 @@ export default function Detail() {
   const nexus = useExperience() === "nexus";
   const [wtab, setWtab] = useState(null);
   useEffect(() => { window.scrollTo(0, 0); setWtab(null); }, [id]);
+  const accentSrc = nexus && item ? (item.poster && item.poster.length > 4 ? item.poster : item.has_poster ? posterUrl(item.id, item.updated_at, 200) : null) : null;
+  const accent = usePosterAccent(accentSrc);
   const { data: making = [] } = useQuery({ queryKey: ["journal", "creation", id], queryFn: () => listJournal({ creation_id: id }).then((l) => l.filter((e) => e.published)), enabled: nexus });
 
   // l'ambiance de la création ne démarre qu'au bouton ; on la coupe en quittant la fiche
@@ -234,10 +237,14 @@ export default function Detail() {
   const btn = { borderColor: "color-mix(in srgb, var(--brand) 30%, var(--border-c))", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "color-mix(in srgb, var(--bg-primary) 42%, transparent)" };
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden" style={{ background: "transparent", color: "var(--text-primary)" }}>
+    <div className={"relative min-h-screen w-full overflow-x-hidden" + (nexus ? " nx-wroot" : "")} data-ws={nexus ? worldStyleOf(item, catLabel) : undefined}
+      style={{ background: "transparent", color: "var(--text-primary)", ...(nexus && accent ? { "--brand": accent } : {}) }}>
+      {/* Nexus : le fond du monde (l'image de l'œuvre en grand) et l'habillage de son ambiance */}
+      {nexus && bgSrc && <div className="nx-wbg" aria-hidden="true" style={{ backgroundImage: `url(${bgSrc})` }} />}
+      {nexus && <div className="nx-wfx" aria-hidden="true" />}
       {/* Même direction artistique que l'accueil : décor cosmique du thème */}
       {/* Voile coloré discret tiré de l'affiche de la création */}
-      {bgSrc && (
+      {!nexus && bgSrc && (
         <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true"
           style={{ backgroundImage: `url(${bgSrc})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(72px) saturate(1.15)", opacity: 0.2 }} />
       )}
@@ -267,7 +274,7 @@ export default function Detail() {
         <div className="max-w-7xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
           {nexus ? (
             <div ref={cardRef} className="ax-view nx-world-obj" data-testid="detail-object">
-              <Face b={{ id: item.id, title: item.title, sub: item.tagline || "", format: fmtOfCreation(item, catLabel), emblem: item.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }} cover={hasImg ? posterSrc : null} />
+              <Box3D b={{ id: item.id, title: item.title, sub: item.tagline || "", format: fmtOfCreation(item, catLabel), emblem: item.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }} cover={hasImg ? posterSrc : null} />
             </div>
           ) : (
           <div ref={cardRef} className="group flex-shrink-0 w-72 sm:w-96 md:w-[28rem] lg:w-[34rem] aspect-[2/3] overflow-hidden border relative poster-in sx-fxcard"
