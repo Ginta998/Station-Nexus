@@ -143,10 +143,10 @@ function CoverInner({ b, cover, upcoming, wished, fmt, R, em, cfs, st }) {
     <>
       {fmt === "vinyle" && <span className="ax-disc" aria-hidden="true"><i /></span>}
       {cover && <span className="ax-cover-img" style={{ backgroundImage: `url(${cover})` }} />}
-      {fmt === "vhs" && <span className="ax-cover-band mono"><b>VHS</b><span>{(R?.label || "LORE").toUpperCase()}</span><i>{b.cote || "À PARAÎTRE"}</i></span>}
+      {fmt === "vhs" && <span className="ax-cover-band mono"><b>VHS</b><span>{(b.roomLabel || R?.label || "LORE").toUpperCase()}</span><i>{b.cote || "À PARAÎTRE"}</i></span>}
       {!cover && (
         <>
-          {fmt === "livre" && <span className="ax-cover-top mono">ALEXANDRIE · {(R?.label || "MES LIVRES").toUpperCase()}</span>}
+          {fmt === "livre" && <span className="ax-cover-top mono">{b.house || "ALEXANDRIE"} · {(b.roomLabel || R?.label || "MES LIVRES").toUpperCase()}</span>}
           <span className="ax-cover-t" style={{ "--fs": cfs }}>{b.title}</span>
           <span className="ax-cover-sun"><i>{em}</i></span>
           {b.sub && <span className="ax-cover-sub">{b.sub}</span>}
@@ -158,7 +158,8 @@ function CoverInner({ b, cover, upcoming, wished, fmt, R, em, cfs, st }) {
     </>
   );
 }
-function Face({ b, cover, upcoming, wished, st }) {
+// Partagé avec la station publique (expérience Nexus) : le même objet physique partout.
+export function Face({ b, cover, upcoming, wished, st }) {
   const L = volLook(b, upcoming); const fmt = L.fmt; const R = ROOMS.find((r) => r.key === b.room);
   const em = b.emblem || (upcoming ? b.title.replace(/^(Le |La |Les |L')/, "")[0].toUpperCase() : R?.kanji || "書");
   const len = b.title.length; const longest = Math.max(...b.title.split(/[\s-]+/).map((w) => w.length));

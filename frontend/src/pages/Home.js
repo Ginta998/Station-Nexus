@@ -15,6 +15,8 @@ import EditorDialog from "@/components/EditorDialog";
 import ProfileDialog from "@/components/ProfileDialog";
 import HomeCountdown from "@/components/HomeCountdown";
 import HomeCustomizer from "@/components/home/HomeCustomizer";
+import NexusHome from "@/components/nexus/NexusHome";
+import { useExperience } from "@/lib/experience";
 
 /* ---------- Compte à rebours vers la prochaine sortie (dim. 20h) ---------- */
 function nextSunday() {
@@ -114,6 +116,7 @@ export default function Home() {
   const [arcSel, setArcSel] = useState(0);
   const [openJ, setOpenJ] = useState(null);
   const [themeOpen, setThemeOpen] = useState(false);
+  const experience = useExperience();
 
   const requireProfile = () => { if (!user) { toast.info("Crée un compte pour sauvegarder ton profil partout."); openAuth(); } else setProfileOpen(true); };
   useEffect(() => { document.body.classList.toggle("sx-picking", themeOpen); return () => document.body.classList.remove("sx-picking"); }, [themeOpen]);
@@ -251,6 +254,16 @@ export default function Home() {
   const heroImg = hero ? (hero.has_bg ? bgUrl(hero.id, hero.updated_at) : (hero.has_poster ? posterUrl(hero.id, hero.updated_at) : null)) : null;
 
   let gi = 0; // compteur d'index global pour les affiches
+
+  // Expérience Nexus : les œuvres en objets physiques (la station classique reste intacte ci-dessous)
+  if (experience === "nexus") return (
+    <div style={{ minHeight: "calc(100vh / var(--uiz, 1))", position: "relative", color: "var(--text-primary)" }}>
+      <TopBar onAdd={openCreate} onProfile={requireProfile} />
+      <NexusHome />
+      <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} />
+      <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
+    </div>
+  );
 
   return (
     <div style={{ minHeight: "calc(100vh / var(--uiz, 1))", background: "transparent", color: "var(--text-primary)", position: "relative" }}>

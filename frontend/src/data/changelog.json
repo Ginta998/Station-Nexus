@@ -1,6 +1,22 @@
 {
-  "version": "0.14",
+  "version": "0.15",
   "patches": [
+    {
+      "v": "0.15",
+      "date": "2026-11-18",
+      "title": "Station Nexus : les œuvres deviennent des objets",
+      "groups": {
+        "Nouveau": [
+          "Expérience Nexus (核) pour la station publique : les œuvres sont posées sur des étagères comme dans Alexandrie, en livres, cassettes VHS ou vinyles selon ce qu'elles sont (à lire, à regarder, à écouter).",
+          "Un clic sur un objet ouvre sa fiche : l'objet en grand, la cote, le format, le nombre de chapitres ou d'épisodes, le résumé, la progression. Un second clic ou Entrée lance l'œuvre.",
+          "Lancer une œuvre, c'est comme lancer un jeu : la cassette entre dans le lecteur, le disque sort de sa pochette, le livre s'ouvre. Un clic ou une touche passe l'animation ; coupée si les animations sont réduites sur l'appareil.",
+          "Accès rapide : les œuvres commencées en premier (chapitre ou épisode en cours, avec une barre de progression), puis celles ouvertes récemment et la une. Un clic reprend où l'on s'était arrêté.",
+          "Navigation au clavier ou à la manette : flèches d'objet en objet et d'étagère en étagère, Entrée pour lancer, Échap pour refermer la fiche.",
+          "Clic droit (ou appui long) sur une œuvre : lancer, voir la fiche, écouter l'ambiance, copier le lien.",
+          "Paramètres › Apparence › Expérience : choisir entre Classique (la station d'origine, inchangée) et Nexus. Bouton « Classique » aussi en haut de la station Nexus. Le choix est propre à chaque visiteur ; Classique par défaut."
+        ]
+      }
+    },
     {
       "v": "0.14",
       "date": "2026-11-13",

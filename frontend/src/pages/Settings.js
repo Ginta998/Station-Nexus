@@ -28,6 +28,7 @@ import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles } from "react-icons/i
 import Celebration from "@/components/Celebration";
 import { StartupSetting } from "@/components/Startup";
 import { TOUR_STEPS } from "@/lib/tourSteps";
+import { EXPERIENCES, useExperience, setExperience } from "@/lib/experience";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const Section = ({ title, extra, children }) => (
@@ -884,6 +885,7 @@ export default function Settings() {
   const TEXT_SCALE_SIZE = { petit: 12, normal: 15, grand: 17, xl: 20, max: 23, ultra: 27 };
 
   const [tab, setTab] = useState("apparence");
+  const experience = useExperience();
   const TABS = [
     { key: "apparence", label: "Apparence", icon: <IoColorPaletteOutline size={15} /> },
     { key: "son", label: "Son", icon: <IoMusicalNotes size={15} /> },
@@ -911,6 +913,19 @@ export default function Settings() {
         </div>
 
         {tab === "apparence" && (<>
+        <Section title="Expérience" extra="— la manière de parcourir la station">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-testid="experience-grid">
+            {EXPERIENCES.map((x) => (
+              <button key={x.key} data-testid={`experience-${x.key}`} onClick={() => { setExperience(x.key); sfx("select"); toast.success(`Station ${x.label}`); }}
+                className="relative text-left p-4 border transition-transform hover:scale-[1.02]" style={{ ...fs, background: "var(--bg-secondary)", outline: experience === x.key ? "2px solid var(--brand)" : "none" }}>
+                <div className="flex items-baseline justify-between"><span className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{x.label}</span><span style={{ color: "var(--text-secondary)" }}>{x.kanji}</span></div>
+                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>{x.desc}</p>
+                {experience === x.key && <span className="flex items-center gap-1 text-xs mt-2" style={{ color: "var(--brand)" }}><IoCheckmarkCircle /> Active</span>}
+              </button>
+            ))}
+          </div>
+        </Section>
+
         <Section title="Thèmes" extra={`— ${THEMES.length} ambiances`}>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="theme-grid">
             {THEMES.map((t) => {
