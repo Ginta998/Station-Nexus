@@ -519,7 +519,13 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
       }
       return;
     }
-    anim.current = anim.current || 1; if (n !== spread) { setPage(n); turnFx(n > spread ? 1 : -1); } else if (flow.current) { const g = geom(); flow.current.scrollTo({ left: Math.round(spread * g.step), behavior: "smooth" }); anim.current = setTimeout(() => { anim.current = 0; }, 420); } };
+    anim.current = anim.current || 1; if (n !== spread) { setPage(n); turnFx(n > spread ? 1 : -1);
+      // téléphone : la même animation qu'à l'ordinateur accompagne la page (reflet du papier, bande VHS « ▶▶ FF », disque)
+      if (!reduce) {
+        const dir = n > spread ? 1 : -1; clearTimeout(turnT.current); setTurn({ dir: dir > 0 ? "next" : "prev", k: Date.now() }); turnT.current = setTimeout(() => setTurn(null), fmt === "vinyle" ? 640 : 520);
+        if (fmt !== "livre") setTimeout(() => { const fl = flow.current; try { fl?.animate?.(fmt === "vhs" ? VHS_KF : VINYL_KF, fmt === "vhs" ? { duration: 340, easing: "linear" } : { duration: 520, easing: "cubic-bezier(.25,.7,.3,1)" }); } catch (_) {} }, 200);
+      }
+    } else if (flow.current) { const g = geom(); flow.current.scrollTo({ left: Math.round(spread * g.step), behavior: "smooth" }); anim.current = setTimeout(() => { anim.current = 0; }, 420); } };
   // À la souris : on attrape la page et on la fait glisser, comme au doigt. Au pavé tactile : un glissement horizontal à deux doigts.
   const onMouseDown = (e) => {
     if (e.button !== 0 || e.target.closest?.("a,button,iframe,input,textarea,figure,.ax-yt-ed")) return;

@@ -110,7 +110,7 @@ export default function WorldThemeLab({ form, set, creationId, bg, cover, onPeek
       <div className="wtl-grid">
         {mine.map((d) => (
           <article key={d.key} className={"wtl-card" + (used === d.key ? " on" : "")} data-testid={`wt-mine-${d.key}`}>
-            <button type="button" className="wtl-prev" onClick={() => edit(d)} title="Modifier"><WorldMini t={d} title={title} bg={bg} cover={cover} /></button>
+            <button type="button" className="wtl-prev" onClick={() => edit(d)} title="Modifier"><WorldPreview thumb t={{ ...WT_BLANK, ...d }} form={form} bg={bg} cover={cover} /></button>
             <div className="wtl-cap"><b>{d.name}</b><small>{used === d.key ? <><IoCheckmark /> utilisé par cette œuvre</> : `D'après ${WORLD_STYLES[d.base] || d.base}`}</small></div>
             <div className="wtl-ra">
               {used !== d.key && <button type="button" onClick={() => set("world_style", d.key)} data-testid={`wt-use-${d.key}`}>Utiliser</button>}
@@ -126,7 +126,7 @@ export default function WorldThemeLab({ form, set, creationId, bg, cover, onPeek
       <div className="wtl-grid">
         {WT_PRESETS.map((p) => (
           <button type="button" key={p.name} className="wtl-card wtl-preset" onClick={() => fromPreset(p)} data-testid={`wt-preset-${p.name}`}>
-            <span className="wtl-prev"><WorldMini t={p} title={title} bg={bg} cover={cover} /></span>
+            <span className="wtl-prev"><WorldPreview thumb t={{ ...WT_BLANK, ...p }} form={form} bg={bg} cover={cover} /></span>
             <span className="wtl-cap"><b>{p.name}</b><small>{p.about}</small></span>
           </button>
         ))}
@@ -136,7 +136,7 @@ export default function WorldThemeLab({ form, set, creationId, bg, cover, onPeek
       <div className="wtl-grid sm">
         {Object.entries(WORLD_STYLES).map(([k, l]) => (
           <button type="button" key={k} className="wtl-card" onClick={() => fromBase(k)} data-testid={`wt-base-${k}`}>
-            <span className="wtl-prev"><WorldMini t={{ ...WT_BLANK, base: k }} title={title} bg={bg} cover={cover} /></span>
+            <span className="wtl-prev"><WorldPreview thumb t={{ ...WT_BLANK, base: k }} form={form} bg={bg} cover={cover} /></span>
             <span className="wtl-cap"><b>{l}</b></span>
           </button>
         ))}

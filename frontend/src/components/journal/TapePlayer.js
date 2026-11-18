@@ -4,7 +4,8 @@ import { IoClose, IoPlay, IoPause, IoPlayBack, IoPlayForward, IoStop } from "rea
 import { useApp } from "@/context/AppContext";
 import { mediaUrl } from "@/lib/api";
 import { JournalBlocks } from "@/components/journal/JournalParts";
-import { tapeStart, tapeRelease, tapeHiss } from "@/lib/tapeSound";
+import { tapeStart, tapeRelease, tapeHiss, tapeInsert } from "@/lib/tapeSound";
+import { Cassette } from "@/components/journal/TapeObject";
 import "@/components/journal/tape.css";
 
 /*
@@ -41,9 +42,10 @@ export default function TapePlayer({ entry: e, onClose }) {
     window.addEventListener("keydown", k, true); return () => window.removeEventListener("keydown", k, true);
   });
   useEffect(() => () => { a.current?.pause(); stopFx(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // à l'ouverture, la cassette glisse dans le lecteur et s'enclenche
+  useEffect(() => { const t = setTimeout(() => tapeInsert(vol), 520); return () => clearTimeout(t); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // bobines : la gauche se vide, la droite se remplit
-  const rl = 44 - 22 * p, rr = 22 + 22 * p;
   const label = e.tape_label || e.title;
   // un enregistrement n'a pas forcément de texte : alors seule la cassette s'affiche, au centre
   const hasText = (e.blocks || []).some((b) => (b.text || "").trim() || b.url || (b.urls || []).length) || (e.body || "").trim();
@@ -51,20 +53,7 @@ export default function TapePlayer({ entry: e, onClose }) {
     <div className={"tp" + (on ? " on" : "") + (starting ? " starting" : "") + (hasText ? "" : " solo")} role="dialog" aria-label={`Cassette : ${e.title}`} data-testid="tape-player">
       <button className="tp-x" onClick={close} aria-label="Fermer" data-testid="tape-close"><IoClose size={18} /></button>
       <div className="tp-deck">
-        <div className="tp-cass" aria-hidden="true">
-          <span className="tp-screw a" /><span className="tp-screw b" /><span className="tp-screw c" /><span className="tp-screw d" />
-          <div className="tp-label">
-            <span className="tp-side">A</span>
-            <b>{label}</b>
-            <small>{[e.tape_voice && `Voix : ${e.tape_voice}`, e.date && new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })].filter(Boolean).join(" · ")}</small>
-            <div className="tp-win">
-              <span className="tp-reel l" style={{ "--tape": `${rl}px` }}><i /></span>
-              <span className="tp-tape" />
-              <span className="tp-reel r" style={{ "--tape": `${rr}px` }}><i /></span>
-            </div>
-          </div>
-          <span className="tp-mouth" />
-        </div>
+        <div className="tp-cassw"><Cassette title={label} sub={[e.tape_voice && `Voix : ${e.tape_voice}`, e.date && new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })].filter(Boolean).join(" · ")} p={p} spinning={on && !starting} starting={starting} /></div>
         <div className="tp-ctl">
           <span className="tp-count mono" aria-label="Compteur">{String(Math.floor(pos)).padStart(3, "0").slice(-3)}</span>
           <div className="tp-keys">

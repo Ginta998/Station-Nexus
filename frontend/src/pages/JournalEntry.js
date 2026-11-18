@@ -25,6 +25,8 @@ export default function JournalEntry() {
   const { data: all = [] } = useQuery({ queryKey: ["journal", isAdmin], queryFn: () => listJournal() });
   const { data: cats = [] } = useQuery({ queryKey: ["journal-cats"], queryFn: listJournalCategories });
   const { data: creations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
+  // une cassette s'ouvre directement (pas de page intermédiaire) ; la refermer ramène en arrière
+  const [tapeClosed, setTapeClosed] = useState(false);
   const cat = cats.find((c) => c.id === e?.category_id);
   const crea = creations.find((c) => c.id === e?.creation_id);
   const { prev, next } = useMemo(() => { const i = all.findIndex((x) => x.id === id); return { prev: all[i + 1], next: i > 0 ? all[i - 1] : null }; }, [all, id]);
@@ -77,7 +79,8 @@ export default function JournalEntry() {
           <img src={lightbox} alt="" />
         </div>
       )}
-      {reading && (e.format === "cassette" ? <TapePlayer entry={e} onClose={() => setReading(false)} /> : <WorkReader entry={e} onClose={() => setReading(false)} />)}
+      {e.format === "cassette" && (reading || !tapeClosed) && <TapePlayer entry={e} onClose={() => { setReading(false); if (!tapeClosed) { setTapeClosed(true); if (window.history.length > 1) nav(-1); } }} />}
+      {reading && e.format !== "cassette" && <WorkReader entry={e} onClose={() => setReading(false)} />}
     </div>
   );
 }

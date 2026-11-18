@@ -1,6 +1,26 @@
 {
-  "version": "0.27",
+  "version": "0.28",
   "patches": [
+    {
+      "v": "0.28",
+      "date": "2026-11-18",
+      "title": "La vraie cassette",
+      "groups": {
+        "Nouveau": [
+          "Une vraie cassette, inspirée des cassettes japonaises : coque en plastique transparent qui laisse voir la mécanique, vis, étiquette imprimée (disque de couleur, marque, type, durée « 46 »), titre écrit à la main, bobines dentées et bande brune. La même dans le lecteur, le Making of et le journal.",
+          "Animation d'ouverture : la cassette glisse dans le lecteur, rebondit et s'enclenche (avec son), puis les touches et la transcription apparaissent.",
+          "Son de magnéto plus mécanique : clic de la touche, verrou qui accroche, clac de la tête, pignons qui s'engrènent, moteur qui monte en régime, bande qui frotte.",
+          "Atelier des thèmes : les vignettes (mes thèmes, modèles, thèmes d'origine) montrent le vrai monde de l'œuvre, figé."
+        ],
+        "Changé": [
+          "Une cassette s'ouvre directement depuis le journal : plus de page intermédiaire avec un bouton « Écouter » ; la refermer ramène en arrière.",
+          "Lecture sur téléphone : les mêmes animations qu'à l'ordinateur accompagnent chaque page (reflet du papier, bande VHS « ▶▶ FF », sillons du disque)."
+        ],
+        "Corrigé": [
+          "Magnétoscope sur téléphone : « ▶ PLAY » ne se pose plus sur le titre."
+        ]
+      }
+    },
     {
       "v": "0.27",
       "date": "2026-11-18",

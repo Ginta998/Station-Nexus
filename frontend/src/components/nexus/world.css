@@ -1240,3 +1240,4 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
 .nw.wt-mn-box .nw-menu button{background:transparent!important;border:1px solid color-mix(in srgb,var(--ink) 40%,transparent)!important;border-radius:0!important;clip-path:none!important;box-shadow:none!important;transform:none!important;color:var(--ink)!important;margin-bottom:5px}
 .nw.wt-mn-box .nw-menu button.on{border-color:var(--hl)!important;box-shadow:inset 3px 0 0 var(--hl)!important;color:var(--hl)!important}
 .nw[class*="wt-mn-"] .nw-menu button::before{display:none!important}
+@media (max-width:760px){.ws-vhs .nw-scr{padding-top:84px}.ws-vhs .nw-osd{font-size:18px;top:16px}}

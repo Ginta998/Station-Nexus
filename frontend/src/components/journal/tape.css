@@ -74,3 +74,69 @@
 .jr-card-img.is-tape{display:grid;place-items:center;padding:8% 12%;background:radial-gradient(70% 70% at 50% 40%,#2a2118,#120e0b) !important}
 .nw-pane-tape{display:grid;place-items:center;padding:10% 8%;background:radial-gradient(70% 70% at 50% 40%,#2a2118,#120e0b)}
 .nw-tapei{display:inline-block;width:16px;height:11px;margin-right:6px;vertical-align:-1px;border-radius:2px;background:linear-gradient(180deg,#efe5cf 0 40%,#d9a441 40% 55%,#efe5cf 55%);box-shadow:0 0 0 1.5px currentColor}
+
+/* =====================================================================
+   0.28 · La cassette, version réaliste (coque transparente, étiquette imprimée, mécanique visible)
+   ===================================================================== */
+.cs{position:relative;display:block;width:100%;aspect-ratio:1.6;container-type:inline-size;border-radius:3.2cqw 3.2cqw 2.4cqw 2.4cqw;transform:rotate(-1.5deg);
+  filter:drop-shadow(0 6cqw 6cqw rgba(0,0,0,.55))}
+.cs-shell{position:absolute;inset:0;border-radius:inherit;
+  background:
+    radial-gradient(120% 80% at 30% 0%,rgba(255,255,255,.28),transparent 55%),
+    linear-gradient(180deg,rgba(210,222,230,.42),rgba(150,165,175,.32) 60%,rgba(110,120,130,.4)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 3px);
+  box-shadow:inset 0 0 0 .5cqw rgba(255,255,255,.35),inset 0 -1.2cqw 2cqw rgba(0,0,0,.25),0 0 0 .3cqw rgba(30,35,40,.55);backdrop-filter:blur(1px)}
+.cs-shell::after{content:"";position:absolute;inset:0;border-radius:inherit;opacity:.35;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* la mécanique qu'on voit par transparence */
+.cs-gear{position:absolute;bottom:10%;width:9cqw;height:9cqw;border-radius:50%;background:repeating-conic-gradient(rgba(240,240,235,.55) 0 8deg,transparent 8deg 20deg);-webkit-mask:radial-gradient(circle,transparent 35%,#000 37%);mask:radial-gradient(circle,transparent 35%,#000 37%);opacity:.6}
+.cs-gear.l{left:7%}.cs-gear.r{right:7%}
+.cs-screw{position:absolute;width:3.2cqw;height:3.2cqw;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f4f4f2,#9a9c9e 55%,#5d6062);box-shadow:0 .2cqw .4cqw rgba(0,0,0,.4)}
+.cs-screw::after{content:"";position:absolute;left:18%;right:18%;top:44%;height:12%;background:#3a3c3e;transform:rotate(40deg)}
+.cs-screw.a{top:3%;left:3%}.cs-screw.b{top:3%;right:3%}.cs-screw.c{bottom:4%;left:3%}.cs-screw.d{bottom:4%;right:3%}.cs-screw.e{bottom:4%;left:48.4%}
+/* l'étiquette imprimée */
+.cs-label{position:absolute;left:6%;right:6%;top:7%;height:66%;border-radius:1.2cqw;overflow:hidden;background:#f1ece2;color:#1d1d1f;
+  box-shadow:inset 0 0 0 .3cqw rgba(0,0,0,.08),0 .2cqw .4cqw rgba(0,0,0,.25)}
+.cs-label::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .45 0 0 0 0 .3 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+.cs-disc{position:absolute;left:-14%;top:12%;width:46%;aspect-ratio:1;border-radius:50%;
+  background:conic-gradient(from 180deg,#e8902a 0 25%,#2f7fd0 25% 75%,#e8902a 75%);box-shadow:0 0 0 1.6cqw #f1ece2,0 0 0 2cqw #1d1d1f}
+.cs-brand{position:absolute;left:4%;top:5%;display:flex;align-items:center;gap:1.4cqw;font:800 3.4cqw/1 "Archivo Black","Anton",sans-serif;letter-spacing:.04em}
+.cs-brand i{display:grid;place-items:center;width:5cqw;height:5cqw;background:#c8202a;color:#fff;font:800 2.4cqw/1 "Archivo Black",sans-serif;font-style:normal;border-radius:.6cqw}
+.cs-brand em{font:600 1.8cqw/1 "Josefin Sans","Inter",sans-serif;font-style:normal;letter-spacing:.2em;color:#555}
+.cs-side{position:absolute;right:4%;top:4%;display:grid;place-items:center;width:5.4cqw;height:5.4cqw;border:.5cqw solid #1d1d1f;border-radius:50%;font:800 3cqw/1 "Archivo Black",sans-serif}
+.cs-title{position:absolute;left:34%;right:20%;top:18%;font:400 3.6cqw/1.1 "Special Elite","Courier Prime",monospace;color:#1b2a6b;transform:rotate(-1.2deg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:.2cqw solid rgba(0,0,0,.18);padding-bottom:.8cqw}
+.cs-sub{position:absolute;left:34%;right:20%;top:27%;font:400 2.2cqw/1 "Courier Prime",monospace;color:#1b2a6b;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-type{position:absolute;left:34%;bottom:6%;font:600 1.9cqw/1 "Josefin Sans","Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#333}
+.cs-type b{display:inline-block;padding:.4cqw 1cqw;margin-right:1cqw;background:#1d1d1f;color:#f1ece2;font-weight:700}
+.cs-len{position:absolute;right:3%;bottom:5%;padding:.4cqw 1.6cqw;background:#1d1d1f;color:#f1ece2;font:italic 700 5cqw/1 "DM Serif Display",Georgia,serif}
+/* la fenêtre : bobines dentées et bande */
+.cs-win{position:absolute;left:30%;right:14%;top:38%;height:34%;display:flex;align-items:center;justify-content:space-between;padding:0 4%;border-radius:8cqw;
+  background:linear-gradient(180deg,rgba(40,44,48,.85),rgba(70,76,82,.8));box-shadow:inset 0 .6cqw 1.2cqw rgba(0,0,0,.7),0 0 0 .4cqw #1d1d1f}
+.cs-tape{position:absolute;left:24%;right:24%;bottom:16%;height:.6cqw;background:#5a3420}
+.cs-reel{position:relative;display:grid;place-items:center;height:100%;aspect-ratio:1}
+.cs-reel::before{content:"";position:absolute;width:var(--tape);height:var(--tape);min-width:46%;min-height:46%;border-radius:50%;background:radial-gradient(circle,#8a5a38 0 35%,#4a2c1a 72%);transition:width .5s,height .5s;box-shadow:inset 0 0 .6cqw rgba(0,0,0,.6)}
+.cs-reel i{position:relative;width:46%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,transparent 0 28%,#f4f2ec 30% 100%);
+  -webkit-mask:conic-gradient(#000 0 14%,transparent 14% 20%,#000 20% 47%,transparent 47% 53%,#000 53% 80%,transparent 80% 86%,#000 86%);mask:conic-gradient(#000 0 14%,transparent 14% 20%,#000 20% 47%,transparent 47% 53%,#000 53% 80%,transparent 80% 86%,#000 86%);box-shadow:0 0 0 .3cqw rgba(0,0,0,.2)}
+.cs.spin .cs-reel i,.cs.spin .cs-gear{animation:tpSpin 1.4s linear infinite}
+.cs.starting .cs-reel i{animation:tpSpin 1.4s cubic-bezier(.6,0,.4,1) infinite}
+/* la bouche de la cassette, en bas, avec la bande et les guides */
+.cs-mouth{position:absolute;left:21%;right:21%;bottom:0;height:13%;display:flex;align-items:flex-end;justify-content:space-around;padding:0 6% .8cqw;
+  clip-path:polygon(6% 0,94% 0,100% 100%,0 100%);background:linear-gradient(180deg,rgba(120,130,138,.55),rgba(70,76,82,.7))}
+.cs-mouth i{width:4cqw;height:4cqw;border-radius:50%;background:rgba(20,22,24,.75)}
+.cs-mouth::after{content:"";position:absolute;left:8%;right:8%;bottom:1.2cqw;height:.6cqw;background:#5a3420}
+.cs-gloss{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.18) 42%,transparent 50%,transparent 70%,rgba(255,255,255,.08) 76%,transparent 82%)}
+.cs.sm{transform:rotate(-2.5deg)}
+.tpo{display:block;width:100%;max-width:360px;margin:auto}
+/* le grand lecteur utilise la même cassette */
+.tp-cassw{width:min(560px,100%)}
+.tp.solo .tp-cassw{width:min(660px,100%)}
+/* animation d'ouverture : la cassette glisse dans le lecteur et s'enclenche */
+.tp-cassw{animation:tpInsert .85s cubic-bezier(.2,.9,.25,1.15) both}
+@keyframes tpInsert{0%{transform:translateY(60vh) rotate(-14deg);opacity:0}55%{opacity:1}80%{transform:translateY(-6px) rotate(1deg)}100%{transform:none}}
+.tp-ctl,.tp-bar{animation:tpUp .5s .55s cubic-bezier(.2,.8,.2,1) both}
+.tp-script,.tp-solo-t{animation:tpUp .6s .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes tpUp{from{opacity:0;transform:translateY(18px)}}
+@media (prefers-reduced-motion:reduce){.tp-cassw,.tp-ctl,.tp-bar,.tp-script,.tp-solo-t{animation:none}}
+.cs-disc{top:30%;left:-16%;width:42%}.cs-brand{z-index:1}
