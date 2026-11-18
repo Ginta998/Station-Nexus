@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { IoArrowBack, IoCreateOutline, IoTrashOutline, IoClose, IoBookOutline } from "react-icons/io5";
+import { IoArrowBack, IoCreateOutline, IoTrashOutline, IoClose, IoBookOutline, IoRadioOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, listJournal, listJournalCategories, listCreations, deleteJournalEntry, mediaUrl, posterUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import MobileMenu from "@/components/MobileMenu";
 import WorkReader from "@/components/nexus/WorkReader";
+import TapePlayer from "@/components/journal/TapePlayer";
 import { useExperience } from "@/lib/experience";
 import { JournalBlocks, CategoryTag, fmtDate } from "@/components/journal/JournalParts";
 
@@ -59,7 +60,8 @@ export default function JournalEntry() {
             <span><small className="mono">CRÉATION LIÉE</small>{crea.title}</span>
           </button>
         )}
-        {nexus && <button className="jr-read" onClick={() => { sfx("select"); setReading(true); }} data-testid="journal-entry-read"><IoBookOutline /> Lire {e.format === "vhs" ? "en cassette" : e.format === "vinyle" ? "sur le disque" : "comme un livre"}</button>}
+        {e.format === "cassette" && <button className="jr-read" onClick={() => { sfx("select"); setReading(true); }} data-testid="journal-entry-listen"><IoRadioOutline /> Écouter la cassette</button>}
+        {nexus && e.format !== "cassette" && <button className="jr-read" onClick={() => { sfx("select"); setReading(true); }} data-testid="journal-entry-read"><IoBookOutline /> Lire {e.format === "vhs" ? "en cassette" : e.format === "vinyle" ? "sur le disque" : "comme un livre"}</button>}
         <div className="jr-rule" />
         <div className="jr-body"><JournalBlocks blocks={e.blocks} onImage={setLightbox} onMusic={onMusic} playingUrl={playingUrl} /></div>
 
@@ -75,7 +77,7 @@ export default function JournalEntry() {
           <img src={lightbox} alt="" />
         </div>
       )}
-      {reading && <WorkReader entry={e} onClose={() => setReading(false)} />}
+      {reading && (e.format === "cassette" ? <TapePlayer entry={e} onClose={() => setReading(false)} /> : <WorkReader entry={e} onClose={() => setReading(false)} />)}
     </div>
   );
 }

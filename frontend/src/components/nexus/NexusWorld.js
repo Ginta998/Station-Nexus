@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil, IoColorPaletteOutline } from "react-icons/io5";
+import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, mediaUrl } from "@/lib/api";
 import { JournalBlocks, fmtDate } from "@/components/journal/JournalParts";
@@ -35,7 +35,7 @@ const readView = () => { try { return localStorage.getItem(VIEW_KEY) === "list" 
 
 export default function NexusWorld(p) {
   const { item, ws, catLabel, cover, bg, making = [], trailer, launchLabel, progress, onLaunch, locked, unitLocked, onChapter, onEpisode,
-    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl, toComments = 0, onEditUnit, onDeleteUnit, wt = null, onStudio } = p;
+    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl, toComments = 0, onEditUnit, onDeleteUnit, wt = null } = p;
 
   const wide = useWide();
   const [view, setViewS] = useState(readView);
@@ -533,7 +533,6 @@ export default function NexusWorld(p) {
           )}
           <SoundBtn className="nw-tb" />
           <button onClick={onFav} className={fav ? "on" : ""} title={fav ? "Retirer des favoris" : "Ajouter aux favoris"} aria-label="Favori" data-testid="nw-fav">{fav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}</button>
-          {isAdmin && onStudio && <button onClick={onStudio} title="Atelier des thèmes de monde" aria-label="Atelier des thèmes de monde" data-testid="nw-studio"><IoColorPaletteOutline size={16} /></button>}
           {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
           <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
           <button onClick={() => { sfx("back"); goWorldHome(); }} title="Accueil de l'œuvre" aria-label="Accueil de l'œuvre" data-testid="nw-home"><IoHomeOutline size={17} /></button>

@@ -9,6 +9,7 @@ import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexa
 import { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
 import { CoverDialog } from "@/components/atelier/Alexandrie";
 import { useWorldThemes } from "@/lib/worldThemes";
+import WorldThemeLab from "@/components/nexus/WorldThemeLab";
 import "@/components/editor.css";
 
 /*
@@ -45,7 +46,7 @@ const LAUNCH = [
   ["info", "Info", "Présentation seulement", IoInformationCircleOutline],
 ];
 const SECTIONS = [
-  ["id", "Identité"], ["world", "Monde"], ["content", "Contenu"], ["media", "Médias"], ["sound", "Son"], ["publish", "Publication"],
+  ["id", "Identité"], ["world", "Monde"], ["themes", "Thèmes"], ["content", "Contenu"], ["media", "Médias"], ["sound", "Son"], ["publish", "Publication"],
 ];
 const SWATCHES = ["#e8473f", "#f99e1a", "#e3c48d", "#3fbf7f", "#2bb3c0", "#4d8dff", "#9b6bff", "#f2f2f2"];
 
@@ -122,13 +123,14 @@ const FilePick = ({ icon, label, present, file, onPick, onRemove, accept, testid
   </div>
 );
 
-export default function EditorDialog({ open, onClose, initial, categories = [], onSaved, onPeek, cover: coverHint, section, onStudio }) {
+export default function EditorDialog({ open, onClose, initial, categories = [], onSaved, onPeek, cover: coverHint, section }) {
   const myThemes = useWorldThemes();
   const [form, setForm] = useState(empty);
   const [sec, setSec] = useState("id");
   const [dirty, setDirty] = useState(false);
   const [askLeave, setAskLeave] = useState(false);
   const [peek, setPeek] = useState(false);
+  const [wtFull, setWtFull] = useState(false); // atelier des thèmes en plein écran
   const [draft, setDraft] = useState(null); // brouillon trouvé à l'ouverture
   const [dark, setDark] = useState(() => { try { return localStorage.getItem("sx_atelier_dark") !== "0"; } catch (_) { return true; } });
   const toggleDark = () => setDark((d) => { try { localStorage.setItem("sx_atelier_dark", d ? "0" : "1"); } catch (_) {} return !d; });
@@ -334,6 +336,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   );
 
   const body = {
+    themes: <WorldThemeLab form={form} set={set} creationId={isEdit ? initial.id : null} bg={bgPrev} cover={cover} onPeek={onPeek && isEdit ? () => setPeek(true) : undefined} full={wtFull} onFull={setWtFull} />,
     id: (
       <>
         <div className="rl-two">
@@ -365,7 +368,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             </button>
           ))}
         </div>
-        <p className="rl-sub"><b>Mes thèmes</b><span>Créés dans l'atelier des thèmes de monde (bouton palette en haut du monde).</span></p>
+        <p className="rl-sub"><b>Mes thèmes</b><span>Créés dans la section Thèmes (juste en dessous).</span></p>
         <div className="rl-ws" data-testid="editor-my-themes">
           {myThemes.map((d) => (
             <button type="button" key={d.key} className={"rl-wsc" + (form.world_style === d.key ? " on" : "")} onClick={() => set("world_style", d.key)} data-testid={`wst-style-${d.key}`}>
@@ -373,7 +376,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
               <strong>{d.name}</strong><small>D'après {WORLD_STYLES[d.base] || d.base}</small>
             </button>
           ))}
-          {onStudio && <button type="button" className="rl-wsc rl-wsc-new" onClick={onStudio} data-testid="editor-open-studio"><span className="rl-mini rl-mini-new">+</span><strong>Atelier des thèmes</strong><small>Créer ou modifier un thème, en direct sur le monde</small></button>}
+          {<button type="button" className="rl-wsc rl-wsc-new" onClick={() => setSec("themes")} data-testid="editor-open-studio"><span className="rl-mini rl-mini-new">+</span><strong>Atelier des thèmes</strong><small>Créer ou modifier un thème, en direct sur le monde</small></button>}
         </div>
         {WORLD_MASKED.some((k) => k !== wsCur) && (
           <details className="rl-masked">
@@ -526,7 +529,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
 
   return (
     <>
-      <div className={"rl" + (dark ? " rl-dark" : "") + (peek ? " rl-peeking" : "")} style={{ "--rl-acc": acc }} data-testid={peek ? "editor-dialog-peek" : "editor-dialog"} role="dialog" aria-label={isEdit ? "Modifier la création" : "Nouvelle création"}>
+      <div className={"rl" + (dark ? " rl-dark" : "") + (peek ? " rl-peeking" : "") + (sec === "themes" ? (wtFull ? " rl-full" : " rl-wide") : "")} style={{ "--rl-acc": acc }} data-testid={peek ? "editor-dialog-peek" : "editor-dialog"} role="dialog" aria-label={isEdit ? "Modifier la création" : "Nouvelle création"}>
         <header className="rl-top">
           <button type="button" className="rl-ico" onClick={tryClose} aria-label="Fermer" data-testid="editor-close"><IoClose size={20} /></button>
           <div className="rl-brand"><small>RHINE LAB · ATELIER DE L'ŒUVRE</small><b>{form.title || (isEdit ? "Sans titre" : "Nouvelle création")}</b></div>

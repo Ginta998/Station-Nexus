@@ -72,3 +72,39 @@ export function wtLook(t) {
     t.pt === "none" && "wt-nopt"].filter(Boolean).join(" ");
   return { cls, style };
 }
+
+// Ce que chaque thème de base utilise quand on ne change rien (pour l'aperçu)
+export const WT_BASE = {
+  cinema: { paper: "#000000", ink: "#f3f3f3", hl: "#e8473f", ft: "Bebas Neue", fu: "Manrope" },
+  vhs: { paper: "#0b0b0d", ink: "#d9e6ff", hl: "#e8f1ff", ft: "VT323", fu: "VT323" },
+  arcade: { paper: "#000000", ink: "#f4f4f4", hl: "#ffd400", ft: "Press Start 2P", fu: "Press Start 2P" },
+  yorha: { paper: "#cdc8b0", ink: "#4e4b42", hl: "#4e4b42", ft: "Zen Kaku Gothic New", fu: "Zen Kaku Gothic New" },
+  eve: { paper: "#04060b", ink: "#eaf1f8", hl: "#8fdcff", ft: "Outfit", fu: "Outfit" },
+  hero: { paper: "#e8edf3", ink: "#1c2333", hl: "#f99e1a", ft: "Anton", fu: "Rajdhani" },
+  cathedrale: { paper: "#070506", ink: "#e6dccd", hl: "#b3121e", ft: "Cormorant Garamond", fu: "Cinzel" },
+  couronne: { paper: "#08070a", ink: "#efe6cf", hl: "#d4b062", ft: "Cinzel", fu: "Marcellus" },
+  trait: { paper: "#f2ead9", ink: "#141414", hl: "#e8473f", ft: "Anton", fu: "Unbounded" },
+  sengoku: { paper: "#0d0c0a", ink: "#ece5d6", hl: "#c0262d", ft: "Shippori Mincho", fu: "Shippori Mincho" },
+  survivance: { paper: "#11130e", ink: "#e4e0d2", hl: "#a9b97a", ft: "Work Sans", fu: "Work Sans" },
+  cristal: { paper: "#070a12", ink: "#eef3ff", hl: "#8fd3ff", ft: "Cormorant Garamond", fu: "Sora" },
+};
+// Palettes toutes prêtes : [nom, fond, encre, accent]
+export const WT_PALETTES = [
+  ["Jazz ambré", "#120d09", "#f1e4cc", "#e0a24a"], ["Terminal", "#050a06", "#a8ffb0", "#39ff6a"], ["Dossier", "#e9e1cf", "#2a2620", "#b3261e"],
+  ["Néon de minuit", "#07051a", "#f2eaff", "#ff3fa4"], ["Encre", "#efe7d6", "#1b1712", "#c0262d"], ["Sang", "#0a0405", "#eadbd6", "#c21d2e"],
+  ["Or noir", "#0b0a08", "#efe6cf", "#d4b062"], ["Givre", "#08101a", "#eaf4ff", "#8fd3ff"], ["Forêt", "#0e130e", "#e2e6d6", "#8fb46a"],
+  ["Rouille", "#16100c", "#eadfd2", "#d0652c"], ["Papier crème", "#f3ecdf", "#24201a", "#3b5bdb"], ["Brume", "#1a1d22", "#d8dde3", "#9fb4c8"],
+];
+// Cinq modèles pour démarrer
+export const WT_PRESETS = [
+  { name: "Jazz bar 2499", about: "Bois sombre, lumière ambrée, grain de pellicule. Rétro-futur feutré.", base: "couronne", paper: "#120d09", ink: "#f1e4cc", hl: "#e0a24a",
+    font_title: "DM Serif Display", font_ui: "Josefin Sans", font_body: "EB Garamond", title_case: "auto", grain: 0.5, vignette: 0.6, scan: 0, pt: "couronne", intro: "cinema", cursor: "spot", win: true, mirror: false, radius: "auto" },
+  { name: "Terminal 1999", about: "Écran cathodique vert, lignes d'écran, coordonnées du labo.", base: "vhs", paper: "#050a06", ink: "#a8ffb0", hl: "#39ff6a",
+    font_title: "VT323", font_ui: "Courier Prime", font_body: "Courier Prime", title_case: "upper", grain: 0.3, scan: 0.7, vignette: 0.5, pt: "vhs", intro: "vhs", cursor: "lab", win: true, mirror: false, radius: 0 },
+  { name: "Dossier classé", about: "Papier, machine à écrire, tampon rouge. Comme un rapport retrouvé.", base: "yorha", paper: "#e9e1cf", ink: "#2a2620", hl: "#b3261e",
+    font_title: "Special Elite", font_ui: "Courier Prime", font_body: "Courier Prime", title_case: "upper", grain: 0.45, vignette: 0.3, scan: 0, pt: "yorha", intro: "yorha", cursor: "cross", win: true, mirror: true, radius: 0 },
+  { name: "Néon de minuit", about: "Ville la nuit, rose néon, halo sous la souris.", base: "eve", paper: "#07051a", ink: "#f2eaff", hl: "#ff3fa4",
+    font_title: "Audiowide", font_ui: "Orbitron", font_body: "Sora", title_case: "upper", grain: 0.15, scan: 0.2, vignette: 0.5, pt: "eve", intro: "eve", cursor: "glow", win: true, mirror: false, radius: 14 },
+  { name: "Encre et papier", about: "Washi, encre noire, un sceau rouge. Calme et précis.", base: "sengoku", paper: "#efe7d6", ink: "#1b1712", hl: "#c0262d",
+    font_title: "Shippori Mincho", font_ui: "Zen Kaku Gothic New", font_body: "Shippori Mincho", title_case: "none", grain: 0.35, vignette: 0.2, scan: 0, pt: "sengoku", intro: "sengoku", cursor: "trail", win: true, mirror: false, radius: 0 },
+];

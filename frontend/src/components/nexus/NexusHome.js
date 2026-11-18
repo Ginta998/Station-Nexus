@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoPlay, IoClose, IoMusicalNotes, IoLinkOutline, IoDocumentTextOutline, IoArrowUndo } from "react-icons/io5";
 import { toast } from "sonner";
-import { posterUrl, updateCreation } from "@/lib/api";
+import { posterUrl, bgUrl, updateCreation } from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { useApp } from "@/context/AppContext";
 import { Face, Rail } from "@/components/atelier/Alexandrie";
@@ -80,7 +80,9 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
     if (!document.getElementById("nx-veil")) { const v = document.createElement("div"); v.id = "nx-veil"; v.setAttribute("aria-hidden", "true"); document.body.appendChild(v); setTimeout(() => v.remove(), 4000); }
     nav(`/oeuvre/${x.id}`, { state: quickR.current && progressOf(x.it)?.resume ? { resume: true } : undefined });
   }, [nav]);
-  const start = useCallback((x, quick = false) => { if (!x) return; quickR.current = quick; sfx?.("select"); remember(x.id); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Pendant l'animation de lancement, on charge déjà les grandes images du monde (affiche, fond) : il arrive sans à-coup
+  const preload = (x) => { try { [posterUrl(x.id, x.it.updated_at), x.it.has_bg ? bgUrl(x.id, x.it.updated_at) : null].filter(Boolean).forEach((u) => { const im = new Image(); im.decoding = "async"; im.src = u; im.decode?.().catch(() => {}); }); } catch (_) {} };
+  const start = useCallback((x, quick = false) => { if (!x) return; preload(x); quickR.current = quick; sfx?.("select"); remember(x.id); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
   const [leaving, setLeaving] = useState(false);
   useEffect(() => { if (!launch) return; setLeaving(false); const a = setTimeout(() => setLeaving(true), 1500); const t = setTimeout(() => go(launch), 1820); return () => { clearTimeout(a); clearTimeout(t); }; }, [launch, go]);
   useEffect(() => { setSel(null); }, [view]);

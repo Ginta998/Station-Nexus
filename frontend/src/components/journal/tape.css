@@ -1,0 +1,56 @@
+/* La cassette audio du journal de bord : plastique fumé, étiquette crème, bobines qui tournent */
+.tp{position:fixed;inset:0;z-index:1250;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(20px,4vw,60px);align-items:center;
+  padding:clamp(24px,5vh,60px) max(16px,4vw);overflow-y:auto;color:#ece4d4;
+  background:radial-gradient(70% 60% at 30% 40%,#2a2118,#120e0b 70%),#0d0a08;animation:tpIn .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes tpIn{from{opacity:0}}
+.tp::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.tp-x{position:fixed;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));z-index:3;display:grid;place-items:center;width:40px;height:40px;border:1px solid rgba(236,228,212,.25);background:rgba(0,0,0,.3);color:inherit;cursor:pointer}
+.tp-deck{display:flex;flex-direction:column;align-items:center;gap:22px}
+/* la cassette */
+.tp-cass{position:relative;width:min(520px,100%);aspect-ratio:1.58;border-radius:14px 14px 10px 10px;padding:6% 5.5% 14%;
+  background:linear-gradient(180deg,#3a3633,#262321 60%,#1c1a18);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -2px 6px rgba(0,0,0,.6),0 30px 60px -20px rgba(0,0,0,.9),0 0 0 1px #0d0c0b;
+  transform:rotate(-1.2deg);transition:transform .4s}
+.tp.on .tp-cass{transform:rotate(-.6deg) translateY(-2px)}
+.tp-screw{position:absolute;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#8b857d,#3d3936);box-shadow:inset 0 0 0 1px rgba(0,0,0,.5)}
+.tp-screw::after{content:"";position:absolute;inset:4px 1px;background:#1b1918;transform:rotate(35deg)}
+.tp-screw.a{top:9px;left:9px}.tp-screw.b{top:9px;right:9px}.tp-screw.c{bottom:9px;left:9px}.tp-screw.d{bottom:9px;right:9px}
+.tp-label{position:relative;height:100%;display:flex;flex-direction:column;gap:4px;padding:5% 6%;border-radius:6px;
+  background:linear-gradient(180deg,#efe5cf 0 26%,#d9a441 26% 31%,#efe5cf 31% 100%);color:#2a2219;box-shadow:inset 0 0 18px rgba(120,90,40,.25)}
+.tp-label b{font-family:"Special Elite","Courier Prime",monospace;font-weight:400;font-size:clamp(15px,2.2vw,21px);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:30px}
+.tp-label small{font-family:"Courier Prime",monospace;font-size:11px;opacity:.75;padding-left:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-side{position:absolute;top:7%;left:5%;display:grid;place-items:center;width:22px;height:22px;border:2px solid #2a2219;border-radius:50%;font:700 12px/1 "Courier Prime",monospace}
+.tp-win{position:relative;flex:1;margin:6% 8% 0;display:flex;align-items:center;justify-content:space-between;padding:0 6%;border-radius:40px;
+  background:linear-gradient(180deg,rgba(30,25,22,.92),rgba(52,45,40,.92));box-shadow:inset 0 2px 6px rgba(0,0,0,.7)}
+.tp-tape{position:absolute;left:20%;right:20%;bottom:18%;height:3px;background:#3b2618;opacity:.85}
+.tp-reel{position:relative;display:grid;place-items:center;width:34%;aspect-ratio:1}
+.tp-reel::before{content:"";position:absolute;width:var(--tape);height:var(--tape);max-width:100%;max-height:100%;border-radius:50%;background:radial-gradient(circle,#4a3020 0 30%,#2c1c12 70%);transition:width .5s,height .5s}
+.tp-reel i{position:relative;width:38%;aspect-ratio:1;border-radius:50%;background:conic-gradient(#f2eadb 0 10%,transparent 10% 16.6%,#f2eadb 16.6% 26.6%,transparent 26.6% 33.3%,#f2eadb 33.3% 43.3%,transparent 43.3% 50%,#f2eadb 50% 60%,transparent 60% 66.6%,#f2eadb 66.6% 76.6%,transparent 76.6% 83.3%,#f2eadb 83.3% 93.3%,transparent 93.3%);
+  -webkit-mask:radial-gradient(circle,transparent 26%,#000 28%);mask:radial-gradient(circle,transparent 26%,#000 28%)}
+.tp.on .tp-reel i{animation:tpSpin 1.6s linear infinite}
+.tp.starting .tp-reel i{animation:tpSpin 1.6s cubic-bezier(.5,0,.5,1) infinite}
+@keyframes tpSpin{to{transform:rotate(-360deg)}}
+.tp-mouth{position:absolute;left:22%;right:22%;bottom:0;height:11%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#191715,#100f0e);box-shadow:inset 0 2px 3px rgba(0,0,0,.8)}
+/* les touches du magnéto */
+.tp-ctl{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center}
+.tp-count{min-width:62px;padding:6px 10px;background:#0b0a09;border:1px solid #3a332b;color:#e8c27a;font-size:20px;letter-spacing:.2em;text-align:center;box-shadow:inset 0 0 10px rgba(0,0,0,.8)}
+.tp-keys{display:flex;gap:3px;padding:4px;background:#1b1714;border-radius:4px;box-shadow:0 2px 0 #0b0a09}
+.tp-keys button{display:grid;place-items:center;width:52px;height:44px;border:0;border-radius:3px;background:linear-gradient(180deg,#d8d0c2,#a9a092);color:#2a2219;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #6b6358,inset 0 1px 0 #fff;transition:transform .08s,box-shadow .08s}
+.tp-keys button:active,.tp-keys button.down{transform:translateY(3px);box-shadow:0 1px 0 #6b6358,inset 0 1px 0 #fff}
+.tp-keys button.play{background:linear-gradient(180deg,#e7b866,#b98636)}
+.tp-time{font-size:12px;letter-spacing:.14em;opacity:.75}
+.tp-bar{position:relative;width:min(520px,100%);height:6px;background:rgba(236,228,212,.12);cursor:pointer}
+.tp-bar i{position:absolute;inset:0 auto 0 0;background:#e0a24a}
+.tp-none{margin:0;font-size:13px;opacity:.7}
+/* la transcription */
+.tp-script{max-width:62ch;max-height:80vh;overflow-y:auto;padding-right:6px}
+.tp-k{margin:0 0 8px;font-size:10px;letter-spacing:.24em;color:#e0a24a}
+.tp-script h1{margin:0 0 6px;font-family:"Special Elite","Courier Prime",monospace;font-weight:400;font-size:clamp(24px,3vw,34px);line-height:1.15}
+.tp-sub{margin:0 0 18px;opacity:.7;font-style:italic}
+.tp-text{font-family:"Courier Prime","Spectral",serif;font-size:16px;line-height:1.75;color:#ddd3c1}
+.tp-text img{max-width:100%}
+@media (max-width:860px){.tp{grid-template-columns:1fr;align-items:start}.tp-script{max-height:none}}
+@media (prefers-reduced-motion:reduce){.tp.on .tp-reel i{animation-duration:6s}}
+.tp-text *::first-letter{font:inherit!important;color:inherit!important;float:none!important;font-size:inherit!important;margin:0!important;padding:0!important;line-height:inherit!important}
+.tp-text *{border-left:0!important}
+.tp-reel::before{background:radial-gradient(circle,#7a5235 0 30%,#4a3020 75%)!important;box-shadow:0 0 0 1px rgba(0,0,0,.4)}

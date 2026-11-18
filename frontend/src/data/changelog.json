@@ -1,6 +1,25 @@
 {
-  "version": "0.25",
+  "version": "0.26",
   "patches": [
+    {
+      "v": "0.26",
+      "date": "2026-11-18",
+      "title": "Cassettes, et un atelier des thèmes qu'on comprend",
+      "groups": {
+        "Nouveau": [
+          "Journal de bord : format « Cassette audio ». On dépose un enregistrement, on lui donne une étiquette et une voix. En l'ouvrant : une vraie cassette ; on appuie sur lecture, la touche s'enfonce, le moteur démarre doucement, puis la voix arrive. Les bobines tournent et se vident d'un côté pour se remplir de l'autre, le compteur avance, le texte de l'entrée sert de transcription.",
+          "Atelier de l'œuvre › Thèmes : l'atelier des thèmes de monde, refait sur le modèle de celui de la station. Bibliothèque (mes thèmes avec aperçu, utiliser, modifier, dupliquer, supprimer), cinq modèles pour démarrer (Jazz bar 2499, Terminal 1999, Dossier classé, Néon de minuit, Encre et papier), les douze thèmes d'origine ; éditeur en onglets (couleurs avec palettes, typo avec les polices dessinées, disposition, matière, effets, souris) avec un grand aperçu en direct, plein écran et « Voir dans le monde »."
+        ],
+        "Changé": [
+          "Le bouton palette en haut du monde disparaît : tout se fait dans l'atelier de l'œuvre."
+        ],
+        "Corrigé": [
+          "Lecture : pendant qu'un livre est ouvert, plus rien ne s'anime derrière lui (monde, fond de la station, particules) ; c'est ce qui faisait apparaître des morceaux noirs en tournant les pages sur téléphone.",
+          "Changer d'écran dans un monde : plus de flou sur tout l'écran pendant la transition (très coûteux), transitions plus courtes.",
+          "Lancer une œuvre : les grandes images du monde se chargent pendant l'animation de lancement."
+        ]
+      }
+    },
     {
       "v": "0.25",
       "date": "2026-11-18",

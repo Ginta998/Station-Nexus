@@ -7,10 +7,11 @@ import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexa
 import { getJournalEntry, createJournalEntry, updateJournalEntry, listJournalCategories, listCreations, mediaUrl,
   createJournalCategory, updateJournalCategory, deleteJournalCategory } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
-import { BlocksEditor, ImagePick, ArtSearch } from "@/components/journal/BlocksEditor";
+import { BlocksEditor, ImagePick, ArtSearch, FilePick } from "@/components/journal/BlocksEditor";
+import { IoMusicalNotes } from "react-icons/io5";
 
 const today = () => new Date().toISOString().slice(0, 10);
-const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre", look: "presse" };
+const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre", look: "presse", tape_url: "", tape_label: "", tape_voice: "" };
 
 function CategoryManager({ cats, refetch }) {
   const [name, setName] = useState(""); const [color, setColor] = useState("#3f86ff");
@@ -88,7 +89,7 @@ export default function JournalEditor() {
           </label>
           <label>Lecture (Nexus)
             <select className="jr-in" value={f.format || "livre"} onChange={(e) => set({ format: e.target.value })} data-testid="journal-format-select">
-              <option value="livre">Livre</option><option value="vhs">Cassette VHS</option><option value="vinyle">Vinyle</option>
+              <option value="livre">Livre</option><option value="vhs">Cassette VHS</option><option value="vinyle">Vinyle</option><option value="cassette">Cassette audio (un enregistrement à écouter)</option>
             </select>
           </label>
           <label>Page du lecteur
@@ -97,6 +98,20 @@ export default function JournalEditor() {
             </select>
           </label>
         </div>
+        {f.format === "cassette" && (
+          <div className="jr-tape-ed" data-testid="journal-tape">
+            <p className="mono jr-k">CASSETTE AUDIO · L'ENREGISTREMENT</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <FilePick accept="audio/*" icon={<IoMusicalNotes />} label={f.tape_url ? "Remplacer l'enregistrement" : "Déposer l'enregistrement (mp3, m4a, wav…)"} onDone={([u]) => set({ tape_url: u })} testid="journal-tape-pick" />
+              {f.tape_url && <audio controls preload="none" src={mediaUrl(f.tape_url)} />}
+            </div>
+            <div className="jr-opts">
+              <label>Étiquette<input className="jr-in" value={f.tape_label || ""} onChange={(e) => set({ tape_label: e.target.value })} placeholder="Enregistrement n°1" data-testid="journal-tape-label" /></label>
+              <label>Voix<input className="jr-in" value={f.tape_voice || ""} onChange={(e) => set({ tape_voice: e.target.value })} placeholder="Brichel" /></label>
+            </div>
+            <p className="jr-hint">Le texte de l'entrée s'affiche sous la cassette, comme une transcription.</p>
+          </div>
+        )}
         {showCats && <CategoryManager cats={cats} refetch={refetchCats} />}
         <div className="jr-toggles">
           <label className="jr-check"><input type="checkbox" checked={f.show_home} onChange={(e) => set({ show_home: e.target.checked })} data-testid="journal-home-toggle" /> Afficher sur l'accueil</label>

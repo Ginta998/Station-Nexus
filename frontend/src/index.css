@@ -3142,3 +3142,11 @@ body:has(.pw) .ax-fiche-wrap,body:has(.rl) .ax-fiche-wrap{z-index:2700}
 .jr-ytfind{display:flex;flex-direction:column;gap:8px;padding:10px;border:1px solid var(--border-c)}
 .jr-yt-note{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary)}
 @media (max-width:700px){.yt-mini{width:190px}}
+/* 0.26 · Fluidité de la lecture : pendant qu'un livre est ouvert, rien ne s'anime derrière lui
+   (monde, fond de la station, particules, effets du thème). Sur téléphone, ces calques cachés
+   occupaient l'écran pendant qu'on tournait les pages et laissaient des morceaux noirs. */
+body:has(.ax-reader) :is(.nw,.cosmic-bg,.nx-tlayer,.nx-tfx,.cyber-ov,.sx-cyber){visibility:hidden!important}
+body:has(.ax-reader) :is(.nw,.cosmic-bg,.nx-tlayer) *{animation-play-state:paused!important}
+.ax-book{contain:layout paint}
+.jr-tape-ed{display:flex;flex-direction:column;gap:12px;margin:6px 0 16px;padding:14px 16px;border:1px dashed var(--border-c)}
+.jr-tape-ed audio{height:34px}

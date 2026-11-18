@@ -2664,6 +2664,9 @@ class JournalEntryInput(BaseModel):
     published: bool = True
     format: str = ""          # lecture en Nexus : "livre", "vhs" ou "vinyle" ("" = livre)
     look: str = ""            # thème de page du lecteur (ambiances d'Alexandrie) ("" = presse)
+    tape_url: str = ""        # format « cassette » : l'enregistrement à écouter (/api/journal-files/…)
+    tape_label: str = ""      # étiquette de la cassette (ex. « Enregistrement n°3 »)
+    tape_voice: str = ""      # qui parle (ex. « Brichel »)
 
 
 class JournalEntry(JournalEntryInput):
