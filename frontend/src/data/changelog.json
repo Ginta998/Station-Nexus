@@ -1,6 +1,19 @@
 {
-  "version": "0.24",
+  "version": "0.25",
   "patches": [
+    {
+      "v": "0.25",
+      "date": "2026-11-18",
+      "title": "L'atelier des thèmes de monde",
+      "groups": {
+        "Nouveau": [
+          "Atelier des thèmes de monde (bouton palette en haut du monde, admin) : un panneau posé sur le monde, qui le change en direct. On part d'un des douze thèmes ou d'un thème déjà créé et on règle : couleurs (encre, fond, accent), polices des titres, des menus et des textes, majuscules, disposition miroir, fenêtre façon Nier, coins, fond (assombrir, flou), grain, lignes d'écran, vignette, particules, transition d'entrée (avec « Rejouer »), effet de souris. « Enregistrer », puis « Appliquer à l'œuvre ».",
+          "Les thèmes créés apparaissent dans l'atelier de l'œuvre › Monde, sous « Mes thèmes », avec un raccourci vers l'atelier des thèmes.",
+          "Effets de souris : Laboratoire (viseur fin et coordonnées, comme l'atelier), Lampe, Anneau, Traînée, Halo, Point, Réticule. Pour un monde (atelier des thèmes de monde) ou pour toute la station (atelier des thèmes › Effet de souris). Sur ordinateur seulement.",
+          "14 nouvelles polices hébergées par la station : Special Elite et Courier Prime (machine à écrire), Orbitron, Audiowide, Oswald, Teko, Syne, Archivo Black, EB Garamond, IM Fell English, DM Serif Display, Josefin Sans, Silkscreen, Major Mono Display."
+        ]
+      }
+    },
     {
       "v": "0.24",
       "date": "2026-11-18",

@@ -333,3 +333,4 @@ body:has(.rl) .ax-fiche-wrap{z-index:2700}
 .rl-colsrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .rl-cols-l{width:92px;font:500 10px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--rl-mute)}
 .rl-colsrow .rl-cols{margin:0 0 12px}
+.rl-wsc-new .rl-mini-new{display:grid;place-items:center;font:300 34px/1 "Inter",sans-serif;color:var(--rl-acc);border:1px dashed var(--rl-hair2);background:none}

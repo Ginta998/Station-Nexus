@@ -5,6 +5,7 @@ import { imgSrc } from "@/lib/atelier";
 import { LOCAL_FONTS } from "@/lib/localFonts";
 import { setAmbientLayers } from "@/lib/ambient";
 import "@/components/themeRuntime.css";
+import CursorFx from "@/components/CursorFx";
 
 const ytId = (u) => (u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
 
@@ -63,10 +64,12 @@ export default function ThemeRuntime() {
 
   if (!d) return null;
   const b = d.bg || {};
-  if (!b.type && !d.fx) return null;
+  const cfx = d.cursor_fx && d.cursor_fx !== "none" ? <CursorFx type={d.cursor_fx} color={d.colors?.brand} layer="station" /> : null;
+  if (!b.type && !d.fx) return cfx;
   const yt = b.type === "video" && ytId(b.url || "");
   return (
     <div className="nx-tlayer" aria-hidden="true" data-testid="theme-runtime-layer">
+      {cfx}
       {b.type === "gradient" && <div className="nx-tbg" style={{ background: `linear-gradient(${b.angle ?? 160}deg,${(b.g || []).join(",")})` }} />}
       {b.type === "image" && b.url && <div className="nx-tbg" style={{ backgroundImage: `url(${imgSrc(b.url)})`, filter: b.blur ? `blur(${b.blur}px)` : undefined }} />}
       {b.type === "video" && b.url && (yt

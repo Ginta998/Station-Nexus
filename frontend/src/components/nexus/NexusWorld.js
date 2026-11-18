@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil } from "react-icons/io5";
+import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil, IoColorPaletteOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, mediaUrl } from "@/lib/api";
 import { JournalBlocks, fmtDate } from "@/components/journal/JournalParts";
@@ -8,6 +8,8 @@ import { ContextMenuHost, pressMenu, showMenu } from "@/components/atelier/Conte
 import StationMenu, { SoundBtn } from "@/components/StationMenu";
 import { Face } from "@/components/atelier/Alexandrie";
 import "@/components/nexus/world.css";
+import CursorFx from "@/components/CursorFx";
+import { wtLook } from "@/lib/worldThemes";
 
 /*
   Le monde d'une œuvre, en plein écran, comme le menu d'un jeu.
@@ -33,7 +35,7 @@ const readView = () => { try { return localStorage.getItem(VIEW_KEY) === "list" 
 
 export default function NexusWorld(p) {
   const { item, ws, catLabel, cover, bg, making = [], trailer, launchLabel, progress, onLaunch, locked, unitLocked, onChapter, onEpisode,
-    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl, toComments = 0, onEditUnit, onDeleteUnit } = p;
+    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl, toComments = 0, onEditUnit, onDeleteUnit, wt = null, onStudio } = p;
 
   const wide = useWide();
   const [view, setViewS] = useState(readView);
@@ -47,6 +49,10 @@ export default function NexusWorld(p) {
   // Transition d'entrée propre au thème (rideau, bande qui défile, encre qui se répand…)
   const [intro, setIntro] = useState(() => !(typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches));
   useEffect(() => { const t = setTimeout(() => setIntro(false), 1800); return () => clearTimeout(t); }, []);
+  // L'atelier des thèmes peut rejouer la transition d'entrée
+  useEffect(() => { if (!wt?.replay) return undefined; setIntro(true); const t = setTimeout(() => setIntro(false), 1800); return () => clearTimeout(t); }, [wt?.replay]);
+  const introKey = wt?.intro && wt.intro !== "auto" ? wt.intro : ws;
+  const look = wtLook(wt);
   const INTRO_TXT = { vhs: "▶ PLAY", arcade: "INSERT COIN", cinema: item.title, yorha: "CONNEXION", sengoku: item.kanji || "始", cristal: "", hero: "", eve: "", cathedrale: "", couronne: "", trait: "", survivance: "" };
 
   // ---------- la pile d'écrans ----------
@@ -503,10 +509,14 @@ export default function NexusWorld(p) {
   const leaveLayer = leaving && <div className={"nw-scr out-" + leaving.dir} key={"l" + leaving.n} aria-hidden="true">{screen(leaving.s)}</div>;
 
   return (
-    <div className={"nw ws-" + ws + " at-" + top.k + (splitMode ? " is-split" : "")} data-ws={ws} data-testid="nexus-world" style={{ ...p.style, "--bgimg": bg ? `url(${bg})` : undefined }}>
+    <div className={"nw ws-" + ws + " at-" + top.k + (splitMode ? " is-split" : "") + (look.cls ? " " + look.cls : "")} data-ws={ws} data-testid="nexus-world" style={{ ...p.style, ...look.style, "--bgimg": bg ? `url(${bg})` : undefined }}>
       {bg && <div className="nw-bg" aria-hidden="true" style={{ backgroundImage: `url(${bg})` }} />}
       <div className="nw-fx" aria-hidden="true" />
-      <div className="nw-pt" aria-hidden="true" />
+      {wt?.pt && wt.pt !== "auto" && wt.pt !== "none"
+        ? <div className={"nw-ptw ws-" + wt.pt} aria-hidden="true"><div className="nw-pt" /></div>
+        : <div className="nw-pt" aria-hidden="true" />}
+      {(wt?.grain || wt?.scan || wt?.vignette) ? <div className="nw-wtfx" aria-hidden="true" /> : null}
+      <CursorFx type={wt?.cursor} color={wt?.hl || undefined} />
 
       <header className="nw-hud">
         <button className="nw-back" onClick={pop} aria-label={stack.length > 1 ? "Retour" : "Quitter le monde"} data-testid="nw-back"><IoArrowBack size={18} /></button>
@@ -523,6 +533,7 @@ export default function NexusWorld(p) {
           )}
           <SoundBtn className="nw-tb" />
           <button onClick={onFav} className={fav ? "on" : ""} title={fav ? "Retirer des favoris" : "Ajouter aux favoris"} aria-label="Favori" data-testid="nw-fav">{fav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}</button>
+          {isAdmin && onStudio && <button onClick={onStudio} title="Atelier des thèmes de monde" aria-label="Atelier des thèmes de monde" data-testid="nw-studio"><IoColorPaletteOutline size={16} /></button>}
           {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
           <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
           <button onClick={() => { sfx("back"); goWorldHome(); }} title="Accueil de l'œuvre" aria-label="Accueil de l'œuvre" data-testid="nw-home"><IoHomeOutline size={17} /></button>
@@ -548,7 +559,7 @@ export default function NexusWorld(p) {
         <span className="nw-depth">{"◆".repeat(stack.length)}{"◇".repeat(Math.max(0, 3 - stack.length))}</span>
       </footer>
       <ContextMenuHost />
-      {intro && <div className={"nw-intro i-" + ws} aria-hidden="true" onClick={() => setIntro(false)}><span className="a" /><span className="b" /><b>{INTRO_TXT[ws]}</b></div>}
+      {intro && introKey !== "none" && <div key={"in" + (wt?.replay || 0) + introKey} className={"nw-intro i-" + introKey} aria-hidden="true" onClick={() => setIntro(false)}><span className="a" /><span className="b" /><b>{INTRO_TXT[introKey]}</b></div>}
     </div>
   );
 }

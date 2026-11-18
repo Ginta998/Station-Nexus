@@ -25,6 +25,9 @@ import { fmtOfCreation } from "@/components/nexus/NexusHome";
 import NexusWorld from "@/components/nexus/NexusWorld";
 import WorkReader, { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
 import ChapterQuickEdit, { deleteUnit } from "@/components/nexus/ChapterQuickEdit";
+import WorldThemeStudio from "@/components/nexus/WorldThemeStudio";
+import { useWorldDraft, worldThemeOf } from "@/lib/worldThemes";
+import { useThemeState } from "@/lib/themeStore";
 import WorldComments from "@/components/nexus/WorldComments";
 import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { listJournal, getJournalEntry } from "@/lib/api";
@@ -60,6 +63,9 @@ export default function Detail() {
   const [workRead, setWorkRead] = useState(null); // Nexus : lecture dans le lecteur d'Alexandrie
   const [quickEdit, setQuickEdit] = useState(null); // Nexus admin : modifier un chapitre sur place ({ key, i } ; i = null : nouveau)
   const [toComments, setToComments] = useState(0);
+  const [studio, setStudio] = useState(false); // atelier des thèmes de monde
+  const wdraft = useWorldDraft();
+  useThemeState(); // les thèmes de monde sont chargés avec ceux de la station : on se met à jour quand ils arrivent
   const [pvw, setPvw] = useState(null); // aperçu en direct : le monde suit les réglages de l'atelier ouvert
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
   const accentSrc = nexus && item ? (item.poster && item.poster.length > 4 ? item.poster : item.has_poster ? posterUrl(item.id, item.updated_at, 200) : null) : null;
@@ -121,7 +127,9 @@ export default function Detail() {
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
   const savedProgress = item.launch_type === "chapters" ? (() => { try { return JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) { return null; } })() : null;
   const view = pvw && pvw.id === item.id ? { ...item, ...pvw } : item; // l'œuvre telle que l'atelier la modifie
-  const wsNow = worldStyleOf(view, catLabel);
+  const wtSaved = worldThemeOf(view.world_style);
+  const wtNow = wdraft && wdraft.forId === item.id ? wdraft : wtSaved; // le brouillon de l'atelier des thèmes passe devant
+  const wsNow = wtNow?.base || worldStyleOf(view, catLabel);
   const accNow = view.accent || accent;
   const viewCover = view.poster && view.poster.length > 4 ? view.poster : hasImg ? posterSrc : null;
   const viewBg = view.bg_image && view.bg_image.length > 4 ? view.bg_image : (item.has_bg ? bgSrc : viewCover);
@@ -251,6 +259,7 @@ export default function Detail() {
         onNext={(n) => { setWorkRead(null); stopAmbient(); nav(`/oeuvre/${n.id}`); }}
         onComment={() => { setWorkRead(null); setToComments((n) => n + 1); }}
         onEditUnit={isAdmin ? (i) => setQuickEdit({ key: workRead.unitKey || "chapters", i }) : undefined} noPdf={!isAdmin} />}
+      {studio && <WorldThemeStudio item={item} ws={wsNow} current={wtSaved ? { ...wtSaved } : null} onClose={() => setStudio(false)} onApplied={() => refetch()} sfx={sfx} />}
       {quickEdit && <ChapterQuickEdit creationId={item.id} unitKey={quickEdit.key} index={quickEdit.i} onClose={() => setQuickEdit(null)} onSaved={() => refetch()} />}
       {gateOpen && <LaunchGate onClose={() => setGateOpen(false)} />}
 
@@ -279,7 +288,7 @@ export default function Detail() {
         </div>
       )}
 
-      <EditorDialog open={editorOpen} onClose={() => { setEditorOpen(false); setPvw(null); }} initial={item} categories={cats} onSaved={refetch} cover={hasImg ? posterSrc : null} onPeek={nexus ? setPvw : undefined} section={editorSec} />
+      <EditorDialog open={editorOpen} onClose={() => { setEditorOpen(false); setPvw(null); }} initial={item} categories={cats} onSaved={refetch} cover={hasImg ? posterSrc : null} onPeek={nexus ? setPvw : undefined} section={editorSec} onStudio={nexus ? () => { setEditorOpen(false); setPvw(null); setStudio(true); } : undefined} />
   </>);
 
   // Expérience Nexus : l'œuvre devient un monde en plein écran, avec ses écrans imbriqués
@@ -297,7 +306,7 @@ export default function Detail() {
     const catOf = (c) => cats.find((x) => x.key === c.category)?.label || c.category;
     return (
       <>
-        <NexusWorld key={item.id} item={view} ws={wsNow} catLabel={catLabel} style={accNow ? { "--brand": accNow } : undefined}
+        <NexusWorld key={item.id} item={view} ws={wsNow} wt={wtNow && (editorOpen || workRead || quickEdit) ? { ...wtNow, cursor: "none" } : wtNow} onStudio={isAdmin ? () => { sfx("select"); setStudio(true); } : undefined} catLabel={catLabel} style={accNow ? { "--brand": accNow } : undefined}
           cover={viewCover} bg={viewBg}
           box={{ id: item.id, title: view.title, sub: view.tagline || "", format: fmtOfCreation(view, catLabel), emblem: view.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }}
           making={making} trailer={trailerSource}

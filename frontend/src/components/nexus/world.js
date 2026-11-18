@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fmtOfCreation } from "@/components/nexus/NexusHome";
+import { themeDef } from "@/lib/themeStore";
 
 // Chaque œuvre a son propre « menu de jeu » : une ambiance choisie d'après ce qu'elle est.
 export const WORLD_STYLES = {
@@ -13,6 +14,8 @@ const LEGACY = { manga: "hero", vinyle: "eve", roman: "yorha" };
 export function worldStyleOf(item, catLabel = "") {
   const w = LEGACY[item.world_style] || item.world_style;
   if (w && WORLD_STYLES[w]) return w;
+  // thème créé dans l'atelier des thèmes de monde : sa base
+  if (typeof w === "string" && w.startsWith("w-")) { const d = themeDef(w); if (d?.base && WORLD_STYLES[d.base]) return d.base; }
   if (item.launch_type === "game") return "arcade";
   const f = fmtOfCreation(item, catLabel);
   if (f === "vinyle" || /musique|music|album|ost/i.test(`${item.category} ${catLabel}`)) return "eve";

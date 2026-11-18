@@ -7,6 +7,7 @@ import { uploadJournalImage, listAmbiences } from "@/lib/api";
 import { SOUND_PACKS, playUiSound } from "@/lib/sound";
 import { AMBIENTS } from "@/lib/ambient";
 import { setDraft, FONTS, FX, CURSORS, KEY_SOUNDS, PALETTES, GRADIENTS, keySound, fontHref } from "@/lib/themeStore";
+import { WT_CURSORS } from "@/lib/worldThemes";
 import { useHiddenLib, isHidden, hiddenCount, hideItem, showItem } from "@/lib/hiddenLib";
 
 // Lit les valeurs réelles d'un thème d'origine pour pouvoir le retoucher
@@ -139,6 +140,7 @@ function ShapeTab({ t, set }) {
     <Range label="Épaisseur des bordures" value={t.border_w ?? 1} max={4} unit="px" onChange={(v) => set({ border_w: v })} />
     <Range label="Flou des panneaux (verre)" value={t.blur ?? 12} max={40} unit="px" onChange={(v) => set({ blur: v })} />
     <Range label="Ombres et halo" value={t.shadow ?? 40} onChange={(v) => set({ shadow: v })} />
+    <Field label="Effet de souris"><div className="ts-seg ts-cursors">{WT_CURSORS.map(([k, l, dsc]) => <button key={k} title={dsc} className={(t.cursor_fx || "none") === k ? "on" : ""} onClick={() => set({ cursor_fx: k })} data-testid={`theme-cfx-${k}`}>{l}</button>)}</div></Field>
     <Field label="Curseur"><div className="ts-seg ts-cursors">{CURSORS.map(([k, l]) => <button key={k} className={(t.cursor || "default") === k ? "on" : ""} onClick={() => set({ cursor: k })} data-testid={`theme-cursor-${k}`}>{l}</button>)}</div></Field>
     <div className="ts-demo"><div className="ts-demo-card">Aperçu d'une carte</div><button className="ts-btn">Bouton</button></div>
   </>);

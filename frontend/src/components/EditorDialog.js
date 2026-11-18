@@ -8,6 +8,7 @@ import { WORLD_STYLES, WORLD_MASKED, worldStyleOf, usePosterAccent } from "@/com
 import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexandrie/looks";
 import { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
 import { CoverDialog } from "@/components/atelier/Alexandrie";
+import { useWorldThemes } from "@/lib/worldThemes";
 import "@/components/editor.css";
 
 /*
@@ -121,7 +122,8 @@ const FilePick = ({ icon, label, present, file, onPick, onRemove, accept, testid
   </div>
 );
 
-export default function EditorDialog({ open, onClose, initial, categories = [], onSaved, onPeek, cover: coverHint, section }) {
+export default function EditorDialog({ open, onClose, initial, categories = [], onSaved, onPeek, cover: coverHint, section, onStudio }) {
+  const myThemes = useWorldThemes();
   const [form, setForm] = useState(empty);
   const [sec, setSec] = useState("id");
   const [dirty, setDirty] = useState(false);
@@ -265,7 +267,8 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const catLabel = categories.find((c) => c.key === form.category)?.label || form.category;
   const wsAuto = worldStyleOf({ ...form, world_style: "" }, catLabel);
   const wsCur = LEGACY[form.world_style] || form.world_style || "";
-  const ws = wsCur || wsAuto;
+  const wsMine = myThemes.find((d) => d.key === wsCur);
+  const ws = wsMine ? (WORLD_STYLES[wsMine.base] ? wsMine.base : wsAuto) : WORLD_STYLES[wsCur] ? wsCur : wsAuto;
   const acc = form.accent || autoAccent || "var(--brand)";
   const units = form.launch_type === "chapters" ? form.chapters || [] : form.launch_type === "episodes" ? form.episodes || [] : null;
   const checks = [
@@ -361,6 +364,16 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
               <strong>{label}</strong><small>{STYLE_HINT[k]}</small>
             </button>
           ))}
+        </div>
+        <p className="rl-sub"><b>Mes thèmes</b><span>Créés dans l'atelier des thèmes de monde (bouton palette en haut du monde).</span></p>
+        <div className="rl-ws" data-testid="editor-my-themes">
+          {myThemes.map((d) => (
+            <button type="button" key={d.key} className={"rl-wsc" + (form.world_style === d.key ? " on" : "")} onClick={() => set("world_style", d.key)} data-testid={`wst-style-${d.key}`}>
+              <span className={"rl-mini m-" + (d.base || "cinema")} style={{ "--a": d.hl || acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined, fontFamily: d.font_title ? `"${d.font_title}"` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
+              <strong>{d.name}</strong><small>D'après {WORLD_STYLES[d.base] || d.base}</small>
+            </button>
+          ))}
+          {onStudio && <button type="button" className="rl-wsc rl-wsc-new" onClick={onStudio} data-testid="editor-open-studio"><span className="rl-mini rl-mini-new">+</span><strong>Atelier des thèmes</strong><small>Créer ou modifier un thème, en direct sur le monde</small></button>}
         </div>
         {WORLD_MASKED.some((k) => k !== wsCur) && (
           <details className="rl-masked">
@@ -558,7 +571,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
         </main>
 
         <aside className="rl-side" aria-label="Aperçu">
-          <p className="rl-lbl">APERÇU · {WORLD_STYLES[ws].toUpperCase()}</p>
+          <p className="rl-lbl">APERÇU · {(wsMine ? wsMine.name : WORLD_STYLES[ws] || "").toUpperCase()}</p>
           <div className={"rl-mini big m-" + ws} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}>
             <b>{form.title || "Titre"}</b>{form.tagline && <small>{form.tagline}</small>}<i /><i /><i />
           </div>

@@ -1164,3 +1164,33 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
   .nw-ugrid.p1 .nw-u-t small{display:-webkit-box;-webkit-line-clamp:3}
   .nw-ugrid.p3 .nw-u-t b{font-size:.85em}.nw-ugrid.p3 .nw-u-n{font-size:20px}
 }
+
+/* =====================================================================
+   0.25 · Thèmes de monde personnalisés (atelier des thèmes de monde)
+   Le thème de base garde sa mise en page ; ces réglages s'ajoutent par-dessus.
+   ===================================================================== */
+.nw-ptw{position:absolute;inset:0;z-index:1;pointer-events:none}
+.nw.wt-nopt .nw-pt{display:none}
+/* polices choisies : elles passent avant celles écrites en dur par le thème */
+.nw.wt-ft :is(.nw-title,.nw-pane h2,.nw-panel h2,.nw-screen h2,.nw-scr h2,.nw-qc-t b,.nw-u-t b){font-family:var(--ft)!important}
+.nw.wt-fu :is(.nw-menu button,.nw-list button,.nw-crumbs,.nw-k,.nw-tools,.nw-quit,.nw-tag){font-family:var(--fu)!important}
+.nw.wt-fb :is(.nw-desc,.nw-u-t small,.nw-qc small,.nw-win p,p){font-family:var(--fb)}
+.nw.wt-up :is(.nw-title,.nw-menu button,.nw-list button){text-transform:uppercase}
+.nw.wt-low :is(.nw-title,.nw-menu button,.nw-list button){text-transform:none}
+/* miroir : le menu et la fenêtre changent de côté */
+@media (min-width:761px){
+  .nw.wt-mirror .nw-home{direction:rtl}
+  .nw.wt-mirror .nw-home>*{direction:ltr}
+  .nw.wt-mirror.is-split .nw-split{direction:rtl}.nw.wt-mirror.is-split .nw-split>*{direction:ltr}
+}
+.nw.wt-nowin .nw-win{display:none!important}
+.nw.wt-rad :is(.nw-win,.nw-qc,.nw-u-img,.nw-menu button,.nw-list button,.nw-pane-img,.nw-gal button,.wc){border-radius:var(--wt-r)!important}
+/* fond : assombrir / flouter */
+.nw.wt-bgfx .nw-bg{opacity:calc(1 - var(--wt-dim,0))!important;filter:blur(var(--wt-blur,0px))!important}
+/* grain, lignes d'écran, vignette */
+.nw-wtfx{position:absolute;inset:0;z-index:4;pointer-events:none}
+.nw.wt-grain .nw-wtfx::before{content:"";position:absolute;inset:-50%;opacity:calc(var(--wt-grain,0) * .5);mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");animation:nwGrain 1.4s steps(4) infinite}
+.nw.wt-scan .nw-wtfx{background-image:repeating-linear-gradient(0deg,rgba(0,0,0,calc(var(--wt-scan,0) * .45)) 0 1px,transparent 1px 3px)}
+.nw.wt-vig .nw-wtfx::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,calc(var(--wt-vig,0) * .9)))}
+@media (prefers-reduced-motion:reduce){.nw.wt-grain .nw-wtfx::before{animation:none}}
