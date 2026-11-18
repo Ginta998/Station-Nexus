@@ -255,15 +255,6 @@ export default function Home() {
 
   let gi = 0; // compteur d'index global pour les affiches
 
-  // Expérience Nexus : les œuvres en objets physiques (la station classique reste intacte ci-dessous)
-  if (experience === "nexus") return (
-    <div style={{ minHeight: "calc(100vh / var(--uiz, 1))", position: "relative", color: "var(--text-primary)" }}>
-      <TopBar onAdd={openCreate} onProfile={requireProfile} />
-      <NexusHome />
-      <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} />
-      <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
-    </div>
-  );
 
   return (
     <div style={{ minHeight: "calc(100vh / var(--uiz, 1))", background: "transparent", color: "var(--text-primary)", position: "relative" }}>
@@ -350,7 +341,7 @@ export default function Home() {
         )}
 
         {/* REPRENDRE */}
-        {resumeItems.length > 0 && (
+        {experience !== "nexus" && resumeItems.length > 0 && (
           <section className="sx-resume">
             <div className="seclabel"><div className="lt"><h2>Reprendre</h2><span className="kj">続</span></div></div>
             <div className="resume">
@@ -364,6 +355,10 @@ export default function Home() {
           </section>
         )}
 
+        {/* NEXUS : accès rapide + rayons d'objets à la place de l'explorateur classique */}
+        {experience === "nexus" && <NexusHome all={all} cats={cats} settings={settings} />}
+
+        {experience !== "nexus" && (<>
         {/* EXPLORER */}
         <div className="seclabel sx-explore-head">
           <div className="lt"><h2>Explorer</h2><span className="kj">探</span></div>
@@ -491,6 +486,8 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        </>)}
 
         {/* ---------- JOURNAL DE BORD ---------- */}
         <section className="sx-journal">

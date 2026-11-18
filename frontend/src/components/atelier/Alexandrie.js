@@ -594,8 +594,8 @@ function AlexSearch({ books, upcoming = UPCOMING, onClose, onOpen, onGoto }) {
   );
 }
 
-// Un rayon : une rangée de volumes sur sa planche, avec son étiquette.
-function Rail({ code, label, list, upFrom, selId, onSel, covers, wish, onOpen, kanji, menuFor, stOf }) {
+// Un rayon : une rangée de volumes sur sa planche, avec son étiquette. Partagé avec la station publique (Nexus).
+export function Rail({ code, label, list, upFrom, selId, onSel, covers, wish, onOpen, kanji, menuFor, stOf }) {
   const rail = useRef(null);
   const k = list.findIndex((b) => b.id === selId);
   useEffect(() => { const box = rail.current; const el = box?.querySelector(".ax-cover"); if (!el) return; box.scrollTo({ left: el.offsetLeft - (box.clientWidth - el.offsetWidth) / 2, behavior: "smooth" }); }, [selId, list.length]);
