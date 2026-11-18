@@ -119,38 +119,3 @@ body:has(.nx-launchfx) :is(.cb-root,.nx-tools,.bn-fab){display:none}
 .nx-box-back{position:absolute;inset:0;transform:translateZ(calc(var(--th) / -2)) rotateY(180deg);background:#0b0b0e;box-shadow:inset 0 0 40px rgba(0,0,0,.8)}
 .nx-box.f-vinyle .nx-box-front .ax-disc{z-index:-1}
 
-/* ===== Habiller ce monde (panneau de l'admin, dans l'œuvre) ===== */
-.wst-wrap{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.25)}
-.wst{position:absolute;top:0;right:0;bottom:0;width:min(440px,100vw);overflow-y:auto;padding:18px 20px calc(24px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg-primary) 94%,transparent);backdrop-filter:blur(18px);border-left:1px solid color-mix(in srgb,var(--brand) 40%,transparent);color:var(--text-primary);box-shadow:-30px 0 80px rgba(0,0,0,.5);animation:wstIn .35s cubic-bezier(.16,1,.3,1) both;font-family:var(--font-body)}
-@keyframes wstIn{from{transform:translateX(40px);opacity:0}}
-.wst .mono{font-family:"JetBrains Mono","Space Mono",monospace}
-.wst-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.wst-h p{font-size:11px;letter-spacing:.24em;color:var(--brand);margin:0}
-.wst-h button{background:none;border:1px solid color-mix(in srgb,var(--text-primary) 20%,transparent);color:inherit;width:34px;height:34px;display:grid;place-items:center;cursor:pointer}
-.wst-l{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.22em;color:var(--text-secondary);margin:22px 0 10px}
-.wst-styles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.wst-styles button{text-align:left;padding:12px;border:1px solid color-mix(in srgb,var(--text-primary) 15%,transparent);background:color-mix(in srgb,var(--bg-secondary) 70%,transparent);color:inherit;cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:border-color .2s}
-.wst-styles button:first-child{grid-column:1 / -1}
-.wst-styles button b{font-size:14px}
-.wst-styles button small{font-size:11.5px;color:var(--text-secondary);line-height:1.35}
-.wst-styles button.on{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
-.wst-styles .ws-cinema b{font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:.05em}
-.wst-styles .ws-vhs b{font-family:"VT323",monospace;font-size:21px}
-.wst-styles .ws-arcade b{font-family:"Press Start 2P",monospace;font-size:10px;line-height:1.6}
-.wst-styles .ws-manga b{font-family:"Anton",sans-serif;font-size:17px;text-transform:uppercase}
-.wst-styles .ws-vinyle b{font-family:"Monoton",sans-serif;font-weight:400;font-size:15px}
-.wst-styles .ws-roman b{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:19px}
-.wst-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.wst-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid color-mix(in srgb,var(--text-primary) 18%,transparent);background:none;color:inherit;font:13px var(--font-body);cursor:pointer}
-.wst-chip.on{border-color:var(--brand);color:var(--brand)}
-.wst-chip input[type=color]{width:22px;height:22px;border:0;padding:0;background:none}
-.wst-sw{width:28px;height:28px;border:1px solid rgba(255,255,255,.3)}
-.wst-prev{display:block;height:120px;margin-top:10px;background:center/cover;border:1px solid color-mix(in srgb,var(--text-primary) 18%,transparent)}
-.wst-f{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
-.wst-f span{font-size:12px;color:var(--text-secondary)}
-.wst-f input,.wst-f textarea{padding:9px 10px;border:1px solid color-mix(in srgb,var(--text-primary) 18%,transparent);background:var(--bg-secondary);color:var(--text-primary);font:14px var(--font-body);outline:none;resize:vertical}
-.wst-f input:focus,.wst-f textarea:focus{border-color:var(--brand)}
-.wst-f-acts{display:flex;flex-direction:column;gap:8px;margin-top:18px}
-.wst-btn{padding:12px 16px;border:0;background:var(--brand);color:var(--bg-primary);font:700 14px var(--font-body);cursor:pointer}
-.wst-btn.ghost{background:none;border:1px solid color-mix(in srgb,var(--text-primary) 22%,transparent);color:var(--text-primary);font-weight:500}
-.wst-btn:disabled{opacity:.6}

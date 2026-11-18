@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowBack, IoClose, IoHeart, IoHeartOutline, IoMusicalNotes, IoBrushOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay } from "react-icons/io5";
+import { IoArrowBack, IoClose, IoHeart, IoHeartOutline, IoMusicalNotes, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, mediaUrl } from "@/lib/api";
 import { JournalBlocks, fmtDate } from "@/components/journal/JournalParts";
@@ -22,7 +22,7 @@ const roman = (i) => ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X
 
 export default function NexusWorld(p) {
   const { item, ws, catLabel, cover, bg, box, making = [], trailer, launchLabel, progress, onLaunch, locked, unitLocked, onChapter, onEpisode,
-    current, unlock, comments, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, isAdmin, onStudio, onEdit, onExit, sfx = () => {}, intentionUrl } = p;
+    current, unlock, comments, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, isAdmin, onEdit, onExit, sfx = () => {}, intentionUrl } = p;
 
   const isUnits = (item.launch_type === "chapters" && item.chapters?.length > 0) || (item.launch_type === "episodes" && item.episodes?.length > 0);
   const unitWord = item.launch_type === "chapters" ? "chapitre" : "épisode";
@@ -129,7 +129,6 @@ export default function NexusWorld(p) {
     { label: it.lock ? "Débloquer" : "Ouvrir", icon: it.lock ? <IoLockClosed size={14} /> : <IoPlay size={14} />, onClick: it.go },
     it.img && top.k !== "gallery" && { label: "Voir l'image", icon: <IoOpenOutline size={14} />, onClick: () => push({ k: "image", list: [it.img], i: 0 }) },
     isAdmin && { label: "Modifier l'œuvre", icon: <IoCreateOutline size={14} />, onClick: onEdit },
-    isAdmin && { label: "Habiller ce monde", icon: <IoBrushOutline size={14} />, onClick: onStudio },
     "-",
     { label: "Copier le lien de l'œuvre", icon: <IoLinkOutline size={14} />, onClick: () => link() },
   ].filter(Boolean) });
@@ -348,8 +347,7 @@ export default function NexusWorld(p) {
         <div className="nw-tools">
           {onAmbient && <button onClick={onAmbient} className={ambientOn ? "on" : ""} title="Ambiance sonore" aria-label="Ambiance sonore"><IoMusicalNotes size={16} /></button>}
           <button onClick={onFav} className={fav ? "on" : ""} title={fav ? "Retirer des favoris" : "Ajouter aux favoris"} aria-label="Favori" data-testid="nw-fav">{fav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}</button>
-          {isAdmin && <button className="adm" onClick={onStudio} title="Habiller ce monde" aria-label="Habiller ce monde" data-testid="world-studio-open"><IoBrushOutline size={16} /></button>}
-          {isAdmin && <button className="adm" onClick={onEdit} title="Modifier l'œuvre" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
+          {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (tout : identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
           <button onClick={() => { sfx("back"); onExit(); }} title="Quitter le monde" aria-label="Quitter le monde" data-testid="nw-exit"><IoClose size={18} /></button>
         </div>
       </header>

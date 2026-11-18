@@ -23,7 +23,6 @@ import CreationJournal from "@/components/journal/CreationJournal";
 import { useExperience } from "@/lib/experience";
 import { fmtOfCreation } from "@/components/nexus/NexusHome";
 import NexusWorld from "@/components/nexus/NexusWorld";
-import WorldStudio from "@/components/nexus/WorldStudio";
 import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { listJournal } from "@/lib/api";
 
@@ -54,8 +53,7 @@ export default function Detail() {
   const cardRef = useRef(null);
   // Expérience Nexus : la fiche devient le « monde » de l'œuvre (l'objet en grand, puis des onglets)
   const nexus = useExperience() === "nexus";
-  const [studio, setStudio] = useState(false);
-  const [pvw, setPvw] = useState(null); // aperçu en direct depuis le panneau « Habiller ce monde »
+  const [pvw, setPvw] = useState(null); // aperçu en direct : le monde suit les réglages de l'atelier ouvert
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
   const accentSrc = nexus && item ? (item.poster && item.poster.length > 4 ? item.poster : item.has_poster ? posterUrl(item.id, item.updated_at, 200) : null) : null;
   const accent = usePosterAccent(accentSrc);
@@ -112,8 +110,11 @@ export default function Detail() {
   const thisPlaying = isPlaying && playingId === item.id;
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
   const savedProgress = item.launch_type === "chapters" ? (() => { try { return JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) { return null; } })() : null;
-  const wsNow = pvw ? (pvw.ws || worldStyleOf({ ...item, world_style: "" }, catLabel)) : worldStyleOf(item, catLabel);
-  const accNow = pvw ? (pvw.accent || accent) : (item.accent || accent);
+  const view = pvw && pvw.id === item.id ? { ...item, ...pvw } : item; // l'œuvre telle que l'atelier la modifie
+  const wsNow = worldStyleOf(view, catLabel);
+  const accNow = view.accent || accent;
+  const viewCover = view.poster && view.poster.length > 4 ? view.poster : hasImg ? posterSrc : null;
+  const viewBg = view.bg_image && view.bg_image.length > 4 ? view.bg_image : (item.has_bg ? bgSrc : viewCover);
   const canResume = savedProgress && ((savedProgress.chapter || 0) > 0 || (savedProgress.ratio || 0) > 0.02);
 
   // Prochain à regarder (reprise de lecture) — affiché en haut de la fiche
@@ -256,7 +257,7 @@ export default function Detail() {
         </div>
       )}
 
-      <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={item} categories={cats} onSaved={refetch} />
+      <EditorDialog open={editorOpen} onClose={() => { setEditorOpen(false); setPvw(null); }} initial={item} categories={cats} onSaved={refetch} cover={hasImg ? posterSrc : null} onPeek={nexus ? setPvw : undefined} />
   </>);
 
   // Expérience Nexus : l'œuvre devient un monde en plein écran, avec ses écrans imbriqués
@@ -271,9 +272,9 @@ export default function Detail() {
     const catOf = (c) => cats.find((x) => x.key === c.category)?.label || c.category;
     return (
       <>
-        <NexusWorld key={item.id} item={item} ws={wsNow} catLabel={catLabel} style={accNow ? { "--brand": accNow } : undefined}
-          cover={hasImg ? posterSrc : null} bg={bgSrc}
-          box={{ id: item.id, title: item.title, sub: item.tagline || "", format: fmtOfCreation(item, catLabel), emblem: item.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }}
+        <NexusWorld key={item.id} item={view} ws={wsNow} catLabel={catLabel} style={accNow ? { "--brand": accNow } : undefined}
+          cover={viewCover} bg={viewBg}
+          box={{ id: item.id, title: view.title, sub: view.tagline || "", format: fmtOfCreation(view, catLabel), emblem: view.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }}
           making={making} trailer={trailerSource}
           launchLabel={item.launch_label && item.launch_label !== "Lancer" ? item.launch_label : "Lancer"} onLaunch={launch}
           current={current} progress={progress}
@@ -289,9 +290,8 @@ export default function Detail() {
           intentionUrl={item.intention_file_id ? assetDownloadUrl(item.intention_file_id) : null}
           fav={isFavorite(item.id)} onFav={() => { sfx("nav"); toggleFavorite(item.id); }}
           onAmbient={item.has_audio ? () => { sfx("nav"); playAmbient(item.id); } : null} ambientOn={thisPlaying}
-          isAdmin={isAdmin} onStudio={() => { sfx("select"); setStudio(true); }} onEdit={() => setEditorOpen(true)}
+          isAdmin={isAdmin} onEdit={() => { sfx("select"); setEditorOpen(true); }}
           onExit={() => { stopAmbient(); if (window.history.length > 1) nav(-1); else nav("/"); }} sfx={sfx} />
-        {studio && <WorldStudio item={item} catLabel={catLabel} onPreview={setPvw} onClose={() => { setStudio(false); setPvw(null); }} onSaved={refetch} onFullEditor={() => { setStudio(false); setPvw(null); setEditorOpen(true); }} />}
         {overlays}
       </>
     );

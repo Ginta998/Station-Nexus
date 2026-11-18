@@ -1,6 +1,29 @@
 {
-  "version": "0.17",
+  "version": "0.18",
   "patches": [
+    {
+      "v": "0.18",
+      "date": "2026-11-18",
+      "title": "L'atelier de l'œuvre",
+      "groups": {
+        "Nouveau": [
+          "Un seul éditeur pour créer et modifier une œuvre : l'atelier, en plein écran, dans l'esprit Rhine Lab. Sept sections : Identité, Monde, Contenu, Médias, Intentions, Son, Publication.",
+          "Monde : choix de l'ambiance sur des mini-scènes qui montrent ton titre, ta couleur et ton fond ; couleur tirée de l'affiche ou choisie ; fond du monde en glisser-déposer.",
+          "« Voir dans le monde » : l'atelier s'efface et le monde de l'œuvre affiche tes réglages en direct, avant d'enregistrer.",
+          "Chapitres et épisodes se déplacent (monter, descendre) ; images du moodboard aussi.",
+          "Colonne « Prêt à publier » : titre, affiche, résumé, contenu, fond ; un clic mène à ce qui manque.",
+          "Ctrl/Cmd + S enregistre ; Échap ferme, et demande avant de perdre des modifications."
+        ],
+        "Amélioré": [
+          "Le bouton Modifier est à côté du cœur dans le monde de l'œuvre, aussi sur téléphone.",
+          "La bande-annonce se règle pour toutes les œuvres (section Médias), plus seulement pour les films.",
+          "Les images sont réduites avant l'envoi : enregistrements plus légers."
+        ],
+        "Retiré": [
+          "Le panneau « Habiller ce monde » : tout est dans l'atelier."
+        ]
+      }
+    },
     {
       "v": "0.17",
       "date": "2026-11-18",
