@@ -47,7 +47,11 @@ export function AppProvider({ children }) {
   const [theme, setThemeState] = useState(() => storedTheme || "abysse");
   // admin = uniquement le compte administrateur connecté
   const { user: authUser } = useAuth();
-  const isAdmin = !!authUser?.is_admin || DEV_LOCAL;
+  const realAdmin = !!authUser?.is_admin || DEV_LOCAL;
+  // Mode spectateur : l'admin voit la station comme un visiteur (sans les boutons d'admin), le temps de vérifier
+  const [spectator, setSpectatorS] = useState(() => { try { return sessionStorage.getItem("sx_spectator") === "1"; } catch (_) { return false; } });
+  const setSpectator = (v) => { setSpectatorS(v); try { sessionStorage.setItem("sx_spectator", v ? "1" : "0"); } catch (_) {} };
+  const isAdmin = realAdmin && !spectator;
   useEffect(() => { localStorage.removeItem(LS.admin); }, []);
   const [musicVolume, setMusicVolumeState] = useState(() => {
     const v = parseFloat(localStorage.getItem(LS.music) ?? localStorage.getItem("sx_volume")); return Number.isFinite(v) ? v : 0.2;
@@ -472,7 +476,7 @@ export function AppProvider({ children }) {
   }, [playAmbient, startAppAmbience]);
 
   const value = {
-    theme, setTheme, isAdmin,
+    theme, setTheme, isAdmin, realAdmin, spectator, setSpectator,
     musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
     muteSfx, muteMusic, toggleSfx, toggleMusic,
     soundPack, setPack, themeSfx, setThemeSfx, customSounds, setCustom, sfx,

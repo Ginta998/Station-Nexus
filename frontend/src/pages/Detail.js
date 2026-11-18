@@ -23,7 +23,8 @@ import CreationJournal from "@/components/journal/CreationJournal";
 import { useExperience, worldAmbientAuto } from "@/lib/experience";
 import { fmtOfCreation } from "@/components/nexus/NexusHome";
 import NexusWorld from "@/components/nexus/NexusWorld";
-import WorkReader from "@/components/nexus/WorkReader";
+import WorkReader, { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
+import WorldComments from "@/components/nexus/WorldComments";
 import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { listJournal, getJournalEntry } from "@/lib/api";
 
@@ -80,8 +81,9 @@ export default function Detail() {
   // resume reading directly when navigated from a card's progress bar
   useEffect(() => {
     if (location.state?.resume && item && item.launch_type === "chapters") {
-      setReaderStart(null);
-      setChaptersOpen(true);
+      // Nexus : on reprend dans le lecteur d'Alexandrie, le monde de l'œuvre derrière
+      if (nexus) { let sp = null; try { sp = JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) {} setWorkRead({ unitKey: "chapters", start: sp?.chapter ?? 0, resume: true }); }
+      else { setReaderStart(null); setChaptersOpen(true); }
       nav(location.pathname, { replace: true, state: {} });
     }
     // eslint-disable-next-line
@@ -120,7 +122,7 @@ export default function Detail() {
   const accNow = view.accent || accent;
   const viewCover = view.poster && view.poster.length > 4 ? view.poster : hasImg ? posterSrc : null;
   const viewBg = view.bg_image && view.bg_image.length > 4 ? view.bg_image : (item.has_bg ? bgSrc : viewCover);
-  const canResume = savedProgress && ((savedProgress.chapter || 0) > 0 || (savedProgress.ratio || 0) > 0.02);
+  const canResume = savedProgress && (savedProgress.opened || (savedProgress.chapter || 0) > 0 || (savedProgress.ratio || 0) > 0.02);
 
   // Prochain à regarder (reprise de lecture) — affiché en haut de la fiche
   const continueTarget = (() => {
@@ -235,10 +237,16 @@ export default function Detail() {
   const btn = { borderColor: "color-mix(in srgb, var(--brand) 30%, var(--border-c))", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "color-mix(in srgb, var(--bg-primary) 42%, transparent)" };
 
   const readerFormat = ["livre", "vhs", "vinyle"].includes(item.reader_format) ? item.reader_format : ({ vinyle: "vinyle", vhs: "vhs" })[fmtOfCreation(item, catLabel)] || "livre";
+  // Œuvre suivante : la suivante du même rayon, sinon la suivante de la station
+  const nextWork = (() => { const list = (allCreations || []).filter((c) => !c.coming_soon && c.id !== item.id).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    return list.find((c) => c.category === item.category && (c.order ?? 0) > (item.order ?? 0)) || list.find((c) => (c.order ?? 0) > (item.order ?? 0)) || list[0] || null; })();
   const overlays = (<>
       {workRead && <WorkReader key={(workRead.entry?.id || workRead.unitKey || "t") + (workRead.start ?? "")} item={item} entry={workRead.entry} unitKey={workRead.unitKey} catLabel={catLabel}
-        format={readerFormat} cover={hasImg ? posterSrc : null} startUnit={workRead.start ?? null} resume={!!workRead.resume}
-        locked={(i) => workRead.unitKey === "chapters" && chapterLocked(item, i)} onClose={() => setWorkRead(null)} />}
+        format={readerFormat} look={item.reader_look || LOOK_OF_WORLD[worldStyleOf(item, catLabel)] || "didone"} cover={hasImg ? posterSrc : null} startUnit={workRead.start ?? null} resume={!!workRead.resume}
+        locked={(i) => workRead.unitKey === "chapters" && chapterLocked(item, i)} onClose={() => setWorkRead(null)}
+        next={nextWork} nextCover={nextWork ? (nextWork.has_poster ? posterUrl(nextWork.id, nextWork.updated_at, 360) : null) : null}
+        onNext={(n) => { setWorkRead(null); stopAmbient(); nav(`/oeuvre/${n.id}`); }}
+        onComment={() => { setWorkRead(null); setTimeout(() => { const w = document.querySelector(".nw-homewrap"); const cm = w?.querySelector(".nw-cm"); if (w && cm) w.scrollTo({ top: cm.offsetTop - 10, behavior: "smooth" }); }, 350); }} />}
       {gateOpen && <LaunchGate onClose={() => setGateOpen(false)} />}
 
       {readerOpen && (
@@ -272,12 +280,15 @@ export default function Detail() {
   // Expérience Nexus : l'œuvre devient un monde en plein écran, avec ses écrans imbriqués
   if (nexus) {
     const unitsCount = item.launch_type === "chapters" ? item.chapters?.length || 0 : item.episodes?.length || 0;
-    let lastEp = null; try { lastEp = JSON.parse(localStorage.getItem("sx_eplast_" + item.id) ?? "null"); } catch (_) {}
+    let lastEp = null; let epRec = null; try { lastEp = JSON.parse(localStorage.getItem("sx_eplast_" + item.id) ?? "null"); epRec = JSON.parse(localStorage.getItem("sx_progress_" + item.id + "_ep") || "null"); } catch (_) {}
+    // Épisodes : on reprend l'épisode en cours de lecture (texte), sinon le suivant du dernier vu (vidéo)
+    const epCur = epRec && epRec.ratio < 0.97 ? epRec.chapter : lastEp != null ? Math.min(Number(lastEp) + 1, unitsCount - 1) : null;
     const current = item.launch_type === "chapters" ? (canResume ? Math.min(savedProgress.chapter || 0, unitsCount - 1) : null)
-      : item.launch_type === "episodes" && lastEp != null ? Math.min(Number(lastEp) + 1, unitsCount - 1) : null;
-    const progress = current == null ? null : item.launch_type === "chapters"
-      ? { label: `Chapitre ${current + 1} / ${unitsCount}`, ratio: (current + (savedProgress?.ratio || 0)) / unitsCount }
-      : { label: `Épisode ${current + 1} / ${unitsCount}`, ratio: current / unitsCount };
+      : item.launch_type === "episodes" ? epCur : null;
+    const rec = item.launch_type === "chapters" ? savedProgress : epRec;
+    const word = item.launch_type === "chapters" ? "Chapitre" : "Épisode";
+    const progress = current == null ? null : { label: `${word} ${current + 1} / ${unitsCount}`, ratio: (current + (rec?.chapter === current ? rec.ratio || 0 : 0)) / unitsCount,
+      inUnit: rec?.chapter === current ? rec.ratio || 0 : 0, excerpt: rec?.chapter === current ? rec.excerpt || "" : "" };
     const catOf = (c) => cats.find((x) => x.key === c.category)?.label || c.category;
     return (
       <>
@@ -294,7 +305,7 @@ export default function Detail() {
           unlock={{ price: `${Number(item.price_eur || 0).toFixed(2)} €`, buying, onBuy: buyThis, onSubscribe: plan?.enabled ? subscribe : null,
             subLabel: plan?.enabled ? `S'abonner · dès ${Math.min(...((plan.tiers && plan.tiers.length ? plan.tiers.map((t) => t.price_eur) : [plan.price_eur || 5])))} €/mois` : "",
             note: item.launch_type === "chapters" && (item.free_chapters || 0) > 0 ? `Les ${item.free_chapters} premiers chapitres sont libres. Pour la suite : accès définitif à l'œuvre, ou l'abonnement pour tout le catalogue.` : null }}
-          comments={<CommentsSection creationId={item.id} units={item.launch_type === "chapters" ? (item.chapters || []) : (item.episodes || [])} term={item.launch_type === "chapters" ? "Chapitre" : "Épisode"} />}
+          comments={<WorldComments creationId={item.id} ws={wsNow} units={item.launch_type === "chapters" ? (item.chapters || []) : (item.episodes || [])} term={item.launch_type === "chapters" ? "Chapitre" : "Épisode"} />}
           neighbors={recommendations.map((c) => ({ ...c, catLabel: catOf(c), fmt: fmtOfCreation(c, catOf(c)) }))}
           coverOf={(c) => (c.poster && c.poster.length > 4 ? c.poster : c.has_poster ? posterUrl(c.id, c.updated_at, 360) : null)}
           onNeighbor={(cid) => nav(`/oeuvre/${cid}`)}

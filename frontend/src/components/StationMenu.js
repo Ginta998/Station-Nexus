@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import AmbientMixer from "@/components/AmbientMixer";
 import { useAmbient, setAmbientMuted } from "@/lib/ambient";
 import { useQuery } from "@tanstack/react-query";
+import { IoEyeOutline } from "react-icons/io5";
 import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -137,7 +138,7 @@ function FsBtn({ style }) {
  */
 export default function StationMenu({ onAdd, onProfile, trigger }) {
   const nav = useNavigate();
-  const { isAdmin, sfx, profile, seenAnnouncements } = useApp();
+  const { isAdmin, realAdmin, spectator, setSpectator, sfx, profile, seenAnnouncements } = useApp();
   const { user, openAuth, logout } = useAuth();
   const { unread: chatUnreadCount } = useChat() || { unread: { total: 0 } };
   const salonUnread = chatUnreadCount?.total || 0;
@@ -157,6 +158,7 @@ export default function StationMenu({ onAdd, onProfile, trigger }) {
     { label: "Paramètres", sub: "COMPTE · THÈME · AMBIANCE", icon: <IoSettingsOutline size={18} />, onClick: () => go("/parametres") },
     ...(isAdmin && onAdd ? [{ label: "Créer une création", sub: "MODE CRÉATION", icon: <IoAddOutline size={18} />, onClick: () => { setMenuOpen(false); onAdd(); } }] : []),
     ...(isAdmin ? [{ label: "Portail · Atelier", sub: "TON ESPACE DE CRÉATION", icon: <IoPlanetOutline size={18} />, onClick: () => go("/atelier") }] : []),
+    ...(realAdmin ? [{ label: spectator ? "Revenir en admin" : "Voir comme un visiteur", sub: spectator ? "MODE SPECTATEUR ACTIF" : "MODE SPECTATEUR", icon: <IoEyeOutline size={18} />, onClick: () => { sfx("select"); setMenuOpen(false); setSpectator(!spectator); } }] : []),
   ];
 
   return (

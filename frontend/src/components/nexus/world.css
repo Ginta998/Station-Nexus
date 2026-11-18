@@ -829,3 +829,268 @@ body:has(.nw) :is(.cb-root,.bn-fab,.sx-global-sound,.nx-tools){display:none!impo
 .ws-trait .nw-cm{background:#141414;border:3px solid #141414;box-shadow:8px 8px 0 var(--hl)}
 .ws-hero .nw-cm{background:#1c2333;border-top:6px solid var(--hl)}
 .ws-cristal .nw-cm{background:rgba(10,16,30,.75);backdrop-filter:blur(18px)}
+
+/* =====================================================================
+   0.21 — Reprendre + Dernière sortie, corrections téléphone
+   ===================================================================== */
+.nw-phone-resume{display:none!important}
+.nw-quickwrap{margin-top:20px;width:100%;max-width:640px}
+.h-arcade .nw-quickwrap,.h-cath .nw-quickwrap{margin-inline:auto}
+.nw-quick{display:grid;gap:10px}
+.nw-quick.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.nw-qc{display:flex;align-items:stretch;min-width:0;padding:0;border:1px solid var(--line);background:color-mix(in srgb,var(--paper) 58%,transparent);color:inherit;font:inherit;text-align:left;cursor:pointer;overflow:hidden;backdrop-filter:blur(10px);transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .2s,box-shadow .2s;animation:nwUp .6s .15s both}
+.nw-qc:hover,.nw-qc:focus-visible{transform:translateY(-2px);border-color:var(--hl);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.nw-qc-img{position:relative;flex:0 0 38%;min-height:84px;background:center/cover color-mix(in srgb,var(--hl) 25%,var(--paper))}
+.nw-qc-img i{position:absolute;left:8px;bottom:8px;padding:3px 7px;font-style:normal;font-size:9px;letter-spacing:.18em;background:var(--hl);color:var(--paper)}
+.nw-qc.q-resume .nw-qc-img i{left:50%;top:50%;bottom:auto;translate:-50% -50%;width:34px;height:34px;display:grid;place-items:center;padding:0;border-radius:50%;font-size:12px;background:color-mix(in srgb,var(--paper) 70%,transparent);color:var(--ink);backdrop-filter:blur(4px)}
+.nw-qc-t{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:10px 12px}
+.nw-qc-t small{font-size:9.5px;letter-spacing:.3em;color:var(--hl)}
+.nw-qc-t b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nw-qc-t em{font-style:normal;font-size:11px;opacity:.7;letter-spacing:.08em}
+.nw-qc-t q{font-size:12px;line-height:1.35;opacity:.8;font-style:italic;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;quotes:"« " " »"}
+.nw-qc-t i{display:block;height:2px;margin-top:5px;background:var(--line)}
+.nw-qc-t u{display:block;height:100%;background:var(--hl)}
+/* par thème */
+.ws-vhs .nw-qc{background:rgba(4,8,14,.6);border:2px solid #cfe3ff;font-family:"VT323",monospace}.ws-vhs .nw-qc-t b{font-size:19px;font-weight:400}.ws-vhs .nw-qc-t small{font-size:14px;letter-spacing:.1em;color:#9fb8e0}
+.ws-arcade .nw-qc{background:#000;border:3px solid #fff;box-shadow:5px 5px 0 color-mix(in srgb,var(--brand,#ff3d6b) 70%,#000);backdrop-filter:none}.ws-arcade .nw-qc-t b{font-size:9px;line-height:1.6}.ws-arcade .nw-qc-t small,.ws-arcade .nw-qc-t em,.ws-arcade .nw-qc-t q{font-family:"VT323",monospace;font-size:15px;letter-spacing:.04em}
+.ws-yorha .nw-qc{background:var(--cream);border:0;box-shadow:4px 4px 0 rgba(78,75,66,.22);backdrop-filter:none}.ws-yorha .nw-qc-img{filter:grayscale(.6) sepia(.3)}.ws-yorha .nw-qc-t small{color:var(--ink)}
+.ws-eve .nw-qc{clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);background:rgba(8,14,24,.5)}
+.ws-hero .nw-qc{background:rgba(255,255,255,.92);border:0;border-left:5px solid var(--hl);box-shadow:0 10px 24px rgba(28,35,51,.18);transform:skewX(-6deg)}.ws-hero .nw-qc>*{transform:skewX(6deg)}.ws-hero .nw-qc:hover{transform:skewX(-6deg) translateY(-2px)}.ws-hero .nw-qc-t b{font-weight:700;text-transform:uppercase;font-size:15px}
+.ws-cathedrale .nw-qc{background:rgba(7,5,6,.7);border-color:rgba(179,18,30,.45)}.ws-cathedrale .nw-qc-t b{font-family:var(--fu);font-weight:400;letter-spacing:.1em;font-size:13px}.ws-cathedrale .nw-qc-t q{font-family:var(--fb)}
+.ws-couronne .nw-qc{background:rgba(8,7,10,.6)}.ws-couronne .nw-qc-t b{font-family:var(--fu);font-weight:400}.ws-couronne .nw-qc-t q{font-family:var(--fb);font-size:14px}
+.ws-trait .nw-qc{background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);backdrop-filter:none}.ws-trait .nw-qc-t b{font-family:var(--fu);text-transform:uppercase;font-size:13px}
+.ws-sengoku .nw-qc{background:rgba(13,12,10,.78);border:0;border-left:3px solid var(--hl)}
+.ws-survivance .nw-qc{background:#e8e2cf;color:#1e1f19;border:0;box-shadow:0 10px 24px rgba(0,0,0,.4)}.ws-survivance .nw-qc-t small{color:#5f6b3c}
+.ws-cristal .nw-qc{background:rgba(10,16,30,.45);border-color:rgba(200,225,255,.22)}.ws-cristal .nw-qc-t b{font-family:var(--fu);font-weight:300;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+.ws-cinema .nw-qc{background:rgba(0,0,0,.55);border-color:rgba(255,255,255,.12)}.ws-cinema .nw-qc-t b{font-family:"Bebas Neue",sans-serif;font-weight:400;font-size:20px;letter-spacing:.04em}
+@media (max-width:760px){
+  .nw-quick.n2{grid-template-columns:1fr}
+  .nw-quickwrap{max-width:none}
+  .h-cath{grid-template-columns:1fr;text-align:center;align-content:center}
+  .h-cath .nw-title{font-size:clamp(40px,12vw,64px)}
+  .ws-cathedrale .nw-menu button{padding:9px 26px;font-size:13px}
+  .h-cath .nw-qc{text-align:left}
+}
+
+/* =====================================================================
+   Commentaires dessinés par chaque thème (avec réponses)
+   ===================================================================== */
+.nw .nw-scr .nw-cm{background:none;border:0;padding:0;box-shadow:none;backdrop-filter:none;max-width:940px;color:var(--ink);
+  --text-primary:var(--ink);--text-secondary:color-mix(in srgb,var(--ink) 66%,transparent);--bg-primary:var(--paper);--bg-secondary:color-mix(in srgb,var(--paper) 92%,var(--ink));--border-c:var(--line)}
+.wc{position:relative;padding:26px clamp(16px,3vw,34px) 30px;background:color-mix(in srgb,var(--paper) 84%,transparent);border:1px solid var(--line);color:var(--ink);font-family:var(--fu);backdrop-filter:blur(14px)}
+.wc-top{display:flex;align-items:baseline;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.wc-top h2{margin:0;font-family:var(--ft);font-size:clamp(24px,3vw,36px);line-height:1.05}
+.wc-count{font-size:12px;letter-spacing:.2em;color:var(--hl)}
+.wc-intro{margin:10px 0 16px;font-size:14px;opacity:.75}
+.wc-form{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:8px;align-items:start}
+.wc-form .wc-in.text{grid-column:1 / -1;min-height:72px}
+.wc-form .wc-send{grid-column:1 / -1;justify-self:end}
+.wc-in{width:100%;padding:10px 12px;border:1px solid var(--line);background:color-mix(in srgb,var(--paper) 70%,transparent);color:var(--ink);font:inherit;font-size:14px;outline:none;resize:none}
+.wc-in:focus{border-color:var(--hl)}
+.wc-in option{color:#111}
+.wc-send{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--hl);background:var(--hl);color:var(--paper);font:600 12px var(--fu);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:filter .2s}
+.wc-send:hover{filter:brightness(1.1)}
+.wc-send:disabled{opacity:.5}
+.wc-filters{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0}
+.wc-filters button{padding:5px 12px;border:1px solid var(--line);background:none;color:inherit;font:inherit;font-size:11px;letter-spacing:.1em;opacity:.75;cursor:pointer}
+.wc-filters button.on{opacity:1;border-color:var(--hl);color:var(--hl)}
+.wc-list{display:flex;flex-direction:column;gap:16px;margin-top:20px}
+.wc-thread{display:flex;flex-direction:column;gap:8px}
+.wc-item{position:relative;padding:14px 16px;border:1px solid var(--line);background:color-mix(in srgb,var(--paper) 60%,transparent);animation:nwUp .4s both}
+.wc-item.child{margin-left:clamp(18px,4vw,44px);border-left:2px solid var(--hl)}
+.wc-item.author{border-color:color-mix(in srgb,var(--hl) 70%,transparent)}
+.wc-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wc-av{flex:0 0 auto;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:var(--hl);color:var(--paper);font-weight:700;font-size:13px}
+.wc-name{font-size:14px}
+.wc-badge{font-style:normal;font-size:9px;letter-spacing:.2em;padding:2px 6px;background:var(--hl);color:var(--paper)}
+.wc-unit{font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border:1px solid var(--line);opacity:.75}
+.wc-date{margin-left:auto;font-size:11px;opacity:.6}
+.wc-text{margin:10px 0 6px;font-family:var(--fb);font-size:14.5px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.wc-f{display:flex;align-items:center;gap:14px}
+.wc-f button{display:inline-flex;align-items:center;gap:5px;padding:0;background:none;border:0;color:inherit;font:inherit;font-size:12px;opacity:.65;cursor:pointer}
+.wc-f button:hover{opacity:1;color:var(--hl)}
+.wc-replyform{display:grid;gap:8px;margin-left:clamp(18px,4vw,44px);padding:12px;border:1px dashed var(--hl);animation:nwUp .3s both}
+.wc-replyform .wc-send{justify-self:end}
+.wc-to{display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--hl)}
+.wc-to button{background:none;border:0;color:inherit;cursor:pointer}
+.wc-empty{margin:0;font-style:italic;opacity:.7}
+@media (max-width:760px){.wc-form{grid-template-columns:1fr}.wc-form .wc-send{justify-self:stretch;justify-content:center}.wc-date{margin-left:0;width:100%}}
+
+/* Magnétoscope : un terminal de messages */
+.wc-vhs{background:rgba(4,8,14,.82);border:2px solid #cfe3ff;font-family:"JetBrains Mono",monospace;backdrop-filter:none}
+.wc-vhs .wc-top h2,.wc-vhs .wc-name{font-family:"VT323",monospace;font-weight:400;letter-spacing:.06em}
+.wc-vhs .wc-top h2{font-size:34px}
+.wc-vhs .wc-item{border:0;border-bottom:1px dashed rgba(207,227,255,.3);background:none;padding:10px 0 10px 18px}
+.wc-vhs .wc-item::before{content:">";position:absolute;left:0;top:12px;color:#9fb8e0}
+.wc-vhs .wc-item.child{border-left:0;margin-left:28px}
+.wc-vhs .wc-av{display:none}
+.wc-vhs .wc-name{font-size:22px}
+.wc-vhs .wc-text{font-family:"JetBrains Mono",monospace;font-size:13px}
+.wc-vhs .wc-in{background:#050a10;border-color:#4b5d78;font-family:"JetBrains Mono",monospace}
+.wc-vhs .wc-send{background:#e8f1ff;color:#0a0f18;border:0;font-family:"VT323",monospace;font-size:20px;letter-spacing:.06em}
+/* Borne d'arcade : tableau des messages */
+.wc-arcade{background:#000;border:4px solid #fff;box-shadow:8px 8px 0 color-mix(in srgb,var(--brand,#ff3d6b) 70%,#000);backdrop-filter:none}
+.wc-arcade .wc-top h2{font-size:16px;line-height:1.5;color:var(--hl)}
+.wc-arcade .wc-intro,.wc-arcade .wc-text,.wc-arcade .wc-in{font-family:"VT323",monospace;font-size:20px}
+.wc-arcade .wc-item{border:0;border-bottom:2px dotted #444;background:none;padding:12px 0}
+.wc-arcade .wc-item.child{border-left:0;padding-left:22px}
+.wc-arcade .wc-item.child::before{content:"►";position:absolute;left:0;top:14px;color:var(--hl);font-size:10px}
+.wc-arcade .wc-av{border-radius:0;font-size:10px}
+.wc-arcade .wc-name{font-size:10px;color:var(--hl)}
+.wc-arcade .wc-send{font-size:10px;background:var(--hl);color:#000;border:0;box-shadow:3px 3px 0 #fff}
+/* Archives : journal des transmissions */
+.wc-yorha{background:var(--cream);border:0;box-shadow:6px 6px 0 rgba(78,75,66,.22);backdrop-filter:none}
+.wc-yorha .wc-top{margin:-26px calc(-1 * clamp(16px,3vw,34px)) 0;padding:12px clamp(16px,3vw,34px);background:var(--ink);color:var(--cream);border:0}
+.wc-yorha .wc-top h2{font-weight:400;letter-spacing:.24em;text-transform:uppercase;font-size:clamp(16px,2vw,22px)}
+.wc-yorha .wc-count{color:var(--cream)}
+.wc-yorha .wc-item{background:color-mix(in srgb,var(--bar) 45%,transparent);border:0;padding-left:34px}
+.wc-yorha .wc-item::before{content:"";position:absolute;left:14px;top:22px;width:8px;height:8px;background:var(--ink)}
+.wc-yorha .wc-item.child{border-left:2px solid var(--ink)}
+.wc-yorha .wc-av{display:none}
+.wc-yorha .wc-send{background:var(--ink);color:var(--cream);border-color:var(--ink);font-weight:400;letter-spacing:.24em}
+.wc-yorha .wc-in{background:#efe9d2;border-color:var(--bar)}
+/* Orbite : verre et lignes fines */
+.wc-eve{background:rgba(8,14,24,.5);clip-path:polygon(22px 0,100% 0,100% calc(100% - 22px),calc(100% - 22px) 100%,0 100%,0 22px)}
+.wc-eve .wc-top h2{font-weight:300;letter-spacing:.24em;text-transform:uppercase}
+.wc-eve .wc-item{background:none;border:0;border-left:1px solid var(--line);padding-left:18px}
+.wc-eve .wc-item::before{content:"";position:absolute;left:-4px;top:20px;width:7px;height:7px;rotate:45deg;background:var(--hl);box-shadow:0 0 10px var(--hl)}
+.wc-eve .wc-av{display:none}
+.wc-eve .wc-name{font-weight:400;letter-spacing:.2em;text-transform:uppercase;font-size:12px}
+.wc-eve .wc-send{background:transparent;color:var(--hl);letter-spacing:.3em}
+/* Arène : cartes de joueurs */
+.wc-hero{background:#1c2333;color:#fff;border:0;border-top:6px solid var(--hl);--ink:#fff;--paper:#1c2333;--line:rgba(255,255,255,.14)}
+.wc-hero .wc-top h2{text-transform:uppercase;font-style:normal;transform:skewX(-8deg);transform-origin:left}
+.wc-hero .wc-item{background:rgba(255,255,255,.06);border:0;border-left:4px solid var(--hl);transform:skewX(-3deg)}
+.wc-hero .wc-item>*{transform:skewX(3deg)}
+.wc-hero .wc-name{font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.wc-hero .wc-send{background:var(--hl);color:#fff;border:0;transform:skewX(-10deg)}
+/* Cathédrale : lettres scellées */
+.wc-cathedrale{background:rgba(10,6,7,.88);border:1px solid rgba(179,18,30,.45);outline:1px solid rgba(230,220,205,.08);outline-offset:6px}
+.wc-cathedrale .wc-top h2{font-style:italic;font-weight:500}
+.wc-cathedrale .wc-item{background:linear-gradient(180deg,rgba(230,220,205,.05),transparent);border:1px solid rgba(230,220,205,.12);padding-left:58px}
+.wc-cathedrale .wc-av{position:absolute;left:14px;top:14px;width:32px;height:32px;background:radial-gradient(circle at 35% 30%,#d43a44,#7d0d14 70%);color:#f6d8c4;font-family:var(--fu);box-shadow:0 2px 6px rgba(0,0,0,.6),inset 0 0 0 3px rgba(0,0,0,.18)}
+.wc-cathedrale .wc-name{font-family:var(--fu);letter-spacing:.12em;font-weight:400}
+.wc-cathedrale .wc-text{font-style:italic;font-size:15.5px}
+.wc-cathedrale .wc-send{background:transparent;color:#f6ecdc;font-family:var(--fu);letter-spacing:.2em}
+/* Couronne : paroles sous filets dorés */
+.wc-couronne{background:rgba(8,7,10,.72)}
+.wc-couronne .wc-top h2{font-weight:400;letter-spacing:.06em}
+.wc-couronne .wc-item{background:none;border:0;border-bottom:1px solid;border-image:linear-gradient(90deg,transparent,rgba(212,176,98,.5),transparent) 1;padding:14px 4px}
+.wc-couronne .wc-item.child{border-left:0;padding-left:24px}
+.wc-couronne .wc-av{background:none;border:1px solid var(--hl);color:var(--hl);font-family:var(--fu)}
+.wc-couronne .wc-name{font-family:var(--fu);font-weight:400;color:#f6e9c6}
+.wc-couronne .wc-text{font-size:16.5px}
+.wc-couronne .wc-send{background:transparent;color:var(--hl);font-family:var(--fu)}
+/* Trait : le courrier des lecteurs, en bulles */
+.wc-trait{background:#fff;border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);backdrop-filter:none}
+.wc-trait .wc-top{border-bottom:3px solid var(--ink)}
+.wc-trait .wc-top h2{text-transform:uppercase}
+.wc-trait .wc-item{background:#fff;border:3px solid var(--ink);border-radius:18px;margin-left:44px;box-shadow:4px 4px 0 var(--ink)}
+.wc-trait .wc-item::before{content:"";position:absolute;left:-14px;top:18px;width:16px;height:16px;background:#fff;border-left:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(45deg)}
+.wc-trait .wc-av{position:absolute;left:-46px;top:6px;width:34px;height:34px;background:#ffd23f;color:var(--ink);border:3px solid var(--ink)}
+.wc-trait .wc-item.child{margin-left:96px;border-left:3px solid var(--ink);background:#fff8e0}
+.wc-trait .wc-name{font-family:var(--fu);font-weight:700;text-transform:uppercase;font-size:13px}
+.wc-trait .wc-in{background:#fff;border:2px solid var(--ink);border-radius:12px}
+.wc-trait .wc-send{border:3px solid var(--ink);border-radius:999px;box-shadow:3px 3px 0 var(--ink);color:#fff}
+/* Sengoku : paroles à l'encre, sceau rouge */
+.wc-sengoku{background:rgba(13,12,10,.86);border:0;border-left:3px solid var(--hl)}
+.wc-sengoku .wc-item{background:none;border:0;border-bottom:1px solid var(--line);padding-left:56px}
+.wc-sengoku .wc-av{position:absolute;left:8px;top:14px;width:34px;height:34px;border-radius:4px;background:var(--hl);color:#f6eee0;font-family:var(--ft);transform:rotate(-4deg)}
+.wc-sengoku .wc-item.child{border-left:0;margin-left:44px}
+.wc-sengoku .wc-text{line-height:1.9}
+.wc-sengoku .wc-send{border-radius:2px;letter-spacing:.2em}
+/* Survivance : notes laissées */
+.wc-survivance{background:rgba(17,19,14,.82)}
+.wc-survivance .wc-item{background:#e8e2cf;color:#1e1f19;border:0;box-shadow:0 8px 18px rgba(0,0,0,.35);transform:rotate(-.6deg);padding-top:20px}
+.wc-survivance .wc-thread:nth-child(even) .wc-item{transform:rotate(.6deg)}
+.wc-survivance .wc-item::before{content:"";position:absolute;top:-9px;left:50%;width:76px;height:18px;translate:-50% 0;background:rgba(220,210,170,.75);transform:rotate(-2deg)}
+.wc-survivance .wc-item.child{border-left:0;background:#dcd5bf}
+.wc-survivance .wc-av{background:#5f6b3c;color:#e8e2cf}
+.wc-survivance .wc-text{font-family:var(--fb);color:#2a2b24}
+.wc-survivance .wc-f button:hover{color:#5f6b3c}
+.wc-survivance .wc-send{color:#11130e}
+/* Cristal : échos de verre */
+.wc-cristal{background:rgba(10,16,30,.5);border-color:rgba(200,225,255,.2);backdrop-filter:blur(18px)}
+.wc-cristal .wc-top h2{font-weight:500;letter-spacing:.14em;text-transform:uppercase;font-size:clamp(20px,2.4vw,30px)}
+.wc-cristal .wc-item{background:rgba(255,255,255,.03);border-color:rgba(200,225,255,.14)}
+.wc-cristal .wc-av{border-radius:0;rotate:45deg;width:20px;height:20px;font-size:0;background:var(--hl);box-shadow:0 0 12px var(--hl)}
+.wc-cristal .wc-name{font-weight:300;letter-spacing:.2em;text-transform:uppercase;font-size:12px}
+.wc-cristal .wc-send{background:transparent;color:#fff;letter-spacing:.3em}
+/* Salle de cinéma : le mot des spectateurs */
+.wc-cinema{background:rgba(0,0,0,.75);border:0;border-top:1px solid var(--line)}
+.wc-cinema .wc-top h2,.wc-cinema .wc-name{font-family:"Bebas Neue",sans-serif;font-weight:400;letter-spacing:.06em}
+.wc-cinema .wc-name{font-size:20px}
+.wc-cinema .wc-item{background:none;border:0;border-left:2px solid var(--line);padding-left:18px}
+.wc-cinema .wc-item.author{border-left-color:var(--hl)}
+
+/* =====================================================================
+   Transitions d'entrée, une par thème (1,8 s, un clic les passe)
+   ===================================================================== */
+.nw-intro{position:absolute;inset:0;z-index:50;pointer-events:auto;overflow:hidden;display:grid;place-items:center;animation:nwIntroOut .4s 1.4s both}
+@keyframes nwIntroOut{to{opacity:0;visibility:hidden}}
+.nw-intro span{position:absolute;display:block}
+.nw-intro b{position:relative;font-weight:400}
+/* Cinéma : le rideau s'ouvre */
+.i-cinema span{top:0;bottom:0;width:50.5%;background:linear-gradient(90deg,#120203,#3a0a0e 40%,#120203),repeating-linear-gradient(90deg,rgba(0,0,0,.35) 0 6px,transparent 6px 22px);background-blend-mode:multiply;box-shadow:0 0 60px rgba(0,0,0,.8)}
+.i-cinema .a{left:0;animation:nwCurtL 1.3s .35s cubic-bezier(.7,0,.2,1) both}.i-cinema .b{right:0;animation:nwCurtR 1.3s .35s cubic-bezier(.7,0,.2,1) both}
+@keyframes nwCurtL{to{transform:translateX(-100%)}}@keyframes nwCurtR{to{transform:translateX(100%)}}
+.i-cinema b{font-family:"Bebas Neue",sans-serif;font-size:clamp(28px,5vw,60px);letter-spacing:.2em;color:#f3e7c9;animation:nwFade .5s both,nwIntroOut .3s .5s both}
+.i-cinema{animation-delay:1.5s}
+/* Magnétoscope : la bande défile, puis PLAY */
+.i-vhs{background:#05080d}
+.i-vhs .a{inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.08) 0 2px,transparent 2px 5px);animation:nwTrackRoll .9s steps(6) both}
+.i-vhs .b{left:0;right:0;height:22%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.22),transparent);animation:nwTrackBar 1.1s linear both}
+@keyframes nwTrackRoll{from{transform:translateY(-30px)}to{transform:translateY(30px)}}
+@keyframes nwTrackBar{from{top:-25%}to{top:110%}}
+.i-vhs b{font-family:"VT323",monospace;font-size:clamp(34px,6vw,64px);color:#e8f1ff;text-shadow:3px 0 rgba(255,0,80,.6),-3px 0 rgba(0,200,255,.6);animation:nwBlink .5s steps(1) 3}
+/* Borne d'arcade : INSERT COIN, puis l'écran s'allume */
+.i-arcade{background:#000}
+.i-arcade b{font-family:"Press Start 2P",monospace;font-size:clamp(12px,2vw,20px);color:#ffd400;animation:nwBlink .35s steps(1) 4}
+.i-arcade .a{inset:0;background:#fff;animation:nwFlash .25s 1.2s both}
+@keyframes nwFlash{0%{opacity:0}40%{opacity:.9}100%{opacity:0}}
+/* Archives : une ligne de balayage ouvre l'écran */
+.i-yorha{background:transparent}
+.i-yorha .a,.i-yorha .b{left:0;right:0;height:50.5%;background:#cdc8b0}
+.i-yorha .a{top:0;animation:nwSplitUp .8s .5s cubic-bezier(.7,0,.2,1) both}.i-yorha .b{bottom:0;animation:nwSplitDown .8s .5s cubic-bezier(.7,0,.2,1) both}
+.i-yorha .a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:#4e4b42;animation:nwLineIn .5s both}
+@keyframes nwSplitUp{to{transform:translateY(-100%)}}@keyframes nwSplitDown{to{transform:translateY(100%)}}
+@keyframes nwLineIn{from{transform:scaleX(0)}}
+.i-yorha b{font-family:"Zen Kaku Gothic New",sans-serif;letter-spacing:.6em;font-size:13px;color:#4e4b42;animation:nwIntroOut .2s .45s both}
+/* Orbite : un anneau de lumière */
+.i-eve{background:#04060b;animation-delay:1.1s}
+.i-eve .a{width:20px;height:20px;border-radius:50%;border:1px solid #bdefff;box-shadow:0 0 30px #8fdcff;animation:nwRing 1.3s cubic-bezier(.16,1,.3,1) both}
+@keyframes nwRing{to{width:260vmax;height:260vmax;opacity:0}}
+/* Arène : un éclair orange en diagonale */
+.i-hero{background:transparent}
+.i-hero .a{inset:-20% -60%;background:linear-gradient(105deg,transparent 40%,#f99e1a 40% 56%,#fff 56% 58%,transparent 58%);animation:nwSwipe .9s .1s cubic-bezier(.7,0,.2,1) both}
+.i-hero .b{inset:0;background:#e8edf3;animation:nwIntroOut .2s .45s both}
+@keyframes nwSwipe{from{transform:translateX(-70%)}to{transform:translateX(70%)}}
+/* Cathédrale : la brume rouge se dissipe autour du sceau */
+.i-cathedrale{background:radial-gradient(circle,#2a0307,#070506 70%)}
+.i-cathedrale .a{width:60px;height:60px;border:1px solid #b3121e;transform:rotate(45deg);box-shadow:0 0 40px rgba(179,18,30,.8);animation:nwSeal 1.4s ease both}
+@keyframes nwSeal{0%{opacity:0;transform:rotate(45deg) scale(.6)}40%{opacity:1}100%{opacity:0;transform:rotate(45deg) scale(3)}}
+/* Couronne : l'éclat doré */
+.i-couronne{background:#08070a}
+.i-couronne .a{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle,#fff6dc,#d4b062 40%,transparent 70%);animation:nwBurst 1.3s cubic-bezier(.16,1,.3,1) both}
+@keyframes nwBurst{to{transform:scale(260);opacity:0}}
+/* Trait : l'iris en trame */
+.i-trait{background:transparent}
+.i-trait .a{inset:0;background:radial-gradient(circle,transparent 0,transparent var(--r,0px),#141414 calc(var(--r,0px) + 1px));animation:nwIris 1.1s .2s cubic-bezier(.7,0,.2,1) both}
+@property --r{syntax:"<length>";inherits:false;initial-value:0px}
+@keyframes nwIris{from{--r:0px}to{--r:150vmax}}
+/* Sengoku : l'encre se répand puis se retire */
+.i-sengoku{background:transparent}
+.i-sengoku .a{inset:0;background:#0d0c0a;clip-path:circle(150% at 50% 50%);animation:nwInk 1.2s .35s cubic-bezier(.7,0,.2,1) both}
+@keyframes nwInk{to{clip-path:circle(0% at 50% 50%)}}
+.i-sengoku b{font-family:"Shippori Mincho",serif;font-weight:800;font-size:clamp(60px,12vw,140px);color:#c0262d;animation:nwFade .4s both,nwIntroOut .3s .55s both}
+/* Survivance : la lumière revient dans le noir */
+.i-survivance{background:#000;animation-duration:.9s;animation-delay:.6s}
+/* Cristal : des éclats de verre */
+.i-cristal{background:transparent}
+.i-cristal .a,.i-cristal .b{inset:0;background:linear-gradient(135deg,#070a12,#13203d)}
+.i-cristal .a{clip-path:polygon(0 0,100% 0,0 100%);animation:nwShardA .9s .3s cubic-bezier(.7,0,.2,1) both}
+.i-cristal .b{clip-path:polygon(100% 0,100% 100%,0 100%);animation:nwShardB .9s .3s cubic-bezier(.7,0,.2,1) both}
+@keyframes nwShardA{to{transform:translate(-40%,-40%) rotate(-8deg);opacity:0}}@keyframes nwShardB{to{transform:translate(40%,40%) rotate(8deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.nw-intro{display:none}}
+@media (max-width:760px){.ws-arcade .nw-osd.r{display:none}}
+.nw{overflow:clip}

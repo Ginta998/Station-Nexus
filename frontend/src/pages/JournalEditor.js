@@ -3,13 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { IoArrowBack, IoSaveOutline } from "react-icons/io5";
 import { toast } from "sonner";
+import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexandrie/looks";
 import { getJournalEntry, createJournalEntry, updateJournalEntry, listJournalCategories, listCreations, mediaUrl,
   createJournalCategory, updateJournalCategory, deleteJournalCategory } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { BlocksEditor, ImagePick } from "@/components/journal/BlocksEditor";
 
 const today = () => new Date().toISOString().slice(0, 10);
-const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre" };
+const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre", look: "presse" };
 
 function CategoryManager({ cats, refetch }) {
   const [name, setName] = useState(""); const [color, setColor] = useState("#3f86ff");
@@ -87,6 +88,11 @@ export default function JournalEditor() {
           <label>Lecture (Nexus)
             <select className="jr-in" value={f.format || "livre"} onChange={(e) => set({ format: e.target.value })} data-testid="journal-format-select">
               <option value="livre">Livre</option><option value="vhs">Cassette VHS</option><option value="vinyle">Vinyle</option>
+            </select>
+          </label>
+          <label>Page du lecteur
+            <select className="jr-in" value={f.look || "presse"} onChange={(e) => set({ look: e.target.value })} data-testid="journal-look-select">
+              {Object.keys(BOOK_LOOKS).map((k) => <option key={k} value={k}>{k[0].toUpperCase() + k.slice(1)}{BOOK_LOOK_INFO[k] ? ` · ${BOOK_LOOK_INFO[k]}` : ""}</option>)}
             </select>
           </label>
         </div>

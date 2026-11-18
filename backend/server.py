@@ -162,6 +162,7 @@ class Creation(BaseModel):
     button_size: str = "md"          # md | lg — size of the main action buttons
     world_style: Optional[str] = ""
     reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
+    reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     chapters_count: int = 0
@@ -216,6 +217,7 @@ class CreationInput(BaseModel):
     # Expérience Nexus : ambiance du monde de l'œuvre (cinema, vhs, arcade, manga, vinyle, roman ; vide = automatique)
     world_style: Optional[str] = ""
     reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
+    reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
     unit_display: str = "movix"
     unit_label: Optional[str] = ""
     episodes: List[Episode] = Field(default_factory=list)
@@ -258,6 +260,9 @@ class Comment(BaseModel):
     text: str
     episode_index: int = -1
     episode_label: str = ""
+    parent_id: str = ""        # réponse à un commentaire (un seul niveau)
+    user_id: str = ""          # auteur connecté (pour le prévenir d'une réponse)
+    is_author: bool = False    # réponse du créateur de la station
     created_at: str = Field(default_factory=now_iso)
 
 
@@ -267,6 +272,7 @@ class CommentInput(BaseModel):
     text: str
     episode_index: int = -1
     episode_label: str = ""
+    parent_id: str = ""
 
 
 class Ambience(BaseModel):
@@ -990,11 +996,29 @@ async def list_comments(cid: str):
 
 
 @api_router.post("/comments", response_model=Comment, status_code=201)
-async def create_comment(payload: CommentInput):
+async def create_comment(payload: CommentInput, authorization: Optional[str] = Header(None)):
     if not payload.name.strip() or not payload.text.strip():
         raise HTTPException(400, "Nom et commentaire requis")
-    obj = Comment(**payload.model_dump())
+    user = await _optional_user(authorization)
+    parent = None
+    if payload.parent_id:
+        parent = await db.comments.find_one({"id": payload.parent_id, "creation_id": payload.creation_id}, {"_id": 0})
+        if not parent:
+            raise HTTPException(404, "Commentaire introuvable")
+        if parent.get("parent_id"):  # on répond toujours au fil principal
+            payload.parent_id = parent["parent_id"]
+    obj = Comment(**payload.model_dump(), user_id=(user or {}).get("id", ""), is_author=bool(user and user.get("is_admin")))
     await db.comments.insert_one(obj.model_dump())
+    # Prévenir l'auteur du commentaire qu'on lui a répondu (s'il est connecté et a activé les notifications)
+    if parent and parent.get("user_id") and parent.get("user_id") != obj.user_id:
+        try:
+            data = {"title": f"↩ {obj.name} vous a répondu", "body": obj.text[:140], "url": f"/oeuvre/{obj.creation_id}#commentaires",
+                    "tag": f"reply-{parent['id']}", "kind": "reply"}
+            subs = await db.push_subscriptions.find({"user_id": parent["user_id"], "pref": {"$ne": "off"}}, {"_id": 0}).to_list(50)
+            for sub in subs:
+                await _send_push_sub(sub, data)
+        except Exception as e:  # noqa: BLE001
+            logger.error("reply push failed: %s", e)
     return obj
 
 
@@ -1003,6 +1027,7 @@ async def delete_comment(cid: str, _admin=Depends(require_admin)):
     res = await db.comments.delete_one({"id": cid})
     if res.deleted_count == 0:
         raise HTTPException(404, "Commentaire introuvable")
+    await db.comments.delete_many({"parent_id": cid})  # ses réponses partent avec lui
     return {"ok": True}
 
 
@@ -2634,6 +2659,7 @@ class JournalEntryInput(BaseModel):
     show_home: bool = False
     published: bool = True
     format: str = ""          # lecture en Nexus : "livre", "vhs" ou "vinyle" ("" = livre)
+    look: str = ""            # thème de page du lecteur (ambiances d'Alexandrie) ("" = presse)
 
 
 class JournalEntry(JournalEntryInput):

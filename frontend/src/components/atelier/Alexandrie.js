@@ -433,10 +433,30 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
   useEffect(() => { if (book.preview) return; const all = read(LS.prog, {}); all[book.id] = { page, pages, mark, at: Date.now() }; write(LS.prog, all); }, [page, pages, mark, book.id]); // eslint-disable-line react-hooks/exhaustive-deps
   // Ouvrir directement au chapitre demandé (sauf si on reprend une page déjà gardée)
   const startedR = useRef(startCh == null || (keepSaved && read(LS.prog, {})[book.id]?.page > 0));
-  useEffect(() => { if (startedR.current || pages < 2) return; startedR.current = true; const t = setTimeout(() => jump(startCh), 60); return () => clearTimeout(t); }, [pages]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [ready, setReady] = useState(startedR.current); // le livre reste caché le temps de se placer au bon chapitre (pas de saut visible)
+  useEffect(() => {
+    if (startedR.current || pages < 2) return; startedR.current = true;
+    // le minuteur n'est pas annulé si la mise en page bouge encore (polices, images) : on saute quand même, puis on se recale
+    setTimeout(() => { jump(startCh); setTimeout(() => { jump(startCh); setReady(true); }, 380); }, 60);
+  }, [pages]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready) return; const t = setTimeout(() => setReady(true), 1200); return () => clearTimeout(t); }, [ready]);
   // Où en est le lecteur : le chapitre affiché et la part lue (pour « Reprendre » et la musique du chapitre)
   const progR = useRef(onProgress); progR.current = onProgress;
-  useEffect(() => { if (!progR.current || !flow.current) return; try { const g = geom(); const x = spread * g.step + g.pad + 2 + g.step * (g.p - 1); let ci = 0; flow.current.querySelectorAll("[data-ch]").forEach((el) => { const n = Number(el.dataset.ch); if (!Number.isNaN(n) && el.offsetLeft <= x) ci = n; }); progR.current(ci, Math.min(1, (spread + per) / Math.max(1, pages))); } catch (_) {} }, [spread, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
+  // On donne : le chapitre affiché, la part lue du livre, la part lue du chapitre et la première phrase de la page.
+  useEffect(() => {
+    if (!progR.current || !flow.current) return;
+    try {
+      const g = geom(); const pg = (el) => Math.max(0, Math.round((el.offsetLeft - g.pad) / g.step));
+      const x = spread * g.step + g.pad + 2 + g.step * (g.p - 1);
+      const chs = [...flow.current.querySelectorAll("[data-ch]")].filter((el) => !Number.isNaN(Number(el.dataset.ch)));
+      let ci = 0; let k = 0; chs.forEach((el, j) => { if (el.offsetLeft <= x) { ci = Number(el.dataset.ch); k = j; } });
+      const a = chs[k] ? pg(chs[k]) : 0; const b = chs[k + 1] ? pg(chs[k + 1]) : pages;
+      const inCh = Math.max(0, Math.min(1, (spread + per - a) / Math.max(1, b - a)));
+      const left = spread * g.step + g.pad - 4; const first = [...flow.current.querySelectorAll(".ax-ch p")].find((el) => el.offsetLeft >= left && el.textContent.trim());
+      const excerpt = first ? first.textContent.trim().split(/(?<=[.!?…])\s/)[0].slice(0, 160) : "";
+      progR.current(ci, Math.min(1, (spread + per) / Math.max(1, pages)), { inCh, excerpt, page: spread });
+    } catch (_) {}
+  }, [spread, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
   const cueR = useRef(onCue); cueR.current = onCue;
   const doneR = useRef(false); // arrivé à la dernière page : le livre passe dans « Lus »
   useEffect(() => { if (!doneR.current && pages > 2 && page + per >= pages && onDone) { doneR.current = true; onDone(); } }, [page, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -555,7 +575,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
       </header>
       <div className="ax-stage">
         <button className="ax-turn l" onClick={() => go(-1)} disabled={spread === 0} aria-label="Page précédente"><IoArrowBack size={20} /></button>
-        <div ref={bookEl} className={"ax-book" + (per === 1 ? " single" : "")} onMouseDown={onMouseDown} onWheel={onWheel} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={() => { drag.current = null; go(0); }}>
+        <div ref={bookEl} className={"ax-book" + (per === 1 ? " single" : "") + (ready ? "" : " ax-pending")} onMouseDown={onMouseDown} onWheel={onWheel} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={() => { drag.current = null; go(0); }}>
           {turn && <i key={turn.k} className={"ax-turnfx " + turn.dir} aria-hidden="true"><b /><em>{turn.dir === "next" ? "▶▶ FF" : "◀◀ REW"}</em></i>}
           <div className="ax-flow" ref={flow} onScroll={() => { try { if (drag.current?.on || anim.current) return; const g = geom(); const want = Math.round(spread * g.step); if (Math.abs(g.el.scrollLeft - want) > 2) g.el.scrollLeft = want; } catch (_) {} }}>
             {body}

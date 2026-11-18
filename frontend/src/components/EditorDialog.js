@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset, assetUrl, createJournalEntry } from "@/lib/api";
 import PageWriter from "@/components/PageWriter";
 import { WORLD_STYLES, worldStyleOf, usePosterAccent } from "@/components/nexus/world";
+import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexandrie/looks";
+import { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
 import "@/components/editor.css";
 
 /*
@@ -15,7 +17,7 @@ import "@/components/editor.css";
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
-  poster: "", accent: "", world_style: "", reader_format: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
+  poster: "", accent: "", world_style: "", reader_format: "", reader_look: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
   launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
   intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
@@ -392,6 +394,19 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           {units && <Field label="Nom de la liste" hint="Chapitres, Tomes, Saisons…"><input className="rl-in" data-testid="editor-unit-label" value={form.unit_label || ""} onChange={(e) => set("unit_label", e.target.value)} placeholder={form.launch_type === "episodes" ? "Épisodes" : "Chapitres"} /></Field>}
         </div>
         {(units || form.launch_type === "reader") && <Field label="Lecture (expérience Nexus)" hint="Le lecteur d'Alexandrie habille les chapitres en livre, en cassette ou en disque. Auto : selon le type de l'œuvre."><Seg value={form.reader_format || ""} onChange={(v) => set("reader_format", v)} options={[["", "Auto"], ["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]]} testid="editor-reader-format" /></Field>}
+        {(units || form.launch_type === "reader") && (
+          <div className="rl-f wide">
+            <span className="rl-lbl">Page du lecteur · ambiances d'Alexandrie</span>
+            <div className="rl-looks" data-testid="editor-reader-look">
+              {[["", null], ...Object.entries(BOOK_LOOKS)].map(([k, L]) => { const lk = L || BOOK_LOOKS[LOOK_OF_WORLD[ws]] || BOOK_LOOKS.didone; return (
+                <button type="button" key={k || "auto"} className={"rl-look" + ((form.reader_look || "") === k ? " on" : "")} onClick={() => set("reader_look", k)} title={k ? BOOK_LOOK_INFO[k] || k : "D'après le thème du monde"} data-testid={`editor-look-${k || "auto"}`}>
+                  <span className="rl-look-pg" style={{ background: lk.p, color: lk.ink, "--la": lk.acc }}><b>{lk.orn}</b><i /><i /><i /></span>
+                  <small>{k ? k[0].toUpperCase() + k.slice(1) : `Auto · ${LOOK_OF_WORLD[ws] || "didone"}`}</small>
+                </button>
+              ); })}
+            </div>
+          </div>
+        )}
         {form.launch_type === "reader" && <Field label="Texte à lire" wide><textarea className="rl-in" rows={8} data-testid="editor-launch-content" value={form.launch_content} onChange={(e) => set("launch_content", e.target.value)} /></Field>}
         {form.launch_type === "link" && <Field label="Adresse" wide><input className="rl-in" data-testid="editor-launch-url" value={form.launch_url} onChange={(e) => set("launch_url", e.target.value)} placeholder="https://…" /></Field>}
         {form.launch_type === "film" && (

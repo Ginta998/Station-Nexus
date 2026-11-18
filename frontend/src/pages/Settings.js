@@ -901,7 +901,7 @@ export default function Settings() {
   const ti = Math.max(0, tabs.findIndex((t) => t.key === tab));
   return (
     // Les paramètres de la station, rangés comme l'atelier de l'œuvre (esprit Rhine Lab) : sections numérotées à gauche
-    <div className={"rl rl-set" + (setDark ? " rl-dark" : "")} data-testid="settings-page">
+    <div className={"rl rl-set" + (setDark ? " rl-dark" : "")} style={{ "--rl-acc": "var(--brand)" }} data-testid="settings-page">
       <header className="rl-top">
         <button type="button" className="rl-ico" data-testid="settings-back" onClick={() => { sfx("back"); nav("/"); }} aria-label="Retour à l'accueil"><IoArrowBack size={18} /></button>
         <div className="rl-brand"><small>RHINE LAB · PARAMÈTRES DE LA STATION</small><b>Paramètres</b></div>

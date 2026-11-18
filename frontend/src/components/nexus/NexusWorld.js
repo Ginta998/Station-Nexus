@@ -42,6 +42,11 @@ export default function NexusWorld(p) {
   const unitWord = item.launch_type === "chapters" ? "chapitre" : "épisode";
   const unitsLabel = item.unit_label || (item.launch_type === "chapters" ? "Chapitres" : "Épisodes");
 
+  // Transition d'entrée propre au thème (rideau, bande qui défile, encre qui se répand…)
+  const [intro, setIntro] = useState(() => !(typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches));
+  useEffect(() => { const t = setTimeout(() => setIntro(false), 1800); return () => clearTimeout(t); }, []);
+  const INTRO_TXT = { vhs: "▶ PLAY", arcade: "INSERT COIN", cinema: item.title, yorha: "CONNEXION", sengoku: item.kanji || "", cristal: "", hero: "", eve: "", cathedrale: "", couronne: "", trait: "", survivance: "" };
+
   // ---------- la pile d'écrans ----------
   const [stack, setStack] = useState([{ k: "home", sel: 0, n: 0 }]);
   const [leaving, setLeaving] = useState(null); // l'écran qui s'en va, le temps de son animation
@@ -179,16 +184,20 @@ export default function NexusWorld(p) {
   );
   const Prog = () => (progress ? <div className="nw-prog"><span>{progress.label}</span><b><i style={{ width: `${Math.round(progress.ratio * 100)}%` }} /></b></div> : null);
   const year = new Date(item.created_at || Date.now()).getFullYear();
-  // « Reprendre » avec le visuel du chapitre ou de l'épisode en cours : le menu vit
+  // Deux accès rapides : « Reprendre » (là où l'on s'est arrêté, avec le visuel et la première phrase de la page)
+  // et « Dernière sortie » (le dernier chapitre ou épisode publié), pour y aller en un geste.
+  const lastIdx = isUnits && !item.coming_soon ? units.length - 1 : -1;
+  const Card = ({ k, kicker, title, sub, img, ratio, excerpt, onGo, testid }) => (
+    <button className={"nw-qc q-" + k} onClick={onGo} data-testid={testid}>
+      <span className="nw-qc-img" style={img ? { backgroundImage: `url(${img})` } : undefined}><i>{k === "new" ? "NOUVEAU" : "▶"}</i></span>
+      <span className="nw-qc-t"><small>{kicker}</small><b>{title}</b>{excerpt ? <q>{excerpt}</q> : <em>{sub}</em>}{ratio != null && <i><u style={{ width: `${Math.round(ratio * 100)}%` }} /></i>}</span>
+    </button>
+  );
   const Resume = () => {
-    if (current == null || !progress) return Prog();
-    const u = units[current] || {}; const img = u.image || cover || bg;
-    return (
-      <button className="nw-resume" onClick={() => openUnit(current, { resume: true })} data-testid="nw-resume-card">
-        <span className="nw-resume-img" style={img ? { backgroundImage: `url(${img})` } : undefined} />
-        <span className="nw-resume-t"><small>REPRENDRE</small><b>{u.title || progress.label}</b><em>{progress.label}</em><i><u style={{ width: `${Math.round(progress.ratio * 100)}%` }} /></i></span>
-      </button>
-    );
+    const cards = [];
+    if (current != null && progress) { const u = units[current] || {}; cards.push(<Card key="r" k="resume" kicker="REPRENDRE" title={u.title || progress.label} sub={progress.label} img={u.image || cover || bg} ratio={progress.inUnit ?? progress.ratio} excerpt={progress.excerpt} onGo={() => openUnit(current, { resume: true })} testid="nw-resume-card" />); }
+    if (lastIdx >= 0 && lastIdx !== current && units.length > 1) { const u = units[lastIdx] || {}; cards.push(<Card key="n" k="new" kicker="DERNIÈRE SORTIE" title={u.title || `${unitWord[0].toUpperCase() + unitWord.slice(1)} ${lastIdx + 1}`} sub={`${unitWord[0].toUpperCase() + unitWord.slice(1)} ${lastIdx + 1} / ${units.length}`} img={u.image || cover || bg} onGo={() => openUnit(lastIdx)} testid="nw-latest-card" />); }
+    return cards.length ? <div className={"nw-quick n" + cards.length}>{cards}</div> : Prog();
   };
 
   // ---------- l'écran d'accueil : une mise en page par ambiance ----------
@@ -202,7 +211,6 @@ export default function NexusWorld(p) {
           {img && <span className="nw-win-img" style={{ backgroundImage: `url(${img})` }} />}
           <div className="nw-win-txt">
             <p className="nw-desc">{cur.desc || item.synopsis}</p>
-            {(cur.id === "resume" || cur.id === "launch") && Resume()}
           </div>
         </div>
       </section>
@@ -215,7 +223,7 @@ export default function NexusWorld(p) {
   </>);
   // l'écran d'accueil : une mise en page par thème, la même fenêtre partout
   const Home = (c) => {
-    const phoneResume = <div className="nw-phone-resume">{Resume()}</div>;
+    const phoneResume = <div className="nw-quickwrap">{Resume()}</div>;
     switch (ws) {
       case "cinema": return (
         <div className="nw-home h-cinema">
@@ -515,6 +523,7 @@ export default function NexusWorld(p) {
         <span className="nw-depth">{"◆".repeat(stack.length)}{"◇".repeat(Math.max(0, 3 - stack.length))}</span>
       </footer>
       <ContextMenuHost />
+      {intro && <div className={"nw-intro i-" + ws} aria-hidden="true" onClick={() => setIntro(false)}><span className="a" /><span className="b" /><b>{INTRO_TXT[ws]}</b></div>}
     </div>
   );
 }

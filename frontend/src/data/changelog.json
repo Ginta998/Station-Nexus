@@ -1,6 +1,32 @@
 {
-  "version": "0.20",
+  "version": "0.21",
   "patches": [
+    {
+      "v": "0.21",
+      "date": "2026-11-18",
+      "title": "Reprendre, répondre, continuer",
+      "groups": {
+        "Nouveau": [
+          "Accueil de l'œuvre en Nexus : deux cartes, « Reprendre » (le chapitre, la première phrase de ta page et la part lue) et « Dernière sortie » (le dernier chapitre ou épisode publié), sur ordinateur comme sur téléphone.",
+          "Vraie reprise : le lecteur rouvre au chapitre et à la page où tu t'étais arrêté.",
+          "Commentaires dessinés par le thème du monde (lettres, transmissions, high scores…), avec réponses ; la réponse du créateur porte la marque « Auteur ».",
+          "Notification quand quelqu'un répond à ton commentaire (si les notifications sont activées).",
+          "Fin de lecture : écran de fin avec « Laisser un mot à l'auteur » et l'œuvre suivante de la même catégorie.",
+          "Chaque thème a sa transition d'entrée (rideau, insert coin, sceau, iris, encre, éclats…).",
+          "Thème de page : on choisit une des ambiances d'Alexandrie dans l'Atelier › Contenu ; par défaut, celle qui va avec le thème du monde.",
+          "Mode spectateur : « Voir comme un visiteur » dans le menu de la station ; une pastille en bas à gauche pour revenir en admin."
+        ],
+        "Corrigé": [
+          "« Dernière sortie » et les liens vers un chapitre ouvraient parfois le début du livre sur téléphone.",
+          "L'accès rapide ouvrait encore l'ancien lecteur en Nexus : tout passe par le lecteur d'Alexandrie.",
+          "Cathédrale sur téléphone : le menu débordait de l'écran.",
+          "Arcade sur téléphone : « HI-SCORE » chevauchait le titre.",
+          "Le monde se décalait vers la gauche après l'ouverture du menu.",
+          "Paramètres : le bleu des barres et des titres suit maintenant la couleur du thème de la station.",
+          "Répondre à un commentaire sans avoir encore donné son nom : le champ « Ton nom » apparaît dans la réponse."
+        ]
+      }
+    },
     {
       "v": "0.20",
       "date": "2026-11-18",

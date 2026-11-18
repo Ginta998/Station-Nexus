@@ -2,7 +2,7 @@
    ATELIER DE L'ŒUVRE — esprit Rhine Lab : laboratoire clair, filets fins,
    étiquettes en chasse fixe, crochets d'angle, la couleur de l'œuvre en signal.
    ===================================================================== */
-.rl{--rl-card:#fff;--rl-on-ink:#fff;--rl-bg:#eceee9;--rl-panel:#fafaf7;--rl-ink:#15171a;--rl-mute:#6a6f74;--rl-hair:rgba(21,23,26,.12);--rl-hair2:rgba(21,23,26,.22);--rl-acc:#2bb3a3;
+.rl{--rl-card:#fff;--rl-on-ink:#fff;--rl-bg:#eceee9;--rl-panel:#fafaf7;--rl-ink:#15171a;--rl-mute:#6a6f74;--rl-hair:rgba(21,23,26,.12);--rl-hair2:rgba(21,23,26,.22);--rl-acc:var(--brand,#2bb3a3);
   --rl-mono:"JetBrains Mono","Space Mono",ui-monospace,monospace;--rl-head:"Space Grotesk","Manrope",sans-serif;--rl-body:"Manrope","Inter",system-ui,sans-serif;
   /* les composants de la station posés dedans (historique…) prennent les couleurs du labo */
   --text-primary:var(--rl-ink);--text-secondary:var(--rl-mute);--border-c:var(--rl-hair2);--bg-primary:var(--rl-panel);--bg-secondary:#fff;
@@ -299,3 +299,13 @@ textarea.rl-in{resize:vertical;line-height:1.6}
 .rl-set .rl-main h2.font-display,.rl-set .rl-main h3{color:var(--rl-ink)}
 @media (max-width:1100px){.rl.rl-set{grid-template-columns:200px minmax(0,1fr)}}
 @media (max-width:760px){.rl.rl-set{grid-template-columns:1fr}}
+/* Choix de la page du lecteur (ambiances d'Alexandrie) */
+.rl-looks{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.rl-look{display:flex;flex-direction:column;gap:5px;padding:5px;border:1px solid var(--rl-hair2);background:var(--rl-card);color:var(--rl-ink);font:inherit;cursor:pointer;transition:.15s}
+.rl-look:hover{border-color:var(--rl-ink)}
+.rl-look.on{border-color:var(--rl-acc);box-shadow:0 0 0 2px var(--rl-acc)}
+.rl-look-pg{position:relative;display:flex;flex-direction:column;gap:4px;padding:8px 8px 10px;aspect-ratio:3/4;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.rl-look-pg b{font-size:15px;line-height:1;color:var(--la);margin-bottom:4px}
+.rl-look-pg i{display:block;height:3px;background:currentColor;opacity:.45}
+.rl-look-pg i:nth-of-type(2){width:80%}.rl-look-pg i:nth-of-type(3){width:60%;background:var(--la);opacity:.9}
+.rl-look small{font:600 10px/1.2 var(--rl-mono);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

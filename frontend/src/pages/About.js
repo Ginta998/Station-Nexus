@@ -85,7 +85,11 @@ export default function About() {
           {edit ? (
             <input data-testid="about-title-input" value={draft?.title || ""} onChange={(e) => set("title", e.target.value)} className="w-full font-display text-4xl md:text-6xl px-3 py-2 border outline-none" style={btn} />
           ) : (
+            <>
+            <p className="lab-kick">STATION NEXUS <i>/</i> À PROPOS <b>A-01</b></p>
             <h1 className="font-display text-4xl md:text-6xl leading-tight" style={{ textShadow: "0 2px 24px rgba(0,0,0,0.6)" }}>{data?.title}</h1>
+            <span className="lab-rule" aria-hidden="true" />
+            </>
           )}
         </div>
       </div>

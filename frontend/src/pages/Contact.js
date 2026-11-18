@@ -62,7 +62,9 @@ export default function Contact() {
             </>
           ) : (
             <>
+              <p className="lab-kick">STATION NEXUS <i>/</i> CONTACT <b>C-01</b></p>
               <h1 className="font-display text-4xl md:text-5xl" style={{ color: "var(--text-primary)" }} data-testid="contact-name">{s.name}</h1>
+              <span className="lab-rule" aria-hidden="true" />
               <p className="mt-3 max-w-md leading-relaxed" style={{ color: "var(--text-secondary)" }} data-testid="contact-bio">{s.bio}</p>
             </>
           )}

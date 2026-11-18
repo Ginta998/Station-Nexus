@@ -92,7 +92,11 @@ export default function SupportPage() {
             {edit ? (
               <input data-testid="support-title-input" value={draft?.page_title || ""} onChange={(e) => setDraft((d) => ({ ...d, page_title: e.target.value }))} className="w-full font-display text-3xl md:text-5xl mb-3 px-3 py-2 border outline-none" style={btn} />
             ) : (
+              <>
+              <p className="lab-kick">STATION NEXUS <i>/</i> SOUTIEN <b>S-01</b></p>
               <h1 className="font-display text-3xl md:text-5xl mb-3 leading-tight">{plan?.page_title}</h1>
+              <span className="lab-rule" aria-hidden="true" />
+              </>
             )}
             {edit ? (
               <textarea data-testid="support-body-input" rows={6} value={draft?.page_body || ""} onChange={(e) => setDraft((d) => ({ ...d, page_body: e.target.value }))} className="w-full px-3 py-2 border outline-none resize-none" style={btn} />
