@@ -1,6 +1,16 @@
 {
-  "version": "0.54.1",
+  "version": "0.54.2",
   "patches": [
+    {
+      "v": "0.54.2",
+      "date": "2026-11-19",
+      "title": "Le magnétoscope plus lisible",
+      "groups": {
+        "Corrigé": [
+          "Monde Magnétoscope : sur téléphone, l'écran prend toute la largeur (plus de téléviseur dans l'écran) ; ailleurs, un cadre plus fin. Fond plus sombre, lignes de balayage plus légères, texte du menu et des descriptions sans dédoublement rouge et bleu. Le « ▶ PLAY SP » a sa propre bande en haut et ne passe plus sur le titre."
+        ]
+      }
+    },
     {
       "v": "0.54.1",
       "date": "2026-11-19",

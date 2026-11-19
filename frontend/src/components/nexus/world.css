@@ -1568,3 +1568,25 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
   .nw-sup-head .nw-rt{overflow-wrap:anywhere}
   .nw-sup-adm{max-width:100%;white-space:normal;text-align:left}
 }
+
+/* Magnétoscope, lisibilité (0.54.2) : plus d'écran dans l'écran sur téléphone, un cadre plus fin ailleurs,
+   un fond plus sombre, des lignes de balayage plus légères, et le texte courant sans dédoublement de couleurs.
+   Le « ▶ PLAY SP » a sa propre bande en haut : il ne passe plus sur le titre. */
+.ws-vhs .nw-stage{margin:0 max(8px,1.4vw);border-radius:16px;box-shadow:0 0 0 3px #1c1c20,0 24px 60px rgba(0,0,0,.7),inset 0 0 50px rgba(0,0,0,.8);background:linear-gradient(rgba(4,8,14,.82),rgba(4,8,14,.94)),var(--bgimg,#061018) center/cover}
+.ws-vhs .nw-stage::after{background:repeating-linear-gradient(0deg,rgba(0,0,0,.13) 0 1px,transparent 1px 4px),radial-gradient(ellipse at center,transparent 70%,rgba(0,0,0,.45))}
+.ws-vhs .nw-title{text-shadow:1.5px 0 rgba(255,0,80,.45),-1.5px 0 rgba(0,200,255,.45)}
+.ws-vhs .nw-menu button,.ws-vhs .nw-desc,.ws-vhs .nw-tag,.ws-vhs .nw-k{text-shadow:none}
+.ws-vhs .nw-menu button{color:#eef5ff}
+.ws-vhs .nw-tag,.ws-vhs .nw-desc{color:#dbe7fb}
+.ws-vhs .nw-osd{top:14px;font-size:clamp(18px,1.8vw,24px);text-shadow:1px 0 rgba(255,0,80,.5),-1px 0 rgba(0,200,255,.5)}
+.ws-vhs .nw-scr,.ws-vhs .nw-split{padding-top:max(58px,calc(14px + 2.6em))}
+.ws-vhs .nw-scr>.nw-homewrap{padding-top:56px}
+@media (max-width:760px){
+  .ws-vhs .nw-stage{margin:0;border-radius:0;box-shadow:none}
+  .ws-vhs .nw-stage::after{border-radius:0}
+  .ws-vhs .nw-scr{padding:56px 14px max(18px,env(safe-area-inset-bottom))!important}
+  .ws-vhs .nw-scr>.nw-homewrap{padding:48px 14px 0}
+  .ws-vhs .nw-osd{position:absolute;top:12px;font-size:17px}
+  .ws-vhs .nw-osd.l{left:14px}.ws-vhs .nw-osd.r{right:14px;max-width:46%}
+  .ws-vhs .nw-title{font-size:clamp(40px,11vw,60px);line-height:.95}
+}
