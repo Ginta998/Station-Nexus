@@ -5,7 +5,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { playPageTurn } from "@/lib/sound";
 import { createPortal } from "react-dom";
-import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
+import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline, IoExpandOutline, IoContractOutline, IoImagesOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
@@ -336,9 +336,9 @@ const artList = (term, kind) => once(`sgdb|${term}|${kind}`, () => atelierApi.sg
 const getJ = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
 const nrm = (x) => String(x || "").toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "");
 // « anime:Psycho-Pass », « manga:Berserk » : la fiche la plus proche du titre, puis toutes ses images (affiches, couvertures des tomes)
-const malList = (type, q) => once(`mal|${type}|${q}`, async () => {
+const malList = (type, q, strict = false) => once(`mal|${type}|${q}|${strict}`, async () => {
   const d = await getJ(`https://api.jikan.moe/v4/${type}?q=${encodeURIComponent(q)}&limit=6&sfw=true`);
-  const xs = d.data || []; const hit = xs.find((x) => [x.title, x.title_english, ...(x.titles || []).map((t) => t.title)].some((t) => nrm(t) === nrm(q))) || xs[0];
+  const xs = d.data || []; const hit = xs.find((x) => [x.title, x.title_english, ...(x.titles || []).map((t) => t.title)].some((t) => nrm(t) === nrm(q))) || (strict ? null : xs[0]);
   if (!hit) return [];
   await new Promise((r) => setTimeout(r, 450)); // Jikan : trois appels par seconde au plus
   const p = await getJ(`https://api.jikan.moe/v4/${type}/${hit.mal_id}/pictures`);
@@ -386,6 +386,55 @@ export async function planArt(book, term, cover) {
     else { const o = lists[other].find((x) => !used.has(artKey(x))); if (o) take(b, o, other); else out.set(b.si, { hide: true }); }
   });
   return out;
+}
+// Wikimedia Commons : portraits, gravures, photos d'archives libres (pour l'histoire, la philosophie, la musique…)
+const commonsList = (q) => once(`commons|${q}`, async () => {
+  const d = await getJ(`https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(q + " filetype:bitmap")}&gsrlimit=40&prop=imageinfo&iiprop=url%7Cmime%7Csize%7Cextmetadata&iiurlwidth=1280`);
+  const txt = (h) => String(h || "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+  return Object.values(d.query?.pages || {}).sort((a, b) => (a.index || 0) - (b.index || 0)).map((p) => p.imageinfo?.[0]).filter((i) => i && /image\/(jpeg|png)/.test(i.mime) && i.width >= 600)
+    .map((i) => { const m = i.extmetadata || {}; const who = txt(m.Artist?.value).slice(0, 60); const lic = txt(m.LicenseShortName?.value);
+      return { id: i.url, url: i.thumburl || i.url, src: "commons", page: i.descriptionurl, credit: ["Wikimedia Commons", who, lic].filter(Boolean).join(" · ") }; });
+});
+const CREDIT = { sgdb: "SteamGridDB", mal: "MyAnimeList", ol: "Open Library", commons: "Wikimedia Commons" };
+// Les sources essayées pour illustrer un livre automatiquement : celles du livre (ligne ILLUSTRATIONS),
+// sinon, pour le Lore, SteamGridDB, MyAnimeList (titre exact) et Open Library ; pour les autres salles, Wikimedia Commons.
+const autoSources = (book, term) => book.pics?.length ? picSources(book, term)
+  : fmtOf(book) === "vhs" || book.room === "lore" ? [["sgdb", term], ["anime!", book.title], ["manga!", book.title], ["ol", book.title]]
+  : [["commons", book.title], ...(book.sub ? [["commons", `${book.title} ${book.sub}`]] : [])];
+async function poolOf(book, term) {
+  const out = [];
+  for (const [k0, q] of autoSources(book, term)) {
+    const k = k0.replace("!", ""); const strict = k0.endsWith("!");
+    let xs = null;
+    if (k === "sgdb") { const [h, g] = [await artList(q, "heroes"), await artList(q, "grids")]; xs = []; for (let i = 0; i < Math.max(h?.length || 0, g?.length || 0); i++) { if (h?.[i]) xs.push(h[i]); if (g?.[i]) xs.push(g[i]); } }
+    else if (k === "anime" || k === "manga") xs = await malList(k, q, strict);
+    else if (k === "ol") xs = await olList(q);
+    else if (k === "commons") xs = await commonsList(q);
+    (xs || []).forEach((a) => out.push({ ...a, credit: a.credit || [CREDIT[a.src], a.author && `par ${a.author}`].filter(Boolean).join(" · ") }));
+  }
+  return out;
+}
+// Illustrer un livre : une image par chapitre qui n'en a pas, posée après le premier paragraphe, jamais deux fois la même
+// (ni une image déjà dans le livre, ni la couverture). Renvoie le texte complet (en-tête compris), prêt à relire et enregistrer.
+export async function autoIllustrate(text, book, cover) {
+  const term = book.art || sgdbTerm(book);
+  const plan = await planArt(book, term, cover).catch(() => new Map());
+  const used = new Set([cover].filter(Boolean));
+  book.chapters.flatMap((c) => c.blocks).forEach((b) => { if (b.t === "img") used.add(b.src); const p = plan.get(b.si); if (p?.a) { used.add(p.a.url); used.add(p.a.thumb); } });
+  const pool = (await poolOf(book, term)).filter((a) => { const k = a.url; if (used.has(k) || used.has(a.thumb)) return false; used.add(k); return true; });
+  const cut = text.search(/^\s*(-{3,}\s*$|# )/m); const head = cut > 0 ? text.slice(0, cut) : ""; const body = cut > 0 ? text.slice(cut) : text;
+  const blocks = body.split(/\n\s*\n/);
+  const heads = blocks.map((b, i) => (b.trim().startsWith("# ") ? i : -1)).filter((i) => i >= 0);
+  const ins = new Map(); let n = 0;
+  heads.forEach((h, ci) => {
+    const end = ci + 1 < heads.length ? heads[ci + 1] : blocks.length;
+    if (blocks.slice(h, end).some((b) => /^\s*@(art|img) /.test(b))) return;
+    const pos = blocks.findIndex((b, j) => j > h && j < end && b.trim() && !/^\s*(##? |@|> |!! )/.test(b));
+    if (pos < 0 || n >= pool.length) return;
+    const a = pool[n++]; ins.set(pos, `@img ${a.url} |  | ${a.credit.replace(/\|/g, "/")}`);
+  });
+  const out = blocks.flatMap((b, i) => (ins.has(i) ? [b, ins.get(i)] : [b])).join("\n\n");
+  return { text: head + out, added: ins.size, found: pool.length, chapters: heads.length };
 }
 function ArtFig({ b, term, si, pick }) {
   const [bad, setBad] = useState(false);
@@ -447,7 +496,7 @@ function YtFig({ b, onSwap, onRemove, si }) {
   );
 }
 
-export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path, noPdf = false, onEditChapter }) {
+export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path, noPdf = false, onEditChapter }) {
   const { sfx } = useApp();
   const flow = useRef(null);
   const spreadR = useRef(0); const stepR = useRef(0); const glide = useRef(0);
@@ -690,6 +739,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
         <span className="grow" />
         {book.mine && !book.src ? onEdit && <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
           : onModify && <button className="ax-rb" onClick={onModify} title="Modifier le texte, les images, les vidéos" data-testid="alex-modify"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
+        {onIllustrate && !(book.mine && !book.src) && <button className="ax-rb" onClick={onIllustrate} title="Ajouter une image à chaque chapitre qui n'en a pas (SteamGridDB, MyAnimeList, Open Library, Wikimedia Commons), jamais deux fois la même" data-testid="alex-illustrate"><IoImagesOutline size={15} /> <span>Illustrer</span></button>}
         {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} title="Notes (touche N)" data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
         {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music" title={radio.pl ? radio.info?.title || radio.pl.title : "Musique"}><IoMusicalNotes size={15} /> <span>{radio.pl ? <span className="ax-rb-now">{radio.info?.title || radio.pl.title}</span> : "Musique"}</span></button>}
         {!radio && workMusic && <button className={"ax-rb" + (workMusic.playing ? " on" : "")} onClick={workMusic.toggle} title={workMusic.playing ? "Mettre la musique en pause" : "Lancer la musique de lecture"} data-testid="alex-work-music">{workMusic.playing ? <IoPause size={15} /> : <IoMusicalNotes size={15} />} <span>{workMusic.playing ? <span className="ax-rb-now">{workMusic.title || "Musique"}</span> : "Musique"}</span></button>}

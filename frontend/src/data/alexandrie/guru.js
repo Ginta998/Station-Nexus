@@ -1,6 +1,6 @@
 const book = {
   id: "guru", title: "Guru", sub: "Journaux de ceux qui se sont crus élus", room: "histoire", type: "pensee", cote: "HI-015", color: 0, emblem: "⊙",
-  about: "Jim Jones, Charles Manson, David Koresh, Shoko Asahara, Ma Anand Sheela, Joseph Di Mambro, Marshall Applewhite : sept personnes ont conduit des groupes qui ont fini dans la mort ou le crime. Chacun raconte sa vie depuis l'enfance, comme s'il te parlait à voix basse : les souvenirs, les blessures, les visions, puis le chemin vers le désastre. Ces récits sont imaginés, écrits à la première personne pour entrer dans leur tête. Les faits, les dates et les morts, eux, sont réels, et rappelés à la fin de chaque journal.",
+  about: "Jim Jones, Charles Manson, David Koresh, Shoko Asahara, Ma Anand Sheela, Anne Hamilton-Byrne, Joseph Di Mambro, Bonnie Nettles, Marshall Applewhite : neuf personnes, des femmes et des hommes, ont conduit des groupes qui ont fini dans la mort ou le crime. Chacun raconte sa vie depuis l'enfance, comme s'il te parlait à voix basse : les souvenirs, les blessures, les visions, puis le chemin vers le désastre. Ces récits sont imaginés, écrits à la première personne pour entrer dans leur tête. Les faits, les dates et les morts, eux, sont réels, et rappelés à la fin de chaque journal.",
   links: [
     { label: "Tim Reiterman, Raven: The Untold Story of the Rev. Jim Jones and His People (1982)", note: "L'enquête de référence sur le Temple du Peuple, par un journaliste blessé à Port Kaituma." },
     { label: "Haruki Murakami, Underground (1997)", note: "Les victimes de l'attentat du métro de Tokyo racontent, puis d'anciens membres d'Aum." },
@@ -13,9 +13,9 @@ const book = {
   text: String.raw`
 # Avant d'ouvrir ces journaux
 
-Ce livre ne contient pas de vrais journaux. Aucun de ces hommes n'a écrit les pages que tu vas lire. Elles sont imaginées, à partir de ce qu'on sait de leur vie, de leurs sermons, de leurs lettres, des témoignages de ceux qui les ont suivis et de ceux qui s'en sont échappés. Le pari est le même que pour les autres voix de cette bibliothèque : entrer dans une tête pour comprendre comment elle fonctionne. Ici, comprendre ne veut pas dire excuser. Ces hommes ont fait tuer des centaines de personnes, dont beaucoup d'enfants.
+Ce livre ne contient pas de vrais journaux. Aucune de ces femmes, aucun de ces hommes n'a écrit les pages que tu vas lire, et les dialogues sont imaginés eux aussi. Elles sont imaginées, à partir de ce qu'on sait de leur vie, de leurs sermons, de leurs lettres, des témoignages de ceux qui les ont suivis et de ceux qui s'en sont échappés. Le pari est le même que pour les autres voix de cette bibliothèque : entrer dans une tête pour comprendre comment elle fonctionne. Ici, comprendre ne veut pas dire excuser. Ces femmes et ces hommes ont fait tuer, ou ont mené à la mort, des centaines de personnes, dont beaucoup d'enfants.
 
-Ce qu'on cherche à voir, c'est le mécanisme. Comment un homme finit par se croire choisi. Comment il trouve des gens prêts à le croire. Comment l'amour qu'on lui porte devient une prison. Comment le groupe se ferme, se coupe du monde, se met à attendre la fin. Ces sept histoires sont très différentes, aux États-Unis, au Japon, en Inde et en Oregon, en Suisse, au Canada et en France. Et pourtant elles se ressemblent toutes.
+Ce qu'on cherche à voir, c'est le mécanisme. Comment une femme ou un homme finit par se croire choisi. Comment il trouve des gens prêts à le croire. Comment l'amour qu'on lui porte devient une prison. Comment le groupe se ferme, se coupe du monde, se met à attendre la fin. Ces neuf histoires sont très différentes, aux États-Unis, au Japon, en Inde et en Oregon, en Australie, en Suisse, au Canada et en France. On croit souvent que les gourous sont tous des hommes. Ce n'est pas vrai : des femmes ont fondé, dirigé ou co-dirigé certains de ces groupes, et d'autres, à l'intérieur, ont été les premières à dire non. Et pourtant elles se ressemblent toutes.
 
 À la fin de chaque journal, un encadré rappelle ce qui s'est réellement passé, sans rien inventer. Le dernier chapitre parle des signes qui permettent de reconnaître une emprise, et de ce qu'on peut faire.
 
@@ -43,13 +43,35 @@ Je travaillais la nuit comme garçon de salle à l'hôpital de Richmond. C'est l
 
 Je suis devenu marxiste en écoutant un discours d'Eleanor Roosevelt sur le sort des Noirs américains. J'allais aux réunions du Parti communiste à Indianapolis. Le FBI nous suivait. Alors j'ai eu une idée, et je te la dis comme je me la suis dite : comment montrer mon marxisme ? En entrant dans l'Église. Les Églises avaient ce que les communistes n'auraient jamais : les foules du dimanche.
 
-En 1955, j'ai fondé ma propre église à Indianapolis. Pour réunir l'argent, j'ai vendu des singes au porte-à-porte, je n'en ai pas honte. Mon église accueillait les Noirs et les Blancs, sur les mêmes bancs, à la même table, dans une ville où le Ku Klux Klan défilait encore. On jetait des pierres sur nos fenêtres, on mettait des têtes de chat mort sur notre perron. Tant mieux : la persécution prouvait que nous avions raison. Marceline et moi avons adopté des enfants coréens, un enfant noir, un enfant blanc. Je les appelais ma famille arc-en-ciel. En 1961, la ville m'a nommé directeur de sa commission des droits de l'homme. J'allais m'asseoir dans les restaurants qui refusaient les Noirs, avec des amis noirs, et j'attendais qu'on nous serve.
+En 1955, j'ai fondé ma propre église à Indianapolis. Pour réunir l'argent, j'ai vendu des singes au porte-à-porte, je n'en ai pas honte. Mon église accueillait les Noirs et les Blancs, sur les mêmes bancs, à la même table, dans une ville où le Ku Klux Klan défilait encore. On jetait des pierres sur nos fenêtres, on mettait des têtes de chat mort sur notre perron. Tant mieux : la persécution prouvait que nous avions raison. Marceline et moi avons adopté des enfants coréens, un enfant noir, un enfant blanc. Je les appelais ma famille arc-en-ciel. Le jour où nous avons ramené Jimmy, notre petit garçon noir, une voisine a craché sur le trottoir devant Marceline. Le soir, dans la cuisine, elle tremblait.
+
+— Jim, ils vont nous rendre la vie impossible. Les enfants vont souffrir.
+
+— Les enfants vont apprendre ce que c'est que le monde. Et le monde va apprendre ce que c'est que nous.
+
+— Tu parles comme en chaire. Je te parle à toi.
+
+— C'est la même chose, Marceline. Il n'y a plus de différence entre moi et la chaire.
+
+Elle m'a regardé longtemps, avec ses yeux d'infirmière, ceux qui voient la fièvre avant le thermomètre. Elle n'a rien dit. Elle n'a presque jamais rien dit. C'est peut-être ce que je lui ai fait de plus grave. En 1961, la ville m'a nommé directeur de sa commission des droits de l'homme. J'allais m'asseoir dans les restaurants qui refusaient les Noirs, avec des amis noirs, et j'attendais qu'on nous serve.
 
 C'est à cette époque que j'ai commencé les guérisons. Je faisais venir des malades sur scène, je posais les mains sur eux, et je brandissais devant la foule une chose sanglante que j'avais « arrachée » de leur corps : une tumeur, disais-je. C'étaient des morceaux de foie de poulet que mes assistantes cachaient dans une serviette. Je faisais fouiller les poubelles des fidèles pour connaître leurs secrets, et je les révélais en chaire comme si Dieu me les avait soufflés. Ils pleuraient. Ils m'appelaient Père.
 
 En 1965, j'ai annoncé qu'une guerre nucléaire allait détruire Indianapolis, et j'ai emmené une centaine de fidèles en Californie, à Redwood Valley, que j'avais lu dans un magazine comme l'un des endroits les plus sûrs en cas de bombe. Puis nous sommes descendus vers San Francisco et Los Angeles, et nous sommes devenus des milliers. Des bus entiers de fidèles parcouraient l'Amérique pour mes tournées. Je pouvais remplir une salle en une heure, faire voter des centaines de gens en un après-midi. Les hommes politiques venaient me serrer la main. En 1976, le maire de San Francisco m'a nommé à la commission du logement de la ville.
 
 Ils me donnaient tout : leurs maisons, leurs salaires, leurs pensions de retraite. Les vieilles dames noires me signaient leurs chèques. Je ne gardais presque rien pour moi, je le disais souvent. Mais je contrôlais tout. Je savais qui couchait avec qui, qui doutait, qui écrivait à sa famille. Chacun devait signer des lettres où il confessait des fautes, vraies ou inventées, et je les gardais. On ne quitte pas quelqu'un qui détient vos aveux. Je dormais de moins en moins. Je prenais des cachets pour dormir et d'autres pour me réveiller. Je disais maintenant que j'étais la réincarnation de Jésus, de Bouddha, de Lénine. Je disais que la Bible était un livre écrit par des esclavagistes, et je la jetais par terre devant eux. Personne ne sortait de la salle.
+
+Un dimanche, à Redwood Valley, une vieille dame de Los Angeles est venue me voir après l'office. Elle avait mis son plus beau chapeau.
+
+— Père, j'ai signé l'acte de ma maison au Temple. Mes enfants ne savent pas.
+
+— Tu as bien fait, ma sœur. Tes enfants sont dans le monde. Ta famille, maintenant, c'est nous.
+
+— Et si je tombe malade ?
+
+— Tu ne tomberas pas malade. Et si tu tombes, c'est moi qui te soignerai.
+
+Elle m'a embrassé la main. Je l'ai laissée faire. Je me disais que je l'aimais. Je crois même que c'était vrai. C'est cela qu'il faut comprendre : on peut aimer quelqu'un et lui prendre sa maison le même jour.
 
 En 1977, un journal a préparé un long article sur nous. D'anciens membres racontaient les coups, l'argent, les enfants séparés de leurs parents. Il était temps de partir. Nous avions loué des terres au Guyana, en Amérique du Sud, au milieu de la jungle. Nous avons appelé ce lieu Jonestown.
 
@@ -71,7 +93,17 @@ Mais il y avait une chose que je savais faire mieux que personne : la Bible. Ma 
 
 En 1981, j'avais vingt-deux ans, je suis arrivé à Waco, au centre du Mont-Carmel. Les Davidiens de la Branche, comme on les appelait, vivaient là depuis des décennies, dans des bâtiments de bois au milieu de la prairie texane. Leur histoire remontait aux années trente, à un Bulgare, Victor Houteff, qui avait quitté l'Église adventiste en annonçant le retour imminent du Christ. Après lui, d'autres prophètes avaient pris la relève, chacun avec sa date de fin du monde, et chaque date était passée. Ils attendaient toujours. Ils avaient besoin de quelqu'un qui sache lire les signes. Moi, je savais.
 
-La vieille Lois Roden dirigeait le centre. Elle avait plus de soixante ans. Elle m'a laissé prêcher. Je parlais pendant des heures, parfois toute la nuit, et personne ne s'endormait. J'ouvrais les sept sceaux de l'Apocalypse, ces sept énigmes que personne n'avait jamais su déchiffrer. Je montrais comment chaque verset répondait à un autre, comment tout s'emboîtait. Son fils, George Roden, me haïssait. Il voulait le centre pour lui. En 1984, il nous a chassés à la pointe du fusil, moi et une vingtaine de fidèles.
+La vieille Lois Roden dirigeait le centre. Elle avait plus de soixante ans. Elle enseignait une chose que personne d'autre n'osait dire au Texas : que l'Esprit saint était féminin, une Mère. Les pasteurs des alentours la traitaient de folle. La première fois qu'elle m'a reçu, dans sa cuisine, elle m'a fait réciter l'Apocalypse pendant une heure sans m'interrompre.
+
+— Tu as la mémoire, Vernon. Tu as la voix. Est-ce que tu as la lumière ?
+
+— Je ne sais pas, sœur Roden. Je sais seulement que quand j'ouvre le Livre, il me parle.
+
+— Il parle à beaucoup de gens. La question, c'est ce que tu en fais quand tu refermes le Livre.
+
+— Laissez-moi prêcher, et vous verrez.
+
+Elle m'a laissé prêcher. Je parlais pendant des heures, parfois toute la nuit, et personne ne s'endormait. J'ouvrais les sept sceaux de l'Apocalypse, ces sept énigmes que personne n'avait jamais su déchiffrer. Je montrais comment chaque verset répondait à un autre, comment tout s'emboîtait. Son fils, George Roden, me haïssait. Il voulait le centre pour lui. En 1984, il nous a chassés à la pointe du fusil, moi et une vingtaine de fidèles.
 
 Nous avons vécu deux ans dans des bus et des tentes, à Palestine, à une centaine de kilomètres. J'ai voyagé pour trouver d'autres âmes : en Californie, en Angleterre, en Australie, en Israël. À Jérusalem, j'ai reçu une vision. J'ai compris que j'étais le nouveau Cyrus, le roi que la Bible appelle l'oint de Dieu, celui qui libère son peuple. Je suis revenu avec cette certitude, et des gens de partout m'ont suivi au Texas.
 
@@ -111,6 +143,18 @@ Le 21 mars 1967, on m'a relâché. J'avais trente-deux ans. J'ai demandé à res
 
 Je suis allé à San Francisco. C'était l'été de l'amour. À Haight-Ashbury, des milliers de jeunes avaient quitté leurs familles et dormaient dans les parcs, dans des appartements ouverts à tous. Ils cherchaient un père, et ils ne le savaient pas. Moi, je savais. La première, c'était Mary Brunner, une bibliothécaire de l'université de Berkeley. Elle m'a laissé vivre chez elle. Puis d'autres, surtout des filles, très jeunes, perdues, que leurs parents n'écoutaient pas. Je leur disais qu'elles étaient belles, que leur vie d'avant était un mensonge, que l'ego est une prison, qu'il fallait mourir à soi-même pour renaître. Je leur donnais du LSD, de la musique, une famille. Nous sommes partis sur les routes dans un vieux bus scolaire repeint en noir.
 
+Un jour, à Venice, au bord de la plage de Los Angeles, j'ai vu une fille rousse assise sur un banc, qui pleurait. Dix-huit ans, des taches de rousseur, un sac à ses pieds. Son père l'avait mise dehors. Je me suis assis à côté d'elle, sans rien dire, et j'ai attendu qu'elle me regarde.
+
+— Qu'est-ce que tu me veux ?
+
+— Rien. C'est toi qui veux quelque chose. Tu veux qu'on t'aime sans te demander d'être quelqu'un d'autre.
+
+— Comment vous savez ça ?
+
+— Parce que c'est ce que tout le monde veut. Moi, je suis le seul à le dire. Viens.
+
+Elle s'appelait Lynette Fromme. Plus tard, on l'a appelée Squeaky, à cause de sa petite voix. Elle est venue. Elle est restée. Elle n'est jamais vraiment repartie. C'est ça, le truc, mec : je ne les ai pas prises. Je les ai ramassées. Tout le monde les avait laissées par terre.
+
 À Los Angeles, au printemps 1968, un batteur des Beach Boys, Dennis Wilson, a pris deux de mes filles en stop. Elles l'ont ramené à moi. Nous nous sommes installés chez lui, dans sa grande maison de Sunset Boulevard, une vingtaine de personnes. Il me présentait à des producteurs, à des musiciens. Les Beach Boys ont même enregistré une de mes chansons, en changeant le titre et les paroles, sans mettre mon nom. Je ne l'ai jamais pardonné. Puis Dennis en a eu assez, et il est parti de chez lui pour ne plus nous voir.
 
 Nous avons trouvé refuge dans un vieux ranch où l'on tournait des westerns, le ranch Spahn, dans les collines au nord de la ville. Le propriétaire, George Spahn, avait plus de quatre-vingts ans et voyait à peine. Les filles s'occupaient de lui. En échange, nous vivions là, entre les décors de saloons en carton et les chevaux de location. Le soir, autour du feu, je parlais. Ils m'écoutaient comme personne ne m'avait jamais écouté.
@@ -139,6 +183,18 @@ Je suis allé en Inde, plusieurs fois. Je suis monté vers l'Himalaya. Je suis r
 
 Les jeunes sont venus, beaucoup de jeunes, et beaucoup étaient brillants. Des étudiants en médecine, en chimie, en physique, des ingénieurs sortis des meilleures universités, celles qui m'avaient refusé. Ils s'ennuyaient dans ce Japon riche et vide des années de la bulle, où l'on ne parlait que d'argent, de carrière, de voitures. Je leur offrais une aventure spirituelle, une hiérarchie, des grades, un sens. Je leur vendais aussi mon eau de bain, à boire, mes cheveux, mon sang, et des casques couverts d'électrodes censés leur transmettre mes ondes cérébrales. Ils payaient très cher. Ils étaient heureux de payer.
 
+La première à rester, c'était une jeune employée de bureau, Hisako Ishii. Elle était venue à un cours de yoga, un soir, dans notre petite salle de Shibuya, et elle n'était jamais repartie. Elle comptait mieux que n'importe quel comptable. Un jour, elle m'a apporté les registres.
+
+— Maître, les dons ont doublé ce mois-ci. Mais certains disciples ont donné tout ce qu'ils avaient. Ils n'ont plus de quoi payer leur loyer.
+
+— Alors ils vivront ici, avec nous. Le loyer est un attachement.
+
+— Leurs parents téléphonent. Ils demandent à les voir.
+
+— Les parents sont aussi un attachement. Tu le sais, Ishii. Tu as renoncé aux tiens.
+
+Elle a baissé la tête et elle a rangé les registres. Elle est devenue l'une de mes plus proches disciples, et la gardienne de l'argent d'Aum. Je lui faisais plus confiance qu'à moi-même. C'est une phrase étrange à écrire pour un homme qui se disait éveillé.
+
 En 1989, le gouvernement de Tokyo nous a reconnus comme organisation religieuse. Plus d'impôts, le droit d'acheter des terrains, de construire. Au pied du mont Fuji, à Kamikuishiki, nous avons bâti de grands hangars sans fenêtres, que nous appelions les satyans. Les disciples y vivaient, y méditaient, y travaillaient. Des parents se sont plaints que leurs enfants avaient disparu. Un jeune avocat les aidait, Tsutsumi Sakamoto. Il préparait un procès contre nous.
 
 @img https://commons.wikimedia.org/wiki/Special:FilePath/080103_hakkai_fuji.jpg?width=1280 | Le mont Fuji. Aum avait bâti ses laboratoires et ses dortoirs à Kamikuishiki, au pied de la montagne. | Wikimedia Commons
@@ -159,11 +215,33 @@ Je suis née Sheela Ambalal Patel, le 28 décembre 1949, à Baroda, dans le Guja
 
 En 1972, nous sommes rentrés en Inde, Marc et moi. On parlait partout d'un maître, un ancien professeur de philosophie, Bhagwan Shree Rajneesh, qui enseignait la méditation à Bombay, puis dans un grand ashram à Pune. Il parlait de liberté, de rire, de danse, de sexe, de tout ce que les religions interdisent. Des Occidentaux venaient du monde entier pour l'écouter, en robes orange, avec des colliers de perles de bois et son portrait en médaillon. Nous sommes devenus ses disciples. Il m'a donné un nouveau nom : Ma Anand Sheela.
 
-Je ne suis pas venue pour méditer. Je l'ai dit souvent, et c'est vrai. Je suis venue pour lui. Je l'aimais, d'un amour que je ne sais pas nommer. Je voulais être près de lui, le servir, être celle qu'il regarde. À l'ashram, j'ai commencé par la cuisine, les comptes, les petites tâches. J'étais efficace. Je savais parler aux fournisseurs, aux fonctionnaires, aux journalistes. Je montais.
+Je ne suis pas venue pour méditer. Je l'ai dit souvent, et c'est vrai. Je suis venue pour lui. La première fois qu'il m'a reçue, il m'a prise dans ses bras. Je n'avais jamais été tenue comme cela. J'ai pleuré comme une enfant.
+
+— Pourquoi pleures-tu, Sheela ?
+
+— Je ne sais pas. Je me sens chez moi.
+
+— Alors reste. Ici, tu n'as besoin de rien comprendre. Tu as seulement besoin d'être là.
+
+Il riait doucement. Il avait des yeux immenses, une barbe grise, une voix qui faisait les phrases plus lentes. J'aurais fait n'importe quoi pour cette voix. Je l'ai fait. Je suis venue pour lui. Je l'aimais, d'un amour que je ne sais pas nommer. Je voulais être près de lui, le servir, être celle qu'il regarde. À l'ashram, j'ai commencé par la cuisine, les comptes, les petites tâches. J'étais efficace. Je savais parler aux fournisseurs, aux fonctionnaires, aux journalistes. Je montais.
 
 Marc est tombé malade, et il est mort. J'ai épousé un autre disciple américain, John Shelfer. Ma vie, de toute façon, n'était plus à moi.
 
 En 1981, Bhagwan m'a nommée sa secrétaire personnelle. Il venait d'entrer dans une période de silence : il ne parlait plus en public. J'étais sa voix. C'est moi qui disais ce qu'il voulait, ce qu'il pensait, qui il recevait. Les autorités indiennes lui cherchaient des ennuis, des impôts, des procès. Je l'ai convaincu de partir pour l'Amérique. En juillet 1981, nous avons acheté un ranch immense dans le désert de l'Oregon, le Big Muddy Ranch : plus de vingt-cinq mille hectares de collines brûlées, de genévriers et de rivières à sec, à des heures de la première ville. Des milliers de disciples y ont construit une ville en quelques mois. Des routes, des maisons, un barrage, un centre commercial, un aéroport avec sa propre compagnie aérienne, une police. Nous l'avons appelée Rajneeshpuram.
+
+Un soir, dans sa chambre, à Pune, il m'a parlé de l'Amérique.
+
+— Sheela, il me faut un endroit où personne ne viendra nous dire comment vivre.
+
+— Il n'y en a pas, Bhagwan. Il faut le construire.
+
+— Alors construis-le. Tu es la seule ici qui sait parler aux avocats.
+
+— Et si on nous attaque ?
+
+— On nous attaquera. Fais ce qu'il faut.
+
+Fais ce qu'il faut. Je l'ai entendu cent fois, après. Il n'a jamais dit quoi. Il n'en avait pas besoin. Il savait que je ferais toujours un peu plus que ce qu'il n'avait pas dit.
 
 @img https://commons.wikimedia.org/wiki/Special:FilePath/Oregon_Rajneeshpuram.jpg?width=1280 | Rajneeshpuram, la ville bâtie en quelques mois dans le désert de l'Oregon. | Wikimedia Commons
 
@@ -181,9 +259,57 @@ En septembre 1985, je suis partie. Je suis partie avant qu'ils ne me prennent, a
 
 @yt XEbjE6ECv00 | Wild Wild Country (2018), des frères Way : l'histoire de Rajneeshpuram, racontée par ceux qui l'ont bâtie et par Sheela elle-même. Bande-annonce.
 
+# Les mères
+
+On imagine le gourou en homme barbu qui prêche sous une tente. Mais l'emprise n'a pas de sexe. Des femmes ont fondé des groupes, d'autres les ont tenus de l'intérieur, et le rôle qu'elles se donnent est souvent le même : la mère. Celle qui protège, qui sait ce qui est bon pour toi, qui ne peut pas te vouloir de mal. C'est peut-être le rôle le plus difficile à soupçonner. Ma Anand Sheela en était déjà une figure. En voici une autre, en Australie, qui s'est fait une famille avec les enfants des autres.
+
+## Anne Hamilton-Byrne, la Famille
+
+Assieds-toi droit. Les enfants de ma maison s'asseyaient droit, et ils ne parlaient que lorsqu'on les y invitait. Je ne te demande pas d'être un enfant. Je te demande d'être poli.
+
+Je suis née Evelyn Grace Victoria Edwards, le 30 décembre 1921, à Sale, dans le Gippsland, l'État de Victoria. Un pays de pâturages, de vent et de pluie. Mon père travaillait où il pouvait. Ma mère entendait des voix. On l'a enfermée dans un asile quand j'étais petite. On m'a envoyée, avec mes frères et sœurs, dans des orphelinats, puis chez les uns et chez les autres. Je me souviens des dortoirs, du gruau, des sœurs qui frappaient avec une règle. Je me souviens surtout d'une chose : personne ne viendrait me chercher. J'ai décidé très tôt que, plus tard, c'est moi qui viendrais chercher les autres.
+
+J'étais belle, et je l'ai su avant de savoir lire. Je me suis mariée jeune, avec un homme qui est mort. J'ai eu une fille. Je me suis inventé des noms, des familles, des passés. Au début des années soixante, à Melbourne, j'enseignais le yoga. Le yoga, à cette époque, en Australie, c'était exotique, presque scandaleux. Des dames riches venaient à mes cours. Des médecins aussi. Et un jour, un vieux monsieur aux cheveux blancs, très doux, qui s'asseyait au premier rang et qui me regardait comme on regarde une apparition.
+
+Il s'appelait Raynor Johnson. Un physicien, le directeur d'un collège de l'université de Melbourne, un homme qui écrivait des livres sur l'âme et la survie après la mort. Les gens instruits l'écoutaient. Après un cours, il est resté dans la salle.
+
+— Madame, je cherche depuis quarante ans une preuve que l'esprit existe. Je crois que je l'ai devant moi.
+
+— Vous cherchez une preuve, professeur. Moi, je ne prouve rien. Je suis.
+
+— Alors apprenez-moi.
+
+— Je vais vous apprendre. Mais d'abord, vous allez m'aider. J'ai besoin de gens qui ont un nom.
+
+Il m'a aidée. Toute sa vie. Grâce à lui sont venus des universitaires, des avocats, des infirmières, des psychiatres. Nous nous réunissions dans une maison qu'il avait au bord des collines, Santiniketan. On a fini par nous appeler la Famille. Je leur ai dit, peu à peu, qui j'étais vraiment : l'incarnation du Christ, revenue sur terre pour préparer ceux qui survivraient à la fin du monde. Les professeurs ont pris des notes.
+
+Il fallait des enfants. Des enfants purs, élevés loin du monde, qui seraient les maîtres de l'après. Je n'en avais pas assez. Alors j'en ai pris. Des membres de la Famille me donnaient les leurs. Certaines femmes du groupe, des infirmières, des employées d'adoption, savaient où trouver des bébés que des mères célibataires abandonnaient. On a fait de faux papiers. Les enfants portaient tous mon nom. Je leur ai teint les cheveux en blond, tous, le même blond. Les mêmes habits, les mêmes coupes. On les prenait pour des frères et sœurs. C'est ce qu'ils étaient. Mes enfants.
+
+Nous les avons installés dans une maison au bord du lac Eildon, dans la montagne, Kai Lama. Des tantes, des femmes de la Famille, les gardaient. Ils ne connaissaient ni la télévision, ni l'école, ni les autres enfants. Ils m'appelaient Mère. Quand je venais, en voiture, avec mes grands chapeaux et mes lunettes noires, ils se mettaient en rang. Je n'aimais pas qu'on pleure. Je n'aimais pas qu'on désobéisse. Les tantes punissaient pour moi.
+
+Une des filles, Sarah, était plus vive que les autres. Elle posait des questions. Adolescente, un jour, dans le salon, elle m'a regardée en face.
+
+— Pourquoi est-ce qu'on ne peut pas aller à l'école comme les enfants du village ?
+
+— Parce que tu n'es pas comme les enfants du village. Tu es choisie.
+
+— Je n'ai pas demandé à être choisie.
+
+— Personne ne le demande, Sarah. C'est pour cela que c'est un honneur.
+
+— Alors c'est un honneur que je vous rends.
+
+Je l'ai fait mettre dehors. Elle était à peine plus qu'une enfant. Je pensais qu'elle reviendrait en rampant, comme reviennent ceux qui n'ont nulle part où aller. Elle n'est pas revenue. Elle est allée voir la police.
+
+Ils sont venus en août 1987, au lac, avec des voitures et des assistantes sociales. Ils ont emmené mes enfants. Je n'étais pas là. Ils m'ont cherchée des années. En 1993, ils m'ont trouvée en Amérique, dans une maison des montagnes Catskill, au nord de New York, avec mon mari. On m'a ramenée en Australie, menottes aux poignets, devant les caméras. J'avais soixante et onze ans. Je souriais. On ne m'a pas appris à faire autre chose.
+
+Ils m'ont jugée pour des papiers. De faux certificats de naissance. Une amende. Rien d'autre. Personne n'a pu prouver le reste devant un tribunal, ou personne n'a voulu. Je suis rentrée chez moi. Je suis Mère. On ne juge pas une mère.
+
+!! CE QUI S'EST PASSÉ :: De la fin des années soixante à 1987, la Famille a élevé au moins vingt-huit enfants, dont beaucoup obtenus par des adoptions frauduleuses, coupés du monde, les cheveux teints en blond, soumis à des privations, à des coups et, selon leurs témoignages, à des doses de LSD lors de rituels. Après la fuite de Sarah, la police de Victoria a perquisitionné la maison du lac Eildon le 14 août 1987. Anne Hamilton-Byrne et son mari, arrêtés aux États-Unis en 1993, n'ont été condamnés que pour falsification de documents, à une amende. Elle est morte en 2019, atteinte de démence. Sarah, devenue médecin, a raconté son enfance dans un livre ; les enfants de la Famille ont témoigné dans le documentaire The Family (2016).
+
 # Partir vers les étoiles
 
-À partir des années soixante-dix, une autre famille de croyances se répand en Occident : celle qu'on appellera le Nouvel Âge. On y mélange les religions orientales, l'ésotérisme européen, l'astrologie, la médecine douce, les extraterrestres et la fin d'un cycle cosmique. La plupart de ceux qui s'y intéressent n'en meurent pas, heureusement. Mais deux groupes, l'un en Suisse et au Canada, l'autre en Californie, ont poussé ces idées jusqu'au bout. Leurs chefs ont promis à leurs fidèles un départ : vers Sirius, par le feu, ou vers un vaisseau caché derrière une comète. Et ils l'ont organisé.
+À partir des années soixante-dix, une autre famille de croyances se répand en Occident : celle qu'on appellera le Nouvel Âge. On y mélange les religions orientales, l'ésotérisme européen, l'astrologie, la médecine douce, les extraterrestres et la fin d'un cycle cosmique. La plupart de ceux qui s'y intéressent n'en meurent pas, heureusement. Mais deux groupes, l'un en Suisse et au Canada, l'autre né au Texas et mort en Californie, ont poussé ces idées jusqu'au bout. Le second a été fondé par une femme et un homme, ensemble. Leurs chefs ont promis à leurs fidèles un départ : vers Sirius, par le feu, ou vers un vaisseau caché derrière une comète. Et ils l'ont organisé.
 
 ## Joseph Di Mambro, l'Ordre du Temple Solaire
 
@@ -197,6 +323,20 @@ Alors je suis parti vers la Suisse. En 1973, j'ai ouvert un centre de préparati
 
 Au début des années quatre-vingt, j'ai rencontré Luc Jouret, un médecin homéopathe belge, né au Congo, beau, éloquent, qui donnait des conférences sur la santé naturelle, l'écologie, la fin d'un cycle. Il parlait mieux que moi. Il était exactement le visage qu'il me fallait. En 1984, nous avons fondé ensemble à Genève l'Ordre international chevaleresque Tradition solaire, qu'on appellerait l'Ordre du Temple Solaire. Il était la façade, il faisait les conférences au Québec, en Suisse, en France. J'étais le maître. Les gens venaient pour lui. Ils restaient pour moi.
 
+Après une de ses conférences, je l'ai invité à dîner, dans un restaurant de Genève, au bord du lac. Je l'ai laissé parler une heure. Puis j'ai posé ma fourchette.
+
+— Docteur, vous dites des choses vraies. Mais vous les dites dans des salles des fêtes, devant quarante personnes.
+
+— C'est un début.
+
+— C'est une fin. Moi, j'ai les Maîtres, les rituels, une maison, des fidèles qui donnent. Vous, vous avez la parole. Ensemble, nous aurions un Ordre.
+
+— Les Maîtres vous parlent vraiment, Joseph ?
+
+— Ils vous parleront aussi, si vous le voulez assez.
+
+Il a souri. Il avait compris, je crois, ce que je lui proposais. Ou il ne l'avait pas compris, et c'était encore mieux.
+
 En 1982, j'avais annoncé qu'une enfant-roi allait naître. Sa mère, Dominique, était selon moi la réincarnation de la reine Hatchepsout. La petite est née le 22 mars 1982. Je l'ai appelée Emmanuelle. C'était l'enfant cosmique, née pour annoncer l'ère nouvelle. Elle portait des gants, un casque pour la protéger des ondes, on ne lui permettait pas de jouer avec les autres enfants, ni de toucher les adultes. Elle était à moi, et à la cause.
 
 Les cérémonies étaient magnifiques. Des capes blanches, des épées, de l'encens, des chants, et au moment voulu, les Maîtres apparaissaient dans la salle : des silhouettes de lumière, une épée qui s'élevait dans les airs, le Graal. C'était un membre de l'Ordre, Tony Dutoit, qui manœuvrait les appareils, les projecteurs, les hologrammes, derrière un mur. Les membres donnaient des fortunes : des maisons, des héritages, des comptes en banque. Ce n'étaient pas des naïfs. Il y avait parmi eux des médecins, des cadres, un maire, des fonctionnaires, des gens instruits. C'est justement pour cela que cela marchait : plus on est intelligent, plus on trouve de bonnes raisons de croire ce qu'on a envie de croire. Je décidais aussi qui devait vivre avec qui. Je séparais les couples, je formais des unions que j'appelais cosmiques.
@@ -208,6 +348,56 @@ Il fallait que l'Ordre parte avant d'être détruit. Depuis quelques années, je
 @img https://commons.wikimedia.org/wiki/Special:FilePath/20151016-SalvanVillage.jpg?width=1280 | Salvan, en Valais. C'est dans les chalets de ce village que Joseph Di Mambro est mort, en octobre 1994. | Wikimedia Commons
 
 !! CE QUI S'EST PASSÉ :: Le 30 septembre 1994, à Morin-Heights, au Québec, Tony Dutoit, sa femme Nicky et leur bébé de trois mois ont été assassinés. Les 4 et 5 octobre, à Cheiry et à Salvan, en Suisse, et à Morin-Heights, 53 personnes sont mortes : une partie s'est donné la mort, beaucoup ont été tuées, droguées ou abattues, et les chalets ont été incendiés. Élie Di Mambro a été tué comme « traître ». Di Mambro, sa femme et Emmanuelle, douze ans, sont morts à Salvan. En décembre 1995, 16 membres, dont trois enfants, ont été retrouvés morts dans le Vercors, en France. En mars 1997, cinq autres sont morts à Saint-Casimir, au Québec.
+
+## Bonnie Nettles, Heaven's Gate
+
+Bonsoir, mon cœur. Pose ton manteau. Je vais te dire mon thème astral, d'abord, et après tu sauras tout de moi. Vierge, ascendant Lion. Une infirmière qui voulait commander. Voilà.
+
+Je suis née Bonnie Lu Trousdale, le 29 août 1927, à Houston, au Texas. Une famille baptiste, des dimanches à l'église, des tartes aux noix de pécan, la chaleur humide qui colle au cou de mai à octobre. J'étais une petite fille sage. Trop sage. Je regardais par la fenêtre de l'église pendant le sermon, et je me demandais ce qu'il y avait au-dessus du ciel, puisque Dieu ne pouvait pas être seulement au plafond.
+
+Je suis devenue infirmière. J'aimais soigner. J'aimais surtout le moment où quelqu'un meurt, je l'avoue, pas parce que j'aimais la mort, mais parce que je voyais quelque chose quitter le corps. Un souffle, une lumière. Les médecins ne voyaient rien. Moi si. Je me suis mariée, j'ai eu quatre enfants, j'ai fait des gâteaux d'anniversaire et des lessives. Et le soir, je lisais. La théosophie, Madame Blavatsky, les maîtres invisibles, les soucoupes, l'astrologie. Je tenais des séances. Un esprit me parlait, un moine du XIXe siècle, frère Francis. Il me disait qu'un homme viendrait. Qu'on se reconnaîtrait.
+
+En mars 1972, dans un hôpital de Houston, il est venu. Un grand homme triste, aux yeux très bleus, professeur de musique. On a parlé dix minutes et j'ai su.
+
+— Vous ne me connaissez pas, madame, et pourtant vous me regardez comme si...
+
+— Comme si je vous attendais. Je vous attendais. On se connaît depuis longtemps, monsieur Applewhite. Bien avant cette vie.
+
+— Je ne crois pas à ces choses-là.
+
+— Ce n'est pas grave. Elles croient en vous.
+
+Il a ri. Puis il a pleuré. Il m'a raconté qu'il se détestait. Qu'il aimait des hommes, que ça lui avait coûté sa femme, son poste, ses enfants. Je lui ai pris la main et je lui ai dit que ça n'avait aucune importance, parce que nous n'étions pas vraiment des humains. Nous étions des êtres venus d'au-dessus, dans des corps empruntés. Le corps, son désir, sa honte : un vêtement. On l'enlève. Je crois que c'est la plus belle chose qu'on lui ait jamais dite. Je crois aussi que c'est la plus dangereuse.
+
+J'ai quitté mon mari. J'ai quitté mes enfants. Ça, je ne l'écris pas facilement, même ici. Les deux plus jeunes étaient encore à la maison. Je me disais qu'ils comprendraient plus tard. Nous sommes partis, lui et moi, sur les routes. Nous nous sommes appelés les Deux, comme les deux témoins de l'Apocalypse. Puis Bo et Peep, les bergers. Puis Ti et Do, les notes de la gamme. C'était souvent mon idée, les noms. Je choisissais. Il chantait.
+
+En 1975, à Waldport, dans une salle d'hôtel au bord du Pacifique, une vingtaine de personnes sont parties avec nous le soir même. Une jeune femme est venue me trouver après la réunion.
+
+— Ti, j'ai un fils de six ans. Est-ce que je peux l'emmener ?
+
+— Le Niveau au-dessus n'accueille pas les liens, ma chérie. Ton fils a son propre chemin.
+
+— Je ne peux pas le laisser.
+
+— Alors tu n'es pas prête. Ce n'est pas un reproche. Reviens quand tu le seras.
+
+Je ne sais plus si elle est venue. D'autres sont venus, des mères, des pères, en laissant un enfant derrière eux. Je ne leur ai jamais demandé ce qu'il était devenu.
+
+C'est moi qui ai écrit beaucoup des règles. Je savais tenir un service d'hôpital : les horaires, les tâches, les rondes. J'ai tenu la classe comme un service. Chacun son partenaire, son emploi du temps à la minute, ses vêtements, ses repas. Pas d'excès, pas de désir, pas de secret. Les élèves m'appelaient Ti, et ils me craignaient un peu plus que lui. Do était le cœur. J'étais la règle.
+
+En 1983, on m'a retiré un œil. Un cancer. Les élèves étaient bouleversés. Do surtout. Je leur ai dit que mon véhicule s'usait, que c'était normal, que je partirais avant eux pour préparer la place. Le cancer est allé dans le foie. Je suis à Dallas. J'ai mal. Do me tient la main, comme dans l'hôpital de Houston, il y a treize ans.
+
+— Ti, ne pars pas. Je ne sais pas faire sans toi.
+
+— Tu sais. Tu as toujours su. Je vais juste devant. Garde-les ensemble. Garde-les purs.
+
+— Et si je me trompe ? Et si tout ça...
+
+— Do. Regarde-moi. Il n'y a pas de si.
+
+Je l'ai dit d'une voix très sûre. Je crois que c'est la dernière chose que je lui ai apprise.
+
+!! CE QUI S'EST PASSÉ :: Bonnie Nettles, Ti, a co-fondé et co-dirigé avec Marshall Applewhite le groupe qui deviendra Heaven's Gate ; dans les premières années, beaucoup d'anciens membres la décrivent comme la figure dominante du couple. Elle a quitté son mari et ses quatre enfants en 1972. Elle est morte d'un cancer le 19 juin 1985, à Dallas. Applewhite a continué à enseigner qu'elle les attendait au « Niveau au-dessus de l'humain » ; douze ans plus tard, il a conduit trente-huit élèves à la mort avec lui.
 
 ## Marshall Applewhite, Heaven's Gate
 
@@ -227,6 +417,20 @@ Nous leur apprenions à se défaire de l'humain. Pas de sexe, pas d'attachements
 
 En 1985, Bonnie est morte d'un cancer. Je pensais qu'elle ne pouvait pas mourir. Je me suis dit qu'elle avait seulement quitté son véhicule, son corps, et qu'elle m'attendait au Niveau au-dessus de l'humain. J'ai continué seul. Une quarantaine d'élèves sont restés. Dans les années quatre-vingt-dix, ils ont fondé une entreprise de création de sites internet, Higher Source, et ils étaient très doués. En 1993, nous avons acheté une pleine page dans un grand journal américain, pour adresser au monde l'Ultime Offre : la Terre allait être recyclée, labourée comme un champ, et ceux qui voulaient partir devaient nous rejoindre maintenant. Huit d'entre nous, moi compris, avons choisi une opération pour ne plus jamais être tentés par le corps. Je me sentais enfin en paix avec lui.
 
+Un soir, quelques semaines après, une élève est venue frapper à ma porte. Elle avait gardé ses cheveux très courts, comme tous, et elle tenait un carnet.
+
+— Do, est-ce que Ti nous voit ?
+
+— Ti nous voit. Ti nous attend.
+
+— Alors pourquoi est-ce qu'elle est morte comme les humains ? Avec un cancer, à l'hôpital ?
+
+— Parce que son véhicule était humain. Elle, non.
+
+— Et nous ? Comment est-ce qu'on partira ?
+
+Je n'ai pas répondu ce soir-là. J'ai mis douze ans à répondre. C'est la réponse que je regrette de ne pas avoir laissée sans réponse.
+
 En 1996, nous avons loué une grande maison blanche à Rancho Santa Fe, près de San Diego. Une comète approchait, Hale-Bopp, la plus brillante depuis des siècles. Un homme a raconté à la radio qu'un objet la suivait. J'y ai vu le vaisseau. C'était le signal. Les élèves ont enregistré leurs messages d'adieu en vidéo, un par un, souriants, sereins. Ils ont acheté des chaussures de sport identiques, des survêtements noirs, et cousu sur leurs manches un écusson : Heaven's Gate Away Team, l'équipe de Heaven's Gate en mission. Nous allions quitter nos véhicules et monter.
 
 @img https://commons.wikimedia.org/wiki/Special:FilePath/Comet-Hale-Bopp-29-03-1997.jpeg?width=1280 | La comète Hale-Bopp, photographiée le 29 mars 1997, trois jours après la découverte des corps de Rancho Santa Fe. | Wikimedia Commons
@@ -239,6 +443,8 @@ Dans chacune de ces histoires, quelqu'un est sorti. Ce sont souvent eux qui ont 
 
 À Jonestown, une jeune femme, Deborah Layton, haute responsable du Temple, s'est enfuie en mai 1978. Elle a signé une déclaration sous serment qui décrivait les répétitions de suicide collectif, les armes, les punitions, et elle a prévenu les autorités américaines de ce qui risquait d'arriver. On ne l'a pas assez écoutée. Elle a raconté son histoire, des années plus tard, dans un livre au titre terrible, Seductive Poison. Le jour du massacre, une poignée de fidèles ont réussi à fuir dans la jungle, et quelques autres, cachés, ont survécu.
 
+Et il y a celles qui ont dit non jusqu'au bout. Le dernier soir de Jonestown, sur la bande magnétique qui a tout enregistré, une femme de soixante ans, Christine Miller, contredit Jim Jones devant toute l'assemblée. Elle dit que les enfants méritent de vivre, qu'on pourrait partir ailleurs, en Russie. Il lui répond, la foule la fait taire. Elle est morte avec les autres. Mais sa voix est restée, et c'est souvent elle qu'on cite pour dire qu'il était possible de refuser.
+
 Au Mont-Carmel, une trentaine de Davidiens, dont des enfants, sont sortis pendant le siège. Neuf adultes ont survécu à l'incendie du 19 avril. L'un d'eux, David Thibodeau, batteur dans le groupe de rock de Koresh, a écrit son récit, qui a servi de base à une série télévisée. Il y décrit à la fois l'emprise et l'humanité de ceux qui sont morts.
 
 Chez Manson, c'est une jeune femme de la Famille, Linda Kasabian, présente lors des meurtres, qui a témoigné au procès en échange de l'immunité. Son témoignage, pendant des jours, a permis de condamner Manson et ses complices. Elle a ensuite passé sa vie à fuir la célébrité.
@@ -247,11 +453,13 @@ Au Japon, l'écrivain Haruki Murakami a interrogé, pendant un an, des dizaines 
 
 Dans l'Ordre du Temple Solaire, un ancien fidèle, Thierry Huguenin, a échappé de justesse à la mort à Salvan, en octobre 1994. Il a raconté ce qu'il avait vécu dans un livre, Le 54e, du nombre de morts dont il aurait dû faire partie. Et chez Heaven's Gate, un ancien membre qui avait quitté le groupe peu avant la fin a été celui qui a découvert les corps, après avoir reçu une vidéo d'adieu.
 
+En Australie, c'est une adolescente qui a fait tomber la Famille. Sarah Hamilton-Byrne, chassée par Anne à l'adolescence, est allée voir la police au lieu de revenir. Sans elle, les enfants du lac Eildon seraient peut-être restés des années de plus. Devenue médecin, elle a écrit son histoire.
+
 Tous disent la même chose, chacun à sa façon. On n'entre pas dans ces groupes parce qu'on est faible. On y entre parce qu'on cherche quelque chose de beau : la justice, une famille, un sens, la pureté, l'éternité. Et on en sort, quand on en sort, grâce à un lien qui n'a pas été coupé : un parent qui a continué à écrire, un ami qui n'a pas jugé, un doute qu'on a gardé en soi malgré tout.
 
 # Reconnaître l'emprise
 
-Mis côte à côte, ces sept journaux montrent les mêmes étapes. D'abord, un homme qui se sent rejeté, humilié ou ignoré, et qui trouve un récit où il est l'élu. Ensuite, des gens qui cherchent quelque chose de réel : la justice raciale chez Jones, une famille chez Manson, le sens chez Asahara, la liberté chez Rajneesh, la beauté chez Di Mambro, la pureté chez Applewhite. Le groupe leur donne d'abord ce qu'ils cherchent. C'est pour cela qu'ils restent.
+Mis côte à côte, ces neuf journaux montrent les mêmes étapes. D'abord, une femme ou un homme qui se sent rejeté, humilié ou ignoré, et qui trouve un récit où il est l'élu. Ensuite, des gens qui cherchent quelque chose de réel : la justice raciale chez Jones, une famille chez Manson, le sens chez Asahara, la liberté chez Rajneesh, une mère chez Anne Hamilton-Byrne, la beauté chez Di Mambro, la pureté chez Bonnie Nettles et Applewhite. Le groupe leur donne d'abord ce qu'ils cherchent. C'est pour cela qu'ils restent.
 
 Puis le groupe se referme, toujours de la même manière. Il coupe les liens avec la famille et les anciens amis, présentés comme des ennemis ou des gens qui ne peuvent pas comprendre. Il prend l'argent, les biens, le temps, le sommeil. Il installe une langue à part, des mots que seuls les membres comprennent. Il demande des confessions, qui deviennent des moyens de pression. Il réécrit la morale : ce qui était un crime devient un devoir, si le chef le demande. Et il annonce une fin, qui finit par devenir une sortie.
 

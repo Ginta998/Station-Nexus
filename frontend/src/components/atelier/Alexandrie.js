@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
 import { DEFAULT_COVERS, mergeCovers, sgdbTerm } from "@/data/alexandrie/covers";
-import { IoCheckmarkCircle, IoTimeOutline, IoClipboardOutline, IoDownloadOutline, IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline, IoPlaySkipForward, IoListOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
+import { IoImagesOutline, IoCheckmarkCircle, IoTimeOutline, IoClipboardOutline, IoDownloadOutline, IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline, IoPlaySkipForward, IoListOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
 import { lookOf, WEB_FONTS, fontHref } from "@/data/alexandrie/looks";
 import { SEP, parsePaste, pasteToBook, bookToPaste, nextCote, withCote, setCatalog } from "@/data/alexandrie/paste";
 import AlexPaste from "@/components/atelier/AlexPaste";
@@ -20,7 +20,7 @@ import { useApp } from "@/context/AppContext";
 import { playLaunch, getLaunchSound, useLaunchSync } from "@/lib/launchSound";
 import "@/components/nexus/nexus.css";
 import "@/components/atelier/alexandrie.css";
-import { AlexSearch, CoverDialog, Face, Grid, LS, NOEDITS, Reader, Room, asPaste, bodyEdit, bookNotes, bookToHtml, clean, errText, exportBook, fmtOf, hue, itemToBook, itemToBookRaw, normT, notesItemOf, notesOf, read, splitSrc, volLook, write, ytDel, ytIns, ytSwap } from "@/components/atelier/AlexCore";
+import { AlexSearch, CoverDialog, Face, Grid, LS, NOEDITS, Reader, Room, asPaste, autoIllustrate, bodyEdit, bookNotes, bookToHtml, clean, errText, exportBook, fmtOf, hue, itemToBook, itemToBookRaw, normT, notesItemOf, notesOf, read, splitSrc, volLook, write, ytDel, ytIns, ytSwap } from "@/components/atelier/AlexCore";
 setCatalog(BOOKS);
 // compatibilité : les autres fichiers importaient ces pièces d'ici
 export { Face, Rail, Reader, CoverDialog, htmlToAlexBlocks } from "@/components/atelier/AlexCore";
@@ -87,6 +87,25 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     setPaste({ text: it ? it.fields.alexandrie.src : asPaste(rawBook(b)), item: it, of: it ? undefined : b.id, title: b.title });
   };
   const rawBook = (b) => { const r = rawOf(BOOKS.find((x) => x.id === b.id) || b); return { ...b, ...r }; };
+  // Illustrer automatiquement : une image par chapitre qui n'en a pas, sans doublon ; le texte s'ouvre dans la fenêtre de collage pour relecture
+  const [illBusy, setIllBusy] = useState(false);
+  const illustrate = async (b) => {
+    const it = itemOf(b);
+    if (it && !it.fields?.alexandrie?.src) { toast.info("Ce livre s'écrit dans l'éditeur : ajoute les images depuis l'éditeur, ou copie-colle-le d'abord."); return; }
+    if (illBusy) return; setIllBusy(true);
+    const tid = toast.loading(`Recherche d'images pour « ${b.title} »…`);
+    try {
+      const text = it ? it.fields.alexandrie.src : asPaste(rawBook(b));
+      const parsed = pasteToBook(text, { id: b.id });
+      const r = await autoIllustrate(text, { ...parsed, id: b.id, room: parsed.room || b.room, format: parsed.format || b.format }, covers[b.id]);
+      toast.dismiss(tid);
+      if (!r.added) { toast.info(r.found ? "Chaque chapitre a déjà son image." : "Aucune image libre trouvée pour ce livre. Ajoute une ligne ILLUSTRATIONS (anime:, manga:, ol:, sgdb:) puis réessaie."); return; }
+      setReading(null);
+      setPaste({ text: r.text, item: it, of: it ? undefined : b.id, title: b.title });
+      toast.success(`${r.added} image${r.added > 1 ? "s" : ""} ajoutée${r.added > 1 ? "s" : ""} sur ${r.chapters} chapitres. Vérifie avec « Lire l'aperçu », puis enregistre.`);
+    } catch (e) { toast.dismiss(tid); toast.error("La recherche d'images a échoué : " + (e?.message || "erreur")); }
+    finally { setIllBusy(false); }
+  };
   // Méthode classique : une copie du livre dans l'éditeur de documents
   const modifyInEditor = async (b) => {
     if (b.mine) { setReading(null); open(b.itemId); return; }
@@ -132,6 +151,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     upc && { id: "wish", label: wish.includes(b.id) ? "Ne plus demander" : "Je veux le lire", icon: <IoStarOutline size={14} />, onClick: () => toggleWish(b.id) },
     upc && { id: "up-write", label: "Écrire ce livre", icon: <IoCreateOutline size={14} />, onClick: () => writeUp(b) },
     !upc && { id: "modify", label: b.mine && !b.src ? "Écrire" : "Modifier (copier-coller)", icon: <IoCreateOutline size={14} />, onClick: () => modifyBook(b) },
+    !upc && !(b.mine && !b.src) && { id: "illustrate", label: "Illustrer automatiquement", icon: <IoImagesOutline size={14} />, onClick: () => illustrate(b) },
     !upc && !b.mine && !b.edited && { id: "modify-ed", label: "Modifier dans l'éditeur", icon: <IoPencil size={14} />, onClick: () => modifyInEditor(b) },
     !upc && { id: "copy", label: "Copier le texte du livre", icon: <IoClipboardOutline size={14} />, onClick: () => navigator.clipboard?.writeText(asPaste(b.mine || b.edited ? b : rawBook(b))).then(() => toast.success("Texte copié : il se colle tel quel dans « Coller un livre »"), () => toast.error("La copie n'a pas marché")) },
     "-",
@@ -361,7 +381,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       {readingBook && (readingBook.preview
         ? <Reader key={readingBook.id + readingBook.words} book={readingBook} at={null} radio={radio} cover={readingBook.coverUrl} onClose={() => { sfx?.("close"); setReading(null); }} />
         : <Reader key={readingBook.id} book={readingBook} at={at} startNotes={readNotes} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); setReadNotes(false); }} onEdit={(id) => { setReading(null); open(id); }}
-          onCover={() => setCoverFor(readingBook)} onModify={() => modifyBook(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} onRemoveVideo={(id) => removeVideo(readingBook, id)} onAddVideo={(si, id, cap) => addVideo(readingBook, si, id, cap)}
+          onCover={() => setCoverFor(readingBook)} onModify={() => modifyBook(readingBook)} onIllustrate={() => illustrate(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} onRemoveVideo={(id) => removeVideo(readingBook, id)} onAddVideo={(si, id, cap) => addVideo(readingBook, si, id, cap)}
           onDone={() => setStatus("read", readingBook.id, true)} />)}
     </section>
   );
