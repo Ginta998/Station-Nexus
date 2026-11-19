@@ -196,3 +196,21 @@ export const listNewsletters = () => api.get("/newsletters").then((r) => r.data)
 export const saveNewsletter = (n) => (n.id ? api.put(`/newsletters/${n.id}`, n) : api.post("/newsletters", n)).then((r) => r.data);
 export const deleteNewsletter = (id) => api.delete(`/newsletters/${id}`).then((r) => r.data);
 export const sendNewsletter = (id) => api.post(`/newsletters/${id}/send`).then((r) => r.data);
+
+// ---- Alertes de sortie (« Me prévenir »)
+export const getWatch = (cid) => api.get(`/creations/${cid}/watch`).then((r) => r.data);
+export const watchCreation = (cid, email = "") => api.post(`/creations/${cid}/watch`, { email }).then((r) => r.data);
+export const unwatchCreation = (cid) => api.delete(`/creations/${cid}/watch`).then((r) => r.data);
+
+// ---- Tes chiffres : visites anonymes (un identifiant aléatoire par navigateur, rien d'autre)
+const visitorId = () => { try { let v = localStorage.getItem("nx-vid"); if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem("nx-vid", v); } return v; } catch (_) { return "anon"; } };
+export const hit = (kind, p = {}) => { try { api.post("/stats/hit", { kind, vid: visitorId(), ...p }).catch(() => {}); } catch (_) { /* jamais bloquant */ } };
+export const getStats = (days = 30) => api.get(`/stats?days=${days}`).then((r) => r.data);
+
+// ---- Sauvegarde complète (admin) : le fichier se télécharge
+export const downloadBackup = async () => {
+  const r = await api.get("/admin/backup", { responseType: "blob", timeout: 180000 });
+  const url = URL.createObjectURL(r.data); const a = document.createElement("a");
+  a.href = url; a.download = `station-nexus-${new Date().toISOString().slice(0, 10)}.json`; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+};

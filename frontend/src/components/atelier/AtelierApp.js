@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoExpandOutline, IoContractOutline, IoLibraryOutline, IoMailOutline } from "react-icons/io5";
+import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoExpandOutline, IoContractOutline, IoLibraryOutline, IoMailOutline, IoStatsChartOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAtelier } from "@/lib/atelier";
 import { SoundBtn } from "@/components/StationMenu";
@@ -39,6 +39,7 @@ import { LabDialogHost } from "@/components/atelier/LabDialog";
 import Alexandrie from "@/components/atelier/Alexandrie";
 import JournalView from "@/components/atelier/JournalView";
 import NewsletterView from "@/components/atelier/NewsletterView";
+import StatsView from "@/components/atelier/StatsView";
 import PublishView from "@/components/atelier/PublishView";
 import NetworkView from "@/components/atelier/NetworkView";
 import { IoGitNetworkOutline } from "react-icons/io5";
@@ -187,6 +188,7 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<PiRabbit size={18} />} label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
           <Dock icon={<IoJournalOutline size={17} />} label="Journal de bord" sub="MES COULISSES PUBLIQUES" on={view.name === "journal"} onClick={() => go({ name: "journal" })} testid="atelier-nav-journal" />
+          <Dock icon={<IoStatsChartOutline size={17} />} label="Tes chiffres" sub="CE QUI MARCHE" on={view.name === "stats"} onClick={() => go({ name: "stats" })} testid="atelier-nav-stats" />
           <Dock icon={<IoMailOutline size={17} />} label="Newsletter" sub="LETTRE AUX ABONNÉS" on={view.name === "newsletter"} onClick={() => go({ name: "newsletter" })} testid="atelier-nav-newsletter" />
           <Dock icon={<IoPubIcon size={17} />} label="Publication" sub="ATELIER → STATION" on={view.name === "publish"} onClick={() => go({ name: "publish" })} testid="atelier-nav-publish" />
           <Dock icon={<IoGitNetworkOutline size={17} />} label="Réseau narratif" sub="QUI EST RELIÉ À QUOI" on={view.name === "network"} onClick={() => go({ name: "network" })} testid="atelier-nav-network" />
@@ -225,6 +227,7 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "radio" && <RadioView radio={radio} />}
           {view.name === "alexandrie" && <Alexandrie {...ctx} radio={radio} room={view.room} book={view.book} />}
           {view.name === "newsletter" && <NewsletterView />}
+          {view.name === "stats" && <StatsView />}
           {view.name === "journal" && <JournalView key={view.edit || "j"} initialEdit={view.edit ?? null} />}
           {view.name === "publish" && <PublishView {...ctx} />}
           {view.name === "network" && <NetworkView {...ctx} />}

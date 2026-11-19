@@ -1,6 +1,9 @@
 // Livres collés : un bloc de texte (réglages en tête, puis les chapitres) devient un volume d'Alexandrie,
 // sans passer par le code. Le même format sert à modifier un livre existant et à exporter ses livres.
-import { ROOMS, TYPES, BOOKS, parseBook } from "./index";
+import { ROOMS, TYPES, parseBook } from "./meta";
+// Le catalogue n'est pas importé ici (il est lourd) : la bibliothèque le donne en s'ouvrant.
+let BOOKS = [];
+export const setCatalog = (b) => { BOOKS = b || []; };
 import { THEMES, TEXTURES, hasLook } from "./looks";
 
 export const SEP = /^\s*={5,}\s*$/m; // plusieurs livres collés d'un coup, séparés par une ligne de =====

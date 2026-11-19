@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import AmbientMixer from "@/components/AmbientMixer";
 import { useAmbient, setAmbientMuted } from "@/lib/ambient";
 import { useQuery } from "@tanstack/react-query";
-import { IoEyeOutline } from "react-icons/io5";
+import { IoEyeOutline, IoLibraryOutline } from "react-icons/io5";
 import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -152,6 +152,7 @@ export default function StationMenu({ onAdd, onProfile, trigger }) {
 
   const menuItems = [
     { label: "Journal de bord", sub: "COULISSES & NOUVEAUTÉS", icon: <IoMegaphone size={18} />, badge: unread, onClick: () => go("/journal") },
+    { label: "Mon étagère", sub: "CE QUE TU AS LU", icon: <IoLibraryOutline size={18} />, onClick: () => go("/etagere") },
     { label: "Planning de sortie", sub: "UNE SORTIE CHAQUE DIMANCHE", icon: <IoCalendarOutline size={18} />, onClick: () => go("/planning") },
     { label: "Salon", sub: "DISCUTE EN DIRECT", icon: <IoChatbubbles size={18} />, badge: salonUnread, onClick: () => go("/salon") },
     { label: "Membres", sub: "LA COMMUNAUTÉ", icon: <IoPeople size={18} />, onClick: () => go("/membres") },

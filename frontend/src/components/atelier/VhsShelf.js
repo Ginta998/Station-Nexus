@@ -7,7 +7,7 @@ import { useApp } from "@/context/AppContext";
 import { playLaunch, getLaunchSound, useLaunchSync } from "@/lib/launchSound";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import Box3D from "@/components/nexus/Box3D";
-import { Face } from "@/components/atelier/Alexandrie";
+import { Face } from "@/components/atelier/AlexCore";
 import { vidOf } from "@/components/atelier/Cinema";
 import { ArtSearch } from "@/components/journal/BlocksEditor";
 import "@/components/atelier/alexandrie.css";

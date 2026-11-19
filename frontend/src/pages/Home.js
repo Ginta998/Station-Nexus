@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoPlay, IoSearch, IoCreateOutline, IoTrashOutline, IoStar, IoStarOutline, IoArrowForward, IoColorPaletteOutline } from "react-icons/io5";
@@ -11,7 +11,8 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import TopBar from "@/components/TopBar";
-import EditorDialog from "@/components/EditorDialog";
+// l'éditeur d'œuvre (admin) ne se charge qu'à l'ouverture
+const EditorDialog = lazy(() => import("@/components/EditorDialog"));
 import StationSearch from "@/components/StationSearch";
 import JournalOverlay from "@/components/journal/JournalOverlay";
 import ProfileDialog from "@/components/ProfileDialog";
@@ -563,7 +564,7 @@ export default function Home() {
 
       </div>
 
-      <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} />
+      {editorOpen && <Suspense fallback={null}><EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} /></Suspense>}
       <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
       <HomeCustomizer open={customizerOpen} onClose={() => setCustomizerOpen(false)} isAdmin={isAdmin} onSaveDefault={() => {}} saving={false} />
     </div>

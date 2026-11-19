@@ -1,4 +1,4 @@
-import { Face } from "@/components/atelier/Alexandrie";
+import { Face } from "@/components/atelier/AlexCore";
 
 // L'objet en volume : la couverture d'Alexandrie devant, une vraie tranche sur le côté et un dos derrière.
 // On le voit de trois quarts, il a une épaisseur : un livre relié, un boîtier VHS, une pochette de disque.

@@ -6,7 +6,7 @@ import { IoAdd, IoCreateOutline, IoEyeOutline, IoTrashOutline, IoPlay, IoHomeOut
 import { listJournal, getJournalEntry, updateJournalEntry, deleteJournalEntry, listJournalCategories, mediaUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import { pressMenu, showMenu } from "@/components/atelier/ContextMenu";
-import { Face } from "@/components/atelier/Alexandrie";
+import { Face } from "@/components/atelier/AlexCore";
 import { Cassette } from "@/components/journal/TapeObject";
 import JournalEditor from "@/pages/JournalEditor";
 import JournalOverlay from "@/components/journal/JournalOverlay";

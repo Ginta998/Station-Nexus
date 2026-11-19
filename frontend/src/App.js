@@ -1,5 +1,5 @@
 import "@/App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -8,24 +8,24 @@ import { AuthProvider } from "@/context/AuthContext";
 import AuthDialog from "@/components/AuthDialog";
 import Home from "@/pages/Home";
 import Detail from "@/pages/Detail";
-import Settings from "@/pages/Settings";
-import Contact from "@/pages/Contact";
-import Members from "@/pages/Members";
-import Journal from "@/pages/Journal";
-import JournalEntry from "@/pages/JournalEntry";
-import JournalEditor from "@/pages/JournalEditor";
-import Planning from "@/pages/Planning";
-import Tutorial from "@/pages/Tutorial";
-import Library from "@/pages/Library";
-import SupportPage from "@/pages/SupportPage";
-import About from "@/pages/About";
-import Revenue from "@/pages/Revenue";
-import Chat from "@/pages/Chat";
+const Settings = lazy(() => import("@/pages/Settings"));
+const Contact = lazy(() => import("@/pages/Contact"));
+const Members = lazy(() => import("@/pages/Members"));
+const Journal = lazy(() => import("@/pages/Journal"));
+const JournalEntry = lazy(() => import("@/pages/JournalEntry"));
+const JournalEditor = lazy(() => import("@/pages/JournalEditor"));
+const Planning = lazy(() => import("@/pages/Planning"));
+const Tutorial = lazy(() => import("@/pages/Tutorial"));
+const Library = lazy(() => import("@/pages/Library"));
+const SupportPage = lazy(() => import("@/pages/SupportPage"));
+const About = lazy(() => import("@/pages/About"));
+const Revenue = lazy(() => import("@/pages/Revenue"));
+const Chat = lazy(() => import("@/pages/Chat"));
 import { ChatProvider } from "@/context/ChatContext";
-import PaymentResult from "@/pages/PaymentResult";
-import Legal from "@/pages/Legal";
-import Resiliation from "@/pages/Resiliation";
-import Retractation from "@/pages/Retractation";
+const PaymentResult = lazy(() => import("@/pages/PaymentResult"));
+const Legal = lazy(() => import("@/pages/Legal"));
+const Resiliation = lazy(() => import("@/pages/Resiliation"));
+const Retractation = lazy(() => import("@/pages/Retractation"));
 import LegalFooter from "@/components/LegalFooter";
 import { CheckoutConfirmHost } from "@/components/CheckoutConfirm";
 import AgeGate from "@/components/AgeGate";
@@ -36,15 +36,16 @@ import GlobalSound from "@/components/GlobalSound";
 import SpectatorBadge from "@/components/SpectatorBadge";
 import YtMini from "@/components/YtMini";
 import PortalListener from "@/components/atelier/PortalListener";
-import Atelier from "@/pages/Atelier";
-import SharedDoc from "@/pages/SharedDoc";
+const Atelier = lazy(() => import("@/pages/Atelier"));
+const SharedDoc = lazy(() => import("@/pages/SharedDoc"));
+const Shelf = lazy(() => import("@/pages/Shelf"));
 import CyberOverlay from "@/components/CyberOverlay";
 import CosmicBackground from "@/components/CosmicBackground";
 import ThemeRuntime from "@/components/ThemeRuntime";
 import { ThemeLoader } from "@/components/ThemeStudio";
 import SiteMeta from "@/components/SiteMeta";
 import GuidedTour from "@/components/GuidedTour";
-import { getSettings, listCreations, listCategories, posterUrl } from "@/lib/api";
+import { getSettings, listCreations, listCategories, posterUrl, hit } from "@/lib/api";
 import { INTROS } from "@/lib/intro";
 import { StartupRedirect, startTarget } from "@/components/Startup";
 import { useQueryClient } from "@tanstack/react-query";
@@ -115,6 +116,22 @@ function IntroGate() {
   );
 }
 
+// Les pages autres que l'accueil et l'œuvre se chargent à la demande : la station s'ouvre plus vite
+function RouteLoading() {
+  return <div className="route-loading" role="status" aria-label="Chargement"><span /></div>;
+}
+
+// Tes chiffres : une visite par session, avec le site d'où l'on vient (le domaine seulement)
+function VisitHit() {
+  useEffect(() => {
+    try { if (sessionStorage.getItem("nx-visit")) return; sessionStorage.setItem("nx-visit", "1"); } catch (_) { /* rien */ }
+    const ref = document.referrer && !document.referrer.startsWith(window.location.origin) ? document.referrer : "";
+    const utm = new URLSearchParams(window.location.search).get("utm_source") || "";
+    hit("visit", { ref: utm || ref });
+  }, []);
+  return null;
+}
+
 function App() {
   return (
     <div className="App">
@@ -126,7 +143,9 @@ function App() {
           <ThemeRuntime />
           <ThemeLoader />
           <SiteMeta />
+          <VisitHit />
           <StartupRedirect />
+          <Suspense fallback={<RouteLoading />}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/oeuvre/:id" element={<Detail />} />
@@ -139,6 +158,7 @@ function App() {
             <Route path="/journal/:id" element={<JournalEntry />} />
             <Route path="/journal/:id/modifier" element={<JournalEditor />} />
             <Route path="/planning" element={<Planning />} />
+            <Route path="/etagere" element={<Shelf />} />
             <Route path="/soutien" element={<SupportPage />} />
             <Route path="/a-propos" element={<About />} />
             <Route path="/atelier" element={<Atelier />} />
@@ -151,6 +171,7 @@ function App() {
             <Route path="/resiliation" element={<Resiliation />} />
             <Route path="/retractation" element={<Retractation />} />
           </Routes>
+          </Suspense>
           <LegalFooter />
           <CheckoutConfirmHost />
           <AgeGate />

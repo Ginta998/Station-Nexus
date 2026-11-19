@@ -6,7 +6,7 @@ import {
 import { MdFormatAlignLeft, MdFormatAlignCenter, MdFormatAlignRight, MdFormatAlignJustify, MdFormatListNumbered, MdFormatIndentIncrease, MdFormatIndentDecrease, MdFormatClear, MdStrikethroughS } from "react-icons/md";
 import { uploadAsset, listAssets, assetUrl, listAmbiences, ambienceUrl, uploadJournalImage } from "@/lib/api";
 import { atelierApi } from "@/lib/atelier";
-import { CoverDialog } from "@/components/atelier/Alexandrie";
+import { CoverDialog } from "@/components/atelier/AlexCore";
 import { IoLogoYoutube, IoSearch } from "react-icons/io5";
 
 // Insérer une image : depuis l'appareil, par un lien, ou en cherchant (Wikipédia, SteamGridDB avec ta clé du serveur), avec Pinterest et Google Images à portée.

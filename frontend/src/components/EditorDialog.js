@@ -7,7 +7,7 @@ import PageWriter from "@/components/PageWriter";
 import { WORLD_STYLES, WORLD_MASKED, worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexandrie/looks";
 import { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
-import { CoverDialog } from "@/components/atelier/Alexandrie";
+import { CoverDialog } from "@/components/atelier/AlexCore";
 import { useWorldThemes, deleteWorldTheme } from "@/lib/worldThemes";
 import WorldThemeLab from "@/components/nexus/WorldThemeLab";
 import "@/components/editor.css";

@@ -3230,3 +3230,7 @@ body:has(.ax-reader) :is(.nw,.cosmic-bg,.nx-tlayer) *{animation-play-state:pause
 @keyframes ctxUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 /* l'éditeur du journal ouvert par-dessus un lecteur (admin, station publique) */
 .jr-editlayer{position:fixed;inset:0;z-index:1600;overflow-y:auto;background:var(--bg-primary)}
+/* 0.46 · le temps qu'une page se charge (chargement à la demande) */
+.route-loading{min-height:60vh;display:grid;place-items:center}
+.route-loading span{width:34px;height:34px;border-radius:50%;border:2px solid color-mix(in srgb,var(--text-primary) 18%,transparent);border-top-color:var(--brand);animation:routeSpin .8s linear infinite}
+@keyframes routeSpin{to{transform:rotate(360deg)}}

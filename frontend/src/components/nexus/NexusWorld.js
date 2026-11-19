@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import WorldSupport from "@/components/nexus/WorldSupport";
+import ReleaseNext from "@/components/nexus/ReleaseNext";
+import ShareCardDialog from "@/components/nexus/ShareCardDialog";
+import { IoShareSocialOutline } from "react-icons/io5";
 import { IoChatbubbleOutline, IoFilmOutline, IoImagesOutline, IoJournalOutline, IoPlanetOutline, IoLockOpenOutline } from "react-icons/io5";
 import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil } from "react-icons/io5";
 import { toast } from "sonner";
@@ -9,7 +12,7 @@ import { getJournalEntry, mediaUrl } from "@/lib/api";
 import { JournalBlocks, fmtDate } from "@/components/journal/JournalParts";
 import { ContextMenuHost, pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 import StationMenu, { SoundBtn } from "@/components/StationMenu";
-import { Face } from "@/components/atelier/Alexandrie";
+import { Face } from "@/components/atelier/AlexCore";
 import "@/components/nexus/world.css";
 import CursorFx from "@/components/CursorFx";
 import TapeObject from "@/components/journal/TapeObject";
@@ -142,7 +145,7 @@ export default function NexusWorld(p) {
   const itemsOf = (s) => {
     switch (s.k) {
       case "home": return homeItems;
-      case "units": return units.map((u, i) => ({ id: "u" + i, idx: i, label: u.title || `${unitWord[0].toUpperCase() + unitWord.slice(1)} ${i + 1}`, sub: item.launch_type === "chapters" ? `CH. ${String(i + 1).padStart(2, "0")}` : `EP. ${String(i + 1).padStart(2, "0")}`, desc: u.description || "", img: u.image, lock: unitLocked(i), mark: current === i, go: () => openUnit(i) }));
+      case "units": return units.map((u, i) => ({ id: "u" + i, idx: i, label: u.title || `${unitWord[0].toUpperCase() + unitWord.slice(1)} ${i + 1}`, sub: item.launch_type === "chapters" ? `CH. ${String(i + 1).padStart(2, "0")}` : `EP. ${String(i + 1).padStart(2, "0")}`, desc: u.description || "", img: u.image, lock: unitLocked(i), mark: current === i, early: !!u.early, sched: isAdmin && !!u.release_at && new Date(u.release_at) > new Date(), go: () => openUnit(i) }));
       case "gallery": return (item.gallery || []).map((g, i) => ({ id: "g" + i, img: g, go: () => push({ k: "image", list: item.gallery, i }) }));
       case "making": return making.map((e) => ({ id: e.id, tape: e.format === "cassette" ? e : null, label: e.title, sub: fmtDate(e.date), desc: e.subtitle || e.excerpt || "", img: e.cover ? mediaUrl(e.cover) : null, go: () => (onEntry ? onEntry(e) : push({ k: "entry", e })) }));
       case "embeds": return (item.embeds || []).map((em, i) => ({ id: "e" + i, label: em.label || (em.platform === "youtube" ? "Voir sur YouTube" : em.platform === "wattpad" ? "Lire sur Wattpad" : "Ouvrir le lien"), sub: (em.platform || "lien").toUpperCase(), desc: em.url, go: () => window.open(em.url, "_blank", "noopener,noreferrer") }));
@@ -195,10 +198,13 @@ export default function NexusWorld(p) {
 
   // ---------- menu contextuel ----------
   const link = (hash = "") => { navigator.clipboard?.writeText(`${window.location.origin}/oeuvre/${item.id}${hash}`).catch(() => {}); toast.success("Lien copié"); };
+  const [card, setCard] = useState(null); // carte Instagram ouverte : { unit } (ou {} pour l'œuvre)
+  const cardOf = (idx) => { const u = units[idx] || {}; return { unit: { kind: item.launch_type === "chapters" ? "chapter" : "episode", index: idx + 1, title: u.title || "", release_at: u.release_at || "" } }; };
   const menuFor = (it) => () => ({ title: it.label || titleOf(top), entries: [
     { label: it.lock ? "Débloquer" : "Ouvrir", icon: it.lock ? <IoLockClosed size={14} /> : <IoPlay size={14} />, onClick: it.go },
     it.img && top.k !== "gallery" && { label: "Voir l'image", icon: <IoOpenOutline size={14} />, onClick: () => push({ k: "image", list: [it.img], i: 0 }) },
     isAdmin && { label: "Modifier l'œuvre", icon: <IoCreateOutline size={14} />, onClick: onEdit },
+    isAdmin && { label: it.idx != null && top.k === "units" ? "Carte Instagram de ce " + unitWord : "Carte Instagram de l'œuvre", icon: <IoShareSocialOutline size={14} />, onClick: () => setCard(it.idx != null && top.k === "units" ? cardOf(it.idx) : {}) },
     "-",
     { label: "Copier le lien de l'œuvre", icon: <IoLinkOutline size={14} />, onClick: () => link() },
   ].filter(Boolean) });
@@ -471,6 +477,8 @@ export default function NexusWorld(p) {
                 <i className="nw-u-n">{n}</i>
                 {it.lock && <span className="nw-u-lk"><IoLockClosed size={14} /></span>}
                 {it.mark && <em className="nw-mk">EN COURS</em>}
+                {it.early && <em className="nw-mk early">AVANT-PREMIÈRE</em>}
+                {it.sched && !it.early && <em className="nw-mk sched">PROGRAMMÉ</em>}
                 <span className="nw-u-play"><IoPlay size={18} /></span>
               </span>
               <span className="nw-u-t"><b>{it.label}</b>{it.desc && <small>{it.desc}</small>}</span>
@@ -632,6 +640,8 @@ export default function NexusWorld(p) {
           <button className={top.k === "comments" ? "on" : ""} onClick={() => goWorldHome("cm")}><IoChatbubbleOutline /><span>Commentaires</span></button>
         </nav>
       )}
+      {card && <ShareCardDialog item={item} unit={card.unit} poster={cover} onClose={() => setCard(null)} />}
+      {top.k === "home" && item.next_release && <ReleaseNext item={item} onSupport={() => push({ k: "support" })} />}
       <header className="nw-hud">
         <button className={"nw-back" + (stack.length > 1 ? "" : " idle")} onClick={pop} aria-label="Retour" disabled={stack.length === 1} data-testid="nw-back"><IoArrowBack size={18} /></button>
         <nav className="nw-crumbs" aria-label="Où je suis">
@@ -648,6 +658,7 @@ export default function NexusWorld(p) {
           <SoundBtn className="nw-tb" />
           <button onClick={onFav} className={fav ? "on" : ""} title={fav ? "Retirer des favoris" : "Ajouter aux favoris"} aria-label="Favori" data-testid="nw-fav">{fav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}</button>
           {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
+          {isAdmin && <button onClick={() => setCard({})} title="Carte Instagram (story) de l'œuvre" aria-label="Carte Instagram" data-testid="nw-card"><IoShareSocialOutline size={16} /></button>}
           {isAdmin && onAtelier && <button onClick={onAtelier} title="Ouvrir son œuvre dans l'atelier" aria-label="Ouvrir dans l'atelier" data-testid="detail-atelier" className="nw-at">工</button>}
           <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
           <button onClick={() => { sfx("back"); goWorldHome(); }} title="Accueil de l'œuvre" aria-label="Accueil de l'œuvre" data-testid="nw-home"><IoHomeOutline size={17} /></button>

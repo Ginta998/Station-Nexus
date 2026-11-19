@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { IoArrowForward, IoChatbubbleEllipsesOutline, IoClose } from "react-icons/io5";
-import { Reader, htmlToAlexBlocks } from "@/components/atelier/Alexandrie";
+import { Reader, htmlToAlexBlocks } from "@/components/atelier/AlexCore";
 import { useApp } from "@/context/AppContext";
-import { chapterAudioUrl, readingAudioUrl, mediaUrl } from "@/lib/api";
+import { chapterAudioUrl, readingAudioUrl, mediaUrl, hit } from "@/lib/api";
+import { markDone } from "@/lib/shelf";
+import PassageLayer from "@/components/nexus/PassageLayer";
 import { blocksToHtml } from "@/lib/blocks";
 
 /*
@@ -67,6 +69,19 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
   // La musique du chapitre démarre à l'ouverture et change avec le chapitre (une seule à la fois)
   useEffect(() => { const t = trackFor(ci); if (t) { setTitle("Musique de lecture"); playReadingUrl(t, readingKey); } }, [ci]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => endReading(owner, !!item?.has_audio), []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Tes chiffres : quel chapitre est lu, lequel est fini (on passe au suivant), et le temps de lecture (par tranches de 30 s, onglet visible)
+  const unitOf = (c) => { const k = map[c]; const u = unitKey && item ? item[unitKey]?.[k] : null; return { unit_index: k ?? -1, unit_id: u?.id || "" }; };
+  const prevCi = useMemo(() => ({ v: null }), []);
+  useEffect(() => {
+    if (entry || !item) return;
+    if (prevCi.v != null && ci > prevCi.v) hit("end", { creation_id: item.id, ...unitOf(prevCi.v) });
+    prevCi.v = ci; hit("read", { creation_id: item.id, ...unitOf(ci) });
+  }, [ci]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (entry || !item) return undefined;
+    const t = setInterval(() => { if (document.visibilityState === "visible") hit("time", { creation_id: item.id, seconds: 30 }); }, 30000);
+    return () => clearInterval(t);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const on = isPlaying && (playingId === readingKey || (typeof playingId === "string" && playingId.startsWith("cue:")));
   const hasCue = book.chapters.some((c) => c.blocks.some((b) => b.t === "mus"));
   const music = trackFor(ci) || hasCue || on ? {
@@ -106,12 +121,14 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
         )}
       </div>
     </div>, document.body);
+  const curUnit = !entry && item && unitKey ? item[unitKey]?.[map[ci]] : null;
   return (<>
     {endCard}
+    {curUnit && <PassageLayer item={item} unit={curUnit} unitIndex={map[ci]} unitLabel={`${unitKey === "episodes" ? "Épisode" : "Chapitre"} ${map[ci] + 1}`} />}
     <Reader book={book} cover={cover || (entry?.cover ? mediaUrl(entry.cover) : null)} onClose={onClose} backLabel={entry ? "Retour" : "Retour au monde"} path={where}
       startCh={startCh} keepSaved={resume} onProgress={onProgress} workMusic={music} noPdf={noPdf}
       onEditChapter={onEditUnit ? (entry ? () => onEditUnit(0) : (c) => onEditUnit(map[c] ?? map[0] ?? 0)) : undefined}
       onCue={(url, t) => { setTitle(t || "Musique"); toggleReadingUrl(mediaUrl(url), "cue:" + url, { loop: false, title: t || "Musique" }); }}
-      onDone={() => { if (!entry) setTimeout(() => setEnded(true), 900); }} />
+      onDone={() => { if (!entry) { hit("end", { creation_id: item.id, ...unitOf(ci) }); if (!held) markDone(item.id); setTimeout(() => setEnded(true), 900); } }} />
   </>);
 }

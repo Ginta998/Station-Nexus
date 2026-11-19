@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { IoAdd, IoArrowUp, IoArrowDown, IoTrashOutline, IoSend, IoMailOutline, IoCopyOutline, IoCloudUploadOutline, IoCheckmarkCircle, IoAlertCircleOutline, IoPhonePortraitOutline, IoDesktopOutline } from "react-icons/io5";
-import { listNewsletters, saveNewsletter, deleteNewsletter, sendNewsletter, emailStatus, emailTest, listCreations, uploadJournalImage } from "@/lib/api";
+import { listNewsletters, saveNewsletter, deleteNewsletter, sendNewsletter, emailStatus, emailTest, listCreations, uploadJournalImage, getSettings, updateSettings } from "@/lib/api";
 import { newsletterHtml, NL_THEMES, NL_BLOCKS } from "@/lib/newsletterHtml";
 import { labConfirm } from "@/components/atelier/LabDialog";
 import { ArtSearch } from "@/components/journal/BlocksEditor";
@@ -78,6 +78,7 @@ export default function NewsletterView() {
         <button className="at-btn ghost" onClick={test} disabled={!!busy} data-testid="nl-test">{busy === "test" ? "Envoi…" : <><IoMailOutline size={15} /> M'envoyer un test</>}</button>
       </div>
 
+      <AutoMail />
       <div className="nl-grid">
         <aside className="nl-list">
           <button className="at-btn" onClick={() => { setN(blank()); setDirty(true); }} data-testid="nl-new"><IoAdd size={15} /> Nouvelle lettre</button>
@@ -148,4 +149,18 @@ export default function NewsletterView() {
 function Frame({ html, phone }) {
   const ref = useRef(null);
   return <iframe ref={ref} className={"nl-frame" + (phone ? " phone" : "")} title="Aperçu de la newsletter" sandbox="allow-same-origin allow-popups" srcDoc={html.replace("%%UNSUB%%", "#")} data-testid="nl-frame" />;
+}
+
+// À chaque sortie programmée, un email part tout seul : à ceux qui ont cliqué « Me prévenir », et, si tu veux, à toute la liste
+function AutoMail() {
+  const qc = useQueryClient();
+  const { data: st } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
+  const on = !!st?.release_mail_all;
+  const flip = async () => { try { await updateSettings({ ...(st || {}), release_mail_all: !on }); qc.invalidateQueries({ queryKey: ["settings"] }); toast.success(!on ? "Chaque sortie préviendra aussi toute la liste" : "Seuls ceux qui ont cliqué « Me prévenir » seront prévenus"); } catch (_) { toast.error("Réglage non enregistré"); } };
+  return (
+    <label className="nl-auto" data-testid="nl-automail">
+      <input type="checkbox" checked={on} onChange={flip} />
+      <span><b>Email automatique à chaque sortie</b><small>Il part toujours à ceux qui ont cliqué « Me prévenir » dans le monde de l'œuvre. Coché : aussi à tous les abonnés de la newsletter.</small></span>
+    </label>
+  );
 }

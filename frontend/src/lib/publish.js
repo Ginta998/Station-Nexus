@@ -145,11 +145,11 @@ export async function pullRemote(at, it, p) {
 export const stripMentions = (html = "") => String(html).replace(/<a[^>]*class="nx-mention"[^>]*>@?([^<]*)<\/a>/g, "$1");
 
 // ---- vers un chapitre (nouveau, ou remplace celui choisi ; republier retrouve le chapitre par son identifiant)
-export async function publishChapter(it, { creation_id, mode, chapter_id, title, unit = "chapters", release_at }) {
+export async function publishChapter(it, { creation_id, mode, chapter_id, title, unit = "chapters", release_at, early }) {
   const full = await getCreationFull(creation_id);
   const units = [...(full[unit] || [])];
   let idx = mode === "replace" ? units.findIndex((u) => u.id === chapter_id) : -1;
-  const rel = release_at === undefined ? {} : { release_at: release_at || "" };
+  const rel = release_at === undefined ? {} : { release_at: release_at || "", ...(early ? { early_days: release_at ? early.days || 0 : 0, early_tier: early.tier || "" } : {}) };
   let body;
   if (unit === "episodes") {
     const url = videoOf(it); const desc = plain(it.content || "").replace(/https?:\/\/\S+/g, "").trim().slice(0, 600);
@@ -200,12 +200,12 @@ export function linkFromEntry(e) {
 }
 
 // ---- un lot : plusieurs documents deviennent des chapitres, dans l'ordre (ceux déjà publiés dans cette création sont mis à jour sur place)
-export async function publishBatch(at, items, creation_id, onStep, { unit = "chapters", release_at } = {}) {
+export async function publishBatch(at, items, creation_id, onStep, { unit = "chapters", release_at, early } = {}) {
   const done = [];
   for (let i = 0; i < items.length; i++) {
     const it = items[i]; const prev = it.fields?.published;
     const same = prev && prev.creation_id === creation_id && (prev.unit || "chapters") === unit;
-    const p = await publishChapter(it, same ? { creation_id, mode: "replace", chapter_id: prev.chapter_id, title: prev.title || it.title, unit, release_at } : { creation_id, mode: "new", title: it.title, unit, release_at });
+    const p = await publishChapter(it, same ? { creation_id, mode: "replace", chapter_id: prev.chapter_id, title: prev.title || it.title, unit, release_at, early } : { creation_id, mode: "new", title: it.title, unit, release_at, early });
     await at.saveItem({ ...it, fields: { ...(it.fields || {}), published: p } });
     done.push(p); onStep?.(i + 1);
   }

@@ -1,6 +1,25 @@
 {
-  "version": "0.45",
+  "version": "0.46",
   "patches": [
+    {
+      "v": "0.46",
+      "date": "2026-11-19",
+      "title": "Faire venir, faire revenir, savoir ce qui marche",
+      "groups": {
+        "Ajouté": [
+          "Alerte de sortie : dans le monde d'une œuvre, la prochaine sortie programmée avec son compte à rebours et « Me prévenir » (un clic avec un compte, sinon un email). À l'heure dite, la station envoie toute seule une notification et un email à ceux qui l'ont demandé et à ceux qui ont l'œuvre en coup de cœur. Option dans Newsletter : prévenir aussi toute la liste à chaque sortie.",
+          "Avant-première : en programmant un chapitre ou un épisode, « X jours plus tôt pour les soutiens » (tous, ou à partir d'un palier). Ces soutiens le lisent en avance, marqué AVANT-PREMIÈRE, et sont prévenus à ce moment-là ; les autres voient le compte à rebours et la date de l'avant-première.",
+          "Cartes Instagram : une image au format story (1080 × 1920) aux couleurs du monde, avec l'affiche, le titre, la sortie (maintenant ou la date) et le lien. Bouton dans le monde (admin) et clic droit sur un chapitre ; télécharger ou partager directement depuis le téléphone.",
+          "Atelier › Tes chiffres : visiteurs par jour, œuvres ouvertes et lues, temps de lecture, provenance (Instagram, YouTube…), et pour chaque œuvre où les lecteurs décrochent, chapitre par chapitre. Comptés par la station elle-même, anonymes, sans tes propres visites.",
+          "Réagir à un passage : double-clic sur une phrase (ou sélection au doigt) dans le lecteur, puis « Réagir ». Les passages commentés sont surlignés avec une bulle ; on ouvre le fil en la touchant. Ces réactions apparaissent aussi dans les commentaires, avec la phrase citée.",
+          "Mon étagère (menu de la station) : les œuvres terminées, en cours (avec la progression) et les films lancés, rangés comme une collection.",
+          "Paramètres › Admin › Sauvegarde : toute la station dans un fichier (œuvres, chapitres, journal, atelier, réglages, newsletters, abonnés, commentaires), sans mots de passe ni paiements."
+        ],
+        "Changé": [
+          "La station est environ trois fois plus légère à l'ouverture : l'atelier, Alexandrie et sa bibliothèque, l'éditeur d'œuvre, les paramètres et les autres pages ne se chargent plus qu'au moment où l'on y entre."
+        ]
+      }
+    },
     {
       "v": "0.45",
       "date": "2026-11-19",

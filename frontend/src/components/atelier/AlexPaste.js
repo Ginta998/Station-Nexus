@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { IoClose, IoPlay, IoCopyOutline, IoFolderOpenOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { labConfirm } from "@/components/atelier/LabDialog";
-import { ROOMS, TYPES } from "@/data/alexandrie";
+import { ROOMS, TYPES } from "@/data/alexandrie/meta";
 import { SEP, parsePaste, pasteToBook, TEMPLATES } from "@/data/alexandrie/paste";
 import { THEMES, THEME_INFO, lookFrom } from "@/data/alexandrie/looks";
 

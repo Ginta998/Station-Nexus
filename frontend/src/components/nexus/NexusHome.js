@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { posterUrl, bgUrl, updateCreation } from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { useApp } from "@/context/AppContext";
-import { Face, Rail } from "@/components/atelier/Alexandrie";
+import { Face, Rail } from "@/components/atelier/AlexCore";
 import { ContextMenuHost, pressMenu } from "@/components/atelier/ContextMenu";
 import Box3D from "@/components/nexus/Box3D";
 import "@/components/atelier/alexandrie.css";

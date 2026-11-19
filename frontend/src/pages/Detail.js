@@ -1,17 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { openInAtelier } from "@/lib/publish";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoHome, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline, IoLockClosed, IoDownloadOutline, IoSparklesOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl, startCheckout, getMembershipPlan, assetDownloadUrl, getSettings } from "@/lib/api";
+import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl, startCheckout, getMembershipPlan, assetDownloadUrl, getSettings, hit } from "@/lib/api";
+import { markSeen } from "@/lib/shelf";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import { resolveVideoEmbed } from "@/lib/video";
 import StationCinema, { canStationPlay } from "@/components/StationCinema";
 import JournalOverlay from "@/components/journal/JournalOverlay";
-import EditorDialog from "@/components/EditorDialog";
+// l'éditeur d'œuvre (admin) ne se charge qu'à l'ouverture
+const EditorDialog = lazy(() => import("@/components/EditorDialog"));
 import MovixSelector from "@/components/MovixSelector";
 import CommentsSection from "@/components/CommentsSection";
 import { FicheSupport } from "@/components/SupportersWall";
@@ -45,6 +47,8 @@ export default function Detail() {
   const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
   const { data: siteSettings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const { data: item, refetch, isLoading } = useQuery({ queryKey: ["creation", id], queryFn: () => getCreation(id) });
+  // Tes chiffres : une ouverture par œuvre et par visite (tes propres visites ne comptent pas, le serveur les écarte)
+  useEffect(() => { if (item?.id) hit("open", { creation_id: item.id }); }, [item?.id]);
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
   const { data: allCreations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
 
@@ -53,6 +57,7 @@ export default function Detail() {
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [gameOpen, setGameOpen] = useState(false);
   const [cinemaKind, setCinemaKind] = useState(null); // "film" | "trailer" | null
+  useEffect(() => { if (item?.id && cinemaKind === "film") { hit("play", { creation_id: item.id, unit_index: -1 }); markSeen(item.id); } }, [cinemaKind]); // eslint-disable-line react-hooks/exhaustive-deps
   const [epPlay, setEpPlay] = useState(null);
   const [jEntry, setJEntry] = useState(""); // une entrée du Making of, ouverte par-dessus (l'admin la modifie d'un seul bouton) // épisode lu dans le lecteur de la station (index)
   const [readerStart, setReaderStart] = useState(null);
@@ -298,7 +303,7 @@ export default function Detail() {
         const start = Math.max(0, eps.findIndex((x) => x.i === epPlay));
         return <StationCinema queue={eps.map((x) => ({ url: x.e.url, title: x.e.title || `Épisode ${x.i + 1}`, image: x.e.image || "" }))} start={start}
           vertical={item.video_ratio === "9:16" ? true : item.video_ratio === "16:9" ? false : undefined}
-          onIndex={(k) => { const ix = eps[k]?.i; if (ix != null) try { localStorage.setItem("sx_eplast_" + item.id, String(ix)); } catch (_) {} }}
+          onIndex={(k) => { const ix = eps[k]?.i; if (ix != null) { hit("play", { creation_id: item.id, unit_index: ix, unit_id: item.episodes[ix]?.id || "" }); markSeen(item.id); try { localStorage.setItem("sx_eplast_" + item.id, String(ix)); } catch (_) {} } }}
           onClose={() => setEpPlay(null)} />;
       })()}
 
@@ -311,7 +316,7 @@ export default function Detail() {
         </div>
       )}
 
-      <EditorDialog open={editorOpen} onClose={() => { setEditorOpen(false); setPvw(null); }} initial={item} categories={cats} onSaved={refetch} cover={hasImg ? posterSrc : null} onPeek={nexus ? setPvw : undefined} section={editorSec} />
+      {editorOpen && <Suspense fallback={null}><EditorDialog open={editorOpen} onClose={() => { setEditorOpen(false); setPvw(null); }} initial={item} categories={cats} onSaved={refetch} cover={hasImg ? posterSrc : null} onPeek={nexus ? setPvw : undefined} section={editorSec} /></Suspense>}
   </>);
 
   // Expérience Nexus : l'œuvre devient un monde en plein écran, avec ses écrans imbriqués

@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks, Header, Depends, Request
-from fastapi.responses import Response, RedirectResponse, JSONResponse
+from fastapi.responses import Response, RedirectResponse, JSONResponse, HTMLResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -113,6 +113,9 @@ class Episode(BaseModel):
     content: Optional[str] = ""  # texte rédigé de l'épisode (HTML du lecteur)
     rich: bool = False
     release_at: Optional[str] = ""  # sortie programmée (ISO, UTC) : caché au public avant cette date
+    early_days: int = 0             # avant-première : visible X jours plus tôt pour les soutiens
+    early_tier: Optional[str] = ""  # palier minimum pour l'avant-première ("" = tout abonné actif)
+    early: bool = False             # calculé : visible en avant-première pour ce visiteur
 
 
 class Chapter(BaseModel):
@@ -124,6 +127,9 @@ class Chapter(BaseModel):
     rich: bool = False          # content is sanitized HTML (WYSIWYG) vs plain text
     has_music: bool = False     # dedicated per-chapter reading music
     release_at: Optional[str] = ""  # sortie programmée (ISO, UTC) : caché au public avant cette date
+    early_days: int = 0             # avant-première : visible X jours plus tôt pour les soutiens
+    early_tier: Optional[str] = ""  # palier minimum pour l'avant-première ("" = tout abonné actif)
+    early: bool = False             # calculé : visible en avant-première pour ce visiteur
     locked: bool = False        # computed: chapter requires purchase/subscription (content stripped)
 
 
@@ -192,6 +198,7 @@ class Creation(BaseModel):
     has_intention: bool = False          # computed for list responses
     locked: bool = False                # computed for the requesting user: no access to paid content
     owned: bool = False                 # computed: current user owns this creation (unit purchase)
+    next_release: Optional[Dict[str, Any]] = None  # calculé : la prochaine sortie programmée (compte à rebours)
     created_at: str = Field(default_factory=now_iso)
     updated_at: str = Field(default_factory=now_iso)
 
@@ -269,6 +276,9 @@ class Comment(BaseModel):
     episode_index: int = -1
     episode_label: str = ""
     parent_id: str = ""        # réponse à un commentaire (un seul niveau)
+    chapter_id: str = ""       # commentaire sur un passage : le chapitre ou l'épisode
+    quote: str = ""            # la phrase surlignée
+    anchor: int = -1           # sa position dans le texte du chapitre (en caractères)
     user_id: str = ""          # auteur connecté (pour le prévenir d'une réponse)
     is_author: bool = False    # réponse du créateur de la station
     created_at: str = Field(default_factory=now_iso)
@@ -281,6 +291,9 @@ class CommentInput(BaseModel):
     episode_index: int = -1
     episode_label: str = ""
     parent_id: str = ""
+    chapter_id: str = ""
+    quote: str = ""
+    anchor: int = -1
 
 
 class Ambience(BaseModel):
@@ -355,7 +368,8 @@ DEFAULT_SITE_DESCRIPTION = "Station Nexus — la station cosmique de Brichel Lou
 
 class SiteSettings(BaseModel):
     site_description: str = DEFAULT_SITE_DESCRIPTION
-    launch_sounds: Dict[str, str] = Field(default_factory=dict)  # son du lancement par format (livre, vhs, vinyle) : choisi par l'admin, entendu par tous
+    launch_sounds: Dict[str, str] = Field(default_factory=dict)
+    release_mail_all: bool = False  # à chaque sortie, prévenir aussi tous les abonnés de la newsletter (pas seulement « Me prévenir »)  # son du lancement par format (livre, vhs, vinyle) : choisi par l'admin, entendu par tous
     name: str = "Brichel Louzala"
     bio: str = "Créateur d'histoires, d'univers et d'émotions. Bienvenue dans ma station."
     avatar: Optional[str] = ""
@@ -574,23 +588,63 @@ async def _user_has_access(uid: Optional[str], doc: dict) -> bool:
     return await _membership_active(uid)
 
 
-def _hide_unreleased(doc: dict) -> dict:
-    """Sorties programmées : un chapitre ou un épisode dont release_at est dans le futur n'existe pas encore pour le public."""
+def _parse_iso(v: str) -> Optional[datetime]:
+    v = (v or "").strip()
+    if not v:
+        return None
+    try:
+        t = datetime.fromisoformat(v.replace("Z", "+00:00"))
+        return t if t.tzinfo else t.replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
+def _tier_rank(tiers: List[dict], tid: Optional[str]) -> int:
+    ids = [t.get("id") for t in (tiers or [])]
+    return ids.index(tid) if tid in ids else -1
+
+
+def _hide_unreleased(doc: dict, member_tier: Optional[str] = None, tiers: Optional[List[dict]] = None) -> dict:
+    """Sorties programmées : un chapitre ou un épisode dont release_at est dans le futur n'existe pas encore pour le public.
+    Avant-première : un abonné du bon palier le voit early_days jours plus tôt (marqué early).
+    La prochaine sortie cachée est donnée dans next_release, pour le compte à rebours et « Me prévenir »."""
     now = datetime.now(timezone.utc)
-
-    def out(u):
-        ra = (u.get("release_at") or "").strip()
-        if not ra:
-            return True
-        try:
-            t = datetime.fromisoformat(ra.replace("Z", "+00:00"))
-            return (t if t.tzinfo else t.replace(tzinfo=timezone.utc)) <= now
-        except ValueError:
-            return True
-
+    nxt = None
     for key in ("chapters", "episodes"):
-        doc[key] = [u for u in (doc.get(key) or []) if out(u)]
+        keep = []
+        for i, u in enumerate(doc.get(key) or []):
+            t = _parse_iso(u.get("release_at"))
+            if not t or t <= now:
+                keep.append(u)
+                continue
+            days = int(u.get("early_days") or 0)
+            early_at = t - timedelta(days=days) if days > 0 else None
+            need = (u.get("early_tier") or "").strip()
+            eligible = bool(member_tier) and (not need or _tier_rank(tiers or [], member_tier) >= _tier_rank(tiers or [], need))
+            if early_at and eligible and early_at <= now:
+                keep.append({**u, "early": True})
+                continue
+            if not nxt or t < _parse_iso(nxt["at"]):
+                tier_name = next((x.get("name") for x in (tiers or []) if x.get("id") == need), "") if need else ""
+                nxt = {"at": t.isoformat(), "unit": "episode" if key == "episodes" else "chapter", "index": i + 1,
+                       "title": u.get("title") or "", "id": u.get("id"),
+                       "early_at": early_at.isoformat() if early_at else "", "early_tier": need, "early_tier_name": tier_name}
+        doc[key] = keep
+    doc["next_release"] = nxt
     return doc
+
+
+async def _member_tier(uid: Optional[str]) -> Optional[str]:
+    """Le palier de l'abonnement actif du visiteur (None sinon)."""
+    if not uid or not await _membership_active(uid):
+        return None
+    m = await db.memberships.find_one({"user_id": uid, "status": "active"}, {"_id": 0, "tier_id": 1})
+    return (m or {}).get("tier_id") or "soutien"
+
+
+async def _site_tiers() -> List[dict]:
+    st = await db.settings.find_one({"key": "site"}, {"_id": 0, "membership_tiers": 1}) or {}
+    return st.get("membership_tiers") or SiteSettings().membership_tiers
 
 
 def _gate_creation(doc: dict, has_access: bool, owned: bool) -> dict:
@@ -662,7 +716,7 @@ async def get_creation(cid: str, media: bool = False, authorization: Optional[st
         # admin must always receive full content, otherwise saving the editor would wipe locked chapters
         has_access = True
     if not is_admin:
-        doc = _hide_unreleased(doc)
+        doc = _hide_unreleased(doc, await _member_tier(uid), await _site_tiers())
     owned = await _user_owns(uid, cid)
     if media:
         doc["has_poster"] = bool(doc.get("poster"))
@@ -1040,6 +1094,7 @@ async def create_comment(payload: CommentInput, authorization: Optional[str] = H
             raise HTTPException(404, "Commentaire introuvable")
         if parent.get("parent_id"):  # on répond toujours au fil principal
             payload.parent_id = parent["parent_id"]
+    payload.quote = (payload.quote or "").strip()[:400]
     obj = Comment(**payload.model_dump(), user_id=(user or {}).get("id", ""), is_author=bool(user and user.get("is_admin")))
     await db.comments.insert_one(obj.model_dump())
     # Prévenir l'auteur du commentaire qu'on lui a répondu (s'il est connecté et a activé les notifications)
@@ -2975,6 +3030,226 @@ async def _migrate_announcements_to_journal():
 
 
 from atelier import build_atelier_router, build_public_files_router  # noqa: E402
+# ---------------- Alertes de sortie : « Me prévenir », notification et email automatiques ----------------
+class WatchIn(BaseModel):
+    email: str = ""
+
+
+def _unit_label(c: dict, u: dict, kind: str, i: int) -> str:
+    word = "Épisode" if kind == "episode" else ((c.get("unit_label") or "Chapitre").strip() or "Chapitre")
+    return f"{word} {i}" + (f" · {u.get('title')}" if u.get("title") else "")
+
+
+@api_router.get("/creations/{cid}/watch")
+async def get_watch(cid: str, authorization: Optional[str] = Header(None)):
+    uid = await _optional_uid(authorization)
+    if not uid:
+        return {"watching": False}
+    return {"watching": bool(await db.release_watch.find_one({"creation_id": cid, "user_id": uid}))}
+
+
+@api_router.post("/creations/{cid}/watch")
+async def add_watch(cid: str, body: WatchIn, authorization: Optional[str] = Header(None)):
+    if not await db.creations.find_one({"id": cid}, {"_id": 0, "id": 1}):
+        raise HTTPException(404, "Œuvre introuvable")
+    user = await _optional_user(authorization)
+    email = ((user or {}).get("email") or body.email or "").strip().lower()
+    if not user and (not email or "@" not in email or len(email) > 200):
+        raise HTTPException(400, "Adresse email invalide")
+    q = {"creation_id": cid, **({"user_id": user["id"]} if user else {"email": email})}
+    if not await db.release_watch.find_one(q):
+        await db.release_watch.insert_one({**q, "id": str(uuid.uuid4()), "email": email, "user_id": (user or {}).get("id", ""),
+                                           "token": uuid.uuid4().hex, "created_at": now_iso()})
+    return {"watching": True}
+
+
+@api_router.delete("/creations/{cid}/watch")
+async def remove_watch(cid: str, authorization: Optional[str] = Header(None)):
+    uid = await _optional_uid(authorization)
+    if uid:
+        await db.release_watch.delete_many({"creation_id": cid, "user_id": uid})
+    return {"watching": False}
+
+
+@api_router.get("/watch/unsubscribe")
+async def watch_unsubscribe(t: str):
+    await db.release_watch.delete_one({"token": t})
+    return HTMLResponse("<html><body style='font-family:Arial;background:#0b0c10;color:#eee;padding:40px'>"
+                        "<h2>C'est noté.</h2><p>Tu ne recevras plus d'alerte de sortie pour cette œuvre.</p></body></html>")
+
+
+def _release_mail(c: dict, label: str, url: str, early: bool = False) -> str:
+    head = "En avant-première pour toi" if early else "C'est sorti"
+    body = (f"<p style='margin:0 0 14px'><b>{label}</b> de <b>{c.get('title', '')}</b> est en ligne.</p>"
+            + (f"<p style='margin:0 0 18px;color:#bbb'>{(c.get('tagline') or '')[:200]}</p>" if c.get("tagline") else "")
+            + f"<p><a href='{url}' style='display:inline-block;padding:11px 20px;background:#d4b26a;color:#111;font-weight:bold;"
+              "text-decoration:none;border-radius:4px'>Lire maintenant</a></p>"
+              "<p style='margin-top:22px;font-size:12px;color:#888'><a href='%%UNSUB%%' style='color:#888'>Ne plus être prévenu</a></p>")
+    return _mail_html(head, body)
+
+
+async def _notify_release(c: dict, u: dict, kind: str, i: int, early: bool = False, tier: str = ""):
+    """Une sortie vient d'arriver : notification et email à ceux qui suivent l'œuvre."""
+    label = _unit_label(c, u, kind, i)
+    url = f"{_site_url()}/oeuvre/{c['id']}"
+    tiers = await _site_tiers()
+    # destinataires : « Me prévenir » + ceux qui ont l'œuvre en coup de cœur
+    watchers = await db.release_watch.find({"creation_id": c["id"]}, {"_id": 0}).to_list(5000)
+    fav_users = await db.users.find({"favorites": c["id"]}, {"_id": 0, "id": 1}).to_list(5000)
+    uids = {w["user_id"] for w in watchers if w.get("user_id")} | {f["id"] for f in fav_users}
+    if early:  # l'avant-première ne prévient que les abonnés éligibles
+        ok = set()
+        for uid in uids:
+            mt = await _member_tier(uid)
+            if mt and (not tier or _tier_rank(tiers, mt) >= _tier_rank(tiers, tier)):
+                ok.add(uid)
+        uids = ok
+        watchers = [w for w in watchers if w.get("user_id") in ok]
+    data = {"title": ("⭐ Avant-première · " if early else "🚀 ") + c.get("title", ""), "body": f"{label} est en ligne.",
+            "url": f"/oeuvre/{c['id']}", "tag": f"rel-{u.get('id')}{'-e' if early else ''}", "kind": "public"}
+    pushed = 0
+    for uid in uids:
+        for sub in await db.push_subscriptions.find({"user_id": uid, "pref": {"$ne": "off"}}, {"_id": 0}).to_list(20):
+            await _send_push_sub(sub, data)
+            pushed += 1
+    mailed = 0
+    if _resend_key():
+        sent_to = set()
+        for w in watchers:
+            em = (w.get("email") or "").lower()
+            if not em or em in sent_to:
+                continue
+            html = _release_mail(c, label, url, early).replace("%%UNSUB%%", f"{_site_url()}/api/watch/unsubscribe?t={w.get('token', '')}")
+            if await _send_email(em, f"{'Avant-première · ' if early else ''}{c.get('title', '')} · {label}", html):
+                mailed += 1
+            sent_to.add(em)
+            await asyncio.sleep(0.6)
+        st = await db.settings.find_one({"key": "site"}, {"_id": 0, "release_mail_all": 1}) or {}
+        if st.get("release_mail_all") and not early:
+            await _broadcast_email(f"{c.get('title', '')} · {label}", _release_mail(c, label, url))
+    logger.info("Sortie %s · %s : %d notifications, %d emails", c.get("title"), label, pushed, mailed)
+    return {"push": pushed, "mail": mailed}
+
+
+async def _release_loop():
+    """Toutes les minutes : les sorties programmées qui viennent d'arriver (et les avant-premières) préviennent leurs lecteurs.
+    Une sortie de plus de 2 jours n'est jamais annoncée (au premier déploiement, rien d'ancien ne part)."""
+    await asyncio.sleep(30)
+    while True:
+        try:
+            now = datetime.now(timezone.utc)
+            async for c in db.creations.find({"$or": [{"chapters.release_at": {"$gt": ""}}, {"episodes.release_at": {"$gt": ""}}]},
+                                             {"_id": 0, "id": 1, "title": 1, "tagline": 1, "unit_label": 1, "chapters.id": 1, "chapters.title": 1,
+                                              "chapters.release_at": 1, "chapters.early_days": 1, "chapters.early_tier": 1, "episodes.id": 1,
+                                              "episodes.title": 1, "episodes.release_at": 1, "episodes.early_days": 1, "episodes.early_tier": 1}):
+                for key, kind in (("chapters", "chapter"), ("episodes", "episode")):
+                    for i, u in enumerate(c.get(key) or []):
+                        t = _parse_iso(u.get("release_at"))
+                        if not t or not u.get("id"):
+                            continue
+                        steps = [("pub", t, False)]
+                        days = int(u.get("early_days") or 0)
+                        if days > 0:
+                            steps.append(("early", t - timedelta(days=days), True))
+                        for tag, when, early in steps:
+                            if when > now or now - when > timedelta(days=2):
+                                continue
+                            sid = f"{tag}:{u['id']}"
+                            if await db.release_sent.find_one({"id": sid}):
+                                continue
+                            await db.release_sent.insert_one({"id": sid, "creation_id": c["id"], "at": now_iso()})
+                            await _notify_release(c, u, kind, i + 1, early, u.get("early_tier") or "")
+        except Exception as ex:  # noqa: BLE001
+            logger.error("release loop: %s", ex)
+        await asyncio.sleep(60)
+
+
+# ---------------- Tes chiffres : visites anonymes, sans service extérieur ----------------
+class HitIn(BaseModel):
+    kind: str                      # open | read | end | play | time
+    creation_id: str = ""
+    unit_id: str = ""
+    unit_index: int = -1
+    seconds: int = 0
+    vid: str = ""                  # identifiant anonyme du navigateur (aléatoire, sans lien avec un compte)
+    ref: str = ""                  # d'où vient le visiteur (domaine seulement)
+
+
+@api_router.post("/stats/hit")
+async def stats_hit(h: HitIn, authorization: Optional[str] = Header(None)):
+    if h.kind not in ("open", "read", "end", "play", "time", "visit"):
+        return {"ok": False}
+    uid = await _optional_uid(authorization)
+    if uid:
+        u = await db.users.find_one({"id": uid}, {"_id": 0, "is_admin": 1})
+        if u and u.get("is_admin"):
+            return {"ok": True, "skipped": "admin"}  # tes propres visites ne comptent pas
+    ref = (h.ref or "").lower().strip()[:120]
+    ref = ref.split("//")[-1].split("/")[0].replace("www.", "") if ref else ""
+    await db.stats_events.insert_one({"kind": h.kind, "creation_id": h.creation_id[:64], "unit_id": h.unit_id[:64],
+                                      "unit_index": h.unit_index, "seconds": max(0, min(h.seconds, 1800)), "vid": h.vid[:40],
+                                      "ref": ref, "day": datetime.now(timezone.utc).strftime("%Y-%m-%d"), "at": now_iso()})
+    return {"ok": True}
+
+
+@api_router.get("/stats")
+async def stats(days: int = 30, _admin=Depends(require_admin)):
+    since = (datetime.now(timezone.utc) - timedelta(days=max(1, min(days, 365)))).strftime("%Y-%m-%d")
+    evs = await db.stats_events.find({"day": {"$gte": since}}, {"_id": 0}).to_list(300000)
+    titles = {c["id"]: c.get("title", "") async for c in db.creations.find({}, {"_id": 0, "id": 1, "title": 1})}
+    per, daily, refs, visitors = {}, {}, {}, set()
+    for e in evs:
+        visitors.add(e.get("vid"))
+        d = daily.setdefault(e["day"], {"day": e["day"], "visitors": set(), "reads": 0})
+        d["visitors"].add(e.get("vid"))
+        if e["kind"] == "visit" and e.get("ref"):
+            refs.setdefault(e["ref"], set()).add(e.get("vid"))
+        cid = e.get("creation_id")
+        if not cid:
+            continue
+        p = per.setdefault(cid, {"id": cid, "title": titles.get(cid, "Œuvre supprimée"), "opens": set(), "readers": set(), "seconds": 0, "units": {}})
+        if e["kind"] == "open":
+            p["opens"].add(e.get("vid"))
+        if e["kind"] in ("read", "play", "end", "time"):
+            p["readers"].add(e.get("vid"))
+        if e["kind"] == "time":
+            p["seconds"] += e.get("seconds") or 0
+        if e["kind"] in ("read", "play", "end") and e.get("unit_index", -1) >= 0:
+            un = p["units"].setdefault(e["unit_index"], {"index": e["unit_index"], "readers": set(), "ends": set()})
+            (un["ends"] if e["kind"] == "end" else un["readers"]).add(e.get("vid"))
+            if e["kind"] == "read":
+                d["reads"] += 1
+    works = []
+    for p in per.values():
+        units = sorted(p["units"].values(), key=lambda x: x["index"])
+        works.append({"id": p["id"], "title": p["title"], "opens": len(p["opens"]), "readers": len(p["readers"]),
+                      "minutes": round(p["seconds"] / 60), "avg_minutes": round(p["seconds"] / 60 / max(1, len(p["readers"])), 1),
+                      "units": [{"index": u["index"], "readers": len(u["readers"] | u["ends"]), "ends": len(u["ends"])} for u in units]})
+    works.sort(key=lambda w: -w["opens"])
+    return {"days": days, "visitors": len(visitors), "works": works,
+            "daily": [{"day": k, "visitors": len(v["visitors"]), "reads": v["reads"]} for k, v in sorted(daily.items())],
+            "refs": sorted([{"ref": k, "visitors": len(v)} for k, v in refs.items()], key=lambda r: -r["visitors"])[:15]}
+
+
+# ---------------- Sauvegarde complète de la station ----------------
+BACKUP_COLLECTIONS = ["creations", "categories", "journal_entries", "journal_categories", "settings", "roadmap", "announcements",
+                      "comments", "ambiences", "newsletters", "subscribers", "profiles", "release_watch",
+                      "atelier_items", "atelier_universes", "atelier_records", "atelier_tasks", "atelier_links", "atelier_config",
+                      "atelier_files", "atelier_versions", "creation_versions", "media_assets"]
+
+
+@api_router.get("/admin/backup")
+async def backup(_admin=Depends(require_admin)):
+    """Tout le contenu de la station dans un seul fichier JSON (sans mots de passe ni paiements)."""
+    out = {"station": "Station Nexus", "version": 1, "exported_at": now_iso(), "collections": {}}
+    for name in BACKUP_COLLECTIONS:
+        out["collections"][name] = await db[name].find({}, {"_id": 0}).to_list(200000)
+    out["collections"]["users"] = await db.users.find({}, {"_id": 0, "password_hash": 0, "google_sub": 0}).to_list(200000)
+    data = json.dumps(out, ensure_ascii=False, default=str).encode("utf-8")
+    fname = f"station-nexus-{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
+    return Response(content=data, media_type="application/json", headers={"Content-Disposition": f'attachment; filename="{fname}"'})
+
+
 api_router.include_router(build_atelier_router(db, require_admin, _storage_put, OBJ_APP_NAME))
 api_router.include_router(build_public_files_router(db, _storage_get))
 from bunny import build_bunny_router  # noqa: E402
@@ -3026,6 +3301,7 @@ async def startup():
     except Exception as e:
         logger.error("Object storage init failed: %s", e)
     asyncio.create_task(_roadmap_reminder_loop())
+    asyncio.create_task(_release_loop())
 
 
 @app.on_event("shutdown")

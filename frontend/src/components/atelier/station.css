@@ -125,3 +125,8 @@
 .st-rel input[type=datetime-local]{align-self:flex-start;min-width:240px;color-scheme:dark}
 .st-sched{color:#9ec5ff!important;border-color:color-mix(in srgb,#6aa8ff 45%,transparent)!important}
 .at-drop-priv{display:block;margin-top:6px;font-size:9.5px;letter-spacing:.2em;color:var(--text-secondary);font-weight:500}
+/* 0.46 · avant-première */
+.st-early{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--at-line,rgba(255,255,255,.15))}
+.st-early>.mono{font-size:10.5px;letter-spacing:.18em;opacity:.75;width:100%}
+.st-early select{flex:1 1 180px}
+.st-early .st-note{width:100%}

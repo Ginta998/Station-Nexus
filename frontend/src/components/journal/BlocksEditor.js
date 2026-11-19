@@ -4,7 +4,7 @@ import { IoArrowUp, IoArrowDown, IoTrashOutline, IoImageOutline, IoMusicalNotes,
 import { toast } from "sonner";
 import { uploadJournalImage, mediaUrl, listAmbiences, ambienceUrl } from "@/lib/api";
 import { ytId } from "@/lib/blocks";
-import { CoverDialog } from "@/components/atelier/Alexandrie";
+import { CoverDialog } from "@/components/atelier/AlexCore";
 import { YtSearchBox } from "@/components/RichTextEditor";
 import AutoTextarea from "@/components/AutoTextarea";
 

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { IoAdd, IoCreateOutline, IoEyeOutline, IoTrashOutline, IoLinkOutline, IoCloudUploadOutline, IoClose, IoSwapHorizontal } from "react-icons/io5";
-import { listCreations, getCreation, getCreationFull, updateCreation, listJournalCategories, posterUrl } from "@/lib/api";
+import { listCreations, getCreation, getCreationFull, updateCreation, listJournalCategories, posterUrl, getMembershipPlan } from "@/lib/api";
 import { isOeuvre, isFolder, stripHtml } from "@/lib/atelier";
 import { pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
@@ -158,6 +158,7 @@ function PublishDialog({ at, it, onClose, initialDest }) {
   const prev = isUnit ? (prevC && (prevC.unit || "chapters") === unit ? prevC : null) : prevJ;
   // sortie : maintenant, ou programmée (le chapitre part tout de suite mais reste caché au public jusqu'à l'heure dite)
   const [when, setWhen] = useState(prevC?.release_at && new Date(prevC.release_at) > new Date() ? "later" : "now");
+  const [early, setEarly] = useState({ days: 0, tier: "" });
   const [relAt, setRelAt] = useState(() => { if (prevC?.release_at && new Date(prevC.release_at) > new Date()) { const d = new Date(prevC.release_at); const q = (n) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${q(d.getMonth() + 1)}-${q(d.getDate())}T${q(d.getHours())}:${q(d.getMinutes())}`; } return nextSunday(); });
   // ce qui a bougé depuis la dernière publication (dans l'atelier, en ligne, ou les deux)
   const { data: remote, isFetching: rLoading } = useQuery({ queryKey: ["pub-remote", prev?.target, prev?.chapter_id || prev?.entry_id], queryFn: () => fetchRemote(prev), enabled: !!prev, staleTime: 0 });
@@ -188,7 +189,7 @@ function PublishDialog({ at, it, onClose, initialDest }) {
     setBusy(true);
     try {
       const p = isUnit
-        ? await publishChapter(it, { creation_id: cid, mode, chapter_id: chId, title: title.trim(), unit, release_at: when === "later" ? localToIso(relAt) : "" })
+        ? await publishChapter(it, { creation_id: cid, mode, chapter_id: chId, title: title.trim(), unit, release_at: when === "later" ? localToIso(relAt) : "", early })
         : await publishJournal(it, { entry_id: prevJ?.entry_id || "", title: title.trim(), creation_id: jc, category_id: cat, format: fmt, published: pub, show_home: home });
       let fields = { ...(it.fields || {}), [isUnit ? "published" : "published_j"]: p };
       if (after === "folder") fields = { ...fields, folder_id: (await publishedFolder(at, it)).id };
@@ -232,7 +233,7 @@ function PublishDialog({ at, it, onClose, initialDest }) {
           </select></label>}
           {mode === "replace" && repl && <p className="st-warn">{word === "épisode" ? "La vidéo et le résumé" : "Le texte"} en ligne de « {repl.title} » {word === "épisode" ? "seront remplacés" : "sera remplacé"} par ceux de ce document.</p>}
           {dest === "episode" && vid && <p className="st-note">Vidéo : {vid.replace(/^https?:\/\/(www\.)?/, "")}. Le texte de l'élément sert de résumé.</p>}
-          <Release when={when} setWhen={setWhen} relAt={relAt} setRelAt={setRelAt} />
+          <Release when={when} setWhen={setWhen} relAt={relAt} setRelAt={setRelAt} early={early} setEarly={setEarly} />
         </> : <>
           <div className="st-row">
             <label>Rattachée à<select value={jc} onChange={(e) => setJc(e.target.value)} data-testid="publish-j-creation"><option value="">Aucune (nouveauté)</option>{creations.map((x) => <option key={x.id} value={x.id}>{x.title}</option>)}</select></label>
@@ -285,14 +286,14 @@ function BatchDialog({ at, ids, onClose }) {
   const [step, setStep] = useState(-1);
   const allVid = items.length > 0 && items.every((it) => videoOf(it));
   const [unit, setUnit] = useState(() => (allVid && items.every((it) => !stripHtml(it.content || "").replace(/https?:\/\/\S+/g, "").trim()) ? "episodes" : "chapters"));
-  const [when, setWhen] = useState("now"); const [relAt, setRelAt] = useState(nextSunday());
+  const [when, setWhen] = useState("now"); const [relAt, setRelAt] = useState(nextSunday()); const [early, setEarly] = useState({ days: 0, tier: "" });
   const n0 = (c?.[unit] || []).length; const abbr = unit === "episodes" ? "ÉP." : "CH.";
   let k = 0; const plan = items.map((it) => { const p = it.fields?.published; if (p && p.creation_id === cid && (p.unit || "chapters") === unit) return { it, upd: true, n: (p.index ?? 0) + 1 }; k += 1; return { it, upd: false, n: n0 + k }; });
   const move = (i, d) => setOrder((o) => { const a = [...o]; const j = i + d; if (j < 0 || j >= a.length) return a; [a[i], a[j]] = [a[j], a[i]]; return a; });
   const empty = items.filter((it) => !stripHtml(it.content || "").trim());
   const go = async () => {
     if (!cid) return toast.error("Choisis la création"); setStep(0);
-    try { await publishBatch(at, items, cid, setStep, { unit, release_at: when === "later" ? localToIso(relAt) : "" }); qc.invalidateQueries({ queryKey: ["creation-atelier"] }); qc.invalidateQueries({ queryKey: ["creations"] }); qc.invalidateQueries({ queryKey: ["pub-panel"] });
+    try { await publishBatch(at, items, cid, setStep, { unit, release_at: when === "later" ? localToIso(relAt) : "", early }); qc.invalidateQueries({ queryKey: ["creation-atelier"] }); qc.invalidateQueries({ queryKey: ["creations"] }); qc.invalidateQueries({ queryKey: ["pub-panel"] });
       toast.success(when === "later" ? `${items.length} ${unit === "episodes" ? "épisode" : "chapitre"}${items.length > 1 ? "s" : ""} programmé${items.length > 1 ? "s" : ""} · ${relLabel(localToIso(relAt))}` : `${items.length} ${unit === "episodes" ? "épisode" : "chapitre"}${items.length > 1 ? "s" : ""} en ligne`, { action: { label: "Voir", onClick: () => nav(`/oeuvre/${cid}`) } }); onClose(); }
     catch (e) { toast.error(e?.response?.data?.detail || "Le lot s'est arrêté en route : ce qui est parti reste en ligne"); setStep(-1); }
   };
@@ -320,7 +321,7 @@ function BatchDialog({ at, ids, onClose }) {
             </li>
           ))}
         </ol>
-        <Release when={when} setWhen={setWhen} relAt={relAt} setRelAt={setRelAt} />
+        <Release when={when} setWhen={setWhen} relAt={relAt} setRelAt={setRelAt} early={early} setEarly={setEarly} />
         {empty.length > 0 && unit === "chapters" && <p className="st-warn">{empty.length} document{empty.length > 1 ? "s sont vides" : " est vide"} : {empty.length > 1 ? "ils partiront" : "il partira"} comme chapitre{empty.length > 1 ? "s" : ""} vide{empty.length > 1 ? "s" : ""}.</p>}
         <footer>
           <button className="at-btn ghost" onClick={onClose} disabled={step >= 0}>Annuler</button>
@@ -333,7 +334,9 @@ function BatchDialog({ at, ids, onClose }) {
 }
 
 // Quand le chapitre ou l'épisode sort : maintenant, ou à une date (le prochain dimanche 18 h par défaut)
-function Release({ when, setWhen, relAt, setRelAt }) {
+function Release({ when, setWhen, relAt, setRelAt, early, setEarly }) {
+  const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
+  const tiers = plan?.tiers || [];
   return (
     <div className="st-rel" data-testid="publish-release">
       <div className="st-seg sm">
@@ -342,7 +345,19 @@ function Release({ when, setWhen, relAt, setRelAt }) {
       </div>
       {when === "later" && <>
         <input type="datetime-local" value={relAt} onChange={(e) => setRelAt(e.target.value)} data-testid="publish-release-at" />
-        <p className="st-note">Il part tout de suite mais reste caché au public jusqu'au {relLabel(localToIso(relAt))}. Toi, tu le vois déjà, marqué « programmé ».</p>
+        <p className="st-note">Il part tout de suite mais reste caché au public jusqu'au {relLabel(localToIso(relAt))}. Toi, tu le vois déjà, marqué « programmé ». Ceux qui suivent l'œuvre reçoivent une notification et un email à l'heure de la sortie.</p>
+        {early && (
+          <div className="st-early" data-testid="publish-early">
+            <span className="mono">AVANT-PREMIÈRE</span>
+            <select value={early.days} onChange={(e) => setEarly({ ...early, days: Number(e.target.value) })} data-testid="publish-early-days">
+              <option value={0}>Non, même jour pour tous</option>{[1, 2, 3, 5, 7, 14].map((d) => <option key={d} value={d}>{d} jour{d > 1 ? "s" : ""} plus tôt</option>)}
+            </select>
+            {early.days > 0 && <select value={early.tier} onChange={(e) => setEarly({ ...early, tier: e.target.value })} data-testid="publish-early-tier">
+              <option value="">pour tous les soutiens</option>{tiers.map((t) => <option key={t.id} value={t.id}>pour le palier {t.name} et au-dessus</option>)}
+            </select>}
+            {early.days > 0 && <p className="st-note">Les soutiens{early.tier ? ` (palier ${tiers.find((t) => t.id === early.tier)?.name || ""} et au-dessus)` : ""} le lisent dès le {relLabel(new Date(new Date(localToIso(relAt)).getTime() - early.days * 86400000).toISOString())}, et sont prévenus à ce moment-là.</p>}
+          </div>
+        )}
       </>}
     </div>
   );

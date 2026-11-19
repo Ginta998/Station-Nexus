@@ -55,6 +55,7 @@ export default function WorldComments({ creationId, units = [], term = "Chapitre
         {c.episode_index >= 0 && !child && <span className="wc-unit">{c.episode_label || unitLabel(c.episode_index)}</span>}
         <time className="wc-date">{ago(c.created_at)}</time>
       </header>
+      {c.quote && <blockquote className="wc-quote">« {c.quote} »</blockquote>}
       <p className="wc-text">{c.text}</p>
       <footer className="wc-f">
         {!child && <button type="button" onClick={() => { setReply(reply?.id === c.id ? null : c); setReplyText(""); }} data-testid={`wc-reply-${c.id}`}><IoReturnDownForward size={14} /> Répondre</button>}

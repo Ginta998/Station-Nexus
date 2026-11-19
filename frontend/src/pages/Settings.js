@@ -22,8 +22,7 @@ import {
   listSubscribers, deleteSubscriber, getSettings, updateSettings, api, API,
   uploadIntroVideo, deleteIntroVideo,
   listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations, emailStatus,
-  getLibrary, getMembershipPlan, pushTest,
-} from "@/lib/api";
+  getLibrary, getMembershipPlan, pushTest, downloadBackup } from "@/lib/api";
 import { pushSupported, getPermission, getNotifPref, getSoundPref, setSoundPref, enablePush, updatePref, disablePush, isSubscribed } from "@/lib/push";
 import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 import Celebration from "@/components/Celebration";
@@ -1081,6 +1080,9 @@ export default function Settings() {
         </>)}
 
         {isAdmin && tab === "admin" && (<>
+        <Section title="Sauvegarde" extra="— toute ta station dans un fichier">
+          <BackupBox />
+        </Section>
         <Section title="Mes revenus" extra="— tableau de bord des abonnements et des ventes">
           <button data-testid="admin-revenue" onClick={() => nav("/revenus")} className="text-sm px-4 py-2 border" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>Ouvrir le tableau de bord</button>
         </Section>
@@ -1235,6 +1237,26 @@ function LaunchSoundPick({ vol }) {
         </div>
       ))}
       <p className="text-[11px] mt-2" style={{ color: "var(--text-secondary)" }}>{LAUNCH_SOUNDS.map((o) => `${o.t} : ${o.d.toLowerCase()}`).join(" · ")}.</p>
+    </div>
+  );
+}
+
+// Sauvegarde complète : œuvres, chapitres, journal, atelier, réglages, abonnés… (sans mots de passe ni paiements)
+function BackupBox() {
+  const [busy, setBusy] = useState(false);
+  const go = async () => {
+    setBusy(true);
+    try { await downloadBackup(); toast.success("Sauvegarde téléchargée : range-la en lieu sûr (disque, Drive…)"); }
+    catch (e) { toast.error(e?.response?.status === 404 ? "Le serveur n'a pas encore cette mise à jour (à déployer sur Emergent)" : "Sauvegarde impossible pour l'instant"); }
+    setBusy(false);
+  };
+  return (
+    <div data-testid="backup-box">
+      <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Un fichier qui contient tout le contenu de la station : œuvres et chapitres, journal de bord, tout l'atelier (fiches, univers, tâches, Salon), réglages, newsletters et abonnés, commentaires. Sans les mots de passe ni les paiements. Les fichiers lourds (vidéos, musiques importées) restent sur le stockage et n'y sont pas copiés.</p>
+      <button onClick={go} disabled={busy} className="flex items-center gap-2 px-4 py-2.5 border text-sm" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)" }} data-testid="backup-download">
+        <IoDownloadOutline /> {busy ? "Préparation…" : "Télécharger la sauvegarde"}
+      </button>
+      <p className="text-xs mt-2" style={{ color: "var(--text-secondary)" }}>Conseil : une fois par mois, et avant chaque grosse mise à jour.</p>
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { getJournalEntry, createJournalEntry, updateJournalEntry, listJournalCat
 import { useApp } from "@/context/AppContext";
 import { BlocksEditor, ImagePick, ArtSearch, FilePick } from "@/components/journal/BlocksEditor";
 import { IoMusicalNotes } from "react-icons/io5";
-import { Face } from "@/components/atelier/Alexandrie";
+import { Face } from "@/components/atelier/AlexCore";
 import { Cassette, WEARS } from "@/components/journal/TapeObject";
 import MicRecorder from "@/components/journal/MicRecorder";
 import LabHead from "@/components/LabHead";
