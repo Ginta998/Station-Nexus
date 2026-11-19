@@ -293,6 +293,7 @@ export function SalonView({ at, launch, mini }) {
         </header>
       )}
 
+      <YtSearch at={at} launch={launch} />
       <form className="at-tadd" onSubmit={add} data-testid="atelier-salon-add">
         <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Lien YouTube, Spotify, Twitch, un site web à parcourir…" data-testid="atelier-salon-url" />
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre (optionnel)" style={{ flex: "0 1 220px" }} />
@@ -307,7 +308,6 @@ export function SalonView({ at, launch, mini }) {
 
       <ContinueRow links={links} launch={launch} />
       <VhsShelf at={at} launch={launch} links={links} />
-      <YtSearch at={at} launch={launch} />
       {order.map((k) => {
         if (k === "playlists") return <PlaylistsSec key={k} />;
         if (k === "integrations") return <IntegrationsSec key={k} />;

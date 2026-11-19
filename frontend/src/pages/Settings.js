@@ -905,7 +905,7 @@ export default function Settings() {
     <div className={"rl rl-set" + (setDark ? " rl-dark" : "")} style={{ "--rl-acc": "var(--brand)" }} data-testid="settings-page">
       <header className="rl-top">
         <button type="button" className="rl-ico" data-testid="settings-back" onClick={() => { sfx("back"); nav("/"); }} aria-label="Retour à l'accueil"><IoArrowBack size={18} /></button>
-        <div className="rl-brand"><small>RHINE LAB · PARAMÈTRES DE LA STATION</small><b>Paramètres</b></div>
+        <div className="rl-brand"><small>STATION NEXUS · PARAMÈTRES</small><b>Paramètres</b></div>
         <div className="rl-top-acts">
           <button type="button" className="rl-ico" onClick={toggleSetDark} title={setDark ? "Mode clair" : "Mode sombre"} aria-label={setDark ? "Mode clair" : "Mode sombre"} data-testid="settings-dark">{setDark ? <IoSunnyOutline size={17} /> : <IoMoonOutline size={17} />}</button>
           <MobileMenu />

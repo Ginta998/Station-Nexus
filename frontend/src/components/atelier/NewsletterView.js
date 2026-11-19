@@ -100,7 +100,8 @@ export default function NewsletterView() {
             <fieldset disabled={locked}>
               <label>Objet<input value={n.subject || ""} onChange={(e) => set({ subject: e.target.value })} placeholder="Le chapitre 12 est sorti" data-testid="nl-subject" /></label>
               <label>Phrase d'aperçu <small>ce qu'on lit à côté de l'objet dans la boîte de réception</small><input value={n.preheader || ""} onChange={(e) => set({ preheader: e.target.value })} placeholder="Et une surprise dans les coulisses…" /></label>
-              <div className="nl-themes">{Object.entries(NL_THEMES).map(([k, t]) => <button type="button" key={k} className={(n.theme || "nuit") === k ? "on" : ""} onClick={() => set({ theme: k })} style={{ "--a": t.acc, "--b": t.card, "--i": t.ink }} data-testid={`nl-theme-${k}`}><i />{t.t}</button>)}</div>
+              <div className="nl-themes-w"><p className="mono">HABILLAGE · {(NL_THEMES[n.theme] || NL_THEMES.nuit).t.toUpperCase()}{(NL_THEMES[n.theme] || {}).info ? ` · ${NL_THEMES[n.theme].info}` : ""}</p>
+                <div className="nl-themes">{Object.entries(NL_THEMES).map(([k, t]) => <button type="button" key={k} className={(n.theme || "nuit") === k ? "on" : ""} onClick={() => set({ theme: k })} style={{ "--a": t.acc, "--b": t.card, "--i": t.ink, "--f": t.head }} title={t.info} data-testid={`nl-theme-${k}`}><i />{t.t}</button>)}</div></div>
 
               <div className="nl-blocks">
                 {n.blocks.map((b, i) => (

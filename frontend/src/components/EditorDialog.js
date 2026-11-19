@@ -569,7 +569,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
       <div className={"rl" + (dark ? " rl-dark" : "") + (peek ? " rl-peeking" : "") + (sec === "themes" ? (wtFull ? " rl-full" : " rl-wide") : "")} style={{ "--rl-acc": acc }} data-testid={peek ? "editor-dialog-peek" : "editor-dialog"} role="dialog" aria-label={isEdit ? "Modifier la création" : "Nouvelle création"}>
         <header className="rl-top">
           <button type="button" className="rl-ico" onClick={tryClose} aria-label="Fermer" data-testid="editor-close"><IoClose size={20} /></button>
-          <div className="rl-brand"><small>RHINE LAB · ATELIER DE L'ŒUVRE</small><b>{form.title || (isEdit ? "Sans titre" : "Nouvelle création")}</b></div>
+          <div className="rl-brand"><small>STATION NEXUS · ATELIER DE L'ŒUVRE</small><b>{form.title || (isEdit ? "Sans titre" : "Nouvelle création")}</b></div>
           <span className={"rl-state" + (fullState === "loading" ? " load" : dirty ? " dirty" : "")}>{fullState === "loading" ? "CHARGEMENT…" : fullState === "error" ? "INCOMPLET" : dirty ? "NON ENREGISTRÉ" : "À JOUR"}</span>
           <div className="rl-top-acts">
             <button type="button" className="rl-ico" onClick={toggleDark} title={dark ? "Mode clair" : "Mode sombre"} aria-label={dark ? "Mode clair" : "Mode sombre"} data-testid="editor-dark">{dark ? <IoSunnyOutline size={17} /> : <IoMoonOutline size={17} />}</button>

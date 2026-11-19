@@ -48,3 +48,7 @@
 .nl-frame.phone{width:390px;max-width:100%;margin:0 auto;display:block}
 @media (max-width:1180px){.nl-grid{grid-template-columns:minmax(0,1fr)}.nl-list,.nl-prev{position:static}.nl-list{flex-direction:row;flex-wrap:wrap}.nl-li{flex:1 1 200px}.nl-start{grid-column:auto}}
 @media (max-width:600px){.nl-diag{flex-wrap:wrap}.nl-diag .at-btn{width:100%;justify-content:center}}
+/* 0.44 · tous les habillages, dont ceux d'Alexandrie */
+.nl-themes-w p{margin:0 0 6px;font-size:10.5px;letter-spacing:.16em;opacity:.7}
+.nl-themes-w .nl-themes{max-height:132px;overflow-y:auto;padding:2px}
+.nl-themes button{font-family:var(--f,inherit)}

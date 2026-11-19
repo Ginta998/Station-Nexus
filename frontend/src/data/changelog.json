@@ -1,6 +1,20 @@
 {
-  "version": "0.43",
+  "version": "0.44",
   "patches": [
+    {
+      "v": "0.44",
+      "date": "2026-11-19",
+      "title": "Habillages de lettre et recherche en haut",
+      "groups": {
+        "Ajouté": [
+          "Newsletter : une trentaine d'habillages, dont toutes les ambiances d'Alexandrie (gothique, washi, presse, cosmos, néon, western…) avec leurs couleurs, leur police de titre et leur ornement de séparation."
+        ],
+        "Changé": [
+          "Salon : la recherche YouTube est en haut, juste sous l'affiche.",
+          "Plus de mention « Rhine Lab » dans la station (atelier de l'œuvre, paramètres, historique des versions)."
+        ]
+      }
+    },
     {
       "v": "0.43",
       "date": "2026-11-19",
@@ -183,7 +197,7 @@
     {
       "v": "0.31",
       "date": "2026-11-19",
-      "title": "Enregistrer, modifier sur place, Rhine Lab partout",
+      "title": "Enregistrer, modifier sur place, Laboratoire partout",
       "groups": {
         "Ajouté": [
           "Enregistrer au micro : dans l'éditeur du journal et sur la cassette elle-même. Voyant rouge, compteur, vumètre, « Arrêter » pose l'enregistrement sur la cassette (le navigateur demande l'accès au micro la première fois).",
@@ -192,7 +206,7 @@
         "Changé": [
           "La cassette a un vrai volume : coins presque droits, biseaux, tranche épaisse avec stries, bas en trapèze en relief, posée en légère perspective.",
           "En Nexus, une entrée du journal s'ouvre directement dans son objet (livre, VHS, vinyle ou cassette), sans page intermédiaire ; fermer ramène à la liste.",
-          "Passe Rhine Lab : l'entrée du journal (repère, filets, crochets, boutons nets), l'éditeur du journal (en-tête de labo, sections numérotées 01 à 05, l'enregistrement juste sous le format) et le Salon (repère S-01, onglets soulignés, canaux et messages à angles droits)."
+          "Passe Laboratoire : l'entrée du journal (repère, filets, crochets, boutons nets), l'éditeur du journal (en-tête de labo, sections numérotées 01 à 05, l'enregistrement juste sous le format) et le Salon (repère S-01, onglets soulignés, canaux et messages à angles droits)."
         ]
       }
     },
@@ -330,7 +344,7 @@
         "Nouveau": [
           "Atelier › Monde : « Grille des chapitres », de 1 à 5 vignettes par ligne sur ordinateur (ou Automatique). Peu de chapitres : grandes vignettes ; beaucoup : plus compact.",
           "Lecture en plein écran : le livre ou la cassette prend tout l'écran ; les barres et les flèches se cachent quand on ne bouge plus et reviennent au moindre mouvement (ou en touchant l'écran).",
-          "Écrire un chapitre en Rhine Lab : barre d'atelier, vraie feuille de papier, compteur de mots et temps de lecture, Ctrl + S pour enregistrer."
+          "Écrire un chapitre en Laboratoire : barre d'atelier, vraie feuille de papier, compteur de mots et temps de lecture, Ctrl + S pour enregistrer."
         ],
         "Changé": [
           "Rayons de l'accueil Nexus : un vrai meuble (bois sombre, planche en noyer, baguette de laiton) avec un fin filet de lumière ; plus de reflet de vitrine, une ombre d'objet posé.",
@@ -357,7 +371,7 @@
           "Seul l'accès rapide reprend la lecture : depuis la bibliothèque, on entre dans l'univers, sur son accueil.",
           "La maison ramène à l'accueil de l'œuvre ; seul « Quitter l'univers » sort du monde.",
           "Cinéma sur ordinateur : le menu est à gauche, comme dans les autres thèmes.",
-          "Messages de Bunny au style Rhine Lab.",
+          "Messages de Bunny au style Laboratoire.",
           "Lecture publique : plus d'export PDF.",
           "Le thème de station Akira et l'ambiance Trait sont masqués (réactivables : Atelier des thèmes, et « Ambiances masquées » dans l'atelier)."
         ],
@@ -411,14 +425,14 @@
           "Thème Cristal refait : verre, lumière, typographie fine.",
           "Monde : une maison pour revenir à l'accueil de la station et un bouton « Quitter l'univers ».",
           "Les commentaires sont sous le menu de l'œuvre : on fait défiler, on lit, on écrit.",
-          "Recherche de la station : un panneau d'index façon Rhine Lab (œuvres, chapitres, journal, pages), au clavier, aussi avec Ctrl/Cmd + K.",
+          "Recherche de la station : un panneau d'index façon Laboratoire (œuvres, chapitres, journal, pages), au clavier, aussi avec Ctrl/Cmd + K.",
           "Paramètres de la station rangés comme l'atelier : sections numérotées, mode clair ou sombre.",
           "Atelier de l'œuvre : mode sombre (bouton lune)."
         ],
         "Amélioré": [
           "Intentions et Making of ne font plus qu'un : à l'enregistrement, les Intentions deviennent une entrée du journal liée à l'œuvre.",
           "Le bouton Thèmes de l'accueil prend la couleur du thème actif.",
-          "En-têtes Rhine Lab sur Membres, Planning et Bibliothèque.",
+          "En-têtes Laboratoire sur Membres, Planning et Bibliothèque.",
           "Téléphone : les titres d'articles passent sur deux lignes au lieu d'être coupés."
         ],
         "Retiré": [
@@ -454,7 +468,7 @@
       "title": "L'atelier de l'œuvre",
       "groups": {
         "Nouveau": [
-          "Un seul éditeur pour créer et modifier une œuvre : l'atelier, en plein écran, dans l'esprit Rhine Lab. Sept sections : Identité, Monde, Contenu, Médias, Intentions, Son, Publication.",
+          "Un seul éditeur pour créer et modifier une œuvre : l'atelier, en plein écran, dans l'esprit Laboratoire. Sept sections : Identité, Monde, Contenu, Médias, Intentions, Son, Publication.",
           "Monde : choix de l'ambiance sur des mini-scènes qui montrent ton titre, ta couleur et ton fond ; couleur tirée de l'affiche ou choisie ; fond du monde en glisser-déposer.",
           "« Voir dans le monde » : l'atelier s'efface et le monde de l'œuvre affiche tes réglages en direct, avant d'enregistrer.",
           "Chapitres et épisodes se déplacent (monter, descendre) ; images du moodboard aussi.",
