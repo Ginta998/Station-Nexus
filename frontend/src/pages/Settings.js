@@ -1,4 +1,5 @@
 import { FAVICONS, faviconPng } from "@/lib/favicons";
+import { LAUNCH_SOUNDS, getLaunchSound, setLaunchSound, playLaunch } from "@/lib/launchSound";
 import { useState, useEffect, useRef } from "react";
 import { MyData, ReportsAdmin, LegalInfoAdmin } from "@/components/PrivacyTools";
 import { useNavigate } from "react-router-dom";
@@ -1007,6 +1008,7 @@ export default function Settings() {
           <input data-testid="music-volume-slider" type="range" min="0" max="1" step="0.05" value={musicVolume} onChange={(e) => setMusicVolume(parseFloat(e.target.value))} className="w-full mt-2 mb-5" style={{ accentColor: "var(--brand)" }} />
           <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Volume de l'interface ({Math.round(uiVolume * 100)}%)</label>
           <input data-testid="ui-volume-slider" type="range" min="0" max="1" step="0.05" value={uiVolume} onChange={(e) => { setUiVolume(parseFloat(e.target.value)); }} onMouseUp={() => sfx("select")} onTouchEnd={() => sfx("select")} className="w-full mt-2" style={{ accentColor: "var(--brand)" }} />
+          <LaunchSoundPick vol={muted ? 0 : uiVolume} />
         </Section>
 
         <Section title="Pistes & ambiances" extra="— choisis ou ajoute">
@@ -1198,6 +1200,25 @@ function SiteIdentity() {
           <span className="text-xs" style={{ color: "var(--text-secondary)" }}>{desc.length}/300 · idéal : 120 à 160 caractères</span>
           <button type="button" data-testid="site-description-save" onClick={saveDesc} className="text-sm px-4 py-2" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Enregistrer</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Le son du lancement d'une œuvre (Nexus) : on écoute en cliquant, le choix est gardé
+function LaunchSoundPick({ vol }) {
+  const [cur, setCur] = useState(getLaunchSound());
+  const pick = (k) => { setCur(k); setLaunchSound(k); if (k !== "none") playLaunch(Math.max(vol, 0.4), k); };
+  return (
+    <div className="mt-2" data-testid="launch-sound-pick">
+      <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Son du lancement (quand une œuvre s'ouvre)</label>
+      <div className="flex flex-wrap gap-2 mt-2">
+        {[...LAUNCH_SOUNDS, { k: "none", t: "Aucun", d: "Lancement silencieux" }].map((o) => (
+          <button key={o.k} type="button" onClick={() => pick(o.k)} title={o.d} data-testid={`launch-sound-${o.k}`}
+            className="px-3 py-2 border text-sm" style={{ borderColor: cur === o.k ? "var(--brand)" : "var(--border-c)", background: cur === o.k ? "color-mix(in srgb, var(--brand) 14%, transparent)" : "transparent", color: "var(--text-primary)" }}>
+            {o.t}<small className="block text-[10px] opacity-60">{o.d}</small>
+          </button>
+        ))}
       </div>
     </div>
   );

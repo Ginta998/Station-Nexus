@@ -6,6 +6,7 @@ import { themeDef } from "@/lib/themeStore";
 export const WORLD_STYLES = {
   cinema: "Salle de cinéma", vhs: "Magnétoscope", arcade: "Borne d'arcade", yorha: "Archives", eve: "Orbite", hero: "Arène",
   cathedrale: "Cathédrale", couronne: "Couronne", trait: "Trait", sengoku: "Sengoku", survivance: "Survivance", cristal: "Cristal",
+  dock: "Application", panorama: "Panorama", sommaire: "Revue",
 };
 // Masqués : gardés (une œuvre qui les utilise les garde), mais rangés à part dans l'atelier
 export const WORLD_MASKED = ["trait"];

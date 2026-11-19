@@ -92,6 +92,9 @@ export const WT_BASE = {
   sengoku: { paper: "#0d0c0a", ink: "#ece5d6", hl: "#c0262d", ft: "Shippori Mincho", fu: "Shippori Mincho" },
   survivance: { paper: "#11130e", ink: "#e4e0d2", hl: "#a9b97a", ft: "Work Sans", fu: "Work Sans" },
   cristal: { paper: "#070a12", ink: "#eef3ff", hl: "#8fd3ff", ft: "Cormorant Garamond", fu: "Sora" },
+  dock: { paper: "#0b0c10", ink: "#f2f2f4", hl: "#ffffff", ft: "Manrope", fu: "Inter" },
+  panorama: { paper: "#05070c", ink: "#f4f6fa", hl: "#5ea0ff", ft: "Outfit", fu: "Outfit" },
+  sommaire: { paper: "#f3efe6", ink: "#1a1814", hl: "#c4321e", ft: "Playfair Display", fu: "Inter" },
 };
 // Palettes toutes prêtes : [nom, fond, encre, accent]
 export const WT_PALETTES = [
@@ -102,6 +105,15 @@ export const WT_PALETTES = [
 ];
 // Cinq modèles pour démarrer : chacun part d'une base différente et change la structure, pas seulement les couleurs
 export const WT_PRESETS = [
+  { name: "Application", about: "Comme une appli : l'image en grand, une barre de rubriques fixe en bas. Pensé pour le téléphone.", base: "dock", paper: "#0b0c10", ink: "#f2f2f4", hl: "#ffffff",
+    font_title: "Manrope", font_ui: "Inter", font_body: "Inter", title_case: "none", title_size: 1.1, title_fx: "none", frame: "none", deco: "none", img: "auto", menu_style: "auto",
+    grain: 0, vignette: 0.35, scan: 0, pt: "none", intro: "auto", cursor: "none", win: false, mirror: false, radius: 14 },
+  { name: "Panorama", about: "Le tableau de bord d'une console : l'affiche en fond, tout en rails horizontaux, épisodes en accès direct.", base: "panorama", paper: "#05070c", ink: "#f4f6fa", hl: "#5ea0ff",
+    font_title: "Outfit", font_ui: "Outfit", font_body: "Outfit", title_case: "none", title_size: 1.2, title_fx: "none", frame: "none", deco: "none", img: "auto", menu_style: "auto",
+    grain: 0, vignette: 0.5, scan: 0, pt: "none", intro: "auto", cursor: "glow", win: false, mirror: false, radius: 10 },
+  { name: "Revue", about: "Un magazine qui se lit en défilant : sommaire fixe, chapitres, making of et moodboard sur une seule page.", base: "sommaire", paper: "#f3efe6", ink: "#1a1814", hl: "#c4321e",
+    font_title: "Playfair Display", font_ui: "Inter", font_body: "EB Garamond", title_case: "none", title_size: 1.25, title_fx: "none", frame: "none", deco: "none", img: "auto", menu_style: "underline",
+    grain: 0.15, vignette: 0, scan: 0, pt: "none", intro: "auto", cursor: "none", win: false, mirror: false, radius: 0 },
   { name: "Jazz bar 2499", about: "Lumière ambrée, titre en néon chaud, double filet, photo sépia. Rétro-futur feutré.", base: "cathedrale", paper: "#120d09", ink: "#f1e4cc", hl: "#e0a24a",
     font_title: "DM Serif Display", font_ui: "Josefin Sans", font_body: "EB Garamond", title_case: "none", title_size: 1.15, title_fx: "neon", frame: "double", deco: "none", img: "sepia", menu_style: "underline",
     grain: 0.5, vignette: 0.6, scan: 0, pt: "couronne", intro: "cinema", cursor: "spot", win: true, mirror: false, radius: "auto" },

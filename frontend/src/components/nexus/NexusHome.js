@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { playLaunch } from "@/lib/launchSound";
 import { useNavigate } from "react-router-dom";
 import { IoPlay, IoClose, IoMusicalNotes, IoLinkOutline, IoDocumentTextOutline, IoArrowUndo } from "react-icons/io5";
 import { toast } from "sonner";
@@ -40,7 +41,7 @@ function progressOf(it) {
 // La barre d'outils (recherche, thèmes, choix de la vue) est celle de l'accueil, passée telle quelle.
 export default function NexusHome({ all = [], cats = [], settings, query = "", view = "rails", toolbar }) {
   const nav = useNavigate();
-  const { sfx, playAmbient, isAdmin, favorites = [] } = useApp();
+  const { sfx, playAmbient, isAdmin, favorites = [], uiVolume = 0.6, muted } = useApp();
   const qc = useQueryClient();
   const [sel, setSel] = useState(null);       // œuvre choisie : sa notice est ouverte
   const [launch, setLaunch] = useState(null);
@@ -82,7 +83,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
   }, [nav]);
   // Pendant l'animation de lancement, on charge déjà les grandes images du monde (affiche, fond) : il arrive sans à-coup
   const preload = (x) => { try { [posterUrl(x.id, x.it.updated_at), x.it.has_bg ? bgUrl(x.id, x.it.updated_at) : null].filter(Boolean).forEach((u) => { const im = new Image(); im.decoding = "async"; im.src = u; im.decode?.().catch(() => {}); }); } catch (_) {} };
-  const start = useCallback((x, quick = false) => { if (!x) return; preload(x); quickR.current = quick; sfx?.("select"); remember(x.id); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
+  const start = useCallback((x, quick = false) => { if (!x) return; preload(x); quickR.current = quick; sfx?.("select"); remember(x.id); playLaunch(muted ? 0 : uiVolume); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
   const [leaving, setLeaving] = useState(false);
   useEffect(() => { if (!launch) return; setLeaving(false); const a = setTimeout(() => setLeaving(true), 1500); const t = setTimeout(() => go(launch), 1820); return () => { clearTimeout(a); clearTimeout(t); }; }, [launch, go]);
   useEffect(() => { setSel(null); }, [view]);

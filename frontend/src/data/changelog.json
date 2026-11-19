@@ -1,6 +1,17 @@
 {
-  "version": "0.36",
+  "version": "0.37",
   "patches": [
+    {
+      "v": "0.37",
+      "date": "2026-11-19",
+      "title": "Le son du lancement et trois mondes à naviguer autrement",
+      "groups": {
+        "Ajouté": [
+          "Un petit son au lancement d'une œuvre (quand le livre ou la VHS s'ouvre) : Halo, Élan, Clé, Aurore ou Seuil, à écouter et choisir dans Paramètres › Son (ou Aucun).",
+          "Trois nouveaux mondes, chacun avec sa façon de naviguer : Application (l'image en grand et une barre de rubriques fixe en bas, comme une appli), Panorama (le tableau de bord d'une console : rails horizontaux, épisodes et chapitres en accès direct), Revue (un magazine qui se lit en défilant, sommaire fixe, chapitres, making of et moodboard sur une seule page). Aussi en modèles dans l'atelier des thèmes de monde."
+        ]
+      }
+    },
     {
       "v": "0.36",
       "date": "2026-11-19",

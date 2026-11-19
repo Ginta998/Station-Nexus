@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { IoChatbubbleOutline, IoFilmOutline, IoImagesOutline, IoJournalOutline, IoPlanetOutline, IoLockOpenOutline } from "react-icons/io5";
 import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, mediaUrl } from "@/lib/api";
@@ -24,6 +25,8 @@ const plural = (n, one, many) => `${n} ${n > 1 ? many : one}`;
 const roman = (i) => ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][i] || String(i + 1);
 // Écran large : le menu de l'œuvre reste en colonne à gauche, la section s'ouvre dans le grand panneau
 const WIDE = "(min-width: 1100px)";
+// les icônes de la barre du monde « Application »
+const DOCK_IC = { launch: <IoPlay />, trailer: <IoFilmOutline />, gallery: <IoImagesOutline />, making: <IoJournalOutline />, embeds: <IoLinkOutline />, neighbors: <IoPlanetOutline />, unlock: <IoLockOpenOutline /> };
 function useWide() {
   const [w, setW] = useState(() => typeof window !== "undefined" && window.matchMedia?.(WIDE).matches);
   useEffect(() => { const m = window.matchMedia?.(WIDE); if (!m) return; const h = () => setW(m.matches); m.addEventListener?.("change", h); return () => m.removeEventListener?.("change", h); }, []);
@@ -243,6 +246,73 @@ export default function NexusWorld(p) {
   const Home = (c) => {
     const phoneResume = <div className="nw-quickwrap">{Resume()}</div>;
     switch (ws) {
+      // ---- Dock : comme une application, l'image en grand et les rubriques en barre fixe en bas (voir plus bas)
+      case "dock": return (
+        <div className="nw-home h-dock">
+          <span className="hd-art" style={cover || bg ? { backgroundImage: `url(${bg || cover})` } : undefined} aria-hidden="true" />
+          <div className="hd-txt">{Head()}<p className="hd-syn">{item.synopsis}</p>
+            <div className="hd-acts">{homeItems.slice(0, 2).map((it, i) => <button key={it.id} className={"hd-btn" + (i === 0 ? " main" : "")} onClick={it.go} data-testid={`nw-${it.id}`}>{i === 0 && <IoPlay size={15} />}{it.label}{it.sub && <small>{it.sub}</small>}</button>)}</div>
+            {phoneResume}
+          </div>
+        </div>
+      );
+      // ---- Panorama : le tableau de bord d'une console, l'affiche en fond et tout en rails horizontaux (rubriques, puis les épisodes / chapitres en accès direct)
+      case "panorama": return (
+        <div className="nw-home h-pano">
+          <span className="hp-art" style={bg || cover ? { backgroundImage: `url(${bg || cover})` } : undefined} aria-hidden="true" />
+          <div className="hp-head">{Head()}</div>
+          <div className="hp-rail" role="list" data-testid="nw-pano-rail">
+            {homeItems.map((it, i) => (
+              <button key={it.id} role="listitem" className={"hp-card" + (i === c.sel ? " on" : "") + (i === 0 ? " big" : "")} onMouseEnter={() => setSel(i)} onFocus={() => setSel(i)} onClick={() => { setSel(i); it.go(); }} data-testid={`nw-${it.id}`}>
+                <span className="hp-img" style={{ backgroundImage: `url(${it.win || cover || bg || ""})` }} />
+                <span className="hp-t"><b>{it.label}</b>{it.sub && <small>{it.sub}</small>}</span>
+              </button>
+            ))}
+          </div>
+          {isUnits && <>
+            <p className="hp-k">{unitsLabel} · accès direct</p>
+            <div className="hp-rail units" role="list">
+              {units.map((u, i) => (
+                <button key={u.id || i} role="listitem" className={"hp-u" + (i === current ? " cur" : "") + (unitLocked(i) ? " lock" : "")} onClick={() => openUnit(i)} data-testid={`nw-pano-u${i}`}>
+                  <span className="hp-img" style={{ backgroundImage: `url(${u.image || cover || bg || ""})` }}><i>{String(i + 1).padStart(2, "0")}</i></span>
+                  <span className="hp-t"><b>{u.title || `${unitWord[0].toUpperCase() + unitWord.slice(1)} ${i + 1}`}</b>{i === current && <small>EN COURS</small>}</span>
+                </button>
+              ))}
+            </div>
+          </>}
+        </div>
+      );
+      // ---- Revue : une seule page qui se lit en défilant, comme un magazine ; un sommaire fixe à gauche saute aux rubriques
+      case "sommaire": {
+        const jump = (id) => { const el = document.getElementById("nwr-" + id); el?.closest(".nw-homewrap")?.scrollTo({ top: el.offsetTop - 16, behavior: "smooth" }); };
+        const secs = [isUnits && ["units", unitsLabel], making.length > 0 && ["making", "Making of"], item.gallery?.length > 0 && ["gallery", "Moodboard"], neighbors.length > 0 && ["neighbors", "Autres mondes"]].filter(Boolean);
+        return (
+          <div className="nw-home h-revue">
+            <nav className="hr-toc" aria-label="Sommaire"><b>SOMMAIRE</b>{secs.map(([id, t], i) => <button key={id} onClick={() => jump(id)}><i>{String(i + 1).padStart(2, "0")}</i>{t}</button>)}<button onClick={() => goWorldHome("cm")}><i>{String(secs.length + 1).padStart(2, "0")}</i>Commentaires</button></nav>
+            <article className="hr-body">
+              <header className="hr-mast">{Head()}{(cover || bg) && <figure><span style={{ backgroundImage: `url(${cover || bg})` }} /></figure>}<p className="hr-lead">{item.synopsis}</p>
+                <div className="hd-acts">{homeItems.slice(0, 2).map((it, i) => <button key={it.id} className={"hd-btn" + (i === 0 ? " main" : "")} onClick={it.go} data-testid={`nw-${it.id}`}>{i === 0 && <IoPlay size={15} />}{it.label}</button>)}</div>
+                {phoneResume}
+              </header>
+              {isUnits && <section id="nwr-units" className="hr-sec"><h2><i>01</i>{unitsLabel}</h2>
+                <ol className="hr-units">{units.map((u, i) => (
+                  <li key={u.id || i}><button onClick={() => openUnit(i)} className={(i === current ? "cur " : "") + (unitLocked(i) ? "lock" : "")} data-testid={`nw-revue-u${i}`}>
+                    <span className="n">{String(i + 1).padStart(2, "0")}</span><span className="t"><b>{u.title || `${unitWord[0].toUpperCase() + unitWord.slice(1)} ${i + 1}`}</b>{u.description && <small>{u.description}</small>}</span>{i === current && <em>EN COURS</em>}{unitLocked(i) && <IoLockClosed size={13} />}
+                  </button></li>))}</ol>
+              </section>}
+              {making.length > 0 && <section id="nwr-making" className="hr-sec"><h2><i>{String(secs.findIndex((x) => x[0] === "making") + 1).padStart(2, "0")}</i>Making of</h2>
+                <div className="hr-cards">{itemsOf({ k: "making" }).map((it) => <button key={it.id} onClick={() => onEntry?.(making.find((e) => e.id === it.id))}><span style={it.img ? { backgroundImage: `url(${it.img})` } : undefined} /><b>{it.label}</b><small>{it.sub}</small></button>)}</div>
+              </section>}
+              {item.gallery?.length > 0 && <section id="nwr-gallery" className="hr-sec"><h2><i>{String(secs.findIndex((x) => x[0] === "gallery") + 1).padStart(2, "0")}</i>Moodboard</h2>
+                <div className="hr-gal">{item.gallery.map((g, i) => <button key={i} onClick={() => push({ k: "image", list: item.gallery, i })} style={{ backgroundImage: `url(${g})` }} aria-label={`Image ${i + 1}`} />)}</div>
+              </section>}
+              {neighbors.length > 0 && <section id="nwr-neighbors" className="hr-sec"><h2><i>{String(secs.findIndex((x) => x[0] === "neighbors") + 1).padStart(2, "0")}</i>Autres mondes</h2>
+                <div className="hr-cards">{neighbors.map((n) => <button key={n.id} onClick={() => { sfx("select"); onNeighbor(n.id); }}><span style={{ backgroundImage: `url(${coverOf(n)})` }} /><b>{n.title}</b><small>{n.tagline || ""}</small></button>)}</div>
+              </section>}
+            </article>
+          </div>
+        );
+      }
       case "cinema": return (
         <div className="nw-home h-cinema">
           <div className="hc-txt">{Head()}{Menu({ c, className: "m-dvd" })}{phoneResume}</div>
@@ -522,6 +592,17 @@ export default function NexusWorld(p) {
       {((wt?.frame && wt.frame !== "none") || (wt?.deco && wt.deco !== "none")) && <div className={"nw-wtfr fr-" + (wt.frame || "none") + " dc-" + (wt.deco || "none")} aria-hidden="true">{wt.deco === "hud" && <><span className="hud tl">SYS · NEXUS</span><span className="hud tr">● REC</span><span className="hud bl">{(item.title || "").toUpperCase().slice(0, 24)}</span><span className="hud br">{new Date().getFullYear()}</span></>}</div>}
       <CursorFx type={wt?.cursor} color={wt?.hl || undefined} />
 
+      {ws === "dock" && (
+        <nav className="nw-dock" aria-label="Rubriques" data-testid="nw-dock">
+          <button className={top.k === "home" ? "on" : ""} onClick={() => goWorldHome()}><IoHomeOutline size={18} /><span>Accueil</span></button>
+          {homeItems.filter((it) => it.id !== "resume").slice(0, 5).map((it) => {
+            const k = it.id === "launch" ? "units" : it.id;
+            return <button key={it.id} className={top.k === k ? "on" : ""} onClick={() => { if (it.id === "launch" && isUnits) replaceAt1({ k: "units", sel: current ?? 0 }); else if (["gallery", "making", "embeds", "neighbors", "trailer", "unlock"].includes(it.id)) replaceAt1({ k: it.id }); else it.go(); }} data-testid={`nw-dock-${it.id}`}>
+              {DOCK_IC[it.id] || <IoPlay />}<span>{it.label}</span></button>;
+          })}
+          <button className={top.k === "comments" ? "on" : ""} onClick={() => goWorldHome("cm")}><IoChatbubbleOutline /><span>Commentaires</span></button>
+        </nav>
+      )}
       <header className="nw-hud">
         <button className="nw-back" onClick={pop} aria-label={stack.length > 1 ? "Retour" : "Quitter le monde"} data-testid="nw-back"><IoArrowBack size={18} /></button>
         <nav className="nw-crumbs" aria-label="Où je suis">

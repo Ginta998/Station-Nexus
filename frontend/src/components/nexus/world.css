@@ -1242,3 +1242,94 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
 .nw[class*="wt-mn-"] .nw-menu button::before{display:none!important}
 @media (max-width:760px){.ws-vhs .nw-scr{padding-top:84px}.ws-vhs .nw-osd{font-size:18px;top:16px}}
 .nw-at{font-size:14px;line-height:1}
+
+/* =====================================================================
+   0.37 · Trois mondes qui se naviguent autrement
+   ===================================================================== */
+.ws-dock{--paper:#0b0c10;--ink:#f2f2f4;--hl:#ffffff;--line:rgba(255,255,255,.12);--ft:"Manrope","Inter",sans-serif;--fu:"Inter",sans-serif;--fb:"Inter",sans-serif}
+.ws-panorama{--paper:#05070c;--ink:#f4f6fa;--hl:#5ea0ff;--line:rgba(255,255,255,.14);--ft:"Outfit",sans-serif;--fu:"Outfit",sans-serif;--fb:"Outfit",sans-serif}
+.ws-sommaire{--paper:#f3efe6;--ink:#1a1814;--hl:#c4321e;--line:rgba(26,24,20,.16);--ft:"Playfair Display","EB Garamond",serif;--fu:"Inter",sans-serif;--fb:"EB Garamond",serif}
+.ws-dock,.ws-panorama,.ws-sommaire{background:var(--paper);color:var(--ink)}
+.h-dock .hd-btn,.h-revue .hd-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font:600 15px/1 var(--fu);cursor:pointer;transition:transform .2s,background .2s}
+.h-dock .hd-btn small,.h-revue .hd-btn small{font-weight:400;opacity:.6;font-size:12px}
+.h-dock .hd-btn.main,.h-revue .hd-btn.main{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.h-dock .hd-btn:hover,.h-revue .hd-btn:hover{transform:translateY(-2px)}
+.hd-acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+
+/* ---- Application : l'image en grand, le texte en bas, une barre de rubriques fixe ---- */
+.h-dock{position:relative;min-height:100%;display:flex;align-items:flex-end;padding:0 clamp(18px,5vw,72px) 130px}
+.hd-art{position:absolute;inset:0;background:center/cover no-repeat;mask-image:linear-gradient(180deg,#000 30%,transparent 92%);-webkit-mask-image:linear-gradient(180deg,#000 30%,transparent 92%);opacity:.85}
+.hd-txt{position:relative;max-width:640px}
+.h-dock .nw-title{font:800 clamp(40px,6vw,84px)/.95 var(--ft);letter-spacing:-.02em;margin:0}
+.h-dock .nw-k{font:600 12px/1 var(--fu);letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.hd-syn{margin:14px 0 0;max-width:56ch;line-height:1.55;opacity:.85;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.nw-dock{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;display:flex;gap:2px;padding:6px;border-radius:22px;background:color-mix(in srgb,var(--paper) 72%,transparent);backdrop-filter:blur(18px) saturate(1.3);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.45);max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none}
+.nw-dock button{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:72px;padding:8px 10px;border-radius:16px;background:none;color:color-mix(in srgb,var(--ink) 65%,transparent);font:600 11px/1 var(--fu);cursor:pointer;transition:background .2s,color .2s}
+.nw-dock button i{font-style:normal;width:22px;height:22px;display:grid;place-items:center;font-size:14px;font-weight:700}
+.nw-dock button span{white-space:nowrap}
+.nw-dock button.on,.nw-dock button:hover{color:var(--ink);background:color-mix(in srgb,var(--ink) 10%,transparent)}
+.ws-dock .nw-scroll{padding-bottom:110px}
+@media (max-width:700px){.nw-dock{left:0;right:0;bottom:0;transform:none;border-radius:18px 18px 0 0;max-width:none;justify-content:space-around;padding-bottom:max(8px,env(safe-area-inset-bottom))}.nw-dock button{min-width:58px;padding:7px 4px}.h-dock{padding-bottom:110px}}
+
+/* ---- Panorama : l'affiche en fond, des rails horizontaux de grandes cartes ---- */
+.h-pano{position:relative;min-height:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:14px;padding:90px 0 40px}
+.hp-art{position:absolute;inset:0;background:center/cover no-repeat;opacity:.55;mask-image:linear-gradient(180deg,#000 10%,rgba(0,0,0,.4) 60%,transparent);-webkit-mask-image:linear-gradient(180deg,#000 10%,rgba(0,0,0,.4) 60%,transparent)}
+.hp-head{position:relative;padding:0 clamp(18px,5vw,64px)}
+.h-pano .nw-title{font:700 clamp(36px,5vw,72px)/1 var(--ft);margin:0}
+.hp-k{position:relative;margin:8px 0 -4px;padding:0 clamp(18px,5vw,64px);font:600 12px/1 var(--fu);letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+.hp-rail{position:relative;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px clamp(18px,5vw,64px) 14px;scrollbar-width:thin}
+.hp-card,.hp-u{flex:none;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;width:200px;background:none;color:var(--ink);text-align:left;cursor:pointer}
+.hp-card.big{width:300px}
+.hp-img{position:relative;display:block;aspect-ratio:16/9;border-radius:10px;background:#1a1d25 center/cover no-repeat;outline:2px solid transparent;outline-offset:3px;transition:transform .25s,outline-color .25s,box-shadow .25s;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.hp-card.big .hp-img{aspect-ratio:16/10}
+.hp-card.on .hp-img,.hp-card:hover .hp-img,.hp-u:hover .hp-img,.hp-u:focus-visible .hp-img{transform:scale(1.04);outline-color:var(--ink)}
+.hp-u .hp-img i{position:absolute;left:8px;bottom:6px;font:700 22px/1 var(--ft);font-style:normal;text-shadow:0 2px 10px rgba(0,0,0,.8)}
+.hp-u.cur .hp-img{outline-color:var(--hl)}
+.hp-u.lock{opacity:.5}
+.hp-t{display:flex;flex-direction:column;gap:3px;padding:0 2px}
+.hp-t b{font:600 15px/1.25 var(--fu)}
+.hp-t small{font-size:12px;opacity:.65}
+@media (max-width:700px){.hp-card{width:150px}.hp-card.big{width:220px}.hp-u{width:150px}}
+
+/* ---- Revue : un magazine qui se lit en défilant, sommaire fixe à gauche ---- */
+.h-revue{display:grid;grid-template-columns:200px minmax(0,760px);gap:clamp(24px,5vw,72px);justify-content:center;padding:96px clamp(18px,5vw,64px) 60px}
+.hr-toc{position:sticky;top:90px;align-self:start;display:flex;flex-direction:column;gap:2px;border-top:2px solid var(--ink);padding-top:10px}
+.hr-toc b{font:700 11px/1 var(--fu);letter-spacing:.2em;margin-bottom:10px}
+.hr-toc button{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);background:none;color:var(--ink);font:500 14px/1.2 var(--fu);text-align:left;cursor:pointer}
+.hr-toc button i{font-style:normal;color:var(--hl);font-variant-numeric:tabular-nums}
+.hr-toc button:hover{color:var(--hl)}
+.hr-mast .nw-k{font:600 12px/1 var(--fu);letter-spacing:.18em;text-transform:uppercase;color:var(--hl)}
+.h-revue .nw-title{font:700 clamp(44px,7vw,96px)/.95 var(--ft);margin:10px 0}
+.h-revue .nw-tag{font:italic 400 22px/1.4 var(--fb);opacity:.8}
+.hr-mast figure{margin:24px 0}
+.hr-mast figure span{display:block;aspect-ratio:16/9;background:center/cover no-repeat}
+.hr-lead{font:400 21px/1.6 var(--fb);margin:0}
+.hr-lead::first-letter{float:left;font:700 64px/.85 var(--ft);margin:6px 10px 0 0;color:var(--hl)}
+.hr-sec{margin-top:64px}
+.hr-sec h2{display:flex;align-items:baseline;gap:14px;font:700 34px/1.1 var(--ft);margin:0 0 18px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.hr-sec h2 i{font:600 13px/1 var(--fu);font-style:normal;color:var(--hl);letter-spacing:.1em}
+.hr-units{list-style:none;margin:0;padding:0}
+.hr-units button{width:100%;display:flex;align-items:baseline;gap:16px;padding:16px 0;border-bottom:1px solid var(--line);background:none;color:var(--ink);text-align:left;cursor:pointer}
+.hr-units .n{font:700 22px/1 var(--ft);color:var(--hl);min-width:36px}
+.hr-units .t{flex:1;display:flex;flex-direction:column;gap:4px}
+.hr-units b{font:600 19px/1.3 var(--fb)}
+.hr-units small{font:400 15px/1.5 var(--fb);opacity:.7}
+.hr-units em{font:600 10px/1 var(--fu);letter-spacing:.14em;color:var(--hl);font-style:normal}
+.hr-units button:hover b{text-decoration:underline;text-underline-offset:4px}
+.hr-units button.lock{opacity:.5}
+.hr-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+.hr-cards button{display:flex;flex-direction:column;gap:6px;background:none;color:var(--ink);text-align:left;cursor:pointer}
+.hr-cards span{aspect-ratio:4/3;background:color-mix(in srgb,var(--ink) 8%,transparent) center/cover no-repeat}
+.hr-cards b{font:600 17px/1.3 var(--fb)}
+.hr-cards small{font:500 11px/1 var(--fu);letter-spacing:.1em;opacity:.6;text-transform:uppercase}
+.hr-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.hr-gal button{aspect-ratio:1;background:center/cover no-repeat;cursor:zoom-in}
+.ws-sommaire .nw-cm{max-width:760px;margin:0 auto}
+@media (max-width:860px){.h-revue{grid-template-columns:1fr;padding-top:80px}.hr-toc{position:static;flex-direction:row;flex-wrap:wrap;gap:6px 14px;border-top:none;padding-top:0}.hr-toc b{width:100%;margin:0}.hr-toc button{border:none;padding:4px 0;font-size:13px}.hr-lead{font-size:18px}}
+/* les trois nouveaux mondes portent leur propre image : le fond commun s'efface (Revue : papier uni) */
+.ws-dock .nw-bg{filter:blur(40px) brightness(.3);opacity:.8}
+.ws-panorama .nw-bg{filter:blur(50px) brightness(.25) saturate(1.2)}
+.ws-sommaire .nw-bg{display:none}
+.ws-dock .hd-art{mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.5) 30%,#000 60%),linear-gradient(180deg,#000 50%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 35%,#000 65%);-webkit-mask-composite:source-in;opacity:.9}
+.ws-dock .nw-cm,.ws-panorama .nw-cm{max-width:900px;margin:0 auto 120px}
+.nw-dock button svg{width:20px;height:20px}
