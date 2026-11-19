@@ -368,7 +368,7 @@ export async function planArt(book, term, cover) {
   // les bannières larges viennent de SteamGridDB ; les images verticales de toutes les sources, dans l'ordre donné
   const lists = { heroes: [], grids: [] }; let answered = false;
   for (const [k, q] of picSources(book, term)) {
-    const got = k === "sgdb" ? [await artList(q, "heroes"), await artList(q, "grids")] : k === "anime" || k === "manga" ? [null, await malList(k, q)] : k === "ol" ? [null, await olList(q)] : [null, null];
+    const got = k === "sgdb" ? [await artList(q, "heroes"), await artList(q, "grids")] : k === "anime" || k === "manga" ? [null, await malList(k, q)] : k === "ol" ? [null, await olList(q)] : k === "commons" ? [null, await commonsList(q)] : [null, null];
     if (got[0]) { answered = true; lists.heroes.push(...got[0]); }
     if (got[1]) { answered = true; lists.grids.push(...got[1]); }
   }

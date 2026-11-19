@@ -61,7 +61,7 @@ export function parsePaste(text) {
   if (meta.tex) { const tx = norm(meta.tex); if (TEXTURES.includes(tx)) over.tex = tx; else errors.push(`Texture inconnue : « ${meta.tex} ».`); }
   return {
     meta: { title: meta.title || "", sub: meta.sub || "", room: room || "atelier", type: type || "recit", format: format || undefined, cote: meta.cote || "", emblem: meta.emblem || undefined,
-      color: hueOf(meta.color), art: meta.art || undefined, pics: meta.pics ? meta.pics.split(/\s*,\s*/).filter((x) => /^(sgdb|anime|manga|ol):./i.test(x)).map((x) => x.replace(/^\w+/, (k) => k.toLowerCase())) : undefined, about: meta.about || "", author: meta.author || "", links: meta.links, cover: meta.cover || "", status: STATUS(meta.status),
+      color: hueOf(meta.color), art: meta.art || undefined, pics: meta.pics ? meta.pics.split(/\s*,\s*/).filter((x) => /^(sgdb|anime|manga|ol|commons):./i.test(x)).map((x) => x.replace(/^\w+/, (k) => k.toLowerCase())) : undefined, about: meta.about || "", author: meta.author || "", links: meta.links, cover: meta.cover || "", status: STATUS(meta.status),
       look: th || Object.keys(over).length ? { ...(th || {}), over } : undefined },
     body, errors,
   };

@@ -99,7 +99,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       const parsed = pasteToBook(text, { id: b.id });
       const r = await autoIllustrate(text, { ...parsed, id: b.id, room: parsed.room || b.room, format: parsed.format || b.format }, covers[b.id]);
       toast.dismiss(tid);
-      if (!r.added) { toast.info(r.found ? "Chaque chapitre a déjà son image." : "Aucune image libre trouvée pour ce livre. Ajoute une ligne ILLUSTRATIONS (anime:, manga:, ol:, sgdb:) puis réessaie."); return; }
+      if (!r.added) { toast.info(r.found ? "Chaque chapitre a déjà son image." : "Aucune image libre trouvée pour ce livre. Ajoute une ligne ILLUSTRATIONS (anime:, manga:, ol:, sgdb:, commons:) puis réessaie."); return; }
       setReading(null);
       setPaste({ text: r.text, item: it, of: it ? undefined : b.id, title: b.title });
       toast.success(`${r.added} image${r.added > 1 ? "s" : ""} ajoutée${r.added > 1 ? "s" : ""} sur ${r.chapters} chapitres. Vérifie avec « Lire l'aperçu », puis enregistre.`);
