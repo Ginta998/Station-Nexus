@@ -11,7 +11,7 @@ import { useApp } from "@/context/AppContext";
 import { mediaUrl, getJournalEntry, updateJournalEntry } from "@/lib/api";
 import { JournalBlocks } from "@/components/journal/JournalParts";
 import { tapeStart, tapeRelease, tapeHiss, tapeInsert } from "@/lib/tapeSound";
-import { Cassette } from "@/components/journal/TapeObject";
+import { Cassette, WEARS } from "@/components/journal/TapeObject";
 import "@/components/journal/tape.css";
 
 /*
@@ -77,7 +77,7 @@ export default function TapePlayer({ entry: saved, onClose }) {
       <button className="tp-x" onClick={close} aria-label={edit ? "Annuler les modifications" : "Fermer"} data-testid="tape-close"><IoClose size={18} /></button>
       {isAdmin && !edit && <button className="tp-x tp-ed-btn" onClick={() => { pause(); setDraft(base); setEdit(true); }} aria-label="Modifier la cassette" title="Modifier la cassette" data-testid="tape-edit"><IoCreateOutline size={18} /></button>}
       <div className="tp-deck">
-        <div className={"tp-cassw" + (edit ? " editing" : "")} onContextMenu={isAdmin && !edit ? (ev) => { ev.preventDefault(); pause(); setDraft(base); setEdit(true); } : undefined}><Cassette title={label} sub={[e.tape_voice && `Voix : ${e.tape_voice}`, e.date && new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })].filter(Boolean).join(" · ")} p={p} spinning={on && !starting} starting={starting} img={e.cover} /></div>
+        <div className={"tp-cassw" + (edit ? " editing" : "")} onContextMenu={isAdmin && !edit ? (ev) => { ev.preventDefault(); pause(); setDraft(base); setEdit(true); } : undefined}><Cassette title={label} sub={[e.tape_voice && `Voix : ${e.tape_voice}`, e.date && new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })].filter(Boolean).join(" · ")} p={p} spinning={on && !starting} starting={starting} img={e.cover} wear={e.tape_wear} /></div>
         {edit && <TapeEditPanel d={draft} set={setD} onSave={save} onCancel={() => setEdit(false)} busy={busy} />}
         {!edit && <><div className="tp-ctl">
           <span className="tp-count mono" aria-label="Compteur">{String(Math.floor(pos)).padStart(3, "0").slice(-3)}</span>
@@ -122,6 +122,8 @@ function TapeEditPanel({ d, set, onSave, onCancel, busy }) {
         <label>Étiquette<input value={d.tape_label || ""} onChange={(ev) => set({ tape_label: ev.target.value })} placeholder={d.title} data-testid="tape-edit-label" autoFocus /></label>
         <label>Voix<input value={d.tape_voice || ""} onChange={(ev) => set({ tape_voice: ev.target.value })} placeholder="Qui parle ?" data-testid="tape-edit-voice" /></label>
       </div>
+      <p className="tp-edit-s mono">GRAIN DE LA CASSETTE</p>
+      <div className="tp-wear" role="radiogroup" aria-label="Usure">{WEARS.map(([k, t, sub]) => <button type="button" key={k} role="radio" aria-checked={(d.tape_wear || "usee") === k} className={(d.tape_wear || "usee") === k ? "on" : ""} onClick={() => set({ tape_wear: k })} data-testid={`tape-wear-${k}`}><b>{t}</b><small>{sub}</small></button>)}</div>
       <p className="tp-edit-s mono">IMAGE (ÉTIQUETTE ET FOND)</p>
       <div className="tp-edit-acts">
         <ImagePick label={d.cover ? "Changer l'image" : "Ajouter une image"} onDone={([u]) => set({ cover: u })} testid="tape-edit-img" />

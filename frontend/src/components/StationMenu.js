@@ -146,6 +146,8 @@ export default function StationMenu({ onAdd, onProfile, trigger }) {
   const { data: journalAll = [] } = useQuery({ queryKey: ["journal", isAdmin], queryFn: () => listJournal() });
   const unread = journalAll.filter((e) => e.published).filter((a) => !seenAnnouncements.includes(a.id)).length;
   const go = (p) => { sfx("select"); setMenuOpen(false); nav(p); };
+  // Échap referme le menu (et rien d'autre ne réagit derrière lui)
+  useEffect(() => { if (!menuOpen) return undefined; const k = (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopImmediatePropagation(); setMenuOpen(false); } }; window.addEventListener("keydown", k, true); return () => window.removeEventListener("keydown", k, true); }, [menuOpen]);
   const openProfile = () => { setMenuOpen(false); if (onProfile) onProfile(); else nav("/parametres"); };
 
   const menuItems = [

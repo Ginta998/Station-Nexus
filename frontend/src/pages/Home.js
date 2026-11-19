@@ -209,7 +209,7 @@ export default function Home() {
 
   // actions
   const pushRecent = (id) => { try { const r = JSON.parse(localStorage.getItem("sx_recent") || "[]"); const nx = [id, ...r.filter((x) => x !== id)].slice(0, 8); localStorage.setItem("sx_recent", JSON.stringify(nx)); } catch (_) {} };
-  const open = (id) => { sfx("select"); pushRecent(id); nav(`/oeuvre/${id}`); };
+  const open = (id) => { pushRecent(id); if (experience === "nexus" && all.some((c) => c.id === id)) { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id } })); return; } sfx("select"); nav(`/oeuvre/${id}`); };
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
   const openEditItem = (it) => { setEditing(it); setEditorOpen(true); };
   const doDeleteItem = async (it) => {

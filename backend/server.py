@@ -2695,6 +2695,7 @@ class JournalEntryInput(BaseModel):
     tape_url: str = ""        # format « cassette » : l'enregistrement à écouter (/api/journal-files/…)
     tape_label: str = ""      # étiquette de la cassette (ex. « Enregistrement n°3 »)
     tape_voice: str = ""      # qui parle (ex. « Brichel »)
+    tape_wear: str = "usee"   # grain de la cassette : neuve | usee | tres
 
 
 class JournalEntry(JournalEntryInput):

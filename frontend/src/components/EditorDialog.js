@@ -8,7 +8,7 @@ import { WORLD_STYLES, WORLD_MASKED, worldStyleOf, usePosterAccent } from "@/com
 import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexandrie/looks";
 import { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
 import { CoverDialog } from "@/components/atelier/Alexandrie";
-import { useWorldThemes } from "@/lib/worldThemes";
+import { useWorldThemes, deleteWorldTheme } from "@/lib/worldThemes";
 import WorldThemeLab from "@/components/nexus/WorldThemeLab";
 import "@/components/editor.css";
 
@@ -123,8 +123,35 @@ const FilePick = ({ icon, label, present, file, onPick, onRemove, accept, testid
   </div>
 );
 
+// Les mondes d'origine qu'on a retirés de la liste (appui long › Retirer) : rangés avec les masqués
+const HID_KEY = "nx-ws-hidden";
+const readHidden = () => { try { return JSON.parse(localStorage.getItem(HID_KEY) || "[]"); } catch (_) { return []; } };
+// Les actions d'une carte de monde, posées sur la carte elle-même
+function WsAsk({ label, sub, ok, danger, onOk, onNo, testid }) {
+  return (
+    <span className="rl-wsask" role="dialog" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()} onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+      <b>{label}</b>{sub && <small>{sub}</small>}
+      <span><span role="button" tabIndex={0} className={"rl-wsask-ok" + (danger ? " danger" : "")} onClick={onOk} onKeyDown={(e) => e.key === "Enter" && onOk()} data-testid={testid}>{ok}</span><span role="button" tabIndex={0} onClick={onNo} onKeyDown={(e) => e.key === "Enter" && onNo()}>Annuler</span></span>
+    </span>
+  );
+}
+// Appui long (téléphone) ou clic droit (ordinateur) : ouvre les actions de la carte
+function longPress(fn) {
+  let t = null; let done = false;
+  const clear = () => { clearTimeout(t); t = null; };
+  return {
+    onContextMenu: (e) => { e.preventDefault(); fn(); },
+    onPointerDown: (e) => { if (e.button !== 0) return; done = false; t = setTimeout(() => { done = true; navigator.vibrate?.(12); fn(); }, 520); },
+    onPointerUp: clear, onPointerLeave: clear, onPointerCancel: clear,
+    onClickCapture: (e) => { if (done) { e.preventDefault(); e.stopPropagation(); done = false; } },
+  };
+}
+
 export default function EditorDialog({ open, onClose, initial, categories = [], onSaved, onPeek, cover: coverHint, section }) {
   const myThemes = useWorldThemes();
+  const [wsAsk, setWsAsk] = useState(null); // la carte de monde dont les actions sont ouvertes (appui long)
+  const [hidden, setHidden] = useState(readHidden);
+  const setHid = (l) => { setHidden(l); try { localStorage.setItem(HID_KEY, JSON.stringify(l)); } catch (_) {} };
   const [form, setForm] = useState(empty);
   const [sec, setSec] = useState("id");
   const [dirty, setDirty] = useState(false);
@@ -361,8 +388,9 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             <span className={"rl-mini m-" + wsAuto} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
             <strong>Automatique</strong><small>{WORLD_STYLES[wsAuto]}, d'après le type</small>
           </button>
-          {Object.entries(WORLD_STYLES).filter(([k]) => !WORLD_MASKED.includes(k) || wsCur === k).map(([k, label]) => (
-            <button type="button" key={k} className={"rl-wsc" + (wsCur === k ? " on" : "")} onClick={() => set("world_style", k)} data-testid={`wst-style-${k}`}>
+          {Object.entries(WORLD_STYLES).filter(([k]) => !(WORLD_MASKED.includes(k) || hidden.includes(k)) || wsCur === k).map(([k, label]) => (
+            <button type="button" key={k} className={"rl-wsc" + (wsCur === k ? " on" : "")} onClick={() => set("world_style", k)} {...longPress(() => setWsAsk(k))} data-testid={`wst-style-${k}`}>
+              {wsAsk === k && <WsAsk label={`Retirer « ${label} » de la liste ?`} sub="Il reste disponible dans « Ambiances masquées »." ok="Retirer" onOk={() => { setHid([...hidden, k]); setWsAsk(null); toast.success(`« ${label} » retiré de la liste`); }} onNo={() => setWsAsk(null)} />}
               <span className={"rl-mini m-" + k} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
               <strong>{label}</strong><small>{STYLE_HINT[k]}</small>
             </button>
@@ -371,19 +399,21 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
         <p className="rl-sub"><b>Mes thèmes</b><span>Créés dans la section Thèmes (juste en dessous).</span></p>
         <div className="rl-ws" data-testid="editor-my-themes">
           {myThemes.map((d) => (
-            <button type="button" key={d.key} className={"rl-wsc" + (form.world_style === d.key ? " on" : "")} onClick={() => set("world_style", d.key)} data-testid={`wst-style-${d.key}`}>
+            <button type="button" key={d.key} className={"rl-wsc" + (form.world_style === d.key ? " on" : "")} onClick={() => set("world_style", d.key)} {...longPress(() => setWsAsk(d.key))} data-testid={`wst-style-${d.key}`}>
+              {wsAsk === d.key && <WsAsk label={`Supprimer le monde « ${d.name} » ?`} sub="Les œuvres qui l'utilisent repassent en automatique." ok="Supprimer" danger testid={`wst-del-${d.key}`} onOk={async () => { setWsAsk(null); try { await deleteWorldTheme(d.key); if (form.world_style === d.key) set("world_style", ""); toast.success("Monde supprimé"); } catch (_) { toast.error("Suppression impossible (reconnecte-toi en admin)"); } }} onNo={() => setWsAsk(null)} />}
               <span className={"rl-mini m-" + (d.base || "cinema")} style={{ "--a": d.hl || acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined, fontFamily: d.font_title ? `"${d.font_title}"` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
               <strong>{d.name}</strong><small>D'après {WORLD_STYLES[d.base] || d.base}</small>
             </button>
           ))}
           {<button type="button" className="rl-wsc rl-wsc-new" onClick={() => setSec("themes")} data-testid="editor-open-studio"><span className="rl-mini rl-mini-new">+</span><strong>Atelier des thèmes</strong><small>Créer ou modifier un thème, en direct sur le monde</small></button>}
         </div>
-        {WORLD_MASKED.some((k) => k !== wsCur) && (
+        {[...WORLD_MASKED, ...hidden].some((k) => k !== wsCur) && (
           <details className="rl-masked">
-            <summary>Ambiances masquées ({WORLD_MASKED.filter((k) => k !== wsCur).length})</summary>
+            <summary>Ambiances masquées ({[...new Set([...WORLD_MASKED, ...hidden])].filter((k) => k !== wsCur).length})</summary>
             <div className="rl-ws">
-              {WORLD_MASKED.filter((k) => k !== wsCur).map((k) => (
-                <button type="button" key={k} className="rl-wsc" onClick={() => set("world_style", k)} data-testid={`wst-style-${k}`}>
+              {[...new Set([...WORLD_MASKED, ...hidden])].filter((k) => k !== wsCur && WORLD_STYLES[k]).map((k) => (
+                <button type="button" key={k} className="rl-wsc" onClick={() => set("world_style", k)} {...(hidden.includes(k) ? longPress(() => setWsAsk(k)) : {})} data-testid={`wst-style-${k}`}>
+                  {wsAsk === k && hidden.includes(k) && <WsAsk label={`Remettre « ${WORLD_STYLES[k]} » dans la liste ?`} ok="Remettre" onOk={() => { setHid(hidden.filter((x) => x !== k)); setWsAsk(null); }} onNo={() => setWsAsk(null)} />}
                   <span className={"rl-mini m-" + k} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
                   <strong>{WORLD_STYLES[k]}</strong><small>{STYLE_HINT[k]}</small>
                 </button>

@@ -479,7 +479,7 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
         return {"universes": universes, "items": items, "tasks": tasks, "links": links, "records": records, "config": await get_config()}
 
     # ---- cockpit carrière : objectifs, agenda, budget, collaborations
-    REC_KINDS = {"goals", "events", "budget", "contacts", "tpl"}  # tpl : modèles du Cockpit créés par l'utilisateur
+    REC_KINDS = {"goals", "events", "budget", "contacts", "tpl", "vhs"}  # tpl : modèles du Cockpit ; vhs : la vidéothèque du Salon
 
     @r.post("/records/{rk}")
     async def create_record(rk: str, body: Dict[str, Any]):

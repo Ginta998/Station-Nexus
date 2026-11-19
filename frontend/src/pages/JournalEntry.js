@@ -79,7 +79,7 @@ export default function JournalEntry() {
         </div>
       )}
       {e.format === "cassette" && reading && <TapePlayer entry={e} onClose={() => setReading(false)} />}
-      {reading && e.format !== "cassette" && <WorkReader entry={e} onClose={() => setReading(false)} />}
+      {reading && e.format !== "cassette" && <WorkReader entry={e} onClose={() => setReading(false)} noPdf={!isAdmin} />}
     </div>
   );
 }

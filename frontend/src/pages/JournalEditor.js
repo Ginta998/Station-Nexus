@@ -10,7 +10,7 @@ import { useApp } from "@/context/AppContext";
 import { BlocksEditor, ImagePick, ArtSearch, FilePick } from "@/components/journal/BlocksEditor";
 import { IoMusicalNotes } from "react-icons/io5";
 import { Face } from "@/components/atelier/Alexandrie";
-import { Cassette } from "@/components/journal/TapeObject";
+import { Cassette, WEARS } from "@/components/journal/TapeObject";
 import MicRecorder from "@/components/journal/MicRecorder";
 import LabHead from "@/components/LabHead";
 
@@ -27,7 +27,7 @@ function FormatPick({ f, set }) {
     <div className="jr-fmts" role="radiogroup" aria-label="Format de l'entrée" data-testid="journal-format-pick">
       {FORMATS.map((o) => (
         <button key={o.k} type="button" role="radio" aria-checked={(f.format || "livre") === o.k} className={"jr-fmt" + ((f.format || "livre") === o.k ? " on" : "")} onClick={() => set({ format: o.k })} data-testid={`journal-format-${o.k}`}>
-          <span className="jr-fmt-obj">{o.k === "cassette" ? <Cassette title={f.tape_label || title} small img={f.cover} /> : <Face b={{ id: "jr", title, format: o.k, room: "lore" }} cover={cover} />}</span>
+          <span className="jr-fmt-obj">{o.k === "cassette" ? <Cassette title={f.tape_label || title} small img={f.cover} wear={f.tape_wear} /> : <Face b={{ id: "jr", title, format: o.k, room: "lore" }} cover={cover} />}</span>
           <b>{o.t}</b><small>{o.d}</small>
         </button>
       ))}
@@ -36,7 +36,7 @@ function FormatPick({ f, set }) {
 }
 
 const today = () => new Date().toISOString().slice(0, 10);
-const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre", look: "presse", tape_url: "", tape_label: "", tape_voice: "" };
+const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre", look: "presse", tape_url: "", tape_label: "", tape_voice: "", tape_wear: "usee" };
 
 function CategoryManager({ cats, refetch }) {
   const [name, setName] = useState(""); const [color, setColor] = useState("#3f86ff");
@@ -118,6 +118,7 @@ export default function JournalEditor({ id: idProp, onDone }) {
               <label>Étiquette<input className="jr-in" value={f.tape_label || ""} onChange={(e) => set({ tape_label: e.target.value })} placeholder="Enregistrement n°1" data-testid="journal-tape-label" /></label>
               <label>Voix<input className="jr-in" value={f.tape_voice || ""} onChange={(e) => set({ tape_voice: e.target.value })} placeholder="Brichel" /></label>
             </div>
+            <div className="tp-wear jr-wear" role="radiogroup" aria-label="Grain de la cassette">{WEARS.map(([k, t, sub]) => <button type="button" key={k} role="radio" aria-checked={(f.tape_wear || "usee") === k} className={(f.tape_wear || "usee") === k ? "on" : ""} onClick={() => set({ tape_wear: k })}><b>{t}</b><small>{sub}</small></button>)}</div>
             <p className="jr-hint">L'image de couverture (en haut) s'imprime sur l'étiquette et colore le fond du lecteur. Le texte, s'il y en a, sert de transcription ; une cassette peut très bien ne contenir que la voix.</p>
           </div>
         )}

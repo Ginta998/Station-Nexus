@@ -109,7 +109,9 @@ export default function WorldThemeLab({ form, set, creationId, bg, cover, onPeek
       {!mine.length && <p className="wtl-empty">Aucun thème pour l'instant. Commence par un modèle ci-dessous.</p>}
       <div className="wtl-grid">
         {mine.map((d) => (
-          <article key={d.key} className={"wtl-card" + (used === d.key ? " on" : "")} data-testid={`wt-mine-${d.key}`}>
+          <article key={d.key} className={"wtl-card" + (used === d.key ? " on" : "")} data-testid={`wt-mine-${d.key}`}
+            onContextMenu={(e) => { e.preventDefault(); setDel(d.key); }}
+            onTouchStart={(e) => { const t = setTimeout(() => { navigator.vibrate?.(12); setDel(d.key); }, 520); const off = () => { clearTimeout(t); e.target.removeEventListener("touchend", off); e.target.removeEventListener("touchmove", off); }; e.target.addEventListener("touchend", off); e.target.addEventListener("touchmove", off); }}>
             <button type="button" className="wtl-prev" onClick={() => edit(d)} title="Modifier"><WorldPreview thumb t={{ ...WT_BLANK, ...d }} form={form} bg={bg} cover={cover} /></button>
             <div className="wtl-cap"><b>{d.name}</b><small>{used === d.key ? <><IoCheckmark /> utilisé par cette œuvre</> : `D'après ${WORLD_STYLES[d.base] || d.base}`}</small></div>
             <div className="wtl-ra">

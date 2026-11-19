@@ -86,7 +86,7 @@ export default function JournalView({ initialEdit = null }) {
             const fmt = e.format || "livre"; const cat = catOf(e.category_id);
             return (
               <article key={e.id} className={"at-jr-card" + (e.published ? "" : " draft")} role="button" tabIndex={0} onClick={() => { sfx("select"); setReading(e.id); }} onKeyDown={(ev) => ev.key === "Enter" && setReading(e.id)} data-testid={`atelier-journal-${e.id}`} {...pressMenu(() => menu(e))}>
-                <span className="at-jr-obj">{fmt === "cassette" ? <Cassette title={e.tape_label || e.title} small img={e.cover} /> : <Face b={{ id: e.id, title: e.title, format: fmt, room: "lore" }} cover={e.cover ? mediaUrl(e.cover) : ""} />}</span>
+                <span className="at-jr-obj">{fmt === "cassette" ? <Cassette title={e.tape_label || e.title} small img={e.cover} wear={e.tape_wear} /> : <Face b={{ id: e.id, title: e.title, format: fmt, room: "lore" }} cover={e.cover ? mediaUrl(e.cover) : ""} />}</span>
                 <span className="at-jr-meta mono"><b>{FMT[fmt]}</b>{cat && <i>{cat.name}</i>}<span>{dateFr(e.date)}</span></span>
                 <h3>{e.title}</h3>
                 {e.subtitle && <p className="at-jr-sub">{e.subtitle}</p>}

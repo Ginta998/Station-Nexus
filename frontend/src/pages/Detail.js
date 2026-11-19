@@ -351,7 +351,7 @@ export default function Detail() {
           onAmbient={item.has_audio ? () => { sfx("nav"); playAmbient(item.id); } : null} ambientOn={thisPlaying}
           onAmbientSetup={() => { setEditorSec("sound"); setEditorOpen(true); }}
           isAdmin={isAdmin} onEdit={() => { sfx("select"); setEditorSec("id"); setEditorOpen(true); }}
-          onExit={() => { stopAmbient(); if (window.history.length > 1) nav(-1); else nav("/"); }} onHome={() => { stopAmbient(); nav("/"); }} sfx={sfx} toComments={toComments}
+          onExit={(n = 1) => { stopAmbient(); if (window.history.length > n) nav(-n); else nav("/"); }} onHome={() => { stopAmbient(); nav("/"); }} sfx={sfx} toComments={toComments}
           onEditUnit={isAdmin ? (i) => setQuickEdit({ key: item.launch_type === "episodes" ? "episodes" : "chapters", i }) : undefined}
           onDeleteUnit={isAdmin ? async (i) => { try { await deleteUnit(item.id, item.launch_type === "episodes" ? "episodes" : "chapters", i); toast.success("Supprimé"); refetch(); } catch (_) { toast.error("Suppression impossible"); } } : undefined} />
         {overlays}

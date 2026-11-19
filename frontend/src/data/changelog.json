@@ -1,6 +1,28 @@
 {
-  "version": "0.40",
+  "version": "0.41",
   "patches": [
+    {
+      "v": "0.41",
+      "date": "2026-11-19",
+      "title": "Rester dans le monde, le soutenir, et la vidéothèque VHS",
+      "groups": {
+        "Ajouté": [
+          "Dans chaque œuvre, quel que soit le monde : « Soutenir la station », une page aux couleurs du monde avec les paliers, les autres façons d'aider (acheter l'œuvre, partager, laisser un mot, coup de cœur) et le mur des soutiens. On ne sort pas du monde ; « Débloquer › S'abonner » y mène aussi.",
+          "Une entrée propre à chacun des trois nouveaux mondes : l'enseigne qui s'allume et l'éclair de néon (Shibuya), les portes de la baie qui s'écartent (Hangar), la une qui se déplie (Gazette).",
+          "Grain de la cassette au choix : neuve, usée ou très usée (sur la cassette en la modifiant, ou dans l'éditeur du journal).",
+          "Salon de l'atelier : la Vidéothèque. Range tes films et tes séries en cassettes VHS sur une étagère ; un clic glisse la cassette dans le magnétoscope (le son de lancement VHS) et ton lecteur s'ouvre. Une série enchaîne ses épisodes ; clic droit pour choisir un épisode.",
+          "Appui long (ou clic droit) sur un monde dans « Monde » : supprimer un de tes mondes, ou retirer un monde d'origine de la liste (il reste dans « Ambiances masquées » et peut être remis)."
+        ],
+        "Changé": [
+          "Le retour (flèche, Échap, bouton retour du téléphone ou du navigateur) remonte d'un cran dans le monde, ou ferme la lecture ouverte ; il ne fait plus quitter l'univers. On sort par « Quitter l'univers ».",
+          "Entrer dans une œuvre par la une (ou la prochaine sortie) joue aussi l'animation de lancement (livre, VHS, vinyle) et son son.",
+          "Export PDF : visible seulement pour l'admin, aussi dans les entrées du journal ; jamais pour le public."
+        ],
+        "Corrigé": [
+          "Le menu de la station se ferme avec Échap."
+        ]
+      }
+    },
     {
       "v": "0.40",
       "date": "2026-11-19",

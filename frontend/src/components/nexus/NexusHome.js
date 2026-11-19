@@ -84,6 +84,8 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
   // Pendant l'animation de lancement, on charge déjà les grandes images du monde (affiche, fond) : il arrive sans à-coup
   const preload = (x) => { try { [posterUrl(x.id, x.it.updated_at), x.it.has_bg ? bgUrl(x.id, x.it.updated_at) : null].filter(Boolean).forEach((u) => { const im = new Image(); im.decoding = "async"; im.src = u; im.decode?.().catch(() => {}); }); } catch (_) {} };
   const start = useCallback((x, quick = false) => { if (!x) return; preload(x); quickR.current = quick; sfx?.("select"); remember(x.id); playLaunch(muted ? 0 : uiVolume, getLaunchSound(x.format === "vhs" || x.format === "vinyle" ? x.format : "livre")); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Ailleurs sur l'accueil (la une, la prochaine sortie…) : on entre avec la même animation que depuis les rayons
+  useEffect(() => { const h = (ev) => { const x = books.find((b) => b.id === ev.detail?.id); if (x) start(x, !!ev.detail?.quick); }; window.addEventListener("nx-start", h); return () => window.removeEventListener("nx-start", h); }, [books, start]);
   const [leaving, setLeaving] = useState(false);
   useEffect(() => { if (!launch) return; setLeaving(false); const a = setTimeout(() => setLeaving(true), 1500); const t = setTimeout(() => go(launch), 1820); return () => { clearTimeout(a); clearTimeout(t); }; }, [launch, go]);
   useEffect(() => { setSel(null); }, [view]);

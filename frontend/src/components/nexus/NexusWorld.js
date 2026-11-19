@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation, useNavigate } from "react-router-dom";
+import WorldSupport from "@/components/nexus/WorldSupport";
 import { IoChatbubbleOutline, IoFilmOutline, IoImagesOutline, IoJournalOutline, IoPlanetOutline, IoLockOpenOutline } from "react-icons/io5";
 import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil } from "react-icons/io5";
 import { toast } from "sonner";
@@ -26,7 +28,7 @@ const roman = (i) => ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X
 // Écran large : le menu de l'œuvre reste en colonne à gauche, la section s'ouvre dans le grand panneau
 const WIDE = "(min-width: 1100px)";
 // les icônes de la barre du monde « Application »
-const DOCK_IC = { launch: <IoPlay />, trailer: <IoFilmOutline />, gallery: <IoImagesOutline />, making: <IoJournalOutline />, embeds: <IoLinkOutline />, neighbors: <IoPlanetOutline />, unlock: <IoLockOpenOutline /> };
+const DOCK_IC = { support: <IoHeartOutline />, launch: <IoPlay />, trailer: <IoFilmOutline />, gallery: <IoImagesOutline />, making: <IoJournalOutline />, embeds: <IoLinkOutline />, neighbors: <IoPlanetOutline />, unlock: <IoLockOpenOutline /> };
 function useWide() {
   const [w, setW] = useState(() => typeof window !== "undefined" && window.matchMedia?.(WIDE).matches);
   useEffect(() => { const m = window.matchMedia?.(WIDE); if (!m) return; const h = () => setW(m.matches); m.addEventListener?.("change", h); return () => m.removeEventListener?.("change", h); }, []);
@@ -57,7 +59,7 @@ export default function NexusWorld(p) {
   useEffect(() => { if (!wt?.replay) return undefined; setIntro(true); const t = setTimeout(() => setIntro(false), 1800); return () => clearTimeout(t); }, [wt?.replay]);
   const introKey = wt?.intro && wt.intro !== "auto" ? wt.intro : ws;
   const look = wtLook(wt);
-  const INTRO_TXT = { vhs: "▶ PLAY", arcade: "INSERT COIN", cinema: item.title, yorha: "CONNEXION", sengoku: item.kanji || "始", cristal: "", hero: "", eve: "", cathedrale: "", couronne: "", trait: "", survivance: "" };
+  const INTRO_TXT = { dock: item.kanji || "夜", panorama: "OUVERTURE DE LA BAIE", sommaire: "Édition spéciale", vhs: "▶ PLAY", arcade: "INSERT COIN", cinema: item.title, yorha: "CONNEXION", sengoku: item.kanji || "始", cristal: "", hero: "", eve: "", cathedrale: "", couronne: "", trait: "", survivance: "" };
 
   // ---------- la pile d'écrans ----------
   const [stack, setStack] = useState([{ k: "home", sel: 0, n: 0 }]);
@@ -72,7 +74,26 @@ export default function NexusWorld(p) {
   };
   useEffect(() => { if (!leaving) return; const t = setTimeout(() => setLeaving(null), 520); return () => clearTimeout(t); }, [leaving]);
   const push = (s) => { sfx("select"); change([...stack, { sel: 0, ...s, n: seq.current }], "f"); };
-  const pop = () => { if (stack.length === 1) { sfx("back"); onExit(); return; } sfx("back"); change(stack.slice(0, -1), "b"); };
+  // ← et Échap remontent d'un cran ; à l'accueil du monde, ils ne font rien : on sort seulement par « Quitter l'univers »
+  const pop = () => { if (stack.length === 1) return; sfx("back"); change(stack.slice(0, -1), "b"); };
+  const loc = useLocation(); const navR = useNavigate();
+  const exiting = useRef(false);
+  const exitWorld = () => { exiting.current = true; sfx("back"); onExit(loc.state?.nxw ? 2 : 1); };
+  // Le bouton « retour » du téléphone ou du navigateur : il remonte d'un cran dans le monde (ou ferme la lecture ouverte), sans jamais quitter
+  const armed = useRef(false); const backRef = useRef(null);
+  backRef.current = () => {
+    if (document.querySelector(OVERLAYS)) { document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })); return; }
+    pop();
+  };
+  useEffect(() => {
+    if (exiting.current) return;
+    const st = loc.state || {};
+    if (st.resume || st.trailer) return; // la fiche s'en sert d'abord
+    if (st.nxw) { armed.current = true; return; }
+    if (armed.current) backRef.current();
+    armed.current = true;
+    navR(loc.pathname + (loc.search || ""), { state: { nxw: 1 } });
+  }, [loc.key]); // eslint-disable-line react-hooks/exhaustive-deps
   const goto = (i) => { if (i >= stack.length - 1) return; sfx("back"); change(stack.slice(0, i + 1), "b"); };
   const replaceAt1 = (s) => { if (stack[1]?.k === s.k && stack.length === 2) return; sfx("select"); change([stack[0], { sel: 0, ...s, n: seq.current }], "f"); };
   const setSel = (i) => setStack((st) => (st[st.length - 1].sel === i ? st : [...st.slice(0, -1), { ...st[st.length - 1], sel: i }]));
@@ -93,6 +114,7 @@ export default function NexusWorld(p) {
     making.length > 0 && { k: "making", label: "Making of", desc: `${plural(making.length, "entrée", "entrées")} du journal de bord : les coulisses, les intentions, la fabrication.`, img: making.find((e) => e.cover)?.cover ? mediaUrl(making.find((e) => e.cover).cover) : null },
     item.embeds?.length > 0 && { k: "embeds", label: "Réseaux", desc: `${plural(item.embeds.length, "lien", "liens")} vers l'œuvre ailleurs.` },
     neighbors.length > 0 && { k: "neighbors", label: "Autres mondes", desc: "Passer directement dans l'univers d'une autre œuvre.", img: coverOf(neighbors[0]) },
+    { k: "support", label: "Soutenir", desc: "Faire vivre la station : les paliers, ce qu'ils donnent, et qui soutient déjà." },
   ].filter(Boolean), [item, making, trailer, neighbors, bg, cover]); // eslint-disable-line
 
   const units = item.launch_type === "chapters" ? (item.chapters || []) : (item.episodes || []);
@@ -130,7 +152,7 @@ export default function NexusWorld(p) {
   };
   const titleOf = (s) => ({
     home: item.title, units: unitsLabel, gallery: "Moodboard", making: "Making of", entry: s.e?.title || "Entrée", intention: item.intention_title || "Intentions",
-    embeds: "Réseaux", comments: "Commentaires", neighbors: "Autres mondes", trailer: "Bande-annonce", unlock: "Débloquer", image: `Image ${(s.i || 0) + 1} / ${s.list?.length || 1}`,
+    embeds: "Réseaux", comments: "Commentaires", support: "Soutenir la station", neighbors: "Autres mondes", trailer: "Bande-annonce", unlock: "Débloquer", image: `Image ${(s.i || 0) + 1} / ${s.list?.length || 1}`,
   })[s.k];
 
   const items = itemsOf(top);
@@ -291,7 +313,7 @@ export default function NexusWorld(p) {
         const secs = [isUnits && ["units", unitsLabel], making.length > 0 && ["making", "Making of"], item.gallery?.length > 0 && ["gallery", "Moodboard"], neighbors.length > 0 && ["neighbors", "Autres mondes"]].filter(Boolean);
         return (
           <div className="nw-home h-revue">
-            <nav className="hr-toc" aria-label="Sommaire"><b>AU SOMMAIRE DE CE NUMÉRO</b>{secs.map(([id, t], i) => <button key={id} onClick={() => jump(id)}><i>{String(i + 1).padStart(2, "0")}</i>{t}</button>)}<button onClick={() => goWorldHome("cm")}><i>{String(secs.length + 1).padStart(2, "0")}</i>Commentaires</button></nav>
+            <nav className="hr-toc" aria-label="Sommaire"><b>AU SOMMAIRE DE CE NUMÉRO</b>{secs.map(([id, t], i) => <button key={id} onClick={() => jump(id)}><i>{String(i + 1).padStart(2, "0")}</i>{t}</button>)}<button onClick={() => goWorldHome("cm")}><i>{String(secs.length + 1).padStart(2, "0")}</i>Commentaires</button><button onClick={() => push({ k: "support" })} data-testid="nw-revue-support"><i>{String(secs.length + 2).padStart(2, "0")}</i>Soutenir la station</button></nav>
             <article className="hr-body">
               <header className="hr-mast">
                 <div className="hr-paper" aria-hidden="true"><b>La Gazette de la Station</b><span>N° {String((item.order ?? 0) + 1).padStart(3, "0")} · {new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} · Prix : un regard</span></div>
@@ -539,6 +561,7 @@ export default function NexusWorld(p) {
         </div>
       );
       case "comments": return <div className="nw-read wide nw-scroll" data-testid="nw-comments">{comments}</div>;
+      case "support": return <WorldSupport item={item} ws={ws} isAdmin={isAdmin} unlock={locked && !item.coming_soon ? unlock : null} onComments={() => goWorldHome("cm")} onFav={onFav} fav={fav} sfx={sfx} />;
       case "unlock": return (
         <div className="nw-unlock" data-testid="nw-unlock">
           <IoLockClosed size={34} />
@@ -546,7 +569,7 @@ export default function NexusWorld(p) {
           <p className="nw-desc">{unlock?.note || "Accès définitif à cette œuvre, ou l'abonnement pour soutenir le créateur et tout lire."}</p>
           <div className="nw-unlock-acts">
             <button className="nw-act" disabled={unlock?.buying} onClick={unlock?.onBuy} data-testid="nw-buy">Acheter · {unlock?.price}</button>
-            {unlock?.onSubscribe && <button className="nw-act ghost" disabled={unlock?.buying} onClick={unlock.onSubscribe}>{unlock.subLabel}</button>}
+            {unlock?.onSubscribe && <button className="nw-act ghost" disabled={unlock?.buying} onClick={() => push({ k: "support" })}>{unlock.subLabel}</button>}
           </div>
         </div>
       );
@@ -601,18 +624,18 @@ export default function NexusWorld(p) {
       {ws === "dock" && (
         <nav className="nw-dock" aria-label="Rubriques" data-testid="nw-dock">
           <button className={top.k === "home" ? "on" : ""} onClick={() => goWorldHome()}><IoHomeOutline size={18} /><span>Accueil</span></button>
-          {homeItems.filter((it) => it.id !== "resume").slice(0, 5).map((it) => {
+          {[...homeItems.filter((it) => it.id !== "resume" && it.id !== "support").slice(0, 4), homeItems.find((it) => it.id === "support")].filter(Boolean).map((it) => {
             const k = it.id === "launch" ? "units" : it.id;
-            return <button key={it.id} className={top.k === k ? "on" : ""} onClick={() => { if (it.id === "launch" && isUnits) replaceAt1({ k: "units", sel: current ?? 0 }); else if (["gallery", "making", "embeds", "neighbors", "trailer", "unlock"].includes(it.id)) replaceAt1({ k: it.id }); else it.go(); }} data-testid={`nw-dock-${it.id}`}>
+            return <button key={it.id} className={top.k === k ? "on" : ""} onClick={() => { if (it.id === "launch" && isUnits) replaceAt1({ k: "units", sel: current ?? 0 }); else if (["gallery", "making", "embeds", "neighbors", "trailer", "unlock", "support"].includes(it.id)) replaceAt1({ k: it.id }); else it.go(); }} data-testid={`nw-dock-${it.id}`}>
               {DOCK_IC[it.id] || <IoPlay />}<span>{it.label}</span></button>;
           })}
           <button className={top.k === "comments" ? "on" : ""} onClick={() => goWorldHome("cm")}><IoChatbubbleOutline /><span>Commentaires</span></button>
         </nav>
       )}
       <header className="nw-hud">
-        <button className="nw-back" onClick={pop} aria-label={stack.length > 1 ? "Retour" : "Quitter le monde"} data-testid="nw-back"><IoArrowBack size={18} /></button>
+        <button className={"nw-back" + (stack.length > 1 ? "" : " idle")} onClick={pop} aria-label="Retour" disabled={stack.length === 1} data-testid="nw-back"><IoArrowBack size={18} /></button>
         <nav className="nw-crumbs" aria-label="Où je suis">
-          <button onClick={() => { sfx("back"); onExit(); }} className="c0">Station</button>
+          <button onClick={exitWorld} className="c0">Station</button>
           {stack.map((s, i) => <button key={i} onClick={() => goto(i)} className={i === stack.length - 1 ? "here" : ""} aria-current={i === stack.length - 1 ? "page" : undefined}>{titleOf(s)}</button>)}
         </nav>
         <div className="nw-tools">
@@ -628,7 +651,7 @@ export default function NexusWorld(p) {
           {isAdmin && onAtelier && <button onClick={onAtelier} title="Ouvrir son œuvre dans l'atelier" aria-label="Ouvrir dans l'atelier" data-testid="detail-atelier" className="nw-at">工</button>}
           <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
           <button onClick={() => { sfx("back"); goWorldHome(); }} title="Accueil de l'œuvre" aria-label="Accueil de l'œuvre" data-testid="nw-home"><IoHomeOutline size={17} /></button>
-          <button className="nw-quit" onClick={() => { sfx("back"); onExit(); }} title="Quitter l'univers (revenir où tu étais)" data-testid="nw-exit"><IoExitOutline size={16} /><span>Quitter l'univers</span></button>
+          <button className="nw-quit" onClick={exitWorld} title="Quitter l'univers (revenir où tu étais)" data-testid="nw-exit"><IoExitOutline size={16} /><span>Quitter l'univers</span></button>
         </div>
       </header>
 
@@ -646,7 +669,7 @@ export default function NexusWorld(p) {
       </main>
 
       <footer className="nw-keys" aria-hidden="true">
-        <span><kbd>↑</kbd><kbd>↓</kbd> Choisir</span><span><kbd>Entrée</kbd> Valider</span><span><kbd>Échap</kbd> {stack.length > 1 ? "Retour" : "Quitter"}</span>
+        <span><kbd>↑</kbd><kbd>↓</kbd> Choisir</span><span><kbd>Entrée</kbd> Valider</span>{stack.length > 1 && <span><kbd>Échap</kbd> Retour</span>}
         <span className="nw-depth">{"◆".repeat(stack.length)}{"◇".repeat(Math.max(0, 3 - stack.length))}</span>
       </footer>
       <ContextMenuHost />

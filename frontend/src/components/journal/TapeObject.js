@@ -6,10 +6,11 @@ import { mediaUrl } from "@/lib/api";
   (bandeau, titre écrit à la main, bandes de couleur tirées du titre), fenêtre avec bobines dentées et bande brune.
 */
 const hue = (str = "") => { let h = 0; for (const ch of str) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
-export function Cassette({ title = "", sub = "", side = "A", p = 0, spinning = false, starting = false, small = false, img = "" }) {
+export const WEARS = [["neuve", "Neuve", "Sortie du blister"], ["usee", "Usée", "Écoutée souvent"], ["tres", "Très usée", "Retrouvée au grenier"]];
+export function Cassette({ title = "", sub = "", side = "A", p = 0, spinning = false, starting = false, small = false, img = "", wear = "usee" }) {
   const rl = 44 - 22 * p, rr = 22 + 22 * p; // la bande passe d'une bobine à l'autre
   return (
-    <span className={"cs" + (small ? " sm" : "") + (spinning ? " spin" : "") + (starting ? " starting" : "") + (img ? " has-img" : "")} style={{ "--h": hue(title) }} aria-hidden="true">
+    <span className={"cs" + (small ? " sm" : "") + (spinning ? " spin" : "") + (starting ? " starting" : "") + (img ? " has-img" : "") + " w-" + (wear || "usee")} style={{ "--h": hue(title) }} aria-hidden="true">
       <span className="cs-shell" />
       <span className="cs-gear l" /><span className="cs-gear r" />
       <span className="cs-screw a" /><span className="cs-screw b" /><span className="cs-screw c" /><span className="cs-screw d" /><span className="cs-screw e" />
@@ -37,5 +38,5 @@ export function Cassette({ title = "", sub = "", side = "A", p = 0, spinning = f
 
 // La cassette comme objet (listes du journal, Making of) : on sait que c'est un enregistrement avant de l'ouvrir.
 export default function TapeObject({ e, small }) {
-  return <span className="tpo" data-testid={`tape-object-${e.id}`} aria-label="Cassette audio"><Cassette title={e.tape_label || e.title} sub={e.tape_voice ? `Voix : ${e.tape_voice}` : ""} small={small} img={e.cover} /></span>;
+  return <span className="tpo" data-testid={`tape-object-${e.id}`} aria-label="Cassette audio"><Cassette title={e.tape_label || e.title} sub={e.tape_voice ? `Voix : ${e.tape_voice}` : ""} small={small} img={e.cover} wear={e.tape_wear} /></span>;
 }

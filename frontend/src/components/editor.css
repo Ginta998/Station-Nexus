@@ -334,3 +334,13 @@ body:has(.rl) .ax-fiche-wrap{z-index:2700}
 .rl-cols-l{width:92px;font:500 10px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--rl-mute)}
 .rl-colsrow .rl-cols{margin:0 0 12px}
 .rl-wsc-new .rl-mini-new{display:grid;place-items:center;font:300 34px/1 "Inter",sans-serif;color:var(--rl-acc);border:1px dashed var(--rl-hair2);background:none}
+/* 0.41 · appui long sur un monde : ses actions, posées sur la carte */
+.rl-wsc{position:relative;-webkit-touch-callout:none;user-select:none}
+.rl-wsask{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:10px;background:color-mix(in srgb,var(--rl-card) 94%,transparent);backdrop-filter:blur(4px);border:1px solid var(--rl-ink);animation:rlAsk .18s ease;cursor:default}
+@keyframes rlAsk{from{opacity:0;transform:scale(.96)}}
+.rl-wsask b{font-size:13px;line-height:1.25}
+.rl-wsask small{font-size:11px;opacity:.65;line-height:1.3}
+.rl-wsask>span{display:flex;gap:6px;margin-top:4px}
+.rl-wsask>span>span{flex:1;text-align:center;padding:7px 6px;border:1px solid var(--rl-hair2);font-size:12px;cursor:pointer}
+.rl-wsask-ok{background:var(--rl-ink);color:var(--rl-card)}
+.rl-wsask-ok.danger{background:#b3261e;border-color:#b3261e!important;color:#fff}

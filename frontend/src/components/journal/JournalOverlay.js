@@ -22,5 +22,5 @@ export default function JournalOverlay({ id, onClose, onEdit }) {
   if (editing) return <JournalEditLayer id={id} onDone={() => { setEditing(false); qc.invalidateQueries({ queryKey: ["journal-entry", id] }); qc.invalidateQueries({ queryKey: ["journal"] }); }} />;
   if (e.format === "cassette") return <TapePlayer entry={e} onClose={onClose} />;
   const edit = onEdit || (isAdmin ? () => setEditing(true) : null);
-  return <WorkReader entry={e} onClose={onClose} onEditUnit={edit ? () => edit() : undefined} />;
+  return <WorkReader entry={e} onClose={onClose} onEditUnit={edit ? () => edit() : undefined} noPdf={!isAdmin} />;
 }
