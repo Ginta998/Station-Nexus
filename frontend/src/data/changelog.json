@@ -1,6 +1,23 @@
 {
-  "version": "0.41",
+  "version": "0.42",
   "patches": [
+    {
+      "v": "0.42",
+      "date": "2026-11-19",
+      "title": "Le studio de la newsletter",
+      "groups": {
+        "Ajouté": [
+          "Atelier › Newsletter : compose une lettre en blocs (titre, texte avec **gras** et *italique*, image, une œuvre de la station avec son affiche et son bouton, bouton, séparateur), trois habillages (Nuit, Papier, Néon), l'aperçu exact de l'email (ordinateur ou téléphone) avec l'objet et la phrase d'aperçu comme dans une boîte de réception. Brouillons gardés, duplication, envoi test à toi, puis envoi à tous les abonnés avec le compte rendu (envoyés / total).",
+          "Diagnostic d'envoi : la Station dit si Resend est branché, si l'adresse d'envoi est une adresse de test, et affiche la réponse exacte de Resend quand un test échoue.",
+          "Les trois nouvelles entrées (néon, porte de baie, une qui se déplie) se choisissent dans l'atelier des thèmes, pour n'importe quel monde.",
+          "Jaquettes de la vidéothèque : « Chercher un artwork », la même recherche qu'Alexandrie.",
+          "Alexandrie : ouvrir un livre joue l'animation d'ouverture et le son de lancement de son format."
+        ],
+        "Changé": [
+          "Envois groupés au rythme permis par Resend (2 par seconde), et la clé Resend est relue sans redémarrer le serveur."
+        ]
+      }
+    },
     {
       "v": "0.41",
       "date": "2026-11-19",

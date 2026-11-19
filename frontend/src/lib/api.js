@@ -189,3 +189,10 @@ export const listReports = () => api.get("/reports").then((r) => r.data);
 export const decideReport = (id, p) => api.put(`/reports/${id}`, p).then((r) => r.data);
 export const getLegalInfo = () => api.get("/legal-info").then((r) => r.data);
 export const saveLegalInfo = (p) => api.put("/legal-info", p).then((r) => r.data);
+
+// ---- Newsletter : le studio de l'atelier, et le test d'envoi Resend
+export const emailTest = (p = {}) => api.post("/email/test", p).then((r) => r.data);
+export const listNewsletters = () => api.get("/newsletters").then((r) => r.data);
+export const saveNewsletter = (n) => (n.id ? api.put(`/newsletters/${n.id}`, n) : api.post("/newsletters", n)).then((r) => r.data);
+export const deleteNewsletter = (id) => api.delete(`/newsletters/${id}`).then((r) => r.data);
+export const sendNewsletter = (id) => api.post(`/newsletters/${id}/send`).then((r) => r.data);

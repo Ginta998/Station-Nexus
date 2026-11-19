@@ -9,6 +9,7 @@ import { pressMenu } from "@/components/atelier/ContextMenu";
 import Box3D from "@/components/nexus/Box3D";
 import { Face } from "@/components/atelier/Alexandrie";
 import { vidOf } from "@/components/atelier/Cinema";
+import { ArtSearch } from "@/components/journal/BlocksEditor";
 import "@/components/atelier/alexandrie.css";
 import "@/components/nexus/nexus.css";
 import "@/components/atelier/vhsShelf.css";
@@ -113,6 +114,7 @@ function VhsEdit({ at, r, links, onClose }) {
           <span className="vh-cover-prev vh-face"><Face b={{ id: "p", title: d.title || "Titre", sub: "", format: "vhs", emblem: d.kind === "serie" ? "連" : "映", cote: d.kind === "serie" ? "SÉRIE" : "FILM", roomLabel: "Salon", house: "VIDÉOTHÈQUE" }} cover={coverOf({ ...d, eps: linesToEps(d.epsTxt || "") })} /></span>
           <div>
             <p>La jaquette : la miniature de la vidéo par défaut, ou ton image.</p>
+            <ArtSearch term={d.title} label="Chercher un artwork" onPick={(u) => set({ cover: u })} />
             <label className="at-btn ghost vh-up"><IoCloudUploadOutline size={15} /> {busy ? "Envoi…" : "Choisir une image"}<input hidden type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; upload(f); }} /></label>
             <input value={d.cover || ""} onChange={(e) => set({ cover: e.target.value })} placeholder="ou le lien d'une image" />
           </div>

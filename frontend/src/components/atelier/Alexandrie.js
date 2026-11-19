@@ -17,6 +17,8 @@ import { exportBook } from "@/lib/exportPdf";
 import { ROOMS, TYPES, BOOKS, UPCOMING, parseBook, readingTime } from "@/data/alexandrie";
 import { stripHtml } from "@/lib/atelier";
 import { useApp } from "@/context/AppContext";
+import { playLaunch, getLaunchSound } from "@/lib/launchSound";
+import "@/components/nexus/nexus.css";
 import "@/components/atelier/alexandrie.css";
 
 // ALEXANDRIE — la bibliothèque de l'Atelier. Des salles, des rayonnages, des livres qui s'ouvrent.
@@ -886,7 +888,10 @@ export function CoverDialog({ b, current, def, onSave, onClose }) {
 }
 
 export default function Alexandrie({ at, open, radio, room: startRoom, book: startBook }) {
-  const { sfx } = useApp();
+  const { sfx, uiVolume = 0.6, muted } = useApp();
+  // L'ouverture d'un livre, comme sur la station : l'objet en volume, le son de lancement, puis la lecture
+  const [launching, setLaunching] = useState(null);
+  useEffect(() => { if (!launching) return undefined; const t = setTimeout(() => { setReading(launching); setLaunching(null); }, 1650); return () => clearTimeout(t); }, [launching]);
   const [room, setRoom] = useState(startRoom || null);
   useEffect(() => { setRoom(startRoom || null); }, [startRoom]);
   const [type, setType] = useState("all");
@@ -1087,7 +1092,13 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       if (it?.id) open(it.id, "document"); else toast.error("Le livre n'a pas pu être créé");
     } catch (e) { toast.error("Le livre n'a pas pu être créé : " + (e?.response?.data?.detail || e?.message || "erreur")); }
   };
-  const openBook = (b) => { sfx?.("open"); setSearch(false); setReading(b); };
+  const openBook = (b) => {
+    setSearch(false);
+    const fmt = volLook(b).fmt;
+    playLaunch(muted ? 0 : uiVolume, getLaunchSound(fmt === "vhs" || fmt === "vinyle" ? fmt : "livre"));
+    if (b.preview || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { setReading(b); return; }
+    setLaunching(b);
+  };
   const enter = (k) => { sfx?.("open"); setRoom(k); document.querySelector(".at-main, main")?.scrollTo?.({ top: 0 }); };
   // Habiller une salle : pour chaque cassette sans artwork choisi par toi, prend le mieux noté sur SteamGridDB.
   const [dressing, setDressing] = useState(false);
@@ -1195,6 +1206,19 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       {coverFor && <CoverDialog b={coverFor} current={covers[coverFor.id]} def={DEFAULT_COVERS[coverFor.id]} onSave={(u) => saveCover(coverFor.id, u)} onClose={() => setCoverFor(null)} />}
       {search && <AlexSearch books={all} upcoming={upcoming} onClose={() => setSearch(false)} onOpen={openBook} onGoto={(b) => { setSearch(false); setRoom(b.room); setSel((s) => ({ ...s, [b.room]: b.id })); }} />}
       {paste && <AlexPaste initial={paste.text} editing={paste.title} onSave={savePaste} onClose={() => setPaste(null)} onPreview={(b) => setReading(b)} renderCover={(b) => <Face b={b} cover={b.coverUrl || covers[b.id]} />} />}
+      {launching && createPortal(
+        <div className={"nx-launchfx f-" + volLook(launching).fmt} onClick={() => { setReading(launching); setLaunching(null); }} role="status" aria-label={`Ouverture de ${launching.title}`} data-testid="alex-launch" style={{ zIndex: 3000 }}>
+          <i className="nx-lf-glow" aria-hidden="true" />
+          <div className="nx-lf-obj">
+            <div className={`nx-box f-${volLook(launching).fmt}`}><div className="nx-box-in">
+              <div className="nx-box-front"><Face b={launching} cover={covers[launching.id]} /></div>
+              <div className="nx-box-side" style={covers[launching.id] ? { backgroundImage: `url(${covers[launching.id]})` } : undefined}><span>{launching.title}</span></div>
+              <div className="nx-box-back" />
+            </div></div>
+          </div>
+          <p className="nx-lf-t"><span className="mono">{volLook(launching).fmt === "vhs" ? "▶ PLAY" : volLook(launching).fmt === "vinyle" ? "◉ FACE A" : "OUVERTURE"}</span>{launching.title}</p>
+          <small className="mono nx-lf-skip">TOUCHE OU CLIC POUR PASSER</small>
+        </div>, document.body)}
       {readingBook && (readingBook.preview
         ? <Reader key={readingBook.id + readingBook.words} book={readingBook} at={null} radio={radio} cover={readingBook.coverUrl} onClose={() => { sfx?.("close"); setReading(null); }} />
         : <Reader key={readingBook.id} book={readingBook} at={at} startNotes={readNotes} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); setReadNotes(false); }} onEdit={(id) => { setReading(null); open(id); }}

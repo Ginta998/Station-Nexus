@@ -1250,9 +1250,9 @@ def _announcement_email_html(title: str, text: str, link: Optional[str]) -> str:
 
 
 async def _broadcast_email(subject: str, html: str):
-    if not RESEND_API_KEY:
+    if not _resend_key():
         logger.warning("RESEND_API_KEY manquant — email non envoyé")
-        return
+        return {"sent": 0, "failed": 0}
     subs = await db.subscribers.find({}, {"_id": 0, "email": 1, "token": 1}).to_list(10000)
     sent = 0
     for s in subs:
@@ -1261,7 +1261,7 @@ async def _broadcast_email(subject: str, html: str):
             tok = secrets.token_urlsafe(16)
             await db.subscribers.update_one({"email": s["email"]}, {"$set": {"token": tok}})
         unsub = f"{_site_url()}/api/newsletter/unsubscribe?t={tok}"
-        params = {"from": SENDER_EMAIL, "to": [s["email"]], "subject": subject, "html": html.replace("%%UNSUB%%", unsub),
+        params = {"from": _sender(), "to": [s["email"]], "subject": subject, "html": html.replace("%%UNSUB%%", unsub),
                   "headers": {"List-Unsubscribe": f"<{unsub}>", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"}}
         if REPLY_TO_EMAIL:
             params["reply_to"] = REPLY_TO_EMAIL
@@ -1270,7 +1270,9 @@ async def _broadcast_email(subject: str, html: str):
             sent += 1
         except Exception as e:
             logger.error("Echec envoi email à %s: %s", s.get("email"), e)
+        await asyncio.sleep(0.6)  # Resend (offre gratuite) : 2 envois par seconde au plus
     logger.info("Broadcast email '%s' envoyé à %d/%d abonnés", subject, sent, len(subs))
+    return {"sent": sent, "failed": len(subs) - sent}
 
 
 # ---------------- Emails transactionnels (confirmations légales) ----------------
@@ -1351,9 +1353,113 @@ async def _cancel_subscription_now(sub_id: str):
         logger.warning("Résiliation immédiate Stripe impossible (%s): %s", sub_id, e)
 
 
+def _resend_key() -> str:
+    """La clé Resend relue à chaque fois : la poser sur Emergent suffit, sans attendre un redémarrage."""
+    k = os.environ.get('RESEND_API_KEY') or RESEND_API_KEY or ""
+    if k:
+        resend.api_key = k
+    return k
+
+
+def _sender() -> str:
+    return os.environ.get('SENDER_EMAIL') or SENDER_EMAIL
+
+
 @api_router.get("/email/status")
 async def email_status():
-    return {"configured": bool(RESEND_API_KEY), "sender": SENDER_EMAIL if RESEND_API_KEY else ""}
+    k = _resend_key()
+    snd = _sender()
+    return {"configured": bool(k), "sender": snd if k else "",
+            "key_ok": k.startswith("re_") if k else False,
+            "test_sender": snd.endswith("@resend.dev"),
+            "subscribers": await db.subscribers.count_documents({})}
+
+
+@api_router.post("/email/test")
+async def email_test(body: Dict[str, Any] = None, admin=Depends(require_admin)):
+    """Envoie un email d'essai à l'admin et renvoie l'erreur exacte de Resend s'il y en a une."""
+    k = _resend_key()
+    if not k:
+        return {"ok": False, "error": "RESEND_API_KEY n'est pas posée dans les variables du serveur."}
+    to = ((body or {}).get("to") or admin.get("email") or "").strip()
+    if not to:
+        return {"ok": False, "error": "Aucune adresse de destination."}
+    html = (body or {}).get("html") or _mail_html("Test d'envoi", "Si tu lis ceci, la newsletter de la Station peut partir.")
+    subject = (body or {}).get("subject") or "Test · Station Nexus"
+    params = {"from": _sender(), "to": [to], "subject": subject, "html": html.replace("%%UNSUB%%", _site_url())}
+    if REPLY_TO_EMAIL:
+        params["reply_to"] = REPLY_TO_EMAIL
+    try:
+        r = await asyncio.to_thread(resend.Emails.send, params)
+        return {"ok": True, "to": to, "id": (r or {}).get("id") if isinstance(r, dict) else None}
+    except Exception as e:
+        return {"ok": False, "to": to, "error": str(e)}
+
+
+# ---------------- Newsletter (le studio de l'atelier) ----------------
+# Le HTML de l'email est composé côté atelier (le même que l'aperçu) ; le serveur garde les brouillons et envoie.
+class NewsletterIn(BaseModel):
+    subject: str = ""
+    preheader: str = ""
+    blocks: List[Dict[str, Any]] = Field(default_factory=list)
+    html: str = ""
+    theme: str = "nuit"
+
+
+@api_router.get("/newsletters")
+async def list_newsletters(_admin=Depends(require_admin)):
+    return await db.newsletters.find({}, {"_id": 0}).sort("updated_at", -1).to_list(500)
+
+
+@api_router.post("/newsletters", status_code=201)
+async def create_newsletter(body: NewsletterIn, _admin=Depends(require_admin)):
+    now = datetime.now(timezone.utc).isoformat()
+    doc = {**body.model_dump(), "id": str(uuid.uuid4()), "status": "draft", "created_at": now, "updated_at": now}
+    await db.newsletters.insert_one(dict(doc))
+    doc.pop("_id", None)
+    return doc
+
+
+@api_router.put("/newsletters/{nid}")
+async def update_newsletter(nid: str, body: NewsletterIn, _admin=Depends(require_admin)):
+    cur = await db.newsletters.find_one({"id": nid}, {"_id": 0})
+    if not cur:
+        raise HTTPException(404, "Newsletter introuvable")
+    if cur.get("status") in ("sending", "sent"):
+        raise HTTPException(409, "Déjà envoyée : duplique-la pour la modifier")
+    await db.newsletters.update_one({"id": nid}, {"$set": {**body.model_dump(), "updated_at": datetime.now(timezone.utc).isoformat()}})
+    return await db.newsletters.find_one({"id": nid}, {"_id": 0})
+
+
+@api_router.delete("/newsletters/{nid}")
+async def delete_newsletter(nid: str, _admin=Depends(require_admin)):
+    await db.newsletters.delete_one({"id": nid})
+    return {"ok": True}
+
+
+async def _send_newsletter(nid: str):
+    n = await db.newsletters.find_one({"id": nid}, {"_id": 0})
+    if not n:
+        return
+    res = await _broadcast_email(n.get("subject") or "Station Nexus", n.get("html") or "")
+    await db.newsletters.update_one({"id": nid}, {"$set": {"status": "sent", "sent_at": datetime.now(timezone.utc).isoformat(), **(res or {})}})
+
+
+@api_router.post("/newsletters/{nid}/send")
+async def send_newsletter(nid: str, background_tasks: BackgroundTasks, _admin=Depends(require_admin)):
+    n = await db.newsletters.find_one({"id": nid}, {"_id": 0})
+    if not n:
+        raise HTTPException(404, "Newsletter introuvable")
+    if n.get("status") in ("sending", "sent"):
+        raise HTTPException(409, "Déjà envoyée")
+    if not _resend_key():
+        raise HTTPException(400, "Resend n'est pas configuré (RESEND_API_KEY)")
+    if not (n.get("subject") or "").strip() or not n.get("html"):
+        raise HTTPException(400, "Il manque l'objet ou le contenu")
+    total = await db.subscribers.count_documents({})
+    await db.newsletters.update_one({"id": nid}, {"$set": {"status": "sending", "total": total}})
+    background_tasks.add_task(_send_newsletter, nid)
+    return {"ok": True, "total": total}
 
 
 # ---------------- Profiles (visitor social profiles) ----------------

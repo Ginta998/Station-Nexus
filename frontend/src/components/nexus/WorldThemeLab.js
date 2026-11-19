@@ -13,7 +13,7 @@ import "@/components/nexus/wtlab.css";
   puis un éditeur en onglets avec un grand aperçu vivant. « Voir dans le monde » montre le vrai monde habillé.
 */
 const PT_NAMES = { cinema: ["Poussière de pellicule", "Fines rayures qui passent"], vhs: ["Parasites", "Neige et bande qui roule"], arcade: ["Étoiles pixel", "Points nets qui scintillent"], yorha: ["Poussière d'archive", "Particules lentes"], eve: ["Étoiles", "Points froids qui dérivent"], hero: ["Étincelles", "Éclats rapides"], cathedrale: ["Braises", "Points rouges qui montent"], couronne: ["Cendres d'or", "Or qui tombe doucement"], trait: ["Taches d'encre", "Points noirs"], sengoku: ["Cendres", "Flocons pâles"], survivance: ["Spores", "Poussière en suspension"], cristal: ["Éclats de givre", "Scintillements froids"] };
-const IN_NAMES = { cinema: "Écran large", vhs: "Bande qui défile", arcade: "Insert coin", yorha: "Connexion", eve: "Anneau", hero: "Balayage", cathedrale: "Sceau de cire", couronne: "Éclat doré", trait: "Encre", sengoku: "Pinceau et sceau", survivance: "La lumière revient", cristal: "Éclats de verre" };
+const IN_NAMES = { cinema: "Écran large", vhs: "Bande qui défile", arcade: "Insert coin", yorha: "Connexion", eve: "Anneau", hero: "Balayage", cathedrale: "Sceau de cire", couronne: "Éclat doré", trait: "Encre", sengoku: "Pinceau et sceau", survivance: "La lumière revient", cristal: "Éclats de verre", dock: "Néon sous la pluie", panorama: "Porte de la baie", sommaire: "La une se déplie" };
 const TABS = [["structure", "Structure"], ["colors", "Couleurs"], ["type", "Typo"], ["layout", "Disposition"], ["matter", "Matière"], ["fx", "Effets"], ["mouse", "Souris"]];
 const B = (t) => WT_BASE[t.base] || WT_BASE.cinema;
 
