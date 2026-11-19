@@ -1,6 +1,19 @@
 {
-  "version": "0.38",
+  "version": "0.39",
   "patches": [
+    {
+      "v": "0.39",
+      "date": "2026-11-19",
+      "title": "Le Cockpit qui se remplit tout seul",
+      "groups": {
+        "Ajouté": [
+          "Cockpit › Aujourd'hui : Bunny dit ce qui compte, trois choses à faire (en retard, prévu aujourd'hui, en cours, document prêt, brouillon du journal), la semaine (tâches, rendez-vous, sorties programmées) et ce qui arrive sur la station. Rien à paramétrer.",
+          "Tableau (À faire / En cours / Fait, glisser une carte pour changer son état), Calendrier (le mois ; double-clic pour une tâche, glisser pour changer sa date), Liste (recherche, filtres, rangée par lot).",
+          "Modèles : six cartes (Sortie du dimanche, Épisode vertical, Reel, Tournage, Chapitre de roman, Semaine d'écriture). Un nom, une date de sortie, et les étapes se créent avec leurs dates comptées à rebours. « Créer un modèle » pour les tiens.",
+          "Les anciens outils restent à côté : Carrière, Roadmap, Objectifs, Agenda, Budget, Collaborations. (Les nouveaux champs des tâches, état et lot, et les modèles personnels demandent la mise à jour du serveur.)"
+        ]
+      }
+    },
     {
       "v": "0.38",
       "date": "2026-11-19",

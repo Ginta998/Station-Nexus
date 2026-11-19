@@ -3,6 +3,7 @@ import { IoAdd, IoTrashOutline, IoCreateOutline, IoCheckmark, IoMailOutline, IoC
 import { toast } from "sonner";
 import { todayStr } from "@/lib/atelier";
 import TasksView from "@/components/atelier/TasksView";
+import { CockpitToday, CockpitBoard, CockpitCalendar, CockpitList, CockpitTemplates, TaskEditor } from "@/components/atelier/CockpitNext";
 import RoadmapView from "@/components/atelier/RoadmapView";
 import GCalPanel from "@/components/atelier/GCalPanel";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
@@ -110,15 +111,23 @@ function Overview({ at, setTab }) {
   );
 }
 
-const TABS = [["overview", "Vue d'ensemble"], ["tasks", "Tâches"], ["roadmap", "Roadmap"], ["goals", "Objectifs"], ["events", "Agenda"], ["budget", "Budget"], ["contacts", "Collaborations"]];
+// Le Cockpit : d'abord ce qui se remplit tout seul (Aujourd'hui) et les vues de tâches, puis les outils de carrière
+const TABS = [["today", "Aujourd'hui"], ["board", "Tableau"], ["calendar", "Calendrier"], ["list", "Liste"], ["templates", "Modèles"], "|", ["overview", "Carrière"], ["roadmap", "Roadmap"], ["goals", "Objectifs"], ["events", "Agenda"], ["budget", "Budget"], ["contacts", "Collaborations"]];
 
 // Cockpit de carrière : savoir ce qui avance, ce qui bloque, ce qui approche
 export default function CockpitView(props) {
-  const [tab, setTab] = useState("overview");
+  const [tab, setTab] = useState("today");
+  const [edit, setEdit] = useState(null);
   return (
     <section className="at-view" data-testid="atelier-cockpit">
-      <header className="at-head"><p className="at-eyebrow mono">// COCKPIT DE CARRIÈRE</p><h1>Cockpit</h1></header>
-      <nav className="at-tabs">{TABS.map(([k, l]) => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)} data-testid={`cockpit-tab-${k}`}>{l}</button>)}</nav>
+      <header className="at-head"><p className="at-eyebrow mono">// COCKPIT</p><h1>Cockpit</h1></header>
+      <nav className="at-tabs">{TABS.map((x, i) => x === "|" ? <span key={i} className="ck-sep" /> : x).map((x) => (x.type ? x : <button key={x[0]} className={tab === x[0] ? "on" : ""} onClick={() => setTab(x[0])} data-testid={`cockpit-tab-${x[0]}`}>{x[1]}</button>))}</nav>
+      {tab === "today" && <CockpitToday {...props} setTab={setTab} />}
+      {tab === "board" && <CockpitBoard at={props.at} onEdit={setEdit} />}
+      {tab === "calendar" && <CockpitCalendar at={props.at} onEdit={setEdit} />}
+      {tab === "list" && <CockpitList at={props.at} onEdit={setEdit} />}
+      {tab === "templates" && <CockpitTemplates at={props.at} />}
+      {edit && <TaskEditor at={props.at} t={edit} onClose={() => setEdit(null)} />}
       {tab === "overview" && <Overview at={props.at} setTab={setTab} />}
       {tab === "tasks" && <TasksView {...props} />}
       {tab === "roadmap" && <RoadmapView at={props.at} />}

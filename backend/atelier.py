@@ -51,6 +51,9 @@ class TaskIn(BaseModel):
     priority: str = "normal"
     done: bool = False
     notes: str = ""
+    status: str = "todo"   # todo | doing | done (Cockpit : vue Tableau)
+    group: str = ""        # le lot dont la tâche fait partie (ex. « Sortie du dimanche · Épisode 4 »)
+    order: int = 0
 
 
 class LinkIn(BaseModel):
@@ -476,7 +479,7 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
         return {"universes": universes, "items": items, "tasks": tasks, "links": links, "records": records, "config": await get_config()}
 
     # ---- cockpit carrière : objectifs, agenda, budget, collaborations
-    REC_KINDS = {"goals", "events", "budget", "contacts"}
+    REC_KINDS = {"goals", "events", "budget", "contacts", "tpl"}  # tpl : modèles du Cockpit créés par l'utilisateur
 
     @r.post("/records/{rk}")
     async def create_record(rk: str, body: Dict[str, Any]):
