@@ -1,9 +1,9 @@
 import { FAVICONS, faviconPng } from "@/lib/favicons";
-import { LAUNCH_SOUNDS, LAUNCH_FORMATS, getLaunchSound, setLaunchSound, playLaunch } from "@/lib/launchSound";
+import { LAUNCH_SOUNDS, LAUNCH_FORMATS, getLaunchSound, setStationLaunchSounds, playLaunch, useLaunchSync } from "@/lib/launchSound";
 import { useState, useEffect, useRef } from "react";
 import { MyData, ReportsAdmin, LegalInfoAdmin } from "@/components/PrivacyTools";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { IoArrowBack, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline , IoDocumentTextOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { useThemeList, baseOf as baseOfTheme } from "@/lib/themeStore";
@@ -1008,7 +1008,7 @@ export default function Settings() {
           <input data-testid="music-volume-slider" type="range" min="0" max="1" step="0.05" value={musicVolume} onChange={(e) => setMusicVolume(parseFloat(e.target.value))} className="w-full mt-2 mb-5" style={{ accentColor: "var(--brand)" }} />
           <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Volume de l'interface ({Math.round(uiVolume * 100)}%)</label>
           <input data-testid="ui-volume-slider" type="range" min="0" max="1" step="0.05" value={uiVolume} onChange={(e) => { setUiVolume(parseFloat(e.target.value)); }} onMouseUp={() => sfx("select")} onTouchEnd={() => sfx("select")} className="w-full mt-2" style={{ accentColor: "var(--brand)" }} />
-          <LaunchSoundPick vol={muted ? 0 : uiVolume} />
+          {isAdmin && <LaunchSoundPick vol={muted ? 0 : uiVolume} />}
         </Section>
 
         <Section title="Pistes & ambiances" extra="— choisis ou ajoute">
@@ -1206,12 +1206,21 @@ function SiteIdentity() {
 }
 
 // Le son du lancement d'une œuvre (Nexus), un par format : on écoute en cliquant, le choix est gardé
+// Réservé à l'admin : le son de lancement de chaque format, enregistré pour toute la station (les visiteurs l'entendent)
 function LaunchSoundPick({ vol }) {
+  const qc = useQueryClient();
+  const settings = useLaunchSync();
   const [cur, setCur] = useState(() => Object.fromEntries(LAUNCH_FORMATS.map(([f]) => [f, getLaunchSound(f)])));
-  const pick = (f, k) => { setCur((c) => ({ ...c, [f]: k })); setLaunchSound(k, f); if (k !== "none") playLaunch(Math.max(vol, 0.4), k); };
+  useEffect(() => { if (settings) setCur(Object.fromEntries(LAUNCH_FORMATS.map(([f]) => [f, settings.launch_sounds?.[f] || getLaunchSound(f)]))); }, [settings]);
+  const pick = async (f, k) => {
+    const next = { ...cur, [f]: k }; setCur(next); setStationLaunchSounds(next);
+    if (k !== "none") playLaunch(Math.max(vol, 0.4), k);
+    try { await updateSettings({ ...(settings || {}), launch_sounds: next }); qc.invalidateQueries({ queryKey: ["settings"] }); toast.success("Son enregistré pour toute la station"); }
+    catch (_) { toast.error("Son non enregistré (reconnecte-toi en admin)"); }
+  };
   return (
     <div className="mt-2" data-testid="launch-sound-pick">
-      <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Son du lancement (quand une œuvre s'ouvre)</label>
+      <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Son du lancement (quand une œuvre s'ouvre) · pour tous les visiteurs</label>
       {LAUNCH_FORMATS.map(([f, name]) => (
         <div key={f} className="mt-3">
           <p className="text-[11px] uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>{name}</p>

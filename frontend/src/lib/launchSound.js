@@ -1,7 +1,11 @@
 /*
   Le petit son du lancement (quand le livre ou la VHS s'ouvre), comme au démarrage d'un jeu sur Steam ou PlayStation.
-  Cinq sons fabriqués à la volée, doux et nets, avec une petite réverbération ; le choix se garde dans le navigateur.
+  Cinq sons fabriqués à la volée, doux et nets, avec une petite réverbération ; le choix est celui de la station (réglé par l'admin).
 */
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getSettings } from "@/lib/api";
+
 let ctx = null; let verb = null;
 const ac = () => { try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === "suspended") ctx.resume(); return ctx; } catch (_) { return null; } };
 // une salle douce : réponse impulsionnelle de bruit qui décroît (stéréo)
@@ -68,12 +72,20 @@ const PLAY = {
   seuil(c, t, v) { note(c, t, N(36), { v: v * 0.28, d: 1.1, a: 0.02, glide: 0.92, wet: false }); whoosh(c, t + 0.05, 0.9, v * 0.06, 600, 6000); [N(62), N(69), N(76)].forEach((f, i) => note(c, t + 0.3, f, { type: "sine", a: 0.35, d: 1.4, v: v * 0.06, detune: (i - 1) * 6 })); },
 };
 
-// un son par format : le livre, la VHS et le vinyle peuvent chacun avoir le leur
+// un son par format : le livre, la VHS et le vinyle ont chacun le leur.
+// C'est l'admin qui choisit, dans les paramètres de la station ; tous les visiteurs entendent ce choix.
 export const LAUNCH_FORMATS = [["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]];
 const DEF = { livre: "aurore", vhs: "elan", vinyle: "velours" };
-const KEY = "nx-launch-snd";
-export const getLaunchSound = (fmt = "livre") => { try { return localStorage.getItem(`${KEY}-${fmt}`) || localStorage.getItem(KEY) || DEF[fmt] || "halo"; } catch (_) { return DEF[fmt] || "halo"; } };
-export const setLaunchSound = (k, fmt = "livre") => { try { localStorage.setItem(`${KEY}-${fmt}`, k); } catch (_) {} };
+let STATION = {};
+export const setStationLaunchSounds = (m) => { STATION = m || {}; };
+export const getLaunchSound = (fmt = "livre") => STATION[fmt] || DEF[fmt] || "halo";
+export const launchFormatOf = (f) => (f === "vhs" || f === "vinyle" ? f : "livre");
+// à appeler là où une œuvre peut se lancer : garde le choix de la station à jour
+export function useLaunchSync() {
+  const { data } = useQuery({ queryKey: ["settings"], queryFn: getSettings, staleTime: 60000 });
+  useEffect(() => { setStationLaunchSounds(data?.launch_sounds); }, [data]);
+  return data;
+}
 export function playLaunch(vol = 0.7, k = getLaunchSound()) {
   if (!k || k === "none" || vol <= 0) return; const c = ac(); if (!c || !PLAY[k]) return;
   PLAY[k](c, c.currentTime + 0.02, Math.min(1, vol));

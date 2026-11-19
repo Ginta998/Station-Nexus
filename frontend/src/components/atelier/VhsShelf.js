@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { IoAdd, IoClose, IoCloudUploadOutline, IoTrashOutline, IoPlay, IoArrowUp, IoArrowDown, IoSearch, IoListOutline } from "react-icons/io5";
 import { atelierApi, imgSrc } from "@/lib/atelier";
 import { useApp } from "@/context/AppContext";
-import { playLaunch, getLaunchSound } from "@/lib/launchSound";
+import { playLaunch, getLaunchSound, useLaunchSync } from "@/lib/launchSound";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import Box3D from "@/components/nexus/Box3D";
 import { Face } from "@/components/atelier/Alexandrie";
@@ -27,6 +27,7 @@ const isSerieEmpty = (r) => !(r.playlist || r.eps?.length);
 
 export default function VhsShelf({ at, launch, links = [] }) {
   const { uiVolume = 0.6, muted } = useApp() || {};
+  useLaunchSync();
   const tapes = (at.records || []).filter((r) => r.rk === "vhs").sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.created_at).localeCompare(String(b.created_at)));
   const [edit, setEdit] = useState(null);
   const [going, setGoing] = useState(null);

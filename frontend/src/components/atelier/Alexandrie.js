@@ -17,7 +17,7 @@ import { exportBook } from "@/lib/exportPdf";
 import { ROOMS, TYPES, BOOKS, UPCOMING, parseBook, readingTime } from "@/data/alexandrie";
 import { stripHtml } from "@/lib/atelier";
 import { useApp } from "@/context/AppContext";
-import { playLaunch, getLaunchSound } from "@/lib/launchSound";
+import { playLaunch, getLaunchSound, useLaunchSync } from "@/lib/launchSound";
 import "@/components/nexus/nexus.css";
 import "@/components/atelier/alexandrie.css";
 
@@ -889,6 +889,7 @@ export function CoverDialog({ b, current, def, onSave, onClose }) {
 
 export default function Alexandrie({ at, open, radio, room: startRoom, book: startBook }) {
   const { sfx, uiVolume = 0.6, muted } = useApp();
+  useLaunchSync();
   // L'ouverture d'un livre, comme sur la station : l'objet en volume, le son de lancement, puis la lecture
   const [launching, setLaunching] = useState(null);
   useEffect(() => { if (!launching) return undefined; const t = setTimeout(() => { setReading(launching); setLaunching(null); }, 1650); return () => clearTimeout(t); }, [launching]);

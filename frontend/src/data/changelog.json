@@ -1,6 +1,16 @@
 {
-  "version": "0.44",
+  "version": "0.45",
   "patches": [
+    {
+      "v": "0.45",
+      "date": "2026-11-19",
+      "title": "Le son de lancement, c'est la station qui le choisit",
+      "groups": {
+        "Changé": [
+          "Le son de lancement (livre, VHS, vinyle) se règle seulement par l'admin, dans Paramètres › Son, et vaut pour toute la station : tous les visiteurs entendent ce choix. Le choix n'est plus gardé dans le navigateur de chacun."
+        ]
+      }
+    },
     {
       "v": "0.44",
       "date": "2026-11-19",

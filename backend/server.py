@@ -355,6 +355,7 @@ DEFAULT_SITE_DESCRIPTION = "Station Nexus — la station cosmique de Brichel Lou
 
 class SiteSettings(BaseModel):
     site_description: str = DEFAULT_SITE_DESCRIPTION
+    launch_sounds: Dict[str, str] = Field(default_factory=dict)  # son du lancement par format (livre, vhs, vinyle) : choisi par l'admin, entendu par tous
     name: str = "Brichel Louzala"
     bio: str = "Créateur d'histoires, d'univers et d'émotions. Bienvenue dans ma station."
     avatar: Optional[str] = ""

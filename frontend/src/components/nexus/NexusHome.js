@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { playLaunch, getLaunchSound } from "@/lib/launchSound";
+import { playLaunch, getLaunchSound, useLaunchSync } from "@/lib/launchSound";
 import { useNavigate } from "react-router-dom";
 import { IoPlay, IoClose, IoMusicalNotes, IoLinkOutline, IoDocumentTextOutline, IoArrowUndo } from "react-icons/io5";
 import { toast } from "sonner";
@@ -40,6 +40,7 @@ function progressOf(it) {
 // Expérience Nexus : les créations en objets, avec les trois manières de regarder de l'accueil (rayons, carte, arcade).
 // La barre d'outils (recherche, thèmes, choix de la vue) est celle de l'accueil, passée telle quelle.
 export default function NexusHome({ all = [], cats = [], settings, query = "", view = "rails", toolbar }) {
+  useLaunchSync();
   const nav = useNavigate();
   const { sfx, playAmbient, isAdmin, favorites = [], uiVolume = 0.6, muted } = useApp();
   const qc = useQueryClient();
