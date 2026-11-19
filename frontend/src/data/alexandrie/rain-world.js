@@ -13,6 +13,8 @@ const book = {
 
 Rain World est un jeu qui ne t'aime pas. Il ne t'explique rien. Il ne te protège de rien. Tu es une petite créature au bas de la chaîne alimentaire, dans un monde qui continue de vivre sans toi, et qui te mange sans y faire attention.
 
+@art 4
+
 Beaucoup de joueurs l'ont abandonné au bout d'une heure. Ceux qui sont restés en parlent comme d'une expérience à part. Derrière la survie, il y a une des histoires les plus étranges du jeu vidéo : une civilisation qui a disparu en cherchant à s'échapper de l'existence elle-même, et les machines qu'elle a laissées derrière, seules avec leur tâche.
 
 @yt 77z9Pi9crSE | Rain World: Downpour, la bande-annonce de l'extension.
@@ -21,6 +23,8 @@ Beaucoup de joueurs l'ont abandonné au bout d'une heure. Ceux qui sont restés 
 # Ceux qui l'ont fait
 
 Rain World est développé par Videocult, un duo : Joar Jakobsson, artiste et concepteur suédois, qui a créé le monde et programmé les créatures, et James Primate, qui en a écrit la musique et le son. Le jeu est édité en 2017 par Adult Swim Games. Sa suite et ses extensions sont éditées par Akupara Games.
+
+@art g 2
 
 Le jeu a mis environ six ans à voir le jour. Ses créatures sont animées par des systèmes procéduraux : elles ne suivent pas de scripts, elles réagissent à leur environnement.
 
@@ -36,6 +40,8 @@ Tu dois survivre. Manger. Te cacher. Et surtout, trouver un abri avant la pluie.
 
 Le monde de Rain World vit en cycles. Pendant un moment, tout est calme. Puis le ciel se couvre, et la pluie tombe. Pas une pluie ordinaire : un déluge, des trombes d'eau qui écrasent tout ce qui est dehors, qui noient les tunnels, qui tuent.
 
+@art 5
+
 Pour survivre, il faut avoir trouvé un abri et avoir assez mangé. Alors tu hibernes, et tu te réveilles au cycle suivant. Sinon, tu meurs, et tu te réveilles quand même, au dernier abri. Car dans ce monde, la mort n'est pas la fin. C'est le début d'un autre tour.
 
 Et c'est justement cela, le problème.
@@ -43,6 +49,8 @@ Et c'est justement cela, le problème.
 # La chaîne alimentaire
 
 Le monde n'est pas fait pour toi. Il est fait pour lui-même. Des lézards de toutes les couleurs, chacun avec sa façon de chasser. Des vautours qui fondent du ciel. Des plantes carnivores qui ressemblent à des perches. Des créatures qui t'ignorent tant que tu ne les déranges pas.
+
+@art g 3
 
 Et des charognards, une espèce intelligente, qui vit en tribus, porte des lances, échange des perles et des objets, et peut devenir ton alliée ou ton ennemie selon ton comportement.
 
@@ -62,6 +70,8 @@ Pour cela, ils avaient besoin de réponses. Alors ils ont construit des machines
 
 Ces machines, ce sont les itérateurs. Des superordinateurs biomécaniques, vivants à leur manière, grands comme des villes, dont la structure monte jusqu'au ciel. Chacun contient un esprit, une conscience, qui calcule sans cesse pour résoudre ce que les Anciens appelaient le Grand Problème : comment échapper au cycle.
 
+@art 6
+
 Puis les Anciens ont trouvé leur propre chemin. Une substance, au plus profond du monde, qu'on appelle le Vide : une mer dorée, sous la terre, où l'on peut se dissoudre et cesser enfin de renaître. Presque tous les Anciens y sont descendus. Ils ont disparu.
 
 Et ils ont laissé les itérateurs derrière eux, sans leur dire de s'arrêter. Les machines continuent de chercher une réponse que leurs créateurs ont déjà trouvée, et qu'elles ne peuvent pas utiliser.
@@ -71,6 +81,8 @@ Et ils ont laissé les itérateurs derrière eux, sans leur dire de s'arrêter. 
 # Five Pebbles
 
 Le plus proche de toi est un itérateur nommé Five Pebbles. Sa structure domine toute la région où tu te trouves. Il fonctionne mal. Il est malade.
+
+@art g 4
 
 Pour résoudre le Grand Problème, Five Pebbles a tenté une méthode interdite, sur lui-même. Elle a échoué. Elle a provoqué une prolifération, une sorte de cancer, que les joueurs appellent la pourriture : des masses bleues et rouges qui envahissent ses circuits et débordent sur le monde autour. Il souffre. Il est en colère. Et il a consommé tant d'eau pour ses expériences qu'il a contribué à l'effondrement d'un autre itérateur.
 
@@ -90,11 +102,15 @@ Dans une autre campagne, un autre slugcat, le Chasseur, est envoyé par Five Peb
 
 Dans certaines régions, au milieu de la pluie et des ruines, tu croises des échos. Des fantômes immenses, translucides, d'Anciens qui ne sont pas parvenus à partir. Ils sont restés coincés, dans un état entre la vie et l'ascension. Ils te parlent, à demi-mot, de ce qu'ils ont perdu.
 
+@art 7
+
 Chaque rencontre te change. Ton karma monte, une notion que le jeu emprunte au bouddhisme. Il mesure, à sa façon, ton détachement du cycle.
 
 # La descente
 
 La fin de Rain World te fait descendre, comme Five Pebbles l'a dit. Toujours plus bas. Sous les fondations, dans les profondeurs, jusqu'à un lieu immense et silencieux.
+
+@art g 5
 
 Et là, il y a la mer du Vide. Une étendue dorée, lumineuse, sous la terre. Tu y plonges. Tu nages. Autour de toi, d'autres slugcats apparaissent, des centaines, peut-être ta famille, peut-être des échos de tous les cycles. Et tu te dissous dans la lumière.
 
@@ -113,6 +129,8 @@ Le monde se densifie, mais ne s'explique pas davantage. Il reste ce qu'il est : 
 # Ce que tu peux en prendre
 
 Rain World t'apprend l'indifférence comme langage. Le monde ne réagit pas à toi. Il continue. Et cette indifférence crée une humilité rare : tu n'es pas le héros. Tu es une créature parmi d'autres, et c'est pour cela que chaque petite victoire compte.
+
+@art 8
 
 Il t'apprend aussi à cacher une métaphysique dans une mécanique. La boucle de la pluie, des abris, de la mort et du retour n'est pas seulement une règle de jeu. C'est le sujet même du monde : le cycle dont les Anciens voulaient sortir.
 

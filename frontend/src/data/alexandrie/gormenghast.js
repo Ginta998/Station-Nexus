@@ -8,10 +8,13 @@ const book = {
     { label: "Gormenghast (BBC, 2000)", note: "Une mini-série en quatre épisodes, avec Jonathan Rhys Meyers en Steerpike et Christopher Lee en Flay." },
     { label: "Maeve Gilmore, Titus Awakes (2011)", note: "Un quatrième volume, écrit par la femme de Peake à partir de ses notes, publié bien après sa mort." },
   ],
+  pics: ["ol:Titus Groan Mervyn Peake", "ol:Gormenghast Mervyn Peake", "ol:Titus Alone Mervyn Peake"],
   text: String.raw`
 # Avant de commencer
 
 Quand on parle de fantasy en Grande-Bretagne, on cite d'abord Tolkien, ses elfes, ses nains, ses batailles épiques entre le Bien et le Mal. Mais il existe une autre tradition, plus secrète, et un autre livre que beaucoup d'écrivains placent au même niveau, ou plus haut encore. Ce livre s'appelle Gormenghast.
+
+@art g 1
 
 Il n'y a pas de magie dans Gormenghast. Pas d'elfes, pas de dragons, pas de quête, pas de grand méchant à vaincre pour sauver le monde. Il y a un château. Un château immense, ancien, délabré, si grand que des familles entières vivent dans des ailes oubliées, que des salles n'ont pas été ouvertes depuis des siècles, que certaines tours ne sont plus visitées que par les hiboux. Et dans ce château, il y a des gens. Des personnages extraordinaires, grotesques, tragiques, comiques, qui semblent sortis de tableaux anciens ou de cauchemars d'enfants.
 
@@ -38,6 +41,8 @@ Sa femme, Maeve Gilmore, peintre elle aussi, a tenté après sa mort de prolonge
 
 Gormenghast est un monde à lui seul. Le château s'étend sur des kilomètres, accumulation de tours, de toits, de cours, de couloirs, de salles, construits les uns sur les autres au fil des siècles, sans plan. Il y a des cuisines immenses, enfumées, où travaillent des dizaines de marmitons. Une bibliothèque où le seigneur passe ses journées. Des greniers où une jeune fille cache ses trésors. Une tour en ruine, la tour des Silex, habitée par des centaines de hiboux. Un lac. Des forêts. Et au-delà des murs, au pied du château, des huttes de boue où vivent les Habitants de l'extérieur, un peuple misérable de sculpteurs qui taillent dans le bois des œuvres d'une beauté extraordinaire, qu'on présente une fois par an au château, et dont la plupart sont aussitôt brûlées.
 
+@art g 2
+
 Au sommet de cette pyramide, il y a la famille Groan, qui règne sur Gormenghast depuis soixante-seize générations.
 
 **Lord Sepulchrave**, le soixante-seizième comte, est un homme mélancolique, maigre, au long visage triste, écrasé par le Rituel qu'il accomplit chaque jour sans y croire. Il n'aime qu'une chose : sa bibliothèque, où il se réfugie pour lire, loin de tout.
@@ -57,6 +62,8 @@ Peake décrit chacun avec un soin de peintre. Ses personnages sont des silhouett
 # Titus d'Enfer
 
 Le premier volume commence par une naissance. Un héritier vient de naître à Gormenghast : Titus, futur soixante-dix-septième comte de Groan. Tout le château s'agite autour de cet événement. Et presque personne ne s'occupe vraiment de l'enfant.
+
+@art g 3
 
 Le même jour, quelqu'un d'autre fait son entrée dans le récit. Un garçon de cuisine, de dix-sept ans, nommé **Steerpike**. Il est maigre, pâle, avec des yeux rapprochés et rouges. Il est intelligent, très intelligent, et il ne supporte pas sa condition. Ce jour-là, il s'échappe des cuisines de Swelter. Il se perd dans les couloirs, se cache, grimpe. Il escalade les toits du château, pendant des heures, jusqu'à arriver par une fenêtre dans le grenier secret de Fuchsia.
 
@@ -79,6 +86,8 @@ Le livre se termine sur le rituel de l'Investiture : l'enfant Titus, un an à pe
 # Gormenghast et la crue
 
 Le deuxième volume suit Titus de sept à dix-sept ans. C'est le cœur du cycle, et souvent considéré comme son sommet.
+
+@art g 4
 
 Titus grandit dans un château qui ne le voit pas. Il apprend le Rituel, qu'on lui impose chaque jour. Il va à l'école du château, où des professeurs fatigués, ridicules, attendrissants, font cours à des enfants qu'ils ne comprennent pas. Leur directeur, **Bellgrove**, est un vieil homme majestueux et paresseux, qui finit, à la surprise générale, par épouser Irma Prunesquallor, après une soirée mémorable où elle avait invité tous les professeurs du château pour se trouver un mari.
 
@@ -111,6 +120,8 @@ Le château est sauvé. L'ordre peut reprendre. Titus, à dix-sept ans, peut enf
 
 Le troisième volume, Titus errant, est très différent. Titus a quitté Gormenghast, et il découvre le monde extérieur. Ce monde n'a rien à voir avec le château : il y a des villes, des voitures, des usines, des savants, des laboratoires, des policiers, des aéronefs. Un monde moderne, mécanique, qui ressemble au nôtre et pourtant pas tout à fait.
 
+@art g 5
+
 Titus y erre, de rencontre en rencontre. Il croise des personnages extraordinaires, comme Muzzlehatch, un excentrique propriétaire d'un zoo, ou Juno, une femme qui l'aime. Il traverse des sociétés étranges, des fêtes, des souterrains peuplés de marginaux. Il découvre la pauvreté, la science, la violence du monde.
 
 Et partout où il va, il parle de Gormenghast. Personne ne le croit. Personne n'a jamais entendu parler de ce château. On le prend pour un fou, ou pour un menteur. Peu à peu, Titus lui-même commence à douter. Gormenghast a-t-il existé ? Ou l'a-t-il rêvé ?
@@ -131,6 +142,8 @@ Il y a enfin la langue. Peake écrit comme il peint. Ses phrases sont chargées 
 # Ce que tu peux en prendre
 
 Gormenghast t'apprend qu'un lieu peut être le personnage principal d'une histoire. Le château, avec ses salles, ses tours, ses lois, ses habitants, est plus vivant que n'importe quel héros. Quand tu construis un monde, demande-toi s'il pourrait, à lui seul, porter un récit.
+
+@art g 6
 
 Il t'apprend à dessiner tes personnages. Peake était peintre, et chaque personnage a une silhouette, un geste, un tic, une voix. Flay et ses genoux qui craquent, Swelter et sa graisse, Prunesquallor et son rire, Gertrude et ses oiseaux. On les reconnaît en une ligne. Pour un réalisateur, c'est une leçon de caractérisation visuelle.
 

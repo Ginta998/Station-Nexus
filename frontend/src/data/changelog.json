@@ -1,6 +1,21 @@
 {
-  "version": "0.49",
+  "version": "0.50",
   "patches": [
+    {
+      "v": "0.50",
+      "date": "2026-11-19",
+      "title": "Les rois des ombres se parlent, les lore s'illustrent",
+      "groups": {
+        "Ajouté": [
+          "Les rois des ombres : des scènes de dialogue dans chaque journal, avec les personnes qui ont compté dans leur vie. Lucky Luciano et Meyer Lansky, de la ruelle du Lower East Side à l'hôtel Nacional de La Havane ; Capone et Johnny Torrio, puis Mae au parloir d'Alcatraz ; Rothstein et son père, puis le petit Luciano à qui il apprend à s'habiller ; Zheng Yi Sao face au gouverneur de Canton ; Du Yuesheng et Huang le Grêlé ; Stephanie St. Clair et Bumpy Johnson ; Bumpy et Luciano à la même table ; Mesrine, Broussard et Besse ; Pupetta et le témoin de son mariage ; Taoka et Hibari Misora ; Phoolan Devi et Vikram, puis le policier venu négocier sa reddition ; Griselda Blanco et Rivi. Le livre dit dès la première page que ces paroles sont reconstruites ; les rencontres, elles, ont eu lieu.",
+          "Illustrations dans tous les livres du Lore : chaque chapitre a son image. En plus de SteamGridDB (jeux), deux sources : MyAnimeList pour les mangas et les animes (affiches, couvertures des tomes), Open Library pour les romans (couvertures des éditions). Nouvelle ligne de collage : ILLUSTRATIONS : anime:Titre, manga:Titre, ol:Titre auteur, sgdb:Jeu."
+        ],
+        "Changé": [
+          "Jamais deux fois la même image dans un livre. Chaque illustration garde l'image demandée si elle est libre, sinon prend la suivante qui ne sert nulle part ailleurs (ni dans le livre, ni sur la couverture) ; s'il n'en reste plus, l'emplacement disparaît au lieu de répéter une image. Avant, un livre qui demandait plus d'images que la source n'en avait (Dragon Ball GT, par exemple) revenait à la première.",
+          "Coller un livre : l'aperçu signale une image demandée deux fois (même @art ou même @img)."
+        ]
+      }
+    },
     {
       "v": "0.49",
       "date": "2026-11-19",

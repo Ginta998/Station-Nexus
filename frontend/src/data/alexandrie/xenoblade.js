@@ -13,6 +13,8 @@ const book = {
 
 Il y a un moment, au début de Xenoblade Chronicles, où la caméra recule. Tu es dans une petite colonie au bord de l'eau, des maisons, un port, des cris d'enfants. Puis la caméra prend de la hauteur, encore, encore, et tu comprends que ce que tu prenais pour des collines, des falaises et des plaines, c'est un corps. Une jambe. Un genou. Tu vis sur le cadavre d'un géant.
 
+@art 4
+
 Et en face, à l'horizon, il y en a un autre. Un géant de métal, l'épée encore plantée dans le premier.
 
 Je vais te raconter ce monde. Je vais tout te dire, y compris la fin. Si tu n'as pas joué et que tu veux le découvrir seul, arrête-toi après ce chapitre et le suivant. Si tu as joué il y a longtemps, tu vas retrouver des choses que tu n'avais pas reliées.
@@ -23,6 +25,8 @@ Je vais te raconter ce monde. Je vais tout te dire, y compris la fin. Si tu n'as
 # Ceux qui l'ont fait
 
 Xenoblade Chronicles est développé par Monolith Soft, un studio japonais fondé par Tetsuya Takahashi et racheté par Nintendo, qui édite le jeu sur Wii en 2010. Takahashi l'a imaginé, dirigé et écrit, avec le scénariste Yuichiro Takeda. Takahashi avait déjà écrit Xenogears chez Square et la trilogie Xenosaga.
+
+@art g 2
 
 L'idée du jeu vient d'une image : Takahashi a dessiné deux géants immobiles, face à face, et s'est demandé comment ce serait de vivre sur leurs corps. C'est avec cette seule image qu'il a convaincu son équipe.
 
@@ -44,11 +48,15 @@ Le géant n'est pas un décor. On traverse sa jambe, sa cuisse, son ventre, la f
 
 Au Japon, pendant son développement, le jeu s'appelait Monado: Beginning of the World, le commencement du monde. Peu avant sa sortie, Satoru Iwata, le président de Nintendo, a proposé de le renommer Xenoblade, en hommage au parcours de Takahashi, l'homme de Xenogears et de Xenosaga. Le préfixe Xeno, l'étranger en grec, est devenu une signature.
 
+@art 5
+
 Le jeu sort sur Wii au Japon en 2010, puis en Europe en 2011. Mais pendant longtemps, Nintendo ne prévoit pas de le sortir en Amérique du Nord. Des joueurs lancent alors une campagne en ligne, qu'ils appellent l'Opération Pluie, pour réclamer la traduction de trois jeux de rôle japonais, dont Xenoblade. Elle fait du bruit, et le jeu finit par sortir aux États-Unis en 2012. Les fans ont, littéralement, fait venir le jeu à eux.
 
 # Shulk et la Monado
 
 Shulk est un jeune chercheur de la Colonie 9, sur la jambe du Bionis. Il étudie la Monado, une épée rouge que personne ne peut manier. Une seule personne l'a fait, un an plus tôt, pendant la bataille de l'Épée, la grande défaite contre les Mechon : Dunban, un héros de la colonie. La Monado l'a sauvé, mais elle lui a brûlé le bras droit. Il ne peut plus s'en servir.
+
+@art g 3
 
 La Monado a deux pouvoirs. Elle découpe les Mechon comme du papier, alors que les armes ordinaires rebondissent sur eux. Et elle ne peut pas blesser les Homs. Ce détail, au début, a l'air d'une règle de jeu. C'est un indice.
 
@@ -58,6 +66,8 @@ Le jour où les Mechon attaquent la colonie, Shulk saisit l'épée. Et il voit l
 
 Pendant l'attaque, un Mechon différent des autres apparaît. Il a un visage, il parle, il rit. On l'appelle Metal Face. Les armes de la Monado ne lui font rien. Et sous les yeux de Shulk, il tue Fiora, son amie d'enfance, la sœur de Dunban.
 
+@art 6
+
 Shulk part se venger, avec Reyn, son ami bourrin. Le voyage commence là, par un deuil, et il va durer des dizaines d'heures.
 
 En chemin, l'équipe s'agrandit. Sharla, une infirmière tireuse d'élite de la Colonie 6. Dunban, qui revient au combat avec son bras gauche. Melia, la princesse des High Entia, qui cache plus de secrets que tout le monde. Et Riki, un Nopon père de onze enfants, désigné « Héropon » par son village parce que personne d'autre ne voulait payer la dette.
@@ -66,6 +76,8 @@ En chemin, l'équipe s'agrandit. Sharla, une infirmière tireuse d'élite de la 
 
 Avant même que l'équipe ne découvre la vérité sur les dieux, il y a une ville à sauver. La Colonie 6, où vivait Sharla, a été rasée par les Mechon. Ses survivants se cachent dans une grotte. Sharla y retrouve son petit frère, Juju, un garçon impulsif qui veut à tout prix se battre, et Otharon, le chef de la défense, un vieux soldat qui tient le moral de tous à bout de bras.
 
+@art g 4
+
 Sharla porte un deuil. Son fiancé, Gadolt, a disparu pendant l'attaque. Elle le croit mort. Elle le retrouvera, transformé lui aussi en Mechon à visage, comme Fiora, comme Mumkhar. Il retrouvera ses souvenirs au moment de mourir, juste assez pour la reconnaître.
 
 Au fil du jeu, le joueur peut reconstruire la Colonie 6. C'est une longue quête secondaire : on y fait revenir des habitants, des artisans, des commerçants, on y fait pousser des champs, on y rebâtit des maisons. La ville détruite renaît pierre par pierre, grâce aux voyages de l'équipe. C'est une manière simple et forte de rendre visible ce que le joueur protège.
@@ -73,6 +85,8 @@ Au fil du jeu, le joueur peut reconstruire la Colonie 6. C'est une longue quête
 # Les visages
 
 Metal Face n'est pas une machine. C'est Mumkhar, un ancien compagnon d'armes de Dunban, qui l'avait abandonné pendant la bataille de l'Épée. Il a été transformé, a reçu un corps de métal. D'autres Mechon à visage sont aussi des Homs. Et la Monado ne les blesse pas, parce qu'ils sont des Homs.
+
+@art 7
 
 C'est la première fissure. Les Mechon sont-ils des machines qui tuent des Homs, ou des Homs qu'on a mis dans des machines ?
 
@@ -92,6 +106,8 @@ Le dernier combat contre Metal Face est autant une vengeance pour Fiora qu'un r�
 
 Plus haut sur le Bionis, au-dessus des forêts et de la mer d'Eryth, les High Entia vivent à Alcamoth, une cité de verre et de lumière posée sur la tête du géant. Ils vivent plusieurs siècles. Ils ont des ailes sur la tête, une technologie avancée, et une certaine idée de leur supériorité.
 
+@art g 5
+
 Melia est la fille de l'empereur, Sorean Antiqua. Mais sa mère était une Homs, et une partie de la cour ne lui pardonne pas ce sang mêlé. Son demi-frère, le prince Kallian, est l'héritier légitime aux yeux de tous. Melia, elle, se tient droite, parle peu, et porte seule le poids d'une couronne qu'on ne veut pas lui donner.
 
 L'empereur a un conseiller, Alvis, un jeune homme aux cheveux blancs qui a des visions comme Shulk. Alvis lui a montré l'avenir : s'il part combattre les Mechon, il mourra. Sorean part quand même.
@@ -106,6 +122,8 @@ Ce géant s'appelait Zanza. Le joueur ne le sait pas encore, mais il vient de re
 
 Le chef des Mechon s'appelle Egil. C'est un Machina, un habitant du Mechonis, le plus grand ingénieur de son peuple. Pendant tout le jeu, on le prend pour le méchant : celui qui envoie ses machines massacrer les Homs.
 
+@art 8
+
 Quand l'équipe arrive enfin sur le Mechonis, on découvre un monde de machines vivantes, un peuple pacifique en train de mourir, des villages détruits. Les Machina vivaient autrefois dans une capitale, Agniratha, au sommet du titan. Il y a très longtemps, Zanza et ses Télétia ont attaqué Agniratha par surprise et l'ont détruite. Les survivants se cachent depuis dans les entrailles de leur dieu endormi. Egil a une sœur, Vanea, qui le supplie d'arrêter. Et on comprend ce que veut Egil. Il ne veut pas tuer les Homs pour le plaisir. Il veut tuer le Bionis. Parce qu'il sait quelque chose que personne ne sait sur la colonie des Homs : le Bionis va se réveiller, et quand il se réveillera, il dévorera tout.
 
 Egil n'est pas un monstre. C'est quelqu'un qui a vu la fin du monde et qui a choisi d'agir, mal, plutôt que de ne rien faire. Le combat contre lui est l'un des plus tristes du jeu. Quand il comprend qu'il s'est trompé de méthode, il essaie de réparer, et il meurt pour que les autres vivent.
@@ -113,6 +131,8 @@ Egil n'est pas un monstre. C'est quelqu'un qui a vu la fin du monde et qui a cho
 # Dickson
 
 Il y a un personnage que tout le monde aime, au début. Dickson, le mentor de Shulk, un vieux soldat fumeur et bourru, qui l'a recueilli enfant après la mort de ses parents. Il apparaît à chaque moment important, il donne des conseils, il sauve la situation.
+
+@art g 6
 
 Au sommet du Mechonis, Dickson tire une balle dans le dos de Shulk.
 
@@ -123,6 +143,8 @@ Il s'appelle Zanza. C'est l'âme du Bionis.
 # Zanza
 
 Zanza explique tout, avec le mépris de quelqu'un qui parle à des insectes.
+
+@art 9
 
 Le Bionis est un dieu, et la vie qui a poussé sur lui n'est pas un accident. Il l'a créée. Pour s'en nourrir. Toute la vie du Bionis vient de lui et doit revenir à lui : il l'absorbe, régulièrement, puis la laisse repousser. Les cycles de massacre ne sont pas une menace venue du Mechonis. C'est sa façon de se nourrir.
 
@@ -150,6 +172,8 @@ Et Shulk revient. Il n'était pas tout à fait mort. Il avait vécu toute sa vie
 
 Le dernier acte remonte au tout début. Avant les titans. Avant la mer infinie.
 
+@art g 7
+
 Il y avait un autre univers, le nôtre peut-être. Une station de recherche, en orbite. Un scientifique nommé Klaus, brillant, arrogant, et une collègue, Galea. Ils travaillaient sur une expérience de transition de phase : un moyen de créer un nouvel univers. Klaus a lancé l'expérience, malgré les avertissements. L'univers a été détruit.
 
 Klaus est devenu Zanza. Galea est devenue Meyneth. L'expérience a créé un nouveau monde, et ils en sont devenus les dieux. Ils ont façonné les deux titans, et leurs peuples.
@@ -159,6 +183,8 @@ Dans ce récit, il y a un personnage qui accompagne l'équipe depuis le début s
 # Un monde sans dieux
 
 Shulk affronte Zanza, et le tue.
+
+@art 10
 
 Puis Alvis lui pose la question. Le monde est vide de dieux, maintenant. Shulk peut le refaire, comme Klaus l'a fait. Il peut décider de sa forme. Que veut-il ?
 
@@ -172,9 +198,13 @@ Le jeu se termine sur un monde nouveau, avec une vraie terre, une vraie mer, et 
 
 En 2020, la Definitive Edition a ajouté un épilogue, Future Connected. Un an après la fin, sur le Bras tombé, un morceau du Bionis, Shulk et Melia cherchent à sauver ce qui reste des High Entia. Ils sont accompagnés de deux jeunes Nopon. L'épilogue est plus court, plus mélancolique. Il laisse une ouverture vers les jeux suivants.
 
+@art g 8
+
 # Le reste de la trilogie
 
 Xenoblade Chronicles 2, en 2017, se passe dans un autre monde, une mer de nuages où les humains vivent sur le dos de titans vivants. On y retrouve la même expérience de Klaus vue d'ailleurs : l'univers ne s'est pas seulement brisé en un nouveau monde, il s'est coupé en deux. Xenoblade Chronicles 3, en 2022, réunit les deux moitiés, dans un monde de guerre perpétuelle où les soldats ne vivent que dix ans. C'est le dernier chapitre de cette histoire.
+
+@art 11
 
 En 2023, une extension du troisième jeu, Future Redeemed, raconte ce qui s'est passé avant lui. On y retrouve Shulk, plus âgé, et Rex, le héros du deuxième jeu, devenus des alliés. Elle referme l'histoire commencée sur les deux titans, et répond à la question de ce qu'est devenu le monde que Shulk a choisi de faire naître.
 
@@ -183,6 +213,8 @@ Il vaut mieux les jouer dans l'ordre. Le premier jeu est le plus simple à suivr
 # Le réseau des liens
 
 Xenoblade a une idée qu'on oublie souvent : chaque habitant du monde a un nom, une histoire, et des liens avec les autres. Le jeu tient un grand tableau, qu'on appelle le réseau d'affinité, où l'on voit qui aime qui, qui se méfie de qui, qui est le frère, le rival, l'ancien amant de qui.
+
+@art g 9
 
 En aidant les gens, on fait évoluer ce tableau. Un père se réconcilie avec son fils, deux amants se retrouvent, un marchand trouve un apprenti. Le monde n'est pas seulement un décor posé sur des géants : c'est une société, faite de centaines de petites vies.
 
@@ -201,6 +233,8 @@ Et il a une musique inoubliable. Gaur Plain, quand on sort pour la première foi
 # Ce que tu peux en prendre
 
 Si tu construis un univers, regarde la méthode de Takahashi.
+
+@art 12
 
 Une image d'abord : deux géants morts, face à face. Elle porte tout. Elle dit la guerre, le temps, l'échelle, avant qu'on ait prononcé un mot.
 

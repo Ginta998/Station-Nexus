@@ -8,10 +8,13 @@ const book = {
     { label: "Edward Gibbon, Histoire du déclin et de la chute de l'Empire romain", note: "Le livre qu'Asimov avait en tête. Fondation, c'est Gibbon transporté dans la galaxie." },
     { label: "Fondation, la série (Apple TV+, depuis 2021)", note: "Une adaptation très libre de David S. Goyer, avec Jared Harris en Seldon et une dynastie d'empereurs clonés qui n'existe pas dans les livres." },
   ],
+  pics: ["ol:Foundation Isaac Asimov", "ol:Foundation and Empire Isaac Asimov", "ol:Second Foundation Isaac Asimov"],
   text: String.raw`
 # Avant de commencer
 
 Il y a des histoires qui suivent un héros. Celle-ci suit un calcul.
+
+@art g 1
 
 Dans un avenir très lointain, l'humanité a peuplé la galaxie entière. Vingt-cinq millions de mondes habités, unis depuis douze mille ans sous un seul Empire, gouverné depuis une planète-capitale entièrement recouverte d'une ville. Tout paraît solide, éternel. Et un mathématicien, Hari Seldon, annonce que cet Empire va mourir. Pas dans un million d'années : dans quelques siècles. Il l'a calculé. Après la chute viendront trente mille ans de barbarie, de guerres, d'oubli, avant qu'un nouvel empire ne renaisse.
 
@@ -32,6 +35,8 @@ Je te préviens d'une chose. Fondation n'est pas un livre d'action. Il n'y a pre
 # L'Empire et la psychohistoire
 
 Commençons par la capitale, parce qu'elle est le symbole de tout ce qui va mourir. Elle s'appelle Trantor. C'est une planète entière recouverte d'une ville, sous des dômes de métal. Quarante milliards d'habitants, presque tous fonctionnaires. Trantor ne produit rien : elle administre. Sa nourriture arrive chaque jour de vingt mondes agricoles, par des milliers de vaisseaux. Ses habitants naissent, vivent et meurent sans jamais voir le ciel. Le jour où les vaisseaux cesseront d'arriver, elle mourra de faim en quelques semaines.
+
+@art g 2
 
 L'Empire galactique a douze mille ans. Il a l'air de tenir. Mais Seldon voit les signes, et Asimov te les montre par petites touches. Les sciences n'avancent plus ; on recopie les anciens au lieu de chercher. Les techniques se perdent : on sait encore faire marcher les centrales atomiques, on ne sait plus les construire. Les provinces lointaines s'éloignent du centre, leurs gouverneurs deviennent des rois. La cour se déchire en intrigues. Personne ne voit l'ensemble, parce que l'ensemble ne se voit pas : il se calcule.
 
@@ -54,6 +59,8 @@ Et Seldon a laissé une dernière chose. Une salle, sur Terminus, qui s'ouvrira 
 # Le maire et les marchands
 
 Cinquante ans passent. Terminus est devenue une petite colonie de savants, qui compilent leur Encyclopédie avec un sérieux de bénédictins. Autour d'eux, la chute a commencé. L'Empire s'est retiré de la périphérie. Les préfets des provinces voisines se sont proclamés rois. Terminus est maintenant entourée de quatre royaumes barbares, dont le plus puissant s'appelle Anacréon. Ils ont gardé des armes, mais ils ont perdu la science : ils ne savent plus réparer leurs vaisseaux, plus faire fonctionner leurs centrales. Et Terminus, qui a la science, n'a pas d'armes.
+
+@art g 3
 
 Le héros de cette époque s'appelle Salvor Hardin. Il est le maire de la ville de Terminus, un politicien rusé, ironique, qui fume le cigare et se moque des savants. Les encyclopédistes gouvernent la planète par un conseil, et ils ne comprennent rien au danger : ils pensent que l'Empire viendra les protéger. Hardin, lui, voit Anacréon s'approcher. Il écarte les savants du pouvoir par un coup d'État sans un coup de feu.
 
@@ -80,6 +87,8 @@ Tu vois le dessin. À chaque époque, la Fondation gagne avec une arme différen
 # Le général et le Mulet
 
 Fondation et Empire raconte deux menaces, et elles sont l'inverse l'une de l'autre.
+
+@art g 4
 
 La première vient de l'Empire lui-même. Deux siècles après Seldon, l'Empire n'est plus que l'ombre de lui-même, mais il a encore un bras armé, et ce bras a un nom : Bel Riose. C'est un jeune général, brillant, honnête, le dernier grand soldat de l'Empire. Il a entendu parler de ces magiciens de la périphérie, et il décide de les soumettre. Il est intelligent, il a des vaisseaux, il a le courage. Il est, en un sens, le héros que la Fondation n'a pas.
 
@@ -111,6 +120,8 @@ C'est une des plus belles scènes du cycle, et elle est presque contraire à son
 
 Le troisième livre est une partie de cache-cache à l'échelle de la galaxie.
 
+@art g 5
+
 Le Mulet règne. Il a conquis la Fondation et un grand nombre de mondes. Il lui reste une seule menace : la Seconde Fondation, dont il ne sait rien, sinon qu'elle existe et qu'elle doit le craindre. Il envoie ses agents la chercher. Ils échouent. Il finit par s'approcher d'elle, et la Seconde Fondation fait alors ce qu'elle seule peut faire.
 
 Car elle est l'autre moitié du plan. La Première Fondation, celle de Terminus, a reçu les sciences physiques : les machines, l'énergie, le commerce. La Seconde a reçu les sciences de l'esprit. Ses membres sont des psychohistoriens, héritiers directs de Seldon, et ils ont développé des pouvoirs mentaux comparables à ceux du Mulet, mais disciplinés, collectifs, secrets. Ils surveillent le plan depuis le début. Ils le corrigent quand il dévie. Ils sont les gardiens invisibles de l'histoire.
@@ -133,6 +144,8 @@ Le cycle d'origine s'arrête là, au milieu des mille ans. Asimov n'a jamais rac
 
 Pendant trente ans, Asimov refuse d'écrire la suite. Il dit qu'il n'a plus rien à ajouter. En 1982, il cède enfin, et ce qu'il écrit change le sens de tout ce qui précède.
 
+@art g 6
+
 Fondation foudroyée se passe cinq siècles après Seldon. La Fondation est devenue une grande puissance. Elle est sûre d'elle, satisfaite, persuadée que la Seconde Fondation a disparu. Un jeune conseiller, Golan Trevize, n'y croit pas. Le plan marche trop bien, dit-il. Quelqu'un le guide encore. On l'exile pour avoir parlé, et la maire de Terminus, une vieille politicienne redoutable, Harla Branno, se sert de cet exil pour l'envoyer à la recherche de ceux qui se cachent. Il part avec un vieil historien, Janov Pelorat, qui a passé sa vie à chercher une planète légendaire, la Terre, le monde d'où l'humanité serait venue, et dont plus personne ne sait où il se trouve.
 
 Leur voyage les mène à un monde inconnu, Gaïa. Sur Gaïa, tout est vivant ensemble : les hommes, les bêtes, les arbres, les rochers même partagent une seule conscience. Chacun garde sa personnalité, mais chacun est aussi la planète. Une jeune femme, Joie, est Gaïa, comme chaque goutte d'eau est la mer. Et Gaïa, elle aussi, guide l'histoire, plus discrètement encore que la Seconde Fondation.
@@ -150,6 +163,8 @@ Asimov a encore écrit deux livres, qui remontent avant le début. Prélude à F
 # Ce que tu peux en prendre
 
 Trois choses pour un conteur, et une pour toi.
+
+@art g 7
 
 La première est le saut dans le temps. Fondation ne suit pas un héros, il suit une institution, et chaque partie commence des dizaines d'années après la précédente. Les héros que tu as aimés sont morts entre deux chapitres. Il y a là une leçon de construction très rare : faire sentir le temps en le coupant. Le lecteur comprend que l'histoire est plus grande que les personnages parce que les personnages passent et que l'histoire continue.
 

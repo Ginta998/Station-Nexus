@@ -12,6 +12,8 @@ const book = {
 
 Sekiro ne ressemble pas aux autres jeux de FromSoftware. Pas de personnage à créer, pas d'armure à choisir, pas de multijoueur. Tu es un seul homme, avec un nom, un maître, une mission. Un shinobi qui doit protéger un enfant.
 
+@art 4
+
 L'histoire se passe dans un Japon de la fin de l'ère Sengoku, l'époque des guerres entre clans, mais un Japon traversé de légendes : un dragon venu de l'Ouest, des eaux qui rendent immortel, des moines qui cherchent à ne plus mourir, des singes géants, des serpents divins.
 
 Et comme dans Dark Souls ou Bloodborne, l'histoire se cache. Je te la remets dans l'ordre.
@@ -22,6 +24,8 @@ Et comme dans Dark Souls ou Bloodborne, l'histoire se cache. Je te la remets dan
 # Ceux qui l'ont fait
 
 Sekiro est développé par FromSoftware et dirigé par Hidetaka Miyazaki. Il est édité par Activision hors du Japon, une première pour le studio. Il sort en 2019 et remporte le prix du jeu de l'année aux Game Awards.
+
+@art g 2
 
 Le studio avait voulu au départ reprendre la licence Tenchu, une série de jeux de shinobis dont FromSoftware possédait les droits. Le projet est devenu autre chose, mais l'esprit est resté : la furtivité, les toits, le grappin.
 
@@ -41,6 +45,8 @@ Genichiro le sait. Et il cherche une arme. Une arme pour que ses soldats ne meur
 
 Cette arme existe. Elle est dans le sang d'un enfant.
 
+@art 5
+
 Kuro, un jeune garçon, porte en lui l'Héritage du dragon. Un pouvoir ancien, venu d'un dragon divin arrivé autrefois de l'Ouest, et qui rend immortel. Ceux qui sont liés à Kuro par un pacte de sang peuvent revenir de la mort.
 
 Genichiro veut ce pouvoir. Il a enfermé l'enfant.
@@ -48,6 +54,8 @@ Genichiro veut ce pouvoir. Il a enfermé l'enfant.
 # Le Loup
 
 Tu incarnes le Loup. Un shinobi. Enfant, il a été recueilli sur un champ de bataille par un maître shinobi, le Hibou, qui l'a élevé et formé. Le Hibou lui a appris le code des shinobis : la loi de fer. Obéis à ton maître, quoi qu'il demande.
+
+@art g 3
 
 Et le maître du Loup, c'est Kuro. Le jeu s'ouvre au fond d'un puits, où le Loup a passé trois ans, abattu. L'enfant lui fait parvenir un message : viens. Le Loup monte. Il retrouve Kuro, enfermé dans un pavillon du château. Il le délivre. Genichiro les intercepte. Le combat est perdu d'avance. Genichiro tranche le bras gauche du Loup et emmène l'enfant.
 
@@ -71,6 +79,8 @@ Une médecin, Emma, élève du vieux docteur Dōsaku, étudie le mal. Elle peut 
 
 Tout Ashina est obsédé par l'immortalité.
 
+@art 6
+
 Genichiro boit des eaux interdites qui rendent fou, pour devenir plus fort. Les moines d'un temple dans la montagne, le temple de Senpou, ont cherché l'immortalité pendant des siècles. Ils ont fini par trouver des mille-pattes, des parasites qu'on peut faire entrer dans un corps et qui l'empêchent de mourir. Ils ont fait des expériences sur des enfants. Il reste un seul de ces enfants, une petite fille vêtue de blanc, qu'ils appellent l'Enfant divin du rajeunissement.
 
 Dans une forêt, un singe gardien, infesté par un mille-pattes, se relève après qu'on lui a coupé la tête, et continue de se battre en tenant sa propre tête dans sa main.
@@ -82,6 +92,8 @@ L'immortalité, dans Sekiro, n'est jamais une bénédiction. C'est une maladie, 
 # Le Hibou
 
 Au milieu du jeu, le Hibou revient. Tout le monde le croyait mort. Il ne l'est pas. Il a simulé sa mort, et il a d'autres plans.
+
+@art g 4
 
 Il demande au Loup d'abandonner Kuro, de renier son maître, et de le servir lui. Il veut utiliser l'Héritage du dragon pour son propre compte.
 
@@ -101,6 +113,8 @@ Le Palais de la source est le lieu le plus étrange du jeu. Une ville sur l'eau,
 
 À la fin, Ashina tombe. Les armées du Ministère entrent dans le château. Genichiro, vaincu, retourne une lame contre lui-même, une seconde lame immortelle, et sacrifie sa vie pour invoquer quelqu'un.
 
+@art 7
+
 De son corps sort Isshin Ashina, jeune. Le Saint de l'épée au sommet de sa force, revenu de la mort par la volonté de son petit-fils, pour un dernier combat.
 
 C'est un des plus grands combats de l'histoire du jeu vidéo. Dans un champ de roseaux, sous la lune, entouré de flammes. Isshin manie le sabre, la lance, le pistolet, et il rit. Il ne parle plus de sauver Ashina. Il veut seulement se battre une dernière fois contre quelqu'un de digne.
@@ -108,6 +122,8 @@ C'est un des plus grands combats de l'histoire du jeu vidéo. Dans un champ de r
 # Les fins
 
 Selon tes choix, Sekiro a plusieurs fins.
+
+@art g 5
 
 **La séparation de l'immortalité.** Le Loup tranche le lien de l'Héritage, comme Kuro le voulait. Kuro meurt. Le Loup reste seul, et devient le nouveau Sculpteur, taillant des statues de bouddhas dans un temple vide.
 
@@ -134,6 +150,8 @@ Et Emma, la douce lame, qui soigne tout le monde, et qui voit tout.
 # Ce que tu peux en prendre
 
 Sekiro t'apprend à faire peser la mécanique sur la morale. La Pourriture du dragon transforme un système de résurrection, une simple règle de jeu, en culpabilité. Chaque échec du joueur a un visage.
+
+@art 8
 
 Il t'apprend aussi la force d'un personnage défini. Le Loup n'est pas un avatar vide. Il a un passé, un père, un maître, un code. Le jeu peut ainsi poser une vraie question de loyauté : qui doit-on servir, quand ceux qui nous ont faits nous demandent de trahir ?
 

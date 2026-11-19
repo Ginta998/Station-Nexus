@@ -11,7 +11,7 @@ const norm = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toL
 
 const KEYS = {
   titre: "title", "sous-titre": "sub", "sous titre": "sub", salle: "room", genre: "type", format: "format", cote: "cote",
-  embleme: "emblem", couleur: "color", steamgrid: "art", steamgriddb: "art", artwork: "art", artworks: "art", theme: "theme",
+  embleme: "emblem", couleur: "color", steamgrid: "art", steamgriddb: "art", illustrations: "pics", images: "pics", artwork: "art", artworks: "art", theme: "theme",
   police: "d", "police titre": "d", "police des titres": "d", "police texte": "r", "police lecture": "r", "police de lecture": "r",
   papier: "p", tranche: "p2", ombre: "p3", encre: "ink", "encre 2": "ink2", accent: "acc", ornement: "orn", texture: "tex",
   statut: "status", auteur: "author", par: "author", "a propos": "about", resume: "about", lien: "link", liens: "link",
@@ -61,10 +61,23 @@ export function parsePaste(text) {
   if (meta.tex) { const tx = norm(meta.tex); if (TEXTURES.includes(tx)) over.tex = tx; else errors.push(`Texture inconnue : « ${meta.tex} ».`); }
   return {
     meta: { title: meta.title || "", sub: meta.sub || "", room: room || "atelier", type: type || "recit", format: format || undefined, cote: meta.cote || "", emblem: meta.emblem || undefined,
-      color: hueOf(meta.color), art: meta.art || undefined, about: meta.about || "", author: meta.author || "", links: meta.links, cover: meta.cover || "", status: STATUS(meta.status),
+      color: hueOf(meta.color), art: meta.art || undefined, pics: meta.pics ? meta.pics.split(/\s*,\s*/).filter((x) => /^(sgdb|anime|manga|ol):./i.test(x)).map((x) => x.replace(/^\w+/, (k) => k.toLowerCase())) : undefined, about: meta.about || "", author: meta.author || "", links: meta.links, cover: meta.cover || "", status: STATUS(meta.status),
       look: th || Object.keys(over).length ? { ...(th || {}), over } : undefined },
     body, errors,
   };
+}
+
+// Images en double dans un texte : deux fois le même @art (même format, même numéro) ou la même adresse @img.
+// La lecture ne les montre jamais deux fois (elle prend l'image libre suivante), mais mieux vaut le savoir en écrivant.
+export function artDupes(body) {
+  const seen = new Map(); const out = [];
+  String(body || "").split("\n").forEach((l) => {
+    const t = l.trim(); let k = null;
+    if (t.startsWith("@art ")) { const h = t.slice(5).split(" | ")[0].trim(); k = (/^g\b/.test(h) ? "@art g " : "@art ") + (parseInt(h.replace(/^g\s*/, ""), 10) || 1); }
+    else if (t.startsWith("@img ")) k = "@img " + t.slice(5).split(" | ")[0].trim();
+    if (!k) return; seen.set(k, (seen.get(k) || 0) + 1); if (seen.get(k) === 2) out.push(k.length > 60 ? k.slice(0, 57) + "…" : k);
+  });
+  return out;
 }
 
 // Un bloc → un livre lisible (le même rendu que les livres du code)
@@ -72,7 +85,7 @@ export function pasteToBook(text, extra = {}) {
   const { meta, body } = parsePaste(text);
   const about = meta.about || (meta.author ? `De ${meta.author}.` : "");
   const b = parseBook({ id: extra.id || "paste", title: meta.title || "Sans titre", sub: meta.sub || (meta.author ? meta.author : ""), room: meta.room, type: meta.type, format: meta.format, cote: meta.cote || "PERS.",
-    color: meta.color, emblem: meta.emblem, art: meta.art, about, links: meta.links, look: meta.look, text: body || "" });
+    color: meta.color, emblem: meta.emblem, art: meta.art, pics: meta.pics, about, links: meta.links, look: meta.look, text: body || "" });
   if (!b.chapters.length) b.chapters = [{ title: "", blocks: [{ t: "p", x: about || "Ce livre n'a pas encore de chapitres." }] }];
   return { ...b, ...extra, src: text, status: meta.status, coverUrl: meta.cover };
 }
@@ -92,7 +105,7 @@ export function bookToPaste(b) {
   const R = ROOMS.find((r) => r.key === b.room); const T = TYPES[b.type];
   const L = [`TITRE : ${b.title}`, b.sub && `SOUS-TITRE : ${b.sub}`, `SALLE : ${R?.key || b.room}`, `GENRE : ${T ? T.label.toLowerCase() : b.type}`,
     b.format && `FORMAT : ${b.format}`, b.cote && `COTE : ${b.cote}`, b.emblem && `EMBLÈME : ${b.emblem}`, Number.isFinite(b.color) && `COULEUR : ${b.color}`,
-    b.art && `STEAMGRID : ${b.art}`, hasLook(b.id) && `THÈME : comme ${b.id}`, b.about && `À PROPOS : ${b.about}`,
+    b.art && `STEAMGRID : ${b.art}`, b.pics?.length && `ILLUSTRATIONS : ${b.pics.join(", ")}`, hasLook(b.id) && `THÈME : comme ${b.id}`, b.about && `À PROPOS : ${b.about}`,
     ...(b.links || []).map((l) => `LIEN : ${l.label}${l.url ? ` | ${l.url}` : ""}${l.note ? ` | ${l.note}` : ""}`)].filter(Boolean);
   return `${L.join("\n")}\n---\n\n${String(b.text || "").trim()}\n`;
 }
@@ -105,7 +118,7 @@ SALLE : ${o.room}
 GENRE : ${o.type}
 FORMAT : ${o.format}
 EMBLÈME : ${o.em}
-${o.art ? "STEAMGRID : Nom du jeu ou du film, en anglais\n" : ""}THÈME : ${o.theme}
+${o.art ? "STEAMGRID : Nom du jeu ou du film, en anglais\n// ILLUSTRATIONS : d'autres sources d'images, séparées par des virgules : sgdb:Nom du jeu, anime:Titre, manga:Titre, ol:Titre du roman auteur\n" : ""}THÈME : ${o.theme}
 // Retouches facultatives : POLICE, POLICE TEXTE, PAPIER, ENCRE, ACCENT, ORNEMENT, TEXTURE
 À PROPOS : Deux ou trois phrases qui donnent envie d'ouvrir le volume. Les créateurs y sont nommés.
 LIEN : Un livre, un film, une vidéo pour aller plus loin | https://… | Pourquoi ça vaut le détour.

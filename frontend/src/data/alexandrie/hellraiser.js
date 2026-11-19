@@ -10,10 +10,13 @@ const book = {
     { label: "Clive Barker, Les Évangiles écarlates (2015)", note: "Sa propre fin pour le prêtre de l'Enfer, trente ans après." },
     { label: "Sade, Bataille, et le Faust de Marlowe", note: "Le désir qui ne connaît pas de borne, l'érotisme comme approbation de la vie jusque dans la mort, et l'homme qui signe. Les trois ancêtres." },
   ],
+  pics: ["ol:The Hellbound Heart Clive Barker"],
   text: String.raw`
 # Une histoire de désir, et celui qui l'a écrite
 
 On range Hellraiser avec les films de monstres, à côté des tueurs masqués des années quatre-vingt. C'est une erreur de rayon. Les tueurs masqués punissent des adolescents qui n'ont rien demandé. Ici, personne ne subit ce qu'il n'a pas cherché. Le monstre ne vient que si on l'appelle, et il arrive avec des manières.
+
+@art g 1
 
 Clive Barker a écrit là une histoire sur ce que les gens veulent, et sur ce qu'ils sont prêts à faire quand ce qu'ils ont ne leur suffit plus. Il y a un homme qui veut plus de sensations qu'un corps ne peut en donner. Une femme qui veut revivre une semaine de sa vie. Et des êtres qui ont fait de l'expérience des limites une religion.
 
@@ -36,6 +39,8 @@ Il faut savoir d'où vient son imagerie, car elle explique tout. Barker fréquen
 # La boîte et Frank
 
 Tout commence par un objet. C'est un cube de bois sombre, aux faces incrustées de laiton. On l'appelle la boîte de Lemarchand, du nom de l'artisan français qui l'aurait fabriquée, un faiseur d'oiseaux mécaniques. Les suites lui donneront un autre nom : la Configuration des Lamentations.
+
+@art g 2
 
 Le quatrième film, sorti en 1996, raconte son origine. Philip Lemarchand est un fabricant de jouets mécaniques dans la France du XVIIIe siècle. Un aristocrate féru de magie noire, le duc de L'Isle, lui commande une boîte selon des plans qu'il lui fournit. Lemarchand la fabrique avec un soin d'horloger, sans comprendre ce qu'il fait. Le duc s'en sert pour faire venir un démon. Lemarchand comprend trop tard, et passe le reste de sa vie, puis celle de ses descendants, à chercher comment refermer ce qu'il a ouvert. Le film suit sa lignée jusqu'à une station spatiale, des siècles plus tard. C'est le plus inégal de la série, mais il a donné à la boîte une histoire, et à ses inventeurs une malédiction.
 
@@ -62,6 +67,8 @@ Ils emmènent Frank. Dans la pièce, il ne reste rien.
 # Julia et Kirsty
 
 Des années plus tard, le frère de Frank emménage dans la maison avec sa femme. Lui, c'est le contraire de Frank : un homme gentil, terne, plein de bonne volonté. Il s'appelle Rory dans le livre, Larry dans le film.
+
+@art g 3
 
 Elle s'appelle Julia, et c'est elle le vrai personnage.
 
@@ -109,6 +116,8 @@ Dans le livre, il y a une dernière page. Kirsty garde la boîte. Elle la regard
 
 Le succès du film appelle une suite, tournée l'année suivante. Barker en donne l'histoire, sans la réaliser. C'est elle qui transforme un conte de chambre en mythologie.
 
+@art g 4
+
 Kirsty est internée. Le médecin qui dirige l'institut, le docteur Channard, a passé sa vie à collectionner les boîtes et à chercher ce qu'il y a derrière. Il fait revenir Julia, par le même moyen, sur le matelas où elle est morte, et se sert d'une patiente muette, une enfant prodige des casse-tête, pour ouvrir la porte.
 
 Et l'on entre.
@@ -131,6 +140,8 @@ En 2022, un nouveau film, réalisé par David Bruckner, reprend tout au début. 
 
 Cet homme aux clous n'a pas de nom dans le roman, et à peine dans le premier film, où il n'apparaît que quelques minutes. L'équipe de tournage lui a donné un surnom moqueur, à cause de sa tête, et le public l'a gardé. Barker ne l'a jamais aimé. Il trouvait qu'on ne donne pas un nom de farce à un prélat. Dans ses propres textes, il l'appelle le prêtre de l'Enfer.
 
+@art g 5
+
 L'acteur, Doug Bradley, venait de la troupe de théâtre de Barker. Il a porté le rôle dans huit films. Il a compris ce qui faisait le personnage : il ne court pas, il ne ricane pas, il ne menace pas. Il se tient droit et il parle bien. Il a la patience de quelqu'un qui a l'éternité et un devoir.
 
 Les suites se sont multipliées, de plus en plus pauvres, et ont fini par en faire un croque-mitaine comme les autres, ce qu'il n'était justement pas. Barker a voulu reprendre son bien. En 2015, il a publié *Les Évangiles écarlates*, un roman où il mène son prêtre jusqu'à sa fin. Il y fait se rencontrer ses deux grandes créations : le prêtre de l'Enfer et Harry D'Amour, un détective new-yorkais spécialisé dans les affaires surnaturelles, qu'il suivait depuis des années dans d'autres livres. Le prêtre a entrepris d'éliminer tous les magiciens de la Terre pour s'approprier leur savoir. Puis il descend dans l'Enfer lui-même pour en prendre le trône, et D'Amour le suit. Barker y décrit un Enfer immense, une ville, des déserts, une hiérarchie. C'est un livre cruel et étrange, qui ferme la boucle et rend au personnage la majesté que les suites lui avaient retirée.
@@ -140,6 +151,8 @@ Entre-temps, les Cénobites avaient vécu ailleurs. Dès 1989, une série de ban
 # Ce que cela veut dire
 
 Je vois trois choses dans cette histoire, et je te les donne.
+
+@art g 6
 
 La première est qu'elle ne moralise pas. Un récit ordinaire punirait Frank pour sa débauche. Barker ne juge pas le désir. Il était lui-même un homme dont le désir était tenu pour un péché par le monde où il avait grandi. Ce qu'il montre est plus fin : le danger n'est pas de désirer, c'est de ne plus savoir ce qu'on demande. Frank voulait une chose sans fond. On la lui a donnée.
 
@@ -154,6 +167,8 @@ Et il y a l'héritage catholique. L'Enfer de Barker ressemble à une Église : u
 # Ce que tu peux en prendre
 
 Pour toi qui fabriques des images avec peu : trois leçons.
+
+@art g 7
 
 Fais du monstre un personnage qui parle. Le prêtre apparaît moins de dix minutes dans le premier film, et il a rempli quarante ans d'imaginaire. C'est parce qu'il a une doctrine. Un antagoniste effraie durablement quand il a raison de son point de vue, et qu'il te l'explique avec courtoisie. Pense au juge Holden : c'est la même famille.
 

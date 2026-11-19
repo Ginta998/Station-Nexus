@@ -327,18 +327,75 @@ function Fig({ b, si }) {
     </figure>
   );
 }
-// Artwork du jeu pendant la lecture : lu sur SteamGridDB par le serveur de la Station, jamais stocké ici.
-// Une seule requête par jeu et par format ; la vignette s'affiche, l'image entière s'ouvre au clic.
+// Les illustrations pendant la lecture, jamais stockées ici. Trois sources :
+// SteamGridDB (lu par le serveur de la Station) pour les jeux, MyAnimeList (Jikan) pour les mangas et les animes,
+// Open Library pour les couvertures des éditions d'un roman. Une requête par source et par livre ; une source qui ne répond pas rend null.
 const ART = new Map();
-const artList = (term, kind) => { const k = term + "|" + kind; if (!ART.has(k)) ART.set(k, atelierApi.sgdbSearch(term, null, kind).then((r) => r?.items || []).catch(() => { setTimeout(() => ART.delete(k), 30000); return []; })); return ART.get(k); };
-function ArtFig({ b, term, si }) {
-  const [a, setA] = useState(undefined);
-  useEffect(() => { let on = true; artList(term, b.kind).then((xs) => on && setA(xs.length ? xs[(b.n - 1) % xs.length] : null)); return () => { on = false; }; }, [term, b.kind, b.n]);
-  const link = `https://www.steamgriddb.com/search/${b.kind}?term=${encodeURIComponent(term)}`;
+const once = (k, f) => { if (!ART.has(k)) ART.set(k, f().catch(() => { setTimeout(() => ART.delete(k), 30000); return null; })); return ART.get(k); };
+const artList = (term, kind) => once(`sgdb|${term}|${kind}`, () => atelierApi.sgdbSearch(term, null, kind).then((r) => (r?.items || []).map((a) => ({ ...a, src: "sgdb", page: `https://www.steamgriddb.com/search/${kind}?term=${encodeURIComponent(term)}` }))));
+const getJ = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
+const nrm = (x) => String(x || "").toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "");
+// « anime:Psycho-Pass », « manga:Berserk » : la fiche la plus proche du titre, puis toutes ses images (affiches, couvertures des tomes)
+const malList = (type, q) => once(`mal|${type}|${q}`, async () => {
+  const d = await getJ(`https://api.jikan.moe/v4/${type}?q=${encodeURIComponent(q)}&limit=6&sfw=true`);
+  const xs = d.data || []; const hit = xs.find((x) => [x.title, x.title_english, ...(x.titles || []).map((t) => t.title)].some((t) => nrm(t) === nrm(q))) || xs[0];
+  if (!hit) return [];
+  await new Promise((r) => setTimeout(r, 450)); // Jikan : trois appels par seconde au plus
+  const p = await getJ(`https://api.jikan.moe/v4/${type}/${hit.mal_id}/pictures`);
+  return (p.data || []).map((x) => x.jpg?.large_image_url || x.jpg?.image_url).filter(Boolean).map((u) => ({ id: u, url: u, thumb: u, src: "mal", page: hit.url }));
+});
+// « ol:Dune Frank Herbert » : les couvertures de toutes les éditions du roman (traductions, rééditions)
+const olList = (q) => once(`ol|${q}`, async () => {
+  const d = await getJ(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=1&fields=key`);
+  const key = d.docs?.[0]?.key; if (!key) return [];
+  const e = await getJ(`https://openlibrary.org${key}/editions.json?limit=80`);
+  const ids = [...new Set((e.entries || []).flatMap((x) => x.covers || []).filter((c) => c > 0))];
+  return ids.map((c) => ({ id: "ol" + c, url: `https://covers.openlibrary.org/b/id/${c}-L.jpg`, thumb: `https://covers.openlibrary.org/b/id/${c}-L.jpg`, src: "ol", page: `https://openlibrary.org${key}` }));
+});
+const SRC = { sgdb: "STEAMGRIDDB", mal: "MYANIMELIST", ol: "OPEN LIBRARY" };
+// Les sources d'un livre : son champ pics (« sgdb:… », « anime:… », « manga:… », « ol:… »), sinon SteamGridDB sur son titre
+const picSources = (book, term) => (book.pics?.length ? book.pics : [`sgdb:${term}`]).map((x) => { const i = x.indexOf(":"); return [x.slice(0, i), x.slice(i + 1).trim()]; });
+// Jamais deux fois la même image dans un livre : on répartit les artworks avant d'afficher.
+// D'abord chaque @art garde l'image demandée si elle est libre, puis les autres prennent la suivante libre
+// (même format, sinon l'autre format) ; s'il n'en reste plus, l'illustration est retirée. L'image de couverture compte comme prise.
+const artKey = (a) => String(a.id || a.url);
+export async function planArt(book, term, cover) {
+  const blocks = book.chapters.flatMap((c) => c.blocks);
+  const out = new Map(); const seen = new Set();
+  blocks.forEach((b) => { if (b.t === "img") { if (seen.has(b.src)) out.set(b.si, { hide: true }); seen.add(b.src); } });
+  const arts = blocks.filter((b) => b.t === "art");
+  if (!arts.length) return out;
+  // les bannières larges viennent de SteamGridDB ; les images verticales de toutes les sources, dans l'ordre donné
+  const lists = { heroes: [], grids: [] }; let answered = false;
+  for (const [k, q] of picSources(book, term)) {
+    const got = k === "sgdb" ? [await artList(q, "heroes"), await artList(q, "grids")] : k === "anime" || k === "manga" ? [null, await malList(k, q)] : k === "ol" ? [null, await olList(q)] : [null, null];
+    if (got[0]) { answered = true; lists.heroes.push(...got[0]); }
+    if (got[1]) { answered = true; lists.grids.push(...got[1]); }
+  }
+  if (!answered) return out; // aucune source ne répond : le lien reste proposé
+  const used = new Set();
+  if (cover) Object.values(lists).flat().forEach((a) => { if (a.url === cover || a.thumb === cover) used.add(artKey(a)); });
+  const take = (b, a, kind) => { used.add(artKey(a)); out.set(b.si, { a, kind }); };
+  arts.forEach((b) => { const a = lists[b.kind][b.n - 1]; if (a && !used.has(artKey(a))) take(b, a, b.kind); });
+  arts.forEach((b) => {
+    if (out.has(b.si)) return;
+    const other = b.kind === "heroes" ? "grids" : "heroes";
+    const xs = lists[b.kind]; const from = Math.min(Math.max(0, b.n - 1), xs.length);
+    const a = [...xs.slice(from), ...xs.slice(0, from)].find((x) => !used.has(artKey(x)));
+    if (a) take(b, a, b.kind);
+    else { const o = lists[other].find((x) => !used.has(artKey(x))); if (o) take(b, o, other); else out.set(b.si, { hide: true }); }
+  });
+  return out;
+}
+function ArtFig({ b, term, si, pick }) {
+  const [bad, setBad] = useState(false);
+  if (pick?.hide) return null;
+  const a = pick === undefined ? undefined : bad ? null : pick?.a || null; const kind = pick?.kind || b.kind;
+  const link = a?.page || `https://www.steamgriddb.com/search/${kind}?term=${encodeURIComponent(term)}`;
   return (
-    <figure className={`ax-fig ax-art ${b.kind}`} data-si={si}>
-      <a className="ax-art-box" href={a?.url || link} target="_blank" rel="noopener noreferrer">{a ? <img src={a.thumb || a.url} alt={b.cap || ""} loading="lazy" referrerPolicy="no-referrer" onError={() => setA(null)} /> : <span className="mono">{a === null ? "VOIR LES ARTWORKS SUR STEAMGRIDDB ↗" : "…"}</span>}</a>
-      <figcaption>{b.cap && inline(b.cap)}<small className="mono">{b.credit ? `${b.credit} · ` : ""}{a?.author ? `ARTWORK PAR ${a.author} · ` : ""}<a href={link} target="_blank" rel="noopener noreferrer">STEAMGRIDDB ↗</a></small></figcaption>
+    <figure className={`ax-fig ax-art ${kind}`} data-si={si}>
+      <a className="ax-art-box" href={a?.src === "sgdb" ? a.url : link} target="_blank" rel="noopener noreferrer">{a ? <img src={a.thumb || a.url} alt={b.cap || ""} loading="lazy" referrerPolicy="no-referrer" onError={() => setBad(true)} /> : <span className="mono">{a === null ? "VOIR LES ARTWORKS SUR STEAMGRIDDB ↗" : "…"}</span>}</a>
+      <figcaption>{b.cap && inline(b.cap)}<small className="mono">{b.credit ? `${b.credit} · ` : ""}{a?.author ? `ARTWORK PAR ${a.author} · ` : ""}<a href={link} target="_blank" rel="noopener noreferrer">{SRC[a?.src] || "STEAMGRIDDB"} ↗</a></small></figcaption>
     </figure>
   );
 }
@@ -590,6 +647,9 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
   const hereSi = () => { try { const g = geom(); const end = (spread + per) * g.step + g.pad - 4; let si = null;
     flow.current.querySelectorAll("[data-si]").forEach((el) => { if (el.offsetLeft < end && el.dataset.si !== "") si = Number(el.dataset.si); });
     return si ?? (book.chapters[0]?.si ?? -1); } catch (_) { return -1; } };
+  const artTerm = book.art || sgdbTerm(book);
+  const [plan, setPlan] = useState(null);
+  useEffect(() => { let on = true; setPlan(null); planArt(book, artTerm, cover).then((p) => { if (!on) return; setPlan(p); relayoutRef.current?.(); }, () => on && setPlan(new Map())); return () => { on = false; }; }, [book, cover]); // eslint-disable-line react-hooks/exhaustive-deps
   const body = useMemo(() => (<>
             <section className="ax-titlepage">
               {fmt === "vinyle" ? <span className="ax-tp-sleeve"><span className="ax-tp-disc" />{cover ? <span className="ax-tp-art" style={{ backgroundImage: `url(${cover})` }} /> : <span className="ax-tp-art blank" />}</span> : cover && <span className="ax-tp-art" style={{ backgroundImage: `url(${cover})` }} />}
@@ -606,9 +666,9 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
                 {c.title && <header><span className="mono">{fmt === "vinyle" ? track(i) : String(i + 1).padStart(2, "0")}</span><h2>{c.title}</h2></header>}
                 {c.blocks.map((b, j) => b.t === "q" ? <blockquote key={j} data-si={b.si}><p>{inline(b.x)}</p>{b.by && <cite>{b.by}</cite>}</blockquote>
                   : b.t === "h" ? <h3 key={j} data-si={b.si}>{inline(b.x)}</h3>
-                  : b.t === "img" ? <Fig key={j} b={b} si={b.si} />
+                  : b.t === "img" ? (plan?.get(b.si)?.hide ? null : <Fig key={j} b={b} si={b.si} />)
                   : b.t === "yt" ? <YtFig key={j} b={b} si={b.si} onSwap={swapS} onRemove={removeS} />
-                  : b.t === "art" ? <ArtFig key={j} b={b} si={b.si} term={book.art || sgdbTerm(book)} />
+                  : b.t === "art" ? <ArtFig key={j} b={b} si={b.si} term={artTerm} pick={plan ? plan.get(b.si) || null : undefined} />
                   : b.t === "box" ? <aside className="ax-box" key={j} data-si={b.si}><b className="mono">{b.label || "À RETENIR"}</b><p>{inline(b.x)}</p></aside>
                   : b.t === "mus" ? <p key={j} data-si={b.si} className="ax-cue-p"><button type="button" className="ax-cue" data-url={b.url} onClick={() => cueR.current?.(b.url, b.x)} data-testid="alex-cue"><IoMusicalNotes size={14} /> <span>{b.x}</span></button></p>
                   : <p key={j} data-si={b.si} className={j === 0 && c.title ? "first" : ""}>{inline(b.x)}</p>)}
@@ -620,7 +680,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
                 <ul>{book.links.map((l, i) => <li key={i}><a href={linkUrl(l, book.title)} target="_blank" rel="noopener noreferrer" title={l.url ? "Ouvrir" : "Rechercher"}>{l.label} <IoOpenOutline size={12} /></a>{l.note && <small>{l.note}</small>}</li>)}</ul>
               </section>
             )}
-  </>), [book, fmt, cover, swapS]); // eslint-disable-line react-hooks/exhaustive-deps
+  </>), [book, fmt, cover, swapS, plan]); // eslint-disable-line react-hooks/exhaustive-deps
   const noteMarks = notesOf(notesItemOf(at, book.id)).map((n) => ({ id: n.id, t: n.t, at: Math.max(0, Math.min(pages - 1, n.n ? Math.round((n.p / n.n) * pages) : n.p)) }));
   return createPortal(
     <div onMouseMove={full ? wake : undefined} onTouchStart={full ? wake : undefined} className={(full ? "ax-full" + (ui ? " ui" : "") + " " : "") + "ax-reader ax-view fmt-" + fmt + ` cf-lh-${cf.lh || "m"} cf-mg-${cf.mg || "m"}` + (cf.ff ? " cf-ff-" + cf.ff : "") + (cf.bg ? " cf-bg-" + cf.bg : "") + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), "--ax-fs": fs, ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>

@@ -4,7 +4,7 @@ import { IoClose, IoPlay, IoCopyOutline, IoFolderOpenOutline } from "react-icons
 import { toast } from "sonner";
 import { labConfirm } from "@/components/atelier/LabDialog";
 import { ROOMS, TYPES } from "@/data/alexandrie/meta";
-import { SEP, parsePaste, pasteToBook, TEMPLATES } from "@/data/alexandrie/paste";
+import { SEP, parsePaste, pasteToBook, TEMPLATES, artDupes } from "@/data/alexandrie/paste";
 import { THEMES, THEME_INFO, lookFrom } from "@/data/alexandrie/looks";
 
 // Coller un livre : un bloc de texte (ou plusieurs, séparés par =====) devient un volume.
@@ -57,6 +57,7 @@ export default function AlexPaste({ initial = "", editing, onSave, onPreview, on
                     <b>{p.meta.title || "Sans titre"}</b>
                     <small className="mono">{(R?.label || "Mes livres").toUpperCase()} · {(TYPES[p.meta.type]?.label || "").toUpperCase()} · {book.chapters.filter((c) => c.title).length} CHAPITRE{book.chapters.filter((c) => c.title).length > 1 ? "S" : ""} · {book.words} MOTS</small>
                     {p.errors.map((er) => <span className="ax-pd-err" key={er}>{er}</span>)}
+                    {artDupes(p.body).length > 0 && <span className="ax-pd-note" data-testid="alex-paste-dupes">Image demandée deux fois : {artDupes(p.body).join(", ")}. À la lecture, la deuxième prendra une autre image libre ; change son numéro pour choisir laquelle.</span>}
                     <label className="ax-pd-th"><span className="mono">THÈME</span>
                       <select value={val} onChange={(e) => setTheme(i, e.target.value)} data-testid="alex-paste-theme">
                         <option value="">Celui de la salle</option>

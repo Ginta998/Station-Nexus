@@ -571,6 +571,7 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .ax-pd-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 .ax-pd-info>b{font-size:16px;line-height:1.2}.ax-pd-info>small{font-size:9.5px;letter-spacing:.14em;color:var(--lab-mute);line-height:1.5}
 .ax-pd-err{font-size:12.5px;color:#ff8a7a}
+.ax-pd-note{font-size:12.5px;color:#e8c27a}
 .ax-pd-th{display:flex;flex-direction:column;gap:4px;width:100%}.ax-pd-th span{font-size:9.5px;letter-spacing:.16em;color:var(--lab-mute)}
 .ax-pd-th select{width:100%;padding:8px;background:var(--bg-primary);color:var(--lab-ink);border:1px solid var(--lab-hair-2);font:inherit;font-size:13px}
 .ax-pd-sw{display:grid;grid-template-columns:1fr auto;gap:4px 10px;width:100%;padding:12px 14px;border:1px solid;border-left-width:3px}

@@ -35,6 +35,8 @@ Et puis il y a l'Église. L'Unitologie est née au XXIIIe siècle, autour de la 
 
 Dead Space a failli ne jamais exister. Au milieu des années deux mille, le studio d'Electronic Arts à Redwood Shores vit des licences des autres : des jeux James Bond, Le Seigneur des anneaux, Le Parrain. EA n'aime pas les nouveaux univers, trop risqués. Glen Schofield en propose un quand même, une horreur de science-fiction, et il le dit lui-même : chez EA, on a un peu paniqué. Pour rassurer, il le présente d'abord comme une suite possible de System Shock, le grand jeu d'horreur spatiale des années quatre-vingt-dix. L'équipe joue à System Shock 2 pour s'en imprégner. Un tout premier concept s'appelle Rancid Moon : des criminels sur une lune, qui deviennent des esprits maléfiques. On en est loin.
 
+@art 5
+
 Puis, en 2005, sort Resident Evil 4. Toute l'équipe est sidérée. Le jeu de Capcom prouve que l'horreur peut encore se vendre, et qu'on peut la jouer avec une caméra placée juste derrière l'épaule du héros. La formule qui convainc EA tient en une phrase : Resident Evil 4 dans l'espace. Schofield obtient une équipe de dix-huit personnes et six mois pour fabriquer un morceau de jeu complet, une tranche verticale, qui doit prouver tout le reste. Cette démonstration décide EA à lancer le projet.
 
 Les inspirations viennent du cinéma. Schofield pense à Alien, de Ridley Scott, et à Event Horizon, le film de Paul W. S. Anderson sur un vaisseau revenu de l'enfer. Le designer Ben Wanat, fou de films d'horreur, pense surtout à The Thing, de John Carpenter : des corps qui se déforment, s'ouvrent, deviennent autre chose. Ses nécromorphes ont des membres allongés, amincis, avec des zones de chair à vif qui indiquent où trancher. Il refuse les points faibles lumineux, ce cliché des jeux d'action. Les thèmes de la démence et des hallucinations arrivent tard dans le projet, poussés par l'amour de Wanat pour Solaris, le film de Tarkovski où les morts reviennent hanter une station spatiale.
@@ -121,6 +123,8 @@ Isaac l'apprend en même temps qu'il comprend autre chose. Kendra Daniels n'est 
 
 Le succès du premier jeu change le studio. Glen Schofield le quitte pendant la production de la suite pour fonder Sledgehammer Games, qui travaillera sur Call of Duty, et emmène avec lui près de la moitié de l'équipe. Le producteur Chuck Beaver se souvient de cette période comme de la pire de sa carrière. Wright Bagwell, entré dans l'équipe après avoir joué à une démo du premier jeu, devient le directeur créatif de Dead Space 2. Ben Wanat dirigera Dead Space 3.
 
+@art g 2
+
 ## Le Sprawl
 
 Dead Space 2 sort en janvier 2011. Il se passe trois ans après le premier jeu, sur le Sprawl, une immense ville spatiale construite sur un fragment de Titan, la plus grande lune de Saturne. Près d'un million de personnes y vivent : des familles, des écoles, une église unitologiste géante, des centres commerciaux, des hôpitaux. Isaac s'y réveille dans une camisole, dans un hôpital psychiatrique, sans souvenirs précis des trois dernières années. Autour de lui, l'épidémie vient de commencer.
@@ -166,6 +170,8 @@ En janvier 2023, le studio Motive, à Montréal, a sorti un remake du premier je
 # Ce qui fait peur, au fond
 
 Dead Space ne fait pas peur seulement par ses monstres. Il fait peur par ce qu'il dit des institutions. La compagnie minière envoie ses ouvriers mourir dans un vaisseau trop vieux. Le gouvernement fabrique en secret des objets qu'il sait mortels, parce qu'il espère s'en servir comme source d'énergie. L'Église unitologiste transforme un instrument de mort en promesse de salut, et ses fidèles se sacrifient en chantant. Personne, au-dessus d'Isaac, ne dit la vérité.
+
+@art 6
 
 Et Isaac est un ingénieur. Pas un élu, pas un guerrier. Il répare des portes, rétablit l'oxygène, relance des réacteurs, recâble des ascenseurs, tout en étant poursuivi par ce que sont devenus ses collègues. Le jeu fait de la compétence technique une forme de courage. Il y a quelque chose de touchant dans cet homme qui, pour survivre à l'horreur cosmique, continue simplement à faire son travail.
 

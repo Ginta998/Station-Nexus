@@ -13,6 +13,8 @@ const book = {
 
 Fear & Hunger a une réputation : on le présente souvent comme le jeu le plus cruel jamais fait. Ce n'est pas une exagération publicitaire. Le jeu montre la torture, la mutilation, la folie, des violences de toutes sortes. Il ne les rend jamais agréables, mais il ne les cache pas non plus. Beaucoup de joueurs ne vont pas au bout. Beaucoup d'autres ne le regardent qu'à travers des vidéos.
 
+@art 4
+
 Ce livre ne décrit pas ces horreurs. Il raconte le monde qu'elles habitent, parce que ce monde est d'une richesse étonnante. Derrière ses images insoutenables, Fear & Hunger cache une mythologie entière : des dieux anciens et des dieux nouveaux, des hommes qui gravissent un trône pour devenir divins, une histoire qui s'étend sur des siècles, d'un royaume médiéval à une Europe en guerre au XXe siècle.
 
 On le joue comme on déchiffre un vieux manuscrit en partie brûlé. Et plus on en apprend, plus on comprend que la cruauté du jeu n'est pas un décor : c'est son sujet. Ce monde est cruel parce que ses dieux le sont, et ses dieux le sont parce qu'ils ont été, un jour, des hommes.
@@ -22,6 +24,8 @@ On le joue comme on déchiffre un vieux manuscrit en partie brûlé. Et plus on 
 # Ceux qui l'ont fait
 
 Fear & Hunger est l'œuvre d'un seul homme : Miro Haverinen, un créateur finlandais. Il a écrit, dessiné, programmé et conçu le jeu presque entièrement seul, avec RPG Maker, un logiciel grand public fait pour créer de petits jeux de rôle à l'ancienne, vus de dessus, avec des combats au tour par tour. C'est l'outil des amateurs. Haverinen en a tiré l'un des jeux les plus singuliers de sa décennie.
+
+@art g 2
 
 Le premier Fear & Hunger sort en décembre 2018, publié par Happy Paintings. Il reste longtemps un secret de connaisseurs, puis il explose quelques années plus tard, porté par les vidéos de joueurs qui montrent leurs parties désastreuses, leurs morts absurdes, leurs théories sur le lore. Il devient culte : un jeu dont beaucoup parlent et que peu finissent.
 
@@ -49,6 +53,8 @@ Le résultat est une expérience unique : on a peur pour ses personnages comme d
 
 Au commencement de ce monde, il y a les dieux anciens. Ils ne sont pas bons. Ils ne sont pas mauvais. Ils sont immenses, et les hommes ne comptent pas beaucoup pour eux.
 
+@art 5
+
 **Sylvian** est la déesse de l'amour, du désir et de la création. On dit qu'elle a créé les humains. Elle bénit les mariages. Et beaucoup croient qu'elle a fini par abandonner l'humanité, parce que les hommes ne pouvaient jamais l'aimer autant qu'elle les aimait. Son symbole est un œil ouvert.
 
 **Gro-goroth** est le dieu de la destruction et des sacrifices humains, celui qu'on appelle le destructeur des hommes. On raconte qu'il porte des peaux humaines et qu'il marche encore parmi les mortels, déguisé. Il a donné aux hommes la magie du sang. Son symbole est une éclipse.
@@ -65,6 +71,8 @@ Ces dieux ne répondent pas aux prières. Ils réagissent aux sacrifices, aux ri
 
 Il existe, loin de tout, une cité des dieux qu'on appelle Ma'habre. Au cœur de Ma'habre, il y a le Trône de l'Ascension. Un mortel qui parvient à s'y asseoir, après avoir réuni les âmes nécessaires et dévoré les traces des dieux anciens, peut devenir un dieu.
 
+@art g 3
+
 C'est l'idée centrale de tout l'univers de Fear & Hunger. Les dieux ne sont pas seulement là depuis toujours. On peut en devenir un. Et depuis des siècles, des hommes et des femmes descendent dans les profondeurs, traversent des horreurs indicibles, pour tenter leur chance.
 
 Le plus célèbre d'entre eux s'appelle **Alll-mer**. Il est né à Jettaiah. Il a enseigné avec douze apôtres. Il a été crucifié. Puis il s'est élevé à Ma'habre, et il est revenu pour massacrer les puissants de son époque. Sa renaissance marque l'an zéro d'un nouveau calendrier, et sa religion devient la foi dominante de l'Europe de ce monde. Le parallèle avec le christianisme est évident, et il est volontaire : Fear & Hunger imagine une religion qui ressemble à la nôtre, mais dont le dieu est bien réel, et terrible.
@@ -74,6 +82,8 @@ Pour pouvoir s'élever, Alll-mer a dû se débarrasser de sa part sombre, de sa 
 # Les dieux nouveaux
 
 Ceux qui montent sur le trône deviennent des dieux nouveaux. Ils sont beaucoup plus faibles que les anciens. Leur règne dure un temps, puis ils s'éteignent dans l'inaction, et se reposent dans une grande salle, en attendant qu'un rituel les rappelle. Leurs titres disent ce qu'était leur âme.
+
+@art 6
 
 L'histoire la plus importante est celle d'une **Compagnie**. En l'an 809, cinq mortels partent ensemble chercher les dieux anciens, et obtiennent pour l'humanité le droit de se gouverner elle-même. L'un d'eux, **Nosramus**, refuse l'ascension. Les quatre autres deviennent des dieux nouveaux.
 
@@ -87,6 +97,8 @@ Le règne de la Compagnie s'achève vers 1590. Et c'est à cette époque que com
 
 Le premier jeu se passe dans un monde qui ressemble à la fin du Moyen Âge, dans le royaume de Rondon. Un royaume corrompu, cruel, où l'Église d'Alll-mer règne avec le pouvoir.
 
+@art g 4
+
 Il y a un rebelle. Il s'appelle **Le'garde**. C'est un homme des prophéties, celui dont parlaient les anciens textes, et il est le père de l'enfant de Nilvan. Le royaume l'a capturé. Il l'a enfermé dans la prison la plus terrible qui soit : les Donjons de la Peur et de la Faim, un labyrinthe creusé sous une forteresse, qui s'enfonce de plus en plus profondément sous la terre, jusqu'à des lieux qui n'ont plus rien d'humain.
 
 Quatre personnes y descendent, chacune pour une raison différente. Le joueur en choisit une au début. Les autres, il peut les croiser, et parfois les recruter.
@@ -98,6 +110,8 @@ D'autres âmes errent dans le donjon : une petite fille perdue, une créature sa
 # La descente
 
 Le donjon de Fear & Hunger est un lieu qui s'enfonce. Au début, ce sont des cachots, des couloirs de pierre, des cellules, des gardes. Puis viennent des cavernes, des marécages souterrains, des temples oubliés, des mines. Puis des lieux qui n'obéissent plus à la géographie : des forêts sous la terre, des ruines englouties d'une ancienne cité, et tout au fond, un endroit qu'on appelle le Cœur des Ténèbres.
+
+@art 7
 
 Chaque niveau abrite des créatures plus étranges, plus difformes. Certaines sont d'anciens prisonniers. D'autres sont nées des expériences des prêtres. D'autres encore sont des fragments des dieux eux-mêmes, des traces laissées par les dieux anciens dans le monde des hommes, qu'on peut combattre, et dont on peut dévorer l'essence.
 
@@ -121,6 +135,8 @@ Si les cœurs du dieu sont détruits, et si l'enfant est encore en vie, elle s'�
 
 Ce dieu-là n'est pas un dieu ancien, ni tout à fait un dieu nouveau. Il est né d'une enfant, dans le corps d'un dieu mort, au milieu de la souffrance. Il incarne la souffrance.
 
+@art g 5
+
 Et pourtant, selon les textes du second jeu, c'est ce dieu qui pousse l'humanité vers la modernité. Les siècles qui suivent, la science, l'industrie, les machines, les guerres mondiales, porteraient sa marque. L'Église, au XXe siècle, le considère comme une fausse divinité. Mais le monde a changé sous son règne.
 
 C'est une idée vertigineuse : le progrès lui-même, dans cet univers, serait l'œuvre d'un dieu né de la peur et de la faim. Les hommes avancent parce qu'ils ont peur et faim. L'histoire est un cauchemar qui se fait passer pour une marche en avant.
@@ -130,6 +146,8 @@ C'est une idée vertigineuse : le progrès lui-même, dans cet univers, serait l
 # Les fins du premier jeu
 
 Fear & Hunger a de nombreuses fins. Elles dépendent du personnage choisi, de ceux qu'on a sauvés ou abandonnés, et du chemin pris tout au fond.
+
+@art 8
 
 Si l'on garde la petite fille en vie, qu'on détruit les trois cœurs du Dieu des Profondeurs et qu'on affronte, tout en bas, le dieu qui vient de naître, c'est la fin du **Dieu de la Peur et de la Faim**.
 
@@ -145,11 +163,15 @@ Pour chaque personnage, une fin secrète existe aussi, en mode difficile. Cahara
 
 Laquelle de ces fins est la vraie ? Aucune entièrement. Le second jeu, situé des siècles plus tard, en a retenu plusieurs éléments à la fois. La petite fille est bien devenue le Dieu de la Peur et de la Faim. Le'garde a survécu, sous une autre forme, et on le retrouvera. Enki a probablement atteint l'illumination. Ragnvaldr aussi a accompli sa quête, ce qui expliquerait que les bêtes mystiques soient devenues si rares dans le monde de Termina. Sans-Lune a survécu et voyage avec les descendants de Ragnvaldr.
 
+@art g 6
+
 Haverinen a ainsi fait des différentes fins du premier jeu un passé commun, comme si chaque partie de chaque joueur avait laissé une trace dans l'histoire.
 
 # Termina
 
 Des siècles ont passé. Le monde ressemble maintenant au nôtre au milieu du XXe siècle : des trains, des journaux, des fusils, des chars, des avions, une Europe en guerre. Le second jeu se passe en 1942.
+
+@art 9
 
 Une armée, celle de l'Empire de Brême, vient de prendre une ville de Bohême, Prehevil, à une autre puissance, l'Union de l'Est. Une partie de la ville est en ruine. Les routes sont bloquées. Et à la tête de l'armée de Brême, il y a un homme qu'on appelle simplement le **Kaiser**. Les joueurs attentifs le reconnaîtront : c'est Le'garde, l'homme des prophéties du premier jeu, qui a traversé les siècles sous une autre forme.
 
@@ -171,6 +193,8 @@ Le jeu se déroule en trois jours, chacun divisé en matin, soir et nuit. Les co
 
 Le joueur choisit un personnage parmi huit, et peut en recruter d'autres.
 
+@art g 7
+
 **Levi** est un ancien soldat, un très jeune homme marqué par la guerre. **Marina** est une occultiste, la fille d'un prêtre de la ville. **Daan** est médecin, et il porte un deuil. **Abella** est mécanicienne et rêve de machines. **O'saa** est un mage jaune, venu des lointains Sanctuaires de l'Est. **Olivia** est botaniste, en fauteuil roulant, et cherche sa sœur, Reila, une ingénieure. **Marcoh** est un boxeur, un homme de main. **Karin** est journaliste, et elle enquête.
 
 Les six autres sont des rivaux, des fous, des inconnus : Henryk, Tanaka, Samarie, August, Pav, Caligura. Certains deviendront des monstres. Certains tenteront de tuer le joueur dès la première nuit.
@@ -181,6 +205,8 @@ Ce qui frappe, c'est l'humanité de ces personnages. Contrairement au premier je
 
 Prehevil est un labyrinthe. La vieille ville, avec ses ruelles et ses églises. La ville intérieure, plus neuve, où le dieu de la lune a pris le contrôle et où patrouillent des créatures en uniforme. Des tunnels, des mines, des appartements moisis, une librairie, une agence de presse, un restaurant, un manoir. Et au centre, dominant tout, la Tour creuse, dans le quartier des temples.
 
+@art 10
+
 Les habitants sont très religieux. Ils pratiquent encore, en secret, les rites des dieux anciens. Une plage sert aux baptêmes. Dans les sous-sols, des choses plus anciennes attendent.
 
 Et la ville est pleine de ces êtres que la lune a brûlés : des gens ordinaires devenus des silhouettes déformées, qui errent en marmonnant.
@@ -189,6 +215,8 @@ Et la ville est pleine de ces êtres que la lune a brûlés : des gens ordinaire
 
 Il y a dans Termina un dieu nouveau d'une espèce inédite. On l'appelle **Logic**, ou le Dieu-Machine. Il absorbe les gens dans un réseau partagé, une conscience collective. Il habite le corps d'une ingénieure, Reila Audrey Haas, la sœur d'Olivia, à un stade précoce de sa divinité.
 
+@art g 8
+
 C'est une idée très moderne au milieu de ces dieux sanglants : un dieu né de la technologie, de la logique, des machines. Le XXe siècle de Fear & Hunger n'a pas chassé le divin. Il en a fabriqué de nouvelles formes.
 
 @yt iOQI-v4EuEI | Le lore de Logic, le Dieu-Machine (en anglais).
@@ -196,6 +224,8 @@ C'est une idée très moderne au milieu de ces dieux sanglants : un dieu né de 
 # Les fins de Termina
 
 Termina a trois grandes fins.
+
+@art 11
 
 Dans la première, le joueur active trois appareils dans la ville, puis descend dans un bunker blanc. Il y affronte des soldats, puis le Kaiser lui-même, puis Logic. Le Dieu-Machine l'invite dans une terre promise, et le personnage est absorbé dans la conscience collective. Les survivants non transformés repartent par le train.
 
@@ -208,6 +238,8 @@ Aucune de ces fins n'est vraiment heureuse. Survivre, dans Termina, c'est porter
 # Le cycle
 
 Si l'on recule pour regarder toute l'histoire de ce monde, une forme apparaît : un cercle.
+
+@art g 9
 
 Les dieux anciens dominent les hommes. Des hommes descendent dans les profondeurs, montent sur le trône, deviennent des dieux. Ils règnent, s'épuisent, s'endorment. D'autres hommes descendent à leur tour. Francóis, devenu dieu, conclut que le temps n'est qu'un cycle. Nas'hrah, devenu dieu, conclut que l'ascension ne fait que relancer la même histoire. Les meilleurs esprits de ce monde, ceux qui sont allés le plus loin, reviennent tous avec la même découverte : on n'en sort pas.
 
@@ -228,6 +260,8 @@ C'est un choix radical. Dans la plupart des jeux, la violence est un outil de pu
 # Ce que tu peux en prendre
 
 Fear & Hunger t'apprend qu'un outil modeste ne limite pas l'ambition. RPG Maker est un logiciel d'amateur. Un homme seul en a tiré un monde plus profond que celui de bien des productions à cent millions.
+
+@art 12
 
 Il t'apprend que les règles racontent. Une pièce lancée pour sauvegarder, un bras qu'on perd pour toujours, une faim qui ne s'arrête pas : ces mécaniques disent mieux que n'importe quel texte que ce monde est sans pitié.
 

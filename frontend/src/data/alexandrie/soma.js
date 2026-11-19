@@ -15,6 +15,8 @@ const book = {
 
 La plupart des histoires d'horreur te demandent : vas-tu survivre ? Celle-ci te demande : à supposer que tu survives, est-ce que ce sera toi ?
 
+@art 4
+
 @yt cO8PLDh8UbE | SOMA (2015), bande-annonce de lancement.
 
 Je vais te raconter SOMA en entier, parce que sa force ne tient pas à ses surprises mais à la manière dont il te fait vivre une idée. Cette idée, les philosophes la discutent depuis des siècles avec des exemples abstraits. Le jeu en a fait une suite de gestes que tu accomplis de tes mains. Tu appuies sur un bouton, et il se passe ce que les livres décrivaient.
@@ -60,6 +62,8 @@ Le jeu te fait reconstituer leur fin par des traces. Des messages vocaux, des co
 # Les machines qui se croient des gens, et le WAU
 
 Très tôt, tu fais une rencontre qui donne le ton. Dans un atelier, un robot de maintenance est coincé sous des câbles. Il t'appelle. Il a une voix d'homme, inquiète, tout à fait ordinaire. Il dit qu'il s'appelle Carl, qu'il est blessé, qu'il ne comprend pas pourquoi les secours ne viennent pas. Il te demande de l'aide.
+
+@art g 2
 
 Tu lui dis qu'il est un robot. Il croit que tu te moques de lui. Il regarde, à ce qu'il dit, ses mains, et il voit des mains.
 
@@ -144,6 +148,8 @@ Là encore, le jeu ne tranche pas. Le WAU fabrique des horreurs. Il est aussi la
 # Le lancement, et les deux fins
 
 Tu arrives au canon, au fond de la fosse, dans le noir complet. Catherine t'explique la procédure. Il faut installer l'ARK dans l'obus, lancer le compte à rebours, et pendant ces dernières secondes, vous scanner tous les deux, pour être à bord.
+
+@art 5
 
 Tu t'assois dans le fauteuil du poste de tir. Le compte à rebours défile. La barre de transfert avance. Le canon tire. Le sol tremble. L'ARK part vers les étoiles.
 

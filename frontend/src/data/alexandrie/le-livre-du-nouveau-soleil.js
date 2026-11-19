@@ -8,10 +8,13 @@ const book = {
     { label: "G. K. Chesterton et J. R. R. Tolkien", note: "Les deux écrivains catholiques qui ont formé Wolfe. On sent les deux sous chaque page." },
     { label: "Marcel Proust", note: "Wolfe le citait volontiers : un narrateur qui se souvient de tout, et qui recompose sa vie en la racontant." },
   ],
+  pics: ["ol:The Shadow of the Torturer Gene Wolfe", "ol:The Claw of the Conciliator Gene Wolfe", "ol:The Sword of the Lictor Gene Wolfe", "ol:The Citadel of the Autarch Gene Wolfe"],
   text: String.raw`
 # Avant de commencer
 
 Celui-ci est un livre pour qui aime être perdu.
+
+@art g 1
 
 Il raconte la vie d'un jeune homme nommé Severian, apprenti dans la guilde des bourreaux, dans un monde si vieux que le soleil est devenu rouge et faible. Severian commet une faute par amour, il est chassé de son ordre, il part sur les routes avec une grande épée, et il finira, au bout de quatre volumes, sur le trône du monde. C'est lui qui écrit le livre, des années plus tard. Et il ne te dit pas tout.
 
@@ -28,6 +31,8 @@ Le livre se présente comme une traduction. Wolfe prétend avoir reçu ce manusc
 # Teur et la Citadelle
 
 Le monde s'appelle Teur. C'est la Terre, dans un avenir si lointain que les continents ont changé et que la Lune est verte, parce qu'on y a jadis planté des forêts. Le soleil est malade. Il est rouge, faible, et l'on peut le regarder en face. Les savants du livre parlent d'un ver dans son cœur, une obscurité qui le ronge. On sait qu'un jour il s'éteindra, et que le monde mourra de froid. On espère, selon une vieille prophétie, qu'il viendra un Nouveau Soleil.
+
+@art g 2
 
 L'humanité a connu un âge d'or. Elle a voyagé entre les étoiles, construit des machines prodigieuses, parlé avec d'autres espèces. Tout cela est fini. Ce qu'il en reste est enfoui sous les villes et les champs, et les gens de Teur vivent parmi ces débris sans les comprendre, comme des paysans du Moyen Âge parmi des ruines romaines. On laboure des champs pleins de tessons de métal. On se sert de lampes dont personne ne sait comment elles fonctionnent. Quelques rares objets techniques circulent encore, réservés aux puissants, et passent pour de la magie.
 
@@ -48,6 +53,8 @@ Il y a aussi ceci, qu'il te dit en passant, presque au début : il n'oublie rien
 # Thecla et la faute
 
 Il faut d'abord te dire comment vit la guilde, parce que Wolfe le raconte avec un soin presque affectueux. Les prisonniers sont gardés dans les caves de la tour, sur plusieurs niveaux, dans des cellules alignées le long de couloirs sombres. La guilde ne les appelle pas des prisonniers. Elle les appelle ses clients. Les apprentis leur portent les repas, vident leurs seaux, entendent leurs plaintes à travers les portes. Ils apprennent le métier en le regardant faire, puis en le faisant, comme on apprend la boucherie ou la menuiserie. Les maîtres insistent sur un point : un bourreau ne doit ni haïr ni plaindre. Il doit être juste dans la mesure, ni plus, ni moins que la sentence. C'est leur fierté, et c'est leur manière de rester des hommes.
+
+@art g 3
 
 Severian devient compagnon de la guilde, le grade au-dessus d'apprenti. La cérémonie a lieu dans la tour, avec une fête, et c'est un des seuls moments de joie pure du livre. On lui confie alors une prisonnière.
 
@@ -71,6 +78,8 @@ Il quitte la Citadelle à l'aube, avec son manteau fuligine, son épée et une l
 
 Le voyage de Severian vers le nord prend trois volumes. C'est un roman picaresque : une suite de rencontres, de villes, de dangers, de personnages qui viennent et qui partent, et qui reviennent parfois sous un autre jour. Je te donne les principaux, parce qu'ils sont tous plus qu'ils ne paraissent.
 
+@art g 4
+
 À Nessus, à peine sorti de la Citadelle, il rencontre Agia, une jeune femme pauvre et rusée qui travaille dans une boutique de vieux habits avec son frère jumeau, Agilus. Elle se fait sa guide dans la ville. Elle l'emmène aux Jardins botaniques, un édifice de verre où chaque salle contient un paysage entier, une jungle, un désert, un marais. Puis elle le conduit à un duel qu'il ne comprend pas : un combat rituel, où l'on se bat avec des fleurs empoisonnées, des avernes, dont les feuilles tranchent et tuent. Severian survit. Il comprend plus tard qu'Agia et son frère voulaient sa mort, pour voler Terminus Est, qui vaut une fortune. Agilus est arrêté, jugé, et c'est Severian, le bourreau de passage, qui doit l'exécuter. Agia jure de se venger. Elle le poursuivra pendant tout le livre.
 
 En chemin, le carrosse d'Agia a renversé l'autel d'un ordre de religieuses itinérantes, les Pèlerines. Dans la confusion, une pierre précieuse a disparu : la Griffe du Conciliateur, leur relique la plus sacrée. Severian la retrouve plus tard dans sa propre sacoche, où quelqu'un l'a glissée. Il ne sait pas quoi en faire. La Griffe est une gemme bleue, et elle semble faire des miracles quand il la tient : elle guérit, elle ressuscite peut-être. Severian n'y croit pas, puis il ne sait plus. Il se met en tête de la rendre aux Pèlerines, et ce projet va le guider pendant deux volumes.
@@ -93,6 +102,8 @@ Le voyage le conduit aussi jusqu'à la Maison Absolue, le palais de l'Autarque, 
 
 Severian arrive enfin à Thrax, la ville des chambres sans fenêtres. Elle est construite au fond d'une gorge, les maisons creusées dans les falaises, et elle commande une route de montagne vers le nord. Il prend son poste dans la prison de la ville, une forteresse étroite où les détenus sont enchaînés le long d'un puits. Il est licteur. Il exécute les condamnés et inflige les châtiments que le juge prononce. Il le fait bien. Le livre ne te le cache pas.
 
+@art g 5
+
 C'est le volume le plus sombre, et peut-être le plus beau. Dorcas, qui vit avec lui, ne supporte plus ce qu'il fait. Les gens de la ville la regardent comme la femme du bourreau. Elle s'enferme, elle maigrit, elle retrouve peu à peu des souvenirs d'une vie qu'elle n'a pas vécue ici, et elle finit par partir, vers le sud, vers Nessus, pour savoir qui elle était. Severian la laisse aller. C'est l'une des séparations les plus douces et les plus tristes du cycle.
 
 Puis il commet la même faute qu'avec Thecla. Le juge lui confie une femme condamnée à mort, Cyriaca, une noble qui a trompé son mari. Il doit la mettre à mort. Il ne le fait pas. Il la laisse fuir. Et il doit fuir à son tour, parce qu'un licteur qui épargne est un traître.
@@ -110,6 +121,8 @@ La Griffe, elle aussi, se brise. Quand Severian ouvre la pierre, il trouve à l'
 # La guerre et l'Autarque
 
 Le quatrième volume s'ouvre sur la guerre. Severian, affamé, marche vers le front, où la Communauté et les Ascians se battent depuis des générations, dans des montagnes et des plaines dévastées. Il tombe malade. Il est recueilli dans un hôpital de campagne tenu par les Pèlerines, les religieuses dont il porte encore la relique.
+
+@art g 6
 
 Dans cet hôpital, Wolfe s'offre une pause, et c'est un de ses plus beaux passages. Les blessés, pour passer le temps, organisent un concours de contes : une jeune soldate promet sa main à celui qui racontera la meilleure histoire. Chacun raconte la sienne, dans sa langue, avec sa culture. Parmi eux, il y a un prisonnier ascian. Il ne connaît que les phrases officielles de son peuple, les formules approuvées par ses chefs. Il raconte pourtant une histoire, entière, émouvante, en n'utilisant que ces phrases, détournées, assemblées, chargées d'un sens nouveau. Une soldate traduit. Tu comprends, en lisant, ce que peut un homme à qui l'on a retiré tous ses mots. Il raconte quand même.
 
@@ -129,6 +142,8 @@ Il revient à Nessus, à la Citadelle, dans la tour de la guilde, en souverain. 
 
 Wolfe a écrit une suite, quatre ans plus tard, Le Nouveau Soleil de Teur. Severian y part dans un vaisseau immense, aux voiles de lumière, vers un monde au-delà des étoiles où siègent ceux qui doivent le juger. Le livre est plus étrange encore que les quatre précédents, et je ne le raconte qu'à grands traits. Severian passe l'épreuve. Le Nouveau Soleil vient : une étoile blanche, jetée au cœur de l'ancien soleil, qui le ranime. Mais une étoile qui revient a un prix. La chaleur fait fondre les glaces, les mers montent, et l'ancien monde de Teur est englouti, avec ses villes, ses guildes, ses ruines. Il naîtra de cette noyade un monde nouveau.
 
+@art g 7
+
 Tu reconnais la figure. Un homme qui vient d'en bas, qui a été bourreau, qui a fait des miracles qu'il ne comprenait pas, qui rapporte la lumière et provoque un déluge. Le peuple de Teur l'appellera le Conciliateur, ce personnage ancien dont il portait la relique sans savoir qu'elle était la sienne. Le temps, dans ce cycle, ne va pas en ligne droite. La fin explique le début, et les miracles de la Griffe viennent peut-être de celui qui la porte.
 
 Wolfe était catholique, et Severian est une figure du Christ. Mais une figure étrange, blessée, ambiguë : un bourreau, qui a tué, qui ment, qui ne se repent pas toujours. Wolfe n'écrit pas une allégorie. Il écrit une question. Qu'est-ce qu'un sauveur, s'il est fait de la même matière que nous ?
@@ -144,6 +159,8 @@ Il faut comprendre ce que cela fait au lecteur. Un roman ordinaire te tient par 
 # Ce que tu peux en prendre
 
 Trois choses, pour qui raconte.
+
+@art g 8
 
 La première est la voix du narrateur qui choisit. Severian ne ment presque jamais. Il fait pire : il choisit l'ordre, le cadrage, l'éclairage. Il te dit une chose terrible dans une phrase calme, au milieu d'un paragraphe sur la météo. Il te parle longuement d'un détail sans importance, et passe vite sur ce qui compte. C'est exactement ce que fait un monteur. Tout ce qu'on comprend d'une histoire dépend de ce que le conteur met au premier plan. Wolfe t'apprend à soupçonner le premier plan, et, si tu écris, à t'en servir.
 

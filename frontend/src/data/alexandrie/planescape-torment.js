@@ -13,6 +13,8 @@ const book = {
 
 Planescape: Torment est souvent cité comme le jeu de rôle le mieux écrit de l'histoire. Il est sorti en 1999, s'est mal vendu, et n'a jamais cessé depuis d'être redécouvert.
 
+@art 4
+
 C'est un jeu où l'on lit énormément. Des centaines de milliers de mots. Où l'on peut finir presque toute l'aventure sans se battre, en parlant. Où les statistiques les plus utiles ne sont pas la force ou l'agilité, mais la sagesse, l'intelligence et le charisme. Et où le héros n'est pas un élu, mais un homme qui a fait beaucoup de mal, et qui ne s'en souvient pas.
 
 @yt LhD-QCb1fyY | Planescape: Torment, une rétrospective (en anglais).
@@ -20,6 +22,8 @@ C'est un jeu où l'on lit énormément. Des centaines de milliers de mots. Où l
 # Ceux qui l'ont fait
 
 Planescape: Torment est développé par Black Isle Studios, une division de l'éditeur californien Interplay, celle qui avait fait Fallout 2. Il utilise le moteur de Baldur's Gate, l'Infinity Engine, mis au point par BioWare.
+
+@art g 2
 
 Le concepteur principal et l'auteur de la plus grande partie du texte est Chris Avellone. Il avait travaillé sur Fallout 2, et deviendra une figure du jeu de rôle : Knights of the Old Republic II, Fallout: New Vegas. À ses côtés, le concepteur Colin McComb, qui avait écrit des suppléments pour l'univers Planescape sur table. Le producteur est Guido Henkel, dont le visage, maquillé et couvert de cicatrices, sert pour l'image du héros sur la boîte.
 
@@ -41,6 +45,8 @@ La ville est dirigée par la Dame des Douleurs. Elle ne parle pas. Elle flotte d
 
 Dans l'univers de Planescape, la croyance façonne le monde. Les plans changent selon ce que croient ceux qui les habitent. Une idée partagée par assez de gens peut devenir un lieu, un dieu, une loi.
 
+@art 5
+
 C'est pourquoi Sigil est divisée en factions. Ce ne sont pas des partis politiques, mais des philosophies armées. Les Morts, qui pensent que la vie est une illusion et qu'il faut atteindre la Vraie Mort. Les Sensats, qui pensent qu'on ne connaît le monde qu'en l'éprouvant par tous les sens. Les Impitoyables, qui pensent que la justice doit s'appliquer sans exception. Et beaucoup d'autres.
 
 Le jeu les appelle des philosophes avec des gourdins. C'est l'esprit de Planescape : chaque idée finit par avoir des conséquences physiques.
@@ -61,6 +67,8 @@ Car le Sans-Nom est immortel. Quand il meurt, il se relève. Mais chaque mort lu
 
 Presque tous les compagnons du Sans-Nom l'ont déjà rencontré. Il ne s'en souvient pas. Eux, si.
 
+@art g 3
+
 Morte, le crâne, a une dette envers lui qu'il ne dit pas. Annah, une jeune tieffeline à la langue acérée, la fille adoptive de Pharod. Dak'kon, un githzerai, un guerrier mystique à la lame changeante, qui doit au Sans-Nom une obéissance absolue, et qui en souffre. Fall-From-Grace, une succube, une démone de la séduction qui a choisi la chasteté et tient une maison où l'on vient pour converser. Ignus, un mage qui brûle en permanence, un ancien élève du Sans-Nom, à qui il a appris à aimer le feu jusqu'à la folie. Nordom, un modron, une petite machine d'un plan de l'ordre absolu, qui s'est détaché de son réseau. Vhailor, une armure vide, animée par une seule conviction, la justice.
 
 Chacun d'eux est le fruit d'une décision prise par une ancienne incarnation du Sans-Nom. Le jeu est, au fond, un procès : celui d'un homme qui doit répondre de tous les autres qu'il a été.
@@ -68,6 +76,8 @@ Chacun d'eux est le fruit d'une décision prise par une ancienne incarnation du 
 # Les anciennes vies
 
 Peu à peu, le Sans-Nom retrouve des fragments. Il découvre qu'il a été, selon les vies, un homme bon, un homme cruel, un homme calculateur, un homme paranoïaque.
+
+@art 6
 
 L'une de ses incarnations, la plus pragmatique, a écrit les tatouages et le journal. Elle utilisait les gens comme des outils. Une autre a posé des pièges pour ses propres successeurs. Le fantôme d'une femme, Deionarra, qui l'a aimé dans une vie passée, hante encore la Morgue. Elle est morte à cause de lui.
 
@@ -89,6 +99,8 @@ Ravel lui pose aussi la question qui traverse tout le jeu. Qu'est-ce qui peut ch
 
 Pendant toute l'aventure, quelque chose observe le Sans-Nom. Une silhouette, qu'on appelle le Transcendant. Il tue ceux qui pourraient aider le Sans-Nom à se souvenir.
 
+@art g 4
+
 Le Transcendant, c'est sa mortalité. La part de lui que Ravel a arrachée. Devenue un être à part entière, intelligente, puissante, elle n'a aucune envie de redevenir mortelle en rejoignant son propriétaire.
 
 Il l'attend dans la Forteresse des Regrets, une citadelle au cœur d'un plan de vide et de mort.
@@ -106,6 +118,8 @@ S'il reprend sa mortalité, le Sans-Nom redevient un homme. Il peut mourir. Et i
 # Ce que tu peux en prendre
 
 Planescape: Torment t'apprend qu'un héros peut être défini par ce qu'il a fait et qu'il ignore. L'amnésie n'est pas un truc de scénario : c'est le sujet. Le joueur découvre en même temps que le héros la personne qu'il a été, et doit décider s'il l'accepte.
+
+@art 7
 
 Il t'apprend aussi à rendre chaque compagnon nécessaire. Tous sont liés au passé du héros, tous portent une part de sa faute. Un personnage secondaire n'est pas là pour aider : il est là pour révéler.
 

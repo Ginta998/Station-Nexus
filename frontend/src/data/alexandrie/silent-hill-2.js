@@ -13,6 +13,8 @@ const book = {
 
 Silent Hill 2 est souvent cité comme le meilleur jeu d'horreur jamais fait. Pas pour ses monstres, qui sont lents et peu nombreux. Pas pour ses combats, qui sont maladroits. Pour son histoire, et pour la façon dont tout le jeu, chaque rue, chaque créature, chaque personnage, sert à la raconter.
 
+@art 4
+
 Il faut le savoir : c'est une histoire de deuil, de culpabilité, de maladie, de violence familiale et de suicide. Je te la raconte avec sa fin, parce que la fin est ce qui donne son sens au reste.
 
 @yt 6yUWKx5C99I | Silent Hill 2, la bande-annonce de lancement de la refonte (2024).
@@ -20,6 +22,8 @@ Il faut le savoir : c'est une histoire de deuil, de culpabilité, de maladie, de
 # Ceux qui l'ont fait
 
 Silent Hill 2 est développé par Team Silent, une équipe interne de Konami, et sort en 2001 sur PlayStation 2. Il est dirigé par Masashi Tsuboyama. Le scénario est écrit par Hiroyuki Owaku.
+
+@art g 2
 
 Le compositeur et directeur du son est Akira Yamaoka, qui signe la musique et le son de la série depuis le premier épisode. Ses bruits industriels, ses grincements, et ses chansons mélancoliques sont devenus la signature de Silent Hill.
 
@@ -41,6 +45,8 @@ James ne sait pas ce qu'il cherche. Il descend.
 
 Silent Hill est vide. Un brouillard épais couvre tout. On ne voit qu'à quelques mètres. La radio que James trouve grésille quand un monstre approche. Les rues sont barrées, les maisons fermées, et parfois, dans le brouillard, quelque chose bouge.
 
+@art 5
+
 Les créatures sont étranges. Des silhouettes sans bras, enfermées dans une peau qui ressemble à une camisole. Des infirmières au visage déformé. Des mannequins faits de deux paires de jambes collées. Elles ne ressemblent à rien de connu. Elles ressemblent à des cauchemars.
 
 Et on comprend peu à peu que ce ne sont pas des monstres de la ville. Ce sont des monstres de James.
@@ -48,6 +54,8 @@ Et on comprend peu à peu que ce ne sont pas des monstres de la ville. Ce sont d
 # Ce que la ville fait
 
 Silent Hill n'est pas une ville hantée comme les autres. Elle attire ceux qui portent une faute, une douleur, un secret. Et elle se transforme pour chacun d'eux. Chaque visiteur voit sa propre version de la ville, peuplée de ses propres démons.
+
+@art g 3
 
 James croise d'autres personnes. Chacune vit dans son propre Silent Hill, et ce que James voit d'elle n'est qu'une partie de son enfer.
 
@@ -63,9 +71,13 @@ Au fil du jeu, on comprend qu'elle a subi, enfant, des violences graves de la pa
 
 Eddie Dombrowski est un jeune homme moqué toute sa vie pour son poids. Il a fini par craquer et par tirer sur quelqu'un. Dans son Silent Hill, tout le monde se moque de lui. Il tue de plus en plus facilement. James est obligé de l'affronter, dans une chambre froide, au milieu de carcasses de viande.
 
+@art 6
+
 # Laura
 
 Laura est une petite fille de huit ans, insolente et rieuse, qui se promène seule dans la ville sans jamais être en danger. Elle ne voit pas de monstres. Parce qu'elle n'a aucune faute à porter.
+
+@art g 4
 
 Elle connaissait Mary. Elles s'étaient rencontrées à l'hôpital. Mary lui avait écrit une lettre. Laura en veut à James. Elle sait quelque chose sur lui que James ne veut pas savoir.
 
@@ -83,11 +95,15 @@ Maria meurt. Sous les yeux de James. Plusieurs fois. Et elle revient. Elle est p
 
 Un monstre poursuit James plus que les autres. Une silhouette massive, couverte d'un tablier taché, le visage caché par un énorme casque triangulaire en métal. Il traîne un couteau gigantesque. Il ne court jamais. Il ne s'arrête jamais.
 
+@art 7
+
 On l'appelle Pyramid Head. Il est le bourreau de James. Il incarne son désir d'être puni. C'est lui qui tue Maria, à chaque fois. Et à la fin, quand James a compris, il y en a deux, et ils se suicident devant lui. James n'a plus besoin d'eux.
 
 # La vérité
 
 James arrive enfin au Lakeview Hotel, au bord du lac, l'endroit spécial. Il y trouve une cassette vidéo, enregistrée pendant leurs vacances. Il la regarde.
+
+@art g 5
 
 Sur la vidéo, il y a Mary, malade, dans son lit d'hôpital. Et James, qui s'approche. Qui prend un oreiller. Et qui l'étouffe.
 
@@ -114,6 +130,8 @@ Et deux fins comiques, l'une avec un chien, l'autre avec des extraterrestres, qu
 # Ce que tu peux en prendre
 
 Silent Hill 2 t'apprend que l'horreur la plus forte est intérieure. Les monstres font peur parce qu'ils ressemblent à quelque chose qu'on ne veut pas regarder. La ville n'est qu'un miroir.
+
+@art 8
 
 Il t'apprend aussi à cacher la vérité dans la forme. Chaque créature, chaque décor, chaque personnage secondaire est un indice. La révélation finale ne surprend pas : elle confirme ce que le spectateur sentait sans oser le formuler.
 

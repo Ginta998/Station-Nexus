@@ -9,10 +9,13 @@ const book = {
     { label: "Joseph Campbell, Le Héros aux mille et un visages (1949)", note: "Le livre sur les mythes que Miller a découvert après le premier film, et qui a transformé sa manière de penser Max." },
     { label: "Mad Max (Avalanche Studios, 2015)", note: "Un jeu en monde ouvert, sorti la même année que Fury Road." },
   ],
+  pics: ["sgdb:Mad Max"],
   text: String.raw`
 # Avant de commencer
 
 Il y a des sagas qui se racontent comme des feuilletons, avec une continuité, des dates, une chronologie. Mad Max n'en est pas une. George Miller, son créateur, dit que ses films sont des légendes, des histoires qu'on se raconte autour d'un feu, dans un monde où l'écrit a presque disparu. D'un film à l'autre, la voiture de Max change, son âge flotte, son passé se brouille. Ce n'est pas une erreur. C'est un choix : Max n'est pas un personnage qu'on suit, c'est une figure qui traverse les récits des autres.
+
+@art 1
 
 Et ces récits sont parmi les plus spectaculaires du cinéma. Des poursuites dans le désert, des véhicules monstrueux faits de pièces récupérées, des tribus aux noms étranges, des seigneurs de guerre qui contrôlent l'eau, l'essence et les munitions. Le tout filmé avec de vraies voitures, de vrais cascadeurs, de vraies explosions.
 
@@ -25,6 +28,8 @@ Ce livre traverse les cinq films, du premier, presque réaliste, jusqu'à Furios
 # Ceux qui l'ont fait
 
 **George Miller.** Né en 1945 dans le Queensland, en Australie, dans une famille d'immigrés grecs, il étudie la médecine et devient médecin urgentiste à Sydney. Aux urgences, il voit arriver les victimes des accidents de la route, les blessés graves, les morts. C'est de là, dit-il, que vient Mad Max : de la violence routière australienne, des routes interminables, de la vitesse comme une drogue.
+
+@art g 1
 
 Il fait son premier film avec un ami producteur, Byron Kennedy. Leur collaboration dure jusqu'en 1983, quand Kennedy meurt dans un accident d'hélicoptère. Le troisième film lui est dédié.
 
@@ -44,6 +49,8 @@ Après le premier Mad Max, il découvre le livre de Joseph Campbell, Le Héros a
 
 Le premier film se passe dans un futur proche, à quelques années de nous. L'Australie n'est pas encore un désert. Mais quelque chose se défait. Les routes sont devenues des zones de non-droit, parcourues par des bandes de motards. Les tribunaux relâchent les criminels faute de témoins. Les policiers de la route, la Main Force Patrol, sont les derniers à faire respecter un semblant d'ordre, depuis un commissariat délabré qu'ils appellent le Palais de justice.
 
+@art 2
+
 Max Rockatansky est le meilleur d'entre eux. Un jeune policier calme, marié, père d'un petit garçon. Au début du film, il poursuit un criminel en fuite, qui se fait appeler le Nightrider, et qui meurt dans un accident spectaculaire. Sa bande, menée par Toecutter, jure de se venger.
 
 La violence monte, par étapes. Un collègue de Max, Goose, est brûlé vif dans sa voiture. Max, ébranlé, veut démissionner. Il part en vacances avec sa femme, Jessie, et son fils, sur la côte. La bande les retrouve. Sur la route, son fils est tué, et sa femme grièvement blessée.
@@ -55,6 +62,8 @@ Le film a été tourné avec un budget minuscule, autour de Melbourne, avec de v
 # Le Guerrier de la route
 
 En 1981, Mad Max 2 change tout. Une voix de vieil homme raconte, au début du film, comment le monde s'est effondré : les guerres, les pénuries de pétrole, les villes qui se vident, les gangs qui s'emparent des routes. Et au milieu de ce chaos, un homme, le guerrier de la route, dont on ne sait plus que la légende.
+
+@art g 2
 
 Max erre maintenant dans un désert, avec son chien et sa voiture, à la recherche d'essence. Il croise un pilote d'autogire excentrique, qu'on appelle le Capitaine Gyro. Et il découvre une petite communauté qui s'est retranchée autour d'une raffinerie, encore capable de produire du carburant.
 
@@ -70,6 +79,8 @@ C'est là que Max devient ce qu'il sera toujours : un homme qui traverse l'histo
 
 En 1985, Mad Max : Au-delà du dôme du tonnerre est le plus étrange de la série. Il est coréalisé par George Ogilvie, un metteur en scène de théâtre, Miller ayant du mal à reprendre seul le travail après la mort de Kennedy.
 
+@art 3
+
 Max arrive à Bartertown, une ville de troc construite au milieu du désert, qui fonctionne à l'énergie tirée du méthane des excréments de porcs. La ville est dirigée par une femme, Aunty Entity, jouée par la chanteuse Tina Turner. Mais l'énergie est contrôlée par un duo : Master Blaster, un nain malin qui commande la machinerie, porté sur les épaules d'un géant muet et simple d'esprit. Aunty veut s'en débarrasser.
 
 Pour régler les conflits, Bartertown a une arène : le Dôme du tonnerre, une cage sphérique où deux hommes entrent et où un seul ressort. Max y affronte le géant. Il refuse de l'achever. Pour avoir rompu le contrat, il est banni dans le désert.
@@ -81,6 +92,8 @@ Le film se termine dans les ruines de Sydney, où les enfants ont trouvé refuge
 # Le monde de Fury Road
 
 Pendant trente ans, il n'y a plus de Mad Max. Puis, à la fin des années 1990, Miller commence à préparer un quatrième film. Il le dessine entièrement avant d'écrire : avec l'illustrateur britannique Brendan McCarthy, il réalise des milliers de dessins, un story-board géant, comme une bande dessinée. Le projet s'enlise pendant plus de dix ans. Les attentats de 2001 et la crise du dollar le repoussent. Un tournage prévu en Australie, dans le désert de Broken Hill, est annulé : des pluies exceptionnelles ont fait fleurir le désert. Finalement, Fury Road est tourné en Namibie, en 2012, avec de vrais véhicules, de vraies cascades, sur des mois de tournage épuisant.
+
+@art g 3
 
 Le monde de Fury Road est le plus riche de la saga. Il s'organise autour de trois places fortes, qui détiennent chacune une ressource vitale.
 
@@ -94,6 +107,8 @@ Les trois places sont liées par un pacte commercial. La Citadelle échange l'ea
 
 Le maître de la Citadelle s'appelle Immortan Joe. C'est un vieil homme malade, au corps couvert de plaies, qui respire à travers un masque orné de dents de cheval et porte une armure transparente. Il a été militaire. Il a construit la Citadelle, sa communauté, et il s'en est fait le dieu.
 
+@art 4
+
 Il a autour de lui une armée de jeunes hommes au crâne rasé et au corps peint en blanc, les **War Boys**. Ils sont malades eux aussi, rongés par les radiations, condamnés à mourir jeunes. Joe leur promet qu'en mourant glorieusement au combat, en son nom, ils iront au Valhalla, le paradis des guerriers, où ils rouleront pour l'éternité sur des autoroutes de chrome. Avant de se sacrifier, ils se vaporisent de la peinture chromée sur la bouche, pour être reconnus.
 
 Joe a aussi des épouses, des jeunes femmes choisies pour leur beauté et leur santé, enfermées dans un coffre-fort au sommet de la Citadelle, chargées de lui donner des héritiers sains. Ses fils sont des difformes : un géant au cerveau d'enfant, un autre infirme.
@@ -103,6 +118,8 @@ Et tout ce monde est organisé avec un détail fou. Les malades servent de rése
 # La route de la colère
 
 Fury Road est, en apparence, une simple poursuite. Un aller, un retour. Mais en deux heures, il raconte un monde entier.
+
+@art g 4
 
 Max, capturé par les War Boys, est enfermé dans la Citadelle et utilisé comme réservoir de sang. Il porte une muselière. Il est hanté par les visages des gens qu'il n'a pas pu sauver.
 
@@ -120,6 +137,8 @@ Dans la Citadelle, sur les murs du coffre-fort vide, les épouses ont laissé de
 
 Furiosa finit par retrouver les siens : un petit groupe de vieilles femmes à moto, les Vuvalini, les Nombreuses Mères. Mais la Terre verte n'existe plus. Elle est devenue un marécage empoisonné, où les corbeaux tournent au-dessus d'arbres morts. Ce qu'elle cherchait, c'est ce qu'elle a passé sa vie à fuir.
 
+@art 5
+
 Furiosa tombe à genoux dans le sable et hurle.
 
 Les Mères transportent avec elles un sac de graines, des graines de l'ancien monde, qu'elles plantent partout où elles peuvent, sans savoir si quoi que ce soit poussera. Le futur tient dans un sac.
@@ -129,6 +148,8 @@ Alors Max propose l'idée la plus simple, et la plus folle : faire demi-tour. Re
 # Le retour
 
 Le retour est une bataille épique, sur la même route. Beaucoup meurent. Une des épouses, la plus déterminée, était déjà tombée en route. Nux se sacrifie en renversant la War Rig dans un défilé, pour bloquer les poursuivants. Il meurt en demandant qu'on le regarde, comme il l'avait toujours voulu, mais pour quelque chose qui en valait la peine.
+
+@art g 5
 
 Furiosa tue Immortan Joe. Grièvement blessée, elle est sauvée par Max, qui lui donne son sang, celui qu'on lui avait volé au début du film. Et il lui dit enfin son nom.
 
@@ -142,6 +163,8 @@ Le film se termine sur une phrase présentée comme une citation, signée du Pre
 
 Fury Road est sorti en 2015. Il a été nommé dix fois aux Oscars, dont celui du meilleur film et du meilleur réalisateur, et en a remporté six : montage, décors, costumes, maquillage, montage sonore et mixage. Pour un film d'action, c'est presque sans précédent.
 
+@art 6
+
 Il a été salué pour sa mise en scène : une action d'une lisibilité parfaite, malgré sa vitesse, parce que Miller cadre toujours l'élément important au centre de l'image, pour que l'œil du spectateur n'ait jamais à chercher. Pour ses cascades réelles. Pour sa musique, de Junkie XL. Et pour ce qu'il raconte sans un discours : la propriété des corps, la libération, la rédemption.
 
 Miller a fait appel, pendant la préparation, à l'autrice Eve Ensler, qui a travaillé avec les actrices sur les violences subies par les femmes dans les zones de guerre. Le film n'en montre rien de direct. Mais tout le monde de Joe est construit sur l'idée qu'un homme peut posséder l'eau, l'essence, les balles, les enfants et les femmes. Et toute l'histoire est celle de ceux qui reprennent ce qui leur appartient.
@@ -149,6 +172,8 @@ Miller a fait appel, pendant la préparation, à l'autrice Eve Ensler, qui a tra
 # Furiosa
 
 En 2024, Miller raconte ce qui s'est passé avant : l'histoire de Furiosa. Le film s'appelle Furiosa: une saga Mad Max, et il est construit comme une saga, en cinq chapitres, sur plus de quinze ans. Max n'y apparaît presque pas.
+
+@art g 6
 
 Au début, Furiosa est une petite fille, qui vit dans la Terre verte, le dernier endroit fertile de ce monde, un bois d'arbres fruitiers au milieu du désert, que sa communauté cache à tous. Un jour, des pillards à moto la découvrent et l'enlèvent. Sa mère la poursuit à travers le désert pour la ramener. Elle est capturée et tuée sous les yeux de sa fille.
 
@@ -160,6 +185,8 @@ Les pillards appartiennent à la horde de **Dementus**, un seigneur de guerre ba
 
 Dementus tente de prendre la Citadelle d'Immortan Joe, et échoue. Alors il s'empare de la Ville-Gaz, la raffinerie. Pour faire la paix, il échange Furiosa avec Joe, qui la veut pour épouse.
 
+@art 7
+
 Furiosa refuse d'être une épouse. Elle s'échappe, se cache, se rase la tête, se fait passer pour un garçon muet parmi les ouvriers de la Citadelle. Elle grandit en secret, apprend la mécanique, la conduite, le combat. Elle devient indispensable.
 
 Elle rencontre un homme, Jack, le meilleur chauffeur de la Citadelle, qui la prend sous son aile et lui apprend le métier de la route. Ils s'estiment, peut-être s'aiment. Ils tentent ensemble de s'enfuir. Dementus les rattrape. Jack meurt. Furiosa perd son bras gauche.
@@ -169,6 +196,8 @@ Puis éclate la guerre des Quarante Jours, entre Dementus et les seigneurs de la
 # La vengeance
 
 À la fin, Furiosa retrouve Dementus, épuisé, seul, dans le désert. Elle le force à se souvenir de sa mère, de ce qu'il lui a fait. Il se moque d'elle. Il lui dit, en substance, que sa vengeance ne lui rendra rien, et qu'elle est déjà comme lui.
+
+@art g 7
 
 Ce qu'elle fait de lui, le film le raconte en plusieurs versions, comme une légende. L'Homme-Histoire dit qu'on ne sait pas vraiment. Certains disent qu'elle l'a tué d'un coup. D'autres racontent qu'elle a fait autre chose : qu'elle l'a gardé vivant, et qu'elle a planté dans son corps une graine de pêcher, une graine de la Terre verte, que son arbre a poussé sur lui, dans le jardin de la Citadelle, et qu'elle a donné le fruit de cet arbre à l'une des épouses de Joe.
 
@@ -182,6 +211,8 @@ Le film n'a pas eu le succès de Fury Road en salles. Mais il a été salué pou
 
 Pourquoi Max ne reste-t-il jamais ? Miller dit que Max est encore en train de guérir. Qu'il a été un animal piégé, hanté par ceux qu'il n'a pas pu sauver, et qu'il n'a pas encore gagné sa place dans la Terre verte.
 
+@art 8
+
 Max est le héros sans foyer, le cavalier solitaire des westerns, le rōnin des films de samouraïs, le guerrier errant des mythes. Les Japonais l'ont vu comme un rōnin, les Français comme un héros de western sur roues, les Scandinaves comme un viking solitaire. Chaque culture a reconnu en lui sa propre figure.
 
 Et c'est pour cela que les films sont racontés par d'autres : l'Enfant sauvage, les enfants des ruines de Sydney, l'Homme-Histoire. Max n'est pas le narrateur de sa vie. Il est le passant que les autres ont vu, et dont ils racontent la légende.
@@ -189,6 +220,8 @@ Et c'est pour cela que les films sont racontés par d'autres : l'Enfant sauvage,
 # Ce que tu peux en prendre
 
 Mad Max t'apprend que l'action peut raconter. Fury Road a très peu de dialogues. Tout se dit par les gestes, les regards, les véhicules, les décors. Une poursuite peut être un récit complet, avec ses personnages, ses retournements, ses sacrifices.
+
+@art g 8
 
 Il t'apprend à construire un monde par l'économie. Eau, essence, balles. Trois ressources, trois places fortes, un commerce, une guerre. Tout l'univers en découle. Demande-toi toujours, quand tu inventes un monde, ce qui y manque, et qui le contrôle.
 

@@ -9,10 +9,13 @@ const book = {
     { label: "Arthur Machen et Algernon Blackwood", note: "Les maîtres anglais de la nature qui fait peur, au début du XXe siècle. VanderMeer est leur héritier." },
     { label: "Le refuge de St. Marks, en Floride", note: "Le vrai paysage de la Zone X : marais, pins, phare. L'auteur y marche depuis des années." },
   ],
+  pics: ["ol:Annihilation Jeff VanderMeer", "ol:Authority Jeff VanderMeer", "ol:Acceptance Jeff VanderMeer"],
   text: String.raw`
 # Avant de commencer
 
 Il y a des livres qui te racontent une créature. Celui-ci te raconte un paysage, et c'est pire.
+
+@art g 1
 
 Quelque part sur une côte du sud des États-Unis, une région sauvage de marais, de forêts de pins et de plages a été coupée du monde il y a une trentaine d'années. Un événement s'est produit, que personne n'a compris. Une frontière invisible est apparue. Ce qui est derrière s'appelle la Zone X. Une agence gouvernementale secrète, le Rempart Sud, la surveille et y envoie des expéditions. La plupart ne reviennent pas. Celles qui reviennent ne vont pas bien.
 
@@ -31,6 +34,8 @@ Je vais te raconter le premier livre en détail, puis les suites, puis le film. 
 # La douzième expédition
 
 Elles sont quatre. Une biologiste, une anthropologue, une géomètre, et une psychologue qui dirige. Il y avait une linguiste, au départ ; elle a renoncé à la dernière minute, à la frontière. On ne saura jamais pourquoi. Elles n'ont pas de noms, parce que le règlement le veut : dans la Zone, on n'est que sa fonction. Elles ne doivent pas se lier. Elles n'ont pas le droit d'apporter de téléphones, d'ordinateurs, d'appareils modernes. Leur matériel est ancien, leurs armes sont de vieux fusils, leurs carnets sont en papier. Tout ce qui est électronique, dans la Zone, se dérègle.
+
+@art g 2
 
 La traversée de la frontière, elles ne s'en souviennent pas. La psychologue les a mises sous hypnose. Elles se réveillent de l'autre côté, sur un chemin, au milieu d'un paysage de marais et de forêt, et le camp de base est là, à quelques kilomètres. On leur a dit que c'était la douzième expédition.
 
@@ -53,6 +58,8 @@ Et puis, à quelques centaines de mètres du camp, dans la forêt, elles trouven
 # La Tour
 
 C'est un trou dans le sol. Une ouverture carrée, maçonnée, au milieu de la végétation, et dedans, un escalier qui descend en spirale. Les autres l'appellent un tunnel. La biologiste, elle, le pense comme une tour, une tour qui s'enfonce au lieu de monter, et elle ne pourra plus jamais la voir autrement. La psychologue ne semble pas surprise. Les cartes officielles ne la mentionnent pas. Les expéditions précédentes non plus. Ou bien on le leur a caché.
+
+@art g 3
 
 Elles descendent. L'escalier tourne vers le bas, dans l'obscurité. Les marches sont usées comme si quelque chose les avait parcourues pendant très longtemps. Et sur le mur intérieur, à hauteur d'épaule, il y a des mots.
 
@@ -80,6 +87,8 @@ Je te dis tout cela froidement, parce que le livre le dit froidement. Mais c'est
 
 Le phare est la deuxième énigme, et peut-être la plus effrayante, parce qu'elle est humaine.
 
+@art g 4
+
 C'est un vieux bâtiment de brique et de pierre, sur la côte, au bout d'une digue. Les expéditions précédentes l'ont visité. Il porte les traces d'un siège : des barricades, des impacts de balles, du sang ancien sur les marches. Quelqu'un s'est battu là, plusieurs fois, contre on ne sait quoi. Au mur, une vieille photographie encadrée montre le gardien d'autrefois, avant l'événement, avec sa petite fille. Un homme au visage paisible.
 
 Et sous l'escalier, une trappe. En dessous, il y a une montagne de carnets.
@@ -104,6 +113,8 @@ Tu vois à quel point ce roman est étrange. Il a la forme d'une histoire d'expl
 
 Les deux livres suivants changent de point de vue, et de genre.
 
+@art g 5
+
 Autorité se passe de l'autre côté de la frontière, dans les bureaux du Rempart Sud. C'est un roman d'espionnage bureaucratique, un roman de couloirs, de rapports, de réunions, de méfiances. Le héros est un homme qui se fait appeler Control, de son vrai nom John Rodriguez, un agent de renseignement de second rang, issu d'une famille d'agents. Sa mère occupe un poste élevé dans la Centrale, l'organisme qui supervise tout. On l'envoie diriger le Rempart Sud après la disparition de la directrice. Il ne sait pas qu'elle était partie elle-même dans la Zone.
 
 Il découvre une agence à l'abandon. Des employés usés, un bâtiment qui sent le moisi, des archives incomplètes, une adjointe, Grace, loyale à l'ancienne directrice et hostile à lui. Des expériences sur des plantes et des lapins dont personne ne veut parler. Des messages laissés par la directrice dans les marges des dossiers, sur des bouts de papier, au dos des photos. Et le bureau de la directrice, plein de notes et d'objets, où une plante en pot semble le regarder.
@@ -126,6 +137,8 @@ En 2024, dix ans plus tard, VanderMeer a publié Absolution, qui revient avant l
 
 En 2018, Alex Garland adapte le premier livre. Il est l'auteur de La Plage, le scénariste de 28 jours plus tard, et il venait de réaliser Ex Machina. Il a lu Annihilation avant la parution des suites, et il a choisi de ne pas les attendre. Il a raconté qu'il avait écrit le scénario de mémoire, sans relire le roman, pour en garder l'impression plutôt que la lettre. Le film est donc un rêve fait d'après le livre.
 
+@art g 6
+
 Les différences sont nombreuses. Les personnages ont des noms : la biologiste s'appelle Lena, elle a été soldate avant d'être biologiste, et c'est Natalie Portman qui la joue. La psychologue s'appelle Ventress, jouée par Jennifer Jason Leigh. Le mari s'appelle Kane, joué par Oscar Isaac. L'expédition compte cinq femmes, et les autres sont jouées par Tessa Thompson, Gina Rodriguez et Tuva Novotny. La Zone devient le Miroitement, une sorte de bulle aux reflets d'huile sur l'eau, qui grandit autour d'un phare où un objet venu de l'espace s'est écrasé.
 
 Garland a aussi trouvé son explication à lui, plus simple que celle des livres. Dans le film, le Miroitement réfracte tout : la lumière, les ondes, et l'ADN. Les êtres vivants s'y mélangent. Les plantes poussent en forme de silhouettes humaines, les fleurs de différentes espèces sur une même tige, les tatouages passent d'un corps à l'autre. Ce n'est pas une volonté. C'est une transformation aveugle, comme un prisme.
@@ -141,6 +154,8 @@ Le livre et le film ne racontent pas la même chose. Le livre est une histoire d
 # Ce que tu peux en prendre
 
 Quatre choses, pour qui raconte.
+
+@art g 7
 
 La première est la voix. Annihilation est écrit à la première personne par une narratrice qui ne te fait pas confiance. Elle te cache son nom, elle te cache son mari pendant des dizaines de pages, elle te dit plus tard ce qu'elle aurait dû te dire avant. Tu comprends peu à peu que ce n'est pas un jeu de l'auteur : c'est le caractère du personnage. Une femme qui a passé sa vie à se taire devant les autres écrit comme elle a vécu. Quand tu donnes la parole à un personnage, fais que sa manière de raconter soit déjà un portrait.
 

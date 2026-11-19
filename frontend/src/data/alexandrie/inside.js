@@ -12,6 +12,8 @@ const book = {
 
 Inside est le deuxième jeu de Playdead, six ans après Limbo. Même principe : un enfant, pas de mots, un monde hostile, des énigmes, des morts brutales. Mais là où Limbo restait un conte, Inside raconte quelque chose de plus précis et de plus inquiétant. Un monde où des gens contrôlent d'autres gens. Et une question qui finit par se retourner contre le joueur.
 
+@art 4
+
 Il faut y jouer avant de lire, si tu peux. La fin ne fonctionne que si on la découvre.
 
 @yt V9sf_s4vyCY | Inside, la bande-annonce de sortie sur PlayStation 4 (2016).
@@ -19,6 +21,8 @@ Il faut y jouer avant de lire, si tu peux. La fin ne fonctionne que si on la dé
 # Ceux qui l'ont fait
 
 Inside est développé par Playdead, à Copenhague, et dirigé par Arnt Jensen, le créateur de Limbo. Le studio a travaillé dessus pendant près de six ans, avec une équipe plus grande et un moteur plus puissant, Unity, qu'il a modifié pour obtenir sa lumière douce et ses ombres.
+
+@art g 2
 
 Le son est de nouveau signé Martin Stig Andersen. Pour ce jeu, il a enregistré des sons et les a fait passer à travers un vrai crâne humain, pour leur donner la résonance d'une tête de l'intérieur. La musique et les bruits sont pensés comme une seule matière.
 
@@ -35,6 +39,8 @@ On ne sait pas qui il est, ni pourquoi il fuit. On sait seulement qu'il ne doit 
 # Les corps vides
 
 Très vite, le garçon croise des êtres étranges. Des humains au regard vide, gris, sans volonté, qui marchent en file, qu'on transporte dans des camions, qu'on fait défiler dans une ville. Ils ne pensent pas. Ils obéissent.
+
+@art 5
 
 Et le garçon découvre qu'il peut les contrôler. Il trouve des casques, reliés à des câbles. Quand il en met un, il prend le contrôle d'un de ces corps. Il le fait marcher, sauter, porter, tirer un levier. Il s'en sert comme d'outils pour avancer, puis il les abandonne.
 
@@ -66,6 +72,8 @@ C'est la fin. Ou l'une des fins.
 
 Si le joueur a trouvé, au fil du jeu, une série d'orbes lumineuses cachées et les a désactivées, une porte secrète s'ouvre dans un bunker. Au bout, une salle remplie d'ordinateurs, et une prise reliée à une grande machine.
 
+@art g 3
+
 Le garçon tire sur la prise. Toutes les lumières s'éteignent. Et le garçon s'immobilise, dans la même posture que les corps vides du début, ceux qu'il contrôlait avec un casque.
 
 Beaucoup ont lu cette scène comme une révélation : le garçon lui-même était contrôlé. Depuis le début. Par quelqu'un, ou par quelque chose. Peut-être par la Masse, qui l'aurait attiré jusqu'à elle pour se libérer. Peut-être par les chercheurs. Peut-être par toi, le joueur.
@@ -83,6 +91,8 @@ Certains y voient une critique de la société de contrôle : des citoyens qui r
 # Ce que tu peux en prendre
 
 Inside t'apprend à faire du joueur un complice. Le jeu ne se contente pas de montrer la manipulation. Il te la fait pratiquer, puis il te fait douter de ta propre liberté.
+
+@art 6
 
 Il t'apprend aussi la mise en scène du mouvement. Le garçon ne s'arrête presque jamais. La caméra le suit de profil, comme un long travelling, et le décor défile, toujours plus inquiétant. C'est un film en un seul plan, ou presque.
 

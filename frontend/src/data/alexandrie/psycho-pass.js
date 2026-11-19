@@ -9,10 +9,13 @@ const book = {
     { label: "Max Weber, Le Savant et le Politique", note: "La bureaucratie comme cage. Un personnage le cite au moment exact où la série montre la sienne." },
     { label: "Ghost in the Shell: Stand Alone Complex", note: "Le même studio, dix ans plus tôt. Psycho-Pass en est le petit frère inquiet." },
   ],
+  pics: ["sgdb:Psycho-Pass: Mandatory Happiness", "anime:Psycho-Pass", "anime:Psycho-Pass 2"],
   text: String.raw`
 # Une société guérie
 
 Imagine un pays où il n'y a presque plus de crimes. Plus de chômage. Plus d'angoisse devant l'avenir : à vingt ans, on te dit exactement pour quel métier tu es fait, et l'on ne se trompe pas. Les rues sont propres, les gens polis, les hologrammes habillent les murs de ce que tu veux voir.
+
+@art 1
 
 @yt ML-iqXrCS0A | Psycho-Pass, le premier épisode (version doublée en anglais).
 
@@ -27,11 +30,15 @@ Je vais te raconter la première saison. Elle a été écrite par Gen Urobuchi, 
 
 Psycho-Pass est une série originale de Production I.G, diffusée en 2012. Son scénariste principal est Gen Urobuchi, l'auteur de Madoka Magica et de Fate/Zero, connu pour ses récits sombres. La réalisation est de Naoyoshi Shiotani, sous la direction générale de Katsuyuki Motohiro, le réalisateur de la série policière Bayside Shakedown.
 
+@art g 1
+
 Les personnages ont été imaginés par Akira Amano, la mangaka de Reborn!, puis adaptés pour l'animation. La musique est de Yugo Kanno. Le générique, Abnormalize, est du groupe Ling Tosite Sigure.
 
 # La couleur de ton âme
 
 Le principe tient en un mot : le Psycho-Pass. Partout dans la ville, des scanners lisent ton état mental, à distance, en continu. Le résultat s'affiche comme une teinte. Une âme sereine est claire. Une âme troublée se fonce.
+
+@art 2
 
 De cette lecture, le système tire un chiffre : le coefficient de criminalité. Ce n'est pas la mesure de ce que tu as fait. C'est la probabilité que tu fasses du mal. En dessous de cent, tu es un citoyen. Au-dessus, tu es un criminel latent, même si tu n'as jamais levé la main sur personne. On t'arrête, on te soigne, et si ta teinte ne s'éclaircit pas, on t'enferme pour la vie dans un établissement dont tu ne sortiras plus. Au-dessus de trois cents, tu n'es plus soignable.
 
@@ -44,6 +51,8 @@ Les conséquences sont d'une logique impeccable. La victime d'un crime est traum
 # Les chiens et leurs maîtres
 
 Reste un problème. Pour traquer des criminels, il faut penser comme eux, et quiconque pense comme eux se trouble. Un bon enquêteur devient vite un criminel latent.
+
+@art g 2
 
 Le système a trouvé la solution, et elle est d'un cynisme parfait. La police est faite de deux espèces d'hommes. Les Inspecteurs sont des citoyens à l'âme claire : ils commandent et restent en retrait. Les Exécuteurs sont des criminels latents qu'on a sortis de leur cellule : ils font le travail sale, reniflent, s'approchent, tuent. Si un Exécuteur s'échappe, l'Inspecteur a le devoir de l'abattre. On les appelle des chiens de chasse, et eux-mêmes le disent.
 
@@ -61,6 +70,8 @@ Dès le premier soir, Akane tire sur Kogami avec son Dominator, pour l'empêcher
 
 Psycho-Pass prend le temps de donner une histoire à chacun de ses chiens, et ce sont souvent les plus belles pages de la série.
 
+@art 3
+
 **Yayoi Kunizuka** était guitariste. Elle jouait dans un groupe, avec une autre musicienne, qui rêvait de faire tomber le système par des attentats. Son amitié pour elle, puis l'amour qu'elle lui portait, ont fait monter sa teinte. Elle a été déclarée criminelle latente. Plus tard, Kogami l'a aidée à sortir de son établissement de soins en lui proposant de devenir Exécutrice. Elle est froide, discrète, d'une loyauté absolue envers lui.
 
 **Shion Karanomori** est l'analyste de l'unité. Elle aussi est une criminelle latente, enfermée dans son laboratoire, entourée d'écrans. Elle fume, plaisante, observe tout, et voit souvent avant les autres ce qui cloche dans les dossiers.
@@ -72,6 +83,8 @@ Psycho-Pass prend le temps de donner une histoire à chacun de ses chiens, et ce
 # Celui que la machine ne voit pas
 
 Les premières enquêtes semblent sans lien. Un ouvrier harcelé qui massacre ses collègues. Un tueur qui se cache derrière des avatars sur les réseaux. Une lycéenne qui fait de ses camarades des sculptures. À chaque fois, quelqu'un a fourni au meurtrier les moyens d'aller jusqu'au bout de son désir : un outil, une technique, un encouragement. Quelqu'un qui regarde.
+
+@art g 3
 
 C'est Shogo Makishima. Il est mince, doux, les cheveux blancs. Il lit des livres en papier, dans un monde qui n'en a plus, et il les cite : Pascal, Swift, Orwell, Dick. Il dit que le papier règle les sens : le poids du volume, le grain de la page, l'odeur. Il se promène dans cette société comme un homme dans un musée.
 
@@ -89,6 +102,8 @@ Retiens ce que la scène démontre, parce que tout le reste en découle. Le syst
 
 Au milieu de la saison, il y a un épisode qui ressemble à un cauchemar de série B, et qui en dit long sur Makishima.
 
+@art 4
+
 Parmi ses alliés, il y a un vieil homme presque entièrement fait de prothèses, un écrivain riche et raffiné, qui organise des chasses à l'homme dans les ruines d'un quartier abandonné. Ses proies sont des criminels latents évadés, qu'il traque avec des chiens mécaniques, et dont il garde les trophées.
 
 Une amie d'Akane est enlevée et lâchée dans cette zone. Kogami, qui a suivi la piste, s'y retrouve aussi, et c'est lui qu'on chasse. Dans le noir, sans Dominator, avec ses seules mains et son intelligence, il retourne la chasse contre le chasseur.
@@ -99,6 +114,8 @@ L'épisode montre ce que Makishima fait des gens qui l'entourent. Il ne les comm
 
 Makishima passe à la suite. Il fait distribuer des casques qui copient en permanence le Psycho-Pass du passant le plus serein des environs. Celui qui en porte un devient invisible aux scanners. Il peut tout faire.
 
+@art g 4
+
 La scène que personne n'oublie se passe en plein jour, sur une place. Un homme casqué frappe une femme à coups de marteau. Les passants s'arrêtent. Ils regardent. Certains filment. Aucun n'intervient, aucun ne crie, aucun n'appelle : dans leur monde, la violence n'existe pas, donc ce qu'ils voient ne peut pas en être. Si c'était un crime, les scanners auraient réagi. Les drones de sécurité s'approchent de la mourante et lui conseillent poliment de consulter, car son niveau de stress est élevé.
 
 Puis la ville bascule. Quand les gens comprennent que des hommes casqués peuvent tuer sans être arrêtés, ils prennent peur. La peur fonce leur teinte. Ils se mettent à lyncher quiconque porte un casque, et le système, qui ne sait que mesurer, voit des milliers de citoyens devenir des criminels latents en une soirée. Une société entière n'était paisible que parce qu'on ne lui avait jamais rien demandé.
@@ -108,6 +125,8 @@ C'était une diversion. Pendant que la police est dans la rue, Makishima entre d
 # Ce qu'il y a dans la tour
 
 Kagari voit Sibyl. Il a le temps de comprendre, et de rire. Puis la directrice de la police entre derrière lui, lève un Dominator, et l'arme, pour elle, se règle toute seule sur le mode qui ne laisse rien. On dira qu'il a déserté.
+
+@art 5
 
 Voici ce qu'il a vu, et ce que la série te révèle un peu plus tard.
 
@@ -125,6 +144,8 @@ Note bien ce refus. Makishima n'est pas contre l'ordre parce qu'il voudrait le p
 
 Son dernier plan vise le ventre. Le Japon fermé ne se nourrit que d'une seule céréale, une avoine modifiée, cultivée par des machines dans une plaine sans paysans, protégée par un virus conçu pour tuer ses parasites. Si l'on retourne ce virus contre la plante, la récolte meurt. Il faudra rouvrir les frontières, importer, laisser entrer le monde. Le système ne tiendra pas devant la faim.
 
+@art g 5
+
 Il y laisserait des millions de morts. Il le sait et cela ne l'arrête pas.
 
 Sibyl ordonne qu'on le capture vivant : elle veut toujours ce cerveau. Kogami comprend que la loi ne punira jamais cet homme. Il quitte la police, sans autorisation, un vieux revolver dans la poche. Il devient exactement ce que le système disait qu'il était.
@@ -136,6 +157,8 @@ Elle pose ses conditions à la machine. Elle ramènera Makishima, mais Sibyl ret
 # Le champ
 
 Tout finit dans les blés, au soleil couchant.
+
+@art 6
 
 Masaoka est mort en protégeant son fils. Ginoza, qui avait passé sa vie à ne pas devenir son père, tient le vieil homme dans ses bras, et sa teinte se brise. Il deviendra un chien à son tour.
 
@@ -153,6 +176,8 @@ Kogami disparaît à l'étranger. Et le dernier épisode reprend le premier, pla
 
 Elle ne pense pas ce qu'on croit, et c'est sa force.
 
+@art g 6
+
 Il serait simple de conclure que Sibyl est le mal et qu'il faut la détruire. Makishima le dit, et Makishima a souvent raison. Il a raison quand il dit que des hommes qui ne choisissent plus ne sont plus des hommes. Il a raison sur la place, devant la foule qui filme. Mais c'est un assassin qui se sert des autres comme de jouets, et sa liberté consiste à regarder souffrir. La série lui donne les meilleurs arguments et les pires actes.
 
 Le système, lui, est un mensonge tenu par des monstres. Mais les gens y mangent, y vivent vieux, n'y sont pas assassinés dans la rue. Quand il vacille, ce n'est pas la liberté qui apparaît : c'est le lynchage.
@@ -165,6 +190,8 @@ Il y a un vieux philosophe anglais, Bentham, qui avait imaginé une prison ronde
 
 Psycho-Pass a eu une longue suite, inégale, qu'on peut parcourir rapidement.
 
+@art 7
+
 En 2014, une **deuxième saison**, écrite par un autre auteur, Tow Ubukata, met Akane, devenue la plus expérimentée de l'unité, face à un nouvel adversaire, Kirito Kamui. Lui aussi est invisible pour le système, mais pour une raison différente de celle de Makishima : son corps est fait de nombreux autres corps, et Sibyl ne sait pas le lire comme une seule personne. Il veut forcer le système à se juger lui-même. La saison pousse la logique de Sibyl jusqu'au vertige, en posant une question simple : que se passe-t-il quand on mesure non plus un individu, mais un groupe ?
 
 En 2015, un **film** emmène Akane hors du Japon, dans un pays d'Asie du Sud-Est en guerre, où l'on a commencé à exporter le système. Elle y retrouve Kogami, devenu mercenaire au service d'une rébellion.
@@ -176,6 +203,8 @@ La plupart des fans s'accordent sur un point : rien n'égale la première saison
 # Ce que tu peux en prendre
 
 Trois choses de construction.
+
+@art g 7
 
 La première est l'idée poussée à bout. Urobuchi part d'une seule règle, on mesure l'intention au lieu de l'acte, et il en tire tout : les victimes punies, les policiers criminels, l'arme qui décide, les émotions qu'on évite, le coupable invisible. Rien n'est décoratif. Quand tu inventes un monde, donne-lui une règle et demande-toi qui elle écrase, qui elle arrange, et qui elle ne voit pas.
 
