@@ -95,7 +95,9 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
     <div ref={box} className={"cine" + (mini ? " mini" : "") + (show ? " ui" : "")} onMouseMove={poke} onTouchStart={poke} data-testid="cinema-player">
       {fileSrc
         ? <video ref={vr} src={fileSrc} autoPlay playsInline onPlaying={onV} onPause={onV} onWaiting={onV} onEnded={onV} onTimeUpdate={onV} onLoadedMetadata={onV} onProgress={onV} onVolumeChange={onV} onRateChange={onV} />
-        : <iframe ref={fr} src={src} title={title || "Vidéo"} allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" onLoad={hello} />}
+        : window.__NX_PREVIEW
+          ? <div className="cine-prevnote" data-testid="cine-prevnote"><b>{title || "Vidéo"}</b><span>Dans l'aperçu sur claude.ai, YouTube est bloqué par sécurité.<br />Sur ta station, la vidéo se lit ici, dans ce lecteur.</span><a href={url} target="_blank" rel="noopener noreferrer">Vérifier le lien sur YouTube</a></div>
+          : <iframe ref={fr} src={src} title={title || "Vidéo"} allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" onLoad={hello} />}
       {!mini && <>
         <div className="cine-hit" onClick={() => { toggle(); poke(); }} onDoubleClick={fs} />
         {!playing && s.state !== -1 && <button className="cine-big" onClick={toggle} data-testid="cinema-big-play"><IoPlay size={40} /></button>}

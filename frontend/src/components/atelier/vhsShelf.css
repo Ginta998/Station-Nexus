@@ -34,3 +34,30 @@
 .vh-up{align-self:flex-start;cursor:pointer}
 .vh-acts{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
 @media (max-width:600px){.vh-face{--z:.48}}
+/* 0.43 · les épisodes, un par ligne, avec leur vignette ; la recherche qui les ajoute */
+.vh-src{display:flex;gap:6px}
+.vh-src button{flex:1;padding:8px 10px;border:1px solid var(--at-line,rgba(255,255,255,.18));background:none;color:inherit;font-size:13px;cursor:pointer;border-radius:2px}
+.vh-src button.on{border-color:var(--at-accent,#e8b04b);box-shadow:inset 0 0 0 1px var(--at-accent,#e8b04b)}
+.vh-eps{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;padding-right:2px}
+.vh-eps-empty{margin:0;padding:12px;font-size:13px;opacity:.65;border:1px dashed var(--at-line,rgba(255,255,255,.18))}
+.vh-ep{display:grid;grid-template-columns:24px 64px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px;border:1px solid var(--at-line,rgba(255,255,255,.12))}
+.vh-ep-n{font-size:11px;opacity:.6;text-align:center}
+.vh-ep-th{width:64px;aspect-ratio:16/9;background:#111 center/cover no-repeat;border-radius:2px}
+.vh-ep-f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.vh-ep-f input{padding:5px 8px!important;font-size:13px!important}
+.vh-ep-f input.url{font-size:11.5px!important;opacity:.7}
+.vh-ep-a{display:flex;flex-direction:column}
+.vh-ep-a button{background:none;border:0;color:inherit;padding:2px 4px;cursor:pointer;opacity:.6}.vh-ep-a button:hover{opacity:1}
+.vh-find form{display:flex;align-items:center;gap:8px;padding:4px 4px 4px 10px;border:1px solid var(--at-line,rgba(255,255,255,.18))}
+.vh-find form input{flex:1;border:0!important;background:none!important;padding:6px 0!important;min-width:0}
+.vh-res{display:flex;flex-direction:column;gap:4px;margin-top:6px;max-height:280px;overflow-y:auto}
+.vh-res>button{display:grid;grid-template-columns:80px minmax(0,1fr) auto;gap:10px;align-items:center;padding:5px;text-align:left;border:1px solid var(--at-line,rgba(255,255,255,.12));background:none;color:inherit;cursor:pointer;font-size:12.5px}
+.vh-res>button span{width:80px;aspect-ratio:16/9;background:#111 center/cover}
+.vh-res>button b{font-weight:500;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.vh-res>button small{opacity:.6;font-size:11px}
+.vh-res>button.on{opacity:.45}
+.vh-res>button:not(:disabled):hover{border-color:var(--at-accent,#e8b04b)}
+.vh-res>.vh-res-all,.vh-res>.vh-res-x{display:flex;justify-content:center;gap:6px;grid-template-columns:none;font-size:12.5px}
+.vh-res>.vh-res-x{border-style:dashed;opacity:.7}
+@media (max-width:600px){.vh-ep{grid-template-columns:20px 52px minmax(0,1fr) auto}.vh-ep-th{width:52px}}
+body:has(.vh-edit) .nx-launcher:not(.open){display:none}

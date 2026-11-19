@@ -1,6 +1,22 @@
 {
-  "version": "0.42",
+  "version": "0.43",
   "patches": [
+    {
+      "v": "0.43",
+      "date": "2026-11-19",
+      "title": "Des séries faciles à ranger",
+      "groups": {
+        "Changé": [
+          "Vidéothèque : une série se remplit sans taper de liste. Cherche sur YouTube et ajoute les épisodes un par un ou « Tout ajouter dans cet ordre », colle plusieurs liens d'un coup, ou prends-les dans le Salon. Chaque épisode a sa vignette, son titre modifiable, et se range avec ↑ ↓.",
+          "Une série peut aussi être une playlist YouTube : un seul lien, tous les épisodes dans l'ordre.",
+          "Un film se trouve aussi par la recherche YouTube."
+        ],
+        "Corrigé": [
+          "Sur téléphone, la barre du lanceur ne cache plus les commandes du lecteur pendant un film, ni le bas de la fiche d'une cassette.",
+          "Aperçu sur claude.ai : à la place de l'erreur du navigateur, le lecteur explique que YouTube y est bloqué (sur la station, la vidéo se lit normalement)."
+        ]
+      }
+    },
     {
       "v": "0.42",
       "date": "2026-11-19",
