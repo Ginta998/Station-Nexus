@@ -204,7 +204,7 @@ export default function NexusWorld(p) {
     { label: it.lock ? "Débloquer" : "Ouvrir", icon: it.lock ? <IoLockClosed size={14} /> : <IoPlay size={14} />, onClick: it.go },
     it.img && top.k !== "gallery" && { label: "Voir l'image", icon: <IoOpenOutline size={14} />, onClick: () => push({ k: "image", list: [it.img], i: 0 }) },
     isAdmin && { label: "Modifier l'œuvre", icon: <IoCreateOutline size={14} />, onClick: onEdit },
-    isAdmin && { label: it.idx != null && top.k === "units" ? "Carte Instagram de ce " + unitWord : "Carte Instagram de l'œuvre", icon: <IoShareSocialOutline size={14} />, onClick: () => setCard(it.idx != null && top.k === "units" ? cardOf(it.idx) : {}) },
+    { label: it.idx != null && top.k === "units" ? "Partager ce " + unitWord : "Partager l'œuvre", icon: <IoShareSocialOutline size={14} />, onClick: () => setCard(it.idx != null && top.k === "units" ? cardOf(it.idx) : {}) },
     "-",
     { label: "Copier le lien de l'œuvre", icon: <IoLinkOutline size={14} />, onClick: () => link() },
   ].filter(Boolean) });
@@ -640,7 +640,7 @@ export default function NexusWorld(p) {
           <button className={top.k === "comments" ? "on" : ""} onClick={() => goWorldHome("cm")}><IoChatbubbleOutline /><span>Commentaires</span></button>
         </nav>
       )}
-      {card && <ShareCardDialog item={item} unit={card.unit} poster={cover} onClose={() => setCard(null)} />}
+      {card && <ShareCardDialog item={item} unit={card.unit} poster={cover} catLabel={catLabel} onClose={() => setCard(null)} />}
       {top.k === "home" && item.next_release && <ReleaseNext item={item} onSupport={() => push({ k: "support" })} />}
       <header className="nw-hud">
         <button className={"nw-back" + (stack.length > 1 ? "" : " idle")} onClick={pop} aria-label="Retour" disabled={stack.length === 1} data-testid="nw-back"><IoArrowBack size={18} /></button>
@@ -658,7 +658,7 @@ export default function NexusWorld(p) {
           <SoundBtn className="nw-tb" />
           <button onClick={onFav} className={fav ? "on" : ""} title={fav ? "Retirer des favoris" : "Ajouter aux favoris"} aria-label="Favori" data-testid="nw-fav">{fav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}</button>
           {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
-          {isAdmin && <button onClick={() => setCard({})} title="Carte Instagram (story) de l'œuvre" aria-label="Carte Instagram" data-testid="nw-card"><IoShareSocialOutline size={16} /></button>}
+          <button onClick={() => setCard({})} title="Partager l'œuvre (carte Instagram, WhatsApp, message…)" aria-label="Partager" data-testid="nw-card"><IoShareSocialOutline size={16} /></button>
           {isAdmin && onAtelier && <button onClick={onAtelier} title="Ouvrir son œuvre dans l'atelier" aria-label="Ouvrir dans l'atelier" data-testid="detail-atelier" className="nw-at">工</button>}
           <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
           <button onClick={() => { sfx("back"); goWorldHome(); }} title="Accueil de l'œuvre" aria-label="Accueil de l'œuvre" data-testid="nw-home"><IoHomeOutline size={17} /></button>

@@ -1,6 +1,21 @@
 {
-  "version": "0.46",
+  "version": "0.47",
   "patches": [
+    {
+      "v": "0.47",
+      "date": "2026-11-19",
+      "title": "Partager en beauté, lire à son aise",
+      "groups": {
+        "Ajouté": [
+          "Partager : six dessins de carte (Affiche, Plein cadre, Citation, Billet, Compte à rebours, Typo) en trois formats (story, post, carré), aux couleurs du monde, et toutes les façons d'envoyer : partage du téléphone (Instagram, WhatsApp, Snap…), WhatsApp, Messages, Telegram, email, X, Facebook, copier le lien ou le message. Le message est modifiable ; la Citation prend une phrase que tu choisis. Le bouton Partager est ouvert à tous les visiteurs.",
+          "Confort de lecture (Aa dans le lecteur) : taille du texte, interligne, police (Livre, Moderne, Très lisible), couleur de page (du livre, claire, sépia, nuit) et marges. Le réglage est gardé pour la prochaine lecture."
+        ],
+        "Corrigé": [
+          "Sur téléphone, les pages d'une œuvre ne sont plus coupées à droite : la barre d'outils du monde défile au doigt au lieu d'élargir la page.",
+          "Sur téléphone, le bouton Aa du lecteur ouvrait un panneau caché sous la barre : il s'affiche maintenant par-dessus la page."
+        ]
+      }
+    },
     {
       "v": "0.46",
       "date": "2026-11-19",

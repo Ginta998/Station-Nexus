@@ -395,7 +395,18 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
   const flow = useRef(null);
   const spreadR = useRef(0); const stepR = useRef(0); const glide = useRef(0);
   // Taille du texte (Aa) : gardée pour toutes les lectures de ce navigateur
-  const [fs, setFs] = useState(() => { const v = Number(read("nx-alex-fs", 1)); return v >= 0.8 && v <= 1.5 ? v : 1; });
+  const [fs, setFs] = useState(() => { const v = Number(read("nx-alex-fs", 1)); return v >= 0.8 && v <= 1.6 ? v : 1; });
+  // le confort de lecture (gardé pour la prochaine fois) : interligne, police, couleur de page, marges
+  const [cf, setCf] = useState(() => ({ lh: "m", ...(read("nx-alex-cf", {}) || {}) }));
+  const setCfK = (k, v) => setCf((o) => ({ ...o, [k]: v }));
+  const cfFirst = useRef(true);
+  useEffect(() => {
+    write("nx-alex-cf", cf);
+    if (cf.ff === "lisible" && !document.getElementById("ax-font-lisible")) { const l = document.createElement("link"); l.id = "ax-font-lisible"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"; document.head.appendChild(l); }
+    if (cfFirst.current) { cfFirst.current = false; return; }
+    relayoutRef.current?.();
+  }, [cf]); // eslint-disable-line react-hooks/exhaustive-deps
+  const relayoutRef = useRef(null);
   const [aa, setAa] = useState(false);
   // Plein écran : le livre (ou la cassette) prend tout l'écran, les barres se cachent et reviennent quand on bouge
   const [full, setFull] = useState(false);
@@ -446,6 +457,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
     const run = () => { try { measure(); const g = geom(); const n = Math.max(1, Math.round((g.el.scrollWidth - g.pad * 2 + g.gap) / g.step)); setPage(Math.round(r * (n - 1))); } catch (_) {} };
     requestAnimationFrame(run); setTimeout(run, 380);
   };
+  relayoutRef.current = () => relayout();
   const fsFirst = useRef(true);
   useEffect(() => {
     if (fsFirst.current) { fsFirst.current = false; return; }
@@ -611,7 +623,7 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
   </>), [book, fmt, cover, swapS]); // eslint-disable-line react-hooks/exhaustive-deps
   const noteMarks = notesOf(notesItemOf(at, book.id)).map((n) => ({ id: n.id, t: n.t, at: Math.max(0, Math.min(pages - 1, n.n ? Math.round((n.p / n.n) * pages) : n.p)) }));
   return createPortal(
-    <div onMouseMove={full ? wake : undefined} onTouchStart={full ? wake : undefined} className={(full ? "ax-full" + (ui ? " ui" : "") + " " : "") + "ax-reader ax-view fmt-" + fmt + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), "--ax-fs": fs, ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
+    <div onMouseMove={full ? wake : undefined} onTouchStart={full ? wake : undefined} className={(full ? "ax-full" + (ui ? " ui" : "") + " " : "") + "ax-reader ax-view fmt-" + fmt + ` cf-lh-${cf.lh || "m"} cf-mg-${cf.mg || "m"}` + (cf.ff ? " cf-ff-" + cf.ff : "") + (cf.bg ? " cf-bg-" + cf.bg : "") + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), "--ax-fs": fs, ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
       <header className="ax-rbar">
         <button className="ax-rb" onClick={onClose} data-testid="alex-close"><IoArrowBack size={15} /> <span>{backLabel}</span></button>
         <p className="mono ax-rpath">{path || <>ALEXANDRIE / {(R?.label || "MES LIVRES").toUpperCase()} / <b>{book.cote}</b></>}</p>
@@ -627,13 +639,22 @@ export function Reader({ book, onClose, onEdit, onModify, onSwap, onRemoveVideo,
         {!noPdf && <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>}
         {onEditChapter && <button className="ax-rb" onClick={() => onEditChapter(chIdxAt())} title="Modifier ce chapitre ici même" data-testid="alex-edit-chapter"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
         <span className="ax-aa-wrap">
-          <button className={"ax-rb ax-rb-sq ax-aa-b" + (aa ? " on" : "")} onClick={() => setAa((v) => !v)} aria-expanded={aa} title="Taille du texte" data-testid="alex-aa">Aa</button>
-          {aa && <span className="ax-aa" role="group" aria-label="Taille du texte" data-testid="alex-aa-panel">
-            <button onClick={() => setFs((v) => Math.max(0.8, Math.round((v - 0.1) * 10) / 10))} disabled={fs <= 0.8} aria-label="Texte plus petit" data-testid="alex-aa-minus">A−</button>
-            <b className="mono">{Math.round(fs * 100)}%</b>
-            <button onClick={() => setFs((v) => Math.min(1.5, Math.round((v + 0.1) * 10) / 10))} disabled={fs >= 1.5} aria-label="Texte plus grand" data-testid="alex-aa-plus">A+</button>
-            {fs !== 1 && <button className="rst" onClick={() => setFs(1)}>Normal</button>}
-          </span>}
+          <button className={"ax-rb ax-rb-sq ax-aa-b" + (aa ? " on" : "")} onClick={() => setAa((v) => !v)} aria-expanded={aa} title="Confort de lecture : taille, interligne, police, page" data-testid="alex-aa">Aa</button>
+          {aa && createPortal(<>
+            <span className="ax-aa-scrim" onClick={() => setAa(false)} />
+            <span className="ax-aa ax-comfort" role="group" aria-label="Confort de lecture" data-testid="alex-aa-panel">
+              <span className="ax-cf-h mono">CONFORT DE LECTURE<button onClick={() => setAa(false)} aria-label="Fermer"><IoClose size={15} /></button></span>
+              <span className="ax-cf-row"><small className="mono">TAILLE</small>
+                <button onClick={() => setFs((v) => Math.max(0.8, Math.round((v - 0.1) * 10) / 10))} disabled={fs <= 0.8} aria-label="Texte plus petit" data-testid="alex-aa-minus">A−</button>
+                <b className="mono">{Math.round(fs * 100)}%</b>
+                <button onClick={() => setFs((v) => Math.min(1.6, Math.round((v + 0.1) * 10) / 10))} disabled={fs >= 1.6} aria-label="Texte plus grand" data-testid="alex-aa-plus">A+</button></span>
+              <span className="ax-cf-row"><small className="mono">INTERLIGNE</small>{[["s", "Serré"], ["m", "Normal"], ["l", "Aéré"]].map(([k, t]) => <button key={k} className={cf.lh === k ? "on" : ""} onClick={() => setCfK("lh", k)}>{t}</button>)}</span>
+              <span className="ax-cf-row"><small className="mono">POLICE</small>{[["", "Livre"], ["sans", "Moderne"], ["lisible", "Très lisible"]].map(([k, t]) => <button key={k} className={(cf.ff || "") === k ? "on" : ""} onClick={() => setCfK("ff", k)} data-testid={`alex-ff-${k || "book"}`}>{t}</button>)}</span>
+              <span className="ax-cf-row"><small className="mono">PAGE</small>{[["", "Du livre"], ["clair", "Claire"], ["sepia", "Sépia"], ["nuit", "Nuit"]].map(([k, t]) => <button key={k} className={"sw-" + (k || "book") + ((cf.bg || "") === k ? " on" : "")} onClick={() => setCfK("bg", k)} data-testid={`alex-bg-${k || "book"}`}><i />{t}</button>)}</span>
+              <span className="ax-cf-row"><small className="mono">MARGES</small>{[["s", "Étroites"], ["m", "Normales"], ["l", "Larges"]].map(([k, t]) => <button key={k} className={(cf.mg || "m") === k ? "on" : ""} onClick={() => setCfK("mg", k)}>{t}</button>)}</span>
+              {(fs !== 1 || cf.lh !== "m" || cf.ff || cf.bg || (cf.mg && cf.mg !== "m")) && <button className="rst" onClick={() => { setFs(1); setCf({ lh: "m" }); }}>Tout remettre comme le livre</button>}
+            </span>
+          </>, document.body)}
         </span>
         {onCover && <button className="ax-rb" onClick={onCover} title="Changer l'artwork du livre" data-testid="alex-reader-cover"><IoImageOutline size={15} /> <span>Artwork</span></button>}
         <button className={"ax-rb ax-rb-sq" + (full ? " on" : "")} onClick={toggleFull} title={full ? "Quitter le plein écran" : "Plein écran : le livre prend tout l'écran"} aria-pressed={full} data-testid="alex-fullscreen">{full ? <IoContractOutline size={15} /> : <IoExpandOutline size={15} />}</button>
