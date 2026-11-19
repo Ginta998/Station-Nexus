@@ -181,3 +181,18 @@
 .jr-card-img.is-tape,.nw-pane-tape{background:radial-gradient(70% 70% at 50% 40%,#202124,#0b0b0c)!important}
 @media (prefers-reduced-motion:reduce){.tp-cassw .cs,.tp-cassw .cs-gloss{animation:none}}
 .cs-wear{opacity:.32!important}
+
+/* 0.30 — une image sur la cassette : imprimée sur l'étiquette (sous le bandeau), le papier et l'usure restent par-dessus */
+.cs-photo{position:absolute;left:0;right:0;top:16%;bottom:0;background:center/cover no-repeat;filter:saturate(.8) contrast(1.05) sepia(.12)}
+.cs.has-img .cs-stripes{display:none}
+.cs.has-img .cs-label::after{mix-blend-mode:multiply;opacity:.55!important}
+.cs.has-img .cs-title,.cs.has-img .cs-sub{background:#e9dfc8;padding:.4cqw 1.4cqw;width:max-content;max-width:90%;box-shadow:0 .2cqw .5cqw rgba(0,0,0,.25)}
+.cs.has-img .cs-sub{top:33.5%!important}
+.cs.has-img .cs-win{box-shadow:inset 0 .6cqw 1.2cqw rgba(0,0,0,.8),0 0 0 .4cqw #0f0e0d,0 0 0 1.1cqw #e9dfc8!important}
+/* l'image de la cassette, floutée, en fond du lecteur */
+.tp-bgimg{position:fixed;inset:-40px;z-index:-1;background:center/cover no-repeat;filter:blur(40px) saturate(.9) brightness(.45);opacity:.6;pointer-events:none}
+.tp{isolation:isolate}
+/* 0.30 — les éraflures répétées ressemblaient à de la pluie : on garde seulement les coins et bords frottés, et deux rayures isolées */
+.cs-wear{background:linear-gradient(104deg,transparent 61.8%,rgba(255,255,255,.18) 62%,transparent 62.3%) 0 0/100% 40% no-repeat,linear-gradient(77deg,transparent 22%,rgba(255,255,255,.14) 22.15%,transparent 22.4%) 0 100%/60% 30% no-repeat,
+  linear-gradient(90deg,rgba(255,255,255,.22),transparent 1.2cqw),linear-gradient(270deg,rgba(255,255,255,.14),transparent 1.2cqw),linear-gradient(180deg,rgba(255,255,255,.2),transparent 1.4cqw),
+  radial-gradient(circle at 0 0,rgba(255,255,255,.35),transparent 5cqw),radial-gradient(circle at 100% 100%,rgba(255,255,255,.3),transparent 5cqw),radial-gradient(circle at 100% 0,rgba(255,255,255,.22),transparent 4cqw)!important;opacity:.45!important}

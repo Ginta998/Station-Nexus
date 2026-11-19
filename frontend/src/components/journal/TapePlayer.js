@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { IoClose, IoPlay, IoPause, IoPlayBack, IoPlayForward, IoStop } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
-import { mediaUrl } from "@/lib/api";
+import { mediaUrl, getJournalEntry } from "@/lib/api";
 import { JournalBlocks } from "@/components/journal/JournalParts";
 import { tapeStart, tapeRelease, tapeHiss, tapeInsert } from "@/lib/tapeSound";
 import { Cassette } from "@/components/journal/TapeObject";
@@ -51,9 +52,10 @@ export default function TapePlayer({ entry: e, onClose }) {
   const hasText = (e.blocks || []).some((b) => (b.text || "").trim() || b.url || (b.urls || []).length) || (e.body || "").trim();
   return createPortal(
     <div className={"tp" + (on ? " on" : "") + (starting ? " starting" : "") + (hasText ? "" : " solo")} role="dialog" aria-label={`Cassette : ${e.title}`} data-testid="tape-player">
+      {e.cover && <span className="tp-bgimg" style={{ backgroundImage: `url(${mediaUrl(e.cover)})` }} aria-hidden="true" />}
       <button className="tp-x" onClick={close} aria-label="Fermer" data-testid="tape-close"><IoClose size={18} /></button>
       <div className="tp-deck">
-        <div className="tp-cassw"><Cassette title={label} sub={[e.tape_voice && `Voix : ${e.tape_voice}`, e.date && new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })].filter(Boolean).join(" · ")} p={p} spinning={on && !starting} starting={starting} /></div>
+        <div className="tp-cassw"><Cassette title={label} sub={[e.tape_voice && `Voix : ${e.tape_voice}`, e.date && new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })].filter(Boolean).join(" · ")} p={p} spinning={on && !starting} starting={starting} img={e.cover} /></div>
         <div className="tp-ctl">
           <span className="tp-count mono" aria-label="Compteur">{String(Math.floor(pos)).padStart(3, "0").slice(-3)}</span>
           <div className="tp-keys">
@@ -78,4 +80,12 @@ export default function TapePlayer({ entry: e, onClose }) {
     </div>,
     document.body
   );
+}
+
+// Ouvre une cassette depuis une liste (journal, accueil, fiche d'une création) sans quitter la page :
+// la croix ramène exactement là où on était.
+export function TapeById({ id, onClose }) {
+  const { data: e } = useQuery({ queryKey: ["journal-entry", id], queryFn: () => getJournalEntry(id), enabled: !!id });
+  if (!id || !e) return null;
+  return <TapePlayer entry={e} onClose={onClose} />;
 }

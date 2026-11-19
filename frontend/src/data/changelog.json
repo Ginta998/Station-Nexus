@@ -1,6 +1,26 @@
 {
-  "version": "0.29",
+  "version": "0.30",
   "patches": [
+    {
+      "v": "0.30",
+      "date": "2026-11-19",
+      "title": "L'enregistreur, sans détour",
+      "groups": {
+        "Ajouté": [
+          "Une image sur la cassette : la couverture de l'entrée s'imprime sur l'étiquette (le titre et la voix restent sur des bandes de papier), et colore en flou le fond du lecteur.",
+          "Éditeur du journal : le format se choisit en voyant l'objet. Quatre cartes, Livre, VHS, Vinyle et Enregistreur, dessinées avec le titre et la couverture de l'entrée."
+        ],
+        "Changé": [
+          "Une cassette s'écoute sur place depuis le journal, l'accueil et la fiche d'une création : la croix ramène exactement là où on était, sans page intermédiaire.",
+          "La page d'une entrée cassette ne lance plus le lecteur toute seule : elle garde son bouton « Écouter la cassette ».",
+          "Les éraflures de la cassette ressemblaient à de la pluie : il reste les coins et les bords frottés, et deux rayures isolées.",
+          "Le réglage « Page du lecteur » est masqué pour une cassette, qui n'a pas de pages."
+        ],
+        "Corrigé": [
+          "Éditeur du journal sur téléphone : les boutons de couverture passent à la ligne au lieu de déborder."
+        ]
+      }
+    },
     {
       "v": "0.29",
       "date": "2026-11-18",

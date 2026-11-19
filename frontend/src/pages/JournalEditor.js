@@ -9,6 +9,29 @@ import { getJournalEntry, createJournalEntry, updateJournalEntry, listJournalCat
 import { useApp } from "@/context/AppContext";
 import { BlocksEditor, ImagePick, ArtSearch, FilePick } from "@/components/journal/BlocksEditor";
 import { IoMusicalNotes } from "react-icons/io5";
+import { Face } from "@/components/atelier/Alexandrie";
+import { Cassette } from "@/components/journal/TapeObject";
+
+// Le format de l'entrée, choisi en voyant l'objet : livre, VHS, vinyle (on la lit) ou cassette audio (on l'écoute).
+const FORMATS = [
+  { k: "livre", t: "Livre", d: "Des pages qu'on tourne" },
+  { k: "vhs", t: "VHS", d: "Une bande vidéo, écran cathodique" },
+  { k: "vinyle", t: "Vinyle", d: "Un disque, sa pochette" },
+  { k: "cassette", t: "Enregistreur", d: "Une cassette audio à écouter" },
+];
+function FormatPick({ f, set }) {
+  const title = f.title || "Sans titre"; const cover = f.cover ? mediaUrl(f.cover) : "";
+  return (
+    <div className="jr-fmts" role="radiogroup" aria-label="Format de l'entrée" data-testid="journal-format-pick">
+      {FORMATS.map((o) => (
+        <button key={o.k} type="button" role="radio" aria-checked={(f.format || "livre") === o.k} className={"jr-fmt" + ((f.format || "livre") === o.k ? " on" : "")} onClick={() => set({ format: o.k })} data-testid={`journal-format-${o.k}`}>
+          <span className="jr-fmt-obj">{o.k === "cassette" ? <Cassette title={f.tape_label || title} small img={f.cover} /> : <Face b={{ id: "jr", title, format: o.k, room: "lore" }} cover={cover} />}</span>
+          <b>{o.t}</b><small>{o.d}</small>
+        </button>
+      ))}
+    </div>
+  );
+}
 
 const today = () => new Date().toISOString().slice(0, 10);
 const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre", look: "presse", tape_url: "", tape_label: "", tape_voice: "" };
@@ -75,6 +98,9 @@ export default function JournalEditor() {
         <input className="jr-in jr-in-title font-display" placeholder="Titre de l'entrée" value={f.title} onChange={(e) => set({ title: e.target.value })} data-testid="journal-title-input" />
         <input className="jr-in" placeholder="Sous-titre / chapeau (facultatif)" value={f.subtitle} onChange={(e) => set({ subtitle: e.target.value })} data-testid="journal-subtitle-input" />
 
+        <p className="mono jr-k jr-fmts-k">FORMAT · COMMENT ON LA DÉCOUVRE</p>
+        <FormatPick f={f} set={set} />
+
         <div className="jr-opts">
           <label>Date<input type="date" className="jr-in" value={f.date} onChange={(e) => set({ date: e.target.value })} data-testid="journal-date-input" /></label>
           <label>Catégorie
@@ -87,16 +113,11 @@ export default function JournalEditor() {
               <option value="">Aucune</option>{creations.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
             </select>
           </label>
-          <label>Lecture (Nexus)
-            <select className="jr-in" value={f.format || "livre"} onChange={(e) => set({ format: e.target.value })} data-testid="journal-format-select">
-              <option value="livre">Livre</option><option value="vhs">Cassette VHS</option><option value="vinyle">Vinyle</option><option value="cassette">Cassette audio (un enregistrement à écouter)</option>
-            </select>
-          </label>
-          <label>Page du lecteur
+          {f.format !== "cassette" && <label>Page du lecteur
             <select className="jr-in" value={f.look || "presse"} onChange={(e) => set({ look: e.target.value })} data-testid="journal-look-select">
               {Object.keys(BOOK_LOOKS).map((k) => <option key={k} value={k}>{k[0].toUpperCase() + k.slice(1)}{BOOK_LOOK_INFO[k] ? ` · ${BOOK_LOOK_INFO[k]}` : ""}</option>)}
             </select>
-          </label>
+          </label>}
         </div>
         {f.format === "cassette" && (
           <div className="jr-tape-ed" data-testid="journal-tape">
@@ -109,7 +130,7 @@ export default function JournalEditor() {
               <label>Étiquette<input className="jr-in" value={f.tape_label || ""} onChange={(e) => set({ tape_label: e.target.value })} placeholder="Enregistrement n°1" data-testid="journal-tape-label" /></label>
               <label>Voix<input className="jr-in" value={f.tape_voice || ""} onChange={(e) => set({ tape_voice: e.target.value })} placeholder="Brichel" /></label>
             </div>
-            <p className="jr-hint">Le texte de l'entrée s'affiche sous la cassette, comme une transcription.</p>
+            <p className="jr-hint">L'image de couverture (en haut) s'imprime sur l'étiquette et colore le fond du lecteur. Le texte, s'il y en a, sert de transcription ; une cassette peut très bien ne contenir que la voix.</p>
           </div>
         )}
         {showCats && <CategoryManager cats={cats} refetch={refetchCats} />}

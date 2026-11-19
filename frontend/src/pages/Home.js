@@ -13,6 +13,7 @@ import { useEntitlements } from "@/lib/useEntitlements";
 import TopBar from "@/components/TopBar";
 import EditorDialog from "@/components/EditorDialog";
 import StationSearch from "@/components/StationSearch";
+import { TapeById } from "@/components/journal/TapePlayer";
 import ProfileDialog from "@/components/ProfileDialog";
 import HomeCountdown from "@/components/HomeCountdown";
 import HomeCustomizer from "@/components/home/HomeCustomizer";
@@ -94,6 +95,8 @@ export default function Home() {
   const THEMES = useThemeList();
   const nav = useNavigate();
   const { isAdmin, sfx, theme, setTheme, playAmbient } = useApp();
+  const [tapeId, setTapeId] = useState(""); // une cassette du journal s'écoute sur place
+  const openJournal = (e) => { sfx("select"); if (e.format === "cassette") setTapeId(e.id); else nav(`/journal/${e.id}`); };
   const { user, openAuth } = useAuth();
   const { membershipActive } = useEntitlements();
 
@@ -308,6 +311,7 @@ export default function Home() {
       <div style={{ position: "relative", zIndex: 1 }}>
       <TopBar onAdd={openCreate} onProfile={requireProfile} />
       {searchOpen && <StationSearch onClose={() => setSearchOpen(false)} />}
+      {tapeId && <TapeById id={tapeId} onClose={() => setTapeId("")} />}
       <HomeCountdown />
 
       <div className="sx-exp">
@@ -508,7 +512,7 @@ export default function Home() {
             {homeJournal.length ? homeJournal.map((e) => {
               const c = journalCats.find((k) => k.id === e.category_id);
               return (
-                <article key={e.id} className="btc" data-testid={`home-journal-${e.id}`} onClick={() => { sfx("select"); nav(`/journal/${e.id}`); }}>
+                <article key={e.id} className="btc" data-testid={`home-journal-${e.id}`} onClick={() => openJournal(e)}>
                   <div className={"bv" + (e.cover ? " bimg" : "")} style={e.cover ? { backgroundImage: `url(${mediaUrl(e.cover)})`, backgroundSize: "cover", backgroundPosition: "center" } : { "--c1": c?.color || "#2b3a60", "--c2": "#0a1020" }}><span className="tag">{(c?.name || "JOURNAL").toUpperCase()}</span></div>
                   <div className="bi"><div className="bt">{e.title}</div><div className="bs">{fmtJournalDate(e.date).toUpperCase()}</div></div>
                 </article>

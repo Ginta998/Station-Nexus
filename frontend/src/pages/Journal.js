@@ -6,6 +6,7 @@ import { listJournal, listJournalCategories, listCreations } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import MobileMenu from "@/components/MobileMenu";
 import { JournalCard, monthLabel } from "@/components/journal/JournalParts";
+import { TapeById } from "@/components/journal/TapePlayer";
 
 export default function Journal() {
   const nav = useNavigate();
@@ -25,6 +26,9 @@ export default function Journal() {
   const linkedCreas = useMemo(() => [...new Set(all.map((e) => e.creation_id).filter(Boolean))].map((id) => creaById[id]).filter(Boolean), [all, creaById]);
   const list = all.filter((e) => (!cat || e.category_id === cat) && (!crea || e.creation_id === crea) && (!month || (e.date || "").startsWith(month)));
   const [lead, ...rest] = list;
+  // une cassette s'écoute sur place : la refermer ramène à la liste, sans page intermédiaire
+  const [tapeId, setTapeId] = useState("");
+  const open = (e) => { sfx("select"); if (e.format === "cassette") setTapeId(e.id); else nav(`/journal/${e.id}`); };
 
   return (
     <div className="relative min-h-screen w-full jr-page" data-testid="journal-page">
@@ -63,13 +67,14 @@ export default function Journal() {
         {!isLoading && !list.length && <p className="jr-empty" data-testid="journal-empty">Aucune entrée pour ces filtres… le carnet attend sa prochaine page.</p>}
         {lead && (
           <div className="jr-lead">
-            <JournalCard e={lead} cat={catById[lead.category_id]} creation={creaById[lead.creation_id]} onOpen={() => { sfx("select"); nav(`/journal/${lead.id}`); }} />
+            <JournalCard e={lead} cat={catById[lead.category_id]} creation={creaById[lead.creation_id]} onOpen={() => open(lead)} />
           </div>
         )}
         <div className="jr-grid" data-testid="journal-list">
-          {rest.map((e, i) => <JournalCard key={e.id} idx={i} e={e} cat={catById[e.category_id]} creation={creaById[e.creation_id]} onOpen={() => { sfx("select"); nav(`/journal/${e.id}`); }} />)}
+          {rest.map((e, i) => <JournalCard key={e.id} idx={i} e={e} cat={catById[e.category_id]} creation={creaById[e.creation_id]} onOpen={() => open(e)} />)}
         </div>
       </div>
+      {tapeId && <TapeById id={tapeId} onClose={() => setTapeId("")} />}
     </div>
   );
 }

@@ -3150,3 +3150,17 @@ body:has(.ax-reader) :is(.nw,.cosmic-bg,.nx-tlayer) *{animation-play-state:pause
 .ax-book{contain:layout paint}
 .jr-tape-ed{display:flex;flex-direction:column;gap:12px;margin:6px 0 16px;padding:14px 16px;border:1px dashed var(--border-c)}
 .jr-tape-ed audio{height:34px}
+/* 0.30 — format d'une entrée du journal, choisi en voyant l'objet */
+.jr-fmts-k{margin:18px 0 8px}
+.jr-fmts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:6px}
+.jr-fmt{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px 10px;border:1px solid var(--border-c);background:color-mix(in srgb,var(--bg-secondary) 70%,transparent);color:var(--text-secondary);cursor:pointer;transition:border-color .2s,background .2s,transform .2s}
+.jr-fmt:hover{border-color:color-mix(in srgb,var(--brand) 50%,var(--border-c));transform:translateY(-2px)}
+.jr-fmt.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,var(--bg-secondary));color:var(--text-primary)}
+.jr-fmt b{font-size:14px;color:var(--text-primary)}
+.jr-fmt small{font-size:11px;line-height:1.3;text-align:center}
+.jr-fmt-obj{height:120px;display:grid;place-items:center;margin-bottom:6px;pointer-events:none}
+.jr-fmt-obj .ax-face{--z:.34;--zv:.3}
+.jr-fmt-obj .cs{width:150px}
+.jr-fmt:not(.on) .jr-fmt-obj{filter:saturate(.5) brightness(.85)}
+@media (max-width:640px){.jr-fmts{grid-template-columns:repeat(2,minmax(0,1fr))}.jr-fmt-obj{height:104px}.jr-fmt-obj .ax-face{--z:.29;--zv:.26}.jr-fmt-obj .cs{width:130px}}
+.jr-cover-edit{flex-wrap:wrap;align-content:flex-end}
