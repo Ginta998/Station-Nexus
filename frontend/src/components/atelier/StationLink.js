@@ -9,7 +9,7 @@ import { isOeuvre, isFolder, stripHtml } from "@/lib/atelier";
 import { pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 import ChapterQuickEdit, { deleteUnit } from "@/components/nexus/ChapterQuickEdit";
-import { publishChapter, publishJournal, publishedOf, publishedLabel, stationUrl } from "@/lib/publish";
+import { publishChapter, publishJournal, publishedOf, publishedLabel, stationUrl, fetchRemote, syncState, pullRemote, SYNC_LABEL } from "@/lib/publish";
 import "@/components/atelier/station.css";
 
 /*
@@ -124,28 +124,33 @@ export function OeuvreStation({ at, o }) {
 }
 
 // ---------------------------------------------------------------- Publier un élément (fenêtre)
-export const askPublish = (id) => window.dispatchEvent(new CustomEvent("at-publish", { detail: { id } }));
+export const askPublish = (id, dest) => window.dispatchEvent(new CustomEvent("at-publish", { detail: { id, dest } }));
 export const goStation = (url) => window.dispatchEvent(new CustomEvent("at-station-go", { detail: { url } }));
 export function PublishHost({ at }) {
-  const [id, setId] = useState(""); const nav = useNavigate();
+  const [req, setReq] = useState(null); const nav = useNavigate();
   useEffect(() => {
-    const on = (e) => setId(e.detail?.id || ""); const go = (e) => e.detail?.url && nav(e.detail.url);
+    const on = (e) => setReq(e.detail?.id ? e.detail : null); const go = (e) => e.detail?.url && nav(e.detail.url);
     window.addEventListener("at-publish", on); window.addEventListener("at-station-go", go);
     return () => { window.removeEventListener("at-publish", on); window.removeEventListener("at-station-go", go); };
   }, [nav]);
-  const it = at.items.find((x) => x.id === id);
+  const it = req && at.items.find((x) => x.id === req.id);
   if (!it) return null;
-  return <PublishDialog at={at} it={it} onClose={() => setId("")} />;
+  return <PublishDialog key={req.id + (req.dest || "")} at={at} it={it} initialDest={req.dest} onClose={() => setReq(null)} />;
 }
 
-function PublishDialog({ at, it, onClose }) {
+function PublishDialog({ at, it, onClose, initialDest }) {
   const nav = useNavigate(); const qc = useQueryClient();
   const prevC = publishedOf(it, "chapter"); const prevJ = publishedOf(it, "journal");
   const linkedCid = creationOfItem(at, it);
   const { data: creations = [] } = useQuery({ queryKey: ["creations", "all"], queryFn: () => listCreations() });
   const { data: cats = [] } = useQuery({ queryKey: ["journal-cats"], queryFn: listJournalCategories });
-  const [dest, setDest] = useState(prevC || linkedCid ? "chapter" : "journal");
+  const [dest, setDest] = useState(initialDest || (prevC || linkedCid ? "chapter" : "journal"));
   const prev = dest === "chapter" ? prevC : prevJ;
+  // ce qui a bougé depuis la dernière publication (dans l'atelier, en ligne, ou les deux)
+  const { data: remote, isFetching: rLoading } = useQuery({ queryKey: ["pub-remote", prev?.target, prev?.chapter_id || prev?.entry_id], queryFn: () => fetchRemote(prev), enabled: !!prev, staleTime: 0 });
+  const st = prev ? (rLoading ? "?" : syncState(it, prev, remote)) : "none";
+  useEffect(() => { if (st === "gone" && dest === "chapter") setMode("new"); }, [st, dest]);
+  const pull = async () => { setBusy(true); try { await pullRemote(at, it, prev); toast.success("Version en ligne récupérée dans le brouillon"); onClose(); } catch { toast.error("Récupération impossible"); setBusy(false); } };
   const [cid, setCid] = useState(prevC?.creation_id || linkedCid || "");
   const [mode, setMode] = useState(prevC?.chapter_id ? "replace" : "new");
   const [chId, setChId] = useState(prevC?.chapter_id || "");
@@ -184,7 +189,13 @@ function PublishDialog({ at, it, onClose }) {
     <div className="st-dlg-wrap" onClick={onClose} data-testid="publish-dialog">
       <div className="st-dlg" role="dialog" aria-label="Publier sur la station" onClick={(e) => e.stopPropagation()}>
         <header><p className="mono st-k">PUBLIER SUR LA STATION</p><h2>{it.title || "Sans titre"}</h2><button className="at-icon" onClick={onClose} aria-label="Fermer"><IoClose size={17} /></button></header>
-        {prev && <p className="st-prev mono">{publishedLabel(prev, creations)} · le {new Date(prev.date).toLocaleDateString("fr-FR")} — republier met à jour au même endroit</p>}
+        {prev && <p className={"st-prev mono s-" + st} data-testid="publish-state">{publishedLabel(prev, creations)} · le {new Date(prev.date).toLocaleDateString("fr-FR")}{st !== "?" && st !== "none" ? ` · ${SYNC_LABEL[st].toUpperCase()}` : ""}</p>}
+        {(st === "remote" || st === "both") && <div className="st-warn st-conflict" data-testid="publish-conflict">
+          <p>{prev.target === "journal" ? "L'entrée du journal" : "Ce chapitre"} a été modifié{prev.target === "journal" ? "e" : ""} sur la station depuis ta dernière publication{st === "both" ? ", et le brouillon aussi" : ""}. Publier maintenant écraserait la version en ligne.</p>
+          <div><button className="at-btn ghost" onClick={pull} disabled={busy} data-testid="publish-pull">Récupérer la version en ligne dans le brouillon</button></div>
+        </div>}
+        {st === "gone" && <p className="st-warn">{prev.target === "journal" ? "L'entrée du journal n'existe plus" : "Ce chapitre n'existe plus"} en ligne : publier en recrée {prev.target === "journal" ? "une" : "un"}.</p>}
+        {st === "ok" && <p className="st-note">Rien n'a changé depuis la dernière publication.</p>}
         {empty && <p className="st-warn">Cet élément est vide : il n'y a rien à publier pour l'instant.</p>}
         <div className="st-seg" role="radiogroup">
           <button role="radio" aria-checked={dest === "chapter"} className={dest === "chapter" ? "on" : ""} onClick={() => setDest("chapter")} data-testid="publish-dest-chapter">Chapitre d'une création</button>
@@ -224,7 +235,7 @@ function PublishDialog({ at, it, onClose }) {
         </div>
         <footer>
           <button className="at-btn ghost" onClick={onClose}>Annuler</button>
-          <button className="at-btn" onClick={go} disabled={busy || empty} data-testid="publish-go"><IoCloudUploadOutline size={15} /> {busy ? "Publication…" : prev ? "Mettre à jour en ligne" : "Publier"}</button>
+          <button className="at-btn" onClick={go} disabled={busy || empty} data-testid="publish-go"><IoCloudUploadOutline size={15} /> {busy ? "Publication…" : st === "remote" || st === "both" ? "Écraser la version en ligne" : prev && st !== "gone" ? "Mettre à jour en ligne" : "Publier"}</button>
         </footer>
       </div>
     </div>,

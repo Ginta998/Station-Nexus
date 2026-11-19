@@ -1,4 +1,4 @@
-import { getCreationFull, updateCreation, createJournalEntry, updateJournalEntry, getJournalEntry } from "@/lib/api";
+import { getCreation, getCreationFull, updateCreation, createJournalEntry, updateJournalEntry, getJournalEntry } from "@/lib/api";
 
 /*
   La passerelle Atelier → Station.
@@ -76,6 +76,53 @@ export const stationUrl = (p) => (!p ? "" : p.target === "journal" ? `/journal/$
 // ---- depuis la station : ouvrir l'œuvre d'une création dans l'atelier (créée et reliée au besoin à l'arrivée)
 export const openInAtelier = (nav, creationId) => { try { sessionStorage.setItem("nx-at-open", creationId); } catch (_) {} nav("/atelier"); };
 
+// ---- empreintes : savoir ce qui a bougé depuis la publication, côté atelier (le brouillon) et côté station (en ligne)
+export const hashOf = (v) => { const t = typeof v === "string" ? v.replace(/\s+/g, " ").trim() : JSON.stringify(v || ""); let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
+const nowIso = () => new Date().toISOString();
+const remoteOfChapter = (ch) => hashOf(ch?.content || "");
+const remoteOfEntry = (e) => hashOf((e?.blocks || []).map((b) => ({ t: b.type, x: b.text || "", u: b.url || "", c: b.caption || "" })));
+
+// l'état d'une publication : "ok" à jour, "local" modifié dans l'atelier, "remote" modifié en ligne, "both", "gone" disparu en ligne, "?" inconnu
+export function syncState(it, p, remote) {
+  if (!p) return "none";
+  if (remote === null) return "gone";
+  if (remote === undefined || !p.local_hash) return "?";
+  const loc = hashOf(it.content || "") !== p.local_hash;
+  const rem = (p.target === "journal" ? remoteOfEntry(remote) : remoteOfChapter(remote)) !== p.remote_hash;
+  return loc && rem ? "both" : loc ? "local" : rem ? "remote" : "ok";
+}
+export const SYNC_LABEL = { ok: "À jour", local: "Modifié dans l'atelier", remote: "Modifié en ligne", both: "Modifié des deux côtés", gone: "Supprimé en ligne", "?": "En ligne", none: "" };
+
+// ce qui est en ligne pour une publication (null = n'existe plus)
+export async function fetchRemote(p) {
+  if (!p) return null;
+  if (p.target === "journal") { try { return await getJournalEntry(p.entry_id); } catch (e) { if (e?.response?.status === 404) return null; throw e; } }
+  const c = await getCreation(p.creation_id); return (c?.chapters || []).find((x) => x.id === p.chapter_id) || null;
+}
+
+// la version en ligne, ramenée dans le brouillon (HTML pour l'atelier)
+const esc = (t = "") => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const mdInline = (t = "") => esc(t).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\*(.+?)\*/g, "<em>$1</em>").replace(/\n/g, "<br>");
+export function blocksToHtml(blocks = []) {
+  return blocks.map((b) => {
+    if (b.type === "heading") return `<h2>${esc(b.text || "")}</h2>`;
+    if (b.type === "quote") return `<blockquote>${mdInline(b.text || "")}${b.author ? `<br>— ${esc(b.author)}` : ""}</blockquote>`;
+    if (b.type === "image") return `<p><img src="${esc(b.url || "")}" alt="${esc(b.caption || "")}" class="sx-rich-img"></p>`;
+    if (b.type === "gallery") return (b.urls || []).map((u) => `<p><img src="${esc(u)}" class="sx-rich-img"></p>`).join("");
+    if (b.type === "youtube") return `<p><a class="sx-yt" href="${esc(b.url || "")}">${esc(b.url || "")}</a></p>`;
+    if (b.type === "music") return `<p><span class="sx-music-cue" data-track="${esc(b.url || "")}" data-title="${esc(b.caption || "")}">${esc(b.caption || "Musique")}</span></p>`;
+    return (b.text || "").split(/\n{2,}/).map((para) => `<p>${mdInline(para)}</p>`).join("");
+  }).join("");
+}
+export const chapterHtml = (ch) => (!ch ? "" : ch.rich ? ch.content || "" : String(ch.content || "").split(/\n{2,}/).map((x) => `<p>${mdInline(x)}</p>`).join(""));
+export async function pullRemote(at, it, p) {
+  const r = await fetchRemote(p); if (!r) throw new Error("gone");
+  const html = p.target === "journal" ? blocksToHtml(r.blocks || []) : chapterHtml(r);
+  const key = p.target === "journal" ? "published_j" : "published";
+  const np = { ...p, local_hash: hashOf(html), remote_hash: p.target === "journal" ? remoteOfEntry(r) : remoteOfChapter(r), date: nowIso() };
+  return at.saveItem({ ...it, content: html, fields: { ...(it.fields || {}), [key]: np } });
+}
+
 // ---- vers un chapitre (nouveau, ou remplace celui choisi ; republier retrouve le chapitre par son identifiant)
 export async function publishChapter(it, { creation_id, mode, chapter_id, title }) {
   const full = await getCreationFull(creation_id);
@@ -86,7 +133,7 @@ export async function publishChapter(it, { creation_id, mode, chapter_id, title 
   else { units.push({ title: title || it.title || "Sans titre", content: html, description: "", image: "", rich: true, has_music: false }); idx = units.length - 1; }
   const saved = await updateCreation(creation_id, { ...full, chapters: units }, true);
   const ch = (saved?.chapters || [])[idx] || units[idx];
-  return { target: "chapter", creation_id, chapter_id: ch.id || chapter_id || "", index: idx, unit_word: "chapitre", date: new Date().toISOString() };
+  return { target: "chapter", creation_id, chapter_id: ch.id || chapter_id || "", index: idx, unit_word: "chapitre", title: ch.title, date: nowIso(), local_hash: hashOf(html), remote_hash: remoteOfChapter(ch) };
 }
 
 // ---- vers le journal de bord (republier met à jour la même entrée si elle existe encore)
@@ -99,5 +146,13 @@ export async function publishJournal(it, { entry_id, title, creation_id, categor
     catch (e) { if (e?.response?.status !== 404) throw e; }
   }
   if (!r) r = await createJournalEntry({ ...base, date: new Date().toISOString().slice(0, 10) });
-  return { target: "journal", entry_id: r.id, published: !!published, date: new Date().toISOString() };
+  return { target: "journal", entry_id: r.id || entry_id, title: base.title, creation_id: base.creation_id, category_id: base.category_id, format: base.format, published: base.published, show_home: base.show_home, date: nowIso(), local_hash: hashOf(it.content || ""), remote_hash: remoteOfEntry(r.blocks ? r : base) };
+}
+
+// ---- republier en un geste, avec les mêmes réglages qu'à la dernière fois
+export async function republish(at, it, p) {
+  const np = p.target === "journal"
+    ? await publishJournal(it, { entry_id: p.entry_id, title: p.title || it.title, creation_id: p.creation_id, category_id: p.category_id, format: p.format, published: p.published, show_home: p.show_home })
+    : await publishChapter(it, { creation_id: p.creation_id, mode: "replace", chapter_id: p.chapter_id, title: p.title || it.title });
+  return at.saveItem({ ...it, fields: { ...(it.fields || {}), [p.target === "journal" ? "published_j" : "published"]: np } });
 }

@@ -40,8 +40,10 @@ export function ContextMenuHost() {
     window.addEventListener("at-menu", on); window.addEventListener("resize", off);
     return () => { window.removeEventListener("at-menu", on); window.removeEventListener("resize", off); };
   }, []);
+  // sur téléphone, le menu s'ouvre en tiroir par-dessus la barre du bas : toutes les actions restent atteignables
+  const sheet = typeof window !== "undefined" && window.matchMedia?.("(max-width: 760px), (pointer: coarse) and (max-width: 1024px)").matches;
   useEffect(() => {
-    if (!m || !box.current) return;
+    if (!m || !box.current || sheet) return;
     const r = box.current.getBoundingClientRect(); const el = box.current;
     el.style.left = `${toCss(Math.max(8, Math.min(m.x, window.innerWidth - r.width - 8)))}px`;
     el.style.top = `${toCss(Math.max(8, Math.min(m.y, window.innerHeight - r.height - 8)))}px`;
@@ -50,7 +52,7 @@ export function ContextMenuHost() {
   const cur = stack.length ? stack[stack.length - 1] : { entries: m.entries, title: m.title };
   const pick = (en) => { if (en.sub) setStack([...stack, { entries: en.sub, title: en.label }]); else { setM(null); en.onClick?.(); } };
   return (
-    <div className="at-ctx-wrap" onClick={() => setM(null)} onContextMenu={(e) => { e.preventDefault(); setM(null); }} data-testid="context-menu-overlay">
+    <div className={"at-ctx-wrap" + (sheet ? " sheet" : "")} onClick={() => setM(null)} onContextMenu={(e) => { e.preventDefault(); setM(null); }} data-testid="context-menu-overlay">
       <div className="at-ctx" ref={box} onClick={(e) => e.stopPropagation()} data-testid="context-menu">
         {cur.title && <div className="at-ctx-t mono">{stack.length > 0 && <button onClick={() => setStack(stack.slice(0, -1))} data-testid="context-menu-back"><IoChevronBack size={12} /></button>}{cur.title.toUpperCase()}</div>}
         {cur.entries.filter(Boolean).map((en, i) => en === "-" ? <hr key={i} /> : (

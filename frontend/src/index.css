@@ -3222,3 +3222,9 @@ body:has(.ax-reader) :is(.nw,.cosmic-bg,.nx-tlayer) *{animation-play-state:pause
 [data-testid="chat-locked"] button{border-radius:2px!important}
 [data-testid="chat-locked"] .max-w-md::before,[data-testid="chat-locked"] .max-w-md::after{content:"";position:absolute;width:12px;height:12px;border:solid var(--text-primary);opacity:.6}
 [data-testid="chat-locked"] .max-w-md::before{top:-1px;left:-1px;border-width:2px 0 0 2px}[data-testid="chat-locked"] .max-w-md::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+/* 0.34 — menu contextuel en tiroir sur téléphone, au-dessus de la barre du bas */
+.at-ctx-wrap.sheet{z-index:2600;background:rgba(2,4,8,.55);backdrop-filter:blur(3px)}
+.at-ctx-wrap.sheet .at-ctx{left:0!important;right:0;top:auto!important;bottom:0;min-width:0;max-width:none;width:100%;max-height:78dvh;padding:8px 10px calc(14px + env(safe-area-inset-bottom));border-radius:0;border-width:1px 0 0;border-top:2px solid var(--brand);animation:ctxUp .22s cubic-bezier(.2,.8,.2,1) both}
+.at-ctx-wrap.sheet .at-ctx-t{padding:10px 8px 12px;font-size:11px}
+.at-ctx-wrap.sheet .at-ctx button:not(.at-ctx-t button){padding:14px 10px;font-size:15.5px}
+@keyframes ctxUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}

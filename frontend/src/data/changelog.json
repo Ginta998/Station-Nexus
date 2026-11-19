@@ -1,6 +1,21 @@
 {
-  "version": "0.33",
+  "version": "0.34",
   "patches": [
+    {
+      "v": "0.34",
+      "date": "2026-11-19",
+      "title": "Publication : le panneau et la protection du texte",
+      "groups": {
+        "Ajouté": [
+          "Atelier › Publication (menu et lanceur sur téléphone) : œuvres reliées ou à relier, tout ce qui est en ligne rangé par création puis le journal avec son état (à jour, modifié dans l'atelier, modifié en ligne, supprimé en ligne), les documents prêts à partir, et un bloc « À traiter » réglé en un geste (Mettre à jour, Récupérer, Recréer).",
+          "Protection du texte : si un chapitre ou une entrée du journal a été modifié sur la station depuis la dernière publication, la fenêtre le dit et propose « Récupérer la version en ligne dans le brouillon » ou « Écraser la version en ligne ».",
+          "Deux actions directes sur chaque élément : « Publier comme chapitre… » et « Mettre dans le journal de bord… » (ou « Mettre à jour le chapitre 8… » une fois en ligne)."
+        ],
+        "Corrigé": [
+          "Sur téléphone, le menu de l'appui long s'ouvre en tiroir au-dessus de la barre du bas : plus aucune action cachée."
+        ]
+      }
+    },
     {
       "v": "0.33",
       "date": "2026-11-19",
