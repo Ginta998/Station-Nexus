@@ -1,12 +1,13 @@
 const book = {
   id: "guru", title: "Guru", sub: "Journaux de ceux qui se sont crus élus", room: "histoire", type: "pensee", cote: "HI-015", color: 0, emblem: "⊙",
-  about: "Jim Jones, Charles Manson, David Koresh, Shoko Asahara, Ma Anand Sheela, Anne Hamilton-Byrne, Joseph Di Mambro, Bonnie Nettles, Marshall Applewhite : neuf personnes, des femmes et des hommes, ont conduit des groupes qui ont fini dans la mort ou le crime. Chacun raconte sa vie depuis l'enfance, comme s'il te parlait à voix basse : les souvenirs, les blessures, les visions, puis le chemin vers le désastre. Ces récits sont imaginés, écrits à la première personne pour entrer dans leur tête. Les faits, les dates et les morts, eux, sont réels, et rappelés à la fin de chaque journal.",
+  about: "Jim Jones, Charles Manson, David Koresh, Shoko Asahara, Ma Anand Sheela, Anne Hamilton-Byrne, Credonia Mwerinde, Joseph Di Mambro, Bonnie Nettles, Marshall Applewhite : dix personnes, des femmes et des hommes, ont conduit des groupes qui ont fini dans la mort ou le crime. Chacun raconte sa vie depuis l'enfance, comme s'il te parlait à voix basse : les souvenirs, les blessures, les visions, puis le chemin vers le désastre. Ces récits sont imaginés, écrits à la première personne pour entrer dans leur tête. Les faits, les dates et les morts, eux, sont réels, et rappelés à la fin de chaque journal.",
   links: [
     { label: "Tim Reiterman, Raven: The Untold Story of the Rev. Jim Jones and His People (1982)", note: "L'enquête de référence sur le Temple du Peuple, par un journaliste blessé à Port Kaituma." },
     { label: "Haruki Murakami, Underground (1997)", note: "Les victimes de l'attentat du métro de Tokyo racontent, puis d'anciens membres d'Aum." },
     { label: "Waco: The Rules of Engagement (1997)", note: "Le documentaire sur le siège du Mont-Carmel." },
     { label: "Wild Wild Country (2018)", note: "La série documentaire sur Rajneeshpuram, avec Ma Anand Sheela elle-même." },
     { label: "Jeff Guinn, Manson (2013)", note: "La biographie la plus complète, qui démonte une partie de la légende." },
+    { label: "Tragedy in Uganda : the Restoration of the Ten Commandments of God (CESNUR)", url: "https://www.cesnur.org/testi/uganda_002.htm", note: "Une analyse du mouvement de Kanungu et de ce qu'on sait vraiment de la fin." },
     { label: "MIVILUDES", url: "https://www.miviludes.interieur.gouv.fr", note: "La mission française de vigilance contre les dérives sectaires : informations, signalements, aide aux proches." },
     { label: "Robert Jay Lifton, Thought Reform and the Psychology of Totalism (1961)", note: "Le livre qui a décrit les huit mécanismes de l'emprise." },
   ],
@@ -15,7 +16,7 @@ const book = {
 
 Ce livre ne contient pas de vrais journaux. Aucune de ces femmes, aucun de ces hommes n'a écrit les pages que tu vas lire, et les dialogues sont imaginés eux aussi. Elles sont imaginées, à partir de ce qu'on sait de leur vie, de leurs sermons, de leurs lettres, des témoignages de ceux qui les ont suivis et de ceux qui s'en sont échappés. Le pari est le même que pour les autres voix de cette bibliothèque : entrer dans une tête pour comprendre comment elle fonctionne. Ici, comprendre ne veut pas dire excuser. Ces femmes et ces hommes ont fait tuer, ou ont mené à la mort, des centaines de personnes, dont beaucoup d'enfants.
 
-Ce qu'on cherche à voir, c'est le mécanisme. Comment une femme ou un homme finit par se croire choisi. Comment il trouve des gens prêts à le croire. Comment l'amour qu'on lui porte devient une prison. Comment le groupe se ferme, se coupe du monde, se met à attendre la fin. Ces neuf histoires sont très différentes, aux États-Unis, au Japon, en Inde et en Oregon, en Australie, en Suisse, au Canada et en France. On croit souvent que les gourous sont tous des hommes. Ce n'est pas vrai : des femmes ont fondé, dirigé ou co-dirigé certains de ces groupes, et d'autres, à l'intérieur, ont été les premières à dire non. Et pourtant elles se ressemblent toutes.
+Ce qu'on cherche à voir, c'est le mécanisme. Comment une femme ou un homme finit par se croire choisi. Comment il trouve des gens prêts à le croire. Comment l'amour qu'on lui porte devient une prison. Comment le groupe se ferme, se coupe du monde, se met à attendre la fin. Ces dix histoires sont très différentes, aux États-Unis, au Japon, en Inde et en Oregon, en Australie, en Ouganda, en Suisse, au Canada et en France. On croit souvent que les gourous sont tous des hommes. Ce n'est pas vrai : des femmes ont fondé, dirigé ou co-dirigé certains de ces groupes, et d'autres, à l'intérieur, ont été les premières à dire non. Et pourtant elles se ressemblent toutes.
 
 À la fin de chaque journal, un encadré rappelle ce qui s'est réellement passé, sans rien inventer. Le dernier chapitre parle des signes qui permettent de reconnaître une emprise, et de ce qu'on peut faire.
 
@@ -261,7 +262,7 @@ En septembre 1985, je suis partie. Je suis partie avant qu'ils ne me prennent, a
 
 # Les mères
 
-On imagine le gourou en homme barbu qui prêche sous une tente. Mais l'emprise n'a pas de sexe. Des femmes ont fondé des groupes, d'autres les ont tenus de l'intérieur, et le rôle qu'elles se donnent est souvent le même : la mère. Celle qui protège, qui sait ce qui est bon pour toi, qui ne peut pas te vouloir de mal. C'est peut-être le rôle le plus difficile à soupçonner. Ma Anand Sheela en était déjà une figure. En voici une autre, en Australie, qui s'est fait une famille avec les enfants des autres.
+On imagine le gourou en homme barbu qui prêche sous une tente. Mais l'emprise n'a pas de sexe. Des femmes ont fondé des groupes, d'autres les ont tenus de l'intérieur, et le rôle qu'elles se donnent est souvent le même : la mère. Celle qui protège, qui sait ce qui est bon pour toi, qui ne peut pas te vouloir de mal. C'est peut-être le rôle le plus difficile à soupçonner. Ma Anand Sheela en était déjà une figure. En voici deux autres : l'une en Australie, qui s'est fait une famille avec les enfants des autres ; l'autre en Ouganda, qui disait parler au nom de la Vierge Marie, et dont le mouvement a fini dans la plus grande mort collective de ces journaux.
 
 ## Anne Hamilton-Byrne, la Famille
 
@@ -306,6 +307,60 @@ Ils sont venus en août 1987, au lac, avec des voitures et des assistantes socia
 Ils m'ont jugée pour des papiers. De faux certificats de naissance. Une amende. Rien d'autre. Personne n'a pu prouver le reste devant un tribunal, ou personne n'a voulu. Je suis rentrée chez moi. Je suis Mère. On ne juge pas une mère.
 
 !! CE QUI S'EST PASSÉ :: De la fin des années soixante à 1987, la Famille a élevé au moins vingt-huit enfants, dont beaucoup obtenus par des adoptions frauduleuses, coupés du monde, les cheveux teints en blond, soumis à des privations, à des coups et, selon leurs témoignages, à des doses de LSD lors de rituels. Après la fuite de Sarah, la police de Victoria a perquisitionné la maison du lac Eildon le 14 août 1987. Anne Hamilton-Byrne et son mari, arrêtés aux États-Unis en 1993, n'ont été condamnés que pour falsification de documents, à une amende. Elle est morte en 2019, atteinte de démence. Sarah, devenue médecin, a raconté son enfance dans un livre ; les enfants de la Famille ont témoigné dans le documentaire The Family (2016).
+
+## Credonia Mwerinde, Kanungu
+
+Chut. Ici, on ne parle pas. Tu as vu les autres, dans la cour : ils se font des signes avec les mains, ils baissent les yeux. Le silence est le premier des commandements que la Vierge nous a rendus. Les paroles inutiles sont des péchés, et il y a tant de péchés dans ce monde qu'il fallait bien commencer quelque part. Je vais te parler quand même. À toi seul. Parce que demain, il n'y aura plus personne pour raconter.
+
+Je suis née dans le Kigezi, au sud-ouest de l'Ouganda, près de Kanungu, il y a une cinquantaine d'années. Des collines vertes, tellement penchées qu'on y cultive comme on grimpe. Des bananeraies, du thé, de la brume le matin dans les vallées. Une famille catholique, comme presque tout le monde chez nous depuis les Pères blancs. Mon père, Paulo Kashaku, avait des visions. Il disait qu'une de ses filles, morte jeune, lui était apparue. On le prenait pour un vieux qui rêvait.
+
+Je n'ai pas été une sainte. Je le dis avant que les journaux le disent. J'ai vendu de la bière de banane, le tonto, dans un petit débit au bord de la route. Les hommes venaient boire, chanter, se battre, me raconter leurs péchés. J'ai eu des hommes. J'ai eu des enfants. J'ai connu la misère et la honte qu'on vous jette au visage au marché. Je savais ce qu'est un pécheur. C'est pour cela, je crois, que la Vierge m'a choisie. On ne choisit pas une femme propre pour parler aux sales.
+
+En 1988, dans une grotte de la montagne, à Nyabugoto, j'ai vu la Vierge. Elle était debout dans la lumière, au fond du rocher. Elle m'a dit que le monde allait finir, que les hommes avaient oublié les dix commandements, et qu'elle voulait qu'on les restaure avant qu'il soit trop tard. Je suis redescendue. J'ai vidé les jarres de bière dans le fossé. J'ai fermé le débit. Ma fille Ursula a eu les mêmes visions. Les gens du village ont commencé à monter à la grotte.
+
+En 1989, nous sommes allées voir un homme important. Joseph Kibwetere. Un homme riche, respecté, catholique depuis toujours, qui avait fondé une école et fait de la politique. Il disait avoir vu la Vierge, lui aussi, quelques années plus tôt. Il nous a reçues dans sa maison, avec du thé et des biscuits, comme on reçoit des paysannes. Je l'ai regardé en face.
+
+— Monsieur Kibwetere, la Vierge m'a parlé de vous. Elle dit que vous êtes choisi.
+
+— Madame, beaucoup de gens viennent me dire que la Vierge leur parle.
+
+— Combien d'entre eux savent que vous l'avez vue, vous aussi ? Elle me l'a dit. Elle vous attend depuis longtemps.
+
+Il est resté silencieux un long moment. Puis il s'est mis à genoux. Ce jour-là, il est devenu notre prophète. Moi, je suis devenue celle qui transmet les messages. On disait qu'il était le chef. Les gens qui vivaient avec nous savaient que les messages venaient de moi. Et que les messages commandaient au chef.
+
+Mon père nous a donné sa terre à Kanungu. Nous y avons construit des maisons, une école, une église. Un prêtre nous a rejoints, le père Dominic Kataribabo, un homme instruit, qui avait étudié en Amérique. L'Église l'a chassé à cause de nous. Il est resté. Nous avons écrit un livre, Un message urgent du ciel : la fin des temps présents. Nous l'avons vendu dans les villages. Les gens sont venus, des centaines, puis des milliers peut-être. Des paysans, des instituteurs, des veuves, des familles entières, avec leurs enfants. Ils vendaient leurs champs, leurs vaches, leurs maisons, et ils nous apportaient l'argent. Ils n'en auraient plus besoin. Le monde allait finir.
+
+Nous vivions selon les commandements, et selon les nôtres. Le silence. Les signes avec les mains. Les hommes d'un côté, les femmes de l'autre, même les époux. Pas de viande, peu de nourriture, des jeûnes. Le travail aux champs, la prière, la confession. Des uniformes de couleurs différentes selon qu'on était nouveau ou ancien, selon qu'on était prêt ou non. Les enfants ne connaissaient plus leurs parents. On leur disait que leurs vrais parents étaient la Vierge et nous.
+
+Un jour, une jeune femme est venue me trouver, à la porte de ma maison. Elle avait le droit de parler, puisqu'elle me parlait à moi. Elle tremblait.
+
+— Mère, mon petit garçon est malade. Il faudrait l'emmener au dispensaire, à Kanungu.
+
+— Le dispensaire, c'est le monde. Le monde va finir. Ton fils sera guéri par la Vierge, ou il ira auprès d'elle. Dans les deux cas, il sera sauvé.
+
+— Et si je veux l'emmener quand même ?
+
+— Alors tu pars avec lui. Et tu pars sans ton âme.
+
+Elle est restée. Je ne lui ai plus jamais parlé. Ici, on ne parle pas.
+
+Le monde devait finir avec l'an deux mille. Le 31 décembre 1999, nous avons prié toute la nuit. Le matin, le soleil s'est levé sur les collines, comme d'habitude. Les gens me regardaient. Certains voulaient leur argent. J'ai reçu un nouveau message : la Vierge avait accordé un délai. L'an deux mille n'était pas fini. Il fallait être prêts, et elle viendrait chercher ceux qui l'étaient. Le père Dominic m'a parlé, un soir, dans la sacristie.
+
+— Credonia, ils ont donné tout ce qu'ils avaient. S'ils redescendent dans les villages, ils diront qu'on les a volés. La police viendra.
+
+— Ils ne redescendront pas, mon père.
+
+— Comment le savez-vous ?
+
+— La Vierge me l'a dit.
+
+Il s'est tu. Il savait, je crois, ce qu'il y avait déjà sous la terre, chez lui, et ailleurs. Il le savait mieux que moi.
+
+Ces jours-ci, nous avons fait la fête. Nous avons tué un taureau, nous avons acheté des caisses de Coca-Cola, nous avons mangé de la viande, pour la première fois depuis des années. Les enfants riaient. Les gens chantaient, sans paroles, en battant des mains. Nous avons fini la nouvelle église. Cette nuit, tout le monde a prié. Demain matin, nous nous rassemblerons dans l'ancienne église, celle qui sert de réfectoire. On a cloué des planches sur les fenêtres. On a apporté des bidons. La Vierge viendra à dix heures.
+
+Je ne te dis pas où je serai. On ne me retrouvera pas. On ne retrouvera ni Joseph, ni le père Dominic, ni Ursula. On dira que nous sommes morts dans le feu avec les autres, ou que nous nous sommes enfuis avec l'argent. On ne saura jamais. C'est ainsi. Chut.
+
+!! CE QUI S'EST PASSÉ :: Le 17 mars 2000, vers dix heures et demie, l'ancienne église du Mouvement pour la restauration des dix commandements de Dieu, à Kanungu, a pris feu, fenêtres condamnées et portes fermées : plusieurs centaines de personnes sont mortes à l'intérieur, dont de très nombreux enfants (les décomptes varient d'environ 330 à plus de 500). Dans les jours suivants, la police a découvert des fosses communes ailleurs : 153 corps à Rutoma, plus d'une centaine chez le père Kataribabo, d'autres encore, tués des semaines ou des mois plus tôt. Au total, près de 780 morts : c'est l'une des plus grandes morts collectives liées à un mouvement religieux à l'époque moderne. Credonia Mwerinde, Joseph Kibwetere et Dominic Kataribabo n'ont jamais été retrouvés ni identifiés ; ils sont présumés morts, et personne n'a été jugé.
 
 # Partir vers les étoiles
 
@@ -459,7 +514,7 @@ Tous disent la même chose, chacun à sa façon. On n'entre pas dans ces groupes
 
 # Reconnaître l'emprise
 
-Mis côte à côte, ces neuf journaux montrent les mêmes étapes. D'abord, une femme ou un homme qui se sent rejeté, humilié ou ignoré, et qui trouve un récit où il est l'élu. Ensuite, des gens qui cherchent quelque chose de réel : la justice raciale chez Jones, une famille chez Manson, le sens chez Asahara, la liberté chez Rajneesh, une mère chez Anne Hamilton-Byrne, la beauté chez Di Mambro, la pureté chez Bonnie Nettles et Applewhite. Le groupe leur donne d'abord ce qu'ils cherchent. C'est pour cela qu'ils restent.
+Mis côte à côte, ces dix journaux montrent les mêmes étapes. D'abord, une femme ou un homme qui se sent rejeté, humilié ou ignoré, et qui trouve un récit où il est l'élu. Ensuite, des gens qui cherchent quelque chose de réel : la justice raciale chez Jones, une famille chez Manson, le sens chez Asahara, la liberté chez Rajneesh, une mère chez Anne Hamilton-Byrne, le salut chez Credonia Mwerinde, la beauté chez Di Mambro, la pureté chez Bonnie Nettles et Applewhite. Le groupe leur donne d'abord ce qu'ils cherchent. C'est pour cela qu'ils restent.
 
 Puis le groupe se referme, toujours de la même manière. Il coupe les liens avec la famille et les anciens amis, présentés comme des ennemis ou des gens qui ne peuvent pas comprendre. Il prend l'argent, les biens, le temps, le sommeil. Il installe une langue à part, des mots que seuls les membres comprennent. Il demande des confessions, qui deviennent des moyens de pression. Il réécrit la morale : ce qui était un crime devient un devoir, si le chef le demande. Et il annonce une fin, qui finit par devenir une sortie.
 

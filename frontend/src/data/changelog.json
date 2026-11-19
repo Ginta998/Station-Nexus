@@ -1,6 +1,19 @@
 {
-  "version": "0.51",
+  "version": "0.52",
   "patches": [
+    {
+      "v": "0.52",
+      "date": "2026-11-19",
+      "title": "Kanungu, et Robespierre jusqu'au bout",
+      "groups": {
+        "Ajouté": [
+          "Guru : Kanungu, en Ouganda. Le journal de Credonia Mwerinde, ancienne vendeuse de bière de banane devenue la voix de la Vierge pour le Mouvement pour la restauration des dix commandements de Dieu, avec Joseph Kibwetere et le père Kataribabo : la grotte de Nyabugoto, le silence et les signes, la fin du monde repoussée, la dernière fête, et le 17 mars 2000 (près de 780 morts en tout, avec les fosses découvertes ensuite)."
+        ],
+        "Changé": [
+          "Robespierre est maintenant raconté par lui-même, à la première personne, allongé sur la table du Comité, la mâchoire brisée, le 10 thermidor : Arras, le juge qui ne mangeait plus, Versailles, la maison Duplay, la guerre qu'il refusait, le roi, la vertu et la terreur, Camille et Danton, l'Être suprême, le 9 thermidor, la feuille signée « Ro », la charrette. Avec des dialogues dans la langue de 1794 (Charlotte, Duplay, Brissot, Camille, Carnot, Éléonore, Couthon)."
+        ]
+      }
+    },
     {
       "v": "0.51",
       "date": "2026-11-19",
