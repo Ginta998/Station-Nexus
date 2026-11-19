@@ -5,7 +5,7 @@ import { KINDS, imgSrc, isFolder, isOeuvre, fileType, mediaFromText } from "@/li
 import { templateHtml, templateMenuEntries, allTemplates, typeContent, typeMenuEntries } from "@/lib/templates";
 import ItemCard from "@/components/atelier/ItemCard";
 import { itemDrop, pressMenu, showMenu } from "@/components/atelier/ContextMenu";
-import { dropToFolder } from "@/components/atelier/itemActions";
+import { dropToFolder, itemMenu } from "@/components/atelier/itemActions";
 import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
 import { archiveCodes, words, fmtDate } from "@/lib/archive";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
@@ -49,9 +49,9 @@ function ArchiveList({ at, open, all, folders, folderMenu, items, setFolderId, f
           </button>
         ))}
         {rows.map((i) => (
-          <button key={i.id} className={"ar-tr" + (sel.has(i.id) ? " sel" : "")} onClick={() => open(i.id)} data-testid={`archive-row-${i.id}`}>
+          <button key={i.id} className={"ar-tr" + (sel.has(i.id) ? " sel" : "")} onClick={() => open(i.id)} {...pressMenu(() => itemMenu(i, at, open))} data-testid={`archive-row-${i.id}`}>
             <span className="c mono">{codes[i.id]}</span>
-            <span className="t"><b><i aria-hidden="true">{KINDS[i.kind]?.kanji}</i>{i.title || "Sans titre"}{i.pinned && <em className="mono"> · ÉPINGLÉ</em>}</b>{(i.tags || []).length > 0 && <small className="mono">{i.tags.slice(0, 4).map((t) => "#" + t).join("  ")}</small>}</span>
+            <span className="t"><b><i aria-hidden="true">{KINDS[i.kind]?.kanji}</i>{i.title || "Sans titre"}{i.pinned && <em className="mono"> · ÉPINGLÉ</em>}{(i.fields?.published || i.fields?.published_j) && <em className="mono st-on"> · EN LIGNE</em>}</b>{(i.tags || []).length > 0 && <small className="mono">{i.tags.slice(0, 4).map((t) => "#" + t).join("  ")}</small>}</span>
             <span className="y">{isOeuvre(i) ? "Œuvre" : KINDS[i.kind]?.label}</span>
             <span className="w mono">{words(i.content).toLocaleString("fr-FR")}</span>
             <span className="d mono">{fmtDate(i.updated_at)}</span>

@@ -1,6 +1,20 @@
 {
-  "version": "0.32",
+  "version": "0.33",
   "patches": [
+    {
+      "v": "0.33",
+      "date": "2026-11-19",
+      "title": "La passerelle Atelier ↔ Station",
+      "groups": {
+        "Ajouté": [
+          "Une œuvre de l'atelier se relie à sa création publique (fiche de l'œuvre › Sur la station). Rien n'est copié : les chapitres en ligne s'affichent en direct et se modifient depuis l'atelier (clic, ou clic droit : renommer, voir sur la station, supprimer), avec « Nouveau chapitre ».",
+          "Publier un élément de l'atelier (clic droit ou bouton dans l'éditeur) : nouveau chapitre ou remplacement d'un chapitre de la création, ou entrée du journal de bord (rattachement, catégorie, format, publiée ou brouillon). Le texte est converti en blocs pour le journal (titres, paragraphes, listes, images, citations, YouTube, musiques).",
+          "Le lien reste : l'élément affiche « ● EN LIGNE · CH. 8 · JOURNAL », republier met à jour au même endroit, « Voir sur la station » y mène. Le brouillon peut être rangé dans un dossier « Publiés ».",
+          "Créer l'œuvre d'une création déjà en ligne : « Depuis la station » dans un univers, ou clic droit sur une affiche liée (titre, affiche et pitch repris, déjà reliée).",
+          "Sur la station (admin), le bouton 工 à côté du crayon ouvre l'œuvre dans l'atelier, et la crée si elle n'existe pas encore."
+        ]
+      }
+    },
     {
       "v": "0.32",
       "date": "2026-11-19",

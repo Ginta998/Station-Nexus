@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { openInAtelier } from "@/lib/publish";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoHome, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline, IoLockClosed, IoDownloadOutline, IoSparklesOutline } from "react-icons/io5";
 import { toast } from "sonner";
@@ -306,7 +307,7 @@ export default function Detail() {
     const catOf = (c) => cats.find((x) => x.key === c.category)?.label || c.category;
     return (
       <>
-        <NexusWorld key={item.id} item={view} ws={wsNow} wt={wtNow && (editorOpen || workRead || quickEdit) ? { ...wtNow, cursor: "none" } : wtNow} catLabel={catLabel} style={accNow ? { "--brand": accNow } : undefined}
+        <NexusWorld key={item.id} onAtelier={() => openInAtelier(nav, item.id)} item={view} ws={wsNow} wt={wtNow && (editorOpen || workRead || quickEdit) ? { ...wtNow, cursor: "none" } : wtNow} catLabel={catLabel} style={accNow ? { "--brand": accNow } : undefined}
           cover={viewCover} bg={viewBg}
           box={{ id: item.id, title: view.title, sub: view.tagline || "", format: fmtOfCreation(view, catLabel), emblem: view.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }}
           making={making} trailer={trailerSource}
@@ -360,6 +361,7 @@ export default function Detail() {
             {isAdmin && (
               <>
                 <button data-testid="detail-edit" onClick={() => setEditorOpen(true)} className="p-2.5 border" style={btn}><IoCreateOutline size={18} /></button>
+                <button data-testid="detail-atelier" onClick={() => openInAtelier(nav, item.id)} className="p-2.5 border" style={btn} title="Ouvrir son œuvre dans l'atelier" aria-label="Ouvrir dans l'atelier"><span style={{ display: "inline-block", width: 18, lineHeight: "18px", fontSize: 15 }}>工</span></button>
                 <button data-testid="detail-delete" onClick={doDelete} className="p-2.5 border" style={{ ...btn, color: "var(--brand)" }}><IoTrashOutline size={18} /></button>
               </>
             )}

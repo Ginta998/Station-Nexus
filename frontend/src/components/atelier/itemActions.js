@@ -4,6 +4,12 @@ import { KINDS, isOeuvre, isFolder } from "@/lib/atelier";
 import { exportItem } from "@/lib/exportPdf";
 import { addShortcut } from "@/components/atelier/Shortcuts";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
+import { IoCloudUploadOutline, IoEyeOutline } from "react-icons/io5";
+import { askPublish, goStation } from "@/components/atelier/StationLink";
+import { publishedOf, stationUrl } from "@/lib/publish";
+
+// ce qui peut partir sur la station : un élément avec du texte (pas une œuvre, un dossier ou un simple fichier)
+export const canPublish = (it) => !isOeuvre(it) && !isFolder(it) && it.kind !== "file";
 
 // Entrées du menu contextuel d'un élément (ouvrir, épingler, déplacer, catégorie, dupliquer, supprimer)
 export function itemMenu(it, at, open) {
@@ -12,6 +18,8 @@ export function itemMenu(it, at, open) {
     title: it.title || "Sans titre",
     entries: [
       { id: "open", label: "Ouvrir", icon: <IoOpenOutline size={14} />, onClick: () => open(it.id) },
+      ...(canPublish(it) ? [{ id: "publish", label: publishedOf(it) ? "Republier sur la station…" : "Publier sur la station…", icon: <IoCloudUploadOutline size={14} />, onClick: () => askPublish(it.id) }] : []),
+      ...(publishedOf(it) ? [{ id: "see-station", label: "Voir sur la station", icon: <IoEyeOutline size={14} />, onClick: () => goStation(stationUrl(publishedOf(it))) }] : []),
       { id: "rename", label: "Renommer", icon: <IoCreateOutline size={14} />, onClick: async () => { const t = (await labPrompt("Titre de l'élément", it.title || "")); if (t !== null) at.saveItem({ ...it, title: t.trim() }).then(() => toast.success("Titre modifié")); } },
       { id: "pin", label: it.pinned ? "Désépingler" : "Épingler en haut", icon: <IoPin size={14} />, onClick: () => at.saveItem({ ...it, pinned: !it.pinned }) },
       { id: "move", label: "Déplacer vers", icon: <IoSwapHorizontal size={14} />, sub: [

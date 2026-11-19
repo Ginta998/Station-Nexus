@@ -3,6 +3,7 @@ import { isOeuvre, isFolder, oeuvreFmt, imgSrc } from "@/lib/atelier";
 import { toEmbed, popOut } from "@/lib/embed";
 import { exportOeuvre } from "@/lib/exportPdf";
 import DriveSpace from "@/components/atelier/DriveSpace";
+import { OeuvreStation } from "@/components/atelier/StationLink";
 import { archiveCodes, uniCode, words, fmtDate } from "@/lib/archive";
 
 // L'espace d'une Œuvre : affiche, pitch, scénario + son Nexus Drive (dossiers & éléments dédiés).
@@ -52,7 +53,9 @@ export default function OeuvreView({ at, open, go, launch, mini, id, importDocs,
           </div>
         </div>
       </header>
-      <p className="ar-sec mono"><b>02</b> CONTENU DU DOSSIER <i>· {els.length} élément{els.length > 1 ? "s" : ""}</i></p>
+      <OeuvreStation at={at} o={o} />
+
+      <p className="ar-sec mono"><b>03</b> CONTENU DU DOSSIER <i>· {els.length} élément{els.length > 1 ? "s" : ""}</i></p>
 
       <DriveSpace at={at} open={open} importDocs={importDocs} universe_id={o.universe_id} oeuvre_id={id} label={o.title || "Œuvre"} />
     </section>

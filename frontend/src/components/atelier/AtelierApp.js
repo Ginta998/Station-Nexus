@@ -38,6 +38,8 @@ import { TextSizeButton } from "@/components/TextSizeButton";
 import { LabDialogHost } from "@/components/atelier/LabDialog";
 import Alexandrie from "@/components/atelier/Alexandrie";
 import JournalView from "@/components/atelier/JournalView";
+import { PublishHost, oeuvreOfCreation, oeuvreFromCreation } from "@/components/atelier/StationLink";
+import { getCreation } from "@/lib/api";
 import { IoJournalOutline } from "react-icons/io5";
 
 const Dock = ({ icon, label, sub, on, onClick, testid, color, kanji, badge, drop }) => (
@@ -108,6 +110,17 @@ export default function AtelierApp({ onLeave }) {
   const pinned = at.universes.filter((u) => u.pinned);
   const cur = view.name === "universe" ? at.universes.find((u) => u.id === view.id) : null;
   const importDocs = (defaults = {}) => { pickDefaults.current = defaults; pick.current?.click(); };
+  // arrivée depuis la station (« Ouvrir dans l'atelier ») : l'œuvre de la création, créée et reliée si elle n'existe pas encore
+  useEffect(() => {
+    if (!at.data) return;
+    let cid = ""; try { cid = sessionStorage.getItem("nx-at-open") || ""; sessionStorage.removeItem("nx-at-open"); } catch (_) {}
+    if (!cid) return;
+    (async () => {
+      let o = oeuvreOfCreation(at, cid);
+      if (!o) { try { const c = await getCreation(cid); o = await oeuvreFromCreation(at, c, at.universes.find((u) => (u.creation_ids || []).includes(cid))?.id || null); } catch (_) { return; } }
+      setView({ name: "oeuvre", id: o.id });
+    })();
+  }, [!!at.data]); // eslint-disable-line react-hooks/exhaustive-deps
   const ctx = { at, go, open, launch, mini: (s) => setMini(s), editUniverse: setUForm, editOeuvre: setOForm, importDocs, openBrains: () => setBrains(true) };
 
   useEffect(() => {
@@ -224,6 +237,7 @@ export default function AtelierApp({ onLeave }) {
       <ContextMenuHost />
       {viewing && <FileViewer at={at} id={viewing} onClose={() => setViewing(null)} edit={(id) => { setViewing(null); setEditing(id); }} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
+      <PublishHost at={at} />
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}
       {oForm && <OeuvreForm {...ctx} oeuvre={oForm} onClose={(o) => { setOForm(null); if (o?.id) setView({ name: "oeuvre", id: o.id }); }} />}
       <LabDialogHost />

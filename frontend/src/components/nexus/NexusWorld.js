@@ -36,7 +36,7 @@ const readView = () => { try { return localStorage.getItem(VIEW_KEY) === "list" 
 
 export default function NexusWorld(p) {
   const { item, ws, catLabel, cover, bg, making = [], trailer, launchLabel, progress, onLaunch, locked, unitLocked, onChapter, onEpisode,
-    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl, toComments = 0, onEditUnit, onDeleteUnit, wt = null } = p;
+    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl, toComments = 0, onEditUnit, onDeleteUnit, wt = null, onAtelier } = p;
 
   const wide = useWide();
   const [view, setViewS] = useState(readView);
@@ -538,6 +538,7 @@ export default function NexusWorld(p) {
           <SoundBtn className="nw-tb" />
           <button onClick={onFav} className={fav ? "on" : ""} title={fav ? "Retirer des favoris" : "Ajouter aux favoris"} aria-label="Favori" data-testid="nw-fav">{fav ? <IoHeart size={16} /> : <IoHeartOutline size={16} />}</button>
           {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
+          {isAdmin && onAtelier && <button onClick={onAtelier} title="Ouvrir son œuvre dans l'atelier" aria-label="Ouvrir dans l'atelier" data-testid="detail-atelier" className="nw-at">工</button>}
           <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
           <button onClick={() => { sfx("back"); goWorldHome(); }} title="Accueil de l'œuvre" aria-label="Accueil de l'œuvre" data-testid="nw-home"><IoHomeOutline size={17} /></button>
           <button className="nw-quit" onClick={() => { sfx("back"); onExit(); }} title="Quitter l'univers (revenir où tu étais)" data-testid="nw-exit"><IoExitOutline size={16} /><span>Quitter l'univers</span></button>

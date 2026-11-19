@@ -8,6 +8,10 @@ import { TaskRow, TaskQuickAdd } from "@/components/atelier/TasksView";
 import MediaGallery from "@/components/atelier/MediaGallery";
 import DocView from "@/components/atelier/DocView";
 import DocEdit from "@/components/atelier/DocEdit";
+import { IoCloudUploadOutline as IoPublish } from "react-icons/io5";
+import { askPublish } from "@/components/atelier/StationLink";
+import { liveTag } from "@/lib/publish";
+import { canPublish } from "@/components/atelier/itemActions";
 import DocStylePanel from "@/components/atelier/DocStylePanel";
 import { styleOf, styleVars, DOC_CSS, DOC_FORMATS, docFonts } from "@/lib/docStyles";
 import "@/components/atelier/docs.css";
@@ -128,11 +132,13 @@ export default function ItemEditor({ at, id, open, onClose }) {
           <option value="">Inbox (sans univers)</option>{at.universes.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
         </select>
         <span className={"at-status mono s-" + status} data-testid="atelier-editor-status">{statusLabel}</span>
+        {liveTag(it) && <span className="at-status mono st-live" title="Ce document est en ligne sur la station">● EN LIGNE · {liveTag(it)}</span>}
         <span className="grow" />
         <button className="at-icon" onClick={() => change({ pinned: !it.pinned })} title="Épingler" data-testid="atelier-editor-pin">{it.pinned ? <IoPin size={17} /> : <IoPinOutline size={17} />}</button>
         <button className="at-icon" onClick={() => setPanel(panel === "versions" ? null : "versions")} title="Versions" data-testid="atelier-editor-versions"><IoTimeOutline size={17} /></button>
         <button className="at-icon" onClick={() => setPanel(panel === "style" ? null : "style")} title="Mise en forme" data-testid="atelier-editor-style"><IoColorPaletteOutline size={17} /></button>
         <button className="at-icon" onClick={async () => { await flush(); setPanel("view"); }} title="Visualiser" data-testid="atelier-editor-view"><IoEyeOutline size={17} /></button>
+        {canPublish(it) && <button className="at-icon" onClick={async () => { await flush(); askPublish(it.id); }} title={liveTag(it) ? "Republier sur la station" : "Publier sur la station"} data-testid="atelier-editor-publish"><IoPublish size={17} /></button>}
         <button className="at-icon" onClick={() => printItem(it, uname)} title="Exporter en PDF" data-testid="atelier-editor-pdf"><IoPrintOutline size={17} /></button>
         <button className="at-icon txt" onClick={async () => { await flush(); try { await atelierApi.downloadDocx(it.id, it.title); } catch { toast.error("Export Word impossible"); } }} title="Exporter en Word (.docx)" data-testid="atelier-editor-docx">W</button>
         <button className="at-icon danger" onClick={remove} title="Supprimer" data-testid="atelier-editor-delete"><IoTrashOutline size={17} /></button>
