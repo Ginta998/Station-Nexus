@@ -9,6 +9,7 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import { resolveVideoEmbed } from "@/lib/video";
+import StationCinema, { canStationPlay } from "@/components/StationCinema";
 import EditorDialog from "@/components/EditorDialog";
 import MovixSelector from "@/components/MovixSelector";
 import CommentsSection from "@/components/CommentsSection";
@@ -51,6 +52,7 @@ export default function Detail() {
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [gameOpen, setGameOpen] = useState(false);
   const [cinemaKind, setCinemaKind] = useState(null); // "film" | "trailer" | null
+  const [epPlay, setEpPlay] = useState(null); // épisode lu dans le lecteur de la station (index)
   const [readerStart, setReaderStart] = useState(null);
   const [readerUnit, setReaderUnit] = useState("chapters");
   const [showEpisodes, setShowEpisodes] = useState(false);
@@ -227,6 +229,7 @@ export default function Detail() {
     if (!ep) return;
     try { localStorage.setItem("sx_eplast_" + item.id, String(i)); } catch (_) {}
     if (ep.content) { sfx("select"); setReaderUnit("episodes"); setReaderStart(i); setChaptersOpen(true); }
+    else if (canStationPlay(ep.url)) { sfx("select"); stopAmbient(); setEpPlay(i); }
     else if (ep.url) { sfx("select"); window.open(ep.url, "_blank", "noopener,noreferrer"); }
     else { toast.info("Aucun lien pour cet épisode."); }
   };
@@ -278,7 +281,23 @@ export default function Detail() {
 
       {chaptersOpen && <ChapterReader key={readerUnit} item={item} unitKey={readerUnit} startChapter={readerStart} onClose={() => setChaptersOpen(false)} onComment={goToComments} />}
 
-      {cinemaKind && <CinemaPlayer item={item} kind={cinemaKind} onClose={() => setCinemaKind(null)} />}
+      {cinemaKind && (() => {
+        // le beau lecteur (YouTube caché derrière nos contrôles) dès que la source s'y prête ; sinon l'ancien lecteur (Vimeo, Dailymotion…)
+        const link = ((cinemaKind === "film" ? item.film_url : item.trailer_url) || "").trim();
+        const up = cinemaKind === "film" ? item.has_film : item.has_trailer;
+        const src = link || (up ? videoUrl(item.id, cinemaKind, item.updated_at) : "");
+        if (canStationPlay(src) || (!link && up)) return <StationCinema queue={[{ url: src, title: cinemaKind === "trailer" ? `${item.title} · bande-annonce` : item.title }]} vertical={item.video_ratio === "9:16" ? true : undefined} onClose={() => setCinemaKind(null)} />;
+        return <CinemaPlayer item={item} kind={cinemaKind} onClose={() => setCinemaKind(null)} />;
+      })()}
+      {epPlay != null && (() => {
+        // les épisodes qui ont une vidéo, à la suite : « Épisode suivant » et compte à rebours
+        const eps = (item.episodes || []).map((e, i) => ({ e, i })).filter((x) => canStationPlay(x.e.url) && !x.e.content);
+        const start = Math.max(0, eps.findIndex((x) => x.i === epPlay));
+        return <StationCinema queue={eps.map((x) => ({ url: x.e.url, title: x.e.title || `Épisode ${x.i + 1}`, image: x.e.image || "" }))} start={start}
+          vertical={item.video_ratio === "9:16" ? true : item.video_ratio === "16:9" ? false : undefined}
+          onIndex={(k) => { const ix = eps[k]?.i; if (ix != null) try { localStorage.setItem("sx_eplast_" + item.id, String(ix)); } catch (_) {} }}
+          onClose={() => setEpPlay(null)} />;
+      })()}
 
       {gameOpen && <CosmicBunnyGame item={item} onClose={() => setGameOpen(false)} />}
 

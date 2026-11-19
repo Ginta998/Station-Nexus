@@ -22,7 +22,7 @@ const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
   poster: "", accent: "", world_style: "", reader_format: "", reader_look: "", units_cols: 0, units_cols_phone: 0, bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
+  launch_content: "", launch_url: "", film_url: "", video_ratio: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
   intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
 };
 
@@ -467,6 +467,13 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
         )}
         {form.launch_type === "chapters" && UnitList({ k: "chapters" })}
         {form.launch_type === "episodes" && UnitList({ k: "episodes" })}
+        {(form.launch_type === "episodes" || form.launch_type === "film") && (
+          <Field label="Format de l'image" hint="Vertical pour une série pensée pour le téléphone (Shorts, Reels). Sans réglage, un lien Shorts passe en vertical tout seul." wide>
+            <div className="rl-seg" data-testid="editor-video-ratio">
+              {[["", "Automatique"], ["16:9", "Horizontal 16:9"], ["9:16", "Vertical 9:16"]].map(([v, t]) => <button key={v} type="button" className={(form.video_ratio || "") === v ? "on" : ""} onClick={() => set("video_ratio", v)}>{t}</button>)}
+            </div>
+          </Field>
+        )}
       </>
     ),
     media: (

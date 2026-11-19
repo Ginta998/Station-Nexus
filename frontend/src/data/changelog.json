@@ -1,6 +1,22 @@
 {
-  "version": "0.35",
+  "version": "0.36",
   "patches": [
+    {
+      "v": "0.36",
+      "date": "2026-11-19",
+      "title": "Le beau lecteur partout, les épisodes et les sorties programmées",
+      "groups": {
+        "Ajouté": [
+          "Sur la station, films, bandes-annonces et épisodes passent dans le lecteur de l'atelier : YouTube caché derrière nos contrôles (lecture, ±10 s, vitesse, sous-titres, reprise), « Épisode suivant », liste « À suivre » et compte à rebours à la fin. Avant, un épisode YouTube ouvrait YouTube dans un nouvel onglet.",
+          "Série verticale : format 9:16 automatique pour les liens Shorts, ou réglé sur la création (Éditeur › Format de l'image : Automatique, Horizontal 16:9, Vertical 9:16).",
+          "Publier des épisodes depuis l'atelier : un lien vidéo du Drive (ou un document qui contient un lien YouTube) devient un épisode, seul (« Publier comme épisode… ») ou en lot (« Épisodes (la vidéo) »).",
+          "Programmer une sortie : « Sortie maintenant » ou « Programmer » (le prochain dimanche 18 h par défaut), seul ou en lot. Le chapitre ou l'épisode part tout de suite mais reste caché au public jusqu'à l'heure dite ; toi tu le vois, marqué « SORTIE dim. 22 nov., 18:00 ». (Demande la mise à jour du serveur : champ release_at et filtrage public.)"
+        ],
+        "Changé": [
+          "« Déposer des fichiers » devient « Importer des fichiers (privé) » et la fenêtre dit « Privé · rien n'est publié ». L'aperçu sait maintenant montrer un fichier importé."
+        ]
+      }
+    },
     {
       "v": "0.35",
       "date": "2026-11-19",

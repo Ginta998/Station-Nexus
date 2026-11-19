@@ -64,22 +64,39 @@ export function htmlToBlocks(html = "") {
 // ---- ce qu'un élément est devenu sur la station
 // fields.published = le chapitre ; fields.published_j = l'entrée du journal (un document peut être les deux)
 export const publishedOf = (it, target) => (target === "journal" ? it?.fields?.published_j : target === "chapter" ? it?.fields?.published : it?.fields?.published || it?.fields?.published_j) || null;
-export const liveTag = (it) => [it?.fields?.published && `CH. ${(it.fields.published.index ?? 0) + 1}`, it?.fields?.published_j && "JOURNAL"].filter(Boolean).join(" · ");
+export const liveTag = (it) => [it?.fields?.published && `${it.fields.published.unit === "episodes" ? "ÉP." : "CH."} ${(it.fields.published.index ?? 0) + 1}${it.fields.published.release_at && new Date(it.fields.published.release_at) > new Date() ? " · PROGRAMMÉ" : ""}`, it?.fields?.published_j && "JOURNAL"].filter(Boolean).join(" · ");
 export function publishedLabel(p, creations = []) {
   if (!p) return "";
   if (p.target === "journal") return "Publié · journal de bord";
   const c = creations.find((x) => x.id === p.creation_id);
-  return `Publié · ${p.unit_word || "chapitre"}${p.index != null ? ` ${p.index + 1}` : ""}${c ? ` · ${c.title}` : ""}`;
+  return `${p.release_at && new Date(p.release_at) > new Date() ? `Programmé ${relLabel(p.release_at)}` : "Publié"} · ${p.unit_word || "chapitre"}${p.index != null ? ` ${p.index + 1}` : ""}${c ? ` · ${c.title}` : ""}`;
 }
 export const stationUrl = (p) => (!p ? "" : p.target === "journal" ? `/journal/${p.entry_id}` : `/oeuvre/${p.creation_id}`);
 
 // ---- depuis la station : ouvrir l'œuvre d'une création dans l'atelier (créée et reliée au besoin à l'arrivée)
 export const openInAtelier = (nav, creationId) => { try { sessionStorage.setItem("nx-at-open", creationId); } catch (_) {} nav("/atelier"); };
 
+// ---- sorties programmées
+export const relLabel = (iso) => { try { return new Date(iso).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch { return iso; } };
+export const isScheduled = (u) => !!u?.release_at && new Date(u.release_at) > new Date();
+// le prochain dimanche à 18 h (heure locale), au format attendu par <input type="datetime-local">
+export function nextSunday(h = 18) { const d = new Date(); d.setHours(h, 0, 0, 0); const add = (7 - d.getDay()) % 7 || (new Date().getHours() >= h ? 7 : 0); d.setDate(d.getDate() + add); const p = (n) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:00`; }
+export const localToIso = (v) => (v ? new Date(v).toISOString() : "");
+
 // ---- empreintes : savoir ce qui a bougé depuis la publication, côté atelier (le brouillon) et côté station (en ligne)
 export const hashOf = (v) => { const t = typeof v === "string" ? v.replace(/\s+/g, " ").trim() : JSON.stringify(v || ""); let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
 const nowIso = () => new Date().toISOString();
-const remoteOfChapter = (ch) => hashOf(ch?.content || "");
+// un épisode se reconnaît à sa vidéo et à son résumé ; un chapitre à son texte
+const remoteOfChapter = (ch, unit) => (unit === "episodes" ? hashOf(`${ch?.url || ""}|${ch?.description || ""}`) : hashOf(ch?.content || ""));
+const plain = (html = "") => { const d = new DOMParser().parseFromString(`<div>${html}</div>`, "text/html"); return (d.body.textContent || "").replace(/\s+/g, " ").trim(); };
+// la vidéo d'un élément de l'atelier : un lien YouTube ou une vidéo déposée, sinon le premier lien YouTube du texte
+export function videoOf(it) {
+  const m = (it?.media || []).find((x) => x.type === "youtube" || x.type === "video"); if (m) return m.url;
+  const html = it?.content || ""; const a = html.match(/href="([^"]*(?:youtube\.com|youtu\.be)[^"]*)"/); if (a) return a[1];
+  const t = html.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)[\w-]{11}[^\s"<]*/); return t ? t[0] : "";
+}
+const epSig = (it) => `${videoOf(it)}|${plain(it?.content || "").slice(0, 400)}`;
+const localSig = (it, p) => (p?.unit === "episodes" ? epSig(it) : it.content || "");
 const remoteOfEntry = (e) => hashOf((e?.blocks || []).map((b) => ({ t: b.type, x: b.text || "", u: b.url || "", c: b.caption || "" })));
 
 // l'état d'une publication : "ok" à jour, "local" modifié dans l'atelier, "remote" modifié en ligne, "both", "gone" disparu en ligne, "?" inconnu
@@ -87,8 +104,8 @@ export function syncState(it, p, remote) {
   if (!p) return "none";
   if (remote === null) return "gone";
   if (remote === undefined || !p.local_hash) return "?";
-  const loc = hashOf(it.content || "") !== p.local_hash;
-  const rem = (p.target === "journal" ? remoteOfEntry(remote) : remoteOfChapter(remote)) !== p.remote_hash;
+  const loc = hashOf(localSig(it, p)) !== p.local_hash;
+  const rem = (p.target === "journal" ? remoteOfEntry(remote) : remoteOfChapter(remote, p.unit)) !== p.remote_hash;
   return loc && rem ? "both" : loc ? "local" : rem ? "remote" : "ok";
 }
 export const SYNC_LABEL = { ok: "À jour", local: "Modifié dans l'atelier", remote: "Modifié en ligne", both: "Modifié des deux côtés", gone: "Supprimé en ligne", "?": "En ligne", none: "" };
@@ -97,7 +114,7 @@ export const SYNC_LABEL = { ok: "À jour", local: "Modifié dans l'atelier", rem
 export async function fetchRemote(p) {
   if (!p) return null;
   if (p.target === "journal") { try { return await getJournalEntry(p.entry_id); } catch (e) { if (e?.response?.status === 404) return null; throw e; } }
-  const c = await getCreation(p.creation_id); return (c?.chapters || []).find((x) => x.id === p.chapter_id) || null;
+  const c = await getCreation(p.creation_id); return (c?.[p.unit || "chapters"] || []).find((x) => x.id === p.chapter_id) || null;
 }
 
 // la version en ligne, ramenée dans le brouillon (HTML pour l'atelier)
@@ -116,24 +133,31 @@ export function blocksToHtml(blocks = []) {
 }
 export const chapterHtml = (ch) => (!ch ? "" : ch.rich ? ch.content || "" : String(ch.content || "").split(/\n{2,}/).map((x) => `<p>${mdInline(x)}</p>`).join(""));
 export async function pullRemote(at, it, p) {
+  if (p.unit === "episodes") throw new Error("episode");
   const r = await fetchRemote(p); if (!r) throw new Error("gone");
   const html = p.target === "journal" ? blocksToHtml(r.blocks || []) : chapterHtml(r);
   const key = p.target === "journal" ? "published_j" : "published";
-  const np = { ...p, local_hash: hashOf(html), remote_hash: p.target === "journal" ? remoteOfEntry(r) : remoteOfChapter(r), date: nowIso() };
+  const np = { ...p, local_hash: hashOf(html), remote_hash: p.target === "journal" ? remoteOfEntry(r) : remoteOfChapter(r, p.unit), date: nowIso() };
   return at.saveItem({ ...it, content: html, fields: { ...(it.fields || {}), [key]: np } });
 }
 
 // ---- vers un chapitre (nouveau, ou remplace celui choisi ; republier retrouve le chapitre par son identifiant)
-export async function publishChapter(it, { creation_id, mode, chapter_id, title }) {
+export async function publishChapter(it, { creation_id, mode, chapter_id, title, unit = "chapters", release_at }) {
   const full = await getCreationFull(creation_id);
-  const units = [...(full.chapters || [])];
+  const units = [...(full[unit] || [])];
   let idx = mode === "replace" ? units.findIndex((u) => u.id === chapter_id) : -1;
-  const html = it.content || "";
-  if (idx >= 0) units[idx] = { ...units[idx], title: title || units[idx].title, content: html, rich: true };
-  else { units.push({ title: title || it.title || "Sans titre", content: html, description: "", image: "", rich: true, has_music: false }); idx = units.length - 1; }
-  const saved = await updateCreation(creation_id, { ...full, chapters: units }, true);
-  const ch = (saved?.chapters || [])[idx] || units[idx];
-  return { target: "chapter", creation_id, chapter_id: ch.id || chapter_id || "", index: idx, unit_word: "chapitre", title: ch.title, date: nowIso(), local_hash: hashOf(html), remote_hash: remoteOfChapter(ch) };
+  const rel = release_at === undefined ? {} : { release_at: release_at || "" };
+  let body;
+  if (unit === "episodes") {
+    const url = videoOf(it); const desc = plain(it.content || "").replace(/https?:\/\/\S+/g, "").trim().slice(0, 600);
+    const yid = (url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
+    body = { url, description: desc, image: it.image || (yid ? `https://i.ytimg.com/vi/${yid}/hqdefault.jpg` : ""), content: "", rich: false };
+  } else body = { content: it.content || "", rich: true };
+  if (idx >= 0) units[idx] = { ...units[idx], title: title || units[idx].title, ...body, ...rel };
+  else { units.push({ title: title || it.title || "Sans titre", description: "", image: "", has_music: false, ...body, ...rel }); idx = units.length - 1; }
+  const saved = await updateCreation(creation_id, { ...full, [unit]: units }, true);
+  const ch = (saved?.[unit] || [])[idx] || units[idx];
+  return { target: "chapter", unit, creation_id, chapter_id: ch.id || chapter_id || "", index: idx, unit_word: unit === "episodes" ? "épisode" : "chapitre", title: ch.title, release_at: ch.release_at || "", date: nowIso(), local_hash: hashOf(unit === "episodes" ? epSig(it) : it.content || ""), remote_hash: remoteOfChapter(ch, unit) };
 }
 
 // ---- vers le journal de bord (republier met à jour la même entrée si elle existe encore)
@@ -153,14 +177,19 @@ export async function publishJournal(it, { entry_id, title, creation_id, categor
 export async function republish(at, it, p) {
   const np = p.target === "journal"
     ? await publishJournal(it, { entry_id: p.entry_id, title: p.title || it.title, creation_id: p.creation_id, category_id: p.category_id, format: p.format, published: p.published, show_home: p.show_home })
-    : await publishChapter(it, { creation_id: p.creation_id, mode: "replace", chapter_id: p.chapter_id, title: p.title || it.title });
+    : await publishChapter(it, { creation_id: p.creation_id, mode: "replace", chapter_id: p.chapter_id, title: p.title || it.title, unit: p.unit || "chapters" });
   return at.saveItem({ ...it, fields: { ...(it.fields || {}), [p.target === "journal" ? "published_j" : "published"]: np } });
 }
 
 // ---- « écrit sur la station » → ramené dans l'atelier comme brouillon déjà relié (republier mettra à jour au même endroit)
-export function linkFromChapter(ch, creation_id, index) {
+export function linkFromChapter(ch, creation_id, index, unit = "chapters") {
+  if (unit === "episodes") {
+    const html = `${ch.url ? `<p><a class="sx-yt" href="${esc(ch.url)}">${esc(ch.url)}</a></p>` : ""}${ch.description ? `<p>${esc(ch.description)}</p>` : ""}`;
+    const it = { content: html, media: [] };
+    return { html, link: { target: "chapter", unit, creation_id, chapter_id: ch.id, index, unit_word: "épisode", title: ch.title, date: nowIso(), local_hash: hashOf(epSig(it)), remote_hash: remoteOfChapter(ch, unit) } };
+  }
   const html = chapterHtml(ch);
-  return { html, link: { target: "chapter", creation_id, chapter_id: ch.id, index, unit_word: "chapitre", title: ch.title, date: nowIso(), local_hash: hashOf(html), remote_hash: remoteOfChapter(ch) } };
+  return { html, link: { target: "chapter", unit, creation_id, chapter_id: ch.id, index, unit_word: "chapitre", title: ch.title, date: nowIso(), local_hash: hashOf(html), remote_hash: remoteOfChapter(ch, unit) } };
 }
 export function linkFromEntry(e) {
   const html = blocksToHtml(e.blocks || []);
@@ -168,12 +197,12 @@ export function linkFromEntry(e) {
 }
 
 // ---- un lot : plusieurs documents deviennent des chapitres, dans l'ordre (ceux déjà publiés dans cette création sont mis à jour sur place)
-export async function publishBatch(at, items, creation_id, onStep) {
+export async function publishBatch(at, items, creation_id, onStep, { unit = "chapters", release_at } = {}) {
   const done = [];
   for (let i = 0; i < items.length; i++) {
     const it = items[i]; const prev = it.fields?.published;
-    const same = prev && prev.creation_id === creation_id;
-    const p = await publishChapter(it, same ? { creation_id, mode: "replace", chapter_id: prev.chapter_id, title: prev.title || it.title } : { creation_id, mode: "new", title: it.title });
+    const same = prev && prev.creation_id === creation_id && (prev.unit || "chapters") === unit;
+    const p = await publishChapter(it, same ? { creation_id, mode: "replace", chapter_id: prev.chapter_id, title: prev.title || it.title, unit, release_at } : { creation_id, mode: "new", title: it.title, unit, release_at });
     await at.saveItem({ ...it, fields: { ...(it.fields || {}), published: p } });
     done.push(p); onStep?.(i + 1);
   }

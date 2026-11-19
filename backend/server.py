@@ -112,6 +112,7 @@ class Episode(BaseModel):
     image: Optional[str] = ""  # data uri / url — vignette de l'épisode (style Canal+)
     content: Optional[str] = ""  # texte rédigé de l'épisode (HTML du lecteur)
     rich: bool = False
+    release_at: Optional[str] = ""  # sortie programmée (ISO, UTC) : caché au public avant cette date
 
 
 class Chapter(BaseModel):
@@ -122,6 +123,7 @@ class Chapter(BaseModel):
     image: Optional[str] = ""  # data uri / url
     rich: bool = False          # content is sanitized HTML (WYSIWYG) vs plain text
     has_music: bool = False     # dedicated per-chapter reading music
+    release_at: Optional[str] = ""  # sortie programmée (ISO, UTC) : caché au public avant cette date
     locked: bool = False        # computed: chapter requires purchase/subscription (content stripped)
 
 
@@ -150,6 +152,7 @@ class Creation(BaseModel):
     launch_label: Optional[str] = "Lancer"
     launch_content: Optional[str] = ""
     launch_url: Optional[str] = ""
+    video_ratio: Optional[str] = ""     # "9:16" pour une série verticale ; vide = 16:9 (ou détecté depuis les liens Shorts)
     film_url: Optional[str] = ""          # main film link (YouTube/Vimeo/Dailymotion/embed/direct .mp4)
     trailer_url: Optional[str] = ""       # trailer link
     has_film: bool = False                # an uploaded main film exists in object storage
@@ -210,6 +213,7 @@ class CreationInput(BaseModel):
     launch_label: Optional[str] = "Lancer"
     launch_content: Optional[str] = ""
     launch_url: Optional[str] = ""
+    video_ratio: Optional[str] = ""     # "9:16" pour une série verticale ; vide = 16:9 (ou détecté depuis les liens Shorts)
     film_url: Optional[str] = ""
     trailer_url: Optional[str] = ""
     buy_url: Optional[str] = ""
@@ -569,6 +573,25 @@ async def _user_has_access(uid: Optional[str], doc: dict) -> bool:
     return await _membership_active(uid)
 
 
+def _hide_unreleased(doc: dict) -> dict:
+    """Sorties programmées : un chapitre ou un épisode dont release_at est dans le futur n'existe pas encore pour le public."""
+    now = datetime.now(timezone.utc)
+
+    def out(u):
+        ra = (u.get("release_at") or "").strip()
+        if not ra:
+            return True
+        try:
+            t = datetime.fromisoformat(ra.replace("Z", "+00:00"))
+            return (t if t.tzinfo else t.replace(tzinfo=timezone.utc)) <= now
+        except ValueError:
+            return True
+
+    for key in ("chapters", "episodes"):
+        doc[key] = [u for u in (doc.get(key) or []) if out(u)]
+    return doc
+
+
 def _gate_creation(doc: dict, has_access: bool, owned: bool) -> dict:
     """Strip locked chapter content and flag the creation for the frontend paywall."""
     doc["owned"] = owned
@@ -630,10 +653,15 @@ async def get_creation(cid: str, media: bool = False, authorization: Optional[st
     # Resolve viewer entitlement (optional auth) for paywall gating
     uid = await _optional_uid(authorization)
     has_access = await _user_has_access(uid, doc)
-    if not has_access and uid:
-        # admin must always receive full content, otherwise saving the editor would wipe locked chapters
+    is_admin = False
+    if uid:
         u = await db.users.find_one({"id": uid}, {"_id": 0, "is_admin": 1})
-        has_access = bool(u and u.get("is_admin"))
+        is_admin = bool(u and u.get("is_admin"))
+    if not has_access and is_admin:
+        # admin must always receive full content, otherwise saving the editor would wipe locked chapters
+        has_access = True
+    if not is_admin:
+        doc = _hide_unreleased(doc)
     owned = await _user_owns(uid, cid)
     if media:
         doc["has_poster"] = bool(doc.get("poster"))

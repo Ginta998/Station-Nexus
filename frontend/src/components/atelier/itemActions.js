@@ -6,10 +6,10 @@ import { addShortcut } from "@/components/atelier/Shortcuts";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 import { IoCloudUploadOutline, IoEyeOutline, IoJournalOutline } from "react-icons/io5";
 import { askPublish, goStation } from "@/components/atelier/StationLink";
-import { publishedOf, stationUrl } from "@/lib/publish";
+import { publishedOf, stationUrl, videoOf } from "@/lib/publish";
 
 // ce qui peut partir sur la station : un élément avec du texte (pas une œuvre, un dossier ou un simple fichier)
-export const canPublish = (it) => !isOeuvre(it) && !isFolder(it) && it.kind !== "file";
+export const canPublish = (it) => !isOeuvre(it) && !isFolder(it) && (it.kind !== "file" || !!videoOf(it));
 
 // Entrées du menu contextuel d'un élément (ouvrir, épingler, déplacer, catégorie, dupliquer, supprimer)
 export function itemMenu(it, at, open) {
@@ -18,8 +18,9 @@ export function itemMenu(it, at, open) {
     title: it.title || "Sans titre",
     entries: [
       { id: "open", label: "Ouvrir", icon: <IoOpenOutline size={14} />, onClick: () => open(it.id) },
-      ...(canPublish(it) ? [
-        { id: "publish", label: publishedOf(it, "chapter") ? `Mettre à jour le chapitre ${(publishedOf(it, "chapter").index ?? 0) + 1}…` : "Publier comme chapitre…", icon: <IoCloudUploadOutline size={14} />, onClick: () => askPublish(it.id, "chapter") },
+      ...(canPublish(it) && videoOf(it) ? [{ id: "publish-episode", label: publishedOf(it, "chapter")?.unit === "episodes" ? `Mettre à jour l'épisode ${(publishedOf(it, "chapter").index ?? 0) + 1}…` : "Publier comme épisode…", icon: <IoCloudUploadOutline size={14} />, onClick: () => askPublish(it.id, "episode") }] : []),
+      ...(canPublish(it) && it.kind !== "file" ? [
+        { id: "publish", label: publishedOf(it, "chapter") && publishedOf(it, "chapter").unit !== "episodes" ? `Mettre à jour le chapitre ${(publishedOf(it, "chapter").index ?? 0) + 1}…` : "Publier comme chapitre…", icon: <IoCloudUploadOutline size={14} />, onClick: () => askPublish(it.id, "chapter") },
         { id: "publish-journal", label: publishedOf(it, "journal") ? "Mettre à jour dans le journal…" : "Mettre dans le journal de bord…", icon: <IoJournalOutline size={14} />, onClick: () => askPublish(it.id, "journal") },
       ] : []),
       ...(publishedOf(it) ? [{ id: "see-station", label: "Voir sur la station", icon: <IoEyeOutline size={14} />, onClick: () => goStation(stationUrl(publishedOf(it))) }] : []),

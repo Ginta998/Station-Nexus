@@ -39,7 +39,7 @@ export default function DropDialog({ at, drop, defaults = {}, onClose, open }) {
           made.push(await at.createItem({ kind: "file", title: files.length === 1 && title.trim() ? title.trim() : files[i].name.replace(/\.[^.]+$/, ""), universe_id: uid || null, media: [md] }));
         }
         if (link) made.push(await at.createItem({ kind: "file", title: title.trim() || link.name, universe_id: uid || null, media: [link] }));
-        toast.success(`${made.length} fichier${made.length > 1 ? "s" : ""} déposé${made.length > 1 ? "s" : ""}`);
+        toast.success(`${made.length} fichier${made.length > 1 ? "s" : ""} rangé${made.length > 1 ? "s" : ""} dans ton Drive (privé)`);
         onClose(); if (made.length === 1) open(made[0].id, "file");
         return;
       }
@@ -77,7 +77,7 @@ export default function DropDialog({ at, drop, defaults = {}, onClose, open }) {
   return (
     <div className="at-modal" onClick={() => !prog && onClose()} data-testid="atelier-drop-dialog">
       <div className="at-modal-c" onClick={(e) => e.stopPropagation()}>
-        <div className="at-modal-h"><h2><IoCloudUploadOutline size={18} /> Ranger dans l'Atelier</h2><button onClick={onClose} disabled={!!prog} aria-label="Fermer"><IoClose size={20} /></button></div>
+        <div className="at-modal-h"><h2><IoCloudUploadOutline size={18} /> Ranger dans l'Atelier <small className="mono at-drop-priv">PRIVÉ · RIEN N'EST PUBLIÉ</small></h2><button onClick={onClose} disabled={!!prog} aria-label="Fermer"><IoClose size={20} /></button></div>
         <div className="at-form">
           <div className="at-drop-list">
             {files.map((f) => <span key={f.name + f.size}>{isImportable(f) ? <IoDocumentTextOutline size={13} /> : "•"} {f.name} <small>{(f.size / 1048576).toFixed(1)} Mo</small></span>)}

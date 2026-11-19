@@ -120,3 +120,8 @@
 .st-ord button{width:30px;height:30px;border:1px solid var(--lab-hair,rgba(255,255,255,.14));background:none;color:var(--lab-ink,var(--text-primary));cursor:pointer}
 .st-ord button:disabled{opacity:.3;cursor:default}
 .pb-all{align-self:flex-start;margin-top:4px;background:none;cursor:pointer}
+/* sortie programmée */
+.st-rel{display:flex;flex-direction:column;gap:8px}
+.st-rel input[type=datetime-local]{align-self:flex-start;min-width:240px;color-scheme:dark}
+.st-sched{color:#9ec5ff!important;border-color:color-mix(in srgb,#6aa8ff 45%,transparent)!important}
+.at-drop-priv{display:block;margin-top:6px;font-size:9.5px;letter-spacing:.2em;color:var(--text-secondary);font-weight:500}

@@ -9,7 +9,7 @@ import { isOeuvre, stripHtml } from "@/lib/atelier";
 import { pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 import { askPublish, goStation } from "@/components/atelier/StationLink";
 import { canPublish } from "@/components/atelier/itemActions";
-import { syncState, SYNC_LABEL, republish, pullRemote, stationUrl, linkFromChapter, linkFromEntry } from "@/lib/publish";
+import { relLabel, syncState, SYNC_LABEL, republish, pullRemote, stationUrl, linkFromChapter, linkFromEntry } from "@/lib/publish";
 import "@/components/atelier/station.css";
 
 /*
@@ -20,7 +20,7 @@ import "@/components/atelier/station.css";
   - Prêts à partir : les documents des œuvres reliées qui ne sont pas encore en ligne.
 */
 const pubsOf = (it) => [it.fields?.published && { it, p: it.fields.published }, it.fields?.published_j && { it, p: it.fields.published_j }].filter(Boolean);
-const where = (p, cTitle) => (p.target === "journal" ? "JOURNAL DE BORD" : `CH. ${(p.index ?? 0) + 1}${cTitle ? ` · ${cTitle.toUpperCase()}` : ""}`);
+const where = (p, cTitle) => (p.target === "journal" ? "JOURNAL DE BORD" : `${p.unit === "episodes" ? "ÉP." : "CH."} ${(p.index ?? 0) + 1}${cTitle ? ` · ${cTitle.toUpperCase()}` : ""}${p.release_at && new Date(p.release_at) > new Date() ? ` · SORTIE ${relLabel(p.release_at).toUpperCase()}` : ""}`);
 
 export default function PublishView({ at, go, open }) {
   const qc = useQueryClient();
@@ -45,7 +45,7 @@ export default function PublishView({ at, go, open }) {
   const remoteOf = (p) => {
     if (p.target === "journal") return R.e[p.entry_id];
     const c = R.c[p.creation_id]; if (c === undefined) return undefined; if (c === null) return null;
-    return (c.chapters || []).find((x) => x.id === p.chapter_id) || null;
+    return (c[p.unit || "chapters"] || []).find((x) => x.id === p.chapter_id) || null;
   };
   const rows = pubs.map((x) => ({ ...x, st: isFetching && !R.c[x.p.creation_id] && !R.e[x.p.entry_id] ? "?" : syncState(x.it, x.p, remoteOf(x.p)) }));
   const todo = rows.filter((x) => ["local", "remote", "both", "gone"].includes(x.st));
@@ -55,7 +55,7 @@ export default function PublishView({ at, go, open }) {
   const reload = () => { refetch(); qc.invalidateQueries({ queryKey: ["creation-atelier"] }); qc.invalidateQueries({ queryKey: ["journal"] }); };
 
   const run = async (key, fn, ok) => { setBusy(key); try { await fn(); toast.success(ok); reload(); } catch (e) { toast.error(e?.response?.data?.detail || "Action impossible"); } setBusy(""); };
-  const doRepublish = (x) => run(x.it.id + x.p.target, () => republish(at, x.it, x.p), x.p.target === "journal" ? "Entrée du journal mise à jour" : `Chapitre ${(x.p.index ?? 0) + 1} mis à jour`);
+  const doRepublish = (x) => run(x.it.id + x.p.target, () => republish(at, x.it, x.p), x.p.target === "journal" ? "Entrée du journal mise à jour" : `${x.p.unit === "episodes" ? "Épisode" : "Chapitre"} ${(x.p.index ?? 0) + 1} mis à jour`);
   const doPull = (x) => run(x.it.id + x.p.target, () => pullRemote(at, x.it, x.p), "Version en ligne récupérée dans le brouillon");
   const forget = (x) => at.saveItem({ ...x.it, fields: { ...x.it.fields, [x.p.target === "journal" ? "published_j" : "published"]: null } }).then(() => toast.success("Lien oublié (rien n'a changé en ligne)"));
   const rowMenu = (x) => ({ title: x.it.title, entries: [
@@ -73,13 +73,13 @@ export default function PublishView({ at, go, open }) {
   const [edCh, setEdCh] = useState(null); const [readJ, setReadJ] = useState(""); const [allJ, setAllJ] = useState(false);
   const chIds = new Set(pubs.filter((x) => x.p.target === "chapter").map((x) => x.p.chapter_id));
   const jIds = new Set(pubs.filter((x) => x.p.target === "journal").map((x) => x.p.entry_id));
-  const stCh = linked.flatMap((o) => (R.c[o.fields.creation_id]?.chapters || []).map((ch, i) => ({ o, cid: o.fields.creation_id, ch, i })).filter((x) => !chIds.has(x.ch.id)));
+  const stCh = linked.flatMap((o) => ["chapters", "episodes"].flatMap((unit) => (R.c[o.fields.creation_id]?.[unit] || []).map((ch, i) => ({ o, cid: o.fields.creation_id, ch, i, unit })))).filter((x) => !chIds.has(x.ch.id));
   const stJ = jall.filter((e) => !jIds.has(e.id));
-  const bringCh = (x) => { const { html, link } = linkFromChapter(x.ch, x.cid, x.i); return at.createItem({ kind: "document", title: x.ch.title || `Chapitre ${x.i + 1}`, universe_id: x.o.universe_id || null, content: html, fields: { oeuvre_id: x.o.id, published: link } }).then(() => toast.success("Ramené dans l'atelier, déjà relié au chapitre")); };
+  const bringCh = (x) => { const { html, link } = linkFromChapter(x.ch, x.cid, x.i, x.unit); return at.createItem({ kind: "document", title: x.ch.title || `${x.unit === "episodes" ? "Épisode" : "Chapitre"} ${x.i + 1}`, universe_id: x.o.universe_id || null, content: html, fields: { oeuvre_id: x.o.id, published: link } }).then(() => toast.success("Ramené dans l'atelier, déjà relié au chapitre")); };
   const bringJ = async (e) => { const full = await getJournalEntry(e.id); const { html, link } = linkFromEntry(full); const o = oeuvres.find((w) => w.fields?.creation_id && w.fields.creation_id === full.creation_id);
     await at.createItem({ kind: "document", title: full.title, universe_id: o?.universe_id || null, image: full.cover || "", content: html, fields: { ...(o ? { oeuvre_id: o.id } : {}), published_j: link } }); toast.success(o ? `Ramenée dans l'œuvre « ${o.title} », déjà reliée` : "Ramenée dans l'Inbox de l'atelier, déjà reliée"); };
   const chMenu = (x) => ({ title: x.ch.title || `Chapitre ${x.i + 1}`, entries: [
-    { id: "edit", label: "Modifier le chapitre", icon: <IoOpenOutline size={14} />, onClick: () => setEdCh({ cid: x.cid, index: x.i }) },
+    { id: "edit", label: "Modifier le chapitre", icon: <IoOpenOutline size={14} />, onClick: () => setEdCh({ cid: x.cid, index: x.i, unit: x.unit }) },
     { id: "see", label: "Voir sur la station", icon: <IoEyeOutline size={14} />, onClick: () => goStation(`/oeuvre/${x.cid}`) },
     { id: "bring", label: "Ramener dans l'atelier (brouillon relié)", icon: <IoDownloadOutline size={14} />, onClick: () => bringCh(x) },
   ] });
@@ -188,10 +188,10 @@ export default function PublishView({ at, go, open }) {
           <div key={o.id} className="pb-group">
             <p className="pb-gt mono">{(cTitle(o.fields.creation_id) || o.title).toUpperCase()}</p>
             <div className="pb-list">{stCh.filter((x) => x.o.id === o.id).map((x) => (
-              <div key={x.ch.id || x.i} className="pb-row" {...pressMenu(() => chMenu(x))} data-testid={`pub-st-ch-${x.i}`}>
-                <button className="pb-main" onClick={() => setEdCh({ cid: x.cid, index: x.i })}>
+              <div key={x.unit + (x.ch.id || x.i)} className="pb-row" {...pressMenu(() => chMenu(x))} data-testid={`pub-st-ch-${x.i}`}>
+                <button className="pb-main" onClick={() => setEdCh({ cid: x.cid, index: x.i, unit: x.unit })}>
                   <span className="pb-ic mono" style={{ fontSize: 10.5 }}>{String(x.i + 1).padStart(2, "0")}</span>
-                  <span className="pb-txt"><b>{x.ch.title || `Chapitre ${x.i + 1}`}</b><small className="mono">CH. {x.i + 1} · ÉCRIT SUR LA STATION</small></span>
+                  <span className="pb-txt"><b>{x.ch.title || `Chapitre ${x.i + 1}`}</b><small className="mono">{x.unit === "episodes" ? "ÉP." : "CH."} {x.i + 1} · ÉCRIT SUR LA STATION{x.ch.release_at && new Date(x.ch.release_at) > new Date() ? ` · SORTIE ${relLabel(x.ch.release_at).toUpperCase()}` : ""}</small></span>
                 </button>
                 <span className="pb-acts"><MoreBtn m={chMenu(x)} /></span>
               </div>
@@ -213,7 +213,7 @@ export default function PublishView({ at, go, open }) {
           {stJ.length > 8 && <button className="at-link pb-all" onClick={() => setAllJ(!allJ)}>{allJ ? "Réduire" : `Afficher les ${stJ.length} entrées`}</button>}
         </div>}
       </>}
-      {edCh && <ChapterQuickEdit creationId={edCh.cid} unitKey="chapters" index={edCh.index} onClose={() => setEdCh(null)} onSaved={reload} />}
+      {edCh && <ChapterQuickEdit creationId={edCh.cid} unitKey={edCh.unit || "chapters"} index={edCh.index} onClose={() => setEdCh(null)} onSaved={reload} />}
       {readJ && <JournalOverlay id={readJ} onClose={() => setReadJ("")} onEdit={() => { const id = readJ; setReadJ(""); go({ name: "journal", edit: id }); }} />}
     </section>
   );

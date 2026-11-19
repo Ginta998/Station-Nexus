@@ -156,7 +156,7 @@ export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_i
     { id: "nf", label: "Nouveau dossier", icon: <IoFolderOutline size={14} />, onClick: newFolder },
     { id: "nn", label: "Nouveau", icon: <IoDocumentTextOutline size={14} />, sub: typeMenuEntries(createType) },
     { id: "tpl", label: "Depuis un template", icon: <IoLibraryOutline size={14} />, sub: templateMenuEntries(fromTemplate, allTemplates(at)) },
-    { id: "up", label: "Déposer des fichiers", icon: <IoCloudUploadOutline size={14} />, onClick: dropFiles },
+    { id: "up", label: "Importer des fichiers (privé)", icon: <IoCloudUploadOutline size={14} />, onClick: dropFiles },
     { id: "ln", label: "Coller un lien", icon: <IoLinkOutline size={14} />, onClick: addLink },
     ...(!fid && items.some((i) => !i.fields?.folder_id) ? ["-", { id: "org", label: "Organiser par type", icon: <IoSparklesOutline size={14} />, onClick: organizeByType }] : []),
   ] });
