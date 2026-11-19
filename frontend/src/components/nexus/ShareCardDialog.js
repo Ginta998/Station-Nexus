@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { IoClose, IoDownloadOutline, IoShareSocialOutline, IoCopyOutline, IoLogoWhatsapp, IoMailOutline, IoChatbubbleOutline, IoPaperPlaneOutline, IoLogoFacebook, IoLogoTwitter, IoLinkOutline } from "react-icons/io5";
 import { shareCardBlob, worldPalette, CARD_SIZES, CARD_LAYOUTS } from "@/lib/shareCard";
+import { shareLink } from "@/lib/api";
 
 /*
   Partager une œuvre, un chapitre ou un épisode : de belles cartes (six dessins, trois formats) aux couleurs du monde,
@@ -12,7 +13,7 @@ const longDate = (iso) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "
 const PREF = "nx-card-pref";
 const readPref = () => { try { return JSON.parse(localStorage.getItem(PREF) || "{}"); } catch (_) { return {}; } };
 
-export default function ShareCardDialog({ item, unit, onClose, poster, catLabel }) {
+export default function ShareCardDialog({ item, unit, onClose, poster, catLabel, pal: palIn }) {
   const future = unit?.release_at && new Date(unit.release_at) > new Date();
   const pref = readPref();
   const [layout, setLayout] = useState(future ? "compte" : pref.layout || "affiche");
@@ -20,12 +21,13 @@ export default function ShareCardDialog({ item, unit, onClose, poster, catLabel 
   const [mode, setMode] = useState(future ? "date" : "now");
   const [quote, setQuote] = useState(() => { const first = (item.synopsis || "").split(/(?<=[.!?…])\s/)[0] || ""; return first.length > 20 ? first : item.tagline || first; });
   const [url, setUrl] = useState(null); const [blob, setBlob] = useState(null);
-  const link = `${window.location.origin}/oeuvre/${item.id}`;
+  const pretty = item.id ? `${window.location.origin}/oeuvre/${item.id}` : window.location.origin; // le lien écrit sur l'image
+  const link = shareLink(item.id, unit ? unit.index - 1 : null); // le lien envoyé : avec l'aperçu (image, titre) dans les messageries
   const unitName = unit ? `${unit.kind === "episode" ? "Épisode" : (item.unit_label || "Chapitre")} ${unit.index}` : "";
-  const kicker = unit ? `${unitName}${unit.title ? " · " + unit.title : ""}` : (catLabel || "Nouvelle œuvre");
+  const kicker = unit ? `${unitName}${unit.title && unit.title.toLowerCase() !== unitName.toLowerCase() ? " · " + unit.title : ""}` : (catLabel || "Nouvelle œuvre");
   const when = mode === "date" && unit?.release_at ? `Sortie ${longDate(unit.release_at)}` : unit ? "Disponible maintenant sur la station" : "À découvrir sur la station";
   const days = mode === "date" && unit?.release_at ? Math.max(0, Math.ceil((new Date(unit.release_at) - new Date()) / 864e5)) : -1;
-  const defaultMsg = unit ? (mode === "date" ? `${unitName} de « ${item.title} » sort ${longDate(unit.release_at)} sur Station Nexus.` : `${unitName} de « ${item.title} » est sorti sur Station Nexus !`) : `Découvre « ${item.title} » sur Station Nexus.`;
+  const defaultMsg = !item.id ? `Viens découvrir Station Nexus, mon univers : œuvres, chapitres, épisodes…` : unit ? (mode === "date" ? `${unitName} de « ${item.title} » sort ${longDate(unit.release_at)} sur Station Nexus.` : `${unitName} de « ${item.title} » est sorti sur Station Nexus !`) : `Découvre « ${item.title} » sur Station Nexus.`;
   const [msg, setMsg] = useState(defaultMsg);
   useEffect(() => setMsg(defaultMsg), [mode]); // eslint-disable-line react-hooks/exhaustive-deps
   const full = `${msg} ${link}`;
@@ -33,8 +35,8 @@ export default function ShareCardDialog({ item, unit, onClose, poster, catLabel 
   useEffect(() => {
     let alive = true; let made = null; setUrl(null);
     try { localStorage.setItem(PREF, JSON.stringify({ layout, size })); } catch (_) { /* rien */ }
-    const pal = worldPalette(document.querySelector('[data-testid="nexus-world"]'));
-    const t = setTimeout(() => shareCardBlob({ layout, size, title: item.title, kicker, when, url: link, poster, pal, quote, days }).then((b) => { if (!alive || !b) return; made = URL.createObjectURL(b); setBlob(b); setUrl(made); }), 120);
+    const pal = palIn || worldPalette(document.querySelector('[data-testid="nexus-world"]'));
+    const t = setTimeout(() => shareCardBlob({ layout, size, title: item.title, kicker, when, url: pretty, poster, pal, quote, days }).then((b) => { if (!alive || !b) return; made = URL.createObjectURL(b); setBlob(b); setUrl(made); }), 120);
     return () => { alive = false; clearTimeout(t); if (made) URL.revokeObjectURL(made); };
   }, [layout, size, mode, quote]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -64,7 +66,7 @@ export default function ShareCardDialog({ item, unit, onClose, poster, catLabel 
   return createPortal(
     <div className="sc-wrap" onClick={onClose} data-testid="share-card">
       <div className="sc-box" onClick={(e) => e.stopPropagation()}>
-        <div className="sc-h"><b>Partager {unit ? unitName.toLowerCase() : "l'œuvre"}</b><button onClick={onClose} aria-label="Fermer"><IoClose size={18} /></button></div>
+        <div className="sc-h"><b>Partager {unit ? unitName.toLowerCase() : item.id ? "l'œuvre" : "la station"}</b><button onClick={onClose} aria-label="Fermer"><IoClose size={18} /></button></div>
         <div className="sc-cols">
           <div className="sc-left">
             <div className="sc-prev" style={{ aspectRatio: ratio }}>{url ? <img src={url} alt={`Carte ${layout} de ${item.title}`} /> : <span className="sc-wait">Dessin de la carte…</span>}</div>

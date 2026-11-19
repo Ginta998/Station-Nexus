@@ -1,6 +1,17 @@
 {
-  "version": "0.47",
+  "version": "0.48",
   "patches": [
+    {
+      "v": "0.48",
+      "date": "2026-11-19",
+      "title": "Partager, en vrai",
+      "groups": {
+        "Ajouté": [
+          "Aperçu des liens : un lien d'œuvre ou de chapitre envoyé dans WhatsApp, Messages, Discord, X ou Facebook s'affiche avec une belle image (l'affiche, le titre, la sortie) et le résumé. L'image est dessinée par la station pour chaque œuvre ; un chapitre pas encore sorti n'est jamais dévoilé.",
+          "Menu › Partager : une page qui rassemble tout. La station (carte et lien de bio, reconnu dans Tes chiffres), chaque œuvre et sa dernière sortie, chaque carte aux couleurs du monde de l'œuvre. Le bouton Partager du monde reste là aussi."
+        ]
+      }
+    },
     {
       "v": "0.47",
       "date": "2026-11-19",

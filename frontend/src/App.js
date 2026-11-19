@@ -39,6 +39,7 @@ import PortalListener from "@/components/atelier/PortalListener";
 const Atelier = lazy(() => import("@/pages/Atelier"));
 const SharedDoc = lazy(() => import("@/pages/SharedDoc"));
 const Shelf = lazy(() => import("@/pages/Shelf"));
+const SharePage = lazy(() => import("@/pages/SharePage"));
 import CyberOverlay from "@/components/CyberOverlay";
 import CosmicBackground from "@/components/CosmicBackground";
 import ThemeRuntime from "@/components/ThemeRuntime";
@@ -159,6 +160,7 @@ function App() {
             <Route path="/journal/:id/modifier" element={<JournalEditor />} />
             <Route path="/planning" element={<Planning />} />
             <Route path="/etagere" element={<Shelf />} />
+            <Route path="/partager" element={<SharePage />} />
             <Route path="/soutien" element={<SupportPage />} />
             <Route path="/a-propos" element={<About />} />
             <Route path="/atelier" element={<Atelier />} />

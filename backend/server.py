@@ -3030,6 +3030,163 @@ async def _migrate_announcements_to_journal():
 
 
 from atelier import build_atelier_router, build_public_files_router  # noqa: E402
+# ---------------- Aperçus de lien (WhatsApp, Messages, Discord…) : une page et une image par œuvre ----------------
+# Le lien à partager est /api/s/{œuvre} (ou /api/s/{œuvre}?u=3 pour un chapitre / épisode).
+# Les messageries lisent ses balises Open Graph (titre, texte, image 1200 × 630) ; un humain est envoyé aussitôt sur la page de l'œuvre.
+_OG_CACHE: Dict[str, bytes] = {}
+_FONT_DIR = ROOT_DIR / "assets" / "fonts"
+
+
+def _og_font(name: str, size: int):
+    from PIL import ImageFont
+    for f in (_FONT_DIR / name, Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")):
+        try:
+            return ImageFont.truetype(str(f), size)
+        except Exception:  # noqa: BLE001
+            continue
+    return ImageFont.load_default()
+
+
+def _img_of(data: str):
+    from PIL import Image
+    if not data or not data.startswith("data:"):
+        return None
+    try:
+        return Image.open(io.BytesIO(base64.b64decode(data.split(",", 1)[1]))).convert("RGB")
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _og_wrap(draw, text: str, font, max_w: int, max_lines: int) -> List[str]:
+    words, lines, cur = (text or "").split(), [], ""
+    for w in words:
+        t = (cur + " " + w).strip()
+        if draw.textlength(t, font=font) > max_w and cur:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = t
+    if cur:
+        lines.append(cur)
+    if len(lines) > max_lines:
+        lines = lines[:max_lines]
+        lines[-1] = lines[-1].rstrip(" .,;:") + "…"
+    return lines
+
+
+def _og_card(c: dict, kicker: str, accent: str) -> bytes:
+    from PIL import Image, ImageDraw, ImageFilter, ImageOps
+    W, H = 1200, 630
+    poster = _img_of(c.get("poster") or "") or _img_of(c.get("bg_image") or "")
+    if poster:
+        bg = ImageOps.fit(poster, (W, H)).filter(ImageFilter.GaussianBlur(28))
+        bg = Image.blend(bg, Image.new("RGB", (W, H), (6, 7, 10)), 0.62)
+    else:
+        bg = Image.new("RGB", (W, H), (11, 12, 16))
+    d = ImageDraw.Draw(bg)
+    try:
+        acc = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4)) if accent and len(accent.lstrip("#")) == 6 else (212, 178, 106)
+    except ValueError:
+        acc = (212, 178, 106)
+    x = 64
+    if poster:
+        ph = H - 110
+        pw = int(ph * 0.72)
+        p = ImageOps.fit(poster, (pw, ph))
+        shadow = Image.new("RGBA", (pw + 60, ph + 60), (0, 0, 0, 0))
+        ImageDraw.Draw(shadow).rectangle([30, 40, pw + 30, ph + 40], fill=(0, 0, 0, 170))
+        bg.paste(shadow.filter(ImageFilter.GaussianBlur(16)), (40, 25), shadow.filter(ImageFilter.GaussianBlur(16)))
+        bg.paste(p, (64, 55))
+        x = 64 + pw + 60
+    d = ImageDraw.Draw(bg)
+    mw = W - x - 64
+    d.text((x, 70), "STATION NEXUS", font=_og_font("SpaceGrotesk-SemiBold.ttf", 24), fill=acc)
+    y = 140
+    if kicker:
+        d.text((x, y), kicker.upper()[:46], font=_og_font("SpaceGrotesk-SemiBold.ttf", 28), fill=acc)
+        y += 56
+    size = 84
+    while size > 46:
+        tf = _og_font("PlayfairDisplay-ExtraBold.ttf", size)
+        lines = _og_wrap(d, c.get("title") or "", tf, mw, 3)
+        if all(d.textlength(line, font=tf) <= mw for line in lines) and len(_og_wrap(d, c.get("title") or "", tf, mw, 9)) <= 3:
+            break
+        size -= 6
+    for line in lines:
+        d.text((x, y), line, font=tf, fill=(255, 255, 255))
+        y += int(size * 1.12)
+    tag = (c.get("tagline") or c.get("synopsis") or "").strip()
+    if tag:
+        for line in _og_wrap(d, tag, _og_font("SpaceGrotesk-Regular.ttf", 28), mw, 3):
+            y += 6
+            d.text((x, y + 10), line, font=_og_font("SpaceGrotesk-Regular.ttf", 28), fill=(220, 222, 228))
+            y += 38
+    d.rectangle([x, H - 92, x + 90, H - 87], fill=acc)
+    d.text((x, H - 72), _site_url().replace("https://", "").replace("http://", ""), font=_og_font("SpaceGrotesk-Regular.ttf", 24), fill=(200, 202, 210))
+    buf = io.BytesIO()
+    bg.save(buf, "JPEG", quality=86, optimize=True, progressive=True)
+    return buf.getvalue()
+
+
+def _released_unit(c: dict, u: Optional[int]):
+    if u is None or u < 0:
+        return None, ""
+    for key, word in (("chapters", (c.get("unit_label") or "Chapitre").strip() or "Chapitre"), ("episodes", "Épisode")):
+        if c.get("launch_type") == key or (key == "episodes" and c.get("launch_type") != "chapters"):
+            units = c.get(key) or []
+            if 0 <= u < len(units):
+                x = units[u]
+                t = _parse_iso(x.get("release_at"))
+                if t and t > datetime.now(timezone.utc):
+                    return None, ""  # pas encore sorti : on ne dévoile rien
+                base = f"{word} {u + 1}"
+                return x, base + (f" · {x.get('title')}" if x.get("title") and x.get("title").strip().lower() != base.lower() else "")
+    return None, ""
+
+
+@api_router.get("/s/{cid}")
+async def share_page(cid: str, u: Optional[int] = None):
+    """La page que lisent WhatsApp, Messages, Discord, X… : titre, texte et image. Les humains repartent tout de suite vers l'œuvre."""
+    import html as _h
+    c = await db.creations.find_one({"id": cid}, {"_id": 0, "id": 1, "title": 1, "tagline": 1, "synopsis": 1, "updated_at": 1, "launch_type": 1,
+                                                  "unit_label": 1, "chapters.title": 1, "chapters.release_at": 1, "episodes.title": 1, "episodes.release_at": 1})
+    site = _site_url()
+    if not c:
+        return RedirectResponse(site)
+    _, label = _released_unit(c, u)
+    target = f"{site}/oeuvre/{cid}"
+    title = f"{c.get('title', '')}" + (f" · {label}" if label else "")
+    desc = (c.get("tagline") or c.get("synopsis") or "Une œuvre à découvrir sur Station Nexus.")[:200]
+    img = f"{site}/api/s/{cid}/card.jpg?u={u if u is not None else ''}&v={_h.escape(str(c.get('updated_at') or ''))[:30]}"
+    e = _h.escape
+    page = f"""<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>{e(title)} · Station Nexus</title>
+<meta name="description" content="{e(desc)}">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Station Nexus">
+<meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}">
+<meta property="og:image" content="{e(img)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="{e(target)}"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{e(title)}"><meta name="twitter:description" content="{e(desc)}"><meta name="twitter:image" content="{e(img)}">
+<link rel="canonical" href="{e(target)}"><meta http-equiv="refresh" content="0;url={e(target)}">
+</head><body style="background:#0b0c10;color:#eee;font-family:Arial"><p><a href="{e(target)}" style="color:#d4b26a">Ouvrir « {e(c.get('title', ''))} » sur Station Nexus</a></p>
+<script>location.replace({json.dumps(target)})</script></body></html>"""
+    return HTMLResponse(page, headers={"Cache-Control": "public, max-age=600"})
+
+
+@api_router.get("/s/{cid}/card.jpg")
+async def share_card(cid: str, u: Optional[str] = None, v: str = ""):
+    c = await db.creations.find_one({"id": cid}, {"_id": 0})
+    if not c:
+        raise HTTPException(404, "Œuvre introuvable")
+    ui = int(u) if (u or "").lstrip("-").isdigit() else None
+    _, label = _released_unit(c, ui)
+    key = f"{cid}:{ui}:{c.get('updated_at')}"
+    if key not in _OG_CACHE:
+        if len(_OG_CACHE) > 200:
+            _OG_CACHE.clear()
+        _OG_CACHE[key] = await asyncio.to_thread(_og_card, c, label or "", c.get("accent") or "")
+    return Response(content=_OG_CACHE[key], media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
+
+
 # ---------------- Alertes de sortie : « Me prévenir », notification et email automatiques ----------------
 class WatchIn(BaseModel):
     email: str = ""

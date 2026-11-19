@@ -214,3 +214,10 @@ export const downloadBackup = async () => {
   a.href = url; a.download = `station-nexus-${new Date().toISOString().slice(0, 10)}.json`; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
 };
+
+// ---- Le lien à partager : il passe par la page d'aperçu du serveur (titre, texte et image dans WhatsApp, Messages, Discord…)
+export const shareLink = (id, unitIndex) => {
+  if (!id) return window.location.origin;
+  if (/^https?:\/\//.test(API)) return `${API}/s/${id}${unitIndex != null && unitIndex >= 0 ? `?u=${unitIndex}` : ""}`;
+  return `${window.location.origin}/oeuvre/${id}`;
+};
