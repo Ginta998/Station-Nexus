@@ -1590,3 +1590,6 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
   .ws-vhs .nw-osd.l{left:14px}.ws-vhs .nw-osd.r{right:14px;max-width:46%}
   .ws-vhs .nw-title{font-size:clamp(40px,11vw,60px);line-height:.95}
 }
+/* Le bandeau du haut restait gris clair avec une affiche claire : le fond flouté est assombri, comme l'écran */
+.ws-vhs .nw-bg{filter:blur(30px) brightness(.14) saturate(.7)}
+.ws-vhs .nw-hud{background:linear-gradient(180deg,rgba(4,8,14,.6),rgba(4,8,14,0))}
