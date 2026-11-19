@@ -1,6 +1,16 @@
 {
-  "version": "0.54",
+  "version": "0.54.1",
   "patches": [
+    {
+      "v": "0.54.1",
+      "date": "2026-11-19",
+      "title": "Le choix du thème réparé",
+      "groups": {
+        "Corrigé": [
+          "Accueil : le bouton Thèmes affichait un écran noir avec un seul thème. Les boutons de la liste portaient le même nom de style que l'écran de lecture des cassettes du journal, qui les étalait en plein écran. Ils ont maintenant leur propre nom."
+        ]
+      }
+    },
     {
       "v": "0.54",
       "date": "2026-11-19",

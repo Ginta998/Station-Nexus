@@ -1111,12 +1111,12 @@ html[data-motion="reduced"] body::after{opacity:.035}
 .sx-exp .sx-search{position:relative}
 .sx-themepick{position:absolute;z-index:90;top:calc(100% + 8px);left:0;width:min(560px,92vw);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 26px 64px -26px #000;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 @media(min-width:560px){.sx-themepick{grid-template-columns:repeat(4,1fr)}}
-.sx-themepick .tp{font:inherit;color:inherit;text-align:left;display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);cursor:pointer;transition:transform .15s,border-color .2s}
-.sx-themepick .tp:hover{transform:translateY(-2px)}
-.sx-themepick .tp.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
-.sx-themepick .tp .sw{width:22px;height:22px;border-radius:6px;flex:0 0 22px;border:1px solid rgba(255,255,255,.18)}
-.sx-themepick .tp .nm{font-size:11px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sx-themepick .tp .kj{margin-left:auto;font-size:11px;color:var(--muted)}
+.sx-themepick .sx-tpk{font:inherit;color:inherit;text-align:left;display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);cursor:pointer;transition:transform .15s,border-color .2s}
+.sx-themepick .sx-tpk:hover{transform:translateY(-2px)}
+.sx-themepick .sx-tpk.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sx-themepick .sx-tpk .sw{width:22px;height:22px;border-radius:6px;flex:0 0 22px;border:1px solid rgba(255,255,255,.18)}
+.sx-themepick .sx-tpk .nm{font-size:11px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sx-themepick .sx-tpk .kj{margin-left:auto;font-size:11px;color:var(--muted)}
 
 /* overlay cyber par thème (HUD type NieR) */
 .sx-cyber{position:fixed;inset:0;z-index:38;pointer-events:none}

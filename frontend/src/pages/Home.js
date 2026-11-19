@@ -287,7 +287,7 @@ export default function Home() {
               <div style={{ position: "fixed", inset: 0, zIndex: 89 }} onClick={() => setThemeOpen(false)} />
               <div className="sx-themepick">
                 {THEMES.map((t) => (
-                  <button type="button" key={t.key} data-testid={`home-theme-pick-${t.key}`} className={"tp" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); setThemeOpen(false); }}>
+                  <button type="button" key={t.key} data-testid={`home-theme-pick-${t.key}`} className={"sx-tpk" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); setThemeOpen(false); }}>
                     <span className="sw" style={{ background: `linear-gradient(135deg, ${t.swatch[0]}, ${t.swatch[1]} 55%, ${t.swatch[2]})` }} />
                     <span className="nm">{t.name}</span>
                     <span className="kj">{t.kanji}</span>
