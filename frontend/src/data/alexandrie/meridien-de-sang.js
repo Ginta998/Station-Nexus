@@ -29,6 +29,8 @@ Il n'a pas de nom. Le livre l'appelle le gamin, puis, à la fin, l'homme.
 
 Il naît en 1833 dans le Tennessee, une nuit où le ciel est rayé d'étoiles filantes. Sa mère meurt en le mettant au monde. Son père, un ancien maître d'école, boit et cite des poètes oubliés. L'enfant ne sait ni lire ni écrire. Et McCarthy te donne, dès la première page, la seule chose qu'il dira jamais de son âme : il y a déjà en lui le goût d'une violence sans motif.
 
+!! LA RÉPLIQUE :: La toute première phrase du roman, au chapitre I : un ordre de trois mots, qui te demande de regarder l'enfant. Tout le livre tient dans ce geste. On te montre ce garçon, et on ne t'expliquera jamais rien d'autre. Lis-la dans le texte, en anglais si tu peux.
+
 À quatorze ans, il s'enfuit. Il descend le fleuve, travaille, se bat, reçoit une balle dans le dos, guérit, et dérive vers l'ouest, vers le Texas. Il ne veut rien. Il va.
 
 Retiens cette construction. McCarthy prend la forme la plus aimée de la littérature américaine, le garçon qui part à l'aventure et devient un homme, et il en retire tout ce qui la rend aimable. Ce garçon n'apprendra rien. Personne ne lui apprendra rien. Il traversera le livre sans que tu saches jamais ce qu'il pense. C'est voulu, et c'est par ce silence que le livre finira par te prendre.
@@ -87,6 +89,8 @@ C'est l'un des sommets du livre, et tu dois l'entendre comme il est écrit : c'e
 
 Et Tobin ajoute ce que tous dans la bande ont remarqué. Chacun d'eux se souvient d'avoir déjà croisé le juge, autrefois, ailleurs, avant de le connaître.
 
+!! LA RÉPLIQUE :: Le récit de la poudre, au chapitre X. C'est Tobin, l'ancien prêtre, qui parle, et c'est l'un des rares longs passages du livre où quelqu'un raconte une histoire à un autre. Lis-le à voix haute, comme on lit un sermon : il est écrit pour ça.
+
 # Le registre
 
 Le juge sait tout. Il parle le hollandais et l'espagnol, cite les juristes et les géologues, joue du violon, danse mieux que personne. Le soir, il sort un carnet. Il y dessine ce qu'il a trouvé dans la journée : une plante, un oiseau qu'il a tué et empaillé, une armure espagnole vieille de trois siècles, des peintures sur une paroi. Il les dessine avec un grand talent.
@@ -94,6 +98,8 @@ Le juge sait tout. Il parle le hollandais et l'espagnol, cite les juristes et le
 @art g 7
 
 Puis il jette l'armure au feu. Il gratte la peinture de la roche jusqu'à ce qu'il n'en reste rien.
+
+!! LA RÉPLIQUE :: Au chapitre XIV, autour du feu, le juge explique pourquoi il consigne tout dans son carnet. Sa phrase sur ce qui existe dans la création sans qu'il le sache, et donc sans son consentement, est la plus commentée du roman. Cherche-la : quelques lignes, et tout le personnage y est.
 
 Un homme lui demande pourquoi il fait cela. Sa réponse est le cœur noir du livre. Tout ce qui existe dans la création à son insu, dit-il, existe sans son consentement. La moindre miette de monde qui lui échappe est une liberté laissée à autre chose que lui. Il veut tout connaître pour tout tenir. Et ce qu'il a connu, consigné, il n'a plus besoin que cela existe.
 
@@ -104,6 +110,8 @@ Sa seconde leçon, il la donne un soir, devant le feu, et c'est sa théologie :
 > La guerre est dieu. | Le juge Holden, Méridien de sang
 
 Il s'explique. Les hommes aiment les jeux, dit-il, et un jeu vaut par ce qu'on y mise. Le jeu suprême est celui où l'on mise sa vie contre celle d'un autre, car il tranche de manière absolue lequel des deux devait exister. La guerre n'est donc pas un accident de l'histoire. Elle est ce qui décide, la seule cour sans appel, et elle attendait l'homme avant qu'il existe. Quant à la morale, c'est une invention des faibles pour priver les forts de leur droit. Un des hommes proteste que les livres saints disent autre chose. Le juge sourit : les livres mentent, mais les pierres et les os ne mentent pas, et il leur montre le sol.
+
+!! LA RÉPLIQUE :: Le sermon sur la guerre, au chapitre XVII. Le juge parle longtemps, et personne ne lui répond vraiment. Repère le moment où il compare la guerre à un jeu dont l'enjeu est l'existence même des joueurs : c'est là que le livre bascule de l'Ouest vers la métaphysique.
 
 Personne, dans le roman, ne le réfute. C'est cela qui fait peur. McCarthy ne lui oppose aucun discours. Il ne lui oppose qu'un silence, celui du gamin.
 
@@ -142,6 +150,8 @@ Plus tard dans la nuit, il sort vers les latrines derrière le saloon. Il ouvre 
 McCarthy ne dit pas ce qui se passe. Lui qui a tout montré pendant trois cents pages, ici, il détourne les yeux. Deux hommes s'approchent ensuite de la porte ; l'un l'ouvre, regarde, et dit seulement : Dieu tout-puissant.
 
 Dans le saloon, le juge danse. Il est nu, blanc, énorme, léger sur ses petits pieds. Il joue du violon, il salue les dames, il est le favori de tous. Il ne dort jamais, dit le texte. Il dit qu'il ne mourra jamais. Ce sont les derniers mots.
+
+!! LA RÉPLIQUE :: Les toutes dernières lignes du chapitre XXIII. Le juge danse, et le texte répète, en boucle, ce qu'il dit de lui-même : qu'il ne dort jamais, qu'il ne mourra jamais. Lis le paragraphe d'un seul souffle. Puis tourne la page pour l'épilogue de l'homme aux trous.
 
 # Qu'est-ce que le juge ?
 

@@ -1,6 +1,17 @@
 {
-  "version": "0.52",
+  "version": "0.53",
   "patches": [
+    {
+      "v": "0.53",
+      "date": "2026-11-19",
+      "title": "Lumumba en entier",
+      "groups": {
+        "Changé": [
+          "Patrice Lumumba passe de 7 000 à plus de 10 000 mots : l'école des missions, Pauline, le jeune roi Baudouin à Stanleyville en 1955, la prison, la bière Polar, la fondation du MNC avec Ileo et Adoula, la rupture avec Kalonji, la campagne de 1960 et Andrée Blouin, Kasa-Vubu au sortir du discours, les soldats du camp Léopold, Ralph Bunche et Hammarskjöld, Washington, la conférence panafricaine, le vote du Parlement, les enfants envoyés au Caire, la fuite sous l'orage, Tshombe et Munongo, ce que l'agent de la CIA a raconté, Rajeshwar Dayal, les noms des exécutants, Mulele, Che Guevara, Fanon, les regrets du roi Philippe, et un chapitre pour Pauline.",
+          "Méridien de sang : cinq encadrés « La réplique », qui disent quel passage retenir et où le trouver (chapitre), sans recopier le texte."
+        ]
+      }
+    },
     {
       "v": "0.52",
       "date": "2026-11-19",
