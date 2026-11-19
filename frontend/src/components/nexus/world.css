@@ -1593,3 +1593,11 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
 /* Le bandeau du haut restait gris clair avec une affiche claire : le fond flouté est assombri, comme l'écran */
 .ws-vhs .nw-bg{filter:blur(30px) brightness(.14) saturate(.7)}
 .ws-vhs .nw-hud{background:linear-gradient(180deg,rgba(4,8,14,.6),rgba(4,8,14,0))}
+/* Téléphone : un seul fond, du haut jusqu'en bas. Plus de bloc pour le bandeau ni pour l'écran : l'affiche assombrie court sous tout */
+@media (max-width:760px){
+  .ws-vhs{background:linear-gradient(rgba(4,8,14,.84),rgba(4,8,14,.95)),var(--bgimg,#061018) center top/cover no-repeat,#05080d}
+  .ws-vhs .nw-bg{display:none}
+  .ws-vhs .nw-hud{background:none}
+  .ws-vhs .nw-stage{background:transparent;border:0}
+  .ws-vhs .nw-stage::after{background:repeating-linear-gradient(0deg,rgba(0,0,0,.12) 0 1px,transparent 1px 4px)}
+}
