@@ -6,12 +6,12 @@ import ReleaseNext from "@/components/nexus/ReleaseNext";
 import ShareCardDialog from "@/components/nexus/ShareCardDialog";
 import { IoShareSocialOutline } from "react-icons/io5";
 import { IoChatbubbleOutline, IoFilmOutline, IoImagesOutline, IoJournalOutline, IoPlanetOutline, IoLockOpenOutline } from "react-icons/io5";
-import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoMenu, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil } from "react-icons/io5";
+import { IoArrowBack, IoHeart, IoHeartOutline, IoCreateOutline, IoLockClosed, IoChevronBack, IoChevronForward, IoDownloadOutline, IoOpenOutline, IoLinkOutline, IoPlay, IoHomeOutline, IoExitOutline, IoChevronDown, IoGridOutline, IoListOutline, IoEllipsisHorizontal, IoDiscOutline, IoAdd, IoTrashOutline, IoPencil } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, mediaUrl } from "@/lib/api";
 import { JournalBlocks, fmtDate } from "@/components/journal/JournalParts";
 import { ContextMenuHost, pressMenu, showMenu } from "@/components/atelier/ContextMenu";
-import StationMenu, { SoundBtn } from "@/components/StationMenu";
+import { SoundBtn } from "@/components/StationMenu";
 import { Face } from "@/components/atelier/AlexCore";
 import "@/components/nexus/world.css";
 import CursorFx from "@/components/CursorFx";
@@ -31,7 +31,7 @@ const roman = (i) => ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X
 // Écran large : le menu de l'œuvre reste en colonne à gauche, la section s'ouvre dans le grand panneau
 const WIDE = "(min-width: 1100px)";
 // les icônes de la barre du monde « Application »
-const DOCK_IC = { support: <IoHeartOutline />, launch: <IoPlay />, trailer: <IoFilmOutline />, gallery: <IoImagesOutline />, making: <IoJournalOutline />, embeds: <IoLinkOutline />, neighbors: <IoPlanetOutline />, unlock: <IoLockOpenOutline /> };
+const DOCK_IC = { share: <IoShareSocialOutline />, support: <IoHeartOutline />, launch: <IoPlay />, trailer: <IoFilmOutline />, gallery: <IoImagesOutline />, making: <IoJournalOutline />, embeds: <IoLinkOutline />, neighbors: <IoPlanetOutline />, unlock: <IoLockOpenOutline /> };
 function useWide() {
   const [w, setW] = useState(() => typeof window !== "undefined" && window.matchMedia?.(WIDE).matches);
   useEffect(() => { const m = window.matchMedia?.(WIDE); if (!m) return; const h = () => setW(m.matches); m.addEventListener?.("change", h); return () => m.removeEventListener?.("change", h); }, []);
@@ -137,6 +137,7 @@ export default function NexusWorld(p) {
     { id: "launch", label: isUnits ? (current != null && progress ? unitsLabel : startLabel) : startLabel, sub: isUnits ? plural(units.length, unitWord, unitWord + "s") : "", desc: isUnits ? `Choisir parmi ${plural(units.length, unitWord, unitWord + "s")}.` : (item.synopsis || ""), go: start, main: !(current != null && progress), win: cover || bg },
     locked && !item.coming_soon && { id: "unlock", label: "Débloquer", sub: unlock?.price, desc: "Accès définitif à l'œuvre, ou l'abonnement pour tout le catalogue.", go: () => push({ k: "unlock" }) },
     ...sections.map((s) => ({ id: s.k, label: s.label, desc: s.desc, win: s.img, go: () => push({ k: s.k }) })),
+    { id: "share", label: "Partager", desc: "Une belle carte pour une story, un post ou un message, et le lien qui montre l'affiche.", go: () => { sfx("select"); setCard({}); } },
   ].filter(Boolean);
 
   // ---------- chaque écran : son titre (fil d'Ariane), ses éléments (clavier) ----------
@@ -319,7 +320,7 @@ export default function NexusWorld(p) {
         const secs = [isUnits && ["units", unitsLabel], making.length > 0 && ["making", "Making of"], item.gallery?.length > 0 && ["gallery", "Moodboard"], neighbors.length > 0 && ["neighbors", "Autres mondes"]].filter(Boolean);
         return (
           <div className="nw-home h-revue">
-            <nav className="hr-toc" aria-label="Sommaire"><b>AU SOMMAIRE DE CE NUMÉRO</b>{secs.map(([id, t], i) => <button key={id} onClick={() => jump(id)}><i>{String(i + 1).padStart(2, "0")}</i>{t}</button>)}<button onClick={() => goWorldHome("cm")}><i>{String(secs.length + 1).padStart(2, "0")}</i>Commentaires</button><button onClick={() => push({ k: "support" })} data-testid="nw-revue-support"><i>{String(secs.length + 2).padStart(2, "0")}</i>Soutenir la station</button></nav>
+            <nav className="hr-toc" aria-label="Sommaire"><b>AU SOMMAIRE DE CE NUMÉRO</b>{secs.map(([id, t], i) => <button key={id} onClick={() => jump(id)}><i>{String(i + 1).padStart(2, "0")}</i>{t}</button>)}<button onClick={() => goWorldHome("cm")}><i>{String(secs.length + 1).padStart(2, "0")}</i>Commentaires</button><button onClick={() => push({ k: "support" })} data-testid="nw-revue-support"><i>{String(secs.length + 2).padStart(2, "0")}</i>Soutenir la station</button><button onClick={() => setCard({})} data-testid="nw-revue-share"><i>{String(secs.length + 3).padStart(2, "0")}</i>Partager</button></nav>
             <article className="hr-body">
               <header className="hr-mast">
                 <div className="hr-paper" aria-hidden="true"><b>La Gazette de la Station</b><span>N° {String((item.order ?? 0) + 1).padStart(3, "0")} · {new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} · Prix : un regard</span></div>
@@ -569,7 +570,7 @@ export default function NexusWorld(p) {
         </div>
       );
       case "comments": return <div className="nw-read wide nw-scroll" data-testid="nw-comments">{comments}</div>;
-      case "support": return <WorldSupport item={item} ws={ws} isAdmin={isAdmin} unlock={locked && !item.coming_soon ? unlock : null} onComments={() => goWorldHome("cm")} onFav={onFav} fav={fav} sfx={sfx} />;
+      case "support": return <WorldSupport item={item} ws={ws} isAdmin={isAdmin} unlock={locked && !item.coming_soon ? unlock : null} onComments={() => goWorldHome("cm")} onShare={() => setCard({})} onFav={onFav} fav={fav} sfx={sfx} />;
       case "unlock": return (
         <div className="nw-unlock" data-testid="nw-unlock">
           <IoLockClosed size={34} />
@@ -660,7 +661,6 @@ export default function NexusWorld(p) {
           {isAdmin && <button onClick={onEdit} title="Modifier l'œuvre (identité, monde, contenu, médias…)" aria-label="Modifier l'œuvre" data-testid="detail-edit"><IoCreateOutline size={16} /></button>}
           <button onClick={() => setCard({})} title="Partager l'œuvre (carte Instagram, WhatsApp, message…)" aria-label="Partager" data-testid="nw-card"><IoShareSocialOutline size={16} /></button>
           {isAdmin && onAtelier && <button onClick={onAtelier} title="Ouvrir son œuvre dans l'atelier" aria-label="Ouvrir dans l'atelier" data-testid="detail-atelier" className="nw-at">工</button>}
-          <StationMenu trigger={(open, badge) => <button onClick={open} title="Menu de la station" aria-label="Menu de la station" data-testid="nw-menu" className="nw-menu-btn"><IoMenu size={17} />{badge > 0 && <b className="nw-badge">{badge}</b>}</button>} />
           <button onClick={() => { sfx("back"); goWorldHome(); }} title="Accueil de l'œuvre" aria-label="Accueil de l'œuvre" data-testid="nw-home"><IoHomeOutline size={17} /></button>
           <button className="nw-quit" onClick={exitWorld} title="Quitter l'univers (revenir où tu étais)" data-testid="nw-exit"><IoExitOutline size={16} /><span>Quitter l'univers</span></button>
         </div>

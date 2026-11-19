@@ -1,6 +1,17 @@
 {
-  "version": "0.48",
+  "version": "0.49",
   "patches": [
+    {
+      "v": "0.49",
+      "date": "2026-11-19",
+      "title": "Partager depuis le monde, guide à jour",
+      "groups": {
+        "Changé": [
+          "En bas de l'accueil d'un monde (avec Autres mondes, Commentaires, Soutenir) : Partager ouvre les cartes et l'envoi. Dans Soutenir, « Partager l'œuvre » ouvre aussi le partage. Le bouton Menu de la station est retiré du monde (on sort par « Quitter l'univers »).",
+          "Le guide « Comment ça marche » est à jour : la sortie d'un chapitre de bout en bout, faire connaître la station, les nouvelles pièces de l'atelier, ce qui vit dans le navigateur ou sur le serveur, les clés à régler sur Emergent."
+        ]
+      }
+    },
     {
       "v": "0.48",
       "date": "2026-11-19",

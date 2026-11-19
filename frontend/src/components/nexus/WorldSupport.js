@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { IoCheckmark, IoHeart, IoHeartOutline, IoLinkOutline, IoChatbubbleOutline, IoCreateOutline, IoLockOpenOutline } from "react-icons/io5";
+import { IoCheckmark, IoHeart, IoHeartOutline, IoLinkOutline, IoShareSocialOutline, IoChatbubbleOutline, IoCreateOutline, IoLockOpenOutline } from "react-icons/io5";
 import { getMembershipPlan, getLibrary, listProfiles, startCheckout } from "@/lib/api";
 import { confirmCheckout } from "@/components/CheckoutConfirm";
 import { useAuth } from "@/context/AuthContext";
@@ -14,7 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 */
 const WS_KICK = { dock: "SOUTIEN · 応援", panorama: "RAVITAILLEMENT DE LA STATION", sommaire: "Appel aux lecteurs", vhs: "▶ SOUTIEN · SP", arcade: "CONTINUE ?", yorha: "SOUTIEN // ARCHIVES", sengoku: "応援", cinema: "Entracte · Soutien" };
 
-export default function WorldSupport({ item, ws, isAdmin, unlock, onComments, onFav, fav, sfx = () => {} }) {
+export default function WorldSupport({ item, ws, isAdmin, unlock, onComments, onShare, onFav, fav, sfx = () => {} }) {
   const nav = useNavigate();
   const { user, openAuth } = useAuth() || {};
   const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
@@ -65,7 +65,7 @@ export default function WorldSupport({ item, ws, isAdmin, unlock, onComments, on
         <h3 className="nw-sup-h">Les autres façons d'aider</h3>
         <div className="nw-sup-grid">
           {unlock && <button onClick={unlock.onBuy} disabled={unlock.buying}><IoLockOpenOutline size={18} /><b>Acheter « {item.title} »</b><small>Accès définitif à cette œuvre · {unlock.price}</small></button>}
-          <button onClick={share} data-testid="nw-support-share"><IoLinkOutline size={18} /><b>Partager l'œuvre</b><small>Le bouche-à-oreille est le meilleur soutien</small></button>
+          <button onClick={onShare || share} data-testid="nw-support-share"><IoShareSocialOutline size={18} /><b>Partager l'œuvre</b><small>Une carte pour ta story ou un message : le bouche-à-oreille est le meilleur soutien</small></button>
           <button onClick={onComments}><IoChatbubbleOutline size={18} /><b>Laisser un mot</b><small>Un commentaire, ça compte vraiment</small></button>
           {onFav && <button onClick={onFav}>{fav ? <IoHeart size={18} /> : <IoHeartOutline size={18} />}<b>{fav ? "Dans tes coups de cœur" : "Ajouter aux coups de cœur"}</b><small>Pour la retrouver vite, et savoir ce qui plaît</small></button>}
         </div>

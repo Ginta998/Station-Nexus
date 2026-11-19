@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-18",
+  "updated": "2026-11-19",
   "sections": [
     {
       "k": "全",
@@ -33,7 +33,7 @@
         ],
         [
           "Claude",
-          "Code surtout le frontend, dans une copie de travail, teste avec de faux serveurs, puis copie les fichiers dans ton dossier du Mac. Ne pousse sur GitHub qu'avec ton accord. N'a accès ni à Emergent ni à tes clés."
+          "Code le frontend et le backend dans une copie de travail, teste tout dans un aperçu privé (des données d'exemple, sur ordinateur et téléphone), note chaque version dans le journal des versions. Ne pousse sur GitHub qu'avec ton accord. N'a accès ni à Emergent ni à tes clés."
         ],
         [
           "Emergent",
@@ -55,23 +55,23 @@
         ],
         [
           "2. Le code",
-          "Claude modifie une copie du projet, la compile et la teste."
+          "Claude modifie sa copie du projet, la compile et la teste dans l'aperçu privé (données d'exemple), sur ordinateur et téléphone. Chaque version est notée dans le journal des versions."
         ],
         [
-          "3. Ton Mac",
-          "Les fichiers sont copiés dans ~/Downloads/Station-Nexus-main, après vérification que tu n'as rien changé entre-temps."
+          "3. Ton test",
+          "Tu regardes l'aperçu sur ton téléphone ou ton ordinateur : tout ce qui ne dépend pas du serveur s'y voit déjà (mondes, lecteur, cartes, atelier)."
         ],
         [
-          "4. Ton test",
-          "Tu lances le site en local (localhost). Il parle au vrai serveur Emergent, donc avec tes vraies données."
+          "4. GitHub",
+          "Quand tu dis « pousse » : les versions partent sur main (Ginta998/Station-Nexus)."
         ],
         [
-          "5. GitHub",
-          "Avec ton accord : une PR, puis la fusion sur main."
+          "5. En ligne",
+          "Emergent déploie le site. Si le backend a changé (server.py, atelier.py), il faut aussi qu'Emergent récupère le code de GitHub et redémarre le serveur, sinon les nouveautés du serveur ne marchent pas."
         ],
         [
-          "6. En ligne",
-          "Emergent déploie stationexus.store. Si le backend a changé, il faut aussi qu'Emergent récupère le code de GitHub et redémarre le serveur."
+          "6. Vérifier",
+          "Sur le vrai site : une sortie programmée, un email de test (Atelier › Newsletter), un lien d'œuvre collé dans WhatsApp pour voir l'aperçu."
         ]
       ]
     },
@@ -81,11 +81,11 @@
       "rows": [
         [
           "Sur le serveur",
-          "Comptes, créations, univers et fiches de l'Atelier, tâches, configuration de l'Atelier (radio, backlog, Alexandrie), fichiers envoyés, icône du site. Te suit partout."
+          "Œuvres, chapitres, épisodes, journal, commentaires (et réactions sur un passage), abonnés, newsletters, « Me prévenir », chiffres de visite, réglages de la station (dont le son de lancement), toutes les fiches de l'Atelier. Paramètres › Admin › Sauvegarde télécharge tout dans un fichier."
         ],
         [
           "Dans ton navigateur",
-          "Thème et préférences d'affichage, progression de lecture, étoiles et coups de cœur d'Alexandrie, copie des artworks choisis, lecteur radio réduit. Reste sur cet appareil ; vider le navigateur l'efface."
+          "Ce qui n'appartient qu'à un appareil : la progression de lecture et « Reprendre », l'étagère du visiteur (Mon étagère), le confort de lecture (taille, interligne, police, page), le volume, les mondes retirés de la liste, le dessin et le format préférés des cartes. Changer de téléphone ou vider le navigateur les remet à zéro."
         ],
         [
           "Dans le code",
@@ -93,7 +93,7 @@
         ],
         [
           "Clés secrètes",
-          "Seulement dans backend/.env sur Emergent (exemple : STEAMGRIDDB_API_KEY). Jamais dans le code ni sur GitHub. Le fichier frontend/.env de ton Mac contient seulement l'adresse du serveur (REACT_APP_BACKEND_URL)."
+          "Sur Emergent uniquement : RESEND_API_KEY et SENDER_EMAIL (les emails), PUBLIC_APP_URL (les liens dans les emails et les aperçus), REPLY_TO_EMAIL, STEAMGRIDDB_API_KEY, les clés Stripe et des notifications. Jamais dans le code."
         ]
       ]
     },
@@ -107,7 +107,7 @@
         ],
         [
           "Classique ou Nexus",
-          "Deux expériences pour la station publique, au choix de chaque visiteur (Paramètres › Apparence › Expérience, gardé dans son navigateur, Classique par défaut). Nexus réutilise les objets d'Alexandrie (Face, dans components/atelier/Alexandrie.js) : son code est dans components/nexus/. Le format d'une œuvre vient de son type de lancement : chapitres ou lecture = livre, épisodes, film ou jeu = cassette, catégorie musicale = vinyle. En Nexus, la fiche d'une œuvre (pages/Detail.js) affiche components/nexus/NexusWorld.js : un monde plein écran fait d'une pile d'écrans (accueil, listes, lecture, images), avec fil d'Ariane et clavier ; ses douze thèmes sont dans world.css (cinema, vhs, arcade, yorha = Archives, eve = Orbite, hero = Arène, cathedrale, couronne, trait, sengoku, survivance, cristal) ; sur grand écran, le menu reste en colonne et la section s'ouvre dans un panneau ; l'atelier (components/EditorDialog.js) crée et modifie tout ; en Nexus, toute lecture passe par le lecteur d'Alexandrie (components/nexus/WorkReader.js, qui utilise Reader d'Alexandrie) ; la recherche est components/StationSearch.js et le choix automatique dans world.js. Le Making of vient des entrées du journal de bord liées à l'œuvre. Les commentaires en Nexus sont components/nexus/WorldComments.js (habillés par le thème, réponses via parent_id, notification « reply » envoyée par le backend). « Reprendre » lit sx_progress_<id> (chapitre, part lue, extrait) écrit par WorkReader ; « Dernière sortie » est le dernier chapitre ou épisode. Le thème de page du lecteur est une ambiance d'Alexandrie (reader_look, sinon LOOK_OF_WORLD). Le mode spectateur (AppContext : spectator, gardé pour la session) masque les outils admin sans se déconnecter. Modifier un chapitre depuis le monde : components/nexus/ChapterQuickEdit.js (charge la création complète, change ce chapitre, enregistre). La recherche d'images de l'atelier réutilise CoverDialog d'Alexandrie. Vignettes par ligne : champ units_cols de la création (0 = automatique). L'éditeur de chapitre est components/PageWriter.js (styles : components/pagewriter.css). Thèmes de monde personnalisés : lib/worldThemes.js (gardés dans la collection des thèmes, clé « w-… », champ base = l'un des douze), réglages appliqués par des classes « wt-… » dans world.css. Effets de souris : components/CursorFx.js. L'atelier des thèmes de monde est components/nexus/WorldThemeLab.js (section « Thèmes » de l'atelier de l'œuvre ; modèles et palettes dans lib/worldThemes.js). Cassettes du journal : components/journal/TapePlayer.js, sons fabriqués dans lib/tapeSound.js, champs tape_url / tape_label / tape_voice. Musique YouTube : AppContext (ytMini) et components/YtMini.js. Masqués par défaut : le thème de station Akira (DEFAULT_MASKED dans lib/themeStore.js) et l'ambiance Trait (WORLD_MASKED dans components/nexus/world.js)."
+          "Paramètres › Apparence. En Nexus, les œuvres sont des objets (livres, cassettes, vinyles) et chacune s'ouvre dans son monde, avec une animation et un son de lancement (choisi par toi pour chaque format, Paramètres › Son)."
         ],
         [
           "L'Atelier",
@@ -116,6 +116,74 @@
         [
           "Écran de démarrage",
           "Les splashs sont listés dans frontend/src/lib/intro.js. Genèse (frontend/src/components/intros/GenesisIntro.js) est dessiné dans un canvas : il lit les couleurs du thème (--brand et --brand-2) au lancement et les éclaircit si elles sont trop sombres. Le 天 utilise la police Noto Sans JP Thin, chargée chez Google Fonts pour ce seul caractère ; si elle n'arrive pas à temps, le navigateur prend sa police japonaise par défaut. L'écran d'entrée de l'Atelier reste à part, réservé à l'Atelier. Le choix se fait dans Réglages, onglet admin."
+        ],
+        [
+          "Le monde d'une œuvre",
+          "Un écran plein, habillé par son thème (Cinéma, VHS, Shibuya, Hangar, Gazette…). On y trouve les chapitres ou épisodes, les coulisses, les autres mondes, les commentaires, Soutenir (les paliers sans quitter le monde) et Partager. Le retour (flèche, Échap, bouton du téléphone) remonte d'un cran sans jamais quitter : on sort par « Quitter l'univers »."
+        ],
+        [
+          "Le lecteur",
+          "Un seul lecteur pour tout (chapitres, épisodes texte, journal) : livre, cassette ou vinyle. Aa ouvre le confort de lecture. Double-clic sur une phrase (ou sélection au doigt) : « Réagir », la phrase reste surlignée avec ses réactions. Le PDF n'est proposé qu'à toi."
+        ],
+        [
+          "Le menu de la station",
+          "Journal de bord, Planning, Partager, Mon étagère, Salon, Membres, Soutien, À propos, Paramètres (et pour toi : Atelier, mode visiteur)."
+        ]
+      ]
+    },
+    {
+      "k": "発",
+      "title": "La sortie d'un chapitre",
+      "rows": [
+        [
+          "1. Écrire",
+          "Dans l'atelier (Drive, Alexandrie…), ou directement sur la station avec le crayon d'un chapitre."
+        ],
+        [
+          "2. Publier",
+          "Clic droit › Publier comme chapitre ou épisode, ou Atelier › Publication. Sortie maintenant, ou Programmer : le chapitre est en ligne mais caché jusqu'à la date."
+        ],
+        [
+          "3. Avant-première",
+          "En programmant : « X jours plus tôt » pour tous les soutiens ou à partir d'un palier. Ils le lisent en avance, marqué AVANT-PREMIÈRE."
+        ],
+        [
+          "4. Le compte à rebours",
+          "Dans le monde de l'œuvre, la prochaine sortie s'affiche avec son compte à rebours et « Me prévenir »."
+        ],
+        [
+          "5. À l'heure dite",
+          "Le serveur le voit tout seul (chaque minute) : notification et email à ceux qui ont cliqué « Me prévenir » et à ceux qui ont l'œuvre en coup de cœur ; à toute la liste si la case est cochée dans Newsletter."
+        ],
+        [
+          "6. Faire connaître",
+          "Partager : une carte aux couleurs du monde (story, post, carré) et le lien qui montre l'affiche dans WhatsApp, Messages, Discord."
+        ]
+      ]
+    },
+    {
+      "k": "広",
+      "title": "Faire connaître la station",
+      "rows": [
+        [
+          "Partager",
+          "Menu › Partager (toute la station : lien de bio, chaque œuvre, sa dernière sortie), le bouton en haut du monde, ou « Partager » en bas de l'accueil d'un monde et dans Soutenir."
+        ],
+        [
+          "Les cartes",
+          "Six dessins (Affiche, Plein cadre, Citation, Billet, Compte à rebours, Typo) en trois formats. « Partager l'image » sur le téléphone l'envoie directement à Instagram, WhatsApp…"
+        ],
+        [
+          "Les aperçus de lien",
+          "Le lien envoyé passe par /api/s/… : les messageries y lisent le titre, le résumé et une image dessinée par la station (1200 × 630). Un chapitre pas encore sorti n'est jamais dévoilé."
+        ],
+        [
+          "Lien de bio",
+          "Copie-le depuis Menu › Partager : il contient ?utm_source=instagram, pour qu'Instagram soit reconnu à coup sûr dans Tes chiffres."
+        ],
+        [
+          "Newsletter",
+          "Les abonnés s'inscrivent avec la case newsletter du compte. Envoi par Resend : il faut un domaine vérifié chez Resend, sinon les emails ne partent qu'à toi."
         ]
       ]
     },
@@ -137,11 +205,11 @@
         ],
         [
           "Cockpit",
-          "Les tâches."
+          "Aujourd'hui (Bunny, trois choses, la semaine), Tableau, Calendrier, Liste, Modèles. Les sorties programmées y apparaissent toutes seules."
         ],
         [
           "Bureau, Salon",
-          "Tes outils et ton espace vidéo."
+          "Le Salon a sa vidéothèque : films et séries en cassettes VHS (recherche YouTube, liens collés d'un coup, playlist), qui s'ouvrent dans ton lecteur."
         ],
         [
           "Alexandrie",
@@ -158,6 +226,26 @@
         [
           "Dev, Réglages",
           "Ce journal, le backlog, ce guide ; les réglages de l'Atelier et du site (thèmes, favicon, sons)."
+        ],
+        [
+          "Journal de bord",
+          "Tes entrées publiques : on les lit comme le public, le crayon ouvre l'éditeur complet. Les cassettes se modifient sur la cassette (grain neuf, usé ou très usé, enregistrement au micro)."
+        ],
+        [
+          "Publication",
+          "Le pont avec la station : relier une œuvre de l'atelier à sa création, publier un élément comme chapitre, épisode ou entrée du journal, sortir un lot, programmer une sortie (avec avant-première pour les soutiens), voir ce qui a changé des deux côtés."
+        ],
+        [
+          "Réseau narratif",
+          "Qui est relié à quoi : la constellation des fiches (glisser une étoile sur une autre pour les relier), la chronologie et la cohérence (un mort qui réapparaît, des alliés ennemis…). Taper @ dans un texte relie aussi."
+        ],
+        [
+          "Tes chiffres",
+          "Visiteurs par jour, œuvres ouvertes et lues, temps de lecture, provenance (Instagram, YouTube…), et l'endroit où l'on décroche, chapitre par chapitre. Anonyme, tes propres visites ne comptent pas."
+        ],
+        [
+          "Newsletter",
+          "Le studio : des blocs (titre, texte, image, œuvre, bouton), une trentaine d'habillages, l'aperçu exact, un test à toi, puis l'envoi. Le diagnostic dit si Resend est bien branché. Case « Email automatique à chaque sortie »."
         ]
       ]
     },
@@ -226,6 +314,18 @@
         [
           "Rien ne change en local",
           "Rechargement forcé (Cmd + Maj + R) : le navigateur garde parfois l'ancienne version en cache."
+        ],
+        [
+          "Une nouveauté ne marche pas en ligne",
+          "Les nouveautés du serveur (alertes, chiffres, aperçus de lien, newsletter, sauvegarde…) n'existent qu'une fois le backend redéployé sur Emergent. Un message « le serveur n'a pas encore cette mise à jour » le signale."
+        ],
+        [
+          "« You can only send testing emails… »",
+          "Resend refuse d'écrire à d'autres que toi : vérifie ton domaine chez Resend, puis mets SENDER_EMAIL à une adresse de ce domaine."
+        ],
+        [
+          "Une vidéo YouTube ne se lit pas",
+          "En privé, elle ne se lit que pour les comptes invités : mets-la en non répertorié. Dans l'aperçu sur claude.ai, YouTube est toujours bloqué, c'est normal."
         ]
       ]
     },
