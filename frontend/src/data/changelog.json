@@ -1,6 +1,17 @@
 {
-  "version": "0.53",
+  "version": "0.54",
   "patches": [
+    {
+      "v": "0.54",
+      "date": "2026-11-19",
+      "title": "Les lots, et le badge « À compléter »",
+      "groups": {
+        "Ajouté": [
+          "Alexandrie : les lots. Dans « Coller des livres ou des lots », un texte qui contient des lignes « LOT : livre » met à jour autant de livres qu'on veut en un seul collage : remplacer ou ajouter un chapitre, l'ajouter après un autre, compléter la fin d'un chapitre, insérer après un paragraphe précis, supprimer un chapitre, changer le résumé ou ajouter des liens, ou créer un livre à paraître. Avant d'appliquer, chaque lot montre le livre visé, ce qui change, les mots avant et après, et les erreurs. Modèle « Lot » dans la fenêtre, et format complet dans le guide du collage.",
+          "Badge orange « À COMPLÉTER » sur tout livre de 2 000 mots ou moins (couverture, tranche, fiche, page de titre). Il disparaît tout seul quand le livre dépasse ce seuil. Aujourd'hui : 21 livres du Lore, plus Moebius, Ramanujan, N.W.A et Michael Jackson."
+        ]
+      }
+    },
     {
       "v": "0.53",
       "date": "2026-11-19",

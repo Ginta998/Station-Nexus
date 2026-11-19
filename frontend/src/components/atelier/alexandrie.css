@@ -571,6 +571,8 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .ax-pd-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 .ax-pd-info>b{font-size:16px;line-height:1.2}.ax-pd-info>small{font-size:9.5px;letter-spacing:.14em;color:var(--lab-mute);line-height:1.5}
 .ax-pd-err{font-size:12.5px;color:#ff8a7a}
+.ax-pd-card.lot{grid-template-columns:1fr}.ax-pd-card.lot.bad{border-color:#ff8a7a55}
+.ax-pd-ops{margin:2px 0 0;padding-left:16px;font-size:12.5px;line-height:1.5;opacity:.85}
 .ax-pd-note{font-size:12.5px;color:#e8c27a}
 .ax-pd-th{display:flex;flex-direction:column;gap:4px;width:100%}.ax-pd-th span{font-size:9.5px;letter-spacing:.16em;color:var(--lab-mute)}
 .ax-pd-th select{width:100%;padding:8px;background:var(--bg-primary);color:var(--lab-ink);border:1px solid var(--lab-hair-2);font:inherit;font-size:13px}
@@ -698,3 +700,8 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .ax-reader.cf-bg-nuit .ax-flow,.ax-reader.cf-bg-sepia .ax-flow,.ax-reader.cf-bg-clair .ax-flow{color:inherit}
 .ax-reader.cf-mg-s .ax-flow{padding-left:clamp(14px,2vw,30px);padding-right:clamp(14px,2vw,30px)}
 .ax-reader.cf-mg-l .ax-flow{padding-left:clamp(34px,6vw,96px);padding-right:clamp(34px,6vw,96px)}
+
+/* Livre pas encore complet (2 000 mots ou moins) */
+.ax-todo{position:absolute;bottom:8px;right:6px;z-index:4;padding:5px 8px;background:#e8792a;color:#1d0d02;font:700 11px/1.2 var(--lab-mono);letter-spacing:.1em;transform:rotate(5deg);border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,.45);pointer-events:none}
+.ax-vtodo{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);z-index:3;width:7px;height:7px;border-radius:50%;background:#e8792a;box-shadow:0 0 0 1.5px rgba(0,0,0,.45);pointer-events:none}
+.ax-todo-in{color:#e8792a}

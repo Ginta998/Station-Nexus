@@ -10,6 +10,7 @@ import { IoImagesOutline, IoCheckmarkCircle, IoTimeOutline, IoClipboardOutline, 
 import { lookOf, WEB_FONTS, fontHref } from "@/data/alexandrie/looks";
 import { SEP, parsePaste, pasteToBook, bookToPaste, nextCote, withCote, setCatalog } from "@/data/alexandrie/paste";
 import AlexPaste from "@/components/atelier/AlexPaste";
+import { splitLots, applyLot, findTarget, countWords } from "@/data/alexandrie/lots";
 import { Controls, Progress, Queue, thumb as ytThumb, coverOf } from "@/components/atelier/Radio";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
@@ -217,6 +218,53 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       sfx?.("select"); setPaste(null);
     } catch (e) { console.error("[Alexandrie] collage", e); toast.error(`Enregistrement interrompu${made.length ? ` après ${made.length} livre(s)` : ""} : ${errText(e)}`); }
   };
+  // Les lots : plusieurs mises à jour de livres collées en une fois. Chaque lot vise un livre (identifiant ou titre),
+  // et s'applique sur le texte actuel du livre (sa copie modifiée s'il en a une). Un lot qui vise un livre inexistant et porte un TITRE en crée un.
+  const srcOf = (b) => { const it = itemOf(b); if (it) return it.fields?.alexandrie?.src || null; return asPaste(rawBook(b)); };
+  const planLots = (text) => {
+    const cur = {}; // id -> texte après les lots précédents
+    return splitLots(text).map((l, i) => {
+      const b = findTarget(l.target, all);
+      if (!b) {
+        const up = upcoming.find((u) => u.id === l.target.trim() || normT(u.title) === normT(l.target));
+        if (/^\s*titre\s*:/im.test(l.text) || up) {
+          const t = /^\s*titre\s*:/im.test(l.text) ? l.text : `TITRE : ${up?.title || l.target}\n${up?.sub ? `SOUS-TITRE : ${up.sub}\n` : ""}SALLE : ${up?.room || "atelier"}\n${l.text.trim().startsWith("#") ? "---\n\n" : ""}${l.text}`;
+          const p = parsePaste(t);
+          return { i, target: l.target, kind: "create", title: p.meta.title, text: t, before: 0, after: countWords(p.body), ops: ["nouveau livre"], errors: p.errors, up: up?.id };
+        }
+        return { i, target: l.target, kind: "error", title: l.target, ops: [], errors: [`Livre introuvable : « ${l.target} ». Mets son identifiant, son titre exact, ou une ligne TITRE pour en créer un.`] };
+      }
+      const src = cur[b.id] ?? srcOf(b);
+      if (src == null) return { i, target: l.target, kind: "error", title: b.title, ops: [], errors: ["Ce livre est écrit dans l'éditeur : copie-colle-le une fois (clic droit, Modifier) avant de lui appliquer des lots."] };
+      const r = applyLot(src, l.text); const p = parsePaste(r.text);
+      if (!r.errors.length) cur[b.id] = r.text;
+      return { i, target: l.target, kind: "update", book: b, title: b.title, text: r.text, before: countWords(parsePaste(src).body), after: countWords(p.body), ops: r.ops, errors: [...r.errors, ...p.errors] };
+    });
+  };
+  const saveLots = async (plans) => {
+    let n = 0; const done = new Set();
+    try {
+      // un livre visé par plusieurs lots n'est enregistré qu'une fois, avec le texte final
+      const last = {}; plans.forEach((pl) => { if (pl.kind === "update") last[pl.book.id] = pl; });
+      for (const pl of plans) {
+        if (pl.kind === "update") {
+          if (done.has(pl.book.id) || last[pl.book.id] !== pl) continue; done.add(pl.book.id);
+          const { meta, body } = parsePaste(pl.text); const it = itemOf(pl.book); const fa = { room: meta.room, type: meta.type, sub: meta.sub, about: meta.about };
+          if (it) await at.saveItem({ ...clean(it), title: meta.title, content: bookToHtml(body), fields: { ...it.fields, alexandrie: { ...it.fields.alexandrie, ...fa, src: pl.text } } });
+          else { const made = await at.createItem({ kind: "document", title: meta.title, content: bookToHtml(body), tags: ["alexandrie"], fields: { alexandrie: { of: pl.book.id, ...fa, src: pl.text } } }); if (!made?.id) throw new Error("création refusée"); }
+          n++;
+        } else if (pl.kind === "create") {
+          const { meta } = parsePaste(pl.text); const src = meta.cote ? pl.text : withCote(pl.text, nextCote(meta.room, all));
+          const { body } = parsePaste(src); const fa = { room: meta.room, type: meta.type, sub: meta.sub, about: meta.about };
+          const it = await at.createItem({ kind: "document", title: meta.title, content: bookToHtml(body), tags: ["alexandrie"], fields: { alexandrie: { ...fa, src } } });
+          if (!it?.id) throw new Error("création refusée");
+          if (pl.up && !hidUp.includes(pl.up)) saveHid([...hidUp, pl.up]);
+          n++;
+        }
+      }
+      toast.success(`${n} livre${n > 1 ? "s" : ""} mis à jour`); sfx?.("select"); setPaste(null);
+    } catch (e) { console.error("[Alexandrie] lots", e); toast.error(`Lots interrompus après ${n} livre(s) : ${errText(e)}`); }
+  };
   // Exporter mes livres : tous les livres écrits ou collés, et les copies modifiées, dans un seul fichier à recoller.
   const exportMine = () => {
     const list = [...books.filter((b) => b.edited), ...mine];
@@ -297,7 +345,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
               <p className="ax-top-ab">Nérodus tient les rayonnages. Pousse une porte.</p>
             </div>
             <div className="ax-tools">{searchBtn}
-              <button className="ax-ghost" onClick={() => setPaste({ text: "" })} data-testid="alex-paste-open"><IoClipboardOutline size={15} /> Coller un livre</button>
+              <button className="ax-ghost" onClick={() => setPaste({ text: "" })} data-testid="alex-paste-open"><IoClipboardOutline size={15} /> Coller des livres ou des lots</button>
               <button className="at-btn" onClick={() => addBook("atelier")} data-testid="alex-add"><IoAdd size={16} /> Écrire un livre</button>
               <button className="ax-ghost ax-ico" onClick={exportMine} title="Exporter mes livres (un fichier texte à recoller)" aria-label="Exporter mes livres" data-testid="alex-export"><IoDownloadOutline size={15} /></button></div>
           </header>
@@ -364,7 +412,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       {hidUp.length > 0 && <p className="ax-wishes mono">{hidUp.length} TITRE{hidUp.length > 1 ? "S" : ""} À PARAÎTRE RETIRÉ{hidUp.length > 1 ? "S" : ""} · <button className="ax-linkbtn" onClick={restoreUp} data-testid="alex-up-restore">LES REMETTRE</button></p>}
       {coverFor && <CoverDialog b={coverFor} current={covers[coverFor.id]} def={DEFAULT_COVERS[coverFor.id]} onSave={(u) => saveCover(coverFor.id, u)} onClose={() => setCoverFor(null)} />}
       {search && <AlexSearch books={all} upcoming={upcoming} onClose={() => setSearch(false)} onOpen={openBook} onGoto={(b) => { setSearch(false); setRoom(b.room); setSel((s) => ({ ...s, [b.room]: b.id })); }} />}
-      {paste && <AlexPaste initial={paste.text} editing={paste.title} onSave={savePaste} onClose={() => setPaste(null)} onPreview={(b) => setReading(b)} renderCover={(b) => <Face b={b} cover={b.coverUrl || covers[b.id]} />} />}
+      {paste && <AlexPaste initial={paste.text} editing={paste.title} onSave={savePaste} planLots={paste.title ? null : planLots} onSaveLots={saveLots} onClose={() => setPaste(null)} onPreview={(b) => setReading(b)} renderCover={(b) => <Face b={b} cover={b.coverUrl || covers[b.id]} />} />}
       {launching && createPortal(
         <div className={"nx-launchfx f-" + volLook(launching).fmt} onClick={() => { setReading(launching); setLaunching(null); }} role="status" aria-label={`Ouverture de ${launching.title}`} data-testid="alex-launch" style={{ zIndex: 3000 }}>
           <i className="nx-lf-glow" aria-hidden="true" />

@@ -156,9 +156,13 @@ const volLook = (b, upcoming) => {
 // Le boîtier de face (livre, cassette, pochette) : utilisé sur le rayon, dans la grille et dans la notice.
 // Étiquette discrète : lu, à lire, coup de cœur
 const StTag = ({ st }) => (st && (st.read || st.want || st.fav) ? <span className="ax-stag mono" aria-label={[st.read && "lu", st.want && "à lire", st.fav && "coup de cœur"].filter(Boolean).join(", ")}>{st.read ? "✓ LU" : st.want ? "À LIRE" : ""}{st.fav && <i>♥</i>}</span> : null);
+// Un livre de 2 000 mots ou moins n'est pas encore complet : un badge orange le signale, il disparaît tout seul quand le livre grandit.
+export const SHORT_WORDS = 2000;
+export const isShort = (b) => !!b && b.words > 0 && b.words <= SHORT_WORDS;
 function CoverInner({ b, cover, upcoming, wished, fmt, R, em, cfs, st }) {
   return (
     <>
+      {!upcoming && isShort(b) && <span className="ax-todo mono" title={`${b.words} mots : ce livre n'est pas encore complet`} data-testid={`alex-todo-${b.id}`}>À COMPLÉTER</span>}
       {fmt === "vinyle" && <span className="ax-disc" aria-hidden="true"><i /></span>}
       {cover && <span className="ax-cover-img" style={{ backgroundImage: `url(${cover})` }} />}
       {fmt === "vhs" && <span className="ax-cover-band mono"><b>VHS</b><span>{(b.roomLabel || R?.label || "LORE").toUpperCase()}</span><i>{b.cote || "À PARAÎTRE"}</i></span>}
@@ -207,6 +211,7 @@ function Volume({ b, sel, cover, upcoming, wished, onPick, onOpen, menu, st }) {
   return (
     <button className={"ax-vol" + cls} style={{ ...vars, width: L.w, height: L.hgt, "--lean": `${L.lean}deg` }} onClick={onPick} title={`${b.title}${b.sub ? " · " + b.sub : ""}${upcoming ? " (à paraître)" : ""}`} data-testid={`alex-book-${b.id}`} {...ctx}>
       <span className="ax-vol-art" style={cover ? { backgroundImage: `url(${cover})` } : undefined}>{!cover && <i>{em}</i>}</span>
+      {!upcoming && isShort(b) && <span className="ax-vtodo" title="À compléter" aria-hidden="true" />}
       {st && (st.read || st.want || st.fav) && <span className="ax-vmark mono" aria-hidden="true">{st.read ? "✓" : st.want ? "◷" : ""}{st.fav ? "♥" : ""}</span>}
       <span className="ax-vol-t" style={{ fontSize: fs }}>{b.title}</span>
       {fmt === "vhs"
@@ -706,7 +711,7 @@ export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, 
               <h1>{book.title}</h1>
               {book.sub && <p className="ax-tp-sub">{book.sub}</p>}
               <span className="ax-rule" />
-              <p className="mono ax-tp-type">{T.label.toUpperCase()} · {readingTime(book.words)}</p>
+              <p className="mono ax-tp-type">{T.label.toUpperCase()} · {readingTime(book.words)}{isShort(book) && <span className="ax-todo-in"> · À COMPLÉTER</span>}</p>
               {book.about && <p className="ax-tp-about">{book.about}</p>}
               <p className="mono ax-tp-foot">{book.house || "BIBLIOTHÈQUE D'ALEXANDRIE"} · COTE {book.cote}</p>
             </section>
@@ -903,7 +908,7 @@ function Room({ r, n, here, up, selId, onSel, covers, wish, prog, onRead, onWish
       {cur && (
         <div className={"ax-notice" + (grid ? " cv" : "")} key={cur.id} ref={nref}>
           {grid && <span className="ax-notice-cv"><Face b={cur} cover={covers[cur.id]} upcoming={isUp} wished={wish.includes(cur.id)} st={isUp ? null : stOf(cur.id)} /></span>}
-          <p className="mono meta">{isUp ? "À PARAÎTRE" : cur.cote || "MES LIVRES"} · {T.label.toUpperCase()} · {fmt === "vhs" ? "CASSETTE" : fmt === "vinyle" ? "DISQUE" : "LIVRE"}{!isUp && cur.words ? ` · ${readingTime(cur.words).toUpperCase()}` : ""}</p>
+          <p className="mono meta">{isUp ? "À PARAÎTRE" : cur.cote || "MES LIVRES"} · {T.label.toUpperCase()} · {fmt === "vhs" ? "CASSETTE" : fmt === "vinyle" ? "DISQUE" : "LIVRE"}{!isUp && isShort(cur) ? " · À COMPLÉTER" : ""}{!isUp && cur.words ? ` · ${readingTime(cur.words).toUpperCase()}` : ""}</p>
           <h3>{cur.title}{favs.includes(cur.id) && <IoHeart className="ax-favh" size={20} aria-label="Coup de cœur" />}</h3>
           {cur.sub && <p className="sub">{cur.sub}</p>}
           {cur.about && <p className="ab">{cur.about}</p>}
