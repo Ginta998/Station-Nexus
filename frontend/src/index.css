@@ -3164,3 +3164,61 @@ body:has(.ax-reader) :is(.nw,.cosmic-bg,.nx-tlayer) *{animation-play-state:pause
 .jr-fmt:not(.on) .jr-fmt-obj{filter:saturate(.5) brightness(.85)}
 @media (max-width:640px){.jr-fmts{grid-template-columns:repeat(2,minmax(0,1fr))}.jr-fmt-obj{height:104px}.jr-fmt-obj .ax-face{--z:.29;--zv:.26}.jr-fmt-obj .cs{width:130px}}
 .jr-cover-edit{flex-wrap:wrap;align-content:flex-end}
+
+/* =====================================================================
+   0.31 · Passe Rhine Lab : Journal (entrée, éditeur) et Salon
+   Coins nets, repères en chasse fixe, filets fins avec segment de couleur, crochets d'angle.
+   ===================================================================== */
+/* journal : boutons, champs et étiquettes à angles droits */
+.jr-page .jr-btn,.jr-page .jr-pick,.jr-page .jr-in,.jr-page .jr-catman,.jr-page .jr-catman button,.jr-page .jr-cover-edit,.jr-page .jr-tape-ed,.jr-page .jr-read,.jr-page .jr-crea{border-radius:2px!important}
+.jr-page .jr-tag{border-radius:1px;font-family:"JetBrains Mono",monospace;font-weight:500;letter-spacing:.16em}
+.jr-page .jr-btn{font-size:13px}
+/* entrée : repère au-dessus du titre, crochets, filet */
+.jr-kick{margin-bottom:14px}
+.jr-meta{font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.14em}
+.jr-title{position:relative;padding-bottom:16px}
+.jr-title::after{content:"";position:absolute;left:0;bottom:0;width:min(100%,520px);height:1px;background:linear-gradient(90deg,var(--brand) 0 72px,color-mix(in srgb,var(--text-primary) 16%,transparent) 72px)}
+.jr-article::before,.jr-article::after{content:"";position:absolute;width:14px;height:14px;border:solid var(--text-primary);opacity:.45;pointer-events:none}
+.jr-article::before{top:-14px;left:4px;border-width:2px 0 0 2px}.jr-article::after{bottom:52px;right:4px;border-width:0 2px 2px 0}
+.jr-crea{padding:6px 14px 6px 6px}.jr-crea small{font-family:"JetBrains Mono",monospace;letter-spacing:.2em}
+.jr-read{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.jr-pn{border-top:none;position:relative}
+.jr-pn::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,var(--brand) 0 72px,color-mix(in srgb,var(--text-primary) 16%,transparent) 72px)}
+.jr-pn small{font-family:"JetBrains Mono",monospace!important}
+.jr-rule{height:1px;background:color-mix(in srgb,var(--text-primary) 14%,transparent)}
+/* éditeur : sections numérotées comme l'atelier de l'œuvre */
+.jr-sec{display:flex;align-items:center;gap:8px;margin:26px 0 10px;font:500 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.22em;color:var(--text-secondary)}
+.jr-sec b{font-weight:500;padding:3px 6px;border:1px solid color-mix(in srgb,var(--text-primary) 22%,transparent);color:var(--brand);letter-spacing:.08em}
+.jr-sec i{font-style:normal;opacity:.5}
+.jr-sec::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--text-primary) 12%,transparent)}
+.jr-page .lab-head + .jr-sec{margin-top:0}
+.jr-in-title{margin-top:0!important}
+.jr-fmts-k{display:none}
+.jr-fmt{border-radius:2px;position:relative}
+.jr-fmt.on::before,.jr-fmt.on::after{content:"";position:absolute;width:10px;height:10px;border:solid var(--brand)}
+.jr-fmt.on::before{top:-1px;left:-1px;border-width:2px 0 0 2px}.jr-fmt.on::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+.jr-fmt b{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.jr-tape-ed{border-style:solid!important;border-color:color-mix(in srgb,var(--text-primary) 12%,transparent)!important;border-left:2px solid #e5484d!important}
+
+/* Salon : en-tête en repères, onglets soulignés, canaux en étiquettes nettes */
+.chat-kick{margin:0 0 6px;font:500 9.5px/1 "JetBrains Mono",monospace;letter-spacing:.22em;color:var(--text-secondary);display:flex;gap:6px;align-items:center}
+.chat-kick i{font-style:normal;opacity:.5}
+.chat-kick b{font-weight:500;padding:2px 5px;border:1px solid color-mix(in srgb,var(--text-primary) 22%,transparent);color:var(--brand)}
+[data-testid="chat-page"] button,[data-testid="chat-page"] input,[data-testid="chat-page"] textarea,[data-testid="chat-page"] img,[data-testid="chat-poll-builder"],[data-testid="chat-pinned"] > div{border-radius:2px!important}
+[data-testid="chat-page"] .rounded-full{border-radius:2px!important}
+[data-testid="chat-tab-salon"],[data-testid="chat-tab-dm"]{background:transparent!important;border:none!important;border-bottom:1px solid color-mix(in srgb,var(--text-primary) 14%,transparent)!important;color:var(--text-secondary)!important;font:500 11px/1 "JetBrains Mono",monospace!important;letter-spacing:.18em;text-transform:uppercase;padding:12px 0!important}
+[data-testid="chat-tab-salon"].on,[data-testid="chat-tab-dm"].on{color:var(--text-primary)!important;border-bottom:2px solid var(--brand)!important}
+[data-testid^="chat-channel-"]:not([data-testid^="chat-channel-del"]):not([data-testid="chat-channel-add"]){font:500 11.5px/1 "JetBrains Mono",monospace!important;letter-spacing:.06em;padding:8px 11px!important}
+[data-testid="chat-pinned"] > div{border-left:2px solid var(--brand)!important}
+[data-testid^="chat-msg-"]{position:relative;padding:8px 10px;margin-left:-10px;margin-right:-10px;border:1px solid transparent;transition:border-color .2s,background .2s}
+[data-testid^="chat-msg-"]:hover{border-color:color-mix(in srgb,var(--text-primary) 10%,transparent);background:color-mix(in srgb,var(--bg-secondary) 50%,transparent)}
+[data-testid^="chat-msg-"] .text-\[10px\]{font-family:"JetBrains Mono",monospace;letter-spacing:.1em}
+[data-testid="chat-online"]{font-family:"JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;font-size:9.5px!important;margin-top:4px}
+[data-testid^="dm-convo-"]{border-radius:2px!important}
+.jr-tape-ed .jr-sec{margin-top:0}
+.jr-tape-ed{margin-top:12px!important}
+[data-testid="chat-locked"] .max-w-md{border-radius:2px!important;position:relative}
+[data-testid="chat-locked"] .max-w-md > div:first-child{border-radius:2px!important}
+[data-testid="chat-locked"] button{border-radius:2px!important}
+[data-testid="chat-locked"] .max-w-md::before,[data-testid="chat-locked"] .max-w-md::after{content:"";position:absolute;width:12px;height:12px;border:solid var(--text-primary);opacity:.6}
+[data-testid="chat-locked"] .max-w-md::before{top:-1px;left:-1px;border-width:2px 0 0 2px}[data-testid="chat-locked"] .max-w-md::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}

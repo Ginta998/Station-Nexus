@@ -196,3 +196,69 @@
 .cs-wear{background:linear-gradient(104deg,transparent 61.8%,rgba(255,255,255,.18) 62%,transparent 62.3%) 0 0/100% 40% no-repeat,linear-gradient(77deg,transparent 22%,rgba(255,255,255,.14) 22.15%,transparent 22.4%) 0 100%/60% 30% no-repeat,
   linear-gradient(90deg,rgba(255,255,255,.22),transparent 1.2cqw),linear-gradient(270deg,rgba(255,255,255,.14),transparent 1.2cqw),linear-gradient(180deg,rgba(255,255,255,.2),transparent 1.4cqw),
   radial-gradient(circle at 0 0,rgba(255,255,255,.35),transparent 5cqw),radial-gradient(circle at 100% 100%,rgba(255,255,255,.3),transparent 5cqw),radial-gradient(circle at 100% 0,rgba(255,255,255,.22),transparent 4cqw)!important;opacity:.45!important}
+
+/* =====================================================================
+   0.31 · Une vraie cassette en volume : coins presque droits, biseau, tranche épaisse,
+   bas trapézoïdal en relief, posée légèrement inclinée pour qu'on voie son épaisseur.
+   ===================================================================== */
+.cs{border-radius:1cqw!important;transform-style:preserve-3d}
+.cs-shell{border-radius:1cqw!important;
+  box-shadow:inset 0 .35cqw 0 rgba(255,255,255,.13),inset .35cqw 0 0 rgba(255,255,255,.05),inset -.35cqw 0 0 rgba(0,0,0,.45),inset 0 -.5cqw 0 rgba(0,0,0,.6),
+    inset 0 0 0 .9cqw rgba(255,255,255,.025),inset 0 -1.4cqw 2.4cqw rgba(0,0,0,.45),0 0 0 .25cqw #050505!important}
+/* la tranche : l'épaisseur du boîtier, avec les stries de prise en main */
+.cs::before{content:"";position:absolute;left:.4cqw;right:.4cqw;top:calc(100% - 1cqw);height:3.4cqw;z-index:-1;border-radius:0 0 1.2cqw 1.2cqw;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 .25cqw,transparent .25cqw 1.1cqw) 32% 0/36% 100% no-repeat,
+    linear-gradient(180deg,#0e0d0c,#1b1917 30%,#0b0a09 85%,#000);box-shadow:0 1.6cqw 3cqw rgba(0,0,0,.6),inset 0 -.2cqw 0 rgba(255,255,255,.06)}
+/* le bas en trapèze qui dépasse (tête de lecture) : en relief, avec ses biseaux */
+.cs-mouth{left:19%!important;right:19%!important;height:15%!important;clip-path:polygon(6% 0,94% 0,100% 100%,0 100%);
+  background:linear-gradient(180deg,#2a2724,#191715 55%,#0f0e0d)!important;box-shadow:inset 0 .3cqw 0 rgba(255,255,255,.12),inset 0 -.4cqw 0 rgba(0,0,0,.7)}
+.cs-mouth i{border-radius:.4cqw!important;background:#070707!important;box-shadow:inset 0 .3cqw .4cqw rgba(0,0,0,.9)}
+/* étiquette : coins nets, légèrement surélevée */
+.cs-label{border-radius:.5cqw!important}
+.cs-screw{box-shadow:inset 0 -.2cqw .3cqw rgba(0,0,0,.5),0 .15cqw 0 rgba(255,255,255,.08)!important}
+/* dans le lecteur : posée en légère perspective, on voit le dessus et la tranche */
+.tp-cassw{perspective:1600px}
+.tp-cassw .cs{transform:rotateX(16deg) rotateZ(-1.5deg)}
+@keyframes csIn{0%{opacity:0;transform:translateY(40px) rotateX(64deg) rotateZ(-9deg) scale(.86)}35%{opacity:1}100%{opacity:1;transform:rotateX(16deg) rotateZ(-1.5deg)}}
+.tp.on .tp-cassw .cs{transform:rotateX(12deg) rotateZ(-1deg) translateY(-1px);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+/* en liste (journal, Making of) : un peu de volume aussi */
+.tpo .cs{transform:perspective(900px) rotateX(14deg) rotate(-2deg)}
+
+/* modifier la cassette directement dessus */
+.tp-ed-btn{right:max(64px,calc(env(safe-area-inset-right) + 64px))!important}
+.tp-cassw.editing .cs{outline:1px dashed color-mix(in srgb,#e9c46a 70%,transparent);outline-offset:1.4cqw}
+.tp-edit{width:min(560px,100%);display:flex;flex-direction:column;gap:10px;padding:16px 16px 14px;border:1px solid rgba(236,228,210,.18);border-top:2px solid #e9b04d;background:rgba(10,10,11,.82);backdrop-filter:blur(8px);color:#ece4d2;
+  animation:tpUp .35s cubic-bezier(.2,.8,.2,1) both}
+.tp-edit-k,.tp-edit-s{margin:0;font:500 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.22em;color:rgba(236,228,210,.6)}
+.tp-edit-k{color:#e9b04d}.tp-edit-s{margin-top:6px}
+.tp-edit-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tp-edit-row label{display:flex;flex-direction:column;gap:5px;font:500 10px/1 "JetBrains Mono",monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(236,228,210,.6)}
+.tp-edit input{padding:9px 11px;border:1px solid rgba(236,228,210,.2);background:rgba(0,0,0,.4);color:#ece4d2;font:400 15px/1.2 "Special Elite","Courier Prime",monospace;letter-spacing:0;text-transform:none;border-radius:2px}
+.tp-edit input:focus{outline:none;border-color:#e9b04d}
+.tp-edit-acts{display:flex;flex-wrap:wrap;gap:8px}
+.tp-edit .jr-pick,.tp-edit .mic-rec{border-radius:2px}
+.tp-edit-au{width:100%;height:34px}
+.tp-edit-end{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+@media (max-width:520px){.tp-edit-row{grid-template-columns:1fr}}
+
+/* enregistrer au micro */
+.mic-rec{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid color-mix(in srgb,#e5484d 60%,var(--border-c,#444));border-radius:2px;background:color-mix(in srgb,#e5484d 10%,transparent);color:var(--text-primary,#ece4d2);font-size:13px;cursor:pointer}
+.mic-rec svg{color:#e5484d}
+.mic-rec:disabled{opacity:.6;cursor:wait}
+.mic-rec.on{cursor:default;border-color:#e5484d;background:color-mix(in srgb,#e5484d 14%,rgba(0,0,0,.4))}
+.mic-rec.on b{font:600 12px/1 "JetBrains Mono",monospace;letter-spacing:.12em;color:#ff6b6f}
+.mic-dot{width:9px;height:9px;border-radius:50%;background:#e5484d;box-shadow:0 0 8px #e5484d;animation:micBlink 1s steps(2) infinite}
+@keyframes micBlink{50%{opacity:.25}}
+.mic-vu{display:inline-flex;align-items:flex-end;gap:2px;height:14px}
+.mic-vu i{width:3px;height:100%;background:rgba(255,255,255,.14)}
+.mic-vu i:nth-child(-n+5).lit{background:#7bd88f}.mic-vu i:nth-child(n+6).lit{background:#f2c14e}.mic-vu i:nth-child(8).lit{background:#e5484d}
+.mic-stop,.mic-x{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border:1px solid rgba(255,255,255,.25);border-radius:2px;color:inherit;font-size:12px;cursor:pointer;background:transparent}
+.mic-stop:hover{border-color:#e5484d}.mic-x{padding:4px 6px}
+@media (prefers-reduced-motion:reduce){.mic-dot{animation:none}}
+.tp-edit .jr-pick{color:#ece4d2;border-color:rgba(236,228,210,.2);background:rgba(0,0,0,.35);font-size:13px}
+.cs::before{height:4.4cqw!important;top:calc(100% - 1.2cqw)!important}
+.tp-cassw .cs{transform:rotateX(22deg) rotateZ(-1.5deg)}
+@keyframes csIn{0%{opacity:0;transform:translateY(40px) rotateX(64deg) rotateZ(-9deg) scale(.86)}35%{opacity:1}100%{opacity:1;transform:rotateX(22deg) rotateZ(-1.5deg)}}
+.tp.on .tp-cassw .cs{transform:rotateX(18deg) rotateZ(-1deg) translateY(-1px)}
+.tp-cassw.editing .cs{transform:rotateX(10deg) rotateZ(-1deg);animation:none}
+@media (max-width:860px){.tp{padding-top:max(70px,calc(env(safe-area-inset-top) + 62px))!important}}

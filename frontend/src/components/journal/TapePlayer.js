@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
-import { IoClose, IoPlay, IoPause, IoPlayBack, IoPlayForward, IoStop } from "react-icons/io5";
+import { IoClose, IoPlay, IoPause, IoPlayBack, IoPlayForward, IoStop, IoCreateOutline, IoMusicalNotes } from "react-icons/io5";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { ImagePick, ArtSearch, FilePick } from "@/components/journal/BlocksEditor";
+import MicRecorder from "@/components/journal/MicRecorder";
 import { useApp } from "@/context/AppContext";
-import { mediaUrl, getJournalEntry } from "@/lib/api";
+import { mediaUrl, getJournalEntry, updateJournalEntry } from "@/lib/api";
 import { JournalBlocks } from "@/components/journal/JournalParts";
 import { tapeStart, tapeRelease, tapeHiss, tapeInsert } from "@/lib/tapeSound";
 import { Cassette } from "@/components/journal/TapeObject";
@@ -16,8 +20,24 @@ import "@/components/journal/tape.css";
 */
 const mmss = (s) => { if (!isFinite(s)) return "--:--"; const m = Math.floor(s / 60); return `${String(m).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`; };
 
-export default function TapePlayer({ entry: e, onClose }) {
-  const { uiVolume = 0.5, muted, pauseReading } = useApp();
+export default function TapePlayer({ entry: saved, onClose }) {
+  const { uiVolume = 0.5, muted, pauseReading, isAdmin } = useApp();
+  const qc = useQueryClient();
+  // modifier la cassette directement dessus (admin) : étiquette, voix, image, enregistrement
+  const [edit, setEdit] = useState(false); const [draft, setDraft] = useState(saved); const [busy, setBusy] = useState(false); const [over, setOver] = useState(null); // ce qui vient d'être enregistré
+  const base = over ? { ...saved, ...over } : saved;
+  const e = edit ? draft : base;
+  const setD = (p) => setDraft((o) => ({ ...o, ...p }));
+  const save = async () => {
+    setBusy(true);
+    try {
+      const payload = { ...draft }; ["id", "created_at", "updated_at"].forEach((k) => delete payload[k]);
+      const r = await updateJournalEntry(saved.id, payload);
+      qc.setQueryData(["journal-entry", saved.id], r && r.id ? r : { ...saved, ...payload }); qc.invalidateQueries({ queryKey: ["journal"] });
+      setOver(payload); toast.success("Cassette enregistrée"); setEdit(false);
+    } catch (err) { toast.error(err?.response?.data?.detail || "Enregistrement impossible"); }
+    setBusy(false);
+  };
   const a = useRef(null); const hiss = useRef(null); const startT = useRef(null);
   const [on, setOn] = useState(false); const [pos, setPos] = useState(0); const [dur, setDur] = useState(0); const [starting, setStarting] = useState(false);
   const vol = muted ? 0 : Math.min(1, (uiVolume ?? 0.5) * 1.1);
@@ -36,10 +56,10 @@ export default function TapePlayer({ entry: e, onClose }) {
   const toggle = () => (on ? pause() : play());
   const seek = (d) => { const el = a.current; if (!el) return; el.currentTime = Math.max(0, Math.min(dur || 0, el.currentTime + d)); setPos(el.currentTime); tapeRelease(vol * 0.6); };
   const stop = () => { pause(); if (a.current) a.current.currentTime = 0; setPos(0); };
-  const close = () => { a.current?.pause(); stopFx(); onClose(); };
+  const close = () => { if (edit) { setEdit(false); return; } a.current?.pause(); stopFx(); onClose(); };
 
   useEffect(() => {
-    const k = (ev) => { if (ev.key === "Escape") { ev.stopPropagation(); close(); } if (ev.key === " " && !/INPUT|TEXTAREA/.test(ev.target?.tagName)) { ev.preventDefault(); toggle(); } };
+    const k = (ev) => { if (ev.key === "Escape") { ev.stopPropagation(); close(); } if (ev.key === " " && !edit && !/INPUT|TEXTAREA|BUTTON/.test(ev.target?.tagName)) { ev.preventDefault(); toggle(); } };
     window.addEventListener("keydown", k, true); return () => window.removeEventListener("keydown", k, true);
   });
   useEffect(() => () => { a.current?.pause(); stopFx(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -53,10 +73,12 @@ export default function TapePlayer({ entry: e, onClose }) {
   return createPortal(
     <div className={"tp" + (on ? " on" : "") + (starting ? " starting" : "") + (hasText ? "" : " solo")} role="dialog" aria-label={`Cassette : ${e.title}`} data-testid="tape-player">
       {e.cover && <span className="tp-bgimg" style={{ backgroundImage: `url(${mediaUrl(e.cover)})` }} aria-hidden="true" />}
-      <button className="tp-x" onClick={close} aria-label="Fermer" data-testid="tape-close"><IoClose size={18} /></button>
+      <button className="tp-x" onClick={close} aria-label={edit ? "Annuler les modifications" : "Fermer"} data-testid="tape-close"><IoClose size={18} /></button>
+      {isAdmin && !edit && <button className="tp-x tp-ed-btn" onClick={() => { pause(); setDraft(base); setEdit(true); }} aria-label="Modifier la cassette" title="Modifier la cassette" data-testid="tape-edit"><IoCreateOutline size={18} /></button>}
       <div className="tp-deck">
-        <div className="tp-cassw"><Cassette title={label} sub={[e.tape_voice && `Voix : ${e.tape_voice}`, e.date && new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })].filter(Boolean).join(" · ")} p={p} spinning={on && !starting} starting={starting} img={e.cover} /></div>
-        <div className="tp-ctl">
+        <div className={"tp-cassw" + (edit ? " editing" : "")} onContextMenu={isAdmin && !edit ? (ev) => { ev.preventDefault(); pause(); setDraft(base); setEdit(true); } : undefined}><Cassette title={label} sub={[e.tape_voice && `Voix : ${e.tape_voice}`, e.date && new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })].filter(Boolean).join(" · ")} p={p} spinning={on && !starting} starting={starting} img={e.cover} /></div>
+        {edit && <TapeEditPanel d={draft} set={setD} onSave={save} onCancel={() => setEdit(false)} busy={busy} />}
+        {!edit && <><div className="tp-ctl">
           <span className="tp-count mono" aria-label="Compteur">{String(Math.floor(pos)).padStart(3, "0").slice(-3)}</span>
           <div className="tp-keys">
             <button onClick={() => seek(-10)} aria-label="Reculer de 10 secondes" title="Reculer (10 s)"><IoPlayBack /></button>
@@ -67,10 +89,10 @@ export default function TapePlayer({ entry: e, onClose }) {
           <span className="tp-time mono">{mmss(pos)} / {mmss(dur)}</span>
         </div>
         <div className="tp-bar" onClick={(ev) => { const r = ev.currentTarget.getBoundingClientRect(); const el = a.current; if (el && dur) { el.currentTime = ((ev.clientX - r.left) / r.width) * dur; setPos(el.currentTime); } }} role="slider" aria-valuemin={0} aria-valuemax={Math.round(dur)} aria-valuenow={Math.round(pos)} aria-label="Position"><i style={{ width: `${p * 100}%` }} /></div>
-        {!e.tape_url && <p className="tp-none">Pas encore d'enregistrement sur cette cassette.</p>}
+        {!e.tape_url && <p className="tp-none">Pas encore d'enregistrement sur cette cassette.</p>}</>}
       </div>
-      {!hasText && <p className="tp-solo-t"><b>{e.title}</b>{e.subtitle && <small>{e.subtitle}</small>}</p>}
-      {hasText && <article className="tp-script">
+      {(!hasText || edit) && <p className="tp-solo-t"><b>{e.title}</b>{e.subtitle && <small>{e.subtitle}</small>}</p>}
+      {hasText && !edit && <article className="tp-script">
         <p className="mono tp-k">TRANSCRIPTION</p>
         <h1>{e.title}</h1>
         {e.subtitle && <p className="tp-sub">{e.subtitle}</p>}
@@ -84,6 +106,34 @@ export default function TapePlayer({ entry: e, onClose }) {
 
 // Ouvre une cassette depuis une liste (journal, accueil, fiche d'une création) sans quitter la page :
 // la croix ramène exactement là où on était.
+function TapeEditPanel({ d, set, onSave, onCancel, busy }) {
+  return (
+    <div className="tp-edit" data-testid="tape-edit-panel">
+      <p className="tp-edit-k mono">MODIFIER LA CASSETTE</p>
+      <div className="tp-edit-row">
+        <label>Étiquette<input value={d.tape_label || ""} onChange={(ev) => set({ tape_label: ev.target.value })} placeholder={d.title} data-testid="tape-edit-label" autoFocus /></label>
+        <label>Voix<input value={d.tape_voice || ""} onChange={(ev) => set({ tape_voice: ev.target.value })} placeholder="Qui parle ?" data-testid="tape-edit-voice" /></label>
+      </div>
+      <p className="tp-edit-s mono">IMAGE</p>
+      <div className="tp-edit-acts">
+        <ImagePick label={d.cover ? "Changer l'image" : "Ajouter une image"} onDone={([u]) => set({ cover: u })} testid="tape-edit-img" />
+        <ArtSearch term={d.tape_label || d.title} label="Chercher un artwork" onPick={(u) => set({ cover: u })} />
+        {d.cover && <button type="button" className="jr-pick" onClick={() => set({ cover: "" })}>Retirer</button>}
+      </div>
+      <p className="tp-edit-s mono">ENREGISTREMENT</p>
+      <div className="tp-edit-acts">
+        <MicRecorder onDone={(u) => set({ tape_url: u })} testid="tape-edit-mic" />
+        <FilePick accept="audio/*" icon={<IoMusicalNotes />} label={d.tape_url ? "Remplacer par un fichier" : "Déposer un fichier"} onDone={([u]) => set({ tape_url: u })} testid="tape-edit-file" />
+      </div>
+      {d.tape_url && <audio controls preload="none" src={mediaUrl(d.tape_url)} className="tp-edit-au" />}
+      <div className="tp-edit-end">
+        <button type="button" className="jr-pick" onClick={onCancel}>Annuler</button>
+        <button type="button" className="jr-btn jr-btn-brand" onClick={onSave} disabled={busy} data-testid="tape-edit-save">{busy ? "Enregistrement…" : "Enregistrer la cassette"}</button>
+      </div>
+    </div>
+  );
+}
+
 export function TapeById({ id, onClose }) {
   const { data: e } = useQuery({ queryKey: ["journal-entry", id], queryFn: () => getJournalEntry(id), enabled: !!id });
   if (!id || !e) return null;

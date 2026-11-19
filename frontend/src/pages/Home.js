@@ -13,7 +13,7 @@ import { useEntitlements } from "@/lib/useEntitlements";
 import TopBar from "@/components/TopBar";
 import EditorDialog from "@/components/EditorDialog";
 import StationSearch from "@/components/StationSearch";
-import { TapeById } from "@/components/journal/TapePlayer";
+import JournalOverlay from "@/components/journal/JournalOverlay";
 import ProfileDialog from "@/components/ProfileDialog";
 import HomeCountdown from "@/components/HomeCountdown";
 import HomeCustomizer from "@/components/home/HomeCustomizer";
@@ -96,7 +96,8 @@ export default function Home() {
   const nav = useNavigate();
   const { isAdmin, sfx, theme, setTheme, playAmbient } = useApp();
   const [tapeId, setTapeId] = useState(""); // une cassette du journal s'écoute sur place
-  const openJournal = (e) => { sfx("select"); if (e.format === "cassette") setTapeId(e.id); else nav(`/journal/${e.id}`); };
+  const nexus = useExperience() === "nexus"; // en Nexus, une entrée se lit directement (livre, VHS, vinyle, cassette)
+  const openJournal = (e) => { sfx("select"); if (e.format === "cassette" || nexus) setTapeId(e.id); else nav(`/journal/${e.id}`); };
   const { user, openAuth } = useAuth();
   const { membershipActive } = useEntitlements();
 
@@ -311,7 +312,7 @@ export default function Home() {
       <div style={{ position: "relative", zIndex: 1 }}>
       <TopBar onAdd={openCreate} onProfile={requireProfile} />
       {searchOpen && <StationSearch onClose={() => setSearchOpen(false)} />}
-      {tapeId && <TapeById id={tapeId} onClose={() => setTapeId("")} />}
+      {tapeId && <JournalOverlay id={tapeId} onClose={() => setTapeId("")} />}
       <HomeCountdown />
 
       <div className="sx-exp">

@@ -6,7 +6,8 @@ import { listJournal, listJournalCategories, listCreations } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import MobileMenu from "@/components/MobileMenu";
 import { JournalCard, monthLabel } from "@/components/journal/JournalParts";
-import { TapeById } from "@/components/journal/TapePlayer";
+import JournalOverlay from "@/components/journal/JournalOverlay";
+import { useExperience } from "@/lib/experience";
 
 export default function Journal() {
   const nav = useNavigate();
@@ -28,7 +29,8 @@ export default function Journal() {
   const [lead, ...rest] = list;
   // une cassette s'écoute sur place : la refermer ramène à la liste, sans page intermédiaire
   const [tapeId, setTapeId] = useState("");
-  const open = (e) => { sfx("select"); if (e.format === "cassette") setTapeId(e.id); else nav(`/journal/${e.id}`); };
+  const nexus = useExperience() === "nexus"; // en Nexus, une entrée se lit directement (livre, VHS, vinyle, cassette)
+  const open = (e) => { sfx("select"); if (e.format === "cassette" || nexus) setTapeId(e.id); else nav(`/journal/${e.id}`); };
 
   return (
     <div className="relative min-h-screen w-full jr-page" data-testid="journal-page">
@@ -74,7 +76,7 @@ export default function Journal() {
           {rest.map((e, i) => <JournalCard key={e.id} idx={i} e={e} cat={catById[e.category_id]} creation={creaById[e.creation_id]} onOpen={() => open(e)} />)}
         </div>
       </div>
-      {tapeId && <TapeById id={tapeId} onClose={() => setTapeId("")} />}
+      {tapeId && <JournalOverlay id={tapeId} onClose={() => setTapeId("")} />}
     </div>
   );
 }

@@ -51,6 +51,7 @@ export default function JournalEntry() {
       </div>
 
       <article className="jr-article">
+        <p className="lab-kick jr-kick">STATION NEXUS <i>/</i> JOURNAL DE BORD <b>{e.format === "cassette" ? "CASSETTE" : e.format === "vhs" ? "VHS" : e.format === "vinyle" ? "VINYLE" : "LIVRE"}</b></p>
         <div className="jr-meta"><CategoryTag cat={cat} /><span className="mono" data-testid="journal-entry-date">{fmtDate(e.date)}</span>{!e.published && <span className="jr-draft static">Brouillon</span>}</div>
         <h1 className="jr-title font-display" data-testid="journal-entry-title">{e.title}</h1>
         {e.subtitle && <p className="jr-sub">{e.subtitle}</p>}

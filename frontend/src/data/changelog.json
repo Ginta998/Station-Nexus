@@ -1,6 +1,22 @@
 {
-  "version": "0.30",
+  "version": "0.31",
   "patches": [
+    {
+      "v": "0.31",
+      "date": "2026-11-19",
+      "title": "Enregistrer, modifier sur place, Rhine Lab partout",
+      "groups": {
+        "Ajouté": [
+          "Enregistrer au micro : dans l'éditeur du journal et sur la cassette elle-même. Voyant rouge, compteur, vumètre, « Arrêter » pose l'enregistrement sur la cassette (le navigateur demande l'accès au micro la première fois).",
+          "Modifier une cassette directement dessus (crayon en haut à droite ou clic droit sur la cassette) : étiquette, voix, image (fichier ou artwork), enregistrement (micro ou fichier). La cassette se met à jour pendant qu'on écrit."
+        ],
+        "Changé": [
+          "La cassette a un vrai volume : coins presque droits, biseaux, tranche épaisse avec stries, bas en trapèze en relief, posée en légère perspective.",
+          "En Nexus, une entrée du journal s'ouvre directement dans son objet (livre, VHS, vinyle ou cassette), sans page intermédiaire ; fermer ramène à la liste.",
+          "Passe Rhine Lab : l'entrée du journal (repère, filets, crochets, boutons nets), l'éditeur du journal (en-tête de labo, sections numérotées 01 à 05, l'enregistrement juste sous le format) et le Salon (repère S-01, onglets soulignés, canaux et messages à angles droits)."
+        ]
+      }
+    },
     {
       "v": "0.30",
       "date": "2026-11-19",

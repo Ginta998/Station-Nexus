@@ -456,6 +456,7 @@ function Header({ nav, sfx, online, showOnline, tab, onTab }) {
           <button data-testid="chat-back" onClick={() => { sfx("back"); nav(-1); }} className="flex items-center gap-2 px-2.5 py-2" style={btn}><IoArrowBack size={18} /></button>
           <button data-testid="chat-home" onClick={() => { sfx("nav"); nav("/"); }} className="flex items-center gap-2 px-2.5 py-2" style={btn}><IoHome size={16} /></button>
           <div className="ml-1 min-w-0">
+            <p className="chat-kick mono">STATION NEXUS <i>/</i> COMMUNAUTÉ <b>S-01</b></p>
             <h1 className="font-display text-lg leading-none flex items-center gap-1.5"><IoChatbubblesOutline size={18} style={{ color: "var(--brand)" }} /> Salon</h1>
             {showOnline && <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--brand)" }} data-testid="chat-online"><IoPeople size={11} /> {online} en ligne</span>}
           </div>
@@ -464,11 +465,11 @@ function Header({ nav, sfx, online, showOnline, tab, onTab }) {
       </div>
       {tab && (
         <div className="flex items-center gap-2 px-3 md:px-8 pb-2 max-w-3xl w-full mx-auto">
-          <button data-testid="chat-tab-salon" onClick={() => onTab("salon")} className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold transition-colors"
+          <button data-testid="chat-tab-salon" onClick={() => onTab("salon")} className={(tab === "salon" ? "on " : "") + "flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold transition-colors"}
             style={{ background: tab === "salon" ? "var(--brand)" : "var(--bg-secondary)", color: tab === "salon" ? "var(--bg-primary)" : "var(--text-secondary)", border: `1px solid ${tab === "salon" ? "var(--brand)" : "var(--border-c)"}`, borderRadius: "var(--radius-base)" }}>
             <IoChatbubblesOutline size={16} /> Salon
           </button>
-          <button data-testid="chat-tab-dm" onClick={() => onTab("dm")} className="relative flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold transition-colors"
+          <button data-testid="chat-tab-dm" onClick={() => onTab("dm")} className={(tab === "dm" ? "on " : "") + "relative flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold transition-colors"}
             style={{ background: tab === "dm" ? "var(--brand)" : "var(--bg-secondary)", color: tab === "dm" ? "var(--bg-primary)" : "var(--text-secondary)", border: `1px solid ${tab === "dm" ? "var(--brand)" : "var(--border-c)"}`, borderRadius: "var(--radius-base)" }}>
             <IoMailOutline size={16} /> Messages
             {dmUnread > 0 && <span data-testid="chat-tab-dm-badge" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: tab === "dm" ? "var(--bg-primary)" : "var(--brand)", color: tab === "dm" ? "var(--brand)" : "var(--bg-primary)" }}>{dmUnread > 9 ? "9+" : dmUnread}</span>}

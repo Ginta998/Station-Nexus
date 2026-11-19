@@ -11,6 +11,8 @@ import { BlocksEditor, ImagePick, ArtSearch, FilePick } from "@/components/journ
 import { IoMusicalNotes } from "react-icons/io5";
 import { Face } from "@/components/atelier/Alexandrie";
 import { Cassette } from "@/components/journal/TapeObject";
+import MicRecorder from "@/components/journal/MicRecorder";
+import LabHead from "@/components/LabHead";
 
 // Le format de l'entrée, choisi en voyant l'objet : livre, VHS, vinyle (on la lit) ou cassette audio (on l'écoute).
 const FORMATS = [
@@ -87,7 +89,8 @@ export default function JournalEditor() {
           <button onClick={() => { sfx("back"); nav(id ? `/journal/${id}` : "/journal"); }} className="jr-btn" aria-label="Retour" data-testid="journal-editor-back"><IoArrowBack /></button>
           <button onClick={save} disabled={saving} className="jr-btn jr-btn-brand" data-testid="journal-save"><IoSaveOutline /> {saving ? "Enregistrement…" : id ? "Enregistrer" : "Publier"}</button>
         </div>
-        <p className="mono jr-k mb-3">{id ? "MODIFIER L'ENTRÉE" : "NOUVELLE ENTRÉE"}</p>
+        <LabHead label="JOURNAL DE BORD" code={id ? "J-MOD" : "J-NEW"} title={id ? "Modifier l'entrée" : "Nouvelle entrée"} />
+        <p className="jr-sec mono"><b>01</b> COUVERTURE</p>
 
         <div className="jr-cover-edit" style={f.cover ? { backgroundImage: `url(${mediaUrl(f.cover)})` } : undefined}>
           <ImagePick label={f.cover ? "Changer la couverture" : "Ajouter une image de couverture"} onDone={([u]) => set({ cover: u })} testid="journal-cover-pick" />
@@ -95,12 +98,29 @@ export default function JournalEditor() {
           {f.cover && <button className="jr-pick" onClick={() => set({ cover: "" })}>Retirer</button>}
         </div>
 
+        <p className="jr-sec mono"><b>02</b> TITRE</p>
         <input className="jr-in jr-in-title font-display" placeholder="Titre de l'entrée" value={f.title} onChange={(e) => set({ title: e.target.value })} data-testid="journal-title-input" />
         <input className="jr-in" placeholder="Sous-titre / chapeau (facultatif)" value={f.subtitle} onChange={(e) => set({ subtitle: e.target.value })} data-testid="journal-subtitle-input" />
 
-        <p className="mono jr-k jr-fmts-k">FORMAT · COMMENT ON LA DÉCOUVRE</p>
+        <p className="jr-sec mono"><b>03</b> FORMAT <i>/</i> COMMENT ON LA DÉCOUVRE</p>
         <FormatPick f={f} set={set} />
+        {f.format === "cassette" && (
+          <div className="jr-tape-ed" data-testid="journal-tape">
+            <p className="jr-sec mono"><b>03·B</b> L'ENREGISTREMENT</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <MicRecorder onDone={(u) => set({ tape_url: u })} label={f.tape_url ? "Réenregistrer au micro" : "Enregistrer au micro"} testid="journal-tape-mic" />
+              <FilePick accept="audio/*" icon={<IoMusicalNotes />} label={f.tape_url ? "Remplacer l'enregistrement" : "Ou déposer un fichier (mp3, m4a, wav…)"} onDone={([u]) => set({ tape_url: u })} testid="journal-tape-pick" />
+              {f.tape_url && <audio controls preload="none" src={mediaUrl(f.tape_url)} />}
+            </div>
+            <div className="jr-opts">
+              <label>Étiquette<input className="jr-in" value={f.tape_label || ""} onChange={(e) => set({ tape_label: e.target.value })} placeholder="Enregistrement n°1" data-testid="journal-tape-label" /></label>
+              <label>Voix<input className="jr-in" value={f.tape_voice || ""} onChange={(e) => set({ tape_voice: e.target.value })} placeholder="Brichel" /></label>
+            </div>
+            <p className="jr-hint">L'image de couverture (en haut) s'imprime sur l'étiquette et colore le fond du lecteur. Le texte, s'il y en a, sert de transcription ; une cassette peut très bien ne contenir que la voix.</p>
+          </div>
+        )}
 
+        <p className="jr-sec mono"><b>04</b> RÉGLAGES</p>
         <div className="jr-opts">
           <label>Date<input type="date" className="jr-in" value={f.date} onChange={(e) => set({ date: e.target.value })} data-testid="journal-date-input" /></label>
           <label>Catégorie
@@ -119,20 +139,6 @@ export default function JournalEditor() {
             </select>
           </label>}
         </div>
-        {f.format === "cassette" && (
-          <div className="jr-tape-ed" data-testid="journal-tape">
-            <p className="mono jr-k">CASSETTE AUDIO · L'ENREGISTREMENT</p>
-            <div className="flex flex-wrap items-center gap-3">
-              <FilePick accept="audio/*" icon={<IoMusicalNotes />} label={f.tape_url ? "Remplacer l'enregistrement" : "Déposer l'enregistrement (mp3, m4a, wav…)"} onDone={([u]) => set({ tape_url: u })} testid="journal-tape-pick" />
-              {f.tape_url && <audio controls preload="none" src={mediaUrl(f.tape_url)} />}
-            </div>
-            <div className="jr-opts">
-              <label>Étiquette<input className="jr-in" value={f.tape_label || ""} onChange={(e) => set({ tape_label: e.target.value })} placeholder="Enregistrement n°1" data-testid="journal-tape-label" /></label>
-              <label>Voix<input className="jr-in" value={f.tape_voice || ""} onChange={(e) => set({ tape_voice: e.target.value })} placeholder="Brichel" /></label>
-            </div>
-            <p className="jr-hint">L'image de couverture (en haut) s'imprime sur l'étiquette et colore le fond du lecteur. Le texte, s'il y en a, sert de transcription ; une cassette peut très bien ne contenir que la voix.</p>
-          </div>
-        )}
         {showCats && <CategoryManager cats={cats} refetch={refetchCats} />}
         <div className="jr-toggles">
           <label className="jr-check"><input type="checkbox" checked={f.show_home} onChange={(e) => set({ show_home: e.target.checked })} data-testid="journal-home-toggle" /> Afficher sur l'accueil</label>
@@ -140,6 +146,7 @@ export default function JournalEditor() {
         </div>
         {f.creation_id && <p className="jr-hint">Elle apparaîtra aussi sur la fiche de la création.</p>}
 
+        <p className="jr-sec mono"><b>05</b> CONTENU{f.format === "cassette" ? <> <i>/</i> TRANSCRIPTION, FACULTATIVE</> : null}</p>
         <BlocksEditor blocks={f.blocks} onChange={(blocks) => set({ blocks })} />
       </div>
     </div>
