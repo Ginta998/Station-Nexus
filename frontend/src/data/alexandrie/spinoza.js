@@ -1,6 +1,6 @@
 const book = {
   id: "spinoza", title: "Spinoza", sub: "La joie comme méthode", room: "philo", type: "pensee", cote: "PH-003", color: 200, emblem: "樂",
-  about: "Spinoza parle, depuis son établi de polisseur de lentilles : l'exclusion de la synagogue à vingt-trois ans, Dieu qui est la Nature, le désir qui fait de chaque chose ce qu'elle est, les passions tristes qui nous diminuent, la liberté qui consiste à comprendre, et la joie comme seule boussole.",
+  about: "Spinoza parle, depuis son établi de polisseur de lentilles : l'exclusion de la synagogue à vingt-trois ans, Dieu qui est la Nature, le désir qui fait de chaque chose ce qu'elle est, les passions tristes qui nous diminuent, la liberté qui consiste à comprendre, et la joie comme seule boussole. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Spinoza, L'Éthique (1677)", note: "Le livre de sa vie, écrit comme un traité de géométrie. Commence par la troisième partie, sur les affects, puis reviens au début." },
     { label: "Spinoza, Traité théologico-politique (1670)", note: "La défense de la liberté de penser, publiée sans nom d'auteur, aussitôt interdite." },
@@ -22,6 +22,18 @@ Je vais te dire ce qu'il contient. Mais il faut d'abord que je te dise pourquoi 
 Mes grands-parents étaient des marranes. Au Portugal, on avait forcé les Juifs à se convertir au christianisme. Ils avaient fait semblant, pendant des générations, en gardant en secret ce qu'ils pouvaient de leur foi, sous la menace de l'Inquisition. Puis ils avaient fui vers Amsterdam, la ville la plus libre d'Europe, où l'on pouvait être juif au grand jour. Ils y avaient fondé une communauté, avec ses synagogues, ses écoles, ses marchands. Mon père était un négociant respecté, un des dirigeants de la communauté.
 
 J'ai été un élève brillant à l'école juive. J'ai appris l'hébreu, la Bible, le Talmud, les grands commentateurs, Maïmonide. On pensait que je deviendrais rabbin. Puis j'ai lu autre chose. J'ai appris le latin auprès d'un ancien jésuite, Franciscus van den Enden, un homme libre, médecin, révolutionnaire, qui finira pendu à Paris pour avoir comploté contre le roi. Par lui, j'ai découvert Descartes, la nouvelle physique, la philosophie qui ne demande rien à la Révélation et tout à la raison.
+
+Je me souviens d'un soir, dans sa maison du Singel, où van den Enden m'a fait lire un passage de Descartes à voix haute, en latin, devant ses autres élèves.
+
+— Bento, tu lis le latin comme un rabbin lit la Torah. En cherchant Dieu sous chaque mot.
+
+— Et que faut-il chercher, maître ?
+
+— Ce que dit le mot. Seulement ce qu'il dit. Le reste, tu l'ajoutes toi-même, et c'est là que commencent les erreurs, et les guerres.
+
+— Et si Dieu était justement ce qu'il dit, et rien d'autre ?
+
+Il m'a regardé longtemps, puis il a ri, de ce rire qui allait le mener à la potence. Je crois que c'est ce soir-là que j'ai commencé à écrire.
 
 Et j'ai commencé à douter. Je me suis demandé si Moïse avait vraiment écrit les cinq livres qu'on lui attribue. Si l'âme était immortelle. Si Dieu avait vraiment choisi un peuple plutôt qu'un autre. Si les miracles étaient autre chose que des choses dont on ignore les causes. Je ne le criais pas sur les toits. Mais je ne savais pas me taire non plus.
 
@@ -69,11 +81,35 @@ Je finis mon livre par cette phrase : tout ce qui est remarquable est aussi diff
 
 Je n'ai pas vécu hors du monde. En 1670, j'ai publié, sans mon nom, un Traité théologico-politique. J'y montrais, en lisant la Bible comme on lit n'importe quel livre ancien, avec son histoire, ses auteurs, ses contradictions, qu'elle n'enseigne pas des vérités sur la nature, mais l'obéissance et la charité. J'y défendais une idée qui paraissait folle : que l'État doit laisser chacun penser ce qu'il veut et dire ce qu'il pense, parce qu'une liberté de pensée étouffée produit des hypocrites et des révoltés, jamais des citoyens. Le livre a été interdit. On l'a appelé un livre forgé en enfer.
 
-Deux ans plus tard, en 1672, j'ai vu ce que peut une foule. La Hollande était envahie par les armées de Louis XIV. Le peuple d'Amsterdam et de La Haye, furieux, s'en est pris aux frères de Witt, Jan et Cornelis, qui gouvernaient la république et qui étaient mes amis, ou du moins mes protecteurs. On les a massacrés dans la rue, on a déchiré leurs corps. J'ai pleuré, moi qui ne pleure pas. J'ai voulu aller afficher sur les lieux un écriteau qui disait : derniers des barbares. Mon logeur m'a enfermé dans la maison pour m'empêcher de sortir. Il m'a sauvé la vie.
+Deux ans plus tard, en 1672, j'ai vu ce que peut une foule. La Hollande était envahie par les armées de Louis XIV. Le peuple d'Amsterdam et de La Haye, furieux, s'en est pris aux frères de Witt, Jan et Cornelis, qui gouvernaient la république et qui étaient mes amis, ou du moins mes protecteurs. On les a massacrés dans la rue, on a déchiré leurs corps. J'ai pleuré, moi qui ne pleure pas. J'ai voulu aller afficher sur les lieux un écriteau qui disait : derniers des barbares. J'avais déjà mon manteau sur le dos. Mon logeur, le peintre Van der Spyck, s'est mis devant la porte.
+
+— Monsieur Spinoza, vous n'irez pas.
+
+— Henri, laissez-moi passer. Il faut que quelqu'un le dise.
+
+— Quelqu'un le dira. Pas vous. Ils vous mettront en pièces comme les autres, et ils ne liront jamais votre livre.
+
+— Alors à quoi sert un livre, si on se tait le jour où il faudrait parler ?
+
+— À servir après. Rentrez.
+
+Mon logeur m'a enfermé dans la maison pour m'empêcher de sortir. Il m'a sauvé la vie.
 
 J'ai compris, ce jour-là, que la raison ne suffit pas à gouverner les foules, et que la politique doit compter avec les passions. J'ai commencé un Traité politique, pour chercher quelles institutions permettent aux hommes, tels qu'ils sont, de vivre libres. Je ne le finirai pas.
 
 Je vais mourir dans quelques semaines, le 21 février 1677. J'aurai quarante-quatre ans. Mes amis publieront mes œuvres, sans nom d'auteur, sous mes seules initiales, quelques mois après. Elles seront aussitôt interdites.
+
+L'automne dernier, un jeune Allemand est venu me voir, plusieurs fois. Il s'appelle Leibniz. Il est conseiller d'un prince, il parle de tout, il invente des calculs que personne ne comprend encore. Il voulait voir mon manuscrit.
+
+— Monsieur Spinoza, si Dieu est la Nature, s'il ne choisit rien, alors ce monde n'est pas le meilleur possible. Il est seulement le seul possible.
+
+— Et cela vous attriste ?
+
+— Cela me terrifie. Où est la bonté de Dieu, s'il ne pouvait pas faire autrement ?
+
+— Dans le fait de comprendre qu'il ne pouvait pas. Celui qui comprend la nécessité cesse d'en souffrir. C'est la seule bonté que je connaisse, et elle me suffit.
+
+Il est reparti avec des notes plein ses poches. Je crois qu'il passera sa vie à me réfuter. C'est une manière comme une autre de ne pas m'oublier.
 
 # Ce que je te laisse
 

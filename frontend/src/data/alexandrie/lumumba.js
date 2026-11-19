@@ -1,6 +1,6 @@
 const book = {
   id: "lumumba", title: "Patrice Lumumba", sub: "La voix du 30 juin", room: "histoire", type: "pensee", cote: "HI-007", color: 212, emblem: "星",
-  about: "Patrice Lumumba raconte : le village d'Onalua, le bureau de poste de Stanleyville, la prison, le Mouvement national congolais, le discours du 30 juin 1960, la mutinerie, la sécession du Katanga, et l'ami qu'il avait fait colonel, Joseph-Désiré Mobutu. Jusqu'à la nuit du 17 janvier 1961, et ce qu'on a fait de lui après.",
+  about: "Patrice Lumumba raconte : le village d'Onalua, le bureau de poste de Stanleyville, la prison, le Mouvement national congolais, le discours du 30 juin 1960, la mutinerie, la sécession du Katanga, et l'ami qu'il avait fait colonel, Joseph-Désiré Mobutu. Jusqu'à la nuit du 17 janvier 1961, et ce qu'on a fait de lui après. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Ludo De Witte, L'Assassinat de Lumumba (1999)", note: "L'enquête qui a obligé la Belgique à ouvrir une commission parlementaire. Le livre le plus précis sur les trois derniers mois." },
     { label: "Commission d'enquête parlementaire belge (2001)", note: "Ses conclusions reconnaissent la responsabilité morale de membres du gouvernement belge. La Belgique a présenté ses excuses en 2002." },
@@ -60,6 +60,20 @@ En octobre 1958, avec d'autres, j'ai fondé le Mouvement national congolais, le 
 
 En décembre 1958, je suis parti pour Accra, au Ghana, à la première Conférence des peuples africains. Nkrumah m'y a reçu. J'y ai rencontré des hommes venus de tout le continent, des syndicalistes, des écrivains, des chefs de partis. Frantz Fanon y était, pour l'Algérie. J'ai parlé devant eux. Je suis revenu changé. J'avais vu que le Congo n'était pas seul. Que l'indépendance n'était pas un rêve, mais un calendrier. À mon retour, j'ai tenu un meeting à Léopoldville, et pour la première fois, j'ai prononcé le mot devant la foule : indépendance. Immédiate.
 
+Le dernier soir, Nkrumah m'a fait venir dans son bureau. Il portait le kente, et il parlait anglais lentement, pour que je suive.
+
+— Monsieur Lumumba, votre pays est grand comme l'Europe de l'Ouest. Si le Congo tombe, l'Afrique tombe avec lui. Vous le savez ?
+
+— Je le sais, monsieur le Premier ministre. C'est pour cela que les Belges ne le lâcheront pas.
+
+— Ils le lâcheront. Ce sont les autres qu'il faudra craindre. Ceux qui viendront après eux, avec de l'argent et des sourires.
+
+— Alors il faudra que l'Afrique soit unie avant qu'ils arrivent.
+
+— Nous n'aurons pas le temps. Mais il faut commencer quand même.
+
+Je n'ai pas compris tout de suite qu'il parlait des Américains. J'ai compris dix-huit mois plus tard.
+
 Quelques jours plus tard, le 4 janvier 1959, une réunion de l'ABAKO a été interdite. La foule s'est soulevée. Pendant plusieurs jours, Léopoldville a brûlé. La Force publique, l'armée coloniale, a tiré. Il y a eu des dizaines de morts, peut-être bien plus ; les chiffres officiels ont toujours été bas. La Belgique a eu peur. Quelques jours après, le roi Baudouin a annoncé à la radio que la Belgique conduirait le Congo à l'indépendance, sans atermoiements funestes, mais aussi sans précipitation inconsidérée. Les mots étaient beaux. Le calendrier était vague. Ils pensaient à quatre ans, cinq ans, plus peut-être.
 
 C'est alors que le MNC s'est divisé. Certains dirigeants trouvaient que je décidais seul, que j'allais trop vite, que je prenais trop de place. Ils n'avaient pas tout à fait tort. Albert Kalonji, un Muluba du Kasaï, est parti avec une partie du parti. Il y a eu désormais deux MNC, le sien et le mien. Cette rupture me poursuivra jusqu'à la mort.
@@ -69,6 +83,16 @@ En octobre 1959, à Stanleyville, mon fief, après un congrès du parti, la poli
 Et puis la Belgique a changé d'avis. Elle a convoqué à Bruxelles, en janvier 1960, une grande conférence, la Table ronde, où les partis congolais devaient discuter avec elle de l'avenir. Les délégués du MNC ont refusé de siéger sans moi. Tous les partis, même mes adversaires, ont exigé ma libération. On m'a sorti de prison, on m'a mis dans un avion, et je suis arrivé à Bruxelles avec les marques des menottes encore sur les poignets. Je les ai montrées aux journalistes.
 
 C'est à Bruxelles que j'ai vraiment connu Mobutu. Il était là depuis quelque temps, pour un stage, à travailler pour un organisme d'information sur le Congo, et il suivait la conférence comme journaliste. Il avait servi sept ans dans la Force publique, où il était devenu sergent, puis il avait écrit dans des journaux de Léopoldville. Il était jeune, intelligent, vif, il parlait bien, il riait volontiers. Il s'est mis à mon service. Il m'aidait, prenait des notes, portait des messages, me tenait au courant de ce qu'on disait dans les couloirs. Il est devenu mon secrétaire, mon homme de confiance. On a dit plus tard qu'il renseignait aussi la Sûreté belge, et peut-être d'autres. Je ne le savais pas. Ou je ne voulais pas le savoir. Il était mon ami.
+
+Un soir, dans un café près de la gare du Midi, il m'a tendu une liasse de notes.
+
+— Patrice, voilà ce que disent les Belges dans les couloirs. Ils pensent que tu vas trop vite.
+
+— Et toi, Joseph, qu'est-ce que tu penses ?
+
+— Moi, je pense que celui qui va trop vite arrive le premier. Ou qu'il tombe le premier. C'est selon.
+
+J'ai ri. J'ai pris cela pour de l'esprit. C'était peut-être un avertissement. Peut-être une confidence.
 
 La Table ronde a fini par une surprise que personne n'attendait, pas même nous. La Belgique a accepté l'indépendance pour le 30 juin 1960. Dans cinq mois. Elle pensait qu'elle garderait tout de même la main : ses officiers commanderaient l'armée, ses fonctionnaires tiendraient l'administration, ses sociétés garderaient les mines. Nous aurions le drapeau, l'hymne, les ministères. Eux, le reste. C'était leur calcul. Ils l'ont appelé, entre eux, l'indépendance sur un plateau.
 
@@ -138,6 +162,22 @@ Il est arrivé à la radio, en uniforme, avec ses soldats. Il a annoncé que l'a
 
 Je l'ai appelé. Je suis allé le voir dans son camp. Je lui ai parlé comme à un ami, puis comme à un traître. Il m'a répondu calmement, poliment. Il disait qu'il voulait éviter le sang, qu'il protégeait le pays contre les politiciens qui se déchiraient. Il ne m'a jamais regardé tout à fait en face.
 
+— Joseph, tu étais à ma table. Tu portais mes dossiers. Je t'ai fait colonel.
+
+— Et je te protège, Patrice. Si je n'avais pas fait cela, ils t'auraient tué cette semaine. Ici, dans ton propre camp.
+
+— Qui, ils ?
+
+— Tout le monde. Les Belges, les Katangais, les tiens. Il faut que tout le monde se calme.
+
+— Tu as fermé le Parlement. Tu as chassé le gouvernement que le peuple a élu. Ce n'est pas le calme, c'est le silence.
+
+— Le silence, c'est mieux que le sang, non ?
+
+— Pour qui, Joseph ? Pour qui ?
+
+Il a regardé par la fenêtre, vers ses soldats. Il n'a pas répondu.
+
 Ce que je ne savais pas, je le sais aujourd'hui, parce que tout a fini par sortir, des années plus tard, dans des archives, dans des commissions d'enquête. Mobutu avait reçu de l'argent. Le chef de la station de la CIA à Léopoldville, un Américain nommé Larry Devlin, le voyait souvent, l'encourageait, le finançait. Le président des États-Unis, Eisenhower, avait dit à ses conseillers, en août, qu'il fallait se débarrasser de moi ; ceux qui étaient dans la pièce l'ont compris ainsi. Le directeur de la CIA avait écrit que mon élimination devait être un objectif prioritaire. Un chimiste de l'agence était venu à Léopoldville avec un poison, préparé pour qu'on le mette dans ma nourriture ou dans mon dentifrice. On ne s'en est jamais servi : on n'a pas trouvé le moyen de m'approcher, et d'autres se sont chargés de la suite. Les Belges, de leur côté, avaient leurs propres agents, leurs propres plans. Un ministre belge, à Bruxelles, a écrit noir sur blanc dans ses télégrammes que l'objectif était mon élimination définitive.
 
 Je ne crois pas que Mobutu ait agi seulement pour l'argent. Il voulait le pouvoir, et il avait compris, plus vite que moi, qui le donnait. Il avait vu que je n'avais plus d'armée fidèle, que l'ONU me lâchait, que les Américains et les Belges voulaient ma chute, et que celui qui la leur offrirait serait leur homme pour longtemps. Il a choisi le camp le plus fort. Il avait l'intelligence froide qui me manquait. Moi, je croyais encore que la justice d'une cause suffisait.
@@ -155,6 +195,18 @@ Ils m'ont rattrapé au bord du Sankuru, la rivière de ma région natale, à que
 Le 2 décembre, ils m'ont ramené à Léopoldville en avion. À l'aéroport, devant les photographes et les caméras du monde entier, les soldats m'ont fait descendre les mains liées dans le dos. Ils m'ont frappé, tiré par les cheveux, poussé dans un camion. On m'a emmené au camp militaire, chez Mobutu. Il était là. Il a regardé ses soldats faire. Il n'a pas levé la main. Les images ont fait le tour du monde. Elles existent encore. Je ne te demande pas de les chercher.
 
 Puis on m'a transféré à Thysville, au camp militaire Hardy, dans le Bas-Congo, avec deux compagnons : Maurice Mpolo, qui avait été ministre de la Jeunesse, et Joseph Okito, le vice-président du Sénat. Nous étions enfermés, mal nourris, en vêtements sales. Je pensais à Pauline et aux enfants. J'ai écrit.
+
+Une nuit, Mpolo, couché contre le mur, m'a parlé dans le noir.
+
+— Patrice, s'ils nous emmènent au Katanga, c'est fini.
+
+— Je sais, Maurice.
+
+— Tu as peur ?
+
+— J'ai peur pour Pauline, pour les enfants, pour toi. Pour moi, non. Ce qu'ils veulent tuer, ce n'est pas moi. C'est une idée. Et une idée, Maurice, on ne la fusille pas.
+
+Il a ri doucement dans le noir. Okito a dit amen, de l'autre côté. Je crois que c'est la dernière fois que nous avons ri tous les trois.
 
 # Dix-sept janvier
 

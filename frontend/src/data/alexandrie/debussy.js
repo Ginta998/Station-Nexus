@@ -1,7 +1,7 @@
 const W = (f) => `https://commons.wikimedia.org/wiki/Special:FilePath/${f}?width=1100`;
 const book = {
   id: "debussy", title: "Debussy", sub: "Monsieur Croche et la mer", room: "musique", type: "pensee", cote: "MU-006", color: 198, emblem: "海",
-  about: "Claude Debussy raconte comment il a quitté les règles : le Conservatoire, la Villa Médicis, le gamelan de l'Exposition universelle, le Faune, Pelléas, la mer de Hokusai, Chouchou, et Paris bombardé où il meurt en 1918.",
+  about: "Claude Debussy raconte comment il a quitté les règles : le Conservatoire, la Villa Médicis, le gamelan de l'Exposition universelle, le Faune, Pelléas, la mer de Hokusai, Chouchou, et Paris bombardé où il meurt en 1918. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Claude Debussy, Monsieur Croche et autres écrits (Gallimard)", note: "Ses articles de critique, signés parfois par un personnage inventé, Monsieur Croche, antidilettante." },
     { label: "Debussy, Prélude à l'après-midi d'un faune (1894)", url: "https://www.youtube.com/watch?v=Y9iDOt2WbjY", note: "Dix minutes qui ouvrent la musique du XXe siècle." },
@@ -32,7 +32,17 @@ C'est pendant ces années-là qu'une dame m'a entendu jouer du piano. Madame Mau
 
 Au Conservatoire de Paris, on m'a appris les règles de l'harmonie. Les accords qu'on peut enchaîner, ceux qu'on ne doit pas enchaîner. La façon de résoudre une dissonance. Les quintes parallèles interdites.
 
-J'étais un élève insupportable. Je jouais au piano des accords que personne n'avait le droit de jouer, et je laissais sonner. Un professeur me demandait quelle règle je suivais. Je répondais : mon plaisir.
+J'étais un élève insupportable. Je jouais au piano des accords que personne n'avait le droit de jouer, et je laissais sonner. Un professeur me demandait quelle règle je suivais. Je répondais : mon plaisir. Je me rappelle la scène, dans la classe, avec ce vieux piano qui sentait la cire.
+
+— Monsieur Debussy, cet accord ne se résout pas.
+
+— Il n'en a pas besoin, monsieur. Écoutez-le. Il est très bien où il est.
+
+— La musique doit aller quelque part.
+
+— Pourquoi ? Les nuages ne vont nulle part, et on les regarde quand même pendant des heures.
+
+Il m'a mis une mauvaise note. Il avait raison, selon ses règles. J'avais raison, selon les nuages.
 
 Ce n'était pas de l'arrogance. C'était une écoute différente. J'entendais un accord comme une couleur, pas comme une étape vers un autre accord. Pourquoi faudrait-il toujours aller quelque part ? Pourquoi un accord ne pourrait-il pas simplement exister, flotter, comme un nuage ?
 
@@ -59,6 +69,20 @@ J'ai écrit plus tard, dans un article, que la musique javanaise contenait un co
 # Le Faune
 
 Je fréquentais les poètes plus que les musiciens. Le mardi, chez Stéphane Mallarmé, rue de Rome, on parlait de poésie, de peinture, de musique, dans un petit salon enfumé.
+
+Au cabaret, à Montmartre, je retrouvais un autre musicien que personne ne prenait au sérieux, Erik Satie. Il avait des idées étranges, et une élégance plus étrange encore.
+
+— Debussy, il faut qu'on se débarrasse de Wagner.
+
+— Je l'aime, Satie. C'est bien le problème.
+
+— Moi aussi, je l'aime. Mais il prend toute la place. Regarde les peintres : Monet ne raconte pas une histoire, il met de la lumière sur une toile. Pourquoi est-ce qu'on ne ferait pas pareil avec les sons ?
+
+— Une musique qui ne raconterait rien ?
+
+— Une musique qui serait là. Comme un arbre. On ne demande pas à un arbre de quoi il parle.
+
+J'ai ri. Je n'ai pas oublié. Satie, lui, l'a fait toute sa vie, avec trois notes et beaucoup d'humour. Moi, j'ai mis vingt ans et un orchestre entier.
 
 Mallarmé avait écrit un poème, *L'Après-midi d'un faune*. Un faune, dans la chaleur d'un après-midi, se souvient ou rêve de deux nymphes qu'il a peut-être poursuivies. On ne sait pas si c'est arrivé. Le poème flotte entre le désir et le sommeil.
 
@@ -113,6 +137,20 @@ La première a eu lieu le 15 octobre 1905. Les critiques ont dit qu'ils ne voyai
 Ma fille est née le 30 octobre 1905, quelques jours après *La Mer*. Claude-Emma. On l'appelait Chouchou.
 
 C'est pour elle que j'ai écrit *Children's Corner*, des pièces pour piano, avec des titres en anglais parce qu'elle avait une gouvernante anglaise. Une poupée qui dort, un éléphant, un petit berger, la neige qui danse, et à la fin, une danse de pantin noir, sur un rythme de cakewalk américain, où je me moque de Wagner au passage. Je l'ai dédiée à ma chère petite Chouchou, avec les tendres excuses de son père pour ce qui va suivre.
+
+Je la lui ai jouée un dimanche, dans le salon. Elle était assise sur le tapis, avec Jimbo, son éléphant en peluche.
+
+— Papa, pourquoi la poupée noire danse comme ça ?
+
+— Parce qu'elle se moque d'un monsieur très sérieux, un Allemand qui écrivait des opéras de cinq heures.
+
+— Il était méchant ?
+
+— Non. Il était seulement très long.
+
+— Alors moi aussi je me moque de lui.
+
+Elle a dansé tout le morceau, de travers, en riant. C'est la meilleure interprétation que j'en aie jamais entendue.
 
 Elle était drôle, vive, autoritaire. C'était la personne que j'aimais le plus au monde.
 

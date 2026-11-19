@@ -1,6 +1,6 @@
 const book = {
   id: "kimpa-vita", title: "Kimpa Vita", sub: "La prophétesse du Kongo", room: "histoire", type: "pensee", cote: "HI-008", color: 18, emblem: "炎",
-  about: "Dona Beatriz Kimpa Vita raconte : le royaume du Kongo déchiré par quarante ans de guerre civile, son initiation de nganga, la fièvre de 1704 où saint Antoine entra en elle, les foules qui la suivirent dans la capitale en ruine, le Christ noir qu'elle annonçait, son fils, et le bûcher d'Evululu, le 2 juillet 1706. Elle avait vingt-deux ans.",
+  about: "Dona Beatriz Kimpa Vita raconte : le royaume du Kongo déchiré par quarante ans de guerre civile, son initiation de nganga, la fièvre de 1704 où saint Antoine entra en elle, les foules qui la suivirent dans la capitale en ruine, le Christ noir qu'elle annonçait, son fils, et le bûcher d'Evululu, le 2 juillet 1706. Elle avait vingt-deux ans. Récit imaginé à la première personne, à partir des récits des capucins qui l'ont connue : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "John K. Thornton, The Kongolese Saint Anthony (1998)", note: "Le livre de référence sur sa vie, par l'historien américain qui a passé sa carrière sur le Kongo. En anglais." },
     { label: "Bernardo da Gallo et Lorenzo da Lucca, rapports des capucins", note: "Les seuls témoignages écrits de son vivant, rédigés par ses adversaires. Tout ce qu'on sait d'elle passe par leurs yeux." },
@@ -87,6 +87,22 @@ Surtout, je disais que le Kongo devait être réuni. Que la guerre entre les roi
 
 Je suis allée trouver Pedro IV, sur sa montagne de Kibangu. Je lui ai dit ce que Dieu voulait. Il m'a écoutée, avec prudence. Il ne m'a pas chassée. Il ne m'a pas suivie non plus. J'ai su plus tard que le capucin qui vivait à sa cour, frère Bernardo, lui avait dit que j'étais possédée par le démon. Je suis allée trouver João II, l'autre roi, dans sa forteresse de Mbula. Il m'a refusée.
 
+Je me souviens de sa voix, lente, d'homme qui a vu trop de guerres. Il était assis sur sa natte royale, sous un dais, et il n'a pas voulu que je m'agenouille.
+
+— On dit que tu es Antoine, ma fille. Qu'Antoine parle par ta bouche.
+
+— Ce n'est pas moi qui parle, Ntotila. C'est lui. Il te dit : retourne à Mbanza Kongo. Relève les murs de la ville sainte. Tant que le trône restera vide, Dieu ne regardera pas le Kongo.
+
+— Et si j'y vais, et que les autres rois m'y attaquent ?
+
+— Alors c'est qu'ils auront choisi la guerre contre Dieu, et Dieu choisira pour toi.
+
+— Le père Bernardo dit que tu as un démon dans le corps.
+
+— Le père Bernardo est un homme de bien. Mais il est venu de loin, et il croit que le ciel parle seulement sa langue.
+
+Le roi a souri. Il n'a rien promis. Les rois ne promettent jamais rien aux femmes qui ont raison trop tôt.
+
 Alors j'ai décidé que, puisque les rois ne voulaient pas retourner à São Salvador, c'est le peuple qui y retournerait le premier. Et que le roi viendrait.
 
 # São Salvador
@@ -103,11 +119,39 @@ Je n'étais pas contre l'Église. Je veux que tu le saches, parce qu'on a dit le
 
 Frère Bernardo da Gallo, lui, ne m'avait pas oubliée. Il m'avait déjà interrogée longuement, à la cour de Pedro IV, quand j'étais allée trouver le roi sur sa montagne. Il m'a demandé qui j'étais, d'où venaient mes visions, ce que je croyais du ciel, de la croix, de la Vierge. Je lui ai répondu. Il a tout noté. Il a écrit que j'étais une femme intelligente et rusée, très sûre d'elle, qu'il fallait se méfier de moi. Il m'a dessinée. Il a conclu que j'étais possédée, ou que je mentais, et que j'étais dangereuse pour les âmes. Depuis São Salvador, je savais qu'il pressait le roi de m'arrêter. Le roi hésitait, parce que j'étais populaire, parce qu'il avait peur, parce qu'il espérait peut-être se servir de moi.
 
+Je te donne ce que je me rappelle de nos paroles. Lui l'a écrit autrement, en italien, pour ses supérieurs.
+
+— Femme, dis-moi la vérité. Qui t'a envoyée ?
+
+— Saint Antoine, mon père. Un vendredi. Je suis morte, et il est entré.
+
+— Les morts ne reviennent pas, sauf Notre-Seigneur.
+
+— Alors pourquoi priez-vous les saints, si les morts ne parlent pas ?
+
+— Les saints intercèdent. Ils ne prennent pas le corps des femmes pour prêcher dans les marchés.
+
+— Et pourquoi pas le corps d'une femme ? La Vierge était une femme. Et Jésus est né à Mbanza Kongo, mon père, pas à Rome. Vous ne l'avez pas su, voilà tout. Personne ne vous l'avait dit.
+
+Il a fait un grand signe de croix. Puis il a pris son crayon, et il m'a dessinée.
+
 Et pendant ce temps, à São Salvador, je portais un secret.
 
 # L'enfant et le feu
 
 Autour de moi, il y avait un petit cercle de fidèles, ceux qui ne me quittaient jamais. On les appelait mes anges gardiens. L'un d'eux s'appelait João Barro. Je suis tombée enceinte de lui.
+
+Quand je l'ai su, je l'ai dit à João, la nuit, dans les ruines de la cathédrale, sous les étoiles qui entraient par le toit effondré.
+
+— Il ne faut pas que le peuple l'apprenne. Ils diront que saint Antoine a menti.
+
+— Saint Antoine n'a pas menti, Beatriz. C'est nous qui sommes des pécheurs.
+
+— Alors le péché est en moi, et Antoine est en moi. Comment est-ce possible, João ? Dis-le-moi, toi.
+
+— Je ne sais pas. Je sais seulement que je ne te quitterai pas.
+
+Il ne m'a pas quittée. Il m'a suivie jusqu'au bûcher. C'est la seule promesse d'homme que j'aie vue tenue jusqu'au bout.
 
 C'était une catastrophe. J'étais saint Antoine. J'avais prêché la pureté. J'avais dit aux gens qu'ils devaient se tenir loin du péché. Si l'on apprenait que saint Antoine portait un enfant, tout s'écroulerait. J'ai caché ma grossesse, aussi longtemps que j'ai pu. Puis j'ai annoncé que je devais faire un long séjour au ciel, plus long que d'habitude. Je suis partie en secret de São Salvador. Je suis rentrée chez mes parents, près du mont Kibangu, dans le pays de Pedro IV, pour accoucher.
 

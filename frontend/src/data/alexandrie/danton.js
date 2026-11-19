@@ -1,6 +1,6 @@
 const book = {
   id: "danton", title: "Danton", sub: "De l'audace", room: "histoire", type: "pensee", cote: "HI-013", color: 18, emblem: "雷",
-  about: "Danton raconte : Arcis-sur-Aube et le visage labouré par un taureau, l'avocat qui monte, les Cordeliers, l'argent de la cour, le 10 août, l'audace du 2 septembre et les massacres du même jour, le Tribunal qu'il a fait créer, Gabrielle, les Indulgents avec Camille Desmoulins, le procès, et sa tête qu'il fallait montrer au peuple.",
+  about: "Danton raconte : Arcis-sur-Aube et le visage labouré par un taureau, l'avocat qui monte, les Cordeliers, l'argent de la cour, le 10 août, l'audace du 2 septembre et les massacres du même jour, le Tribunal qu'il a fait créer, Gabrielle, les Indulgents avec Camille Desmoulins, le procès, et sa tête qu'il fallait montrer au peuple. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Georg Büchner, La Mort de Danton (1835)", note: "La pièce écrite par un étudiant allemand de vingt et un ans. Un des chefs-d'œuvre du théâtre." },
     { label: "Andrzej Wajda, Danton (1983)", note: "Le film, avec Gérard Depardieu et Wojciech Pszoniak en Robespierre. La Révolution vue depuis la Pologne de Solidarność." },
@@ -30,6 +30,14 @@ On m'a envoyé chez les Oratoriens, à Troyes. J'étais un mauvais élève, sauf
 À vingt ans, je suis monté à Paris. J'ai été clerc chez un procureur, j'ai fait mon droit, je me suis fait avocat. En 1787, j'ai acheté, avec de l'argent emprunté et la dot de ma femme, une charge d'avocat aux Conseils du roi : un office prestigieux, coûteux, qui permettait de plaider devant les plus hautes juridictions du royaume. J'étais un bourgeois qui montait.
 
 Ma femme s'appelait Antoinette Gabrielle Charpentier. C'était la fille d'un limonadier, le patron du café de l'École, sur le quai, près du Pont-Neuf, où j'allais jouer aux dominos. Je l'ai aimée profondément. Elle m'a donné des fils. Nous vivions dans le quartier des Cordeliers, sur la rive gauche, au milieu des imprimeurs, des étudiants, des avocats sans causes, des journalistes. C'est là que la Révolution m'a pris.
+
+Je l'ai demandée à son père un soir de dominos, entre deux parties, parce que je n'avais pas le courage de le faire à jeun. Le vieux Charpentier m'a regardé par-dessus ses lunettes.
+
+— Vous, Danton ? Vous n'avez pas le sou, monsieur, et vous avez une figure à effrayer les chevaux.
+
+— Je n'ai pas le sou, c'est vrai. Mais j'ai une voix, et dans ce pays, monsieur Charpentier, la voix finira par valoir plus que les écus. Quant à ma figure, votre fille la regarde déjà comme si elle était belle. C'est donc qu'elle l'est.
+
+Gabrielle, derrière le comptoir, a ri. Le vieux a ri aussi, malgré lui. Il m'a donné sa fille et une dot de vingt mille livres. Je ne l'ai jamais regretté. Lui, peut-être, certains jours.
 
 En 1789, je n'étais rien, qu'un avocat de quartier. Mais je savais parler. J'avais une voix immense, qui couvrait une salle entière, et je savais faire rire et faire rugir. Les gens du quartier des Cordeliers m'ont élu président de leur district. Puis, avec d'autres, j'ai fondé un club, la Société des amis des droits de l'homme et du citoyen, qu'on a appelé le club des Cordeliers, du nom du couvent où il se réunissait. Il était plus populaire, plus bruyant, plus radical que celui des Jacobins. On y entrait pour deux sous. Les artisans, les petits commerçants, les ouvriers y venaient. On y lisait les journaux à voix haute. On y surveillait la municipalité, l'Assemblée, le roi.
 
@@ -71,11 +79,45 @@ Je suis rentré à Paris en novembre 1793. Je ne reconnaissais plus la ville. Le
 
 Camille Desmoulins a lancé un journal, Le Vieux Cordelier. Il y racontait, en citant l'historien romain Tacite, les temps de l'empereur Tibère, où l'on était coupable de tout : d'avoir une mine triste, d'avoir une mine gaie, d'être riche, d'être pauvre. Tout le monde comprenait qu'il parlait de Paris. Il demandait qu'on ouvre les prisons aux suspects qui n'avaient rien fait, qu'on crée un comité de clémence. Le journal se vendait par milliers. Les gens le lisaient en pleurant.
 
+Il venait me lire ses épreuves chez moi, le soir, l'encre encore fraîche sur les doigts, en bégayant d'excitation.
+
+— Écoute, Danton, écoute ça. « Ouvrez les prisons à ces deux cent mille citoyens que vous appelez suspects. » Je l'imprime ?
+
+— Imprime. Mais sache ce que tu fais, Camille. Ce n'est plus un journal, c'est une pétition contre le Comité. Ils vont la lire comme une déclaration de guerre.
+
+— Robespierre est mon ami. Il était à mon mariage. Il tient mon fils sur les fonts.
+
+— Robespierre est l'ami de la République. Le jour où il croira que tu lui fais du tort, il t'aimera encore, et il te fera couper la tête quand même. C'est un homme vertueux, mon petit. Méfie-toi de la vertu, elle n'a pas d'estomac.
+
+Il a imprimé. J'étais fier de lui. Je le suis encore.
+
 Je l'ai soutenu. Je disais qu'il fallait que la Terreur s'arrête, maintenant que les armées gagnaient, maintenant que la Vendée était écrasée, maintenant que les ennemis de l'intérieur étaient brisés. Je disais qu'il fallait économiser le sang des hommes. On nous a appelés les Indulgents. C'était une injure, dans la bouche de nos ennemis. C'est devenu notre nom.
 
 Robespierre a d'abord protégé Camille. Il l'avait connu au collège, il avait été son témoin de mariage. Puis il a eu peur, ou il a été convaincu. Le Comité a abattu les Hébertistes en mars 1794. Puis il s'est tourné vers nous.
 
+Des amis communs ont voulu nous réconcilier. Ils nous ont fait dîner ensemble, Robespierre et moi, quelques semaines avant la fin. Il mangeait peu, comme toujours, et il buvait de l'eau. Moi, j'ai parlé.
+
+— Maximilien, il faut que cela cesse. Les armées gagnent. La Vendée est écrasée. Les tribunaux continuent par habitude. On guillotine des cuisinières pour un mot de travers.
+
+— Il n'y a d'innocents que ceux qui n'ont rien à craindre, Danton. Ceux qui ont peur ont leurs raisons.
+
+— Tu crois cela ? Moi j'ai peur, et je n'ai rien fait contre la patrie. J'ai peur pour elle. Il faut savoir distinguer l'erreur du crime.
+
+— Et qui distinguera ? Toi ?
+
+Il s'est essuyé les lèvres avec sa serviette, il l'a pliée en quatre, et il est parti avant le dessert. J'ai su ce soir-là, je crois, qu'il avait déjà choisi. Je n'ai pas voulu le savoir.
+
 On m'a prévenu. Des amis m'ont dit de fuir, de me cacher, de partir pour la Suisse ou l'Angleterre, comme en 1791. J'ai répondu qu'on n'emporte pas sa patrie à la semelle de ses souliers. Je n'y croyais pas. Je pensais qu'ils n'oseraient pas. Je pensais qu'ils avaient besoin de moi, que la Convention ne laisserait jamais toucher à Danton. J'étais fatigué, aussi. J'aimais ma jeune femme. J'avais envie de vivre, pas de me battre.
+
+Le dernier soir, c'est Louise qui me l'a demandé, à genoux presque, dans notre chambre de la cour du Commerce.
+
+— Georges, partons. Cette nuit. Arcis, la Suisse, n'importe où. Ils vont venir.
+
+— Ils n'oseront pas, ma petite. On n'arrête pas Danton comme on arrête un épicier.
+
+— Ils ont bien arrêté le roi.
+
+Je l'ai prise dans mes bras pour qu'elle se taise. Elle avait raison, bien sûr. Ils sont venus la nuit suivante.
 
 Dans la nuit du 30 au 31 mars, on m'a arrêté chez moi. Le lendemain, Saint-Just a lu à la Convention son rapport contre nous. Il disait que j'avais toujours trahi, que j'avais servi le roi, Mirabeau, Dumouriez, l'étranger. Il mêlait des choses vraies et des mensonges, avec cette voix calme qui ne tremblait jamais. Il avait vingt-six ans. Personne ne s'est levé pour me défendre, sauf un ou deux qui se sont vite rassis. La Convention avait peur.
 

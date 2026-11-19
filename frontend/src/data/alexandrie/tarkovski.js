@@ -1,7 +1,7 @@
 const W = (f) => `https://commons.wikimedia.org/wiki/Special:FilePath/${f}?width=1100`;
 const book = {
   id: "tarkovski", title: "Tarkovski", sub: "Je sculpte le temps", room: "cinema", type: "pensee", cote: "CI-001", color: 165, emblem: "時",
-  about: "Sept longs métrages en vingt-quatre ans, la censure, l'exil, et une seule idée : le cinéma est l'art de capturer le temps. Andreï Tarkovski raconte chacun de ses films, de L'Enfance d'Ivan au Sacrifice.",
+  about: "Sept longs métrages en vingt-quatre ans, la censure, l'exil, et une seule idée : le cinéma est l'art de capturer le temps. Andreï Tarkovski raconte chacun de ses films, de L'Enfance d'Ivan au Sacrifice. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Andreï Tarkovski, Le Temps scellé (1986)", note: "Son livre de cinéma, achevé dans ses dernières semaines. La vraie voix." },
     { label: "Andreï Tarkovski, Journal 1970-1986 (Martyrologe)", note: "Les doutes, la censure, l'argent qui manque, l'exil, la maladie." },
@@ -32,6 +32,18 @@ Mon père est parti quand j'avais quatre ou cinq ans. Il a quitté ma mère pour
 Toute ma vie, j'ai filmé cela. Je ne savais pas que je le faisais, et puis un jour j'ai fait un film entier pour m'en débarrasser, et je ne m'en suis pas débarrassé.
 
 Les poèmes de mon père, je les ai mis dans mes films. Ce sont les seuls mots qui m'ont jamais paru dignes d'être dits par-dessus une image.
+
+Il me les lisait quand il venait nous voir, le dimanche, à Moscou. Il lisait debout, une main dans la poche, d'une voix sans emphase.
+
+— Papa, pourquoi tu ne lis pas plus fort ? Les acteurs, à la radio, ils lisent fort.
+
+— Parce qu'un poème, Andriouchka, ce n'est pas un discours. C'est un secret qu'on confie à une seule personne. Ici, c'est toi.
+
+— Et si personne n'écoute ?
+
+— Alors il attend. Un poème sait attendre. C'est la seule chose qu'il sache faire mieux que nous.
+
+Il est reparti le soir même vers son autre famille. J'ai attendu, moi aussi. Toute ma vie, je crois.
 
 J'ai fait beaucoup de choses avant le cinéma. De la musique, de la peinture. J'ai étudié l'arabe à l'Institut des langues orientales, puis j'ai tout lâché. Je suis parti en Sibérie, dans une expédition de géologues, pendant presque un an, dans la taïga. C'est là, je crois, que j'ai décidé. En 1956, je suis entré à l'école de cinéma de Moscou, le VGIK, dans l'atelier de Mikhaïl Romm. Romm était un grand professeur parce qu'il ne nous apprenait rien. Il nous laissait chercher.
 
@@ -76,6 +88,18 @@ On m'a ensuite proposé un roman de science-fiction de Stanisław Lem. Une plan�
 Un psychologue, Kris Kelvin, monte à la station. La première nuit, sa femme est là, Hari. Elle s'est suicidée dix ans plus tôt, après qu'il l'a quittée. Elle ne sait pas qu'elle est morte. Elle ne sait pas d'où elle vient. Elle l'aime. Il est épouvanté, il essaie de s'en débarrasser, il l'envoie dans l'espace dans une capsule. Le lendemain, elle revient.
 
 Lem n'a pas aimé mon film. Il voulait un film sur les limites de la connaissance, sur l'impossibilité de comprendre ce qui n'est pas humain. Moi je voulais un film sur la conscience. Sur un homme à qui l'univers renvoie sa faute et qui doit apprendre à l'aimer. Nous nous sommes disputés. Il avait sans doute raison sur son livre. J'avais raison sur mon film.
+
+Il est venu à Moscou. Nous avons parlé des heures, dans une pièce trop chaude, avec du thé et de mauvaises cigarettes.
+
+— Andreï, mon livre parle de ce que l'homme ne peut pas comprendre. Vous en avez fait une histoire de famille.
+
+— Stanisław, je ne sais pas filmer ce qu'on ne peut pas comprendre. Je sais filmer un homme qui a honte devant sa femme morte. C'est déjà un océan.
+
+— Alors pourquoi être allé dans l'espace ?
+
+— Pour qu'il ne soit pas possible de fuir. Dans une station, on ne peut pas prendre le train.
+
+Il a dit, je crois, que j'avais fait Crime et Châtiment dans le cosmos. Il voulait m'insulter. Je l'ai pris comme un compliment.
 
 Ce que je déteste dans la science-fiction, c'est le décor. Les machines, les boutons, les combinaisons. J'ai rempli la station de choses terrestres : des livres anciens, des bougies, des bustes, des tableaux. Dans la bibliothèque, il y a un tableau de Bruegel, *Les Chasseurs dans la neige*. Hari le regarde longtemps, et la caméra entre dans le tableau, et l'on entend des chiens, des cloches, des voix d'enfants. C'est la Terre. Elle n'en a pas de souvenir, et pourtant elle la reconnaît.
 
@@ -140,6 +164,18 @@ Alors ils restent assis, sous la pluie, au seuil. Le Stalker pleure : il voulait
 Le film se termine chez lui. Sa fille, qu'on surnomme Martychka, le petit singe, est infirme, sans doute à cause de la Zone. Elle est assise à une table. Elle regarde des verres. Et les verres se mettent à glisser sur la table, tout seuls, l'un après l'autre. Un train passe. On entend l'*Hymne à la joie*. On ne sait pas si c'est le train qui fait vibrer la table, ou elle.
 
 Il faut que je te dise comment on a fait ce film, parce que c'est presque un film en soi. Nous avons tourné toute une première version en 1977, en Estonie. La pellicule, une pellicule spéciale, a été mal développée au laboratoire. Tout était inutilisable. J'ai failli abandonner. On m'a accordé, presque par miracle, de quoi recommencer. J'ai changé de chef opérateur, tout réécrit, et presque tout retourné l'année suivante.
+
+Le jour où l'on a vu les rushes, dans la salle de projection, il n'y avait rien sur l'écran. Une bouillie grise, verte, sans forme. Un an de travail. Mon chef opérateur était à côté de moi.
+
+— Andreï, c'est le laboratoire. Ce n'est pas notre faute.
+
+— Ce n'est la faute de personne. C'est bien le pire. Quand c'est la faute de quelqu'un, on peut au moins le haïr.
+
+— Qu'est-ce qu'on fait ?
+
+— On recommence. Ou on meurt. Je ne vois pas d'autre solution.
+
+Nous n'avons pas recommencé ensemble. Nous nous sommes séparés, mal. Je le regrette aujourd'hui. Mais le film que j'ai tourné ensuite n'était plus le même film. Peut-être fallait-il que le premier disparaisse pour que l'autre existe.
 
 Nous avons tourné près de Tallinn, dans une zone industrielle abandonnée, au bord d'une rivière où se déversaient les eaux d'usines chimiques. On voyait de la mousse blanche flotter sur l'eau, en été il neigeait des flocons de produits. Plusieurs d'entre nous sont morts d'un cancer quelques années plus tard : l'acteur Anatoli Solonitsyne, ma femme Larissa, et moi. Certains de ceux qui étaient là pensent que c'est la Zone. On ne le saura jamais.
 

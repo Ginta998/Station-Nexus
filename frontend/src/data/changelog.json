@@ -1,6 +1,18 @@
 {
-  "version": "0.50",
+  "version": "0.51",
   "patches": [
+    {
+      "v": "0.51",
+      "date": "2026-11-19",
+      "title": "Illustrer en un clic, des voix qui se répondent",
+      "groups": {
+        "Ajouté": [
+          "Alexandrie : « Illustrer » (dans la barre de lecture et au clic droit sur un livre). La station cherche des images (SteamGridDB et MyAnimeList pour le Lore, Open Library pour les romans, Wikimedia Commons pour l'histoire, la philosophie, la musique), en place une après le premier paragraphe de chaque chapitre qui n'en a pas, jamais deux fois la même, ni celle de la couverture, puis ouvre le texte dans la fenêtre de collage pour relecture avant d'enregistrer.",
+          "Guru : les femmes. Deux nouveaux journaux, Anne Hamilton-Byrne (la Famille, en Australie) et Bonnie Nettles (Ti, co-fondatrice de Heaven's Gate), une nouvelle partie « Les mères », et celles qui ont dit non : Christine Miller à Jonestown, Sarah Hamilton-Byrne. Des scènes de dialogue dans chaque journal : Jones et Marceline, Koresh et Lois Roden, Manson et Lynette Fromme, Asahara et Hisako Ishii, Sheela et Bhagwan, Di Mambro et Luc Jouret, Applewhite après la mort de Ti.",
+          "Des dialogues dans quinze autres journaux, chacun dans la langue de son époque : Danton et Camille Desmoulins, Saint-Just et Carnot, Toussaint et son neveu Moïse, Kimpa Vita et le capucin, Soundiata et Nana Triban, Lumumba et Mobutu, Musashi et le seigneur Hosokawa, Spinoza et Leibniz, Nietzsche et Lou Salomé, Mozart et Constanze, Debussy et Chouchou, Bresson et Maria Casarès, Tarkovski et Lem, Kitano et sa mère, Rodriguez et sa fille. Chaque livre dit en présentation que les dialogues sont reconstruits."
+        ]
+      }
+    },
     {
       "v": "0.50",
       "date": "2026-11-19",
