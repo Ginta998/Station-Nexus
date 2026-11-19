@@ -1371,7 +1371,7 @@ async def email_status():
     snd = _sender()
     return {"configured": bool(k), "sender": snd if k else "",
             "key_ok": k.startswith("re_") if k else False,
-            "test_sender": snd.endswith("@resend.dev"),
+            "test_sender": "@resend.dev" in snd,
             "subscribers": await db.subscribers.count_documents({})}
 
 
