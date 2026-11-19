@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import { resolveVideoEmbed } from "@/lib/video";
 import StationCinema, { canStationPlay } from "@/components/StationCinema";
+import JournalOverlay from "@/components/journal/JournalOverlay";
 import EditorDialog from "@/components/EditorDialog";
 import MovixSelector from "@/components/MovixSelector";
 import CommentsSection from "@/components/CommentsSection";
@@ -52,7 +53,8 @@ export default function Detail() {
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [gameOpen, setGameOpen] = useState(false);
   const [cinemaKind, setCinemaKind] = useState(null); // "film" | "trailer" | null
-  const [epPlay, setEpPlay] = useState(null); // épisode lu dans le lecteur de la station (index)
+  const [epPlay, setEpPlay] = useState(null);
+  const [jEntry, setJEntry] = useState(""); // une entrée du Making of, ouverte par-dessus (l'admin la modifie d'un seul bouton) // épisode lu dans le lecteur de la station (index)
   const [readerStart, setReaderStart] = useState(null);
   const [readerUnit, setReaderUnit] = useState("chapters");
   const [showEpisodes, setShowEpisodes] = useState(false);
@@ -289,6 +291,7 @@ export default function Detail() {
         if (canStationPlay(src) || (!link && up)) return <StationCinema queue={[{ url: src, title: cinemaKind === "trailer" ? `${item.title} · bande-annonce` : item.title }]} vertical={item.video_ratio === "9:16" ? true : undefined} onClose={() => setCinemaKind(null)} />;
         return <CinemaPlayer item={item} kind={cinemaKind} onClose={() => setCinemaKind(null)} />;
       })()}
+      {jEntry && <JournalOverlay id={jEntry} onClose={() => setJEntry("")} />}
       {epPlay != null && (() => {
         // les épisodes qui ont une vidéo, à la suite : « Épisode suivant » et compte à rebours
         const eps = (item.episodes || []).map((e, i) => ({ e, i })).filter((x) => canStationPlay(x.e.url) && !x.e.content);
@@ -335,7 +338,7 @@ export default function Detail() {
           locked={isPaidLocked} unitLocked={(i) => item.launch_type === "chapters" && chapterLocked(item, i)}
           onChapter={(i, o) => { sfx("select"); setWorkRead({ unitKey: "chapters", start: i, resume: !!o?.resume }); }}
           onEpisode={(i, o) => { const ep = item.episodes?.[i]; try { localStorage.setItem("sx_eplast_" + item.id, String(i)); } catch (_) {} if (ep?.content) { sfx("select"); setWorkRead({ unitKey: "episodes", start: i, resume: !!o?.resume }); } else openEpisode(i); }}
-          onEntry={async (e) => { sfx("select"); try { const full = await getJournalEntry(e.id); if (full.format === "cassette") setTape(full); else setWorkRead({ entry: full }); } catch (_) { toast.error("Entrée introuvable"); } }}
+          onEntry={(e) => { sfx("select"); setJEntry(e.id); }}
           unlock={{ price: `${Number(item.price_eur || 0).toFixed(2)} €`, buying, onBuy: buyThis, onSubscribe: plan?.enabled ? subscribe : null,
             subLabel: plan?.enabled ? `S'abonner · dès ${Math.min(...((plan.tiers && plan.tiers.length ? plan.tiers.map((t) => t.price_eur) : [plan.price_eur || 5])))} €/mois` : "",
             note: item.launch_type === "chapters" && (item.free_chapters || 0) > 0 ? `Les ${item.free_chapters} premiers chapitres sont libres. Pour la suite : accès définitif à l'œuvre, ou l'abonnement pour tout le catalogue.` : null }}

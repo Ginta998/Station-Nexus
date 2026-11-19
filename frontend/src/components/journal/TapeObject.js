@@ -15,6 +15,7 @@ export function Cassette({ title = "", sub = "", side = "A", p = 0, spinning = f
       <span className="cs-screw a" /><span className="cs-screw b" /><span className="cs-screw c" /><span className="cs-screw d" /><span className="cs-screw e" />
       <span className="cs-label">
         {img && <span className="cs-photo" style={{ backgroundImage: `url(${mediaUrl(img)})` }} />}
+        <span className="cs-stain" />
         <span className="cs-band"><b>C-46</b><span>STATION NEXUS · AUDIO</span><i>{side}</i></span>
         <span className="cs-title">{title}</span>
         {sub && <span className="cs-sub">{sub}</span>}
@@ -27,6 +28,8 @@ export function Cassette({ title = "", sub = "", side = "A", p = 0, spinning = f
       </span>
       <span className="cs-mouth"><i /><i /><i /></span>
       <span className="cs-wear" />
+      <span className="cs-dirt" />
+      <span className="cs-scotch" />
       <span className="cs-gloss" />
     </span>
   );

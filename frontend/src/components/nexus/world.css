@@ -1333,3 +1333,77 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
 .ws-dock .hd-art{mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.5) 30%,#000 60%),linear-gradient(180deg,#000 50%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 35%,#000 65%);-webkit-mask-composite:source-in;opacity:.9}
 .ws-dock .nw-cm,.ws-panorama .nw-cm{max-width:900px;margin:0 auto 120px}
 .nw-dock button svg{width:20px;height:20px}
+
+/* =====================================================================
+   0.40 · Shibuya, Hangar, Gazette : trois mondes avec du caractère
+   ===================================================================== */
+/* ---- Shibuya : la ville la nuit, les néons sous la pluie ---- */
+.ws-dock{--paper:#07060d;--ink:#f3eefe;--hl:#ff3fa4;--cy:#3fe0ff;--line:rgba(255,63,164,.25);--ft:"Unbounded","Bebas Neue",sans-serif;--fu:"Space Grotesk",sans-serif;--fb:"Space Grotesk",sans-serif}
+.ws-dock .nw-bg{filter:blur(2px) brightness(.32) saturate(1.5) hue-rotate(-12deg);opacity:1}
+.h-dock .hd-art{opacity:.95;filter:saturate(1.25) contrast(1.1)}
+.hd-rain{position:absolute;inset:0;pointer-events:none;opacity:.35;background:repeating-linear-gradient(104deg,transparent 0 22px,rgba(160,220,255,.22) 22px 23px,transparent 23px 61px),repeating-linear-gradient(100deg,transparent 0 40px,rgba(255,120,200,.14) 40px 41px,transparent 41px 97px);background-size:200px 400px,300px 600px;animation:sbRain .9s linear infinite}
+@keyframes sbRain{to{background-position:-40px 400px,-60px 600px}}
+.hd-floor{position:absolute;left:0;right:0;bottom:0;height:34%;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,63,164,.12) 40%,rgba(63,224,255,.1)),repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 2px,transparent 2px 9px);mask-image:linear-gradient(180deg,transparent,#000 60%)}
+.hd-sign{position:absolute;right:clamp(14px,4vw,60px);top:90px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 10px;border:2px solid var(--hl);border-radius:6px;color:var(--hl);font:900 clamp(40px,5vw,72px)/1 "Shippori Mincho",serif;text-shadow:0 0 8px var(--hl),0 0 24px var(--hl),0 0 48px rgba(255,63,164,.6);box-shadow:0 0 18px rgba(255,63,164,.55),inset 0 0 18px rgba(255,63,164,.35);animation:sbFlick 6s steps(1) infinite;pointer-events:none}
+.hd-sign i{writing-mode:vertical-rl;font:600 13px/1 var(--fu);letter-spacing:.3em;font-style:normal;color:var(--cy);text-shadow:0 0 6px var(--cy),0 0 16px var(--cy)}
+@keyframes sbFlick{0%,61%,64%,100%{opacity:1}62%{opacity:.35}63%{opacity:.9}}
+.h-dock .nw-title{font:800 clamp(40px,6.5vw,96px)/.92 var(--ft);text-transform:uppercase;letter-spacing:-.01em;color:#fff;text-shadow:0 0 6px rgba(255,255,255,.5),0 0 22px var(--hl),0 0 60px rgba(255,63,164,.55)}
+.h-dock .nw-k{color:var(--cy);text-shadow:0 0 10px var(--cy)}
+.h-dock .nw-tag{color:color-mix(in srgb,var(--ink) 80%,var(--hl))}
+.h-dock .hd-btn{border-radius:4px;border-color:color-mix(in srgb,var(--hl) 60%,transparent);text-transform:uppercase;letter-spacing:.08em;font-size:13px;box-shadow:0 0 0 rgba(0,0,0,0)}
+.h-dock .hd-btn.main{background:var(--hl);border-color:var(--hl);color:#12020b;box-shadow:0 0 18px rgba(255,63,164,.6)}
+.h-dock .hd-btn:not(.main):hover{box-shadow:0 0 14px rgba(63,224,255,.5);border-color:var(--cy)}
+.ws-dock .nw-dock{background:rgba(14,8,22,.55);border:1px solid rgba(255,255,255,.14);box-shadow:0 0 0 1px rgba(255,63,164,.15),0 20px 50px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.12)}
+.ws-dock .nw-dock button.on{color:#fff;background:linear-gradient(180deg,rgba(255,63,164,.28),rgba(63,224,255,.12));box-shadow:inset 0 -2px 0 var(--hl)}
+.ws-dock .nw-dock button.on svg{filter:drop-shadow(0 0 6px var(--hl))}
+@media (max-width:700px){.hd-sign{display:none}}
+@media (prefers-reduced-motion:reduce){.hd-rain,.hd-sign{animation:none}}
+
+/* ---- Hangar : la baie d'un vaisseau ---- */
+.ws-panorama{--paper:#06090e;--ink:#dfe8f2;--hl:#ffb340;--line:rgba(255,179,64,.22);--ft:"Rajdhani","Space Grotesk",sans-serif;--fu:"Space Grotesk",sans-serif;--fb:"Space Grotesk",sans-serif}
+.ws-panorama .nw-bg{filter:blur(30px) brightness(.22) saturate(.6) sepia(.3)}
+.h-pano .hp-art{opacity:.4;filter:saturate(.7) contrast(1.15)}
+.hp-grid{position:absolute;left:-20%;right:-20%;bottom:0;height:45%;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(255,179,64,.18) 0 1px,transparent 1px 80px),repeating-linear-gradient(0deg,rgba(255,179,64,.14) 0 1px,transparent 1px 60px);transform:perspective(500px) rotateX(62deg);transform-origin:bottom;mask-image:linear-gradient(0deg,#000,transparent 85%)}
+.hp-scan{position:absolute;left:0;right:0;top:0;height:2px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,179,64,.7),transparent);box-shadow:0 0 18px rgba(255,179,64,.6);animation:hgScan 6s ease-in-out infinite}
+@keyframes hgScan{0%{top:12%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:92%;opacity:0}}
+.hp-tel{margin:0 0 10px;font-size:11px;letter-spacing:.24em;color:var(--hl)}
+.hp-tel::before{content:"◆ ";animation:hgBlink 1.4s steps(1) infinite}
+@keyframes hgBlink{50%{opacity:.2}}
+.h-pano .nw-title{font:700 clamp(40px,6vw,88px)/.9 var(--ft);text-transform:uppercase;letter-spacing:.06em}
+.h-pano .hp-img{border-radius:0;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);outline:none!important;box-shadow:none}
+.h-pano .hp-card,.h-pano .hp-u{position:relative}
+.h-pano .hp-card::before,.h-pano .hp-card::after,.h-pano .hp-u::before,.h-pano .hp-u::after{content:"";position:absolute;width:16px;height:16px;border:solid var(--hl);opacity:0;transition:opacity .2s,transform .25s;pointer-events:none;z-index:2}
+.h-pano .hp-card::before,.h-pano .hp-u::before{left:-6px;top:-6px;border-width:2px 0 0 2px;transform:translate(-4px,-4px)}
+.h-pano .hp-card::after,.h-pano .hp-u::after{right:-6px;top:calc(var(--imgh,0) - 10px);border-width:2px 2px 0 0;transform:translate(4px,-4px)}
+.h-pano .hp-card.on::before,.h-pano .hp-card:hover::before,.h-pano .hp-u:hover::before,.h-pano .hp-card.on::after,.h-pano .hp-card:hover::after,.h-pano .hp-u:hover::after{opacity:1;transform:none}
+.h-pano .hp-card.on .hp-img,.h-pano .hp-card:hover .hp-img{transform:none;filter:brightness(1.12)}
+.hp-bay{position:absolute;right:10px;top:8px;font-size:10px;letter-spacing:.2em;font-style:normal;color:var(--hl);background:rgba(0,0,0,.55);padding:3px 6px}
+.h-pano .hp-t b{font:600 16px/1.2 var(--ft);text-transform:uppercase;letter-spacing:.08em}
+.h-pano .hp-k{color:var(--hl);font-family:var(--fu)}
+.h-pano .hp-u .hp-img i{font:700 26px/1 var(--ft);color:var(--hl)}
+@media (prefers-reduced-motion:reduce){.hp-scan,.hp-tel::before{animation:none}}
+
+/* ---- Gazette : un journal des années 30 ---- */
+.ws-sommaire{--paper:#ece6d6;--ink:#151311;--hl:#b3261e;--line:rgba(21,19,17,.22);--ft:"Playfair Display",serif;--fu:"Courier Prime",monospace;--fb:"EB Garamond",serif;background:#ece6d6 radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.4),transparent 60%)}
+.ws-sommaire .nw-homewrap{background:linear-gradient(90deg,rgba(80,60,30,.08),transparent 6%,transparent 94%,rgba(80,60,30,.08))}
+.hr-paper{display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 0 12px;margin-bottom:26px;border-bottom:4px double var(--ink);text-align:center}
+.hr-paper b{font:900 clamp(26px,4.5vw,54px)/1 "UnifrakturMaguntia","Playfair Display",serif;letter-spacing:.01em}
+.hr-paper span{width:100%;display:block;padding:6px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);font:400 12px/1 var(--fu);letter-spacing:.1em;text-transform:uppercase}
+.hr-mast{position:relative}
+.hr-stamp{position:absolute;right:0;top:110px;padding:8px 14px;border:3px solid var(--hl);color:var(--hl);font:700 15px/1 var(--fu);letter-spacing:.18em;text-transform:uppercase;transform:rotate(-8deg);opacity:.82;mix-blend-mode:multiply;box-shadow:inset 0 0 0 2px rgba(236,230,214,.6)}
+.h-revue .nw-title{font:900 clamp(48px,8vw,112px)/.9 var(--ft);letter-spacing:-.02em}
+.h-revue .nw-k{font-family:var(--fu)!important}
+.hr-mast figure span,.hr-cards span,.hr-gal button{filter:grayscale(1) contrast(1.25) brightness(1.05);position:relative}
+.hr-mast figure{position:relative;border:1px solid var(--ink);padding:6px}
+.hr-mast figure::after{content:"";position:absolute;inset:6px;pointer-events:none;background:radial-gradient(circle,rgba(20,18,16,.35) 0.6px,transparent 1.2px) 0 0/4px 4px;mix-blend-mode:multiply}
+.hr-lead{column-count:2;column-gap:28px;column-rule:1px solid var(--line);text-align:justify;hyphens:auto}
+.hr-lead::first-letter{font-family:var(--ft);color:var(--ink);font-size:72px}
+.h-revue .hd-btn{border-radius:0;border:2px solid var(--ink);font-family:var(--fu);text-transform:uppercase;letter-spacing:.12em;font-size:13px}
+.h-revue .hd-btn.main{background:var(--ink);color:var(--paper)}
+.hr-toc{border-top:4px double var(--ink)}
+.hr-toc b{font-family:var(--fu)}
+.hr-sec h2{border-bottom:4px double var(--ink);font-style:italic}
+.hr-units button{border-bottom:1px dotted var(--line)}
+.hr-units .t b{font-family:var(--ft);font-weight:700}
+.hr-units .n{font-family:var(--fu);font-size:15px;color:var(--hl)}
+@media (max-width:860px){.hr-lead{column-count:1}.hr-stamp{top:84px;font-size:11px}}

@@ -250,6 +250,8 @@ export default function NexusWorld(p) {
       case "dock": return (
         <div className="nw-home h-dock">
           <span className="hd-art" style={cover || bg ? { backgroundImage: `url(${bg || cover})` } : undefined} aria-hidden="true" />
+          <span className="hd-rain" aria-hidden="true" /><span className="hd-floor" aria-hidden="true" />
+          <span className="hd-sign" aria-hidden="true">{item.kanji || "夜"}<i>ステーション・ネクサス</i></span>
           <div className="hd-txt">{Head()}<p className="hd-syn">{item.synopsis}</p>
             <div className="hd-acts">{homeItems.slice(0, 2).map((it, i) => <button key={it.id} className={"hd-btn" + (i === 0 ? " main" : "")} onClick={it.go} data-testid={`nw-${it.id}`}>{i === 0 && <IoPlay size={15} />}{it.label}{it.sub && <small>{it.sub}</small>}</button>)}</div>
             {phoneResume}
@@ -260,11 +262,12 @@ export default function NexusWorld(p) {
       case "panorama": return (
         <div className="nw-home h-pano">
           <span className="hp-art" style={bg || cover ? { backgroundImage: `url(${bg || cover})` } : undefined} aria-hidden="true" />
-          <div className="hp-head">{Head()}</div>
+          <span className="hp-grid" aria-hidden="true" /><span className="hp-scan" aria-hidden="true" />
+          <div className="hp-head"><p className="hp-tel mono" aria-hidden="true">BAIE {String((item.order ?? 0) + 1).padStart(2, "0")} · AMARRAGE CONFIRMÉ · {isUnits ? `${units.length} ${unitWord.toUpperCase()}S À BORD` : "PRÊT AU LANCEMENT"}</p>{Head()}</div>
           <div className="hp-rail" role="list" data-testid="nw-pano-rail">
             {homeItems.map((it, i) => (
               <button key={it.id} role="listitem" className={"hp-card" + (i === c.sel ? " on" : "") + (i === 0 ? " big" : "")} onMouseEnter={() => setSel(i)} onFocus={() => setSel(i)} onClick={() => { setSel(i); it.go(); }} data-testid={`nw-${it.id}`}>
-                <span className="hp-img" style={{ backgroundImage: `url(${it.win || cover || bg || ""})` }} />
+                <span className="hp-img" style={{ backgroundImage: `url(${it.win || cover || bg || ""})` }}><i className="hp-bay mono">MOD-{String(i + 1).padStart(2, "0")}</i></span>
                 <span className="hp-t"><b>{it.label}</b>{it.sub && <small>{it.sub}</small>}</span>
               </button>
             ))}
@@ -288,9 +291,12 @@ export default function NexusWorld(p) {
         const secs = [isUnits && ["units", unitsLabel], making.length > 0 && ["making", "Making of"], item.gallery?.length > 0 && ["gallery", "Moodboard"], neighbors.length > 0 && ["neighbors", "Autres mondes"]].filter(Boolean);
         return (
           <div className="nw-home h-revue">
-            <nav className="hr-toc" aria-label="Sommaire"><b>SOMMAIRE</b>{secs.map(([id, t], i) => <button key={id} onClick={() => jump(id)}><i>{String(i + 1).padStart(2, "0")}</i>{t}</button>)}<button onClick={() => goWorldHome("cm")}><i>{String(secs.length + 1).padStart(2, "0")}</i>Commentaires</button></nav>
+            <nav className="hr-toc" aria-label="Sommaire"><b>AU SOMMAIRE DE CE NUMÉRO</b>{secs.map(([id, t], i) => <button key={id} onClick={() => jump(id)}><i>{String(i + 1).padStart(2, "0")}</i>{t}</button>)}<button onClick={() => goWorldHome("cm")}><i>{String(secs.length + 1).padStart(2, "0")}</i>Commentaires</button></nav>
             <article className="hr-body">
-              <header className="hr-mast">{Head()}{(cover || bg) && <figure><span style={{ backgroundImage: `url(${cover || bg})` }} /></figure>}<p className="hr-lead">{item.synopsis}</p>
+              <header className="hr-mast">
+                <div className="hr-paper" aria-hidden="true"><b>La Gazette de la Station</b><span>N° {String((item.order ?? 0) + 1).padStart(3, "0")} · {new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} · Prix : un regard</span></div>
+                <span className="hr-stamp" aria-hidden="true">{item.coming_soon ? "Bientôt" : "Édition spéciale"}</span>
+                {Head()}{(cover || bg) && <figure><span style={{ backgroundImage: `url(${cover || bg})` }} /></figure>}<p className="hr-lead">{item.synopsis}</p>
                 <div className="hd-acts">{homeItems.slice(0, 2).map((it, i) => <button key={it.id} className={"hd-btn" + (i === 0 ? " main" : "")} onClick={it.go} data-testid={`nw-${it.id}`}>{i === 0 && <IoPlay size={15} />}{it.label}</button>)}</div>
                 {phoneResume}
               </header>

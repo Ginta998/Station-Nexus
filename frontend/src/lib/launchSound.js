@@ -36,18 +36,44 @@ export const LAUNCH_SOUNDS = [
   { k: "cle", t: "Clé", d: "Deux notes de confirmation, comme une console" },
   { k: "aurore", t: "Aurore", d: "Quatre notes qui montent, légères" },
   { k: "seuil", t: "Seuil", d: "Une porte grave qui s'ouvre sur l'air" },
+  { k: "velours", t: "Velours", d: "Une nappe chaude qui s'ouvre, un battement doux" },
+  { k: "prisme", t: "Prisme", d: "Trois éclats de verre, puis une lueur" },
+  { k: "horizon", t: "Horizon", d: "Une montée de cinéma qui éclôt en accord" },
 ];
 const PLAY = {
   halo(c, t, v) { [N(60), N(67), N(71), N(74)].forEach((f, i) => note(c, t + i * 0.035, f, { type: "triangle", a: 0.18, d: 1.5, v: v * 0.09, detune: (i - 1.5) * 4 })); bell(c, t + 0.22, N(86), v * 0.08, 1.8); },
   elan(c, t, v) { whoosh(c, t, 0.55, v * 0.1); note(c, t + 0.55, N(43), { v: v * 0.22, d: 0.9, a: 0.008 }); [N(67), N(74), N(79)].forEach((f, i) => note(c, t + 0.56 + i * 0.02, f, { type: "triangle", v: v * 0.07, d: 1.3, a: 0.02 })); },
   cle(c, t, v) { bell(c, t, N(76), v * 0.13, 1.1); bell(c, t + 0.16, N(83), v * 0.13, 1.6); note(c, t + 0.16, N(52), { v: v * 0.08, d: 1.2, a: 0.05 }); },
   aurore(c, t, v) { [N(64), N(68), N(71), N(76)].forEach((f, i) => bell(c, t + i * 0.085, f, v * 0.085, 1.3 + i * 0.15)); note(c, t + 0.26, N(52), { type: "triangle", v: v * 0.06, d: 1.4, a: 0.25 }); },
+  velours(c, t, v) {
+    // nappe : dents de scie désaccordées dans un filtre qui s'ouvre
+    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 0.7; lp.frequency.setValueAtTime(380, t); lp.frequency.exponentialRampToValueAtTime(2600, t + 0.9); lp.frequency.exponentialRampToValueAtTime(900, t + 2);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v * 0.07, t + 0.35); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.1);
+    lp.connect(g); out(c, g, 1);
+    [N(57), N(64), N(69), N(73)].forEach((f, i) => [-7, 7].forEach((dt) => { const o = c.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.detune.value = dt + i; o.connect(lp); o.start(t); o.stop(t + 2.2); }));
+    note(c, t + 0.02, N(33), { v: v * 0.22, d: 0.7, a: 0.01, wet: false });
+  },
+  prisme(c, t, v) {
+    // éclats de verre : sinus aigus brefs, l'un après l'autre, puis une lueur tenue
+    [N(88), N(84), N(91)].forEach((f, i) => { note(c, t + i * 0.07, f, { v: v * 0.08, d: 0.5, a: 0.002 }); note(c, t + i * 0.07, f * 1.5, { v: v * 0.03, d: 0.3, a: 0.002 }); });
+    [N(64), N(71), N(76)].forEach((f, i) => note(c, t + 0.24, f, { type: "sine", a: 0.3, d: 1.5, v: v * 0.05, detune: (i - 1) * 5 }));
+  },
+  horizon(c, t, v) {
+    // une montée (souffle et note qui glissent vers le haut), puis l'accord s'ouvre en grand
+    whoosh(c, t, 0.85, v * 0.08, 200, 5200);
+    note(c, t, N(45), { type: "triangle", v: v * 0.1, d: 0.85, a: 0.6, glide: 2 });
+    [N(57), N(64), N(69), N(76), N(81)].forEach((f, i) => note(c, t + 0.86, f, { type: i % 2 ? "sine" : "triangle", a: 0.04, d: 1.8, v: v * 0.075, detune: (i - 2) * 3 }));
+    note(c, t + 0.86, N(33), { v: v * 0.2, d: 1.2, a: 0.01, wet: false });
+  },
   seuil(c, t, v) { note(c, t, N(36), { v: v * 0.28, d: 1.1, a: 0.02, glide: 0.92, wet: false }); whoosh(c, t + 0.05, 0.9, v * 0.06, 600, 6000); [N(62), N(69), N(76)].forEach((f, i) => note(c, t + 0.3, f, { type: "sine", a: 0.35, d: 1.4, v: v * 0.06, detune: (i - 1) * 6 })); },
 };
 
+// un son par format : le livre, la VHS et le vinyle peuvent chacun avoir le leur
+export const LAUNCH_FORMATS = [["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]];
+const DEF = { livre: "aurore", vhs: "elan", vinyle: "velours" };
 const KEY = "nx-launch-snd";
-export const getLaunchSound = () => { try { return localStorage.getItem(KEY) || "halo"; } catch (_) { return "halo"; } };
-export const setLaunchSound = (k) => { try { localStorage.setItem(KEY, k); } catch (_) {} };
+export const getLaunchSound = (fmt = "livre") => { try { return localStorage.getItem(`${KEY}-${fmt}`) || localStorage.getItem(KEY) || DEF[fmt] || "halo"; } catch (_) { return DEF[fmt] || "halo"; } };
+export const setLaunchSound = (k, fmt = "livre") => { try { localStorage.setItem(`${KEY}-${fmt}`, k); } catch (_) {} };
 export function playLaunch(vol = 0.7, k = getLaunchSound()) {
   if (!k || k === "none" || vol <= 0) return; const c = ac(); if (!c || !PLAY[k]) return;
   PLAY[k](c, c.currentTime + 0.02, Math.min(1, vol));

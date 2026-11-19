@@ -264,3 +264,48 @@
 @media (max-width:860px){.tp{padding-top:max(70px,calc(env(safe-area-inset-top) + 62px))!important}}
 /* atelier : « Modifier l'entrée » à côté du crayon de la cassette */
 .tp-ed-full{right:max(116px,calc(env(safe-area-inset-right) + 116px))!important;width:auto!important;padding:0 14px!important;font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase}
+
+/* =====================================================================
+   0.40 · Une cassette qui a vécu : plastique frotté aux coins et sur les arêtes, poussière dans les creux,
+   étiquette jaunie, tachée, déchirée au bord, un morceau de scotch, impression passée. Rien de répété.
+   ===================================================================== */
+.cs-shell::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:
+    radial-gradient(14cqw 9cqw at 2% 3%,rgba(255,255,255,.16),transparent 70%),
+    radial-gradient(12cqw 8cqw at 98% 97%,rgba(255,255,255,.13),transparent 70%),
+    radial-gradient(10cqw 6cqw at 99% 2%,rgba(255,255,255,.1),transparent 70%),
+    radial-gradient(9cqw 6cqw at 1% 98%,rgba(255,255,255,.09),transparent 70%),
+    linear-gradient(90deg,rgba(255,255,255,.12),transparent 1.6cqw),linear-gradient(180deg,rgba(255,255,255,.1),transparent 1.4cqw)}
+.cs-dirt{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;mix-blend-mode:screen;opacity:.85;
+  background:
+    linear-gradient(97deg,transparent 48.2%,rgba(255,255,255,.22) 48.35%,transparent 48.6%) 0 82%/34% 14% no-repeat,
+    linear-gradient(81deg,transparent 30%,rgba(255,255,255,.16) 30.2%,transparent 30.5%) 88% 90%/22% 16% no-repeat,
+    linear-gradient(170deg,transparent 60%,rgba(255,255,255,.12) 60.3%,transparent 60.7%) 96% 30%/10% 50% no-repeat,
+    radial-gradient(.35cqw .35cqw at 21% 88%,rgba(255,255,255,.5),transparent),radial-gradient(.3cqw .3cqw at 73% 93%,rgba(255,255,255,.45),transparent),
+    radial-gradient(.25cqw .25cqw at 91% 79%,rgba(255,255,255,.4),transparent),radial-gradient(.3cqw .3cqw at 6% 60%,rgba(255,255,255,.35),transparent)}
+/* un bout de scotch jauni qui retient le coin de l'étiquette */
+.cs-scotch{position:absolute;z-index:4;right:3%;top:4.5%;width:12%;height:6%;transform:rotate(28deg);pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,240,190,.38),rgba(230,205,140,.3));box-shadow:0 .1cqw .3cqw rgba(0,0,0,.25);
+  clip-path:polygon(0 8%,6% 0,12% 10%,20% 2%,30% 9%,100% 0,100% 100%,92% 90%,84% 100%,76% 92%,0 100%)}
+/* l'étiquette : jaunie, des taches de café et de doigts, le bord bas-droit déchiré */
+.cs-label{clip-path:polygon(0 0,100% 0,100% 82%,98.6% 86%,99.4% 89%,97.8% 92%,98.9% 96%,96.5% 100%,0 100%)}
+.cs-stain{position:absolute;inset:0;z-index:5;pointer-events:none;mix-blend-mode:multiply;
+  background:
+    radial-gradient(7cqw 5.5cqw at 86% 78%,transparent 62%,rgba(120,72,20,.32) 66%,rgba(120,72,20,.1) 72%,transparent 76%),
+    radial-gradient(10cqw 6cqw at 12% 84%,rgba(140,96,40,.22),transparent 70%),
+    radial-gradient(6cqw 3cqw at 64% 8%,rgba(90,60,25,.18),transparent 70%),
+    linear-gradient(180deg,rgba(150,110,50,.12),rgba(120,80,30,.22)),
+    radial-gradient(3cqw 2cqw at 30% 30%,rgba(80,60,40,.12),transparent 70%)}
+.cs-band{filter:saturate(.75) contrast(.92)}
+.cs-title{opacity:.9}
+.cs.has-img .cs-photo{filter:saturate(.62) contrast(1.02) sepia(.28) brightness(.95)!important}
+.cs-wear{opacity:.7!important}
+.tp:has(.tp-edit){overflow-y:auto;align-items:flex-start}
+.tp:has(.tp-edit) .tp-deck{width:min(720px,100%)}
+.tp-edit{width:min(720px,100%)!important}
+.tp-edit-row.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tp-edit select{padding:9px 11px;border:1px solid rgba(236,228,210,.2);background:rgba(0,0,0,.4);color:#ece4d2;font:inherit;font-size:14px;letter-spacing:0;text-transform:none;border-radius:2px}
+.tp-edit-checks{display:flex;flex-wrap:wrap;gap:16px;align-items:center;color:#ece4d2;font-size:14px}
+.tp-edit-checks label{display:flex;align-items:center;gap:8px}
+.tp-edit-blocks{border:1px solid rgba(236,228,210,.14);padding:10px;background:rgba(0,0,0,.25)}
+@media (max-width:520px){.tp-edit-row.three{grid-template-columns:1fr}}

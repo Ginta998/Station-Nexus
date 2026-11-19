@@ -1,5 +1,5 @@
 import { FAVICONS, faviconPng } from "@/lib/favicons";
-import { LAUNCH_SOUNDS, getLaunchSound, setLaunchSound, playLaunch } from "@/lib/launchSound";
+import { LAUNCH_SOUNDS, LAUNCH_FORMATS, getLaunchSound, setLaunchSound, playLaunch } from "@/lib/launchSound";
 import { useState, useEffect, useRef } from "react";
 import { MyData, ReportsAdmin, LegalInfoAdmin } from "@/components/PrivacyTools";
 import { useNavigate } from "react-router-dom";
@@ -1205,21 +1205,27 @@ function SiteIdentity() {
   );
 }
 
-// Le son du lancement d'une œuvre (Nexus) : on écoute en cliquant, le choix est gardé
+// Le son du lancement d'une œuvre (Nexus), un par format : on écoute en cliquant, le choix est gardé
 function LaunchSoundPick({ vol }) {
-  const [cur, setCur] = useState(getLaunchSound());
-  const pick = (k) => { setCur(k); setLaunchSound(k); if (k !== "none") playLaunch(Math.max(vol, 0.4), k); };
+  const [cur, setCur] = useState(() => Object.fromEntries(LAUNCH_FORMATS.map(([f]) => [f, getLaunchSound(f)])));
+  const pick = (f, k) => { setCur((c) => ({ ...c, [f]: k })); setLaunchSound(k, f); if (k !== "none") playLaunch(Math.max(vol, 0.4), k); };
   return (
     <div className="mt-2" data-testid="launch-sound-pick">
       <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Son du lancement (quand une œuvre s'ouvre)</label>
-      <div className="flex flex-wrap gap-2 mt-2">
-        {[...LAUNCH_SOUNDS, { k: "none", t: "Aucun", d: "Lancement silencieux" }].map((o) => (
-          <button key={o.k} type="button" onClick={() => pick(o.k)} title={o.d} data-testid={`launch-sound-${o.k}`}
-            className="px-3 py-2 border text-sm" style={{ borderColor: cur === o.k ? "var(--brand)" : "var(--border-c)", background: cur === o.k ? "color-mix(in srgb, var(--brand) 14%, transparent)" : "transparent", color: "var(--text-primary)" }}>
-            {o.t}<small className="block text-[10px] opacity-60">{o.d}</small>
-          </button>
-        ))}
-      </div>
+      {LAUNCH_FORMATS.map(([f, name]) => (
+        <div key={f} className="mt-3">
+          <p className="text-[11px] uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>{name}</p>
+          <div className="flex flex-wrap gap-2">
+            {[...LAUNCH_SOUNDS, { k: "none", t: "Aucun", d: "Lancement silencieux" }].map((o) => (
+              <button key={o.k} type="button" onClick={() => pick(f, o.k)} title={o.d} data-testid={`launch-sound-${f}-${o.k}`}
+                className="px-3 py-2 border text-sm" style={{ borderColor: cur[f] === o.k ? "var(--brand)" : "var(--border-c)", background: cur[f] === o.k ? "color-mix(in srgb, var(--brand) 14%, transparent)" : "transparent", color: "var(--text-primary)" }}>
+                {o.t}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <p className="text-[11px] mt-2" style={{ color: "var(--text-secondary)" }}>{LAUNCH_SOUNDS.map((o) => `${o.t} : ${o.d.toLowerCase()}`).join(" · ")}.</p>
     </div>
   );
 }

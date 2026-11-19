@@ -3228,3 +3228,5 @@ body:has(.ax-reader) :is(.nw,.cosmic-bg,.nx-tlayer) *{animation-play-state:pause
 .at-ctx-wrap.sheet .at-ctx-t{padding:10px 8px 12px;font-size:11px}
 .at-ctx-wrap.sheet .at-ctx button:not(.at-ctx-t button){padding:14px 10px;font-size:15.5px}
 @keyframes ctxUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+/* l'éditeur du journal ouvert par-dessus un lecteur (admin, station publique) */
+.jr-editlayer{position:fixed;inset:0;z-index:1600;overflow-y:auto;background:var(--bg-primary)}

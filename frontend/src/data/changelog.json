@@ -1,6 +1,22 @@
 {
-  "version": "0.39",
+  "version": "0.40",
   "patches": [
+    {
+      "v": "0.40",
+      "date": "2026-11-19",
+      "title": "Un seul crayon, et trois mondes qui ont du caractère",
+      "groups": {
+        "Ajouté": [
+          "Cassette : vraie usure (coins frottés, rayures, poussière, scotch jauni, étiquette déchirée et tachée, couleurs passées).",
+          "Un seul bouton pour modifier une entrée du journal, partout (station publique, accueil, atelier) : sur une cassette, le crayon ouvre l'édition complète sur la cassette elle-même (titre, voix, image, enregistrement, date, catégorie, création, publiée, accueil, format, transcription). Pour les autres formats, le crayon ouvre l'éditeur complet par-dessus la page.",
+          "Sons de lancement : trois nouveaux (Velours, Prisme, Horizon), huit en tout, et un son différent au choix pour le livre, la VHS et le vinyle (Réglages).",
+          "Trois mondes refaits avec un caractère propre : Shibuya (néons sous la pluie, enseigne verticale, sol mouillé, barre de verre), Hangar (baie de vaisseau, sol quadrillé, balayage, repères de visée, télémétrie ambre), Gazette (journal des années 30 : manchette, numéro du jour, tampon rouge, photos en trame, colonnes)."
+        ],
+        "Retiré": [
+          "Le second bouton « Modifier l'entrée » sous la cassette."
+        ]
+      }
+    },
     {
       "v": "0.39",
       "date": "2026-11-19",
