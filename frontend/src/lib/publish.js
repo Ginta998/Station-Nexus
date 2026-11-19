@@ -141,6 +141,9 @@ export async function pullRemote(at, it, p) {
   return at.saveItem({ ...it, content: html, fields: { ...(it.fields || {}), [key]: np } });
 }
 
+// les @mentions de l'atelier redeviennent du texte simple sur la station (sans « @ » ni lien)
+export const stripMentions = (html = "") => String(html).replace(/<a[^>]*class="nx-mention"[^>]*>@?([^<]*)<\/a>/g, "$1");
+
 // ---- vers un chapitre (nouveau, ou remplace celui choisi ; republier retrouve le chapitre par son identifiant)
 export async function publishChapter(it, { creation_id, mode, chapter_id, title, unit = "chapters", release_at }) {
   const full = await getCreationFull(creation_id);
@@ -152,7 +155,7 @@ export async function publishChapter(it, { creation_id, mode, chapter_id, title,
     const url = videoOf(it); const desc = plain(it.content || "").replace(/https?:\/\/\S+/g, "").trim().slice(0, 600);
     const yid = (url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
     body = { url, description: desc, image: it.image || (yid ? `https://i.ytimg.com/vi/${yid}/hqdefault.jpg` : ""), content: "", rich: false };
-  } else body = { content: it.content || "", rich: true };
+  } else body = { content: stripMentions(it.content || ""), rich: true };
   if (idx >= 0) units[idx] = { ...units[idx], title: title || units[idx].title, ...body, ...rel };
   else { units.push({ title: title || it.title || "Sans titre", description: "", image: "", has_music: false, ...body, ...rel }); idx = units.length - 1; }
   const saved = await updateCreation(creation_id, { ...full, [unit]: units }, true);
@@ -162,7 +165,7 @@ export async function publishChapter(it, { creation_id, mode, chapter_id, title,
 
 // ---- vers le journal de bord (republier met à jour la même entrée si elle existe encore)
 export async function publishJournal(it, { entry_id, title, creation_id, category_id, format, published, show_home }) {
-  const blocks = htmlToBlocks(it.content || "");
+  const blocks = htmlToBlocks(stripMentions(it.content || ""));
   const base = { title: title || it.title || "Sans titre", subtitle: "", cover: it.image || "", blocks, creation_id: creation_id || "", category_id: category_id || "", format: format || "livre", published: !!published, show_home: !!show_home };
   let r = null;
   if (entry_id) {

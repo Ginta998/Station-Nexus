@@ -8,6 +8,8 @@ import { TaskRow, TaskQuickAdd } from "@/components/atelier/TasksView";
 import MediaGallery from "@/components/atelier/MediaGallery";
 import DocView from "@/components/atelier/DocView";
 import DocEdit from "@/components/atelier/DocEdit";
+import Mentions from "@/components/atelier/Mentions";
+import { REL, relOf, guessRel, withLink, syncMentions } from "@/lib/network";
 import { IoCloudUploadOutline as IoPublish } from "react-icons/io5";
 import { askPublish } from "@/components/atelier/StationLink";
 import { liveTag } from "@/lib/publish";
@@ -89,6 +91,9 @@ export default function ItemEditor({ at, id, open, onClose }) {
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   });
   if (!it) return null;
+  // un texte modifié : ses @mentions deviennent des liens (réseau narratif)
+  const withMentions = (html) => { const n = syncMentions(latest.current || it, html); return { content: html, links: n.links, fields: n.fields }; };
+  const setRel = (lid, rel) => change({ fields: { ...(it.fields || {}), rel: { ...(it.fields?.rel || {}), [lid]: rel } } });
 
   const close = async () => { await flush(); onClose(); };
   const goTo = async (lid) => { await flush(); onClose(); setTimeout(() => open(lid), 0); };
@@ -125,6 +130,7 @@ export default function ItemEditor({ at, id, open, onClose }) {
 
   return (
     <div className="at-editor" data-testid="atelier-editor" onDragOver={(e) => e.preventDefault()} onDrop={onDrop} style={{ "--u": at.universes.find((u) => u.id === it.universe_id)?.color || "var(--brand)" }}>
+      <Mentions at={at} scope={it.universe_id} selfId={it.id} onOpen={goTo} />
       <div className="at-ed-bar">
         <button className="at-btn ghost" onClick={close} data-testid="atelier-editor-close"><IoArrowBack size={16} /> <span className="hide-sm">Retour</span></button>
         <select value={it.kind} onChange={(e) => change({ kind: e.target.value })} data-testid="atelier-editor-kind">{Object.entries(KINDS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select>
@@ -154,8 +160,8 @@ export default function ItemEditor({ at, id, open, onClose }) {
             <button className={"at-ed-wide" + (wide ? " on" : "")} onClick={toggleWide} data-testid="atelier-format-wide" title={wide ? "Largeur page" : "Pleine largeur"}>{wide ? "Pleine largeur" : "Page"}</button>
           </div>
           {fmt === "flow"
-            ? <RichTextEditor key={it.id + ":" + rev} value={it.content} onChange={(html) => change({ content: html })} page eyebrow={`${KINDS[it.kind]?.kanji} ${KINDS[it.kind]?.label.toUpperCase()}${uname ? ` · ${uname.toUpperCase()}` : " · INBOX"}`} title={it.title} onTitle={(t) => change({ title: t })} placeholder="Écris, colle depuis Google Docs, développe ton idée…" />
-            : <DocEdit key={it.id + ":" + rev + ":" + fmt} value={it.content} onChange={(html) => change({ content: html })} format={fmt} styleKey={it.fields?.doc?.style} eyebrow={`${KINDS[it.kind]?.label || ""}${uname ? " · " + uname : ""}`} title={it.title} onTitle={(t) => change({ title: t })} image={it.image} />}
+            ? <RichTextEditor key={it.id + ":" + rev} value={it.content} onChange={(html) => change(withMentions(html))} page eyebrow={`${KINDS[it.kind]?.kanji} ${KINDS[it.kind]?.label.toUpperCase()}${uname ? ` · ${uname.toUpperCase()}` : " · INBOX"}`} title={it.title} onTitle={(t) => change({ title: t })} placeholder="Écris, colle depuis Google Docs, développe ton idée…" />
+            : <DocEdit key={it.id + ":" + rev + ":" + fmt} value={it.content} onChange={(html) => change(withMentions(html))} format={fmt} styleKey={it.fields?.doc?.style} eyebrow={`${KINDS[it.kind]?.label || ""}${uname ? " · " + uname : ""}`} title={it.title} onTitle={(t) => change({ title: t })} image={it.image} />}
         </article>
 
         <aside className="at-ed-side">
@@ -194,11 +200,11 @@ export default function ItemEditor({ at, id, open, onClose }) {
             <div className="at-chips">
             </div>
             <ul className="ar-links">
-              {links.map((l) => <li key={l.id}><button className="ar-row" onClick={() => goTo(l.id)}><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>{KINDS[l.kind]?.label}</small><i aria-hidden="true">↗</i></button><button className="ar-x" onClick={() => change({ links: it.links.filter((x) => x !== l.id) })} aria-label={`Retirer le lien vers ${l.title || "Sans titre"}`}><IoClose size={12} /></button></li>)}
-              {backlinks.map((l) => <li key={l.id} className="back"><button className="ar-row" onClick={() => goTo(l.id)} title="Relié depuis cet élément"><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>↩ RENVOI</small><i aria-hidden="true">↗</i></button></li>)}
+              {links.map((l) => <li key={l.id}><select className="ar-rel mono" value={relOf(it, l.id)} onChange={(e) => setRel(l.id, e.target.value)} title="Nature du lien" data-testid={`atelier-rel-${l.id}`}>{Object.entries(REL).map(([k, v]) => <option key={k} value={k}>{v.t}</option>)}</select><button className="ar-row" onClick={() => goTo(l.id)}><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>{KINDS[l.kind]?.label}</small><i aria-hidden="true">↗</i></button><button className="ar-x" onClick={() => change({ links: it.links.filter((x) => x !== l.id) })} aria-label={`Retirer le lien vers ${l.title || "Sans titre"}`}><IoClose size={12} /></button></li>)}
+              {backlinks.map((l) => <li key={l.id} className="back"><button className="ar-row" onClick={() => goTo(l.id)} title="Relié depuis cet élément"><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>↩ {(REL[relOf(l, it.id)]?.back || "lié à").toUpperCase()}</small><i aria-hidden="true">↗</i></button></li>)}
             </ul>
             {others.length > 0 && (
-              <select value="" onChange={(e) => e.target.value && change({ links: [...(it.links || []), e.target.value] })} data-testid="atelier-editor-link-add">
+              <select value="" onChange={(e) => { const o = at.items.find((x) => x.id === e.target.value); if (o) { const n = withLink(it, o.id, guessRel(it, o)); change({ links: n.links, fields: n.fields }); } }} data-testid="atelier-editor-link-add">
                 <option value="">+ Relier un élément…</option>
                 {others.map((o) => <option key={o.id} value={o.id}>{KINDS[o.kind]?.label} · {o.title || "Sans titre"}</option>)}
               </select>

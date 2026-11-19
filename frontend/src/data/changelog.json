@@ -1,6 +1,19 @@
 {
-  "version": "0.37",
+  "version": "0.38",
   "patches": [
+    {
+      "v": "0.38",
+      "date": "2026-11-19",
+      "title": "Le réseau narratif",
+      "groups": {
+        "Ajouté": [
+          "Atelier › Réseau narratif : la constellation des fiches (personnages, lieux, scènes, lore, chronologie…), par univers ou par œuvre. Une étoile choisie éclaire ses liens et liste tout ce qui la touche ; glisser une étoile sur une autre les relie (on choisit la nature du lien) ; molette pour zoomer, glisser le fond pour se déplacer.",
+          "Des liens qui ont un sens : lié à, cite, apparaît dans, se passe à, allié, ennemi, famille, aime, appartient à, avant, après, inspiré de. Dans une fiche, chaque lien a sa nature, et les renvois disent « met en scène », « lieu de »…",
+          "@mentions : dans un texte de l'atelier, @ puis le début d'un nom propose les fiches ; la mention relie la fiche toute seule. Ctrl/⌘ + clic l'ouvre. Sur la station, la mention redevient du texte simple.",
+          "Chronologie (fiches datées, scènes et événements, avec leur lieu et leurs personnages) et Cohérence : personnage mort qui réapparaît après sa mort, alliés et ennemis à la fois, scène sans lieu, fiche reliée à rien."
+        ]
+      }
+    },
     {
       "v": "0.37",
       "date": "2026-11-19",

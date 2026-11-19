@@ -39,6 +39,8 @@ import { LabDialogHost } from "@/components/atelier/LabDialog";
 import Alexandrie from "@/components/atelier/Alexandrie";
 import JournalView from "@/components/atelier/JournalView";
 import PublishView from "@/components/atelier/PublishView";
+import NetworkView from "@/components/atelier/NetworkView";
+import { IoGitNetworkOutline } from "react-icons/io5";
 import { IoCloudUploadOutline as IoPubIcon } from "react-icons/io5";
 import { PublishHost, oeuvreOfCreation, oeuvreFromCreation } from "@/components/atelier/StationLink";
 import { getCreation } from "@/lib/api";
@@ -185,6 +187,7 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
           <Dock icon={<IoJournalOutline size={17} />} label="Journal de bord" sub="MES COULISSES PUBLIQUES" on={view.name === "journal"} onClick={() => go({ name: "journal" })} testid="atelier-nav-journal" />
           <Dock icon={<IoPubIcon size={17} />} label="Publication" sub="ATELIER → STATION" on={view.name === "publish"} onClick={() => go({ name: "publish" })} testid="atelier-nav-publish" />
+          <Dock icon={<IoGitNetworkOutline size={17} />} label="Réseau narratif" sub="QUI EST RELIÉ À QUOI" on={view.name === "network"} onClick={() => go({ name: "network" })} testid="atelier-nav-network" />
           <Dock icon={<IoBookOutline size={17} />} label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
           <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
           <Dock icon={<IoMoonOutline size={17} />} label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
@@ -221,6 +224,7 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "alexandrie" && <Alexandrie {...ctx} radio={radio} room={view.room} book={view.book} />}
           {view.name === "journal" && <JournalView key={view.edit || "j"} initialEdit={view.edit ?? null} />}
           {view.name === "publish" && <PublishView {...ctx} />}
+          {view.name === "network" && <NetworkView {...ctx} />}
           {view.name === "devlog" && <DevLogView at={at} />}
         </main>
       </div>
