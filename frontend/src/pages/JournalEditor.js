@@ -55,8 +55,10 @@ function CategoryManager({ cats, refetch }) {
   );
 }
 
-export default function JournalEditor() {
-  const { id } = useParams();
+// Page de la station (/journal/nouveau, /journal/:id/modifier) ou, dans l'atelier, avec `id` et `onDone` :
+// on reste alors dans l'atelier, « Retour » et « Enregistrer » ramènent à la liste.
+export default function JournalEditor({ id: idProp, onDone }) {
+  const params = useParams(); const id = idProp !== undefined ? idProp || undefined : params.id;
   const nav = useNavigate(); const qc = useQueryClient();
   const { sfx, isAdmin } = useApp();
   const [f, setF] = useState(blank); const [saving, setSaving] = useState(false); const [showCats, setShowCats] = useState(false);
@@ -77,16 +79,16 @@ export default function JournalEditor() {
       const r = id ? await updateJournalEntry(id, payload) : await createJournalEntry(payload);
       qc.invalidateQueries({ queryKey: ["journal"] }); qc.invalidateQueries({ queryKey: ["journal-entry", r.id] });
       toast.success(id ? "Entrée mise à jour" : f.published ? "Entrée publiée — les abonnés sont notifiés" : "Brouillon enregistré");
-      sfx("select"); nav(`/journal/${r.id}`);
+      sfx("select"); if (onDone) onDone(r); else nav(`/journal/${r.id}`);
     } catch (e) { toast.error(e?.response?.data?.detail || "Enregistrement impossible"); }
     setSaving(false);
   };
 
   return (
-    <div className="relative min-h-screen w-full jr-page" data-testid="journal-editor">
+    <div className={"relative w-full jr-page" + (onDone ? " jr-embed" : " min-h-screen")} data-testid="journal-editor">
       <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
         <div className="flex items-center justify-between gap-2 mb-8">
-          <button onClick={() => { sfx("back"); nav(id ? `/journal/${id}` : "/journal"); }} className="jr-btn" aria-label="Retour" data-testid="journal-editor-back"><IoArrowBack /></button>
+          <button onClick={() => { sfx("back"); if (onDone) onDone(null); else nav(id ? `/journal/${id}` : "/journal"); }} className="jr-btn" aria-label="Retour" data-testid="journal-editor-back"><IoArrowBack /></button>
           <button onClick={save} disabled={saving} className="jr-btn jr-btn-brand" data-testid="journal-save"><IoSaveOutline /> {saving ? "Enregistrement…" : id ? "Enregistrer" : "Publier"}</button>
         </div>
         <LabHead label="JOURNAL DE BORD" code={id ? "J-MOD" : "J-NEW"} title={id ? "Modifier l'entrée" : "Nouvelle entrée"} />

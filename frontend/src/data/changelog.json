@@ -1,6 +1,18 @@
 {
-  "version": "0.31",
+  "version": "0.32",
   "patches": [
+    {
+      "v": "0.32",
+      "date": "2026-11-19",
+      "title": "Le journal de bord dans l'atelier",
+      "groups": {
+        "Ajouté": [
+          "Atelier › Journal de bord (menu de l'atelier et lanceur sur téléphone) : toutes les entrées, brouillons compris, rangées comme leurs objets (livre, VHS, vinyle, cassette), avec leur état (publiée, brouillon, accueil) et un filtre Tout / Publiées / Brouillons.",
+          "On écrit et on modifie une entrée sans quitter l'atelier : l'éditeur du journal s'ouvre dedans, « Retour » et « Enregistrer » ramènent à la liste.",
+          "Clic droit (ou appui long, ou « ⋯ ») sur une entrée : Modifier, Lire / Écouter, Voir sur la station, Publier ou repasser en brouillon, Afficher sur l'accueil ou l'en retirer, Supprimer (avec confirmation)."
+        ]
+      }
+    },
     {
       "v": "0.31",
       "date": "2026-11-19",

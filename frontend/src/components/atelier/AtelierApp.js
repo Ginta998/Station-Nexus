@@ -37,6 +37,8 @@ import { useLabFx } from "@/components/atelier/labFx";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { LabDialogHost } from "@/components/atelier/LabDialog";
 import Alexandrie from "@/components/atelier/Alexandrie";
+import JournalView from "@/components/atelier/JournalView";
+import { IoJournalOutline } from "react-icons/io5";
 
 const Dock = ({ icon, label, sub, on, onClick, testid, color, kanji, badge, drop }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label} {...(drop ? itemDrop(drop) : {})}>
@@ -166,6 +168,7 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
           <Dock icon={<PiRabbit size={18} />} label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
+          <Dock icon={<IoJournalOutline size={17} />} label="Journal de bord" sub="MES COULISSES PUBLIQUES" on={view.name === "journal"} onClick={() => go({ name: "journal" })} testid="atelier-nav-journal" />
           <Dock icon={<IoBookOutline size={17} />} label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
           <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
           <Dock icon={<IoMoonOutline size={17} />} label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
@@ -200,6 +203,7 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
           {view.name === "radio" && <RadioView radio={radio} />}
           {view.name === "alexandrie" && <Alexandrie {...ctx} radio={radio} room={view.room} book={view.book} />}
+          {view.name === "journal" && <JournalView />}
           {view.name === "devlog" && <DevLogView at={at} />}
         </main>
       </div>
