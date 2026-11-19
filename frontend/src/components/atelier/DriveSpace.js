@@ -5,7 +5,8 @@ import { KINDS, imgSrc, isFolder, isOeuvre, fileType, mediaFromText } from "@/li
 import { templateHtml, templateMenuEntries, allTemplates, typeContent, typeMenuEntries } from "@/lib/templates";
 import ItemCard from "@/components/atelier/ItemCard";
 import { itemDrop, pressMenu, showMenu } from "@/components/atelier/ContextMenu";
-import { dropToFolder, itemMenu } from "@/components/atelier/itemActions";
+import { dropToFolder, itemMenu, canPublish } from "@/components/atelier/itemActions";
+import { askBatch } from "@/components/atelier/StationLink";
 import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
 import { archiveCodes, words, fmtDate } from "@/lib/archive";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
@@ -210,6 +211,7 @@ export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_i
         </>
       )}
       <BulkBar sel={sel} all={sortedItems.map((i) => i.id)}>
+        {picked().some(canPublish) && <button onClick={() => askBatch(sel.ids.filter((id) => { const i = at.items.find((x) => x.id === id); return i && canPublish(i); }))} data-testid="bulk-publish"><IoCloudUploadOutline size={14} /> Publier comme chapitres</button>}
         <button onClick={bulkMove} data-testid="bulk-move"><IoFolderOutline size={14} /> Déplacer</button>
         <button className="danger" onClick={bulkDelete} data-testid="bulk-delete"><IoTrashOutline size={14} /> Supprimer</button>
       </BulkBar>

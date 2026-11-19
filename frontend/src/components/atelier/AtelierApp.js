@@ -219,7 +219,7 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
           {view.name === "radio" && <RadioView radio={radio} />}
           {view.name === "alexandrie" && <Alexandrie {...ctx} radio={radio} room={view.room} book={view.book} />}
-          {view.name === "journal" && <JournalView />}
+          {view.name === "journal" && <JournalView key={view.edit || "j"} initialEdit={view.edit ?? null} />}
           {view.name === "publish" && <PublishView {...ctx} />}
           {view.name === "devlog" && <DevLogView at={at} />}
         </main>

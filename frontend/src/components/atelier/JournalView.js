@@ -19,10 +19,10 @@ import "@/components/atelier/journal.css";
 const FMT = { livre: "LIVRE", vhs: "VHS", vinyle: "VINYLE", cassette: "CASSETTE" };
 const dateFr = (d) => { try { return new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }); } catch { return d; } };
 
-export default function JournalView() {
+export default function JournalView({ initialEdit = null }) {
   const { sfx } = useApp();
   const nav = useNavigate(); const qc = useQueryClient();
-  const [edit, setEdit] = useState(null); // null = liste ; "" = nouvelle entrée ; id = modification
+  const [edit, setEdit] = useState(initialEdit); // null = liste ; "" = nouvelle entrée ; id = modification
   const [filter, setFilter] = useState("all");
   const [reading, setReading] = useState("");
   const [confirmDel, setConfirmDel] = useState("");
@@ -68,7 +68,7 @@ export default function JournalView() {
       <header className="at-head">
         <p className="at-eyebrow mono">// MES COULISSES PUBLIQUES</p>
         <h1>Journal de bord</h1>
-        <p className="at-sub">Ce que tu racontes aux visiteurs de ta station : avancées, making-of, enregistrements. Clic droit (appui long sur téléphone) sur une entrée pour la publier, la mettre à l'accueil ou la voir sur la station.</p>
+        <p className="at-sub">Ce que tu racontes aux visiteurs de ta station : avancées, making-of, enregistrements. Une entrée s'ouvre comme le public la voit, avec « Modifier » pour l'éditer. Clic droit (appui long sur téléphone) pour la publier, la mettre à l'accueil ou la voir sur la station.</p>
       </header>
       <div className="at-jr-bar">
         <div className="at-jr-tabs" role="tablist">
@@ -85,7 +85,7 @@ export default function JournalView() {
           {shown.map((e) => {
             const fmt = e.format || "livre"; const cat = catOf(e.category_id);
             return (
-              <article key={e.id} className={"at-jr-card" + (e.published ? "" : " draft")} role="button" tabIndex={0} onClick={() => { sfx("select"); setEdit(e.id); }} onKeyDown={(ev) => ev.key === "Enter" && setEdit(e.id)} data-testid={`atelier-journal-${e.id}`} {...pressMenu(() => menu(e))}>
+              <article key={e.id} className={"at-jr-card" + (e.published ? "" : " draft")} role="button" tabIndex={0} onClick={() => { sfx("select"); setReading(e.id); }} onKeyDown={(ev) => ev.key === "Enter" && setReading(e.id)} data-testid={`atelier-journal-${e.id}`} {...pressMenu(() => menu(e))}>
                 <span className="at-jr-obj">{fmt === "cassette" ? <Cassette title={e.tape_label || e.title} small img={e.cover} /> : <Face b={{ id: e.id, title: e.title, format: fmt, room: "lore" }} cover={e.cover ? mediaUrl(e.cover) : ""} />}</span>
                 <span className="at-jr-meta mono"><b>{FMT[fmt]}</b>{cat && <i>{cat.name}</i>}<span>{dateFr(e.date)}</span></span>
                 <h3>{e.title}</h3>
@@ -100,7 +100,7 @@ export default function JournalView() {
           })}
         </div>
       )}
-      {reading && <JournalOverlay id={reading} onClose={() => setReading("")} />}
+      {reading && <JournalOverlay id={reading} onClose={() => setReading("")} onEdit={() => { const id = reading; setReading(""); setEdit(id); }} />}
     </section>
   );
 }

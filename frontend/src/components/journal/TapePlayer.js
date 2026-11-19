@@ -20,7 +20,7 @@ import "@/components/journal/tape.css";
 */
 const mmss = (s) => { if (!isFinite(s)) return "--:--"; const m = Math.floor(s / 60); return `${String(m).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`; };
 
-export default function TapePlayer({ entry: saved, onClose }) {
+export default function TapePlayer({ entry: saved, onClose, onEditEntry }) {
   const { uiVolume = 0.5, muted, pauseReading, isAdmin } = useApp();
   const qc = useQueryClient();
   // modifier la cassette directement dessus (admin) : étiquette, voix, image, enregistrement
@@ -74,6 +74,7 @@ export default function TapePlayer({ entry: saved, onClose }) {
     <div className={"tp" + (on ? " on" : "") + (starting ? " starting" : "") + (hasText ? "" : " solo")} role="dialog" aria-label={`Cassette : ${e.title}`} data-testid="tape-player">
       {e.cover && <span className="tp-bgimg" style={{ backgroundImage: `url(${mediaUrl(e.cover)})` }} aria-hidden="true" />}
       <button className="tp-x" onClick={close} aria-label={edit ? "Annuler les modifications" : "Fermer"} data-testid="tape-close"><IoClose size={18} /></button>
+      {onEditEntry && !edit && <button className="tp-x tp-ed-btn tp-ed-full" onClick={() => { a.current?.pause(); stopFx(); onEditEntry(); }} title="Modifier l'entrée du journal" data-testid="tape-edit-entry"><span>Modifier l'entrée</span></button>}
       {isAdmin && !edit && <button className="tp-x tp-ed-btn" onClick={() => { pause(); setDraft(base); setEdit(true); }} aria-label="Modifier la cassette" title="Modifier la cassette" data-testid="tape-edit"><IoCreateOutline size={18} /></button>}
       <div className="tp-deck">
         <div className={"tp-cassw" + (edit ? " editing" : "")} onContextMenu={isAdmin && !edit ? (ev) => { ev.preventDefault(); pause(); setDraft(base); setEdit(true); } : undefined}><Cassette title={label} sub={[e.tape_voice && `Voix : ${e.tape_voice}`, e.date && new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })].filter(Boolean).join(" · ")} p={p} spinning={on && !starting} starting={starting} img={e.cover} /></div>

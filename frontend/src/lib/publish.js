@@ -156,3 +156,26 @@ export async function republish(at, it, p) {
     : await publishChapter(it, { creation_id: p.creation_id, mode: "replace", chapter_id: p.chapter_id, title: p.title || it.title });
   return at.saveItem({ ...it, fields: { ...(it.fields || {}), [p.target === "journal" ? "published_j" : "published"]: np } });
 }
+
+// ---- « écrit sur la station » → ramené dans l'atelier comme brouillon déjà relié (republier mettra à jour au même endroit)
+export function linkFromChapter(ch, creation_id, index) {
+  const html = chapterHtml(ch);
+  return { html, link: { target: "chapter", creation_id, chapter_id: ch.id, index, unit_word: "chapitre", title: ch.title, date: nowIso(), local_hash: hashOf(html), remote_hash: remoteOfChapter(ch) } };
+}
+export function linkFromEntry(e) {
+  const html = blocksToHtml(e.blocks || []);
+  return { html, link: { target: "journal", entry_id: e.id, title: e.title, creation_id: e.creation_id || "", category_id: e.category_id || "", format: e.format || "livre", published: !!e.published, show_home: !!e.show_home, date: nowIso(), local_hash: hashOf(html), remote_hash: remoteOfEntry(e) } };
+}
+
+// ---- un lot : plusieurs documents deviennent des chapitres, dans l'ordre (ceux déjà publiés dans cette création sont mis à jour sur place)
+export async function publishBatch(at, items, creation_id, onStep) {
+  const done = [];
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i]; const prev = it.fields?.published;
+    const same = prev && prev.creation_id === creation_id;
+    const p = await publishChapter(it, same ? { creation_id, mode: "replace", chapter_id: prev.chapter_id, title: prev.title || it.title } : { creation_id, mode: "new", title: it.title });
+    await at.saveItem({ ...it, fields: { ...(it.fields || {}), published: p } });
+    done.push(p); onStep?.(i + 1);
+  }
+  return done;
+}

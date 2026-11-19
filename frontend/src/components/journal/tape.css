@@ -262,3 +262,5 @@
 .tp.on .tp-cassw .cs{transform:rotateX(18deg) rotateZ(-1deg) translateY(-1px)}
 .tp-cassw.editing .cs{transform:rotateX(10deg) rotateZ(-1deg);animation:none}
 @media (max-width:860px){.tp{padding-top:max(70px,calc(env(safe-area-inset-top) + 62px))!important}}
+/* atelier : « Modifier l'entrée » à côté du crayon de la cassette */
+.tp-ed-full{right:max(116px,calc(env(safe-area-inset-right) + 116px))!important;width:auto!important;padding:0 14px!important;font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase}

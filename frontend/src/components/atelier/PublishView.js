@@ -2,12 +2,14 @@ import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { IoCloudUploadOutline, IoJournalOutline, IoEyeOutline, IoOpenOutline, IoRefresh, IoDownloadOutline, IoLinkOutline } from "react-icons/io5";
-import { getCreation, getJournalEntry, posterUrl } from "@/lib/api";
+import { getCreation, getJournalEntry, posterUrl, listJournal } from "@/lib/api";
+import ChapterQuickEdit from "@/components/nexus/ChapterQuickEdit";
+import JournalOverlay from "@/components/journal/JournalOverlay";
 import { isOeuvre, stripHtml } from "@/lib/atelier";
 import { pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 import { askPublish, goStation } from "@/components/atelier/StationLink";
 import { canPublish } from "@/components/atelier/itemActions";
-import { syncState, SYNC_LABEL, republish, pullRemote, stationUrl } from "@/lib/publish";
+import { syncState, SYNC_LABEL, republish, pullRemote, stationUrl, linkFromChapter, linkFromEntry } from "@/lib/publish";
 import "@/components/atelier/station.css";
 
 /*
@@ -65,6 +67,29 @@ export default function PublishView({ at, go, open }) {
     { id: "forget", label: "Oublier le lien (garder en ligne)", danger: true, onClick: () => forget(x) },
   ] });
   const cTitle = (id) => R.c[id]?.title || "";
+
+  // ---- écrit directement sur la station (pas parti de l'atelier) : modifiable ici sans copie, ou ramené dans l'atelier si on veut
+  const { data: jall = [] } = useQuery({ queryKey: ["journal", "atelier"], queryFn: () => listJournal({ limit: 500 }) });
+  const [edCh, setEdCh] = useState(null); const [readJ, setReadJ] = useState(""); const [allJ, setAllJ] = useState(false);
+  const chIds = new Set(pubs.filter((x) => x.p.target === "chapter").map((x) => x.p.chapter_id));
+  const jIds = new Set(pubs.filter((x) => x.p.target === "journal").map((x) => x.p.entry_id));
+  const stCh = linked.flatMap((o) => (R.c[o.fields.creation_id]?.chapters || []).map((ch, i) => ({ o, cid: o.fields.creation_id, ch, i })).filter((x) => !chIds.has(x.ch.id)));
+  const stJ = jall.filter((e) => !jIds.has(e.id));
+  const bringCh = (x) => { const { html, link } = linkFromChapter(x.ch, x.cid, x.i); return at.createItem({ kind: "document", title: x.ch.title || `Chapitre ${x.i + 1}`, universe_id: x.o.universe_id || null, content: html, fields: { oeuvre_id: x.o.id, published: link } }).then(() => toast.success("Ramené dans l'atelier, déjà relié au chapitre")); };
+  const bringJ = async (e) => { const full = await getJournalEntry(e.id); const { html, link } = linkFromEntry(full); const o = oeuvres.find((w) => w.fields?.creation_id && w.fields.creation_id === full.creation_id);
+    await at.createItem({ kind: "document", title: full.title, universe_id: o?.universe_id || null, image: full.cover || "", content: html, fields: { ...(o ? { oeuvre_id: o.id } : {}), published_j: link } }); toast.success(o ? `Ramenée dans l'œuvre « ${o.title} », déjà reliée` : "Ramenée dans l'Inbox de l'atelier, déjà reliée"); };
+  const chMenu = (x) => ({ title: x.ch.title || `Chapitre ${x.i + 1}`, entries: [
+    { id: "edit", label: "Modifier le chapitre", icon: <IoOpenOutline size={14} />, onClick: () => setEdCh({ cid: x.cid, index: x.i }) },
+    { id: "see", label: "Voir sur la station", icon: <IoEyeOutline size={14} />, onClick: () => goStation(`/oeuvre/${x.cid}`) },
+    { id: "bring", label: "Ramener dans l'atelier (brouillon relié)", icon: <IoDownloadOutline size={14} />, onClick: () => bringCh(x) },
+  ] });
+  const jMenu = (e) => ({ title: e.title, entries: [
+    { id: "read", label: "Consulter", icon: <IoEyeOutline size={14} />, onClick: () => setReadJ(e.id) },
+    { id: "edit", label: "Modifier", icon: <IoOpenOutline size={14} />, onClick: () => go({ name: "journal", edit: e.id }) },
+    { id: "see", label: "Voir sur la station", icon: <IoEyeOutline size={14} />, onClick: () => goStation(`/journal/${e.id}`) },
+    { id: "bring", label: "Ramener dans l'atelier (brouillon relié)", icon: <IoDownloadOutline size={14} />, onClick: () => bringJ(e) },
+  ] });
+  const MoreBtn = ({ m }) => <button className="pb-more" aria-label="Plus d'actions" onClick={(ev) => { const r = ev.currentTarget.getBoundingClientRect(); showMenu(r.left, r.bottom + 4, m.entries, m.title); }}>⋯</button>;
 
   const Row = ({ x, actions = true }) => (
     <div className={"pb-row s-" + x.st} {...pressMenu(() => rowMenu(x))} data-testid={`pub-row-${x.it.id}-${x.p.target}`}>
@@ -157,6 +182,39 @@ export default function PublishView({ at, go, open }) {
           <div className="pb-list">{jrows.map((x) => <Row key={x.it.id + "j"} x={x} actions={!todo.includes(x)} />)}</div>
         </div>}
       </>}
+      {(stCh.length > 0 || stJ.length > 0) && <>
+        <p className="ar-sec mono"><b>·</b> ÉCRIT SUR LA STATION <i>· {stCh.length} chapitre{stCh.length > 1 ? "s" : ""}, {stJ.length} entrée{stJ.length > 1 ? "s" : ""} du journal · modifiables ici, sans copie</i></p>
+        {linked.filter((o) => stCh.some((x) => x.o.id === o.id)).map((o) => (
+          <div key={o.id} className="pb-group">
+            <p className="pb-gt mono">{(cTitle(o.fields.creation_id) || o.title).toUpperCase()}</p>
+            <div className="pb-list">{stCh.filter((x) => x.o.id === o.id).map((x) => (
+              <div key={x.ch.id || x.i} className="pb-row" {...pressMenu(() => chMenu(x))} data-testid={`pub-st-ch-${x.i}`}>
+                <button className="pb-main" onClick={() => setEdCh({ cid: x.cid, index: x.i })}>
+                  <span className="pb-ic mono" style={{ fontSize: 10.5 }}>{String(x.i + 1).padStart(2, "0")}</span>
+                  <span className="pb-txt"><b>{x.ch.title || `Chapitre ${x.i + 1}`}</b><small className="mono">CH. {x.i + 1} · ÉCRIT SUR LA STATION</small></span>
+                </button>
+                <span className="pb-acts"><MoreBtn m={chMenu(x)} /></span>
+              </div>
+            ))}</div>
+          </div>
+        ))}
+        {stJ.length > 0 && <div className="pb-group">
+          <p className="pb-gt mono">JOURNAL DE BORD</p>
+          <div className="pb-list">{(allJ ? stJ : stJ.slice(0, 8)).map((e) => (
+            <div key={e.id} className="pb-row" {...pressMenu(() => jMenu(e))} data-testid={`pub-st-j-${e.id}`}>
+              <button className="pb-main" onClick={() => setReadJ(e.id)}>
+                <span className="pb-ic"><IoJournalOutline size={15} /></span>
+                <span className="pb-txt"><b>{e.title}</b><small className="mono">{(e.format || "livre").toUpperCase()} · {new Date(e.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}</small></span>
+                <em className={"pb-st mono " + (e.published ? "s-ok" : "")}>{e.published ? "Publiée" : "Brouillon"}</em>
+              </button>
+              <span className="pb-acts"><MoreBtn m={jMenu(e)} /></span>
+            </div>
+          ))}</div>
+          {stJ.length > 8 && <button className="at-link pb-all" onClick={() => setAllJ(!allJ)}>{allJ ? "Réduire" : `Afficher les ${stJ.length} entrées`}</button>}
+        </div>}
+      </>}
+      {edCh && <ChapterQuickEdit creationId={edCh.cid} unitKey="chapters" index={edCh.index} onClose={() => setEdCh(null)} onSaved={reload} />}
+      {readJ && <JournalOverlay id={readJ} onClose={() => setReadJ("")} onEdit={() => { const id = readJ; setReadJ(""); go({ name: "journal", edit: id }); }} />}
     </section>
   );
 }

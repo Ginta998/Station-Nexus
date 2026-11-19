@@ -1,6 +1,20 @@
 {
-  "version": "0.34",
+  "version": "0.35",
   "patches": [
+    {
+      "v": "0.35",
+      "date": "2026-11-19",
+      "title": "Consulter d'abord, sortir un lot, tout voir",
+      "groups": {
+        "Ajouté": [
+          "Sortir un lot : dans le Drive, « Sélectionner » plusieurs documents puis « Publier comme chapitres ». La fenêtre montre les numéros (ch. 8, 9, 10…), l'ordre se change avec ↑↓, tout part d'un coup ; ceux déjà publiés dans la création sont mis à jour sur place.",
+          "Panneau Publication › « Écrit sur la station » : les chapitres des œuvres reliées et les entrées du journal qui ne viennent pas de l'atelier. On les consulte et on les modifie d'ici sans copie, ou on les « ramène dans l'atelier » comme brouillon déjà relié."
+        ],
+        "Changé": [
+          "Atelier › Journal de bord : une entrée existante s'ouvre comme le public la voit (livre, VHS, vinyle, cassette), « Modifier » passe en édition. Une nouvelle entrée s'ouvre toujours en écriture."
+        ]
+      }
+    },
     {
       "v": "0.34",
       "date": "2026-11-19",

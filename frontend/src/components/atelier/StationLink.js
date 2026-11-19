@@ -9,7 +9,7 @@ import { isOeuvre, isFolder, stripHtml } from "@/lib/atelier";
 import { pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 import ChapterQuickEdit, { deleteUnit } from "@/components/nexus/ChapterQuickEdit";
-import { publishChapter, publishJournal, publishedOf, publishedLabel, stationUrl, fetchRemote, syncState, pullRemote, SYNC_LABEL } from "@/lib/publish";
+import { publishBatch, publishChapter, publishJournal, publishedOf, publishedLabel, stationUrl, fetchRemote, syncState, pullRemote, SYNC_LABEL } from "@/lib/publish";
 import "@/components/atelier/station.css";
 
 /*
@@ -125,14 +125,17 @@ export function OeuvreStation({ at, o }) {
 
 // ---------------------------------------------------------------- Publier un élément (fenêtre)
 export const askPublish = (id, dest) => window.dispatchEvent(new CustomEvent("at-publish", { detail: { id, dest } }));
+export const askBatch = (ids) => window.dispatchEvent(new CustomEvent("at-publish-batch", { detail: { ids } }));
 export const goStation = (url) => window.dispatchEvent(new CustomEvent("at-station-go", { detail: { url } }));
 export function PublishHost({ at }) {
-  const [req, setReq] = useState(null); const nav = useNavigate();
+  const [req, setReq] = useState(null); const [batch, setBatch] = useState(null); const nav = useNavigate();
   useEffect(() => {
+    const ob = (e) => setBatch(e.detail?.ids?.length ? e.detail.ids : null); window.addEventListener("at-publish-batch", ob);
     const on = (e) => setReq(e.detail?.id ? e.detail : null); const go = (e) => e.detail?.url && nav(e.detail.url);
     window.addEventListener("at-publish", on); window.addEventListener("at-station-go", go);
-    return () => { window.removeEventListener("at-publish", on); window.removeEventListener("at-station-go", go); };
+    return () => { window.removeEventListener("at-publish-batch", ob); window.removeEventListener("at-publish", on); window.removeEventListener("at-station-go", go); };
   }, [nav]);
+  if (batch) return <BatchDialog at={at} ids={batch} onClose={() => setBatch(null)} />;
   const it = req && at.items.find((x) => x.id === req.id);
   if (!it) return null;
   return <PublishDialog key={req.id + (req.dest || "")} at={at} it={it} initialDest={req.dest} onClose={() => setReq(null)} />;
@@ -255,4 +258,54 @@ async function publishedFolder(at, it) {
 export function useCreationsWithoutOeuvre(at) {
   const { data: creations = [] } = useQuery({ queryKey: ["creations", "all"], queryFn: () => listCreations() });
   return useMemo(() => creations.filter((c) => !oeuvreOfCreation(at, c.id)), [creations, at.items]); // eslint-disable-line react-hooks/exhaustive-deps
+}
+
+// ---------------------------------------------------------------- Sortir un lot : plusieurs documents → chapitres, dans l'ordre
+function BatchDialog({ at, ids, onClose }) {
+  const nav = useNavigate(); const qc = useQueryClient();
+  const [order, setOrder] = useState(() => ids.map((id) => at.items.find((x) => x.id === id)).filter((it) => it && !isOeuvre(it) && !isFolder(it) && it.kind !== "file").map((it) => it.id));
+  const items = order.map((id) => at.items.find((x) => x.id === id)).filter(Boolean);
+  const { data: creations = [] } = useQuery({ queryKey: ["creations", "all"], queryFn: () => listCreations() });
+  const [cid, setCid] = useState(() => (items.map((it) => creationOfItem(at, it)).find(Boolean)) || "");
+  const { data: c } = useQuery({ queryKey: ["creation-atelier", cid], queryFn: () => getCreation(cid), enabled: !!cid });
+  const [step, setStep] = useState(-1);
+  const n0 = (c?.chapters || []).length;
+  let k = 0; const plan = items.map((it) => { const p = it.fields?.published; if (p && p.creation_id === cid) return { it, upd: true, n: (p.index ?? 0) + 1 }; k += 1; return { it, upd: false, n: n0 + k }; });
+  const move = (i, d) => setOrder((o) => { const a = [...o]; const j = i + d; if (j < 0 || j >= a.length) return a; [a[i], a[j]] = [a[j], a[i]]; return a; });
+  const empty = items.filter((it) => !stripHtml(it.content || "").trim());
+  const go = async () => {
+    if (!cid) return toast.error("Choisis la création"); setStep(0);
+    try { await publishBatch(at, items, cid, setStep); qc.invalidateQueries({ queryKey: ["creation-atelier"] }); qc.invalidateQueries({ queryKey: ["creations"] }); qc.invalidateQueries({ queryKey: ["pub-panel"] });
+      toast.success(`${items.length} chapitre${items.length > 1 ? "s" : ""} en ligne`, { action: { label: "Voir", onClick: () => nav(`/oeuvre/${cid}`) } }); onClose(); }
+    catch (e) { toast.error(e?.response?.data?.detail || "Le lot s'est arrêté en route : ce qui est parti reste en ligne"); setStep(-1); }
+  };
+  return createPortal(
+    <div className="st-dlg-wrap" onClick={step < 0 ? onClose : undefined} data-testid="batch-dialog">
+      <div className="st-dlg" role="dialog" aria-label="Sortir un lot" onClick={(e) => e.stopPropagation()}>
+        <header><p className="mono st-k">SORTIR UN LOT</p><h2>{items.length} document{items.length > 1 ? "s" : ""} → chapitres</h2><button className="at-icon" onClick={onClose} aria-label="Fermer" disabled={step >= 0}><IoClose size={17} /></button></header>
+        <label>Création<select value={cid} onChange={(e) => setCid(e.target.value)} disabled={step >= 0} data-testid="batch-creation">
+          <option value="">Choisir…</option>
+          {creations.map((x) => <option key={x.id} value={x.id}>{x.title}</option>)}
+        </select></label>
+        {cid && <p className="st-note">{n0} chapitre{n0 > 1 ? "s" : ""} déjà en ligne. Les nouveaux s'ajoutent à la suite, dans l'ordre ci-dessous (↑↓ pour le changer). Ceux déjà publiés dans cette création sont mis à jour sur place.</p>}
+        <ol className="st-batch">
+          {plan.map(({ it, upd, n }, i) => (
+            <li key={it.id} className={step > i ? "done" : step === i ? "cur" : ""}>
+              <span className="mono n">{cid ? `CH. ${n}` : "—"}</span>
+              <b>{it.title || "Sans titre"}</b>
+              {upd && <small className="mono">MISE À JOUR</small>}
+              {!stripHtml(it.content || "").trim() && <small className="mono warn">VIDE</small>}
+              <span className="st-ord"><button onClick={() => move(i, -1)} disabled={i === 0 || step >= 0} aria-label="Monter">↑</button><button onClick={() => move(i, 1)} disabled={i === plan.length - 1 || step >= 0} aria-label="Descendre">↓</button></span>
+            </li>
+          ))}
+        </ol>
+        {empty.length > 0 && <p className="st-warn">{empty.length} document{empty.length > 1 ? "s sont vides" : " est vide"} : {empty.length > 1 ? "ils partiront" : "il partira"} comme chapitre{empty.length > 1 ? "s" : ""} vide{empty.length > 1 ? "s" : ""}.</p>}
+        <footer>
+          <button className="at-btn ghost" onClick={onClose} disabled={step >= 0}>Annuler</button>
+          <button className="at-btn" onClick={go} disabled={step >= 0 || !cid || !items.length} data-testid="batch-go"><IoCloudUploadOutline size={15} /> {step >= 0 ? `Publication… ${step}/${items.length}` : `Publier ${items.length} chapitre${items.length > 1 ? "s" : ""}`}</button>
+        </footer>
+      </div>
+    </div>,
+    document.querySelector(".at-root") || document.body
+  );
 }
