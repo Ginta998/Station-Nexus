@@ -171,6 +171,7 @@ class Creation(BaseModel):
     button_size: str = "md"          # md | lg — size of the main action buttons
     world_style: Optional[str] = ""
     reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
+    object_format: Optional[str] = ""  # objet sur les étagères : livre, vhs, vinyle ("" = selon l'œuvre)
     reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
     units_cols: Optional[int] = 0      # vignettes de chapitres par ligne sur ordinateur (0 = automatique, 1 à 5)
     units_cols_phone: Optional[int] = 0  # vignettes par ligne sur téléphone (0 = automatique, 1 à 3)
@@ -230,6 +231,7 @@ class CreationInput(BaseModel):
     # Expérience Nexus : ambiance du monde de l'œuvre (cinema, vhs, arcade, manga, vinyle, roman ; vide = automatique)
     world_style: Optional[str] = ""
     reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
+    object_format: Optional[str] = ""  # objet sur les étagères : livre, vhs, vinyle ("" = selon l'œuvre)
     reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
     units_cols: Optional[int] = 0      # vignettes de chapitres par ligne sur ordinateur (0 = automatique, 1 à 5)
     units_cols_phone: Optional[int] = 0  # vignettes par ligne sur téléphone (0 = automatique, 1 à 3)

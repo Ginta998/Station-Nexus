@@ -14,7 +14,7 @@ import "@/components/nexus/nexus.css";
 
 // L'objet qui porte une œuvre : un livre pour ce qui se lit, une cassette pour ce qui se regarde ou se joue, un vinyle pour ce qui s'écoute.
 export const fmtOfCreation = (it, catLabel = "") => {
-  if (["livre", "vhs", "vinyle"].includes(it.reader_format)) return it.reader_format; // choisi dans l'éditeur
+  if (["livre", "vhs", "vinyle"].includes(it.object_format)) return it.object_format; // choisi dans l'éditeur
   if (/musi|son|album|audio|disque|ost/i.test(`${it.category} ${catLabel}`)) return "vinyle";
   if (["episodes", "film", "game"].includes(it.launch_type)) return "vhs";
   return "livre";

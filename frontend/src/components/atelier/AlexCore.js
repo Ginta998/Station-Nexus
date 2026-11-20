@@ -42,9 +42,12 @@ function itemToBook(it) {
   try { return itemToBookRaw(it); } catch (_) { return { id: "item:" + it.id, itemId: it.id, mine: true, title: String(it.title || "Sans titre"), sub: "", room: "atelier", type: "recit", about: "", cote: "PERS.", chapters: [{ title: "", blocks: [{ t: "p", x: "Ce livre n'a pas pu être lu. Ouvre-le pour le corriger." }] }], words: 0, links: [] }; }
 }
 // Texte d'un nœud avec l'italique gardé (*mot*)
-const nodeText = (n) => [...n.childNodes].map((c) => (c.nodeType === 3 ? c.textContent : /^(EM|I)$/.test(c.nodeName) ? `*${c.textContent}*` : /^(STRONG|B)$/.test(c.nodeName) ? `**${c.textContent}**` : c.nodeName === "BR" ? " " : nodeText(c))).join("").replace(/\s+/g, " ").trim();
+// gras / italique aussi quand ils viennent d'un style (texte collé), retours à la ligne gardés
+const isB = (c) => /^(STRONG|B)$/.test(c.nodeName) || Number(c.style?.fontWeight) >= 600 || c.style?.fontWeight === "bold";
+const isI = (c) => /^(EM|I)$/.test(c.nodeName) || c.style?.fontStyle === "italic";
+const nodeText = (n) => [...n.childNodes].map((c) => (c.nodeType === 3 ? c.textContent.replace(/\s+/g, " ") : c.nodeName === "BR" ? "\n" : isB(c) ? `**${c.textContent.trim()}**` : isI(c) ? `*${c.textContent.trim()}*` : c.nodeType === 1 ? nodeText(c) : "")).join("").replace(/\s+/g, " ").trim();
 const YT_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/;
-function itemToBookRaw(it) {
+function itemToBookRaw(it, opt = {}) {
   const doc = new DOMParser().parseFromString(`<div>${it.content || ""}</div>`, "text/html").body.firstChild;
   const chapters = []; let cur = { title: "", blocks: [] };
   const newCh = (t) => { if (cur.blocks.length || cur.title) chapters.push(cur); cur = { title: t, blocks: [] }; };
@@ -63,7 +66,10 @@ function itemToBookRaw(it) {
     if (n.nodeType === 1 && tag === "FIGURE" && (n.querySelectorAll?.("img").length || 0) > 1) { const cap = n.querySelector("figcaption")?.textContent?.trim() || ""; [...n.querySelectorAll("img")].forEach((im, k, all) => cur.blocks.push({ t: "img", src: im.getAttribute("src"), cap: k === all.length - 1 ? cap : "" })); return; }
     const img = n.nodeType === 1 && (tag === "IMG" ? n : n.querySelector?.("img"));
     if (img && (tag === "FIGURE" || tag === "IMG" || !txt)) { const [cap, credit] = (n.querySelector?.("figcaption")?.textContent || img.alt || "").split(" | ").map((x) => x.trim()); cur.blocks.push({ t: "img", src: img.getAttribute("src"), cap, credit }); return; }
-    if (!txt) return;
+    // une ligne vide voulue (espacement) : gardée dans les textes de la station
+    if (!txt) { if (opt.keep && n.nodeType === 1 && cur.blocks.length && cur.blocks[cur.blocks.length - 1].t !== "sp") cur.blocks.push({ t: "sp" }); return; }
+    const al = opt.keep && n.nodeType === 1 && /^(center|right)$/.test(n.style?.textAlign || n.getAttribute?.("align") || "") ? (n.style?.textAlign || n.getAttribute("align")) : "";
+    const whole = opt.keep && n.nodeType === 1 && (isB(n) || (n.querySelector?.("strong,b") && n.querySelector("strong,b").textContent.trim() === txt)) ? "b" : "";
     if (!/^H[1-4]$/.test(tag)) {
       const a = n.nodeType === 1 ? [...(n.querySelectorAll?.("a[href]") || [])].find((x) => YT_RE.test(x.getAttribute("href") || "")) : null;
       const yt = (a && (a.getAttribute("href") || "").match(YT_RE)) || txt.match(YT_RE);
@@ -76,13 +82,14 @@ function itemToBookRaw(it) {
       }
     }
     if (/^H[12]$/.test(tag)) { newCh(txt); return; }
-    if (tag === "H3" || tag === "H4") { cur.blocks.push({ t: "h", x: nodeText(n) }); return; }
+    if (tag === "H3" || tag === "H4") { cur.blocks.push({ t: "h", x: nodeText(n), al }); return; }
     if (tag === "BLOCKQUOTE") { const ps = [...n.querySelectorAll("p")].map(nodeText).filter(Boolean); cur.blocks.push(ps.length > 1 ? { t: "q", x: ps.slice(0, -1).join(" "), by: ps[ps.length - 1] } : { t: "q", x: nodeText(n) }); return; }
     // Une phrase toute en gras, courte : un titre de chapitre. Un début en gras suivi de « : » : un encadré.
     const strong = n.nodeType === 1 && n.querySelector?.("strong,b");
-    if (strong && strong.textContent.trim() === txt && txt.length < 90) { newCh(txt.replace(/[:.]\s*$/, "")); return; }
-    if (strong && txt.startsWith(strong.textContent.trim()) && /:\s*$/.test(strong.textContent.trim())) { cur.blocks.push({ t: "box", label: strong.textContent.trim().replace(/\s*:\s*$/, "").toUpperCase(), x: nodeText(n).replace(/^\*\*[^*]*\*\*\s*/, "").trim() }); return; }
-    cur.blocks.push({ t: "p", x: n.nodeType === 1 ? nodeText(n) : txt });
+    if (!opt.keep && strong && strong.textContent.trim() === txt && txt.length < 90) { newCh(txt.replace(/[:.]\s*$/, "")); return; }
+    if (!opt.keep && strong && txt.startsWith(strong.textContent.trim()) && /:\s*$/.test(strong.textContent.trim())) { cur.blocks.push({ t: "box", label: strong.textContent.trim().replace(/\s*:\s*$/, "").toUpperCase(), x: nodeText(n).replace(/^\*\*[^*]*\*\*\s*/, "").trim() }); return; }
+    const x = (n.nodeType === 1 ? nodeText(n) : txt).trim();
+    cur.blocks.push({ t: "p", x: whole ? x.replace(/^\*\*([\s\S]*)\*\*$/, "$1") : x, al, w: whole, it: opt.keep && n.nodeType === 1 && isI(n) ? 1 : 0 });
   }
   if (cur.blocks.length || cur.title) chapters.push(cur);
   const a = it.fields?.alexandrie || {};
@@ -92,7 +99,7 @@ function itemToBookRaw(it) {
 // Ses propres titres deviennent des intertitres : le chapitre reste un seul chapitre du livre.
 export function htmlToAlexBlocks(html) {
   let chs = [];
-  try { chs = itemToBookRaw({ id: "x", title: "", content: html || "" }).chapters; } catch (_) { chs = []; }
+  try { chs = itemToBookRaw({ id: "x", title: "", content: html || "" }, { keep: true }).chapters; } catch (_) { chs = []; }
   return chs.flatMap((c, k) => [...(c.title && (k > 0 || c.blocks.length) ? [{ t: "h", x: c.title }] : []), ...c.blocks.filter((b) => !(b.t === "p" && /^Ce livre est encore vide/.test(b.x)))]);
 }
 // Livre de la bibliothèque → document de l'éditeur (pour le modifier avec le même éditeur que tes livres)
@@ -719,13 +726,15 @@ export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, 
               <section className="ax-ch" key={i} data-ch={i}>
                 {c.title && <header><span className="mono">{fmt === "vinyle" ? track(i) : String(i + 1).padStart(2, "0")}</span><h2>{c.title}</h2></header>}
                 {c.blocks.map((b, j) => b.t === "q" ? <blockquote key={j} data-si={b.si}><p>{inline(b.x)}</p>{b.by && <cite>{b.by}</cite>}</blockquote>
-                  : b.t === "h" ? <h3 key={j} data-si={b.si}>{inline(b.x)}</h3>
+                  : b.t === "h" ? <h3 key={j} data-si={b.si} style={b.al ? { textAlign: b.al } : undefined}>{inline(b.x)}</h3>
+                  : b.t === "sp" ? <p key={j} className="ax-sp" aria-hidden="true">{"\u00a0"}</p>
                   : b.t === "img" ? (plan?.get(b.si)?.hide ? null : <Fig key={j} b={b} si={b.si} />)
                   : b.t === "yt" ? <YtFig key={j} b={b} si={b.si} onSwap={swapS} onRemove={removeS} />
                   : b.t === "art" ? <ArtFig key={j} b={b} si={b.si} term={artTerm} pick={plan ? plan.get(b.si) || null : undefined} />
                   : b.t === "box" ? <aside className="ax-box" key={j} data-si={b.si}><b className="mono">{b.label || "À RETENIR"}</b><p>{inline(b.x)}</p></aside>
                   : b.t === "mus" ? <p key={j} data-si={b.si} className="ax-cue-p"><button type="button" className="ax-cue" data-url={b.url} onClick={() => cueR.current?.(b.url, b.x)} data-testid="alex-cue"><IoMusicalNotes size={14} /> <span>{b.x}</span></button></p>
-                  : <p key={j} data-si={b.si} className={j === 0 && c.title ? "first" : ""}>{inline(b.x)}</p>)}
+                  : <p key={j} data-si={b.si} className={[j === 0 && c.title ? "first" : "", b.al || b.x.includes("\n") ? "ax-al" : ""].join(" ").trim() || undefined}
+                      style={b.al || b.w || b.it ? { textAlign: b.al || undefined, fontWeight: b.w ? 700 : undefined, fontStyle: b.it ? "italic" : undefined } : undefined}>{inline(b.x)}</p>)}
               </section>
             ))}
             {(book.links || []).length > 0 && (

@@ -710,3 +710,8 @@ body.ax-grabbing,body.ax-grabbing *{cursor:grabbing!important;user-select:none!i
 .ax-reader{overscroll-behavior:contain}
 body:has(.ax-reader) .at-main{overflow:hidden!important}
 @media (max-width:900px){.ax-book{contain:layout paint;isolation:isolate}.ax-flow{backface-visibility:hidden}}
+
+/* Mise en page de l'auteur gardée : centrage, lignes, espaces */
+.ax-flow p.ax-al{text-indent:0!important;white-space:pre-line;hyphens:manual}
+.ax-flow p.ax-al[style*="center"],.ax-flow p.ax-al[style*="right"]{text-align-last:auto}
+.ax-flow p.ax-sp{text-indent:0;margin:0;line-height:1}
