@@ -155,6 +155,32 @@ def split_by_headings(html: str, fallback_title: str):
     return sections
 
 
+
+async def yt_search_core(q: str):
+    import httpx
+    import json as _json
+    async with httpx.AsyncClient(timeout=10, headers={"Accept-Language": "fr-FR,fr;q=0.9", "User-Agent": "Mozilla/5.0"}) as c:
+        html = (await c.get("https://www.youtube.com/results", params={"search_query": q[:120]})).text
+    m = re.search(r"var ytInitialData = (\{.*?\});</script>", html)
+    out = []
+    if m:
+        def walk(o):
+            if isinstance(o, dict):
+                v = o.get("videoRenderer")
+                if v and v.get("videoId"):
+                    out.append({"id": v["videoId"], "title": "".join(x.get("text", "") for x in v.get("title", {}).get("runs", [])),
+                                "author": "".join(x.get("text", "") for x in v.get("ownerText", {}).get("runs", [])),
+                                "length": v.get("lengthText", {}).get("simpleText", ""), "views": v.get("shortViewCountText", {}).get("simpleText", ""),
+                                "date": v.get("publishedTimeText", {}).get("simpleText", "")})
+                for x in o.values():
+                    walk(x)
+            elif isinstance(o, list):
+                for x in o:
+                    walk(x)
+        walk(_json.loads(m.group(1)))
+    return out[:24]
+
+
 def build_public_files_router(db, storage_get) -> APIRouter:
     r = APIRouter(prefix="/atelier-files")
 
@@ -254,28 +280,7 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
 
     @r.get("/yt-search")
     async def yt_search(q: str):
-        import httpx
-        import json as _json
-        async with httpx.AsyncClient(timeout=10, headers={"Accept-Language": "fr-FR,fr;q=0.9", "User-Agent": "Mozilla/5.0"}) as c:
-            html = (await c.get("https://www.youtube.com/results", params={"search_query": q[:120]})).text
-        m = re.search(r"var ytInitialData = (\{.*?\});</script>", html)
-        out = []
-        if m:
-            def walk(o):
-                if isinstance(o, dict):
-                    v = o.get("videoRenderer")
-                    if v and v.get("videoId"):
-                        out.append({"id": v["videoId"], "title": "".join(x.get("text", "") for x in v.get("title", {}).get("runs", [])),
-                                    "author": "".join(x.get("text", "") for x in v.get("ownerText", {}).get("runs", [])),
-                                    "length": v.get("lengthText", {}).get("simpleText", ""), "views": v.get("shortViewCountText", {}).get("simpleText", ""),
-                                    "date": v.get("publishedTimeText", {}).get("simpleText", "")})
-                    for x in o.values():
-                        walk(x)
-                elif isinstance(o, list):
-                    for x in o:
-                        walk(x)
-            walk(_json.loads(m.group(1)))
-        return out[:24]
+        return await yt_search_core(q)
 
     # SteamGridDB : artworks pour Alexandrie. La clé reste côté serveur (variable STEAMGRIDDB_API_KEY).
     @r.get("/sgdb/search")

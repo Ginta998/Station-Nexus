@@ -14,6 +14,7 @@ export const setAmbientMuted = (m) => { localStorage.setItem("nx-amb-muted", JSO
 export const setAmbientVol = (v) => { localStorage.setItem("nx-amb-vol", JSON.stringify(v)); emit({ vol: v }); };
 export const toggleLayer = (key) => { const off = { ...st.off, [key]: !st.off[key] }; localStorage.setItem("nx-amb-off", JSON.stringify(off)); emit({ off }); };
 export const setAmbientLayers = (layers) => { if (JSON.stringify(layers || []) !== JSON.stringify(st.layers)) emit({ layers: layers || [] }); };
+export const holdAmbient = (h) => emit({ hold: !!h }); // lecture d'une œuvre : les sons d'ambiance se taisent
 export const layerKey = (l) => l.id === "file" ? l.url : l.id;
 
 let ctx, master, noise; const live = new Map();
@@ -76,7 +77,7 @@ function build(kind, out) {
 }
 
 function sync() {
-  const want = st.muted ? [] : st.layers.filter((l) => !st.off[layerKey(l)]);
+  const want = st.muted || st.hold ? [] : st.layers.filter((l) => !st.off[layerKey(l)]);
   const keys = new Set(want.map(layerKey));
   for (const [k, v] of live) if (!keys.has(k)) { v.stop(); live.delete(k); }
   if (!want.length) return;

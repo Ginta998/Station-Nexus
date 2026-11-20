@@ -46,7 +46,7 @@ export function useRadio(at) {
   const playAt = (p, k) => { if (pl?.id === p.id) return cmd("playVideoAt", [k]); live.current.skipRand = true; try { localStorage.setItem("nx-radio:" + p.id, JSON.stringify({ i: k, t: 0 })); } catch (_) {} play(p); };
   const nextPl = () => { if (!list.length) return; const i = list.findIndex((x) => x.id === pl?.id); play(list[shuffle ? Math.floor(Math.random() * list.length) : (i + 1) % list.length]); };
   const live = useRef({});
-  const r = { live: live.current, list, pl, info, station, shuffle, vol, muted, fr, cmd, play, playAt, nextPl, setStation,
+  const r = { pub: !!at.pub, live: live.current, list, pl, info, station, shuffle, vol, muted, fr, cmd, play, playAt, nextPl, setStation,
     playing: info.state === 1,
     toggle: () => cmd(info.state === 1 ? "pauseVideo" : "playVideo"),
     pause: () => pl && cmd("pauseVideo"),

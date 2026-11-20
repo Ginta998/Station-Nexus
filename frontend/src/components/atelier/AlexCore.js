@@ -8,7 +8,7 @@ import { createPortal } from "react-dom";
 import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline, IoExpandOutline, IoContractOutline, IoImagesOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
-import { uploadJournalImage } from "@/lib/api";
+import { uploadJournalImage, api } from "@/lib/api";
 import { DEFAULT_COVERS, mergeCovers, sgdbTerm } from "@/data/alexandrie/covers";
 import { IoCheckmarkCircle, IoTimeOutline, IoClipboardOutline, IoDownloadOutline, IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline, IoPlaySkipForward, IoListOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
 import { lookOf, WEB_FONTS, fontHref } from "@/data/alexandrie/looks";
@@ -45,7 +45,7 @@ function itemToBook(it) {
 // gras / italique aussi quand ils viennent d'un style (texte collé), retours à la ligne gardés
 const isB = (c) => /^(STRONG|B)$/.test(c.nodeName) || Number(c.style?.fontWeight) >= 600 || c.style?.fontWeight === "bold";
 const isI = (c) => /^(EM|I)$/.test(c.nodeName) || c.style?.fontStyle === "italic";
-const nodeText = (n) => [...n.childNodes].map((c) => (c.nodeType === 3 ? c.textContent.replace(/\s+/g, " ") : c.nodeName === "BR" ? "\n" : isB(c) ? `**${c.textContent.trim()}**` : isI(c) ? `*${c.textContent.trim()}*` : c.nodeType === 1 ? nodeText(c) : "")).join("").replace(/\s+/g, " ").trim();
+const nodeText = (n) => [...n.childNodes].map((c) => (c.nodeType === 3 ? c.textContent.replace(/\s+/g, " ") : c.nodeName === "BR" ? "\n" : isB(c) ? `**${nodeText(c).trim()}**` : isI(c) ? `*${nodeText(c).trim()}*` : /^(DIV|P|LI)$/.test(c.nodeName) ? `\n${nodeText(c)}\n` : c.nodeType === 1 ? nodeText(c) : "")).join("").replace(/\s+/g, " ").trim();
 const YT_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/;
 function itemToBookRaw(it, opt = {}) {
   const doc = new DOMParser().parseFromString(`<div>${it.content || ""}</div>`, "text/html").body.firstChild;
@@ -89,7 +89,7 @@ function itemToBookRaw(it, opt = {}) {
     if (!opt.keep && strong && strong.textContent.trim() === txt && txt.length < 90) { newCh(txt.replace(/[:.]\s*$/, "")); return; }
     if (!opt.keep && strong && txt.startsWith(strong.textContent.trim()) && /:\s*$/.test(strong.textContent.trim())) { cur.blocks.push({ t: "box", label: strong.textContent.trim().replace(/\s*:\s*$/, "").toUpperCase(), x: nodeText(n).replace(/^\*\*[^*]*\*\*\s*/, "").trim() }); return; }
     const x = (n.nodeType === 1 ? nodeText(n) : txt).trim();
-    cur.blocks.push({ t: "p", x: whole ? x.replace(/^\*\*([\s\S]*)\*\*$/, "$1") : x, al, w: whole, it: opt.keep && n.nodeType === 1 && isI(n) ? 1 : 0 });
+    cur.blocks.push({ t: "p", x: whole ? x.replace(/^\*\*([\s\S]*)\*\*$/, "$1") : x, al, w: whole, it: opt.keep && n.nodeType === 1 && isI(n) ? 1 : 0, k: opt.keep ? 1 : 0 });
   }
   if (cur.blocks.length || cur.title) chapters.push(cur);
   const a = it.fields?.alexandrie || {};
@@ -312,14 +312,14 @@ function NowPlaying({ r }) {
 // Un résultat lancé devient une file : les autres résultats suivent, on peut passer au suivant.
 function ReaderMusic({ radio, onClose }) {
   const [q, setQ] = useState(""); const [res, setRes] = useState(null); const [busy, setBusy] = useState(false);
-  const go = async (e) => { e.preventDefault(); if (!q.trim()) return; setBusy(true); try { setRes(await atelierApi.ytSearch(q.trim())); } catch (_) { toast.error("Recherche impossible"); } setBusy(false); };
+  const go = async (e) => { e.preventDefault(); if (!q.trim()) return; setBusy(true); try { setRes(await api.get("/yt-search", { params: { q: q.trim() } }).then((r) => r.data)); } catch (_) { toast.error("Recherche impossible"); } setBusy(false); };
   const play = (v) => { const ids = res.map((x) => x.id); const k = ids.indexOf(v.id); const vids = [...ids.slice(k), ...ids.slice(0, k)];
     radio.play({ id: "yt-q-" + Date.now(), url: `https://www.youtube.com/watch?v=${v.id}`, title: `Recherche : ${q.trim()}`, thumb: `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`, vids }); };
   return (
     <aside className="ax-music" data-testid="alex-music-panel">
       <p className="mono">MUSIQUE DE LECTURE</p>
       {radio.pl && <NowPlaying r={radio} />}
-      {radio.pl && radio.kept && !radio.kept() && <button className="ax-rb" style={{ marginBottom: 10 }} onClick={radio.keep} data-testid="alex-music-keep"><IoAdd size={14} /> Ajouter ce morceau à ma radio</button>}
+      {radio.pl && !radio.pub && radio.kept && !radio.kept() && <button className="ax-rb" style={{ marginBottom: 10 }} onClick={radio.keep} data-testid="alex-music-keep"><IoAdd size={14} /> Ajouter ce morceau à ma radio</button>}
       <form onSubmit={go} className="ax-ytq"><IoLogoYoutube size={17} /><input autoFocus={!radio.pl} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher sur YouTube : Hisaishi, pluie, lo-fi…" data-testid="alex-music-input" /><button type="submit" disabled={busy}>{busy ? "…" : "Chercher"}</button></form>
       {res && (res.length ? res.slice(0, 12).map((v) => <button key={v.id} className={"ax-ytr" + (radio.info?.vid === v.id ? " on" : "")} onClick={() => play(v)} data-testid={`alex-yt-${v.id}`}><i style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} /><span><b>{v.title}</b><small>{v.author}{v.length ? ` · ${v.length}` : ""}</small></span></button>) : <p className="ax-empty">Aucun résultat.</p>)}
       {!res && (radio.list || []).length > 0 && <><p className="mono" style={{ marginTop: 14 }}>MES PLAYLISTS</p>{radio.list.slice(0, 8).map((p) => <button key={p.id} className={"ax-ytr" + (radio.pl?.id === p.id ? " on" : "")} onClick={() => radio.play(p)}><i style={{ backgroundImage: p.cover || p.thumb ? `url(${coverOf(p)})` : undefined }} /><span><b>{p.title}</b><small>Playlist de ta radio</small></span></button>)}</>}
@@ -733,7 +733,7 @@ export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, 
                   : b.t === "art" ? <ArtFig key={j} b={b} si={b.si} term={artTerm} pick={plan ? plan.get(b.si) || null : undefined} />
                   : b.t === "box" ? <aside className="ax-box" key={j} data-si={b.si}><b className="mono">{b.label || "À RETENIR"}</b><p>{inline(b.x)}</p></aside>
                   : b.t === "mus" ? <p key={j} data-si={b.si} className="ax-cue-p"><button type="button" className="ax-cue" data-url={b.url} onClick={() => cueR.current?.(b.url, b.x)} data-testid="alex-cue"><IoMusicalNotes size={14} /> <span>{b.x}</span></button></p>
-                  : <p key={j} data-si={b.si} className={[j === 0 && c.title ? "first" : "", b.al || b.x.includes("\n") ? "ax-al" : ""].join(" ").trim() || undefined}
+                  : <p key={j} data-si={b.si} className={[j === 0 && c.title ? "first" : "", b.al || b.x.includes("\n") ? "ax-al" : "", b.k ? "ax-kp" : ""].join(" ").trim() || undefined}
                       style={b.al || b.w || b.it ? { textAlign: b.al || undefined, fontWeight: b.w ? 700 : undefined, fontStyle: b.it ? "italic" : undefined } : undefined}>{inline(b.x)}</p>)}
               </section>
             ))}
@@ -756,7 +756,7 @@ export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, 
         {onIllustrate && !(book.mine && !book.src) && <button className="ax-rb" onClick={onIllustrate} title="Ajouter une image à chaque chapitre qui n'en a pas (SteamGridDB, MyAnimeList, Open Library, Wikimedia Commons), jamais deux fois la même" data-testid="alex-illustrate"><IoImagesOutline size={15} /> <span>Illustrer</span></button>}
         {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} title="Notes (touche N)" data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
         {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music" title={radio.pl ? radio.info?.title || radio.pl.title : "Musique"}><IoMusicalNotes size={15} /> <span>{radio.pl ? <span className="ax-rb-now">{radio.info?.title || radio.pl.title}</span> : "Musique"}</span></button>}
-        {!radio && workMusic && <button className={"ax-rb" + (workMusic.playing ? " on" : "")} onClick={workMusic.toggle} title={workMusic.playing ? "Mettre la musique en pause" : "Lancer la musique de lecture"} data-testid="alex-work-music">{workMusic.playing ? <IoPause size={15} /> : <IoMusicalNotes size={15} />} <span>{workMusic.playing ? <span className="ax-rb-now">{workMusic.title || "Musique"}</span> : "Musique"}</span></button>}
+        {workMusic && <button className={"ax-rb" + (workMusic.playing ? " on" : "")} onClick={workMusic.toggle} title={workMusic.playing ? "Mettre la musique en pause" : "Lancer la musique de lecture"} data-testid="alex-work-music">{workMusic.playing ? <IoPause size={15} /> : <IoMusicalNotes size={15} />} <span>{workMusic.playing ? <span className="ax-rb-now">{workMusic.title || "Musique"}</span> : "Musique"}</span></button>}
         {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.toggle} title={radio.playing ? "Pause" : "Lecture"} data-testid="alex-music-toggle">{radio.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>}
         {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.next} title="Morceau suivant" data-testid="alex-music-next"><IoPlaySkipForward size={15} /></button>}
         {onAddVideo && <button className={"ax-rb" + (vid ? " on" : "")} onClick={() => { setVid((v) => !v); setToc(false); setMusic(false); setNotes(false); }} aria-expanded={vid} title="Ajouter une vidéo YouTube à cette page" data-testid="alex-addvid"><IoLogoYoutube size={15} /> <span>Vidéo</span></button>}

@@ -7,6 +7,11 @@ import { chapterAudioUrl, readingAudioUrl, mediaUrl, hit } from "@/lib/api";
 import { markDone } from "@/lib/shelf";
 import PassageLayer from "@/components/nexus/PassageLayer";
 import { blocksToHtml } from "@/lib/blocks";
+import { useRadio, RadioEngine } from "@/components/atelier/Radio";
+import { holdAmbient } from "@/lib/ambient";
+
+const PUB_AT = { pub: true, config: { radio: [] }, saveConfig: async () => {} };
+const YT = /(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/;
 
 /*
   Un seul lecteur pour toute la station en Nexus : celui d'Alexandrie.
@@ -56,6 +61,11 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
   const { book, map } = built;
   const owner = entry ? entry.id : item.id;
   const readingKey = "reading:" + owner;
+  const radio = useRadio(PUB_AT);
+  // En entrant dans l'œuvre : l'ambiance du monde et les sons d'ambiance se taisent (rendus en sortant)
+  useEffect(() => { holdAmbient(true); if (!trackFor(ci)) playReadingUrl("", readingKey); return () => holdAmbient(false); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Jamais deux musiques : la radio YouTube coupe la musique de lecture
+  useEffect(() => { if (radio.playing) pauseReading(); }, [radio.playing]); // eslint-disable-line react-hooks/exhaustive-deps
   const startCh = startUnit == null ? null : Math.max(0, map.indexOf(startUnit));
   const [ci, setCi] = useState(startCh ?? 0);
   const [title, setTitle] = useState("Musique de lecture");
@@ -124,11 +134,17 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
   const curUnit = !entry && item && unitKey ? item[unitKey]?.[map[ci]] : null;
   return (<>
     {endCard}
+    <RadioEngine radio={radio} />
     {curUnit && <PassageLayer item={item} unit={curUnit} unitIndex={map[ci]} unitLabel={`${unitKey === "episodes" ? "Épisode" : "Chapitre"} ${map[ci] + 1}`} />}
     <Reader book={book} cover={cover || (entry?.cover ? mediaUrl(entry.cover) : null)} onClose={onClose} backLabel={entry ? "Retour" : "Retour au monde"} path={where}
       startCh={startCh} keepSaved={resume} onProgress={onProgress} workMusic={music} noPdf={noPdf}
       onEditChapter={onEditUnit ? (entry ? () => onEditUnit(0) : (c) => onEditUnit(map[c] ?? map[0] ?? 0)) : undefined}
-      onCue={(url, t) => { setTitle(t || "Musique"); toggleReadingUrl(mediaUrl(url), "cue:" + url, { loop: false, title: t || "Musique" }); }}
+      radio={radio}
+      onCue={(url, t) => {
+        const v = (String(url).match(YT) || [])[1];
+        if (v) { if (radio.info?.vid === v || radio.pl?.id === "cue-" + v) return radio.toggle(); pauseReading(); return radio.play({ id: "cue-" + v, url: `https://www.youtube.com/watch?v=${v}`, title: t || "Musique", thumb: `https://i.ytimg.com/vi/${v}/mqdefault.jpg` }); }
+        radio.pause(); setTitle(t || "Musique"); toggleReadingUrl(mediaUrl(url), "cue:" + url, { loop: false, title: t || "Musique" });
+      }}
       onDone={() => { if (!entry) { hit("end", { creation_id: item.id, ...unitOf(ci) }); if (!held) markDone(item.id); setTimeout(() => setEnded(true), 900); } }} />
   </>);
 }

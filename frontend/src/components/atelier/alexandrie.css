@@ -715,3 +715,5 @@ body:has(.ax-reader) .at-main{overflow:hidden!important}
 .ax-flow p.ax-al{text-indent:0!important;white-space:pre-line;hyphens:manual}
 .ax-flow p.ax-al[style*="center"],.ax-flow p.ax-al[style*="right"]{text-align-last:auto}
 .ax-flow p.ax-sp{text-indent:0;margin:0;line-height:1}
+.ax-flow p.ax-kp{margin:0 0 .85em}
+.ax-flow p.ax-kp:not(.ax-al){text-indent:0}

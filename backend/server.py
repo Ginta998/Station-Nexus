@@ -3419,6 +3419,13 @@ api_router.include_router(build_bunny_router(db, require_admin))
 from themes import build_themes_router  # noqa: E402
 api_router.include_router(build_themes_router(db, require_admin))
 from calendar_api import build_calendar_router  # noqa: E402
+from atelier import yt_search_core  # noqa: E402
+
+
+@api_router.get("/yt-search")
+async def public_yt_search(q: str):
+    return await yt_search_core(q)
+
 api_router.include_router(build_calendar_router(db, require_admin))
 api_router.include_router(build_legal_router(db, get_current_user, require_admin, _send_email, _mail_html, _public_user,
                                              _subscribe_email, _cancel_subscription_now, rate_limit, _site_url))
