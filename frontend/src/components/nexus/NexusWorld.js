@@ -138,6 +138,7 @@ export default function NexusWorld(p) {
     locked && !item.coming_soon && { id: "unlock", label: "Débloquer", sub: unlock?.price, desc: "Accès définitif à l'œuvre, ou l'abonnement pour tout le catalogue.", go: () => push({ k: "unlock" }) },
     ...sections.map((s) => ({ id: s.k, label: s.label, desc: s.desc, win: s.img, go: () => push({ k: s.k }) })),
     { id: "share", label: "Partager", desc: "Une belle carte pour une story, un post ou un message, et le lien qui montre l'affiche.", go: () => { sfx("select"); setCard({}); } },
+    { id: "quit", label: "Quitter l'univers", desc: "Revenir là où tu étais avant d'entrer dans l'œuvre.", go: exitWorld },
   ].filter(Boolean);
 
   // ---------- chaque écran : son titre (fil d'Ariane), ses éléments (clavier) ----------
