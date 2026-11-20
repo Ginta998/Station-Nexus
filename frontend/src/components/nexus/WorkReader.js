@@ -7,8 +7,8 @@ import { chapterAudioUrl, readingAudioUrl, mediaUrl, hit } from "@/lib/api";
 import { markDone } from "@/lib/shelf";
 import PassageLayer from "@/components/nexus/PassageLayer";
 import { blocksToHtml } from "@/lib/blocks";
-import { useRadio, RadioEngine, Progress, artOf } from "@/components/atelier/Radio";
-import { IoPause, IoPlay, IoPlaySkipForward, IoVolumeHigh, IoVolumeMute, IoChevronDown, IoChevronUp } from "react-icons/io5";
+import { useRadio, RadioEngine, artOf } from "@/components/atelier/Radio";
+import { IoPause, IoPlay, IoPlaySkipForward, IoChevronDown, IoChevronUp, IoMusicalNotes } from "react-icons/io5";
 import { holdAmbient } from "@/lib/ambient";
 
 const PUB_AT = { pub: true, config: { radio: [] }, saveConfig: async () => {} };
@@ -56,29 +56,35 @@ export function bookOfEntry(e) {
 }
 
 // Barre de musique pendant la lecture : avancée, pause, suivant, volume, réduire, couper
-function ReaderPlayer({ r }) {
+const fmtT = (t) => { t = Math.max(0, Math.floor(t || 0)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
+function ReaderPlayer({ m }) {
   const [min, setMin] = useState(false);
-  if (!r.pl) return null;
-  const i = r.info;
+  if (!m) return null;
   return createPortal(
     <div className={"wr-player" + (min ? " min" : "")} data-testid="reader-player">
-      <span className="wr-pl-art" style={{ backgroundImage: `url(${artOf(r.pl, i.vid)})` }} />
+      <span className="wr-pl-art" style={m.art ? { backgroundImage: `url(${m.art})` } : undefined}>{!m.art && <IoMusicalNotes size={18} />}</span>
       <div className="wr-pl-mid">
-        <b className="wr-pl-t">{i.title || r.pl.title}</b>
-        {!min && <Progress r={r} />}
+        <b className="wr-pl-t">{m.title}</b>
+        {!min && <div className="wr-pl-prog"><span className="mono">{fmtT(m.t)}</span>
+          <input type="range" min="0" max={m.d || 1} step="1" value={Math.min(m.t || 0, m.d || 1)} onChange={(e) => m.seek(+e.target.value)} style={{ "--p": (m.d ? (m.t / m.d) * 100 : 0) + "%" }} data-testid="reader-player-seek" />
+          <span className="mono">{fmtT(m.d)}</span></div>}
       </div>
-      <button onClick={r.toggle} aria-label={r.playing ? "Pause" : "Lecture"} data-testid="reader-player-toggle">{r.playing ? <IoPause size={18} /> : <IoPlay size={18} />}</button>
-      {!min && (i.n || 0) > 1 && <button onClick={r.next} aria-label="Suivant" data-testid="reader-player-next"><IoPlaySkipForward size={16} /></button>}
-      {!min && <button onClick={r.mute} aria-label="Son" data-testid="reader-player-mute">{r.muted ? <IoVolumeMute size={17} /> : <IoVolumeHigh size={17} />}</button>}
-      {!min && <input className="rd-vol wr-pl-vol" type="range" min="0" max="100" value={r.muted ? 0 : r.vol} onChange={(e) => r.setVol(+e.target.value)} style={{ "--p": (r.muted ? 0 : r.vol) + "%" }} data-testid="reader-player-volume" />}
+      <button onClick={m.toggle} aria-label={m.playing ? "Pause" : "Lecture"} data-testid="reader-player-toggle">{m.playing ? <IoPause size={18} /> : <IoPlay size={18} />}</button>
+      {!min && m.next && <button onClick={m.next} aria-label="Suivant" data-testid="reader-player-next"><IoPlaySkipForward size={16} /></button>}
+      {!min && <input className="wr-pl-vol" type="range" min="0" max="100" value={m.vol} onChange={(e) => m.setVol(+e.target.value)} style={{ "--p": m.vol + "%" }} aria-label="Volume" data-testid="reader-player-volume" />}
       <button onClick={() => setMin(!min)} aria-label={min ? "Agrandir" : "Réduire"} data-testid="reader-player-min">{min ? <IoChevronUp size={17} /> : <IoChevronDown size={17} />}</button>
-      <button onClick={r.stop} aria-label="Couper la musique" data-testid="reader-player-stop"><IoClose size={17} /></button>
+      <button onClick={m.stop} aria-label="Couper la musique" data-testid="reader-player-stop"><IoClose size={17} /></button>
     </div>, document.body);
+}
+// Avancée de la musique de l'œuvre (lecteur audio de la station)
+function useAudioClock(a, on) {
+  const [, tick] = useState(0);
+  useEffect(() => { if (!on || !a) return undefined; const f = () => tick((x) => x + 1); a.addEventListener("timeupdate", f); a.addEventListener("loadedmetadata", f); a.addEventListener("pause", f); a.addEventListener("play", f); return () => { ["timeupdate", "loadedmetadata", "pause", "play"].forEach((e) => a.removeEventListener(e, f)); }; }, [a, on]);
 }
 
 export default function WorkReader({ item, entry, unitKey = "chapters", catLabel, format = "livre", look, cover, startUnit = null, resume = false, locked, onClose, next, nextCover, onNext, onComment, onEditUnit, noPdf = true }) {
   const [ended, setEnded] = useState(false); // fin de l'œuvre : écran de fin et œuvre suivante
-  const { playReadingUrl, toggleReadingUrl, pauseReading, endReading, isPlaying, playingId } = useApp();
+  const { playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, endReading, isPlaying, playingId, getReadingAudio, musicVolume, setMusicVolume } = useApp();
   const built = useMemo(() => (entry ? { book: bookOfEntry(entry), map: [0] } : bookOfCreation(item, { unitKey, catLabel, format, locked, look })), [item, entry, unitKey, catLabel, format, look]); // eslint-disable-line react-hooks/exhaustive-deps
   const { book, map } = built;
   const owner = entry ? entry.id : item.id;
@@ -115,7 +121,16 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
     return () => clearInterval(t);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const on = isPlaying && (playingId === readingKey || (typeof playingId === "string" && playingId.startsWith("cue:")));
-  const music = trackFor(ci) || (on && !radio.pl) ? {
+  // la barre : la radio YouTube si elle joue, sinon la musique de l'œuvre dès qu'elle est chargée
+  const aud = getReadingAudio(); const audOn = !radio.pl && !!aud?.src && !!aud.dataset?.rsrc && (playingId === readingKey || String(playingId || "").startsWith("cue:"));
+  useAudioClock(aud, audOn);
+  const ri = radio.info;
+  const player = radio.pl ? { title: ri.title || radio.pl.title, art: artOf(radio.pl, ri.vid), playing: radio.playing, toggle: radio.toggle, t: ri.t, d: ri.d, seek: radio.seek,
+      next: (ri.n || 0) > 1 ? radio.next : null, vol: radio.muted ? 0 : radio.vol, setVol: radio.setVol, stop: radio.stop }
+    : audOn ? { title, art: cover || null, playing: on, toggle: () => (on ? pauseReading() : resumeReading()), t: aud.currentTime, d: Number.isFinite(aud.duration) ? aud.duration : 0,
+      seek: (v) => { aud.currentTime = v; }, vol: Math.round(musicVolume * 100), setVol: (v) => setMusicVolume(v / 100), stop: () => { pauseReading(); aud.dataset.rsrc = ""; aud.removeAttribute("src"); aud.load(); } }
+    : null;
+  const music = trackFor(ci) && !player ? {
     playing: on, title,
     toggle: () => { if (on) pauseReading(); else { const t = trackFor(ci); if (t) { setTitle("Musique de lecture"); toggleReadingUrl(t, readingKey); } } },
   } : null;
@@ -156,7 +171,7 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
   return (<>
     {endCard}
     <RadioEngine radio={radio} />
-    <ReaderPlayer r={radio} />
+    <ReaderPlayer m={player} />
     {curUnit && <PassageLayer item={item} unit={curUnit} unitIndex={map[ci]} unitLabel={`${unitKey === "episodes" ? "Épisode" : "Chapitre"} ${map[ci] + 1}`} />}
     <Reader book={book} cover={cover || (entry?.cover ? mediaUrl(entry.cover) : null)} onClose={onClose} backLabel={entry ? "Retour" : "Retour au monde"} path={where}
       startCh={startCh} keepSaved={resume} onProgress={onProgress} workMusic={music} noPdf={noPdf}

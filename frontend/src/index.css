@@ -15,7 +15,7 @@
    Ordinateur : texte de base fixe, toute l'interface est agrandie par zoom (--uiz posé par AppContext).
    Téléphone : pas de zoom, seule la taille du texte change (règles plus bas). */
 html { font-size: 112.5%; --text-scale: 1.125; -webkit-tap-highlight-color: transparent; }
-html { zoom: var(--uiz, 1); }
+html { zoom: var(--uiz, 1); } /* ordinateur ; sur téléphone, --uiz vaut 1 et la taille passe par le viewport */
 .min-h-screen { min-height: calc(100vh / var(--uiz, 1)); }
 .h-screen { height: calc(100vh / var(--uiz, 1)); }
 

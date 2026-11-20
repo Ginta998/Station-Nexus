@@ -211,7 +211,26 @@ export function AppProvider({ children }) {
   useEffect(() => { document.documentElement.setAttribute("data-poster", posterSize); }, [posterSize]);
   useEffect(() => { document.documentElement.setAttribute("data-motion", reduceMotion ? "reduced" : "full"); }, [reduceMotion]);
   useEffect(() => { document.documentElement.setAttribute("data-card-tagline", cardTagline ? "on" : "off"); }, [cardTagline]);
-  useEffect(() => { const h = document.documentElement; h.setAttribute("data-textscale", textScale); h.style.setProperty("--uiz", String(zoomOf(textScale, isPhoneNow()))); resetUiRatio(); window.dispatchEvent(new Event("resize")); }, [textScale]);
+  useEffect(() => {
+    const h = document.documentElement; h.setAttribute("data-textscale", textScale);
+    const apply = () => {
+      const s = window.screen || {}; const small = Math.min(s.width || 9999, s.height || 9999) < 768 && window.matchMedia?.("(pointer:coarse)").matches;
+      const mv = document.querySelector('meta[name="viewport"]');
+      if (small) {
+        const z = zoomOf(textScale, true); const land = window.matchMedia?.("(orientation: landscape)").matches;
+        const w = (land ? Math.max : Math.min)(s.width, s.height);
+        h.style.setProperty("--uiz", "1");
+        mv?.setAttribute("content", z === 1 ? "width=device-width, initial-scale=1, viewport-fit=cover" : `width=${Math.round(w / z)}, initial-scale=${z}, viewport-fit=cover`);
+      } else {
+        h.style.setProperty("--uiz", String(zoomOf(textScale, false)));
+        mv?.setAttribute("content", "width=device-width, initial-scale=1, viewport-fit=cover");
+      }
+      resetUiRatio(); window.dispatchEvent(new Event("resize"));
+    };
+    apply();
+    const o = () => setTimeout(apply, 250); window.addEventListener("orientationchange", o);
+    return () => window.removeEventListener("orientationchange", o);
+  }, [textScale]); // eslint-disable-line react-hooks/exhaustive-deps
   // switch to the device's own remembered size when crossing the phone/desktop breakpoint
   useEffect(() => {
     if (!window.matchMedia) return;

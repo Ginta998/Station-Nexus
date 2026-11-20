@@ -874,3 +874,9 @@ Modèle choisi par l'utilisateur : vente à l'unité + abonnement mensuel type P
 - Bulk.js (useSel/SelBtn/BulkBar) : Drive (déplacer univers/dossier/œuvre, supprimer, glisser plusieurs), Radio (fusionner en station via p.vids, supprimer), Salon (ajouter à playlist, supprimer).
 - Pont : Cap du jour + brief Bunny + Google Agenda sous « Tes univers ».
 - calendar_api.py : OAuth Google (GOOGLE_CLIENT_ID/SECRET), callback /api/calendar/callback, CRUD événements. GCalPanel.js dans Pont (7 j) et Cockpit > Agenda (30 j). Redirect URIs à déclarer : preview + https://stationexus.store/api/calendar/callback.
+
+## 2026-11 Lecteur / téléphone
+- Taille aA sur téléphone : via meta viewport (width=W/z), --uiz=1 (le zoom CSS rétrécissait les écrans 100dvh : Alexandrie montrait le menu dessous). Ordinateur : zoom CSS.
+- WorkReader : barre ReaderPlayer unique (radio YouTube publique via useRadio(PUB_AT) + musique fichier de l oeuvre), /api/yt-search public, holdAmbient pendant lecture.
+- Plein écran téléphone : barres toujours visibles.
+- AlexCore itemToBookRaw(opt.keep) : centrage, gras, lignes vides, retours ligne conservés pour les textes station.
