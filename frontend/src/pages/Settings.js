@@ -922,7 +922,7 @@ export default function Settings() {
        <section className="rl-sec rl-set-sec">
         <header className="rl-sec-h"><i>{String(ti + 1).padStart(2, "0")}</i><h2>{tabs[ti]?.label}</h2></header>
         {tab === "apparence" && (<>
-        <Section title="Expérience" extra="— la manière de parcourir la station">
+        {isAdmin && <Section title="Expérience" extra="— la manière de parcourir la station, pour tous les visiteurs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-testid="experience-grid">
             {EXPERIENCES.map((x) => (
               <button key={x.key} data-testid={`experience-${x.key}`} onClick={() => { setExperience(x.key); sfx("select"); toast.success(`Station ${x.label}`); }}
@@ -933,14 +933,16 @@ export default function Settings() {
               </button>
             ))}
           </div>
-          {experience === "nexus" && (
+        </Section>}
+        {experience === "nexus" && (
+          <Section title="Ambiance des mondes">
             <label className="flex items-center justify-between gap-4 mt-3 p-4 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="world-amb-auto">
               <span><span className="block font-semibold" style={{ color: "var(--text-primary)" }}>Lancer l'ambiance sonore en entrant dans une œuvre</span>
                 <span className="block text-sm" style={{ color: "var(--text-secondary)" }}>Sinon, elle se lance avec le bouton disque, en haut à droite du monde.</span></span>
               <input type="checkbox" defaultChecked={worldAmbientAuto()} onChange={(e) => { setWorldAmbientAuto(e.target.checked); sfx("select"); }} style={{ width: 20, height: 20, accentColor: "var(--brand)" }} />
             </label>
-          )}
-        </Section>
+          </Section>
+        )}
 
         <Section title="Thèmes" extra={`— ${THEMES.length} ambiances`}>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="theme-grid">

@@ -15,20 +15,14 @@
    Ordinateur : texte de base fixe, toute l'interface est agrandie par zoom (--uiz posé par AppContext).
    Téléphone : pas de zoom, seule la taille du texte change (règles plus bas). */
 html { font-size: 112.5%; --text-scale: 1.125; -webkit-tap-highlight-color: transparent; }
-@media (min-width: 768px) { html { zoom: var(--uiz, 1); } }
-@media (max-width: 767px) { html { --uiz: 1 !important; } }
+html { zoom: var(--uiz, 1); }
 .min-h-screen { min-height: calc(100vh / var(--uiz, 1)); }
 .h-screen { height: calc(100vh / var(--uiz, 1)); }
 
 /* ===== Mobile compaction — shrink the whole UI ~15% on phones (rem-based) ===== */
 @media (max-width: 767px) {
   html                          { font-size: 85%; }
-  html[data-textscale="petit"]  { font-size: 74.4%; --text-scale: .875; }
-  html[data-textscale="normal"] { font-size: 85%; --text-scale: 1; }
-  html[data-textscale="grand"]  { font-size: 95.6%; --text-scale: 1.125; }
-  html[data-textscale="xl"]     { font-size: 106.25%; --text-scale: 1.25; }
-  html[data-textscale="max"]    { font-size: 119%; --text-scale: 1.4; }
-  html[data-textscale="ultra"]  { font-size: 134%; --text-scale: 1.6; }
+  html[data-textscale]          { font-size: 85%; --text-scale: 1; } /* la taille aA agrandit toute l'interface (zoom), comme sur ordinateur */
 }
 
 [data-theme="abysse"] {
