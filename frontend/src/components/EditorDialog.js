@@ -472,7 +472,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           <Field label="Texte du bouton"><input className="rl-in" data-testid="editor-launch-label" value={form.launch_label} onChange={(e) => set("launch_label", e.target.value)} placeholder="Lancer" /></Field>
           {units && <Field label="Nom de la liste" hint="Chapitres, Tomes, Saisons…"><input className="rl-in" data-testid="editor-unit-label" value={form.unit_label || ""} onChange={(e) => set("unit_label", e.target.value)} placeholder={form.launch_type === "episodes" ? "Épisodes" : "Chapitres"} /></Field>}
         </div>
-        {(units || form.launch_type === "reader") && <Field label="Lecture (expérience Nexus)" hint="Le lecteur d'Alexandrie habille les chapitres en livre, en cassette ou en disque. Auto : selon le type de l'œuvre."><Seg value={form.reader_format || ""} onChange={(v) => set("reader_format", v)} options={[["", "Auto"], ["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]]} testid="editor-reader-format" /></Field>}
+        {<Field label="Objet (expérience Nexus)" hint="Comment l'œuvre apparaît sur les étagères et dans le lecteur : livre, cassette VHS ou vinyle. Auto : selon le type de l'œuvre."><Seg value={form.reader_format || ""} onChange={(v) => set("reader_format", v)} options={[["", "Auto"], ["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]]} testid="editor-reader-format" /></Field>}
         {(units || form.launch_type === "reader") && (
           <div className="rl-f wide">
             <span className="rl-lbl">Page du lecteur · ambiances d'Alexandrie</span>
