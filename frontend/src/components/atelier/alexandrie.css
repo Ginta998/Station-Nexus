@@ -722,10 +722,26 @@ body:has(.ax-reader) .at-main{overflow:hidden!important}
 @media (max-width:900px),(pointer:coarse){.ax-full:not(.ui) .ax-rbar,.ax-full:not(.ui) .ax-rfoot{opacity:1;transform:none;pointer-events:auto}.ax-full:not(.ui){cursor:auto}}
 
 
-/* barre de musique du lecteur : le design de la Radio, au-dessus du livre */
-.rd-bar.wr-bar{z-index:1300;--rc:var(--brand)}
-@media(max-width:767px){.rd-bar.wr-bar{bottom:calc(8px + env(safe-area-inset-bottom,0px));grid-template-columns:minmax(0,1fr) auto auto;padding:8px 10px;gap:6px}.wr-bar .rd-bar-art{width:38px;height:38px}.wr-bar .rd-bar-mid{display:contents}.wr-bar .rd-prog{grid-column:1/-1;order:9}.wr-bar .rd-vol{display:none}}
-.wr-mini-slot{display:inline-flex;flex-shrink:0}
-.wr-mini{--rc:var(--brand);height:34px}
 .ax-music-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 .ax-music-h p{margin:0}
+
+/* barre de musique du lecteur : posée entre le livre et les flèches, aux couleurs du livre */
+.wr-mb{display:flex;align-items:center;gap:8px;margin:0 clamp(10px,3vw,40px);padding:7px 10px;border-radius:12px;color:var(--lab-ink,#f3efe6);
+  background:color-mix(in srgb,var(--bg-secondary,#14141c) 88%,var(--brand) 12%);border:1px solid color-mix(in srgb,var(--brand) 30%,transparent);animation:wr-mb-in .25s ease-out}
+.wr-mb-art{flex-shrink:0;width:38px;height:38px;border-radius:8px;background:#222 center/cover;display:grid;place-items:center;color:rgba(255,255,255,.7)}
+.wr-mb-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.wr-mb-top{display:flex;align-items:baseline;gap:8px;min-width:0}
+.wr-mb-top b{flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wr-mb-top small{flex-shrink:0;font-size:10px;opacity:.7}
+.wr-mb-seek,.wr-mb-vol{-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;cursor:pointer;background:linear-gradient(90deg,var(--brand) var(--p),color-mix(in srgb,currentColor 22%,transparent) var(--p))}
+.wr-mb-seek{width:100%}.wr-mb-vol{width:80px;flex-shrink:0}
+.wr-mb-seek::-webkit-slider-thumb,.wr-mb-vol::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--brand);border:2px solid #fff}
+.wr-mb-seek::-moz-range-thumb,.wr-mb-vol::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:var(--brand);border:2px solid #fff}
+.wr-mb-b{flex-shrink:0;width:34px;height:34px;display:grid;place-items:center;border-radius:9px;border:0;background:transparent;color:inherit;cursor:pointer;transition:background-color .15s}
+.wr-mb-b:hover{background:color-mix(in srgb,currentColor 12%,transparent)}
+.wr-mb-b.main{background:var(--brand);color:#fff}
+@media(max-width:600px){.wr-mb-vol{display:none}.wr-mb{gap:4px;padding:6px 8px}}
+@keyframes wr-mb-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wr-mm{display:inline-flex;align-items:center;gap:2px;flex-shrink:0;margin-left:6px;padding:2px;border-radius:10px;border:1px solid color-mix(in srgb,var(--brand) 40%,transparent)}
+.wr-mm-art{width:30px;height:30px;border-radius:7px;border:0;background:#222 center/cover;display:grid;place-items:center;color:#fff;cursor:pointer}
+.wr-mm-b{width:30px;height:30px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:inherit;cursor:pointer}

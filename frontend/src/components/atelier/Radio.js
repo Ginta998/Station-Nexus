@@ -42,7 +42,7 @@ export function useRadio(at) {
   const [vol, setVol] = useState(80);
   const [muted, setMuted] = useState(false);
   const cmd = (func, args = []) => { try { fr.current.contentWindow.postMessage(JSON.stringify({ event: "command", func, args }), "*"); } catch (_) {} };
-  const play = (p) => { const src = srcFor(p); if (!src) return toast.error("Lien YouTube invalide"); setInfo({}); setPl({ ...p, src, off: p.vids?.length ? (saved(p.id).i || 0) % p.vids.length : 0 }); };
+  const play = (p) => { let src = srcFor(p); if (src && at.pub) src += "&mute=1"; if (!src) return toast.error("Lien YouTube invalide"); setInfo({}); setPl({ ...p, src, off: p.vids?.length ? (saved(p.id).i || 0) % p.vids.length : 0 }); };
   const playAt = (p, k) => { if (pl?.id === p.id) return cmd("playVideoAt", [k]); live.current.skipRand = true; try { localStorage.setItem("nx-radio:" + p.id, JSON.stringify({ i: k, t: 0 })); } catch (_) {} play(p); };
   const nextPl = () => { if (!list.length) return; const i = list.findIndex((x) => x.id === pl?.id); play(list[shuffle ? Math.floor(Math.random() * list.length) : (i + 1) % list.length]); };
   const live = useRef({});
@@ -74,7 +74,7 @@ export function useRadio(at) {
       if (!fr.current || m.source !== fr.current.contentWindow) return;
       let d; try { d = JSON.parse(m.data); } catch (_) { return; }
       const c = live.current;
-      if (d.event === "onReady") { c.ready = true; c.cmd("setVolume", [c.vol]); c.cmd("playVideo"); return; }
+      if (d.event === "onReady") { c.ready = true; c.cmd("setVolume", [c.vol]); c.cmd("playVideo"); if (c.pub) { c.cmd("unMute"); setTimeout(() => { c.cmd("unMute"); c.cmd("playVideo"); }, 600); } return; }
       const x = d.info; if (!x) return;
       setInfo((o) => {
         const n = { ...o };

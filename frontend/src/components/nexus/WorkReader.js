@@ -8,7 +8,7 @@ import { markDone } from "@/lib/shelf";
 import PassageLayer from "@/components/nexus/PassageLayer";
 import { blocksToHtml } from "@/lib/blocks";
 import { useRadio, RadioEngine, artOf } from "@/components/atelier/Radio";
-import { IoPause, IoPlay, IoPlaySkipForward, IoChevronDown, IoMusicalNotes } from "react-icons/io5";
+import { IoPause, IoPlay, IoPlaySkipForward, IoChevronUp, IoMusicalNotes } from "react-icons/io5";
 import { holdAmbient } from "@/lib/ambient";
 
 const PUB_AT = { pub: true, config: { radio: [] }, saveConfig: async () => {} };
@@ -57,47 +57,31 @@ export function bookOfEntry(e) {
 
 // Barre de musique pendant la lecture : avancée, pause, suivant, volume, réduire, couper
 const fmtT = (t) => { t = Math.max(0, Math.floor(t || 0)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
-function ReaderPlayer({ m }) {
-  const [min, setMin] = useState(false);
-  const [slot, setSlot] = useState(null);
-  // Réduite : une pastille dans la barre du haut du lecteur, juste après « Retour »
-  useEffect(() => {
-    if (!min || !m) return undefined;
-    const bar = document.querySelector(".ax-reader .ax-rbar"); if (!bar) return undefined;
-    const el = document.createElement("span"); el.className = "wr-mini-slot"; bar.insertBefore(el, bar.children[1] || null); setSlot(el);
-    return () => { el.remove(); setSlot(null); };
-  }, [min, !!m]); // eslint-disable-line react-hooks/exhaustive-deps
-  if (!m) return null;
-  const pct = m.d ? (m.t / m.d) * 100 : 0;
-  if (min) return slot ? createPortal(
-    <div className="rd-mini wr-mini" data-testid="reader-player-mini">
-      <button className="rd-mini-now" onClick={() => setMin(false)} title={`${m.title} : agrandir`}>
-        <span className="rd-mini-art" style={m.art ? { backgroundImage: `url(${m.art})` } : undefined}>{m.playing && <span className="sx-eq"><i /><i /><i /><i /></span>}</span>
-        <span className="rd-mini-txt">{m.title}</span>
-      </button>
-      <button className="rd-ic" onClick={m.toggle} aria-label={m.playing ? "Pause" : "Lecture"} data-testid="reader-player-mini-toggle">{m.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>
-    </div>, slot) : null;
-  return createPortal(
-    <div className="rd-bar wr-bar" data-testid="reader-player">
-      <div className="rd-bar-now">
-        <span className="rd-bar-art" style={m.art ? { backgroundImage: `url(${m.art})` } : undefined}>{!m.art && <IoMusicalNotes size={18} />}</span>
-        <span className="rd-bar-txt"><b>{m.title}</b><small>{m.sub || "Musique de lecture"}</small></span>
+// Dans le lecteur, entre le livre et les flèches ; réduite, une pastille dans la barre du haut
+function MusicBar({ m, onMin }) {
+  const pct = m.d ? Math.min(100, (m.t / m.d) * 100) : 0;
+  return (
+    <div className="wr-mb" data-testid="reader-player">
+      <span className="wr-mb-art" style={m.art ? { backgroundImage: `url(${m.art})` } : undefined}>{!m.art && <IoMusicalNotes size={16} />}</span>
+      <div className="wr-mb-mid">
+        <div className="wr-mb-top"><b>{m.title}</b><small className="mono">{fmtT(m.t)} / {fmtT(m.d)}</small></div>
+        <input className="wr-mb-seek" type="range" min="0" max={m.d || 1} step="1" value={Math.min(m.t || 0, m.d || 1)} onChange={(e) => m.seek(+e.target.value)} style={{ "--p": pct + "%" }} aria-label="Avancée" data-testid="reader-player-seek" />
       </div>
-      <div className="rd-bar-mid">
-        <div className="rd-ctrl sm">
-          <button className="rd-play" onClick={m.toggle} aria-label={m.playing ? "Pause" : "Lecture"} data-testid="reader-player-toggle">{m.playing ? <IoPause size={20} /> : <IoPlay size={20} />}</button>
-          {m.next && <button className="rd-ic" onClick={m.next} aria-label="Suivant" data-testid="reader-player-next"><IoPlaySkipForward size={18} /></button>}
-        </div>
-        <div className="rd-prog"><span className="mono">{fmtT(m.t)}</span>
-          <input type="range" min="0" max={m.d || 1} step="1" value={Math.min(m.t || 0, m.d || 1)} onChange={(e) => m.seek(+e.target.value)} style={{ "--p": pct + "%" }} data-testid="reader-player-seek" />
-          <span className="mono">{fmtT(m.d)}</span></div>
-      </div>
-      <div className="rd-bar-r">
-        <input className="rd-vol" type="range" min="0" max="100" value={m.vol} onChange={(e) => m.setVol(+e.target.value)} style={{ "--p": m.vol + "%" }} aria-label="Volume" data-testid="reader-player-volume" />
-        <button className="rd-ic" onClick={() => setMin(true)} title="Réduire dans la barre du haut" data-testid="reader-player-min"><IoChevronDown size={18} /></button>
-        <button className="rd-ic" onClick={m.stop} title="Couper la musique" data-testid="reader-player-stop"><IoClose size={18} /></button>
-      </div>
-    </div>, document.body);
+      <button className="wr-mb-b main" onClick={m.toggle} aria-label={m.playing ? "Pause" : "Lecture"} data-testid="reader-player-toggle">{m.playing ? <IoPause size={18} /> : <IoPlay size={18} />}</button>
+      {m.next && <button className="wr-mb-b" onClick={m.next} aria-label="Suivant" data-testid="reader-player-next"><IoPlaySkipForward size={16} /></button>}
+      <input className="wr-mb-vol" type="range" min="0" max="100" value={m.vol} onChange={(e) => m.setVol(+e.target.value)} style={{ "--p": m.vol + "%" }} aria-label="Volume" data-testid="reader-player-volume" />
+      <button className="wr-mb-b" onClick={onMin} aria-label="Réduire la barre" title="Réduire dans la barre du haut" data-testid="reader-player-min"><IoChevronUp size={17} /></button>
+      <button className="wr-mb-b" onClick={m.stop} aria-label="Couper la musique" title="Couper la musique" data-testid="reader-player-stop"><IoClose size={17} /></button>
+    </div>
+  );
+}
+function MusicMini({ m, onOpen }) {
+  return (
+    <span className="wr-mm" data-testid="reader-player-mini">
+      <button className="wr-mm-art" onClick={onOpen} aria-label="Afficher la barre de musique" style={m.art ? { backgroundImage: `url(${m.art})` } : undefined}>{m.playing ? <span className="sx-eq"><i /><i /><i /><i /></span> : !m.art && <IoMusicalNotes size={14} />}</button>
+      <button className="wr-mm-b" onClick={m.toggle} aria-label={m.playing ? "Pause" : "Lecture"} data-testid="reader-player-mini-toggle">{m.playing ? <IoPause size={14} /> : <IoPlay size={14} />}</button>
+    </span>
+  );
 }
 // Avancée de la musique de l'œuvre (lecteur audio de la station)
 function useAudioClock(a, on) {
@@ -113,6 +97,7 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
   const owner = entry ? entry.id : item.id;
   const readingKey = "reading:" + owner;
   const radio = useRadio(PUB_AT);
+  const [barMin, setBarMin] = useState(false);
   // En entrant dans l'œuvre : l'ambiance du monde et les sons d'ambiance se taisent (rendus en sortant)
   useEffect(() => { holdAmbient(true); if (!trackFor(ci)) playReadingUrl("", readingKey); return () => holdAmbient(false); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // Jamais deux musiques : la radio YouTube coupe la musique de lecture
@@ -194,12 +179,13 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
   return (<>
     {endCard}
     <RadioEngine radio={radio} />
-    <ReaderPlayer m={player} />
     {curUnit && <PassageLayer item={item} unit={curUnit} unitIndex={map[ci]} unitLabel={`${unitKey === "episodes" ? "Épisode" : "Chapitre"} ${map[ci] + 1}`} />}
     <Reader book={book} cover={cover || (entry?.cover ? mediaUrl(entry.cover) : null)} onClose={onClose} backLabel={entry ? "Retour" : "Retour au monde"} path={where}
       startCh={startCh} keepSaved={resume} onProgress={onProgress} workMusic={music} noPdf={noPdf}
       onEditChapter={onEditUnit ? (entry ? () => onEditUnit(0) : (c) => onEditUnit(map[c] ?? map[0] ?? 0)) : undefined}
       radio={radio}
+      musicBar={player && !barMin ? <MusicBar m={player} onMin={() => setBarMin(true)} /> : null}
+      musicMini={player && barMin ? <MusicMini m={player} onOpen={() => setBarMin(false)} /> : null}
       onCue={(url, t) => {
         const v = (String(url).match(YT) || [])[1];
         if (v) { if (radio.info?.vid === v || radio.pl?.id === "cue-" + v) return radio.toggle(); pauseReading(); return radio.play({ id: "cue-" + v, url: `https://www.youtube.com/watch?v=${v}`, title: t || "Musique", thumb: `https://i.ytimg.com/vi/${v}/mqdefault.jpg` }); }

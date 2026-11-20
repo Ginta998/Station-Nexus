@@ -508,7 +508,7 @@ function YtFig({ b, onSwap, onRemove, si }) {
   );
 }
 
-export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path, noPdf = false, onEditChapter }) {
+export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, onRemoveVideo, onAddVideo, onDone, paused, radio, cover, at, startNotes, onCover, startCh = null, keepSaved = false, onProgress, workMusic, onCue, backLabel = "Rayonnages", path, noPdf = false, onEditChapter, musicBar, musicMini }) {
   const { sfx } = useApp();
   const flow = useRef(null);
   const spreadR = useRef(0); const stepR = useRef(0); const glide = useRef(0);
@@ -639,6 +639,7 @@ export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, 
     return () => clearTimeout(t);
   }, [spread, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
   const cueR = useRef(onCue); cueR.current = onCue;
+  useEffect(() => { const t = setTimeout(() => window.dispatchEvent(new Event("resize")), 30); return () => clearTimeout(t); }, [!!musicBar, !!musicMini]); // eslint-disable-line react-hooks/exhaustive-deps
   const doneR = useRef(false); // arrivé à la dernière page : le livre passe dans « Lus »
   useEffect(() => { if (!doneR.current && pages > 2 && page + per >= pages && onDone) { doneR.current = true; onDone(); } }, [page, pages, per]); // eslint-disable-line react-hooks/exhaustive-deps
   const go = (d) => {
@@ -749,6 +750,7 @@ export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, 
     <div onMouseMove={full ? wake : undefined} onTouchStart={full ? wake : undefined} className={(full ? "ax-full" + (ui ? " ui" : "") + " " : "") + "ax-reader ax-view fmt-" + fmt + ` cf-lh-${cf.lh || "m"} cf-mg-${cf.mg || "m"}` + (cf.ff ? " cf-ff-" + cf.ff : "") + (cf.bg ? " cf-bg-" + cf.bg : "") + (fmt === "vhs" ? " skin-vhs" : "") + (fmt === "vinyle" ? " skin-vinyle" : "") + (look ? ` has-look look-${look.key} tex-${look.tex}` + (look.dark ? " look-dark" : " look-light") : "")} style={{ "--h": book.color ?? hue(book.title), "--ax-fs": fs, ...(look ? { "--bk-d": `"${look.d}"`, "--bk-r": `"${look.r}"`, "--paper": look.p, "--paper-2": look.p2, "--paper-3": look.p3, "--ink": look.ink, "--ink-2": look.ink2, "--acc": look.acc, "--orn": `"${look.orn}"` } : {}) }} data-testid="alex-reader" role="dialog" aria-modal="true" aria-label={book.title}>
       <header className="ax-rbar">
         <button className="ax-rb" onClick={onClose} data-testid="alex-close"><IoArrowBack size={15} /> <span>{backLabel}</span></button>
+        {musicMini}
         <p className="mono ax-rpath">{path || <>ALEXANDRIE / {(R?.label || "MES LIVRES").toUpperCase()} / <b>{book.cote}</b></>}</p>
         <span className="grow" />
         {book.mine && !book.src ? onEdit && <button className="ax-rb" onClick={() => onEdit(book.itemId)}><IoCreateOutline size={15} /> <span>Écrire</span></button>
@@ -796,6 +798,7 @@ export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, 
         </div>
         <button className="ax-turn r" onClick={() => go(1)} disabled={spread + per >= pages} aria-label="Page suivante"><IoArrowForward size={20} /></button>
       </div>
+      {musicBar}
       <footer className="ax-rfoot mono"><button className="ax-fturn" onClick={() => go(-1)} disabled={spread === 0} aria-label="Page précédente" data-testid="alex-prev"><IoArrowBack size={18} /></button><span>{book.title.toUpperCase()}</span><span className="ax-prog"><i style={{ width: `${Math.min(100, ((spread + per) / pages) * 100)}%` }} />{noteMarks.map((n) => <button key={n.id} className="ax-pmark" style={{ left: `${(n.at / Math.max(1, pages - 1)) * 100}%` }} onClick={() => { setPage(n.at); setNotes(true); }} title={`Note page ${n.at + 1} : ${n.t.slice(0, 80)}`} aria-label={`Note page ${n.at + 1}`} />)}</span><span>{fmt === "vinyle" ? (spread < pages / 2 ? "FACE A · " : "FACE B · ") : ""}PAGE {Math.min(pages, spread + 1)}{per === 2 && spread + 2 <= pages ? `–${spread + 2}` : ""} / {pages}</span><button className="ax-fturn" onClick={() => go(1)} disabled={spread + per >= pages} aria-label="Page suivante" data-testid="alex-next"><IoArrowForward size={18} /></button></footer>
       {vid && onAddVideo && <VideoAdd book={book} page={spread + 1} onClose={() => setVid(false)} onAdd={async (id, cap) => { if (await onAddVideo(hereSi(), id, cap)) setVid(false); }} />}
       {music && radio && <ReaderMusic radio={radio} onClose={() => setMusic(false)} />}
