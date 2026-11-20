@@ -1,14 +1,15 @@
 // Taille de l'interface (bouton aA) : sur ordinateur, toute l'interface est agrandie (zoom CSS),
 // pas seulement le texte — utile sur les grands écrans. Sur téléphone, seul le texte change.
+// zoom : ordinateur ; mzoom : téléphone (écran plus petit, l'interface y est déjà plus serrée)
 export const UI_SCALES = [
-  { v: "petit", label: "Petit", pct: "90 %", zoom: 0.9 },
-  { v: "normal", label: "Normal", pct: "100 %", zoom: 1 },
-  { v: "grand", label: "Grand", pct: "112 %", zoom: 1.12 },
-  { v: "xl", label: "Très grand", pct: "125 %", zoom: 1.25 },
-  { v: "max", label: "Maximum", pct: "140 %", zoom: 1.4 },
-  { v: "ultra", label: "Écran géant", pct: "160 %", zoom: 1.6 },
+  { v: "petit", label: "Petit", pct: "90 %", zoom: 0.9, mzoom: 0.68 },
+  { v: "normal", label: "Normal", pct: "100 %", zoom: 1, mzoom: 0.76 },
+  { v: "grand", label: "Grand", pct: "112 %", zoom: 1.12, mzoom: 0.85 },
+  { v: "xl", label: "Très grand", pct: "125 %", zoom: 1.25, mzoom: 0.94 },
+  { v: "max", label: "Maximum", pct: "140 %", zoom: 1.4, mzoom: 1.04 },
+  { v: "ultra", label: "Écran géant", pct: "160 %", zoom: 1.6, mzoom: 1.16 },
 ];
-export const zoomOf = (v) => UI_SCALES.find((s) => s.v === v)?.zoom || 1;
+export const zoomOf = (v, phone) => { const s = UI_SCALES.find((x) => x.v === v) || UI_SCALES[1]; return phone ? s.mzoom : s.zoom; };
 
 // Rapport entre les coordonnées de la souris et les pixels CSS (mesuré, quel que soit le navigateur).
 let ratio = null;

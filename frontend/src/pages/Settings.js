@@ -973,13 +973,13 @@ export default function Settings() {
 
         <Section title="Accessibilité" extra="— confort de lecture">
           <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Taille de l'interface</p>
-          <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Sur ordinateur, agrandit toute l'interface (textes, boutons, cartes, images) — « Écran géant » pour les très grands écrans. Sur mobile, agrandit le texte. Réglable séparément.</p>
+          <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Agrandit ou réduit toute l'interface (textes, boutons, cartes, images), réglable séparément sur ordinateur et sur téléphone. « Écran géant » pour les très grands écrans.</p>
           {[{ phone: false, label: "Ordinateur", cur: textDesktop }, { phone: true, label: "Mobile", cur: textMobile }].map((dev) => (
             <div key={dev.label} className="mb-3">
               <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: "var(--brand)" }}>{dev.label}</p>
               <div className="flex flex-wrap items-stretch gap-2" data-testid={`text-scale-${dev.phone ? "mobile" : "desktop"}-grid`}>
                 {TEXT_SCALES.map((t) => {
-                  const active = (dev.cur || (dev.phone ? "petit" : "normal")) === t.v;
+                  const active = (dev.cur || "normal") === t.v;
                   return (
                     <button key={t.v} data-testid={`text-${dev.phone ? "mobile" : "desktop"}-${t.v}`} onClick={() => { setTextScaleFor(dev.phone, t.v); sfx("nav"); }}
                       className="flex-1 min-w-[64px] border flex flex-col items-center justify-center gap-1 py-2.5 px-2 transition-transform hover:scale-[1.02]"
@@ -990,6 +990,16 @@ export default function Settings() {
                   );
                 })}
               </div>
+              {isAdmin && siteSettings && (
+                <label className="flex items-center gap-2 mt-2 text-xs" style={{ color: "var(--text-secondary)" }}>
+                  Par défaut pour tous les visiteurs ({dev.label.toLowerCase()}) :
+                  <select value={siteSettings[dev.phone ? "default_scale_mobile" : "default_scale_desktop"] || "normal"} data-testid={`default-scale-${dev.phone ? "mobile" : "desktop"}`}
+                    onChange={async (e) => { await updateSettings({ ...siteSettings, [dev.phone ? "default_scale_mobile" : "default_scale_desktop"]: e.target.value }); toast.success("Taille par défaut mise à jour"); refetchSite(); }}
+                    className="px-2 py-1 border" style={{ background: "var(--bg-secondary)", color: "var(--text-primary)", borderColor: "var(--border-c)" }}>
+                    {UI_SCALES.map((s) => <option key={s.v} value={s.v}>{s.label}</option>)}
+                  </select>
+                </label>
+              )}
             </div>
           ))}
             <label className="flex items-center justify-between gap-3 p-3 border cursor-pointer mt-5" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="toggle-motion">

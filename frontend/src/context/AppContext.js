@@ -147,7 +147,7 @@ export function AppProvider({ children }) {
   const [homeLayout, setHomeLayoutState] = useState(() => localStorage.getItem("sx_homelayout") || "steam");
   const scaleKey = (phone) => (phone ? "sx_textscale_mobile" : "sx_textscale_desktop");
   // resolve per-device text scale: device key -> legacy key -> default (petit on phone, grand on PC)
-  const resolveScale = (phone) => localStorage.getItem(scaleKey(phone)) || localStorage.getItem(LS.textScale) || (phone ? "petit" : "normal");
+  const resolveScale = (phone) => localStorage.getItem(scaleKey(phone)) || localStorage.getItem("sx_scale_default_" + (phone ? "m" : "d")) || "normal";
   const [textScale, setTextScaleState] = useState(() => resolveScale(isPhoneNow()));
 
   // per-device values (for choosing PC & mobile independently from settings)
@@ -211,7 +211,7 @@ export function AppProvider({ children }) {
   useEffect(() => { document.documentElement.setAttribute("data-poster", posterSize); }, [posterSize]);
   useEffect(() => { document.documentElement.setAttribute("data-motion", reduceMotion ? "reduced" : "full"); }, [reduceMotion]);
   useEffect(() => { document.documentElement.setAttribute("data-card-tagline", cardTagline ? "on" : "off"); }, [cardTagline]);
-  useEffect(() => { const h = document.documentElement; h.setAttribute("data-textscale", textScale); h.style.setProperty("--uiz", String(zoomOf(textScale))); resetUiRatio(); window.dispatchEvent(new Event("resize")); }, [textScale]);
+  useEffect(() => { const h = document.documentElement; h.setAttribute("data-textscale", textScale); h.style.setProperty("--uiz", String(zoomOf(textScale, isPhoneNow()))); resetUiRatio(); window.dispatchEvent(new Event("resize")); }, [textScale]);
   // switch to the device's own remembered size when crossing the phone/desktop breakpoint
   useEffect(() => {
     if (!window.matchMedia) return;
@@ -239,8 +239,13 @@ export function AppProvider({ children }) {
     const needAmb = storedAmbience === null;
     const needTheme = storedTheme === null;
     const needMode = storedMode === null;
-    if (!needAmb && !needTheme && !needPosterD && !needPosterM && !needMode) return;
     getSettings().then((s) => {
+      // taille aA par défaut choisie par l'admin (gardée pour le prochain démarrage, sans flash)
+      [[false, s?.default_scale_desktop], [true, s?.default_scale_mobile]].forEach(([ph, v]) => {
+        if (!v) return; localStorage.setItem("sx_scale_default_" + (ph ? "m" : "d"), v);
+        if (!localStorage.getItem(scaleKey(ph))) { if (ph) setTextMobileState(v); else setTextDesktopState(v); if (isPhoneNow() === ph) setTextScaleState(v); }
+      });
+      if (!needAmb && !needTheme && !needPosterD && !needPosterM && !needMode) return;
       if (needMode && ["loop", "sequence", "shuffle"].includes(s?.default_play_mode)) setPlayModeState(s.default_play_mode);
       if (needAmb && s?.default_ambience_id) setAmbienceId(s.default_ambience_id);
       if (needTheme && (THEMES.some((t) => t.key === s?.default_theme) || isCustomKey(s?.default_theme))) setThemeState(s.default_theme);

@@ -382,6 +382,8 @@ class SiteSettings(BaseModel):
     default_theme: str = "abysse"
     default_poster_desktop: str = "compact"   # taille des affiches par défaut sur PC
     default_poster_mobile: str = "compact"    # taille des affiches par défaut sur mobile
+    default_scale_desktop: str = "normal"     # taille de l'interface (aA) par défaut sur PC
+    default_scale_mobile: str = "normal"      # taille de l'interface (aA) par défaut sur téléphone
     featured_ids: List[str] = Field(default_factory=list)
     featured_creation_id: str = ""            # "création du moment" épinglée par l'admin (héro accueil)
     home_hero_size: str = "l"                 # s | m | l — taille de la grande tuile mise en avant
