@@ -13,6 +13,8 @@ const book = {
 
 Hollow Knight a été fait par trois personnes, en Australie, avec un budget minuscule. C'est devenu un des jeux les plus aimés de sa génération, et un des mondes les plus cohérents du jeu vidéo.
 
+@art 4
+
 Tout se passe sous terre, dans un royaume d'insectes. Les décors sont dessinés à la main, dans des gris, des bleus, des blancs. Les personnages sont minuscules, ronds, presque mignons. Et pourtant, c'est une histoire de dieux, de sacrifice d'enfants, d'épidémie et de deuil.
 
 Je te la raconte dans l'ordre, ce que le jeu ne fait jamais. Il disperse tout : dans les tablettes gravées, dans les répliques des personnages, dans les rêves que tu peux lire en frappant les créatures avec une lame spéciale, dans le journal où le chasseur note chaque bête qu'il a tuée.
@@ -23,6 +25,8 @@ Je te la raconte dans l'ordre, ce que le jeu ne fait jamais. Il disperse tout : 
 # Ceux qui l'ont fait
 
 Hollow Knight a été fait par Team Cherry, un tout petit studio d'Adélaïde, en Australie. Au départ, ils sont deux : Ari Gibson, qui dessine et anime tout le jeu à la main et en signe l'univers visuel, et William Pellen, qui conçoit le jeu et le programme. Ils co-dirigent le projet. David Kazi les rejoint comme directeur technique, et Matthew Griffin s'occupe de la production et de la communication.
+
+@art g 2
 
 Le jeu est financé en 2014 par une campagne Kickstarter modeste, quelques dizaines de milliers de dollars australiens. Il sort en février 2017. Personne ne l'attendait. Il est devenu l'un des jeux indépendants les plus vendus et les plus admirés de sa décennie.
 
@@ -43,6 +47,8 @@ Toi aussi. Tu es un petit chevalier sans nom, avec un masque blanc à deux corne
 
 Dirtmouth est triste au début. Le vieil insecte du banc, qu'on appelle l'Ancien, te parle avec la lassitude de quelqu'un qui a vu partir tout le monde. Il ne descendra jamais. Il n'aime pas ce qui se trouve en bas, et il s'en méfie un peu, de toi aussi.
 
+@art 5
+
 Puis, au fil de ton voyage, le village se remplit. Tu croises en bas Cornifer, un cartographe qui fredonne en dessinant les plans du royaume, et dont tu entends la chanson avant de le voir. Sa femme, Iselda, finit par ouvrir une boutique à Dirtmouth pour vendre ses cartes. Tu retrouves Sly, un petit marchand ridicule enfermé dans une cave du Carrefour oublié, qui ouvre lui aussi boutique au village. Tu libères Bretta, une jeune insecte timide perdue dans les champignons, qui rentre chez elle et se met à rêver de toi. Un forgeron, au bord de la capitale, te propose d'affûter ton aiguille, encore et encore, jusqu'à l'arme parfaite.
 
 C'est un détail que beaucoup de joueurs remarquent sans y penser : à mesure que tu sauves des gens, le village revit. La surface, morte au début, devient le seul endroit chaleureux du jeu. Tu y remontes pour respirer.
@@ -50,6 +56,8 @@ C'est un détail que beaucoup de joueurs remarquent sans y penser : à mesure qu
 # Le royaume
 
 Hallownest est une carte immense, un réseau de galeries où l'on revient sans cesse sur ses pas. Chaque région a son peuple, sa couleur, sa musique, et sa manière d'être morte.
+
+@art g 3
 
 Le Carrefour oublié est la grande route, juste sous le village. C'est là qu'on rencontre les premiers insectes infectés, des carapaces vides qui errent et attaquent. Plus tard dans le jeu, quand l'infection progresse, le Carrefour se couvre de bulles orange et ses chemins changent.
 
@@ -77,6 +85,8 @@ Et partout, il y a des bancs. Le banc est le seul endroit sûr du jeu. On s'y re
 
 Au commencement, avant Hallownest, il y avait la Radiance. Une déesse-papillon de lumière, qui régnait sur les esprits des insectes. Les insectes n'avaient pas vraiment de pensée à eux. Ils vivaient dans une sorte de rêve commun, et ce rêve, c'était elle. Une tribu de papillons de nuit, les Mites, la vénérait et gardait sa mémoire.
 
+@art 6
+
 Puis un autre est venu. Un ver géant, un être supérieur, un Wyrm. Il est mort, et de son cadavre est sorti un petit être pâle, en forme d'insecte : le Roi pâle.
 
 Le Roi pâle a fait quelque chose que la Radiance n'avait jamais fait. Il a donné aux insectes un esprit propre. La conscience, la volonté, la pensée. Avec ce don, ils ont bâti une civilisation : Hallownest. Des villes, des lois, des routes, une capitale sous la pluie éternelle. Même les Mites ont fini par se tourner vers lui. La Radiance a été oubliée.
@@ -87,6 +97,8 @@ Mais on ne tue pas un dieu en l'oubliant.
 
 La Radiance a survécu dans les rêves. Les insectes de Hallownest, devenus conscients, rêvaient encore, et dans leurs rêves, elle revenait. Une lumière orange, chaude, douce, qui murmurait de revenir à elle.
 
+@art g 4
+
 Ceux qui l'écoutaient tombaient malades. Leurs yeux devenaient orange. Ils perdaient la raison, attaquaient les autres. Même les morts se relevaient, animés par la lumière. On l'a appelée l'Infection.
 
 Le Roi pâle a compris que le royaume entier allait sombrer. Et il a imaginé une solution terrible.
@@ -94,6 +106,8 @@ Le Roi pâle a compris que le royaume entier allait sombrer. Et il a imaginé un
 # Le vide
 
 Sous Hallownest, il y a l'Abîme. Un gouffre noir, au fond du monde, rempli de Vide : une substance de ténèbres pures, sans pensée, sans lumière. Le Vide est l'opposé exact de la Radiance.
+
+@art 7
 
 Le Roi pâle a voulu créer un réceptacle. Un être fait de Vide, dans lequel on pourrait enfermer la Radiance pour toujours. Pour cela, il fallait que ce réceptacle soit parfaitement creux : sans esprit, sans volonté, sans voix. Rien que la Radiance puisse atteindre.
 
@@ -121,6 +135,8 @@ Les trois Rêveurs dorment, chacun dans son sanctuaire, protégés par leurs ser
 
 Le sceau n'a pas suffi. L'infection a continué de fuir, lentement. Le royaume s'est effondré. Le Roi pâle a disparu, dans son palais blanc, caché dans un rêve. La Dame blanche s'est enfermée dans son jardin. Les cinq grands chevaliers du roi sont morts ou ont fui. Une d'entre eux, Dryya, est morte en protégeant le jardin de la reine.
 
+@art g 5
+
 Quand tu arrives, Hallownest est un tombeau. La capitale, la Cité des larmes, est noyée sous une pluie qui ne s'arrête jamais, venue du lac au-dessus. Ses habitants sont des carapaces vides, possédées par la lumière orange. Les tribus qui restent, les mantes, les abeilles de la Ruche, les araignées de Nid-Profond, se sont repliées sur elles-mêmes.
 
 Et dans le temple, le Chevalier creux se bat, seul, depuis des siècles, contre ce qu'il contient.
@@ -128,6 +144,8 @@ Et dans le temple, le Chevalier creux se bat, seul, depuis des siècles, contre 
 # Les chevaliers du roi
 
 Le Roi pâle avait cinq grands chevaliers. On les retrouve en morceaux, comme tout le reste.
+
+@art 8
 
 Ogrim, un gros insecte joyeux, est toujours à son poste dans les égouts de la capitale, des siècles après. On l'appelle le Défenseur du fumier. Il te combat en riant, comme un jeu. Il aimait une autre des cinq, Isma, une chevalière douce qui a quitté le service du roi. Quand tu trouves l'arbre où elle est morte, au fond des égouts, il fleurit encore.
 
@@ -140,6 +158,8 @@ C'est une des choses les plus tendres du jeu : un chevalier qui garde un royaume
 
 Le royaume avait aussi ses maîtres d'armes. Le plus grand s'appelait le Grand Sage de l'aiguille. Il a formé trois élèves, devenus maîtres à leur tour : Oro, Mato, et Sheo. Les deux premiers sont frères, et ne se parlent plus depuis longtemps. Le troisième a abandonné le combat pour la peinture, et il te reçoit dans sa cabane de Vertchemin, entouré de toiles.
 
+@art g 6
+
 Chacun t'apprend une technique, si tu le trouves et si tu as de quoi payer. Et il y a une révélation qui fait sourire tous les joueurs : le Grand Sage de l'aiguille, le maître légendaire, c'est Sly. Le petit marchand avare et râleur que tu as libéré au début du jeu. Il a pris sa retraite et vend des babioles au village. Si tu lui montres que tu as appris les trois techniques de ses élèves, il te teste, et te transmet la sienne.
 
 C'est toute la manière de Hollow Knight : les personnages les plus modestes cachent souvent les histoires les plus grandes.
@@ -147,6 +167,8 @@ C'est toute la manière de Hollow Knight : les personnages les plus modestes cac
 # Le voyage
 
 Tu descends. Tu croises des personnages qui ont chacun leur raison d'être là.
+
+@art 9
 
 Hornet, la fille d'Herrah, qui garde le royaume et te met à l'épreuve, encore et encore. Elle sait ce que tu es. Elle veut savoir si tu es digne.
 
@@ -160,6 +182,8 @@ La Voyante, la dernière des Mites, qui te donne la Lame des rêves et t'expliqu
 # Ceux qui restent
 
 Certains de ces personnages ont des histoires qui se jouent sur tout le jeu, et qu'on ne voit qu'en revenant les voir.
+
+@art g 7
 
 Quirrel est peut-être le plus beau. On le croise au bord des routes, dans les endroits les plus calmes, souvent assis, à contempler un paysage. Il parle peu, il sourit, il a l'air heureux d'être là. Il dit qu'il ne sait pas pourquoi il est venu, qu'il a l'impression d'être déjà venu. On le retrouve dans les Archives de Monomon, et on comprend : il était son élève, son serviteur. Il a protégé son sommeil. Quand tu la libères, quand tu brises son rêve, il s'en va. On le retrouve une dernière fois au bord du lac bleu, au-delà du royaume. Il a retrouvé la mémoire. Il te parle une dernière fois, puis il disparaît, et il ne reste que son aiguille plantée dans le sable.
 
@@ -185,6 +209,8 @@ Si tu tues assez de chaque espèce, il te donne sa marque. Le Chasseur est la pr
 
 Pour atteindre le Chevalier creux, tu dois ouvrir le temple. Et pour l'ouvrir, tu dois tuer les trois Rêveurs dans leur sommeil.
 
+@art 10
+
 Tu entres dans leurs rêves. Tu les frappes. Monomon, Lurien, Herrah. Avec chacun, une partie du sceau se brise. Hornet t'attend à la porte du temple. Elle sait ce que tu vas faire, et elle t'aide, à sa façon.
 
 Dans le temple, le Chevalier creux est enchaîné. Il est devenu fou, infecté, il se poignarde lui-même entre deux attaques pour retenir ce qu'il contient. C'est un combat contre ton grand frère.
@@ -192,6 +218,8 @@ Dans le temple, le Chevalier creux est enchaîné. Il est devenu fou, infecté, 
 # Les fins
 
 Le jeu a plusieurs fins, et chacune dit quelque chose.
+
+@art g 8
 
 Si tu le bats simplement, tu prends sa place. Tu deviens le nouveau réceptacle, scellé dans le temple. L'infection est contenue pour un temps. Le cycle recommence.
 
@@ -206,6 +234,8 @@ L'extension Godmaster ajoute une dernière couche. Dans un panthéon secret, apr
 # Les autres histoires
 
 Hallownest est plein de récits secondaires, et beaucoup sont parmi les meilleurs du jeu.
+
+@art 11
 
 Les Mantes, un peuple guerrier, ont refusé l'infection par la seule force de leur volonté. Leurs trois seigneurs te combattent par honneur, puis s'inclinent. Une partie de la tribu, les Traîtres, a fait un autre choix.
 
@@ -222,11 +252,15 @@ La Dame blanche, dans son jardin, qui regrette ses enfants. Le Roi pâle, dans s
 
 La musique de Christopher Larkin est un des personnages du jeu. Chaque région a son thème. Dirtmouth a une mélodie de piano lente, solitaire. Vertchemin, des cordes légères. La Cité des larmes, un thème mélancolique où l'on entend la pluie. Nid-Profond a très peu de musique, surtout des sons, des grincements, des respirations.
 
+@art g 9
+
 Et il y a un motif qui revient partout, transformé : celui du Chevalier creux, du réceptacle. On l'entend dans le combat final, joué comme une marche funèbre, avec un orgue et des cordes, pendant que ton frère se poignarde lui-même.
 
 # Le panthéon
 
 L'extension gratuite Godmaster, sortie en 2018, ajoute à la fin du jeu un lieu étrange : la Maison des dieux. Un monde de rêve, au-dessus de tout, où vit une créature, la Chercheuse de dieux, qui veut affronter les êtres les plus puissants du royaume, dans leurs rêves, pour en faire ses dieux.
+
+@art 12
 
 Tu y rejoues tous les combats du jeu, dans des versions plus difficiles, enchaînés les uns après les autres, dans cinq panthéons. Le dernier, le Panthéon de Hallownest, demande d'affronter presque tous les ennemis du jeu à la suite, sans mourir. Au bout, il y a la Radiance absolue, et une fin où le Vide se déverse sur le monde.
 
@@ -241,6 +275,8 @@ En 2025, après des années d'attente, Team Cherry a sorti la suite, Silksong. H
 # Ce que tu peux en prendre
 
 Hollow Knight t'apprend à faire un monde avec peu. Trois personnes, des dessins à la main, des personnages de quelques pixels. Et pourtant tout est cohérent : chaque zone a son peuple, sa musique, sa couleur, sa tragédie.
+
+@art g 10
 
 Il t'apprend aussi à cacher le sujet dans le joueur lui-même. Tu crois être un aventurier. Tu es un enfant raté d'une expérience, revenu de la fosse où on l'avait jeté. Le jeu ne te le dit pas en face. Il te le montre, lentement, jusqu'à ce que tu descendes dans l'Abîme et que tu voies les autres.
 

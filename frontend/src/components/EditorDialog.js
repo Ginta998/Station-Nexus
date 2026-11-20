@@ -1,36 +1,169 @@
 import { useEffect, useRef, useState } from "react";
 import VersionHistory from "@/components/VersionHistory";
-import { IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoExpandOutline, IoContractOutline, IoCreateOutline } from "react-icons/io5";
+import { IoSearch, IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoCreateOutline, IoChevronUp, IoChevronDown, IoEyeOutline, IoTimeOutline, IoFilmOutline, IoLinkOutline, IoGameControllerOutline, IoInformationCircleOutline, IoListOutline, IoReaderOutline, IoCheckmark, IoArrowBack, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset } from "@/lib/api";
+import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset, assetUrl, createJournalEntry } from "@/lib/api";
 import PageWriter from "@/components/PageWriter";
+import { WORLD_STYLES, WORLD_MASKED, worldStyleOf, usePosterAccent } from "@/components/nexus/world";
+import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexandrie/looks";
+import { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
+import { CoverDialog } from "@/components/atelier/AlexCore";
+import { useWorldThemes, deleteWorldTheme } from "@/lib/worldThemes";
+import WorldThemeLab from "@/components/nexus/WorldThemeLab";
+import "@/components/editor.css";
+
+/*
+  L'atelier d'une œuvre : un seul éditeur pour créer et modifier chaque aspect,
+  de l'identité au monde (ambiance, couleur, fond), au contenu, aux médias et à la publication.
+  Ouvert depuis l'accueil (nouvelle création) ou depuis l'œuvre elle-même (bouton Modifier, à côté du cœur).
+*/
 
 const empty = {
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
-  poster: "", accent: "", bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
+  poster: "", accent: "", world_style: "", reader_format: "", reader_look: "", units_cols: 0, units_cols_phone: 0, bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
   launch_type: "reader", launch_label: "Lancer",
-  launch_content: "", launch_url: "", film_url: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
+  launch_content: "", launch_url: "", film_url: "", video_ratio: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
   intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
 };
 
 const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-
-const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
-const Label = ({ children }) => <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--text-secondary)" }}>{children}</label>;
+const LEGACY = { manga: "hero", vinyle: "eve", roman: "yorha" };
+const STYLE_HINT = {
+  cinema: "Bandes noires, grand titre, menu de DVD", vhs: "Écran cathodique, menus d'affichage",
+  arcade: "Écran titre, police pixel, PRESS START", yorha: "Papier crème, menus carrés",
+  eve: "Verre sombre, lignes fines, losanges", hero: "Panneaux inclinés, couleurs vives",
+  cathedrale: "Noir et rouge sang, gothique, cadre gravé", couronne: "Noir et or, halo, filets dorés",
+  trait: "Aplats, contours encrés, trames", sengoku: "Encre, coup de pinceau, sceau rouge",
+  survivance: "Tons sourds, notes scotchées, sobriété", cristal: "Verre, lumière, typographie fine",
+};
+const LAUNCH = [
+  ["chapters", "Chapitres", "Un lecteur page par page", IoBookOutline],
+  ["episodes", "Épisodes", "Une liste d'épisodes", IoListOutline],
+  ["film", "Film", "Lecture dans la plateforme", IoFilmOutline],
+  ["reader", "Extrait", "Un texte court à lire", IoReaderOutline],
+  ["link", "Lien", "Ouvre un autre site", IoLinkOutline],
+  ["game", "Jeu", "Le jeu d'arcade", IoGameControllerOutline],
+  ["info", "Info", "Présentation seulement", IoInformationCircleOutline],
+];
+const SECTIONS = [
+  ["id", "Identité"], ["world", "Monde"], ["themes", "Thèmes"], ["content", "Contenu"], ["media", "Médias"], ["sound", "Son"], ["publish", "Publication"],
+];
+const SWATCHES = ["#e8473f", "#f99e1a", "#e3c48d", "#3fbf7f", "#2bb3c0", "#4d8dff", "#9b6bff", "#f2f2f2"];
 
 const unitHtml = (u) => (u.rich ? (u.content || "") : (u.content ? u.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : ""));
 
-const readFile = (file, cb, max = 3) => {
-  if (file.size > max * 1024 * 1024) return toast.error(`Fichier trop lourd (max ${max} Mo)`);
-  const r = new FileReader(); r.onload = () => cb(r.result); r.readAsDataURL(file);
-};
+// Réduit une image avant de la garder (affiche, fond, moodboard) : moins lourd, même rendu à l'écran
+const shrink = (file, max = 1600) => new Promise((res, rej) => {
+  if (!file?.type?.startsWith("image/")) return rej(new Error("type"));
+  const r = new FileReader(); r.onerror = rej;
+  r.onload = () => {
+    if (file.type === "image/gif" || file.type === "image/svg+xml") return res(r.result);
+    const img = new Image();
+    img.onload = () => { const k = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL("image/jpeg", 0.86)); };
+    img.onerror = rej; img.src = r.result;
+  };
+  r.readAsDataURL(file);
+});
+const takeImage = (file, cb, max) => shrink(file, max).then(cb).catch(() => toast.error("Image illisible"));
 
-export default function EditorDialog({ open, onClose, initial, categories = [], onSaved }) {
+
+// Images plus légères : celles du moodboard, des intentions, des chapitres et des épisodes partent en fichiers
+// (servis à part et gardés en cache par le navigateur) au lieu d'alourdir la fiche de l'œuvre.
+const isData = (v) => typeof v === "string" && v.startsWith("data:image");
+const toBlob = (d) => { const [h, b] = d.split(","); const mime = h.match(/data:([^;]+)/)?.[1] || "image/jpeg"; const bin = atob(b); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: mime }); };
+async function offloadImages(cid, f) {
+  const up = async (v) => { if (!isData(v)) return v; try { const a = await uploadAsset(cid, toBlob(v), "image", "image.jpg"); return a?.id ? assetUrl(a.id) : v; } catch (_) { return v; } };
+  const list = async (arr) => { const out = []; for (const v of arr || []) out.push(await up(v)); return out; };
+  const units = async (arr) => { const out = []; for (const u of arr || []) out.push(isData(u.image) ? { ...u, image: await up(u.image) } : u); return out; };
+  return { ...f, gallery: await list(f.gallery), intention_images: await list(f.intention_images), chapters: await units(f.chapters), episodes: await units(f.episodes) };
+}
+const hasData = (f) => [...(f.gallery || []), ...(f.intention_images || []), ...(f.chapters || []).map((u) => u.image), ...(f.episodes || []).map((u) => u.image)].some(isData);
+// Brouillon : ce qui n'est pas enregistré survit à un onglet fermé (gardé dans ce navigateur)
+const DRAFT = (id) => `sx_draft_creation_${id || "new"}`;
+const saveDraft = (id, f) => {
+  try { localStorage.setItem(DRAFT(id), JSON.stringify({ at: Date.now(), form: f })); }
+  catch (_) { try { const { poster, bg_image, gallery, intention_images, ...light } = f; localStorage.setItem(DRAFT(id), JSON.stringify({ at: Date.now(), form: light, light: true })); } catch (__) {} }
+};
+const readDraft = (id) => { try { return JSON.parse(localStorage.getItem(DRAFT(id)) || "null"); } catch (_) { return null; } };
+const dropDraft = (id) => { try { localStorage.removeItem(DRAFT(id)); } catch (_) {} };
+
+// Petits éléments de l'atelier
+const Field = ({ label, hint, children, wide }) => (
+  <label className={"rl-f" + (wide ? " wide" : "")}><span className="rl-lbl">{label}</span>{children}{hint && <small className="rl-hint">{hint}</small>}</label>
+);
+const Toggle = ({ on, onChange, children, testid }) => (
+  <button type="button" role="switch" aria-checked={!!on} className={"rl-tg" + (on ? " on" : "")} onClick={() => onChange(!on)} data-testid={testid}><i /><span>{children}</span></button>
+);
+const Seg = ({ value, onChange, options, testid }) => (
+  <div className="rl-seg" role="radiogroup" data-testid={testid}>{options.map(([v, l]) => <button type="button" key={v} role="radio" aria-checked={value === v} className={value === v ? "on" : ""} onClick={() => onChange(v)}>{l}</button>)}</div>
+);
+const Drop = ({ img, ratio = "2/3", label, onFile, onClear, testid, multiple, onSearch }) => {
+  const [over, setOver] = useState(false);
+  return (
+    <div className={"rl-drop" + (over ? " over" : "") + (img ? " has" : "")} style={{ aspectRatio: ratio }} data-testid={testid}
+      onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)}
+      onDrop={(e) => { e.preventDefault(); setOver(false); const fl = [...(e.dataTransfer.files || [])]; if (fl.length) multiple ? onFile(fl) : onFile(fl[0]); }}>
+      {img && <img src={img} alt="" />}
+      <label className="rl-drop-in">
+        <IoCloudUploadOutline size={20} /><span>{img ? "Remplacer" : label}</span><small>glisser-déposer ou cliquer</small>
+        <input type="file" accept="image/*" multiple={multiple} hidden onChange={(e) => { const fl = [...(e.target.files || [])]; e.target.value = ""; if (fl.length) multiple ? onFile(fl) : onFile(fl[0]); }} />
+      </label>
+      {img && onClear && <button type="button" className="rl-drop-x" onClick={onClear} aria-label="Retirer"><IoTrashOutline size={14} /></button>}
+      {onSearch && <button type="button" className="rl-drop-s" onClick={onSearch} title="Chercher une image : SteamGridDB, affiches, manga, livres, domaine public, Pinterest…" data-testid={testid ? testid + "-search" : undefined}><IoSearch size={14} /> Chercher un artwork</button>}
+    </div>
+  );
+};
+const FilePick = ({ icon, label, present, file, onPick, onRemove, accept, testid, removeTestid }) => (
+  <div className="rl-file">
+    <label className={"rl-btn ghost" + (file || present ? " set" : "")} data-testid={testid}>
+      {icon}<span>{file ? file.name : present ? `${label} — remplacer` : label}</span>
+      <input type="file" accept={accept} hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) onPick(f); }} />
+    </label>
+    {(file || present) && onRemove && <button type="button" className="rl-ico" onClick={onRemove} data-testid={removeTestid} aria-label="Retirer"><IoTrashOutline /></button>}
+  </div>
+);
+
+// Les mondes d'origine qu'on a retirés de la liste (appui long › Retirer) : rangés avec les masqués
+const HID_KEY = "nx-ws-hidden";
+const readHidden = () => { try { return JSON.parse(localStorage.getItem(HID_KEY) || "[]"); } catch (_) { return []; } };
+// Les actions d'une carte de monde, posées sur la carte elle-même
+function WsAsk({ label, sub, ok, danger, onOk, onNo, testid }) {
+  return (
+    <span className="rl-wsask" role="dialog" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()} onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+      <b>{label}</b>{sub && <small>{sub}</small>}
+      <span><span role="button" tabIndex={0} className={"rl-wsask-ok" + (danger ? " danger" : "")} onClick={onOk} onKeyDown={(e) => e.key === "Enter" && onOk()} data-testid={testid}>{ok}</span><span role="button" tabIndex={0} onClick={onNo} onKeyDown={(e) => e.key === "Enter" && onNo()}>Annuler</span></span>
+    </span>
+  );
+}
+// Appui long (téléphone) ou clic droit (ordinateur) : ouvre les actions de la carte
+function longPress(fn) {
+  let t = null; let done = false;
+  const clear = () => { clearTimeout(t); t = null; };
+  return {
+    onContextMenu: (e) => { e.preventDefault(); fn(); },
+    onPointerDown: (e) => { if (e.button !== 0) return; done = false; t = setTimeout(() => { done = true; navigator.vibrate?.(12); fn(); }, 520); },
+    onPointerUp: clear, onPointerLeave: clear, onPointerCancel: clear,
+    onClickCapture: (e) => { if (done) { e.preventDefault(); e.stopPropagation(); done = false; } },
+  };
+}
+
+export default function EditorDialog({ open, onClose, initial, categories = [], onSaved, onPeek, cover: coverHint, section }) {
+  const myThemes = useWorldThemes();
+  const [wsAsk, setWsAsk] = useState(null); // la carte de monde dont les actions sont ouvertes (appui long)
+  const [hidden, setHidden] = useState(readHidden);
+  const setHid = (l) => { setHidden(l); try { localStorage.setItem(HID_KEY, JSON.stringify(l)); } catch (_) {} };
   const [form, setForm] = useState(empty);
+  const [sec, setSec] = useState("id");
+  const [dirty, setDirty] = useState(false);
+  const [askLeave, setAskLeave] = useState(false);
+  const [peek, setPeek] = useState(false);
+  const [wtFull, setWtFull] = useState(false); // atelier des thèmes en plein écran
+  const [draft, setDraft] = useState(null); // brouillon trouvé à l'ouverture
+  const [dark, setDark] = useState(() => { try { return localStorage.getItem("sx_atelier_dark") !== "0"; } catch (_) { return true; } });
+  const toggleDark = () => setDark((d) => { try { localStorage.setItem("sx_atelier_dark", d ? "0" : "1"); } catch (_) {} return !d; });
   const [showHistory, setShowHistory] = useState(false);
   const [fullState, setFullState] = useState("ok"); // ok | loading | error — on n'enregistre jamais une version incomplète
   const [saving, setSaving] = useState(false);
-  const [fullscreen, setFullscreen] = useState(false);
   const [audioFile, setAudioFile] = useState(null);
   const [readingFile, setReadingFile] = useState(null);
   const [chapterFiles, setChapterFiles] = useState({});
@@ -39,14 +172,16 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const [intentionFile, setIntentionFile] = useState(null);
   const [videoProg, setVideoProg] = useState({ film: 0, trailer: 0 });
   const [writing, setWriting] = useState(null); // { key: "chapters" | "episodes", i }
-  const posterInput = useRef(null);
+  const [pick, setPick] = useState(null); // recherche d'image façon Alexandrie : { label, cur, put }
+  const autoAccent = usePosterAccent(!open ? null : form.poster && form.poster.length > 4 ? form.poster : coverHint || null);
+  const keyRef = useRef(null);
 
   useEffect(() => {
     if (open) {
       const base = initial ? { ...empty, ...initial } : { ...empty, category: categories[0]?.key || "livres" };
-      setFullState("ok");
-      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFilmFile(null); setTrailerFile(null); setIntentionFile(null); setVideoProg({ film: 0, trailer: 0 }); setFullscreen(false); setWriting(null);
-      // fetch full item (with base64 images) so editing preserves poster/bg/gallery/chapters
+      setFullState("ok"); setSec(section || "id"); setDraft(readDraft(initial?.id)); setDirty(false); setAskLeave(false); setPeek(false); setShowHistory(false);
+      setForm(base); setAudioFile(null); setReadingFile(null); setChapterFiles({}); setFilmFile(null); setTrailerFile(null); setIntentionFile(null); setVideoProg({ film: 0, trailer: 0 }); setWriting(null);
+      // on charge la version complète (images comprises) pour ne rien perdre en enregistrant
       if (initial && initial.id) {
         setFullState("loading");
         getCreationFull(initial.id).then((full) => { setForm({ ...empty, ...full }); setFullState("ok"); })
@@ -55,17 +190,39 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
     }
   }, [open, initial]); // eslint-disable-line
 
+  // Brouillon : gardé quelques instants après chaque modification
+  useEffect(() => { if (!open || !dirty) return; const t = setTimeout(() => saveDraft(initial?.id, form), 900); return () => clearTimeout(t); }, [open, dirty, form]); // eslint-disable-line
+  // Aperçu en direct : le monde derrière l'atelier suit tes réglages
+  useEffect(() => { if (open && onPeek) onPeek(form); }, [open, form]); // eslint-disable-line
+  useEffect(() => () => onPeek?.(null), []); // eslint-disable-line
+
+  // Clavier : Échap pour fermer (avec confirmation si rien n'est enregistré), Ctrl/Cmd + S pour enregistrer
+  keyRef.current = (e) => {
+    if (!open || writing) return;
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); save(); }
+    else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (peek) setPeek(false); else tryClose(); }
+  };
+  useEffect(() => { const h = (e) => keyRef.current?.(e); window.addEventListener("keydown", h, true); return () => window.removeEventListener("keydown", h, true); }, []);
+
   if (!open) return null;
   const isEdit = Boolean(initial && initial.id);
-  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const upd = (fn) => { setDirty(true); setForm(fn); };
+  const set = (k, v) => upd((f) => ({ ...f, [k]: v }));
+  const close = () => { onPeek?.(null); onClose(); };
+  const tryClose = () => (dirty ? setAskLeave(true) : close());
 
+  // listes (chapitres, épisodes) : ajouter, modifier, retirer, déplacer
   const addEp = () => set("episodes", [...(form.episodes || []), { title: "", description: "", url: "", image: "" }]);
   const updEp = (i, k, v) => set("episodes", form.episodes.map((e, x) => (x === i ? { ...e, [k]: v } : e)));
   const delEp = (i) => set("episodes", form.episodes.filter((_, x) => x !== i));
-
   const addCh = () => set("chapters", [...(form.chapters || []), { title: "", content: "", description: "", image: "", rich: true, has_music: false }]);
   const updCh = (i, k, v) => set("chapters", form.chapters.map((c, x) => (x === i ? { ...c, [k]: v } : c)));
-  const delCh = (i) => { set("chapters", form.chapters.filter((_, x) => x !== i)); setChapterFiles((f) => { const n = { ...f }; delete n[i]; return n; }); };
+  const delCh = (i) => { set("chapters", form.chapters.filter((_, x) => x !== i)); setChapterFiles((f) => { const n = {}; Object.entries(f).forEach(([k, v]) => { const j = Number(k); if (j < i) n[j] = v; else if (j > i) n[j - 1] = v; }); return n; }); };
+  const move = (key, i, d) => {
+    const j = i + d; const list = [...(form[key] || [])]; if (j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]]; set(key, list);
+    if (key === "chapters") setChapterFiles((f) => { const n = { ...f }; const a = n[i]; const b = n[j]; delete n[i]; delete n[j]; if (b) n[i] = b; if (a) n[j] = a; return n; });
+  };
   const removeChapterMusic = async (i) => {
     const ch = form.chapters[i];
     if (isEdit && ch?.id) { try { await deleteChapterAudio(initial.id, ch.id); } catch (_) {} }
@@ -74,454 +231,426 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
     toast.success("Musique du chapitre retirée");
   };
 
-  const addGallery = (files) => {
-    [...files].slice(0, 12).forEach((f) => readFile(f, (d) => setForm((p) => ({ ...p, gallery: [...(p.gallery || []), d] })), 4));
-  };
-  const delGallery = (i) => set("gallery", form.gallery.filter((_, x) => x !== i));
-
-  const addIntentionImages = (files) => {
-    [...files].slice(0, 12).forEach((f) => readFile(f, (d) => setForm((p) => ({ ...p, intention_images: [...(p.intention_images || []), d] })), 4));
-  };
-  const delIntentionImage = (i) => set("intention_images", (form.intention_images || []).filter((_, x) => x !== i));
-  const pickIntentionFile = (file) => {
-    if (!file) return;
-    if (file.size > 12 * 1024 * 1024) return toast.error("Dossier trop lourd (max 12 Mo)");
-    setIntentionFile(file);
-  };
-  const removeIntentionFile = () => { setIntentionFile(null); set("intention_file_id", ""); set("intention_file_name", ""); };
+  const addImages = (key, files) => [...files].slice(0, 12).forEach((f) => takeImage(f, (d) => upd((p) => ({ ...p, [key]: [...(p[key] || []), d] })), 1600));
+  const delImage = (key, i) => set(key, (form[key] || []).filter((_, x) => x !== i));
+  const moveImage = (key, i, d) => { const l = [...(form[key] || [])]; const j = i + d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; set(key, l); };
 
   const addEmbed = () => set("embeds", [...(form.embeds || []), { platform: "youtube", url: "", label: "" }]);
   const updEmbed = (i, k, v) => set("embeds", form.embeds.map((e, x) => (x === i ? { ...e, [k]: v } : e)));
   const delEmbed = (i) => set("embeds", form.embeds.filter((_, x) => x !== i));
 
   const save = async () => {
-    if (!form.title.trim()) return toast.error("Le titre est requis");
+    if (saving) return;
+    if (!form.title.trim()) { setSec("id"); return toast.error("Le titre est requis"); }
     if (isEdit && fullState !== "ok") return toast.error(fullState === "loading" ? "Chargement de la création en cours… réessaie dans un instant" : "La création complète n'a pas pu être chargée : ferme et rouvre l'éditeur");
     setSaving(true);
     try {
-      const payload = { ...form, order: Number(form.order) || 0 };
-      const saved = isEdit ? await updateCreation(initial.id, payload, true) : await createCreation(payload);
+      let payload = { ...form, order: Number(form.order) || 0 };
+      // Les Intentions rejoignent le Making of : elles deviennent une entrée du journal de bord liée à l'œuvre
+      if (isEdit && payload.intention_enabled && (payload.intention_text || (payload.intention_images || []).length)) {
+        try {
+          if (hasData(payload)) payload = await offloadImages(initial.id, payload);
+          const imgs = payload.intention_images || [];
+          await createJournalEntry({ title: payload.intention_title || "Intentions de l'auteur", subtitle: "", creation_id: initial.id, date: new Date().toISOString().slice(0, 10), cover: imgs[0] || "", published: true, show_home: false,
+            blocks: [{ type: "text", text: payload.intention_text || "" }, ...imgs.map((url) => ({ type: "image", url }))] });
+          payload = { ...payload, intention_enabled: false };
+          toast.success("Tes Intentions sont maintenant une entrée du Making of");
+        } catch (_) { toast.error("Les Intentions n'ont pas pu passer dans le Making of (elles restent enregistrées)"); }
+      }
+      if (isEdit && hasData(payload)) payload = await offloadImages(initial.id, payload);
+      let saved = isEdit ? await updateCreation(initial.id, payload, true) : await createCreation(payload);
+      if (!isEdit && hasData(payload)) { payload = await offloadImages(saved.id, payload); saved = await updateCreation(saved.id, payload, true); }
       if (audioFile) await uploadAudio(saved.id, audioFile);
       if (readingFile) await uploadReadingAudio(saved.id, readingFile);
       if (filmFile) await uploadVideo(saved.id, "film", filmFile, (p) => setVideoProg((s) => ({ ...s, film: p })));
       if (trailerFile) await uploadVideo(saved.id, "trailer", trailerFile, (p) => setVideoProg((s) => ({ ...s, trailer: p })));
-      // intention dossier (uploaded to object assets, then linked to the creation)
       if (intentionFile) {
         try {
           const a = await uploadAsset(saved.id, intentionFile, "file", intentionFile.name);
           await updateCreation(saved.id, { ...payload, intention_file_id: a.id, intention_file_name: a.name }, true);
         } catch { toast.error("Dossier trop lourd (max 12 Mo) ?"); }
       }
-      // per-chapter music (chapters keep order → match by index to saved.chapters)
-      const chFiles = Object.entries(chapterFiles);
-      for (const [i, file] of chFiles) {
+      // musique de chaque chapitre (les chapitres gardent leur ordre : on les retrouve par position)
+      for (const [i, file] of Object.entries(chapterFiles)) {
         const ch = saved.chapters?.[Number(i)];
         if (ch && file) { try { await uploadChapterAudio(saved.id, ch.id, file); } catch (_) { toast.error(`Musique du chapitre ${Number(i) + 1} trop lourde (max 12 Mo) ?`); } }
       }
       toast.success(isEdit ? "Création mise à jour" : "Création ajoutée");
-      onSaved?.(); onClose();
+      dropDraft(isEdit ? initial.id : null); setDirty(false); onSaved?.(); close();
     } catch { toast.error("Erreur lors de l'enregistrement"); } finally { setSaving(false); }
   };
 
-  const removeAudio = async () => { if (!isEdit) return; await deleteAudio(initial.id); set("has_audio", false); toast.success("Ambiance supprimée"); };
-  const removeReading = async () => { if (!isEdit) return; await deleteReadingAudio(initial.id); set("has_reading_audio", false); toast.success("Musique de lecture supprimée"); };
+  const removeAudio = async () => { if (audioFile) { setAudioFile(null); return; } if (!isEdit) return; await deleteAudio(initial.id); set("has_audio", false); toast.success("Ambiance supprimée"); };
+  const removeReading = async () => { if (readingFile) { setReadingFile(null); return; } if (!isEdit) return; await deleteReadingAudio(initial.id); set("has_reading_audio", false); toast.success("Musique de lecture supprimée"); };
   const pickVideo = (kind, file) => {
-    if (!file) return;
     if (file.size > 200 * 1024 * 1024) return toast.error("Vidéo trop lourde (max 200 Mo). Utilise plutôt un lien.");
-    if (kind === "film") setFilmFile(file); else setTrailerFile(file);
+    setDirty(true); if (kind === "film") setFilmFile(file); else setTrailerFile(file);
   };
-  const removeFilm = async () => { if (!isEdit) return; await deleteVideo(initial.id, "film"); set("has_film", false); setFilmFile(null); toast.success("Film supprimé"); };
-  const removeTrailer = async () => { if (!isEdit) return; await deleteVideo(initial.id, "trailer"); set("has_trailer", false); setTrailerFile(null); toast.success("Bande-annonce supprimée"); };
+  const removeFilm = async () => { if (filmFile) { setFilmFile(null); return; } if (!isEdit) return; await deleteVideo(initial.id, "film"); set("has_film", false); toast.success("Film supprimé"); };
+  const removeTrailer = async () => { if (trailerFile) { setTrailerFile(null); return; } if (!isEdit) return; await deleteVideo(initial.id, "trailer"); set("has_trailer", false); toast.success("Bande-annonce supprimée"); };
 
   const wUnit = writing && form[writing.key]?.[writing.i];
-  const updUnit = (patch) => setForm((f) => ({ ...f, [writing.key]: f[writing.key].map((u, x) => (x === writing.i ? { ...u, ...patch } : u)) }));
+  const updUnit = (patch) => upd((f) => ({ ...f, [writing.key]: f[writing.key].map((u, x) => (x === writing.i ? { ...u, ...patch } : u)) }));
+
+  // ce que l'atelier sait de l'œuvre
+  const catLabel = categories.find((c) => c.key === form.category)?.label || form.category;
+  const wsAuto = worldStyleOf({ ...form, world_style: "" }, catLabel);
+  const wsCur = LEGACY[form.world_style] || form.world_style || "";
+  const wsMine = myThemes.find((d) => d.key === wsCur);
+  const ws = wsMine ? (WORLD_STYLES[wsMine.base] ? wsMine.base : wsAuto) : WORLD_STYLES[wsCur] ? wsCur : wsAuto;
+  const acc = form.accent || autoAccent || "var(--brand)";
+  const units = form.launch_type === "chapters" ? form.chapters || [] : form.launch_type === "episodes" ? form.episodes || [] : null;
+  const checks = [
+    ["Titre", !!form.title.trim(), "id"], ["Affiche", !!(form.poster && form.poster.length > 4) || !!form.has_poster, "id"], ["Résumé", !!form.synopsis.trim(), "id"],
+    ["Contenu", units ? units.length > 0 : form.launch_type === "film" ? !!(form.film_url || form.has_film || filmFile) : form.launch_type === "link" ? !!form.launch_url : form.launch_type === "reader" ? !!form.launch_content : true, "content"],
+    ["Fond du monde", !!(form.bg_image && form.bg_image.length > 4) || !!form.has_bg, "world"],
+  ];
+  const count = { content: units ? units.length : null, media: (form.gallery || []).length + (form.embeds || []).length + (form.trailer_url || form.has_trailer || trailerFile ? 1 : 0) };
+  const cover = form.poster && form.poster.length > 4 ? form.poster : coverHint || null;
+  const bgPrev = form.bg_image && form.bg_image.length > 4 ? form.bg_image : cover;
+
+  const UnitList = ({ k }) => {
+    const list = form[k] || []; const isCh = k === "chapters";
+    return (
+      <div className="rl-units">
+        <div className="rl-sub"><b>{isCh ? "Chapitres" : "Épisodes"}</b><span className="rl-count">{String(list.length).padStart(2, "0")}</span>
+          <button type="button" className="rl-btn" onClick={isCh ? addCh : addEp} data-testid={isCh ? "editor-add-chapter" : "editor-add-episode"}><IoAddOutline /> Ajouter</button></div>
+        {list.length === 0 && <p className="rl-empty">Aucun {isCh ? "chapitre" : "épisode"} pour l'instant.</p>}
+        {list.map((u, i) => (
+          <article key={i} className="rl-unit" data-testid={isCh ? `editor-chapter-${i}` : `editor-episode-${i}`}>
+            <span className="rl-unit-n">{String(i + 1).padStart(2, "0")}</span>
+            <span className="rl-thumbw"><label className="rl-thumb" title="Image">
+              {u.image ? <img src={u.image} alt="" /> : <IoImageOutline size={18} />}
+              <input type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) takeImage(f, (d) => (isCh ? updCh(i, "image", d) : updEp(i, "image", d)), 1280); }} />
+            </label>
+            <button type="button" className="rl-thumb-s" onClick={() => setPick({ label: `${isCh ? "Chapitre" : "Épisode"} ${i + 1}`, cur: u.image, put: (url) => (isCh ? updCh(i, "image", url) : updEp(i, "image", url)) })} title="Chercher une image" aria-label="Chercher une image" data-testid={`editor-unit-search-${i}`}><IoSearch size={12} /></button></span>
+            <div className="rl-unit-b">
+              <input className="rl-in" value={u.title || ""} onChange={(e) => (isCh ? updCh(i, "title", e.target.value) : updEp(i, "title", e.target.value))} placeholder={`${isCh ? "Chapitre" : "Épisode"} ${i + 1}`} />
+              <textarea className="rl-in" rows={2} value={u.description || ""} onChange={(e) => (isCh ? updCh(i, "description", e.target.value) : updEp(i, "description", e.target.value))} placeholder="Résumé affiché dans la liste" data-testid={isCh ? `editor-chapter-desc-${i}` : undefined} />
+              {!isCh && <input className="rl-in" value={u.url || ""} onChange={(e) => updEp(i, "url", e.target.value)} placeholder="Lien (optionnel)" />}
+              <div className="rl-unit-acts">
+                <button type="button" className="rl-btn" onClick={() => setWriting({ key: k, i })} data-testid={isCh ? `editor-chapter-write-${i}` : `editor-episode-write-${i}`}><IoCreateOutline /> {u.content ? "Modifier le texte" : "Rédiger"}</button>
+                {isCh && <FilePick icon={<IoMusicalNotes />} label="Musique du chapitre" present={u.has_music} file={chapterFiles[i]} accept="audio/*" testid={`editor-chapter-music-${i}`} removeTestid={`editor-chapter-music-remove-${i}`}
+                  onPick={(f) => { setDirty(true); setChapterFiles((cf) => ({ ...cf, [i]: f })); }} onRemove={() => removeChapterMusic(i)} />}
+              </div>
+            </div>
+            <div className="rl-unit-side">
+              <button type="button" className="rl-ico" onClick={() => move(k, i, -1)} disabled={i === 0} aria-label="Monter"><IoChevronUp /></button>
+              <button type="button" className="rl-ico" onClick={() => move(k, i, 1)} disabled={i === list.length - 1} aria-label="Descendre"><IoChevronDown /></button>
+              <button type="button" className="rl-ico danger" onClick={() => (isCh ? delCh(i) : delEp(i))} data-testid={isCh ? `editor-chapter-delete-${i}` : undefined} aria-label="Retirer"><IoTrashOutline /></button>
+            </div>
+          </article>
+        ))}
+        {isCh && list.length > 0 && <p className="rl-hint">Sans musique propre, un chapitre reprend la musique de lecture générale (section Son).</p>}
+      </div>
+    );
+  };
+
+  const ImageGrid = ({ k, testid }) => (
+    <div className="rl-grid">
+      {(form[k] || []).map((g, i) => (
+        <figure key={i} className="rl-gi">
+          <img src={g} alt="" />
+          <figcaption>
+            <button type="button" onClick={() => moveImage(k, i, -1)} aria-label="Avant"><IoChevronUp style={{ rotate: "-90deg" }} /></button>
+            <button type="button" onClick={() => moveImage(k, i, 1)} aria-label="Après"><IoChevronDown style={{ rotate: "-90deg" }} /></button>
+            <button type="button" onClick={() => delImage(k, i)} aria-label="Retirer"><IoTrashOutline /></button>
+          </figcaption>
+        </figure>
+      ))}
+      <div className="rl-gi add"><Drop ratio="1/1" label="Ajouter" multiple onFile={(fl) => addImages(k, fl)} testid={testid} onSearch={() => setPick({ label: "Moodboard", cur: "", put: (u) => set(k, [...(form[k] || []), u]) })} /></div>
+    </div>
+  );
+
+  const body = {
+    themes: <WorldThemeLab form={form} set={set} creationId={isEdit ? initial.id : null} bg={bgPrev} cover={cover} onPeek={onPeek && isEdit ? () => setPeek(true) : undefined} full={wtFull} onFull={setWtFull} />,
+    id: (
+      <>
+        <div className="rl-two">
+          <Drop img={cover} label="Affiche" onFile={(f) => takeImage(f, (d) => set("poster", d), 1400)} onClear={form.poster ? () => set("poster", "") : null} testid="editor-poster-upload" onSearch={() => setPick({ label: "Affiche", cur: form.poster, put: (u) => set("poster", u) })} />
+          <div className="rl-stack">
+            <Field label="Titre"><input className="rl-in big" data-testid="editor-title" value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="Le nom de l'œuvre" autoFocus={!isEdit} /></Field>
+            <Field label="Accroche" hint="Une ligne sous le titre (auteur, slogan, sous-titre)."><input className="rl-in" data-testid="editor-tagline" value={form.tagline} onChange={(e) => set("tagline", e.target.value)} /></Field>
+            <div className="rl-row">
+              <Field label="Catégorie"><select className="rl-in" data-testid="editor-category" value={form.category} onChange={(e) => set("category", e.target.value)}>{categories.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}</select></Field>
+              <Field label="Emblème" hint="Un caractère, sur la tranche et la couverture."><input className="rl-in mono" data-testid="editor-kanji" maxLength={3} value={form.kanji} onChange={(e) => set("kanji", e.target.value)} /></Field>
+            </div>
+          </div>
+        </div>
+        <Field label="Résumé" hint={`${form.synopsis.length} caractères — 300 à 500, c'est l'idéal pour la notice.`} wide><textarea className="rl-in" rows={5} data-testid="editor-synopsis" value={form.synopsis} onChange={(e) => set("synopsis", e.target.value)} /></Field>
+      </>
+    ),
+    world: (
+      <>
+        <p className="rl-sub"><b>Ambiance</b><span>Le menu de jeu de l'œuvre en expérience Nexus.</span></p>
+        <div className="rl-ws">
+          <button type="button" className={"rl-wsc" + (!wsCur ? " on" : "")} onClick={() => set("world_style", "")} data-testid="wst-style-auto">
+            <span className={"rl-mini m-" + wsAuto} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
+            <strong>Automatique</strong><small>{WORLD_STYLES[wsAuto]}, d'après le type</small>
+          </button>
+          {Object.entries(WORLD_STYLES).filter(([k]) => !(WORLD_MASKED.includes(k) || hidden.includes(k)) || wsCur === k).map(([k, label]) => (
+            <button type="button" key={k} className={"rl-wsc" + (wsCur === k ? " on" : "")} onClick={() => set("world_style", k)} {...longPress(() => setWsAsk(k))} data-testid={`wst-style-${k}`}>
+              {wsAsk === k && <WsAsk label={`Retirer « ${label} » de la liste ?`} sub="Il reste disponible dans « Ambiances masquées »." ok="Retirer" onOk={() => { setHid([...hidden, k]); setWsAsk(null); toast.success(`« ${label} » retiré de la liste`); }} onNo={() => setWsAsk(null)} />}
+              <span className={"rl-mini m-" + k} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
+              <strong>{label}</strong><small>{STYLE_HINT[k]}</small>
+            </button>
+          ))}
+        </div>
+        <p className="rl-sub"><b>Mes thèmes</b><span>Créés dans la section Thèmes (juste en dessous).</span></p>
+        <div className="rl-ws" data-testid="editor-my-themes">
+          {myThemes.map((d) => (
+            <button type="button" key={d.key} className={"rl-wsc" + (form.world_style === d.key ? " on" : "")} onClick={() => set("world_style", d.key)} {...longPress(() => setWsAsk(d.key))} data-testid={`wst-style-${d.key}`}>
+              {wsAsk === d.key && <WsAsk label={`Supprimer le monde « ${d.name} » ?`} sub="Les œuvres qui l'utilisent repassent en automatique." ok="Supprimer" danger testid={`wst-del-${d.key}`} onOk={async () => { setWsAsk(null); try { await deleteWorldTheme(d.key); if (form.world_style === d.key) set("world_style", ""); toast.success("Monde supprimé"); } catch (_) { toast.error("Suppression impossible (reconnecte-toi en admin)"); } }} onNo={() => setWsAsk(null)} />}
+              <span className={"rl-mini m-" + (d.base || "cinema")} style={{ "--a": d.hl || acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined, fontFamily: d.font_title ? `"${d.font_title}"` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
+              <strong>{d.name}</strong><small>D'après {WORLD_STYLES[d.base] || d.base}</small>
+            </button>
+          ))}
+          {<button type="button" className="rl-wsc rl-wsc-new" onClick={() => setSec("themes")} data-testid="editor-open-studio"><span className="rl-mini rl-mini-new">+</span><strong>Atelier des thèmes</strong><small>Créer ou modifier un thème, en direct sur le monde</small></button>}
+        </div>
+        {[...WORLD_MASKED, ...hidden].some((k) => k !== wsCur) && (
+          <details className="rl-masked">
+            <summary>Ambiances masquées ({[...new Set([...WORLD_MASKED, ...hidden])].filter((k) => k !== wsCur).length})</summary>
+            <div className="rl-ws">
+              {[...new Set([...WORLD_MASKED, ...hidden])].filter((k) => k !== wsCur && WORLD_STYLES[k]).map((k) => (
+                <button type="button" key={k} className="rl-wsc" onClick={() => set("world_style", k)} {...(hidden.includes(k) ? longPress(() => setWsAsk(k)) : {})} data-testid={`wst-style-${k}`}>
+                  {wsAsk === k && hidden.includes(k) && <WsAsk label={`Remettre « ${WORLD_STYLES[k]} » dans la liste ?`} ok="Remettre" onOk={() => { setHid(hidden.filter((x) => x !== k)); setWsAsk(null); }} onNo={() => setWsAsk(null)} />}
+                  <span className={"rl-mini m-" + k} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}><b>{form.title || "Titre"}</b><i /><i /><i /></span>
+                  <strong>{WORLD_STYLES[k]}</strong><small>{STYLE_HINT[k]}</small>
+                </button>
+              ))}
+            </div>
+          </details>
+        )}
+        {(form.launch_type === "chapters" || form.launch_type === "episodes") && (<>
+          <p className="rl-sub"><b>Grille des {form.launch_type === "chapters" ? "chapitres" : "épisodes"}</b><span>Combien de vignettes par ligne sur ordinateur. Peu de chapitres : grandes vignettes ; beaucoup : plus compact.</span></p>
+          {[["units_cols", "Ordinateur", [0, 1, 2, 3, 4, 5], "editor-cols-"], ["units_cols_phone", "Téléphone", [0, 1, 2, 3], "editor-pcols-"]].map(([key, lab, opts, tid]) => (
+            <div className="rl-colsrow" key={key}>
+              <span className="rl-cols-l">{lab}</span>
+              <div className="rl-cols" role="radiogroup" aria-label={lab} data-testid={key === "units_cols" ? "editor-units-cols" : "editor-units-cols-phone"}>
+                {opts.map((n) => (
+                  <button type="button" key={n} role="radio" aria-checked={(Number(form[key]) || 0) === n} className={(Number(form[key]) || 0) === n ? "on" : ""} onClick={() => set(key, n)} data-testid={`${tid}${n}`}>
+                    <span className="rl-cols-m" aria-hidden="true">{n === 0 ? <em>A</em> : Array.from({ length: n }, (_, i) => <i key={i} />)}</span>
+                    <small>{n === 0 ? "Auto" : n}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </>)}
+        <p className="rl-sub"><b>Couleur</b><span>Les menus, les reflets, la barre de progression.</span></p>
+        <div className="rl-colors">
+          <button type="button" className={"rl-sw auto" + (!form.accent ? " on" : "")} onClick={() => set("accent", "")} title="Tirée de l'affiche"><i style={{ background: autoAccent || "var(--brand)" }} /><span>Affiche</span></button>
+          {SWATCHES.map((c) => <button type="button" key={c} className={"rl-sw" + (form.accent === c ? " on" : "")} onClick={() => set("accent", c)} aria-label={c}><i style={{ background: c }} /></button>)}
+          <label className={"rl-sw pick" + (form.accent && !SWATCHES.includes(form.accent) ? " on" : "")}><i style={{ background: form.accent && !SWATCHES.includes(form.accent) ? form.accent : "conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" }} /><span>Choisir</span>
+            <input type="color" value={form.accent || "#4d8dff"} onChange={(e) => set("accent", e.target.value)} /></label>
+        </div>
+        <p className="rl-sub"><b>Fond du monde</b><span>Sans image, l'affiche sert de fond.</span></p>
+        <Drop img={form.bg_image && form.bg_image.length > 4 ? form.bg_image : null} ratio="16/7" label="Image de fond" onFile={(f) => takeImage(f, (d) => set("bg_image", d), 1920)} onClear={() => set("bg_image", "")} onSearch={() => setPick({ label: "Image de fond", cur: form.bg_image, put: (u) => set("bg_image", u) })} testid="editor-bg-upload" />
+        <details className="rl-more">
+          <summary>Réglages de la fiche Classique</summary>
+          <div className="rl-row">
+            <Field label={`Flou du fond · ${form.bg_blur}px`}><input type="range" min="0" max="60" value={form.bg_blur} onChange={(e) => set("bg_blur", Number(e.target.value))} data-testid="editor-bg-blur" /></Field>
+            <Field label={`Assombrissement · ${Math.round(form.bg_dim * 100)}%`}><input type="range" min="0" max="0.95" step="0.05" value={form.bg_dim} onChange={(e) => set("bg_dim", Number(e.target.value))} data-testid="editor-bg-dim" /></Field>
+          </div>
+          <div className="rl-row">
+            <Field label="Taille des boutons"><Seg value={form.button_size || "md"} onChange={(v) => set("button_size", v)} options={[["md", "Normale"], ["lg", "Grande"], ["xl", "Très grande"]]} testid="editor-button-size" /></Field>
+            {units && <Field label="Taille des chapitres / épisodes"><Seg value={form.chapter_size || "md"} onChange={(v) => set("chapter_size", v)} options={[["sm", "S"], ["md", "M"], ["lg", "L"], ["xl", "XL"]]} testid="editor-chapter-size" /></Field>}
+          </div>
+          {units && <Field label="Affichage de la liste"><Seg value={form.unit_display || "movix"} onChange={(v) => set("unit_display", v)} options={[["movix", "Menu + grande affiche"], ["list", "Liste complète"]]} testid="editor-unit-display" /></Field>}
+        </details>
+      </>
+    ),
+    content: (
+      <>
+        <p className="rl-sub"><b>Ce que lance l'œuvre</b></p>
+        <div className="rl-types" data-testid="editor-launch-type">
+          {LAUNCH.map(([v, l, d, Icon]) => (
+            <button type="button" key={v} className={form.launch_type === v ? "on" : ""} onClick={() => set("launch_type", v)} data-testid={`editor-launch-${v}`}><Icon size={20} /><b>{l}</b><small>{d}</small></button>
+          ))}
+        </div>
+        <div className="rl-row">
+          <Field label="Texte du bouton"><input className="rl-in" data-testid="editor-launch-label" value={form.launch_label} onChange={(e) => set("launch_label", e.target.value)} placeholder="Lancer" /></Field>
+          {units && <Field label="Nom de la liste" hint="Chapitres, Tomes, Saisons…"><input className="rl-in" data-testid="editor-unit-label" value={form.unit_label || ""} onChange={(e) => set("unit_label", e.target.value)} placeholder={form.launch_type === "episodes" ? "Épisodes" : "Chapitres"} /></Field>}
+        </div>
+        {(units || form.launch_type === "reader") && <Field label="Lecture (expérience Nexus)" hint="Le lecteur d'Alexandrie habille les chapitres en livre, en cassette ou en disque. Auto : selon le type de l'œuvre."><Seg value={form.reader_format || ""} onChange={(v) => set("reader_format", v)} options={[["", "Auto"], ["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]]} testid="editor-reader-format" /></Field>}
+        {(units || form.launch_type === "reader") && (
+          <div className="rl-f wide">
+            <span className="rl-lbl">Page du lecteur · ambiances d'Alexandrie</span>
+            <div className="rl-looks" data-testid="editor-reader-look">
+              {[["", null], ...Object.entries(BOOK_LOOKS)].map(([k, L]) => { const lk = L || BOOK_LOOKS[LOOK_OF_WORLD[ws]] || BOOK_LOOKS.didone; return (
+                <button type="button" key={k || "auto"} className={"rl-look" + ((form.reader_look || "") === k ? " on" : "")} onClick={() => set("reader_look", k)} title={k ? BOOK_LOOK_INFO[k] || k : "D'après le thème du monde"} data-testid={`editor-look-${k || "auto"}`}>
+                  <span className="rl-look-pg" style={{ background: lk.p, color: lk.ink, "--la": lk.acc }}><b>{lk.orn}</b><i /><i /><i /></span>
+                  <small>{k ? k[0].toUpperCase() + k.slice(1) : `Auto · ${LOOK_OF_WORLD[ws] || "didone"}`}</small>
+                </button>
+              ); })}
+            </div>
+          </div>
+        )}
+        {form.launch_type === "reader" && <Field label="Texte à lire" wide><textarea className="rl-in" rows={8} data-testid="editor-launch-content" value={form.launch_content} onChange={(e) => set("launch_content", e.target.value)} /></Field>}
+        {form.launch_type === "link" && <Field label="Adresse" wide><input className="rl-in" data-testid="editor-launch-url" value={form.launch_url} onChange={(e) => set("launch_url", e.target.value)} placeholder="https://…" /></Field>}
+        {form.launch_type === "film" && (
+          <div className="rl-box">
+            <Field label="Film : un lien" hint="YouTube, Vimeo, Dailymotion, .mp4 ou code iframe. Un lien passe avant un fichier envoyé." wide><input className="rl-in" data-testid="editor-film-url" value={form.film_url || ""} onChange={(e) => set("film_url", e.target.value)} placeholder="https://youtube.com/watch?v=…" /></Field>
+            <FilePick icon={<IoCloudUploadOutline />} label="…ou envoyer un fichier (max 200 Mo)" present={form.has_film} file={filmFile} accept="video/*" testid="editor-film-upload" removeTestid="editor-film-remove" onPick={(f) => pickVideo("film", f)} onRemove={removeFilm} />
+            {videoProg.film > 0 && videoProg.film < 100 && <p className="rl-prog"><i style={{ width: `${videoProg.film}%` }} />Envoi… {videoProg.film}%</p>}
+          </div>
+        )}
+        {form.launch_type === "chapters" && UnitList({ k: "chapters" })}
+        {form.launch_type === "episodes" && UnitList({ k: "episodes" })}
+        {(form.launch_type === "episodes" || form.launch_type === "film") && (
+          <Field label="Format de l'image" hint="Vertical pour une série pensée pour le téléphone (Shorts, Reels). Sans réglage, un lien Shorts passe en vertical tout seul." wide>
+            <div className="rl-seg" data-testid="editor-video-ratio">
+              {[["", "Automatique"], ["16:9", "Horizontal 16:9"], ["9:16", "Vertical 9:16"]].map(([v, t]) => <button key={v} type="button" className={(form.video_ratio || "") === v ? "on" : ""} onClick={() => set("video_ratio", v)}>{t}</button>)}
+            </div>
+          </Field>
+        )}
+      </>
+    ),
+    media: (
+      <>
+        <p className="rl-sub"><b>Moodboard</b><span className="rl-count">{String((form.gallery || []).length).padStart(2, "0")}</span></p>
+        {ImageGrid({ k: "gallery", testid: "editor-gallery-add" })}
+        <p className="rl-sub"><b>Bande-annonce</b></p>
+        <div className="rl-box">
+          <Field label="Lien" wide><input className="rl-in" data-testid="editor-trailer-url" value={form.trailer_url || ""} onChange={(e) => set("trailer_url", e.target.value)} placeholder="https://…" /></Field>
+          <FilePick icon={<IoCloudUploadOutline />} label="…ou envoyer la bande-annonce" present={form.has_trailer} file={trailerFile} accept="video/*" testid="editor-trailer-upload" removeTestid="editor-trailer-remove" onPick={(f) => pickVideo("trailer", f)} onRemove={removeTrailer} />
+          {videoProg.trailer > 0 && videoProg.trailer < 100 && <p className="rl-prog"><i style={{ width: `${videoProg.trailer}%` }} />Envoi… {videoProg.trailer}%</p>}
+        </div>
+        <p className="rl-sub"><b>Réseaux</b><button type="button" className="rl-btn" onClick={addEmbed} data-testid="editor-embed-add"><IoAddOutline /> Ajouter</button></p>
+        {(form.embeds || []).length === 0 && <p className="rl-empty">Un lien YouTube s'affiche en vidéo, un lien Wattpad ou autre en bouton.</p>}
+        {(form.embeds || []).map((em, i) => (
+          <div key={i} className="rl-embed" data-testid={`editor-embed-${i}`}>
+            <Seg value={em.platform} onChange={(v) => updEmbed(i, "platform", v)} options={[["youtube", "YouTube"], ["wattpad", "Wattpad"], ["other", "Autre"]]} />
+            <input className="rl-in" value={em.url} onChange={(e) => updEmbed(i, "url", e.target.value)} placeholder="Adresse" />
+            <input className="rl-in" value={em.label} onChange={(e) => updEmbed(i, "label", e.target.value)} placeholder="Libellé" />
+            <button type="button" className="rl-ico danger" onClick={() => delEmbed(i)} aria-label="Retirer"><IoTrashOutline /></button>
+          </div>
+        ))}
+        <p className="rl-sub"><b>Making of</b><span>Il se compose depuis le journal de bord : chaque entrée liée à l'œuvre y apparaît, intentions comprises.</span></p>
+      </>
+    ),
+    sound: (
+      <>
+        <p className="rl-sub"><b>Ambiance de l'œuvre</b><span>Jouée quand on écoute l'ambiance depuis la fiche ou le monde. Max 12 Mo.</span></p>
+        <FilePick icon={<IoMusicalNotes />} label="Choisir un fichier" present={form.has_audio} file={audioFile} accept="audio/*" testid="editor-audio-upload" removeTestid="editor-audio-remove" onPick={(f) => { setDirty(true); setAudioFile(f); }} onRemove={removeAudio} />
+        <p className="rl-sub"><b>Musique de lecture</b><span>Remplace l'ambiance pendant la lecture des chapitres.</span></p>
+        <FilePick icon={<IoBookOutline />} label="Choisir un fichier" present={form.has_reading_audio} file={readingFile} accept="audio/*" testid="editor-reading-upload" removeTestid="editor-reading-remove" onPick={(f) => { setDirty(true); setReadingFile(f); }} onRemove={removeReading} />
+        {form.launch_type === "chapters" && <p className="rl-hint">Chaque chapitre peut aussi avoir sa propre musique (section Contenu).</p>}
+      </>
+    ),
+    publish: (
+      <>
+        <Field label="Statut"><Seg value={form.status || ""} onChange={(v) => set("status", v)} options={[["", "Aucun"], ["en_cours", "En cours"], ["a_venir", "À venir"], ["termine", "Terminé"]]} testid="editor-status" /></Field>
+        <Toggle on={form.coming_soon} onChange={(v) => set("coming_soon", v)} testid="editor-coming-soon">Pas encore sortie (prochaine sortie, date)</Toggle>
+        {form.coming_soon && (
+          <div className="rl-row" data-testid="editor-release-section">
+            <Field label="Mois"><select className="rl-in" data-testid="editor-release-month" value={form.release_month || ""} onChange={(e) => set("release_month", e.target.value)}><option value="">—</option>{MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}</select></Field>
+            <Field label="Année"><input className="rl-in mono" type="number" min="2024" max="2100" placeholder="2027" data-testid="editor-release-year" value={form.release_year || ""} onChange={(e) => set("release_year", e.target.value)} /></Field>
+          </div>
+        )}
+        <Toggle on={form.is_paid} onChange={(v) => set("is_paid", v)} testid="editor-is-paid">Œuvre payante (achat à l'unité ou abonnement)</Toggle>
+        {form.is_paid && (
+          <div className="rl-row">
+            <Field label="Prix (€)"><input className="rl-in mono" type="number" min="0" step="0.5" data-testid="editor-price" value={form.price_eur} onChange={(e) => set("price_eur", Number(e.target.value))} /></Field>
+            {form.launch_type === "chapters" && <Field label="Chapitres gratuits"><input className="rl-in mono" type="number" min="0" step="1" data-testid="editor-free-chapters" value={form.free_chapters} onChange={(e) => set("free_chapters", Number(e.target.value))} /></Field>}
+          </div>
+        )}
+        {form.is_paid && <p className="rl-hint">{form.launch_type === "chapters" ? `Les ${form.free_chapters || 0} premiers chapitres restent libres, la suite après achat ou avec l'abonnement.` : "Le contenu se débloque après achat ou avec l'abonnement."}</p>}
+        <div className="rl-row">
+          <Field label="Lien d'achat externe" hint="Optionnel : boutique, éditeur…"><input className="rl-in" data-testid="editor-buy-url" value={form.buy_url} onChange={(e) => set("buy_url", e.target.value)} placeholder="https://…" /></Field>
+          <Field label="Ordre" hint="Plus petit = plus haut dans le rayon."><input className="rl-in mono" type="number" data-testid="editor-order" value={form.order} onChange={(e) => set("order", e.target.value)} /></Field>
+        </div>
+      </>
+    ),
+  };
 
   return (
     <>
-    <div className={`fixed inset-0 z-50 flex justify-center overflow-y-auto ${fullscreen ? "items-stretch p-0" : "items-start sm:items-center p-0 sm:p-6"}`}
-      style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} data-testid="editor-dialog">
-      <div className={`w-full border ${fullscreen ? "max-w-none min-h-full flex flex-col" : "max-w-2xl my-auto"}`} style={{ ...fs, background: "var(--bg-secondary)" }}>
-        <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: "var(--border-c)" }}>
-          <h2 className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{isEdit ? "Modifier la création" : "Nouvelle création"}</h2>
-          <div className="flex items-center gap-1">
-            {isEdit && <button data-testid="editor-history" onClick={() => setShowHistory((v) => !v)} className="px-3 py-1 text-xs border mr-1" style={{ borderColor: "var(--border-c)", color: showHistory ? "var(--brand)" : "var(--text-secondary)", borderRadius: "var(--radius-base)" }}>Historique</button>}
-            <button data-testid="editor-fullscreen" onClick={() => setFullscreen((v) => !v)} className="p-1" style={{ color: "var(--text-secondary)" }} title={fullscreen ? "Taille normale" : "Plein écran"}>
-              {fullscreen ? <IoContractOutline size={20} /> : <IoExpandOutline size={20} />}
+      <div className={"rl" + (dark ? " rl-dark" : "") + (peek ? " rl-peeking" : "") + (sec === "themes" ? (wtFull ? " rl-full" : " rl-wide") : "")} style={{ "--rl-acc": acc }} data-testid={peek ? "editor-dialog-peek" : "editor-dialog"} role="dialog" aria-label={isEdit ? "Modifier la création" : "Nouvelle création"}>
+        <header className="rl-top">
+          <button type="button" className="rl-ico" onClick={tryClose} aria-label="Fermer" data-testid="editor-close"><IoClose size={20} /></button>
+          <div className="rl-brand"><small>STATION NEXUS · ATELIER DE L'ŒUVRE</small><b>{form.title || (isEdit ? "Sans titre" : "Nouvelle création")}</b></div>
+          <span className={"rl-state" + (fullState === "loading" ? " load" : dirty ? " dirty" : "")}>{fullState === "loading" ? "CHARGEMENT…" : fullState === "error" ? "INCOMPLET" : dirty ? "NON ENREGISTRÉ" : "À JOUR"}</span>
+          <div className="rl-top-acts">
+            <button type="button" className="rl-ico" onClick={toggleDark} title={dark ? "Mode clair" : "Mode sombre"} aria-label={dark ? "Mode clair" : "Mode sombre"} data-testid="editor-dark">{dark ? <IoSunnyOutline size={17} /> : <IoMoonOutline size={17} />}</button>
+            {isEdit && <button type="button" className={"rl-btn ghost" + (showHistory ? " set" : "")} onClick={() => setShowHistory((v) => !v)} data-testid="editor-history"><IoTimeOutline /> <span>Historique</span></button>}
+            {onPeek && <button type="button" className="rl-btn ghost" onClick={() => setPeek(true)} data-testid="editor-peek"><IoEyeOutline /> <span>Voir dans le monde</span></button>}
+            <button type="button" className="rl-btn go" onClick={save} disabled={saving} data-testid="editor-save">{saving ? "Enregistrement…" : <><IoCheckmark /> Enregistrer</>}</button>
+          </div>
+        </header>
+
+        {draft && fullState === "ok" && (
+          <div className="rl-draft" data-testid="editor-draft">
+            <span>Un brouillon non enregistré du {new Date(draft.at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} existe{draft.light ? " (sans les images)" : ""}.</span>
+            <button type="button" className="rl-btn go" onClick={() => { setForm((f) => ({ ...f, ...draft.form })); setDirty(true); setDraft(null); toast.success("Brouillon repris"); }} data-testid="editor-draft-restore">Reprendre le brouillon</button>
+            <button type="button" className="rl-btn ghost" onClick={() => { dropDraft(initial?.id); setDraft(null); }}>Ignorer</button>
+          </div>
+        )}
+        <nav className="rl-nav" aria-label="Sections">
+          {SECTIONS.map(([k, l], i) => (
+            <button type="button" key={k} className={sec === k ? "on" : ""} onClick={() => setSec(k)} data-testid={`editor-sec-${k}`}>
+              <i>{String(i + 1).padStart(2, "0")}</i><span>{l}</span>{count[k] != null && <em>{count[k]}</em>}
             </button>
-            <button data-testid="editor-close" onClick={onClose} className="p-1" style={{ color: "var(--text-secondary)" }}><IoClose size={22} /></button>
-          </div>
-        </div>
-        {isEdit && showHistory && <VersionHistory creationId={initial.id} onRestored={(full) => { setForm({ ...empty, ...full }); setFullState("ok"); onSaved?.(full); }} />}
+          ))}
+          <p className="rl-keys"><kbd>Ctrl</kbd>+<kbd>S</kbd> enregistrer · <kbd>Échap</kbd> fermer</p>
+        </nav>
 
-        <div className={`p-5 space-y-4 overflow-y-auto ${fullscreen ? "flex-1" : "max-h-[70vh]"}`}>
-          <div className="flex gap-4">
-            <button onClick={() => posterInput.current?.click()} className="flex-shrink-0 w-28 aspect-[2/3] border flex flex-col items-center justify-center overflow-hidden" style={fs} data-testid="editor-poster-upload">
-              {form.poster ? <img src={form.poster} alt="poster" className="w-full h-full object-cover" /> : (<><IoCloudUploadOutline size={22} style={{ color: "var(--brand)" }} /><span className="text-[10px] mt-1" style={{ color: "var(--text-secondary)" }}>Poster</span></>)}
-            </button>
-            <input ref={posterInput} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0], (d) => set("poster", d))} />
-            <div className="flex-1 space-y-3">
-              <div><Label>Titre</Label><input data-testid="editor-title" value={form.title} onChange={(e) => set("title", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} /></div>
-              <div className="flex gap-3">
-                <div className="w-20"><Label>Kanji</Label><input data-testid="editor-kanji" value={form.kanji} onChange={(e) => set("kanji", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} /></div>
-                <div className="flex-1"><Label>Catégorie</Label>
-                  <select data-testid="editor-category" value={form.category} onChange={(e) => set("category", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
-                    {categories.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
-                  </select></div>
-              </div>
-            </div>
-          </div>
-
-          <div><Label>Accroche</Label><input data-testid="editor-tagline" value={form.tagline} onChange={(e) => set("tagline", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} /></div>
-          <div><Label>Synopsis</Label><textarea data-testid="editor-synopsis" rows={3} value={form.synopsis} onChange={(e) => set("synopsis", e.target.value)} className="w-full px-3 py-2 border outline-none resize-none" style={fs} /></div>
-
-          {/* Immersive background */}
-          <div className="border p-3 space-y-3" style={fs} data-testid="editor-bg-section">
-            <Label>Image de fond immersive (floutée & assombrie)</Label>
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-bg-upload">
-                <IoImageOutline style={{ color: form.bg_image ? "var(--brand)" : "var(--text-secondary)" }} />
-                {form.bg_image ? "Fond présent — remplacer" : "Choisir une image (sinon le poster est utilisé)"}
-                <input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0], (d) => set("bg_image", d), 4)} />
-              </label>
-              {form.bg_image && <button onClick={() => set("bg_image", "")} style={{ color: "var(--brand)" }}><IoTrashOutline /></button>}
-            </div>
-            <div className="flex gap-4">
-              <div className="flex-1"><Label>Flou ({form.bg_blur}px)</Label>
-                <input type="range" min="0" max="60" value={form.bg_blur} onChange={(e) => set("bg_blur", Number(e.target.value))} className="w-full" style={{ accentColor: "var(--brand)" }} data-testid="editor-bg-blur" /></div>
-              <div className="flex-1"><Label>Assombrissement ({Math.round(form.bg_dim * 100)}%)</Label>
-                <input type="range" min="0" max="0.95" step="0.05" value={form.bg_dim} onChange={(e) => set("bg_dim", Number(e.target.value))} className="w-full" style={{ accentColor: "var(--brand)" }} data-testid="editor-bg-dim" /></div>
-            </div>
-          </div>
-
-          {/* Gallery */}
-          <div className="border p-3" style={fs} data-testid="editor-gallery-section">
-            <div className="flex items-center justify-between mb-2">
-              <Label>Galerie d'images</Label>
-              <label className="flex items-center gap-1 text-xs cursor-pointer" style={{ color: "var(--brand)" }} data-testid="editor-gallery-add">
-                <IoAddOutline /> Ajouter
-                <input type="file" accept="image/*" multiple hidden onChange={(e) => e.target.files && addGallery(e.target.files)} />
-              </label>
-            </div>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-              {(form.gallery || []).map((g, i) => (
-                <div key={i} className="relative aspect-square overflow-hidden border" style={{ borderColor: "var(--border-c)" }}>
-                  <img src={g} alt="" className="w-full h-full object-cover" />
-                  <button onClick={() => delGallery(i)} className="absolute top-0.5 right-0.5 p-0.5" style={{ background: "rgba(0,0,0,0.6)", color: "#fff" }}><IoTrashOutline size={12} /></button>
-                </div>
-              ))}
-              {(form.gallery || []).length === 0 && <p className="col-span-full text-xs" style={{ color: "var(--text-secondary)" }}>Aucune image.</p>}
-            </div>
-          </div>
-
-          {/* Intentions de l'auteur */}
-          <div className="border p-3 space-y-3" style={fs} data-testid="editor-intention-section">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" data-testid="editor-intention-enabled" checked={!!form.intention_enabled} onChange={(e) => set("intention_enabled", e.target.checked)} />
-              <Label>Section « Intentions » (mot de l'auteur, making-of, dossier)</Label>
-            </label>
-            {form.intention_enabled && (
-              <div className="space-y-3">
-                <div><Label>Titre de la section</Label>
-                  <input data-testid="editor-intention-title" value={form.intention_title || ""} onChange={(e) => set("intention_title", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} placeholder="Intentions de l'auteur" /></div>
-                <div><Label>Texte (intentions, coulisses…)</Label>
-                  <textarea data-testid="editor-intention-text" rows={5} value={form.intention_text || ""} onChange={(e) => set("intention_text", e.target.value)} className="w-full px-3 py-2 border outline-none resize-none" style={fs} placeholder="Pourquoi cette œuvre, ce que tu as voulu raconter…" /></div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Images « making-of »</Label>
-                    <label className="flex items-center gap-1 text-xs cursor-pointer" style={{ color: "var(--brand)" }} data-testid="editor-intention-img-add">
-                      <IoAddOutline /> Ajouter
-                      <input type="file" accept="image/*" multiple hidden onChange={(e) => e.target.files && addIntentionImages(e.target.files)} />
-                    </label>
-                  </div>
-                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                    {(form.intention_images || []).map((g, i) => (
-                      <div key={i} className="relative aspect-square overflow-hidden border" style={{ borderColor: "var(--border-c)" }}>
-                        <img src={g} alt="" className="w-full h-full object-cover" />
-                        <button onClick={() => delIntentionImage(i)} className="absolute top-0.5 right-0.5 p-0.5" style={{ background: "rgba(0,0,0,0.6)", color: "#fff" }}><IoTrashOutline size={12} /></button>
-                      </div>
-                    ))}
-                    {(form.intention_images || []).length === 0 && <p className="col-span-full text-xs" style={{ color: "var(--text-secondary)" }}>Aucune image.</p>}
-                  </div>
-                </div>
-                <div>
-                  <Label>Dossier à télécharger (PDF, ZIP… max 12 Mo)</Label>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-intention-file-upload">
-                      <IoCloudUploadOutline style={{ color: (intentionFile || form.intention_file_id) ? "var(--brand)" : "var(--text-secondary)" }} />
-                      {intentionFile ? intentionFile.name : (form.intention_file_name || "Choisir un fichier")}
-                      <input type="file" hidden onChange={(e) => pickIntentionFile(e.target.files?.[0])} />
-                    </label>
-                    {(intentionFile || form.intention_file_id) && <button onClick={removeIntentionFile} style={{ color: "var(--brand)" }} data-testid="editor-intention-file-remove"><IoTrashOutline /></button>}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Embeds / réseaux */}
-          <div className="border p-3" style={fs} data-testid="editor-embeds-section">
-            <div className="flex items-center justify-between mb-2">
-              <Label>Intégrations réseaux (YouTube, Wattpad…)</Label>
-              <button onClick={addEmbed} className="flex items-center gap-1 text-xs" style={{ color: "var(--brand)" }} data-testid="editor-embed-add"><IoAddOutline /> Ajouter</button>
-            </div>
-            <div className="space-y-2">
-              {(form.embeds || []).map((em, i) => (
-                <div key={i} className="flex gap-2 items-center" data-testid={`editor-embed-${i}`}>
-                  <select value={em.platform} onChange={(e) => updEmbed(i, "platform", e.target.value)} className="px-2 py-1.5 border outline-none text-sm" style={fs}>
-                    <option value="youtube">YouTube</option>
-                    <option value="wattpad">Wattpad</option>
-                    <option value="other">Autre</option>
-                  </select>
-                  <input value={em.url} onChange={(e) => updEmbed(i, "url", e.target.value)} placeholder="URL" className="flex-1 px-2 py-1.5 border outline-none text-sm" style={fs} />
-                  <input value={em.label} onChange={(e) => updEmbed(i, "label", e.target.value)} placeholder="Libellé" className="w-28 px-2 py-1.5 border outline-none text-sm" style={fs} />
-                  <button onClick={() => delEmbed(i)} style={{ color: "var(--brand)" }}><IoTrashOutline /></button>
-                </div>
-              ))}
-              {(form.embeds || []).length === 0 && <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Colle un lien YouTube (vidéo) ou Wattpad pour l'afficher sur la fiche.</p>}
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <div className="flex-1"><Label>Type de lancement</Label>
-              <select data-testid="editor-launch-type" value={form.launch_type} onChange={(e) => set("launch_type", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
-                <option value="reader">Lecture (extrait)</option>
-                <option value="chapters">Lecteur de chapitres</option>
-                <option value="film">🎬 Film / Cinéma (dans la plateforme)</option>
-                <option value="link">Lien externe (nouvel onglet)</option>
-                <option value="episodes">Épisodes</option>
-                <option value="game">Jeu arcade</option>
-                <option value="info">Info seulement</option>
-              </select></div>
-            <div className="flex-1"><Label>Libellé du bouton</Label><input data-testid="editor-launch-label" value={form.launch_label} onChange={(e) => set("launch_label", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} /></div>
-          </div>
-
-          <div className="flex gap-3">
-            <div className="flex-1"><Label>Taille des boutons d'action</Label>
-              <select data-testid="editor-button-size" value={form.button_size || "md"} onChange={(e) => set("button_size", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
-                <option value="md">Normale</option>
-                <option value="lg">Grande</option>
-                <option value="xl">Très grande</option>
-              </select></div>
-            {(form.launch_type === "chapters" || form.launch_type === "episodes") && (
-              <div className="flex-1"><Label>Taille des chapitres / épisodes</Label>
-                <select data-testid="editor-chapter-size" value={form.chapter_size || "md"} onChange={(e) => set("chapter_size", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
-                  <option value="sm">Petite</option>
-                  <option value="md">Moyenne</option>
-                  <option value="lg">Grande</option>
-                  <option value="xl">Très grande</option>
-                </select></div>
-            )}
-          </div>
-
-          {(form.launch_type === "chapters" || form.launch_type === "episodes") && (
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="flex-1"><Label>Libellé de la section (optionnel)</Label>
-                <input data-testid="editor-unit-label" value={form.unit_label || ""} onChange={(e) => set("unit_label", e.target.value)}
-                  placeholder={form.launch_type === "episodes" ? "Épisodes (ou Saisons, Volumes…)" : "Chapitres (ou Tomes, Parties…)"}
-                  className="w-full px-3 py-2 border outline-none" style={fs} />
-              </div>
-              <div className="flex-1"><Label>Affichage de la section</Label>
-                <select data-testid="editor-unit-display" value={form.unit_display || "movix"} onChange={(e) => set("unit_display", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
-                  <option value="movix">Menu déroulant + grande affiche</option>
-                  <option value="list">Liste complète (les uns derrière les autres)</option>
-                </select>
-              </div>
-            </div>
+        <main className="rl-main" key={sec + (showHistory ? "h" : "")}>
+          {showHistory && isEdit ? (
+            <section className="rl-hist"><VersionHistory creationId={initial.id} onRestored={(full) => { setForm({ ...empty, ...full }); setFullState("ok"); setDirty(false); onSaved?.(full); }} /></section>
+          ) : (
+            <section className="rl-sec">
+              <header className="rl-sec-h"><i>{String(SECTIONS.findIndex(([k]) => k === sec) + 1).padStart(2, "0")}</i><h2>{SECTIONS.find(([k]) => k === sec)[1]}</h2></header>
+              {body[sec]}
+              <footer className="rl-sec-f">
+                {sec !== "id" && <button type="button" className="rl-btn ghost" onClick={() => setSec(SECTIONS[SECTIONS.findIndex(([k]) => k === sec) - 1][0])}><IoArrowBack /> {SECTIONS[SECTIONS.findIndex(([k]) => k === sec) - 1][1]}</button>}
+                {sec !== "publish" && <button type="button" className="rl-btn" onClick={() => setSec(SECTIONS[SECTIONS.findIndex(([k]) => k === sec) + 1][0])}>{SECTIONS[SECTIONS.findIndex(([k]) => k === sec) + 1][1]} →</button>}
+              </footer>
+            </section>
           )}
+        </main>
 
-          {form.launch_type === "reader" && (
-            <div><Label>Contenu à lire</Label><textarea data-testid="editor-launch-content" rows={4} value={form.launch_content} onChange={(e) => set("launch_content", e.target.value)} className="w-full px-3 py-2 border outline-none resize-none" style={fs} /></div>
-          )}
-          {form.launch_type === "link" && (
-            <div><Label>URL du film / vidéo</Label><input data-testid="editor-launch-url" value={form.launch_url} onChange={(e) => set("launch_url", e.target.value)} placeholder="https://..." className="w-full px-3 py-2 border outline-none" style={fs} /></div>
-          )}
-
-          {form.launch_type === "film" && (
-            <div className="space-y-4 p-3 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "var(--bg-primary)" }}>
-              <div>
-                <Label>🎬 Film — lien (YouTube, Vimeo, Dailymotion, .mp4, ou code iframe)</Label>
-                <input data-testid="editor-film-url" value={form.film_url || ""} onChange={(e) => set("film_url", e.target.value)} placeholder="https://youtube.com/watch?v=…" className="w-full px-3 py-2 border outline-none" style={fs} />
-                <div className="flex items-center gap-3 mt-2">
-                  <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-film-upload">
-                    <IoCloudUploadOutline /> {filmFile ? filmFile.name : (form.has_film ? "Fichier présent — remplacer" : "…ou uploader un fichier vidéo")}
-                    <input type="file" accept="video/*" hidden onChange={(e) => pickVideo("film", e.target.files?.[0])} />
-                  </label>
-                  {isEdit && form.has_film && <button onClick={removeFilm} className="text-sm" style={{ color: "var(--brand)" }} data-testid="editor-film-remove"><IoTrashOutline /></button>}
-                </div>
-                {videoProg.film > 0 && videoProg.film < 100 && <p className="text-xs mt-1" style={{ color: "var(--brand)" }}>Envoi… {videoProg.film}%</p>}
-                <p className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>Un lien est recommandé. L'upload est limité à 200 Mo (idéal pour extraits / bandes-annonces). Si un lien est renseigné, il a la priorité.</p>
-              </div>
-              <div>
-                <Label>Bande-annonce (optionnel) — lien</Label>
-                <input data-testid="editor-trailer-url" value={form.trailer_url || ""} onChange={(e) => set("trailer_url", e.target.value)} placeholder="https://…" className="w-full px-3 py-2 border outline-none" style={fs} />
-                <div className="flex items-center gap-3 mt-2">
-                  <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-trailer-upload">
-                    <IoCloudUploadOutline /> {trailerFile ? trailerFile.name : (form.has_trailer ? "Fichier présent — remplacer" : "…ou uploader la bande-annonce")}
-                    <input type="file" accept="video/*" hidden onChange={(e) => pickVideo("trailer", e.target.files?.[0])} />
-                  </label>
-                  {isEdit && form.has_trailer && <button onClick={removeTrailer} className="text-sm" style={{ color: "var(--brand)" }} data-testid="editor-trailer-remove"><IoTrashOutline /></button>}
-                </div>
-                {videoProg.trailer > 0 && videoProg.trailer < 100 && <p className="text-xs mt-1" style={{ color: "var(--brand)" }}>Envoi… {videoProg.trailer}%</p>}
-              </div>
-            </div>
-          )}
-
-          {form.launch_type === "chapters" && (
-            <div>
-              <div className="flex items-center justify-between mb-2"><Label>Chapitres</Label>
-                <button onClick={addCh} data-testid="editor-add-chapter" className="flex items-center gap-1 text-xs px-2 py-1" style={{ color: "var(--brand)" }}><IoAddOutline /> Ajouter</button></div>
-              <div className="space-y-3">
-                {(form.chapters || []).map((ch, i) => (
-                  <div key={i} className="p-3 border space-y-2" style={fs} data-testid={`editor-chapter-${i}`}>
-                    <div className="flex gap-2 items-center">
-                      <input value={ch.title} onChange={(e) => updCh(i, "title", e.target.value)} placeholder={`Titre chapitre ${i + 1}`} className="flex-1 px-2 py-1.5 border outline-none text-sm" style={fs} />
-                      <label className="p-2 border cursor-pointer" style={fs} title="Image">
-                        <IoImageOutline style={{ color: ch.image ? "var(--brand)" : "var(--text-secondary)" }} />
-                        <input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0], (d) => updCh(i, "image", d), 4)} />
-                      </label>
-                      <button onClick={() => delCh(i)} style={{ color: "var(--brand)" }} data-testid={`editor-chapter-delete-${i}`}><IoTrashOutline /></button>
-                    </div>
-                    <textarea value={ch.description || ""} onChange={(e) => updCh(i, "description", e.target.value)} placeholder="Description (résumé affiché sur la carte)" rows={2} data-testid={`editor-chapter-desc-${i}`} className="w-full px-2 py-1.5 border outline-none text-sm resize-none" style={fs} />
-                    <button onClick={() => setWriting({ key: "chapters", i })} data-testid={`editor-chapter-write-${i}`}
-                      className="flex items-center gap-2 px-3 py-2 border text-sm font-semibold w-full justify-center" style={{ ...fs, color: "var(--brand)", borderColor: "var(--brand)" }}>
-                      <IoCreateOutline /> {ch.content ? "Modifier le chapitre" : "Rédiger le chapitre"}
-                    </button>
-                    {/* per-chapter music */}
-                    <div className="flex items-center gap-2 flex-wrap pt-1">
-                      <label className="flex items-center gap-2 px-3 py-1.5 border cursor-pointer text-xs" style={fs} data-testid={`editor-chapter-music-${i}`}>
-                        <IoMusicalNotes style={{ color: (chapterFiles[i] || ch.has_music) ? "var(--brand)" : "var(--text-secondary)" }} />
-                        {chapterFiles[i]?.name || (ch.has_music ? "Musique du chapitre — remplacer" : "Musique de ce chapitre (max 12 Mo)")}
-                        <input type="file" accept="audio/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) setChapterFiles((cf) => ({ ...cf, [i]: f })); }} />
-                      </label>
-                      {(ch.has_music || chapterFiles[i]) && <button onClick={() => removeChapterMusic(i)} className="text-xs" style={{ color: "var(--brand)" }} data-testid={`editor-chapter-music-remove-${i}`}><IoTrashOutline /></button>}
-                    </div>
-                    <p className="text-[10px]" style={{ color: "var(--text-secondary)" }}>Astuce : sans musique propre, ce chapitre reprend la musique de lecture générale de l'œuvre.</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          {form.launch_type === "episodes" && (
-            <div>
-              <div className="flex items-center justify-between mb-2"><Label>Épisodes</Label>
-                <button onClick={addEp} data-testid="editor-add-episode" className="flex items-center gap-1 text-xs px-2 py-1" style={{ color: "var(--brand)" }}><IoAddOutline /> Ajouter</button></div>
-              <div className="space-y-3">
-                {(form.episodes || []).map((ep, i) => (
-                  <div key={i} data-testid={`editor-episode-${i}`} className="flex gap-3 p-2.5 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-                    <label className="relative flex-shrink-0 w-24 aspect-video overflow-hidden cursor-pointer flex items-center justify-center" style={{ borderRadius: "var(--radius-base)", border: "1px dashed var(--border-c)", background: "var(--bg-secondary)" }}>
-                      {ep.image ? <img src={ep.image} alt="" className="absolute inset-0 w-full h-full object-cover" /> : <IoImageOutline size={20} style={{ color: "var(--text-secondary)" }} />}
-                      <input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0], (dta) => updEp(i, "image", dta), 4)} />
-                    </label>
-                    <div className="flex-1 min-w-0 space-y-1.5">
-                      <input value={ep.title} onChange={(e) => updEp(i, "title", e.target.value)} placeholder={`Titre épisode ${i + 1}`} className="w-full px-2 py-1.5 border outline-none text-sm" style={fs} />
-                      <textarea value={ep.description} onChange={(e) => updEp(i, "description", e.target.value)} placeholder="Description (résumé de l'épisode)" rows={2} className="w-full px-2 py-1.5 border outline-none text-sm resize-none" style={fs} />
-                      <input value={ep.url} onChange={(e) => updEp(i, "url", e.target.value)} placeholder="Lien (optionnel)" className="w-full px-2 py-1.5 border outline-none text-sm" style={fs} />
-                      <button onClick={() => setWriting({ key: "episodes", i })} data-testid={`editor-episode-write-${i}`}
-                        className="flex items-center gap-2 px-3 py-1.5 border text-xs font-semibold w-full justify-center" style={{ ...fs, color: "var(--brand)", borderColor: "var(--brand)" }}>
-                        <IoCreateOutline /> {ep.content ? "Modifier le texte de l'épisode" : "Rédiger l'épisode"}
-                      </button>
-                    </div>
-                    <button onClick={() => delEp(i)} className="flex-shrink-0" style={{ color: "var(--brand)" }}><IoTrashOutline /></button>
-                  </div>
-                ))}
-                {(form.episodes || []).length === 0 && <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Aucun épisode.</p>}
-              </div>
-            </div>
-          )}
-
-          <div><Label>Lien d'achat (optionnel)</Label><input data-testid="editor-buy-url" value={form.buy_url} onChange={(e) => set("buy_url", e.target.value)} placeholder="https://..." className="w-full px-3 py-2 border outline-none" style={fs} /></div>
-
-          {/* Monétisation */}
-          <div className="p-3 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-            <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer" style={{ color: "var(--text-primary)" }}>
-              <input type="checkbox" data-testid="editor-is-paid" checked={!!form.is_paid} onChange={(e) => set("is_paid", e.target.checked)} /> 💰 Création payante (achat à l'unité / abonnement)
-            </label>
-            {form.is_paid && (
-              <div className="mt-3 flex flex-wrap items-end gap-4">
-                <div>
-                  <Label>Prix (€)</Label>
-                  <input data-testid="editor-price" type="number" min="0" step="0.5" value={form.price_eur} onChange={(e) => set("price_eur", Number(e.target.value))} className="w-28 px-3 py-2 border outline-none" style={fs} />
-                </div>
-                {form.launch_type === "chapters" && (
-                  <div>
-                    <Label>Chapitres gratuits</Label>
-                    <input data-testid="editor-free-chapters" type="number" min="0" step="1" value={form.free_chapters} onChange={(e) => set("free_chapters", Number(e.target.value))} className="w-28 px-3 py-2 border outline-none" style={fs} />
-                  </div>
-                )}
-                <p className="text-xs flex-1 min-w-[180px]" style={{ color: "var(--text-secondary)" }}>
-                  {form.launch_type === "chapters"
-                    ? `Les ${form.free_chapters || 0} premiers chapitres seront lisibles gratuitement, le reste après achat ou avec l'abonnement.`
-                    : "Le contenu sera débloqué après achat à l'unité ou avec l'abonnement."}
-                </p>
-              </div>
-            )}
+        <aside className="rl-side" aria-label="Aperçu">
+          <p className="rl-lbl">APERÇU · {(wsMine ? wsMine.name : WORLD_STYLES[ws] || "").toUpperCase()}</p>
+          <div className={"rl-mini big m-" + ws} style={{ "--a": acc, backgroundImage: bgPrev ? `url(${bgPrev})` : undefined }}>
+            <b>{form.title || "Titre"}</b>{form.tagline && <small>{form.tagline}</small>}<i /><i /><i />
           </div>
-
-          <div><Label>Musique d'ambiance de la fiche (max 12 Mo)</Label>
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-audio-upload">
-                <IoMusicalNotes style={{ color: "var(--brand)" }} />
-                {audioFile ? audioFile.name : (form.has_audio ? "Ambiance présente — remplacer" : "Choisir un fichier")}
-                <input type="file" accept="audio/*" hidden onChange={(e) => setAudioFile(e.target.files?.[0] || null)} />
-              </label>
-              {isEdit && form.has_audio && <button onClick={removeAudio} className="text-sm" style={{ color: "var(--brand)" }} data-testid="editor-audio-remove"><IoTrashOutline /></button>}
-            </div>
+          <div className="rl-card">
+            {cover ? <img src={cover} alt="" /> : <span className="rl-card-ph">{form.kanji || "?"}</span>}
+            <div><small>{catLabel}</small><b>{form.title || "Sans titre"}</b>{units && <span>{units.length} {form.launch_type === "chapters" ? "chapitre(s)" : "épisode(s)"}</span>}</div>
           </div>
+          <p className="rl-lbl">PRÊT À PUBLIER</p>
+          <ul className="rl-check">
+            {checks.map(([l, ok, s]) => <li key={l} className={ok ? "ok" : ""}><button type="button" onClick={() => setSec(s)}><i>{ok ? <IoCheckmark /> : ""}</i>{l}</button></li>)}
+          </ul>
+        </aside>
 
-          <div><Label>Musique de lecture (chapitres) — coupe l'ambiance pendant la lecture</Label>
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 px-3 py-2 border cursor-pointer text-sm" style={fs} data-testid="editor-reading-upload">
-                <IoBookOutline style={{ color: "var(--brand)" }} />
-                {readingFile ? readingFile.name : (form.has_reading_audio ? "Musique de lecture présente — remplacer" : "Choisir un fichier")}
-                <input type="file" accept="audio/*" hidden onChange={(e) => setReadingFile(e.target.files?.[0] || null)} />
-              </label>
-              {isEdit && form.has_reading_audio && <button onClick={removeReading} className="text-sm" style={{ color: "var(--brand)" }} data-testid="editor-reading-remove"><IoTrashOutline /></button>}
-            </div>
+        {askLeave && (
+          <div className="rl-ask" role="alertdialog">
+            <p><b>Des modifications ne sont pas enregistrées.</b> Les garder ?</p>
+            <button type="button" className="rl-btn go" onClick={() => { setAskLeave(false); save(); }}>Enregistrer</button>
+            <button type="button" className="rl-btn ghost" onClick={() => { dropDraft(initial?.id); close(); }} data-testid="editor-discard">Quitter sans enregistrer</button>
+            <button type="button" className="rl-btn ghost" onClick={() => setAskLeave(false)}>Rester</button>
           </div>
-
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2"><Label>Statut</Label>
-              <select data-testid="editor-status" value={form.status || ""} onChange={(e) => set("status", e.target.value)} className="px-3 py-2 border outline-none" style={fs}>
-                <option value="">Aucun</option>
-                <option value="en_cours">🟠 En cours</option>
-                <option value="a_venir">🔵 À venir</option>
-                <option value="termine">🟢 Terminé</option>
-              </select></div>
-            <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: "var(--text-primary)" }}>
-              <input type="checkbox" data-testid="editor-coming-soon" checked={form.coming_soon} onChange={(e) => set("coming_soon", e.target.checked)} /> À venir (date de sortie)
-            </label>
-            <div className="flex items-center gap-2"><Label>Ordre</Label>
-              <input data-testid="editor-order" type="number" value={form.order} onChange={(e) => set("order", e.target.value)} className="w-20 px-2 py-1 border outline-none" style={fs} /></div>
-          </div>
-
-          {form.coming_soon && (
-            <div className="border p-3 flex gap-3" style={fs} data-testid="editor-release-section">
-              <div className="flex-1"><Label>Mois de sortie (optionnel)</Label>
-                <select data-testid="editor-release-month" value={form.release_month || ""} onChange={(e) => set("release_month", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs}>
-                  <option value="">—</option>
-                  {MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}
-                </select></div>
-              <div className="w-32"><Label>Année (optionnel)</Label>
-                <input data-testid="editor-release-year" type="number" min="2024" max="2100" placeholder="2026" value={form.release_year || ""} onChange={(e) => set("release_year", e.target.value)} className="w-full px-3 py-2 border outline-none" style={fs} /></div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex justify-end gap-3 p-5 border-t" style={{ borderColor: "var(--border-c)" }}>
-          <button onClick={onClose} className="px-4 py-2 border text-sm" style={{ ...fs, color: "var(--text-secondary)" }}>Annuler</button>
-          <button data-testid="editor-save" onClick={save} disabled={saving} className="px-5 py-2 font-semibold text-sm transition-transform hover:scale-105"
-            style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)", opacity: saving ? 0.6 : 1 }}>
-            {saving ? "Enregistrement…" : "Enregistrer"}
-          </button>
-        </div>
+        )}
       </div>
-    </div>
+
+      {peek && (
+        <div className="rl-peekbar" style={{ "--rl-acc": acc }}>
+          <span><IoEyeOutline /> Aperçu en direct · rien n'est enregistré</span>
+          <button type="button" className="rl-btn ghost" onClick={() => setPeek(false)} data-testid="editor-peek-back">Revenir à l'atelier</button>
+          <button type="button" className="rl-btn go" onClick={save} disabled={saving}>{saving ? "…" : "Enregistrer"}</button>
+        </div>
+      )}
+
+      {pick && <CoverDialog b={{ id: "sn-" + (form.id || "new"), title: form.title || pick.label, room: /manga|anime/i.test(catLabel) ? "manga" : form.launch_type === "game" ? "jeux" : "cinema", format: form.launch_type === "game" || form.launch_type === "episodes" ? "vhs" : /musique|music|album/i.test(catLabel) ? "vinyle" : "livre" }}
+        current={pick.cur && pick.cur.length > 4 && !/^data:/.test(pick.cur) ? pick.cur : ""} onSave={(u) => { if (u) pick.put(u); setPick(null); }} onClose={() => setPick(null)} />}
       {wUnit && (
         <PageWriter kicker={`${form.title || "Création"} · ${writing.key === "episodes" ? "Épisode" : "Chapitre"} ${writing.i + 1}`}
           title={wUnit.title} onTitle={(v) => updUnit({ title: v })}
           html={unitHtml(wUnit)} onHtml={(v) => updUnit({ content: v, rich: true })} image={wUnit.image}
           creationId={isEdit ? initial.id : form.id} onClose={() => setWriting(null)} onSave={save} saving={saving} saveLabel="Enregistrer la création"
-          note="« Retour » garde ton texte dans le formulaire ; « Enregistrer la création » le sauvegarde définitivement." />
+          note="« Retour » garde ton texte dans l'atelier ; « Enregistrer la création » le sauvegarde définitivement." />
       )}
     </>
   );

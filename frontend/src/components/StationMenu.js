@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import AmbientMixer from "@/components/AmbientMixer";
 import { useAmbient, setAmbientMuted } from "@/lib/ambient";
 import { useQuery } from "@tanstack/react-query";
+import { IoEyeOutline, IoLibraryOutline, IoShareSocialOutline } from "react-icons/io5";
 import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -27,7 +28,7 @@ function Cov({ id, playing, small }) {
 
 const MODES = [["loop", "En boucle", IoRepeat], ["sequence", "À la suite", IoListOutline], ["shuffle", "Aléatoire", IoShuffle]];
 
-export function SoundBtn({ btn: bstyle = btn, up = false }) {
+export function SoundBtn({ btn: bstyle = btn, up = false, className }) {
   const nav = useNavigate();
   const { muted, toggleMute, ambienceId, selectAmbience, appPlaying, sfx, playMode, setPlayMode, nextAmbience, muteSfx, muteMusic, toggleSfx, toggleMusic } = useApp();
   const amb = useAmbient();
@@ -42,7 +43,7 @@ export function SoundBtn({ btn: bstyle = btn, up = false }) {
   return (
     <div className="relative">
       <button data-testid="sound-btn" onClick={() => { sfx("nav"); setOpen((o) => !o); }} title="Musique / ambiance"
-        className="p-2.5 border transition-colors" style={{ ...bstyle, color: playing ? "var(--brand)" : "var(--on-media-2)" }}>
+        className={className ? className + (playing ? " on" : "") : "p-2.5 border transition-colors"} style={className ? undefined : { ...bstyle, color: playing ? "var(--brand)" : "var(--on-media-2)" }}>
         {playing ? <span className="sx-eq"><i /><i /><i /><i /></span> : (muted ? <IoVolumeMute size={18} /> : <IoMusicalNotes size={18} />)}
       </button>
       {open && (<>
@@ -135,9 +136,9 @@ function FsBtn({ style }) {
  *   onAdd     : (admin) ouvre la création d'une œuvre — optionnel
  *   onProfile : ouvre l'édition du profil — si absent, renvoie vers /parametres
  */
-export default function StationMenu({ onAdd, onProfile }) {
+export default function StationMenu({ onAdd, onProfile, trigger }) {
   const nav = useNavigate();
-  const { isAdmin, sfx, profile, seenAnnouncements } = useApp();
+  const { isAdmin, realAdmin, spectator, setSpectator, sfx, profile, seenAnnouncements } = useApp();
   const { user, openAuth, logout } = useAuth();
   const { unread: chatUnreadCount } = useChat() || { unread: { total: 0 } };
   const salonUnread = chatUnreadCount?.total || 0;
@@ -145,10 +146,14 @@ export default function StationMenu({ onAdd, onProfile }) {
   const { data: journalAll = [] } = useQuery({ queryKey: ["journal", isAdmin], queryFn: () => listJournal() });
   const unread = journalAll.filter((e) => e.published).filter((a) => !seenAnnouncements.includes(a.id)).length;
   const go = (p) => { sfx("select"); setMenuOpen(false); nav(p); };
+  // Échap referme le menu (et rien d'autre ne réagit derrière lui)
+  useEffect(() => { if (!menuOpen) return undefined; const k = (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopImmediatePropagation(); setMenuOpen(false); } }; window.addEventListener("keydown", k, true); return () => window.removeEventListener("keydown", k, true); }, [menuOpen]);
   const openProfile = () => { setMenuOpen(false); if (onProfile) onProfile(); else nav("/parametres"); };
 
   const menuItems = [
     { label: "Journal de bord", sub: "COULISSES & NOUVEAUTÉS", icon: <IoMegaphone size={18} />, badge: unread, onClick: () => go("/journal") },
+    { label: "Partager", sub: "CARTES · STORIES · MESSAGES", icon: <IoShareSocialOutline size={18} />, onClick: () => go("/partager") },
+    { label: "Mon étagère", sub: "CE QUE TU AS LU", icon: <IoLibraryOutline size={18} />, onClick: () => go("/etagere") },
     { label: "Planning de sortie", sub: "UNE SORTIE CHAQUE DIMANCHE", icon: <IoCalendarOutline size={18} />, onClick: () => go("/planning") },
     { label: "Salon", sub: "DISCUTE EN DIRECT", icon: <IoChatbubbles size={18} />, badge: salonUnread, onClick: () => go("/salon") },
     { label: "Membres", sub: "LA COMMUNAUTÉ", icon: <IoPeople size={18} />, onClick: () => go("/membres") },
@@ -157,16 +162,19 @@ export default function StationMenu({ onAdd, onProfile }) {
     { label: "Paramètres", sub: "COMPTE · THÈME · AMBIANCE", icon: <IoSettingsOutline size={18} />, onClick: () => go("/parametres") },
     ...(isAdmin && onAdd ? [{ label: "Créer une création", sub: "MODE CRÉATION", icon: <IoAddOutline size={18} />, onClick: () => { setMenuOpen(false); onAdd(); } }] : []),
     ...(isAdmin ? [{ label: "Portail · Atelier", sub: "TON ESPACE DE CRÉATION", icon: <IoPlanetOutline size={18} />, onClick: () => go("/atelier") }] : []),
+    ...(realAdmin ? [{ label: spectator ? "Revenir en admin" : "Voir comme un visiteur", sub: spectator ? "MODE SPECTATEUR ACTIF" : "MODE SPECTATEUR", icon: <IoEyeOutline size={18} />, onClick: () => { sfx("select"); setMenuOpen(false); setSpectator(!spectator); } }] : []),
   ];
 
   return (
     <>
+      {trigger ? trigger(() => { sfx("nav"); setMenuOpen(true); }, unread + salonUnread) : (
       <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }}
-        className="relative flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105 flex-shrink-0"
-        style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-        <IoMenu size={18} /> Menu
-        {(unread > 0 || salonUnread > 0) && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{(unread + salonUnread) > 9 ? "9+" : (unread + salonUnread)}</span>}
-      </button>
+          className="relative flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105 flex-shrink-0"
+          style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
+          <IoMenu size={18} /> Menu
+          {(unread > 0 || salonUnread > 0) && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{(unread + salonUnread) > 9 ? "9+" : (unread + salonUnread)}</span>}
+        </button>
+      )}
 
       {menuOpen && createPortal(
         <div className="sx-menu-scrim" onClick={() => setMenuOpen(false)} data-testid="mobile-menu">

@@ -15,7 +15,7 @@ const RATES = [0.5, 0.75, 1, 1.25, 1.5, 2];
 const titles = {};
 
 // Lecteur cinéma : interface YouTube masquée, contrôles Nexus
-export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, onClose, fileSrc }) {
+export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, onClose, fileSrc, station = false }) {
   const box = useRef(null); const fr = useRef(null); const vr = useRef(null); const ready = useRef(false); const idle = useRef(null); const ccRef = useRef(localStorage.getItem("nx-cc") === "1"); const ccVid = useRef(""); const ccPlayed = useRef(null);
   const [src] = useState(() => {
     const v = vidOf(url); const l = listOf(url); const st = getPos(url);
@@ -43,8 +43,8 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
     else { cmd("setOption", ["captions", "track", {}]); cmd("unloadModule", ["captions"]); cmd("unloadModule", ["cc"]); }
   }
   const hasQ = queue && queue.length > 1;
-  const items = hasQ ? queue.map((x, k) => { const v = vidOf(x.url); return { v, title: titles[v]?.title || x.title, k }; }) : (s.ids || []).map((v, k) => ({ v, title: titles[v]?.title, k }));
-  const qids = hasQ ? queue.map((x) => vidOf(x.url)).filter(Boolean) : s.ids || [];
+  const items = hasQ ? queue.map((x, k) => { const v = vidOf(x.url); return { v, title: (station && x.title) || titles[v]?.title || x.title, img: x.image || "", k }; }) : (s.ids || []).map((v, k) => ({ v, title: titles[v]?.title, k }));
+  const qids = station ? [] : hasQ ? queue.map((x) => vidOf(x.url)).filter(Boolean) : s.ids || [];
   const curK = hasQ ? qi : s.i || 0;
   const nextItem = items[curK + 1];
   const playK = (k) => { setCount(null); if (hasQ) goTo(k); else cmd("playVideoAt", [k]); };
@@ -95,16 +95,18 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
     <div ref={box} className={"cine" + (mini ? " mini" : "") + (show ? " ui" : "")} onMouseMove={poke} onTouchStart={poke} data-testid="cinema-player">
       {fileSrc
         ? <video ref={vr} src={fileSrc} autoPlay playsInline onPlaying={onV} onPause={onV} onWaiting={onV} onEnded={onV} onTimeUpdate={onV} onLoadedMetadata={onV} onProgress={onV} onVolumeChange={onV} onRateChange={onV} />
-        : <iframe ref={fr} src={src} title={title || "Vidéo"} allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" onLoad={hello} />}
+        : window.__NX_PREVIEW
+          ? <div className="cine-prevnote" data-testid="cine-prevnote"><b>{title || "Vidéo"}</b><span>Dans l'aperçu sur claude.ai, YouTube est bloqué par sécurité.<br />Sur ta station, la vidéo se lit ici, dans ce lecteur.</span><a href={url} target="_blank" rel="noopener noreferrer">Vérifier le lien sur YouTube</a></div>
+          : <iframe ref={fr} src={src} title={title || "Vidéo"} allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" onLoad={hello} />}
       {!mini && <>
         <div className="cine-hit" onClick={() => { toggle(); poke(); }} onDoubleClick={fs} />
         {!playing && s.state !== -1 && <button className="cine-big" onClick={toggle} data-testid="cinema-big-play"><IoPlay size={40} /></button>}
         {s.state === 3 && <span className="cine-spin" />}
         <div className="cine-top">
           <button className="cine-ic" onClick={onClose} title="Fermer" data-testid="cinema-close"><IoChevronBack size={22} /></button>
-          <div className="cine-tt"><small className="mono">{hasQ || items.length ? `${curK + 1} / ${items.length}` : "SALON"}{s.va ? ` · ${s.va}` : ""}</small><b>{name}</b></div>
-          <button className="cine-ic" onClick={onMini} title="Mini-lecteur" data-testid="cinema-mini"><IoContractOutline size={19} /></button>
-          <button className="cine-ic" onClick={() => { toScreen(`https://www.youtube.com/embed/${vidOf(url) || "videoseries"}?autoplay=1${listOf(url) ? `&list=${listOf(url)}` : ""}&start=${Math.floor(s.t)}`); onClose(); }} title="Envoyer sur l'autre écran" data-testid="cinema-screen2"><IoDesktopOutline size={19} /></button>
+          <div className="cine-tt"><small className="mono">{hasQ || items.length ? `${station ? "ÉPISODE " : ""}${curK + 1} / ${items.length}` : station ? "STATION NEXUS" : "SALON"}{s.va ? ` · ${s.va}` : ""}</small><b>{name}</b></div>
+          {!station && <button className="cine-ic" onClick={onMini} title="Mini-lecteur" data-testid="cinema-mini"><IoContractOutline size={19} /></button>}
+          {!station && <button className="cine-ic" onClick={() => { toScreen(`https://www.youtube.com/embed/${vidOf(url) || "videoseries"}?autoplay=1${listOf(url) ? `&list=${listOf(url)}` : ""}&start=${Math.floor(s.t)}`); onClose(); }} title="Envoyer sur l'autre écran" data-testid="cinema-screen2"><IoDesktopOutline size={19} /></button>}
         </div>
         <div className="cine-bot">
           <Bar s={s} seek={seek} />
@@ -127,7 +129,7 @@ export default function Cinema({ url, title, queue, qi = 0, goTo, mini, onMini, 
         {panel && <UpNext items={items} cur={curK} play={playK} close={() => setPanel(false)} />}
         {count != null && nextItem && (
           <div className="cine-next" data-testid="cinema-countdown">
-            <img src={thumb(nextItem.v)} alt="" /><div><small className="mono">À SUIVRE DANS {count}</small><b>{nextItem.title || titles[nextItem.v]?.title || "Vidéo suivante"}</b>
+            <img src={nextItem.img || thumb(nextItem.v)} alt="" /><div><small className="mono">{station ? "ÉPISODE SUIVANT" : "À SUIVRE"} DANS {count}</small><b>{nextItem.title || titles[nextItem.v]?.title || "Vidéo suivante"}</b>
               <span><button className="cine-btn" onClick={next}>Lire maintenant</button><button className="cine-btn ghost" onClick={() => setCount(null)}>Annuler</button></span></div>
           </div>
         )}
@@ -156,7 +158,7 @@ function UpNext({ items, cur, play, close }) {
       <div className="cine-ph"><b>À suivre</b><button className="cine-ic" onClick={close}><IoClose size={18} /></button></div>
       <ol ref={ref}>{items.map((x) => (
         <li key={x.k} className={(x.k === cur ? "on" : "") + (x.k < cur ? " past" : "")} onClick={() => play(x.k)} data-testid={`cinema-upnext-${x.k}`}>
-          <span className="th" style={{ backgroundImage: `url(${thumb(x.v)})` }}>{x.k === cur && <em>EN COURS</em>}</span>
+          <span className="th" style={{ backgroundImage: `url(${x.img || thumb(x.v)})` }}>{x.k === cur && <em>EN COURS</em>}</span>
           <span className="tx"><small className="mono">{String(x.k + 1).padStart(2, "0")}</small><b>{x.title || titles[x.v]?.title || "…"}</b></span>
         </li>))}</ol>
     </aside>

@@ -1,239 +1,347 @@
 {
- "updated": "2026-11-13",
- "sections": [
-  {
-   "k": "全",
-   "title": "La Station en bref",
-   "rows": [
-    [
-     "En une phrase",
-     "Station Nexus est un site en trois morceaux : ce que tu vois (le frontend), ce qui calcule et garde les données (le backend) et la base de données. Les trois parlent entre eux par Internet."
-    ],
-    [
-     "Frontend",
-     "React. Les pages, les menus, l'Atelier, Alexandrie, la Radio : tout ce qui s'affiche dans le navigateur. Dossier frontend/."
-    ],
-    [
-     "Backend",
-     "Python (FastAPI). Les comptes, les créations, les fiches de l'Atelier, les fichiers envoyés, l'icône du site, les appels à des services (YouTube, SteamGridDB, IA). Dossier backend/, fichiers principaux server.py et atelier.py."
-    ],
-    [
-     "Base de données",
-     "MongoDB, sur Emergent. Tout ce qui doit survivre et te suivre d'un appareil à l'autre."
-    ]
-   ]
-  },
-  {
-   "k": "人",
-   "title": "Qui fait quoi",
-   "rows": [
-    [
-     "Toi",
-     "Tu décides, tu testes, tu règles les clés secrètes sur Emergent et tu donnes le feu vert avant chaque envoi sur GitHub."
-    ],
-    [
-     "Claude",
-     "Code surtout le frontend, dans une copie de travail, teste avec de faux serveurs, puis copie les fichiers dans ton dossier du Mac. Ne pousse sur GitHub qu'avec ton accord. N'a accès ni à Emergent ni à tes clés."
-    ],
-    [
-     "Emergent",
-     "Héberge le backend, la base de données et le site en ligne. Son agent modifie le backend (logique, données). Chaque demande coûte des crédits."
-    ],
-    [
-     "GitHub",
-     "Ginta998/Station-Nexus, la référence du code. Fusionner une demande (PR) sur main déclenche le déploiement. Emergent peut aussi pousser sur main de son côté : on vérifie avant chaque fusion."
-    ]
-   ]
-  },
-  {
-   "k": "路",
-   "title": "Le chemin d'une modification",
-   "rows": [
-    [
-     "1. L'idée",
-     "Tu la notes dans le Backlog (onglet à côté) ou tu la demandes à Claude."
-    ],
-    [
-     "2. Le code",
-     "Claude modifie une copie du projet, la compile et la teste."
-    ],
-    [
-     "3. Ton Mac",
-     "Les fichiers sont copiés dans ~/Downloads/Station-Nexus-main, après vérification que tu n'as rien changé entre-temps."
-    ],
-    [
-     "4. Ton test",
-     "Tu lances le site en local (localhost). Il parle au vrai serveur Emergent, donc avec tes vraies données."
-    ],
-    [
-     "5. GitHub",
-     "Avec ton accord : une PR, puis la fusion sur main."
-    ],
-    [
-     "6. En ligne",
-     "Emergent déploie stationexus.store. Si le backend a changé, il faut aussi qu'Emergent récupère le code de GitHub et redémarre le serveur."
-    ]
-   ]
-  },
-  {
-   "k": "蔵",
-   "title": "Où sont gardées les choses",
-   "rows": [
-    [
-     "Sur le serveur",
-     "Comptes, créations, univers et fiches de l'Atelier, tâches, configuration de l'Atelier (radio, backlog, Alexandrie), fichiers envoyés, icône du site. Te suit partout."
-    ],
-    [
-     "Dans ton navigateur",
-     "Thème et préférences d'affichage, progression de lecture, étoiles et coups de cœur d'Alexandrie, copie des artworks choisis, lecteur radio réduit. Reste sur cet appareil ; vider le navigateur l'efface."
-    ],
-    [
-     "Dans le code",
-     "Les livres d'Alexandrie (frontend/src/data/alexandrie), les patch notes et ce guide (frontend/src/data), les favicons (frontend/public/favicons). Changer ces contenus demande une nouvelle version du site."
-    ],
-    [
-     "Clés secrètes",
-     "Seulement dans backend/.env sur Emergent (exemple : STEAMGRIDDB_API_KEY). Jamais dans le code ni sur GitHub. Le fichier frontend/.env de ton Mac contient seulement l'adresse du serveur (REACT_APP_BACKEND_URL)."
-    ]
-   ]
-  },
-  {
-   "k": "門",
-   "title": "Station publique et Atelier",
-   "rows": [
-    [
-     "La Station",
-     "stationexus.store : le launcher, les créations, le salon public, les comptes, le soutien. Chargée pour tous les visiteurs."
-    ],
-    [
-     "L'Atelier",
-     "/atelier, réservé à l'admin. Chargé à part, seulement quand tu l'ouvres : Alexandrie, la Radio ou le Drive ne ralentissent pas le site public."
-    ],
-    [
-     "Écran de démarrage",
-     "Les splashs sont listés dans frontend/src/lib/intro.js. Genèse (frontend/src/components/intros/GenesisIntro.js) est dessiné dans un canvas : il lit les couleurs du thème (--brand et --brand-2) au lancement et les éclaircit si elles sont trop sombres. Le 天 utilise la police Noto Sans JP Thin, chargée chez Google Fonts pour ce seul caractère ; si elle n'arrive pas à temps, le navigateur prend sa police japonaise par défaut. L'écran d'entrée de l'Atelier reste à part, réservé à l'Atelier. Le choix se fait dans Réglages, onglet admin."
-    ]
-   ]
-  },
-  {
-   "k": "工",
-   "title": "Les pièces de l'Atelier",
-   "rows": [
-    [
-     "Pont",
-     "L'accueil : univers, tâches, briefing de Bunny, reprendre au Salon et à Alexandrie."
-    ],
-    [
-     "Nexus Drive",
-     "Tes univers, œuvres et fiches (scènes, personnages, lieux, documents, fichiers)."
-    ],
-    [
-     "Inbox",
-     "Les fiches rangées dans aucun univers. Les livres d'Alexandrie n'y apparaissent pas."
-    ],
-    [
-     "Cockpit",
-     "Les tâches."
-    ],
-    [
-     "Bureau, Salon",
-     "Tes outils et ton espace vidéo."
-    ],
-    [
-     "Alexandrie",
-     "La bibliothèque : salles, livres, VHS du Lore, disques de la salle Musique."
-    ],
-    [
-     "Radio, Focus",
-     "La musique de l'Atelier (réductible en haut de l'écran) et les séances de travail minutées."
-    ],
-    [
-     "Bunny",
-     "Le copilote IA (cerveaux réglables)."
-    ],
-    [
-     "Dev, Réglages",
-     "Ce journal, le backlog, ce guide ; les réglages de l'Atelier et du site (thèmes, favicon, sons)."
-    ]
-   ]
-  },
-  {
-   "k": "書",
-   "title": "Alexandrie en détail",
-   "rows": [
-    [
-     "Les livres",
-     "Des fichiers texte balisés : # chapitre, ## intertitre, > citation | source, !! LIBELLÉ :: encadré, @img lien | légende | crédit, @yt lien | légende, @art n | légende. Les livres du code sont dans frontend/src/data/alexandrie ; les livres collés suivent exactement le même format."
-    ],
-    [
-     "Modifier un livre",
-     "« Modifier (copier-coller) » ouvre le texte complet du livre (réglages et chapitres) dans la fenêtre de collage ; en l'enregistrant, une copie remplace l'original sur les rayons. « Modifier dans l'éditeur » garde l'ancienne méthode. « Revenir au texte d'origine » supprime la copie. Le bouton « Vidéo » du lecteur ajoute une vidéo YouTube à la page où l'on est ; « Changer » et « Supprimer » (avec confirmation) agissent sur une vidéo du livre."
-    ],
-    [
-     "Tes livres",
-     "Des fiches de l'Atelier marquées Alexandrie. Dans l'éditeur : un titre ou une phrase entièrement en gras devient un chapitre. Une vidéo YouTube est reconnue sous toutes ses formes (adresse collée, lien dans une phrase, lien sur un mot, lecteur intégré) ; le reste du paragraphe devient sa légende."
-    ],
-    [
-     "Coller un livre",
-     "Bouton « Coller un livre » (plan des salles) ou « Coller » (dans une salle). En tête du bloc : TITRE, SOUS-TITRE, SALLE, GENRE (récit, pensée, apprentissage), FORMAT (livre, vhs, vinyle), COTE (sinon la suivante de la salle), EMBLÈME, COULEUR, STEAMGRID (le jeu pour les @art), THÈME (une ambiance, ou « comme bloodborne » pour reprendre le look d'un livre), retouches POLICE, POLICE TEXTE, PAPIER, ENCRE, ACCENT, ORNEMENT, TEXTURE, puis À PROPOS, LIEN (libellé | adresse | note), STATUT (lu, à lire, coup de cœur), COUVERTURE (adresse d'image). Une ligne --- ou le premier # ouvre les chapitres, au même format que les livres du code. Plusieurs livres d'un coup : sépare-les par une ligne =====. L'aperçu montre la couverture, les chapitres et le thème, qu'on peut changer en direct, et « Lire l'aperçu » ouvre le livre avant de l'enregistrer. Les lignes qui commencent par // sont ignorées. Les livres collés sont des fiches de l'Atelier (dans la base, pas dans GitHub) : le bouton ⤓ du plan les exporte tous dans un fichier texte qui se recolle tel quel."
-    ],
-    [
-     "Mes lectures",
-     "Chaque livre peut être marqué Lu, À lire ou Coup de cœur (fiche du livre ou clic droit). Une étiquette discrète apparaît sur la couverture et une marque sur la tranche. Un livre lu jusqu'à la dernière page passe tout seul dans « Lus ». Le plan des salles a une colonne « Mes lectures » ; dans une salle, le filtre Tout / Lus / À lire / Coups de cœur. Ces listes sont gardées sur le serveur et suivent tous tes appareils."
-    ],
-    [
-     "Notes",
-     "Une fiche « Notes de lecture » par livre, avec la page de chaque note. Visibles dans le lecteur, la fiche du livre et le PDF."
-    ],
-    [
-     "Artworks",
-     "Ceux par défaut (Steam, Open Library, domaine public) sont dans covers.js ; tes choix sont gardés dans ton navigateur et dans la configuration. La fenêtre Artwork cherche dans cinq sources : SteamGridDB passe par le serveur et demande STEAMGRIDDB_API_KEY ; Wikipédia, MyAnimeList, Open Library et les pochettes d'albums sont interrogés directement par ton navigateur, sans clé."
-    ],
-    [
-     "Grille et artworks dans la lecture",
-     "Dans une salle, le bouton Rayon / Grille montre tous les volumes d'un coup (clic : notice, double-clic : lire, clic droit : menu). Dans le texte d'un livre, la ligne « @art 2 | légende » affiche la 2e bannière SteamGridDB du jeu, « @art g 1 | légende » sa 1re affiche verticale ; le jeu cherché est le champ art du livre, sinon son titre. Les images passent par la route /sgdb/search du serveur (clé STEAMGRIDDB_API_KEY) et ne sont pas copiées dans la Station."
-    ],
-    [
-     "Sur téléphone",
-     "Une page à la fois, qu'on fait glisser au doigt (livres, VHS et vinyles), ou en touchant le bord droit ou gauche de la page ; des flèches sont aussi dans le bas du lecteur. Pas d'effet en surimpression ni d'ouverture en 3D, et pas de calque de grain sur l'écran : ces calques faisaient clignoter les transitions. Sur ordinateur, la page change d'un coup avec un pli de lumière (livre), une avance rapide ▶▶ FF (VHS) ou une plage qui s'ouvre depuis le centre (vinyle). L'identité visuelle de chaque livre est dans frontend/src/data/alexandrie/looks.js ; le bruit des pages vient de playPageTurn dans frontend/src/lib/sound.js."
-    ]
-   ]
-  },
-  {
-   "k": "診",
-   "title": "Quand quelque chose ne marche pas",
-   "rows": [
-    [
-     "« Not Found »",
-     "Le serveur Emergent n'a pas encore le code de cette fonction : lui faire récupérer GitHub et redémarrer."
-    ],
-    [
-     "Un réglage disparaît",
-     "Même cause : le serveur ne connaît pas encore ce champ."
-    ],
-    [
-     "« Clé … absente »",
-     "La variable n'est pas dans backend/.env sur Emergent."
-    ],
-    [
-     "Rien ne change en local",
-     "Rechargement forcé (Cmd + Maj + R) : le navigateur garde parfois l'ancienne version en cache."
-    ]
-   ]
-  },
-  {
-   "k": "新",
-   "title": "Tenir ce guide à jour",
-   "rows": [
-    [
-     "Le fichier",
-     "frontend/src/data/guide.json. Chaque section est une liste de lignes « titre, explication »."
-    ],
-    [
-     "Quand",
-     "À chaque grosse modification : demande « mets à jour le guide », et la date en haut change."
-    ]
-   ]
-  }
- ]
+  "updated": "2026-11-19",
+  "sections": [
+    {
+      "k": "全",
+      "title": "La Station en bref",
+      "rows": [
+        [
+          "En une phrase",
+          "Station Nexus est un site en trois morceaux : ce que tu vois (le frontend), ce qui calcule et garde les données (le backend) et la base de données. Les trois parlent entre eux par Internet."
+        ],
+        [
+          "Frontend",
+          "React. Les pages, les menus, l'Atelier, Alexandrie, la Radio : tout ce qui s'affiche dans le navigateur. Dossier frontend/."
+        ],
+        [
+          "Backend",
+          "Python (FastAPI). Les comptes, les créations, les fiches de l'Atelier, les fichiers envoyés, l'icône du site, les appels à des services (YouTube, SteamGridDB, IA). Dossier backend/, fichiers principaux server.py et atelier.py."
+        ],
+        [
+          "Base de données",
+          "MongoDB, sur Emergent. Tout ce qui doit survivre et te suivre d'un appareil à l'autre."
+        ]
+      ]
+    },
+    {
+      "k": "人",
+      "title": "Qui fait quoi",
+      "rows": [
+        [
+          "Toi",
+          "Tu décides, tu testes, tu règles les clés secrètes sur Emergent et tu donnes le feu vert avant chaque envoi sur GitHub."
+        ],
+        [
+          "Claude",
+          "Code le frontend et le backend dans une copie de travail, teste tout dans un aperçu privé (des données d'exemple, sur ordinateur et téléphone), note chaque version dans le journal des versions. Ne pousse sur GitHub qu'avec ton accord. N'a accès ni à Emergent ni à tes clés."
+        ],
+        [
+          "Emergent",
+          "Héberge le backend, la base de données et le site en ligne. Son agent modifie le backend (logique, données). Chaque demande coûte des crédits."
+        ],
+        [
+          "GitHub",
+          "Ginta998/Station-Nexus, la référence du code. Fusionner une demande (PR) sur main déclenche le déploiement. Emergent peut aussi pousser sur main de son côté : on vérifie avant chaque fusion."
+        ]
+      ]
+    },
+    {
+      "k": "路",
+      "title": "Le chemin d'une modification",
+      "rows": [
+        [
+          "1. L'idée",
+          "Tu la notes dans le Backlog (onglet à côté) ou tu la demandes à Claude."
+        ],
+        [
+          "2. Le code",
+          "Claude modifie sa copie du projet, la compile et la teste dans l'aperçu privé (données d'exemple), sur ordinateur et téléphone. Chaque version est notée dans le journal des versions."
+        ],
+        [
+          "3. Ton test",
+          "Tu regardes l'aperçu sur ton téléphone ou ton ordinateur : tout ce qui ne dépend pas du serveur s'y voit déjà (mondes, lecteur, cartes, atelier)."
+        ],
+        [
+          "4. GitHub",
+          "Quand tu dis « pousse » : les versions partent sur main (Ginta998/Station-Nexus)."
+        ],
+        [
+          "5. En ligne",
+          "Emergent déploie le site. Si le backend a changé (server.py, atelier.py), il faut aussi qu'Emergent récupère le code de GitHub et redémarre le serveur, sinon les nouveautés du serveur ne marchent pas."
+        ],
+        [
+          "6. Vérifier",
+          "Sur le vrai site : une sortie programmée, un email de test (Atelier › Newsletter), un lien d'œuvre collé dans WhatsApp pour voir l'aperçu."
+        ]
+      ]
+    },
+    {
+      "k": "蔵",
+      "title": "Où sont gardées les choses",
+      "rows": [
+        [
+          "Sur le serveur",
+          "Œuvres, chapitres, épisodes, journal, commentaires (et réactions sur un passage), abonnés, newsletters, « Me prévenir », chiffres de visite, réglages de la station (dont le son de lancement), toutes les fiches de l'Atelier. Paramètres › Admin › Sauvegarde télécharge tout dans un fichier."
+        ],
+        [
+          "Dans ton navigateur",
+          "Ce qui n'appartient qu'à un appareil : la progression de lecture et « Reprendre », l'étagère du visiteur (Mon étagère), le confort de lecture (taille, interligne, police, page), le volume, les mondes retirés de la liste, le dessin et le format préférés des cartes. Changer de téléphone ou vider le navigateur les remet à zéro."
+        ],
+        [
+          "Dans le code",
+          "Les livres d'Alexandrie (frontend/src/data/alexandrie), les patch notes et ce guide (frontend/src/data), les favicons (frontend/public/favicons). Changer ces contenus demande une nouvelle version du site."
+        ],
+        [
+          "Clés secrètes",
+          "Sur Emergent uniquement : RESEND_API_KEY et SENDER_EMAIL (les emails), PUBLIC_APP_URL (les liens dans les emails et les aperçus), REPLY_TO_EMAIL, STEAMGRIDDB_API_KEY, les clés Stripe et des notifications. Jamais dans le code."
+        ]
+      ]
+    },
+    {
+      "k": "門",
+      "title": "Station publique et Atelier",
+      "rows": [
+        [
+          "La Station",
+          "stationexus.store : le launcher, les créations, le salon public, les comptes, le soutien. Chargée pour tous les visiteurs."
+        ],
+        [
+          "Classique ou Nexus",
+          "Paramètres › Apparence. En Nexus, les œuvres sont des objets (livres, cassettes, vinyles) et chacune s'ouvre dans son monde, avec une animation et un son de lancement (choisi par toi pour chaque format, Paramètres › Son)."
+        ],
+        [
+          "L'Atelier",
+          "/atelier, réservé à l'admin. Chargé à part, seulement quand tu l'ouvres : Alexandrie, la Radio ou le Drive ne ralentissent pas le site public."
+        ],
+        [
+          "Écran de démarrage",
+          "Les splashs sont listés dans frontend/src/lib/intro.js. Genèse (frontend/src/components/intros/GenesisIntro.js) est dessiné dans un canvas : il lit les couleurs du thème (--brand et --brand-2) au lancement et les éclaircit si elles sont trop sombres. Le 天 utilise la police Noto Sans JP Thin, chargée chez Google Fonts pour ce seul caractère ; si elle n'arrive pas à temps, le navigateur prend sa police japonaise par défaut. L'écran d'entrée de l'Atelier reste à part, réservé à l'Atelier. Le choix se fait dans Réglages, onglet admin."
+        ],
+        [
+          "Le monde d'une œuvre",
+          "Un écran plein, habillé par son thème (Cinéma, VHS, Shibuya, Hangar, Gazette…). On y trouve les chapitres ou épisodes, les coulisses, les autres mondes, les commentaires, Soutenir (les paliers sans quitter le monde) et Partager. Le retour (flèche, Échap, bouton du téléphone) remonte d'un cran sans jamais quitter : on sort par « Quitter l'univers »."
+        ],
+        [
+          "Le lecteur",
+          "Un seul lecteur pour tout (chapitres, épisodes texte, journal) : livre, cassette ou vinyle. Aa ouvre le confort de lecture. Double-clic sur une phrase (ou sélection au doigt) : « Réagir », la phrase reste surlignée avec ses réactions. Le PDF n'est proposé qu'à toi."
+        ],
+        [
+          "Le menu de la station",
+          "Journal de bord, Planning, Partager, Mon étagère, Salon, Membres, Soutien, À propos, Paramètres (et pour toi : Atelier, mode visiteur)."
+        ]
+      ]
+    },
+    {
+      "k": "発",
+      "title": "La sortie d'un chapitre",
+      "rows": [
+        [
+          "1. Écrire",
+          "Dans l'atelier (Drive, Alexandrie…), ou directement sur la station avec le crayon d'un chapitre."
+        ],
+        [
+          "2. Publier",
+          "Clic droit › Publier comme chapitre ou épisode, ou Atelier › Publication. Sortie maintenant, ou Programmer : le chapitre est en ligne mais caché jusqu'à la date."
+        ],
+        [
+          "3. Avant-première",
+          "En programmant : « X jours plus tôt » pour tous les soutiens ou à partir d'un palier. Ils le lisent en avance, marqué AVANT-PREMIÈRE."
+        ],
+        [
+          "4. Le compte à rebours",
+          "Dans le monde de l'œuvre, la prochaine sortie s'affiche avec son compte à rebours et « Me prévenir »."
+        ],
+        [
+          "5. À l'heure dite",
+          "Le serveur le voit tout seul (chaque minute) : notification et email à ceux qui ont cliqué « Me prévenir » et à ceux qui ont l'œuvre en coup de cœur ; à toute la liste si la case est cochée dans Newsletter."
+        ],
+        [
+          "6. Faire connaître",
+          "Partager : une carte aux couleurs du monde (story, post, carré) et le lien qui montre l'affiche dans WhatsApp, Messages, Discord."
+        ]
+      ]
+    },
+    {
+      "k": "広",
+      "title": "Faire connaître la station",
+      "rows": [
+        [
+          "Partager",
+          "Menu › Partager (toute la station : lien de bio, chaque œuvre, sa dernière sortie), le bouton en haut du monde, ou « Partager » en bas de l'accueil d'un monde et dans Soutenir."
+        ],
+        [
+          "Les cartes",
+          "Six dessins (Affiche, Plein cadre, Citation, Billet, Compte à rebours, Typo) en trois formats. « Partager l'image » sur le téléphone l'envoie directement à Instagram, WhatsApp…"
+        ],
+        [
+          "Les aperçus de lien",
+          "Le lien envoyé passe par /api/s/… : les messageries y lisent le titre, le résumé et une image dessinée par la station (1200 × 630). Un chapitre pas encore sorti n'est jamais dévoilé."
+        ],
+        [
+          "Lien de bio",
+          "Copie-le depuis Menu › Partager : il contient ?utm_source=instagram, pour qu'Instagram soit reconnu à coup sûr dans Tes chiffres."
+        ],
+        [
+          "Newsletter",
+          "Les abonnés s'inscrivent avec la case newsletter du compte. Envoi par Resend : il faut un domaine vérifié chez Resend, sinon les emails ne partent qu'à toi."
+        ]
+      ]
+    },
+    {
+      "k": "工",
+      "title": "Les pièces de l'Atelier",
+      "rows": [
+        [
+          "Pont",
+          "L'accueil : univers, tâches, briefing de Bunny, reprendre au Salon et à Alexandrie."
+        ],
+        [
+          "Nexus Drive",
+          "Tes univers, œuvres et fiches (scènes, personnages, lieux, documents, fichiers)."
+        ],
+        [
+          "Inbox",
+          "Les fiches rangées dans aucun univers. Les livres d'Alexandrie n'y apparaissent pas."
+        ],
+        [
+          "Cockpit",
+          "Aujourd'hui (Bunny, trois choses, la semaine), Tableau, Calendrier, Liste, Modèles. Les sorties programmées y apparaissent toutes seules."
+        ],
+        [
+          "Bureau, Salon",
+          "Le Salon a sa vidéothèque : films et séries en cassettes VHS (recherche YouTube, liens collés d'un coup, playlist), qui s'ouvrent dans ton lecteur."
+        ],
+        [
+          "Alexandrie",
+          "La bibliothèque : salles, livres, VHS du Lore, disques de la salle Musique."
+        ],
+        [
+          "Radio, Focus",
+          "La musique de l'Atelier (réductible en haut de l'écran) et les séances de travail minutées."
+        ],
+        [
+          "Bunny",
+          "Le copilote IA (cerveaux réglables)."
+        ],
+        [
+          "Dev, Réglages",
+          "Ce journal, le backlog, ce guide ; les réglages de l'Atelier et du site (thèmes, favicon, sons)."
+        ],
+        [
+          "Journal de bord",
+          "Tes entrées publiques : on les lit comme le public, le crayon ouvre l'éditeur complet. Les cassettes se modifient sur la cassette (grain neuf, usé ou très usé, enregistrement au micro)."
+        ],
+        [
+          "Publication",
+          "Le pont avec la station : relier une œuvre de l'atelier à sa création, publier un élément comme chapitre, épisode ou entrée du journal, sortir un lot, programmer une sortie (avec avant-première pour les soutiens), voir ce qui a changé des deux côtés."
+        ],
+        [
+          "Réseau narratif",
+          "Qui est relié à quoi : la constellation des fiches (glisser une étoile sur une autre pour les relier), la chronologie et la cohérence (un mort qui réapparaît, des alliés ennemis…). Taper @ dans un texte relie aussi."
+        ],
+        [
+          "Tes chiffres",
+          "Visiteurs par jour, œuvres ouvertes et lues, temps de lecture, provenance (Instagram, YouTube…), et l'endroit où l'on décroche, chapitre par chapitre. Anonyme, tes propres visites ne comptent pas."
+        ],
+        [
+          "Newsletter",
+          "Le studio : des blocs (titre, texte, image, œuvre, bouton), une trentaine d'habillages, l'aperçu exact, un test à toi, puis l'envoi. Le diagnostic dit si Resend est bien branché. Case « Email automatique à chaque sortie »."
+        ]
+      ]
+    },
+    {
+      "k": "書",
+      "title": "Alexandrie en détail",
+      "rows": [
+        [
+          "Les livres",
+          "Des fichiers texte balisés : # chapitre, ## intertitre, > citation | source, !! LIBELLÉ :: encadré, @img lien | légende | crédit, @yt lien | légende, @art n | légende. Les livres du code sont dans frontend/src/data/alexandrie ; les livres collés suivent exactement le même format."
+        ],
+        [
+          "Modifier un livre",
+          "« Modifier (copier-coller) » ouvre le texte complet du livre (réglages et chapitres) dans la fenêtre de collage ; en l'enregistrant, une copie remplace l'original sur les rayons. « Modifier dans l'éditeur » garde l'ancienne méthode. « Revenir au texte d'origine » supprime la copie. Le bouton « Vidéo » du lecteur ajoute une vidéo YouTube à la page où l'on est ; « Changer » et « Supprimer » (avec confirmation) agissent sur une vidéo du livre."
+        ],
+        [
+          "Tes livres",
+          "Des fiches de l'Atelier marquées Alexandrie. Dans l'éditeur : un titre ou une phrase entièrement en gras devient un chapitre. Une vidéo YouTube est reconnue sous toutes ses formes (adresse collée, lien dans une phrase, lien sur un mot, lecteur intégré) ; le reste du paragraphe devient sa légende."
+        ],
+        [
+          "Coller un livre",
+          "Bouton « Coller un livre » (plan des salles) ou « Coller » (dans une salle). En tête du bloc : TITRE, SOUS-TITRE, SALLE, GENRE (récit, pensée, apprentissage), FORMAT (livre, vhs, vinyle), COTE (sinon la suivante de la salle), EMBLÈME, COULEUR, STEAMGRID (le jeu pour les @art), THÈME (une ambiance, ou « comme bloodborne » pour reprendre le look d'un livre), retouches POLICE, POLICE TEXTE, PAPIER, ENCRE, ACCENT, ORNEMENT, TEXTURE, puis À PROPOS, LIEN (libellé | adresse | note), STATUT (lu, à lire, coup de cœur), COUVERTURE (adresse d'image). Une ligne --- ou le premier # ouvre les chapitres, au même format que les livres du code. Plusieurs livres d'un coup : sépare-les par une ligne =====. L'aperçu montre la couverture, les chapitres et le thème, qu'on peut changer en direct, et « Lire l'aperçu » ouvre le livre avant de l'enregistrer. Les lignes qui commencent par // sont ignorées. Les livres collés sont des fiches de l'Atelier (dans la base, pas dans GitHub) : le bouton ⤓ du plan les exporte tous dans un fichier texte qui se recolle tel quel."
+        ],
+        [
+          "Mes lectures",
+          "Chaque livre peut être marqué Lu, À lire ou Coup de cœur (fiche du livre ou clic droit). Une étiquette discrète apparaît sur la couverture et une marque sur la tranche. Un livre lu jusqu'à la dernière page passe tout seul dans « Lus ». Le plan des salles a une colonne « Mes lectures » ; dans une salle, le filtre Tout / Lus / À lire / Coups de cœur. Ces listes sont gardées sur le serveur et suivent tous tes appareils."
+        ],
+        [
+          "Titres à paraître",
+          "Les volumes « À paraître » ont trois boutons (fiche ou clic droit) : « Je veux le lire » (une étoile, ils passent en premier), « Écrire ce livre » (la fenêtre de collage s'ouvre avec le titre, la salle, le genre et le format déjà remplis) et « Retirer » (il quitte les rayons). Un titre écrit, ou dont un de tes livres porte le même nom, disparaît tout seul des titres à paraître. Les titres retirés se remettent d'un clic en bas de la bibliothèque, et la liste est gardée sur le serveur."
+        ],
+        [
+          "Notes",
+          "Une fiche « Notes de lecture » par livre, avec la page de chaque note. Visibles dans le lecteur, la fiche du livre et le PDF."
+        ],
+        [
+          "Artworks",
+          "Ceux par défaut (Steam, Open Library, domaine public) sont dans covers.js ; tes choix sont gardés dans ton navigateur et dans la configuration. La fenêtre Artwork cherche dans cinq sources : SteamGridDB passe par le serveur et demande STEAMGRIDDB_API_KEY ; Wikipédia, MyAnimeList, Open Library et les pochettes d'albums sont interrogés directement par ton navigateur, sans clé."
+        ],
+        [
+          "Grille et artworks dans la lecture",
+          "Dans une salle, le bouton Rayon / Grille montre tous les volumes d'un coup (clic : notice, double-clic : lire, clic droit : menu). Dans le texte d'un livre, la ligne « @art 2 | légende » affiche la 2e bannière SteamGridDB du jeu, « @art g 1 | légende » sa 1re affiche verticale ; le jeu cherché est le champ art du livre, sinon son titre. Les images passent par la route /sgdb/search du serveur (clé STEAMGRIDDB_API_KEY) et ne sont pas copiées dans la Station."
+        ],
+        [
+          "Sur téléphone",
+          "Une page à la fois, qu'on fait glisser au doigt (livres, VHS et vinyles), ou en touchant le bord droit ou gauche de la page ; des flèches sont aussi dans le bas du lecteur. Pas d'effet en surimpression ni d'ouverture en 3D, et pas de calque de grain sur l'écran : ces calques faisaient clignoter les transitions. Sur ordinateur, la page change d'un coup avec un pli de lumière (livre), une avance rapide ▶▶ FF (VHS) ou une plage qui s'ouvre depuis le centre (vinyle). L'identité visuelle de chaque livre est dans frontend/src/data/alexandrie/looks.js ; le bruit des pages vient de playPageTurn dans frontend/src/lib/sound.js."
+        ]
+      ]
+    },
+    {
+      "k": "診",
+      "title": "Quand quelque chose ne marche pas",
+      "rows": [
+        [
+          "« Not Found »",
+          "Le serveur Emergent n'a pas encore le code de cette fonction : lui faire récupérer GitHub et redémarrer."
+        ],
+        [
+          "Un réglage disparaît",
+          "Même cause : le serveur ne connaît pas encore ce champ."
+        ],
+        [
+          "« Clé … absente »",
+          "La variable n'est pas dans backend/.env sur Emergent."
+        ],
+        [
+          "Rien ne change en local",
+          "Rechargement forcé (Cmd + Maj + R) : le navigateur garde parfois l'ancienne version en cache."
+        ],
+        [
+          "Une nouveauté ne marche pas en ligne",
+          "Les nouveautés du serveur (alertes, chiffres, aperçus de lien, newsletter, sauvegarde…) n'existent qu'une fois le backend redéployé sur Emergent. Un message « le serveur n'a pas encore cette mise à jour » le signale."
+        ],
+        [
+          "« You can only send testing emails… »",
+          "Resend refuse d'écrire à d'autres que toi : vérifie ton domaine chez Resend, puis mets SENDER_EMAIL à une adresse de ce domaine."
+        ],
+        [
+          "Une vidéo YouTube ne se lit pas",
+          "En privé, elle ne se lit que pour les comptes invités : mets-la en non répertorié. Dans l'aperçu sur claude.ai, YouTube est toujours bloqué, c'est normal."
+        ]
+      ]
+    },
+    {
+      "k": "新",
+      "title": "Tenir ce guide à jour",
+      "rows": [
+        [
+          "Le fichier",
+          "frontend/src/data/guide.json. Chaque section est une liste de lignes « titre, explication »."
+        ],
+        [
+          "Quand",
+          "À chaque grosse modification : demande « mets à jour le guide », et la date en haut change."
+        ]
+      ]
+    }
+  ]
 }

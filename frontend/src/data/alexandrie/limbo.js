@@ -13,6 +13,8 @@ const book = {
 
 Limbo dure trois heures. Il n'a pas un mot de texte, pas une ligne de dialogue, presque pas de musique. Tout est en noir et blanc, dans un grain de vieux film. Tu diriges un petit garçon dont on ne voit que la silhouette noire et les deux yeux blancs.
 
+@art 4
+
 Il meurt. Beaucoup. Écrasé, empalé, décapité, noyé. Le jeu te montre ces morts sans les adoucir, et te fait recommencer quelques secondes plus tôt. Tu apprends en mourant.
 
 Et il ne te dit jamais ce que tu fais là.
@@ -22,6 +24,8 @@ Et il ne te dit jamais ce que tu fais là.
 # Ceux qui l'ont fait
 
 Limbo est né de l'imagination d'Arnt Jensen, un artiste danois qui travaillait dans le jeu vidéo et s'y ennuyait. Vers 2004, il dessine des images d'une forêt sombre, avec un petit garçon, et en fait une courte bande-annonce de concept. Un programmeur, Dino Patti, la voit et décide de l'aider. Ensemble, ils fondent un studio à Copenhague : Playdead.
+
+@art g 2
 
 Le jeu est financé au départ par des aides publiques danoises et par leurs économies. L'équipe grandit. Jeppe Carlsen, qui deviendra le concepteur principal du gameplay, construit un moteur sur mesure quand aucun ne convient. Jensen, perfectionniste, fait couper une grande partie de ce qui a été fait, pour ne garder que l'essentiel.
 
@@ -43,6 +47,8 @@ Il avance. La forêt est pleine de pièges : des mâchoires d'acier cachées dan
 
 Puis l'araignée arrive.
 
+@art 5
+
 Elle est immense. On ne voit d'abord que ses pattes, longues comme des arbres, qui frappent le sol devant le garçon. Elle le chasse pendant une bonne partie de la forêt. Elle l'enveloppe de soie. Il s'échappe en la mutilant, patte après patte, avec un piège à ours. À la fin, elle n'a plus qu'une patte. Elle continue de le poursuivre.
 
 C'est l'image la plus célèbre du jeu. Elle dit tout de Limbo : une terreur enfantine, presque mythologique, affrontée avec les moyens d'un enfant.
@@ -59,6 +65,8 @@ On en retrouve certains morts, pendus, dans les arbres. On ne sait pas qui les a
 
 Plus loin, des vers lumineux tombent du plafond et s'accrochent à la tête du garçon. Ils prennent le contrôle de son corps. Il ne peut plus marcher que dans une seule direction, jusqu'à ce qu'il trouve de la lumière pour s'en débarrasser.
 
+@art g 3
+
 C'est une des idées les plus troublantes du jeu : le corps du héros ne lui appartient plus. Inside reprendra cette idée et en fera son sujet.
 
 # La ville
@@ -72,6 +80,8 @@ Il n'y a plus personne. La nature a cédé la place aux machines, et les machine
 # La fin
 
 À la fin, le garçon traverse une vitre. Il est projeté en arrière, à travers l'écran, et retombe dans une forêt. Il se relève. Il marche. Et il voit une petite fille, accroupie près d'une échelle, qui creuse la terre.
+
+@art 6
 
 Il s'approche. Elle sursaute. Il s'arrête.
 
@@ -96,6 +106,8 @@ D'autres pensent que le garçon est mort au début, et que les yeux blancs sont 
 # Ce que tu peux en prendre
 
 Limbo t'apprend que le silence est un langage. Pas de texte, pas de dialogue, pas d'explication, et pourtant tout le monde a compris qu'il s'agissait d'un frère qui cherche sa sœur. L'image et le son suffisent.
+
+@art g 4
 
 Il t'apprend aussi la force de la silhouette. Un personnage réduit à une ombre et deux points blancs, et on s'identifie à lui plus qu'à bien des héros détaillés. Moins on montre, plus le spectateur projette.
 

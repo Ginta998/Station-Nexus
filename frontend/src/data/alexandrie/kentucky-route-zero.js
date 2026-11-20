@@ -15,6 +15,8 @@ const book = {
 
 Kentucky Route Zero est un jeu où l'on ne se bat pas, où l'on ne gagne rien, et où l'on ne peut presque pas perdre. On clique pour avancer, on choisit ce que disent les personnages. C'est tout. Et pourtant, beaucoup de critiques l'ont rangé parmi les plus grandes œuvres du jeu vidéo de la décennie 2010.
 
+@art 4
+
 C'est un jeu qui ressemble à une pièce de théâtre. Les décors sont simples, géométriques, comme des décors de scène éclairés par des projecteurs. Les personnages parlent peu, mais chaque phrase compte. Et le monde qu'il montre est à la fois très réel, le Kentucky des mines fermées et des dettes, et complètement magique.
 
 @yt HTxYvJyBNiU | Kentucky Route Zero, la TV Edition (2020), la bande-annonce.
@@ -22,6 +24,8 @@ C'est un jeu qui ressemble à une pièce de théâtre. Les décors sont simples,
 # Ceux qui l'ont fait
 
 Kentucky Route Zero est l'œuvre d'un studio de trois personnes, Cardboard Computer, basé à Chicago. Jake Elliott a écrit, conçu et programmé le jeu. Tamas Kemenczy a fait les décors, l'art et une partie de la programmation. Ben Babbitt a composé la musique et a rejoint l'équipe en tant que concepteur.
+
+@art g 2
 
 Le projet est révélé sur Kickstarter en 2011. Le premier acte sort en janvier 2013. Le dernier, le cinquième, sort en janvier 2020, sept ans plus tard. Entre les actes, l'équipe publie de petits intermèdes gratuits, qui ouvrent des portes de côté sur le même monde.
 
@@ -45,6 +49,8 @@ C'est le premier geste du jeu : descendre dans le noir pour remettre la lumière
 
 La Zero est une autoroute souterraine. Elle passe sous le Kentucky, dans des grottes, des tunnels, des boucles qui ne mènent jamais au même endroit deux fois. Pour y entrer, il faut connaître un certain chemin, faire certains gestes dans un certain ordre, et accepter que la logique ne tienne pas toujours.
 
+@art 5
+
 Sur la Zero, on rencontre des lieux impossibles : une église qui sert d'entrepôt, un musée installé dans une maison qui est elle-même habitée, une administration où l'on se perd d'étage en étage, une rivière souterraine qu'on descend en bateau.
 
 Et tout cela est raconté sur le ton le plus naturel du monde. Personne ne s'étonne. C'est ça, le réalisme magique : l'étrange est traité comme ordinaire, et l'ordinaire, la dette, la fatigue, la solitude, devient presque fantastique.
@@ -52,6 +58,8 @@ Et tout cela est raconté sur le ton le plus naturel du monde. Personne ne s'ét
 # Shannon et la mine
 
 Pendant sa recherche, Conway rencontre Shannon Márquez, une réparatrice de télévisions. Elle cherche sa cousine, Weaver, qui a disparu. Elle accepte d'aider Conway, et ils descendent ensemble dans une ancienne mine, la mine d'Elkhorn.
+
+@art g 3
 
 Dans la mine, un éboulement blesse Conway à la jambe. Shannon raconte l'histoire du lieu : une inondation y a tué des mineurs, il y a longtemps, et la famille Márquez s'est endettée. C'est la dette qui a fait partir Weaver.
 
@@ -70,6 +78,8 @@ Puis la jambe de Conway s'aggrave. Le groupe cherche un médecin, le docteur Tru
 # La jambe de squelette
 
 Au troisième acte, Conway se réveille. Sa jambe a été remplacée par une jambe de squelette, qui brille d'une lumière douce. Il ne sait pas vraiment comment.
+
+@art 6
 
 On apprend ensuite ce qu'il a fait. En chemin, il a été entraîné dans une distillerie de whisky souterraine, tenue par des ouvriers qui sont, eux aussi, des squelettes lumineux. On lui a servi un whisky très cher. Et on lui a dit qu'il devait maintenant rembourser. En conduisant des camions pour la distillerie.
 
@@ -93,6 +103,8 @@ Dans le même acte, on rencontre Donald, un homme obsédé par un ordinateur fai
 
 Au quatrième acte, le groupe embarque sur un bateau, le Mucky Mammoth, qui descend une rivière souterraine, l'Echo River. Cette rivière existe vraiment : elle coule dans les grottes de Mammoth Cave, au Kentucky, le plus long réseau de grottes connu au monde.
 
+@art g 4
+
 Le bateau s'arrête dans des lieux étranges : une station d'essence flottante, un bar tiki, une cabine téléphonique au milieu de l'eau, un centre de recherche, une île couverte de champignons.
 
 Conway boit de plus en plus. Les autres le voient devenir un squelette. Il finit par partir, dans une barque, avec d'autres squelettes, vers la distillerie. Il demande à Shannon de terminer la livraison à sa place.
@@ -102,6 +114,8 @@ On ne le revoit plus.
 # Le dernier acte
 
 Le cinquième acte se passe dans une petite ville, au bout du voyage. Une inondation vient de tout dévaster. Une seule maison est neuve, intacte : le 5 Dogwood Drive.
+
+@art 7
 
 Le joueur n'incarne plus vraiment personne. Il se promène dans la ville, entre des habitants qui hésitent : faut-il reconstruire, ou partir ? Un homme creuse une tombe pour deux chevaux morts dans l'inondation. On les enterre. Une femme lit un poème. Une autre chante.
 
@@ -122,6 +136,8 @@ Les créateurs ont expliqué que les textes de théâtre les avaient aidés à p
 # Ce que tu peux en prendre
 
 Kentucky Route Zero t'apprend que la magie la plus forte est celle qu'on ne commente pas. Un aigle géant, une jambe de squelette, une autoroute sous la terre. Personne ne s'en étonne, et c'est pour ça que tu y crois.
+
+@art g 5
 
 Il t'apprend aussi à raconter le monde réel par le détour du rêve. Le jeu parle d'argent, de travail, d'abandon, de régions oubliées. Mais il le fait avec des fantômes et des chansons, et ça touche plus fort qu'un discours.
 

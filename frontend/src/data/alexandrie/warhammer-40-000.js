@@ -15,6 +15,8 @@ const book = {
 
 Warhammer 40 000 commence comme un jeu de figurines : des petits soldats en métal, puis en plastique, qu'on peint soi-même et qu'on fait s'affronter sur une table, avec des règles, des dés et un mètre ruban. Mais autour de ces figurines, en près de quarante ans, s'est construit l'un des univers de fiction les plus vastes qui existent. Des centaines de romans, des livres d'histoire imaginaire, des jeux vidéo, des bandes dessinées, des séries d'animation.
 
+@art 4
+
 Le slogan de cet univers dit, en substance, que dans les ténèbres de ce futur lointain, il n'y a que la guerre. C'est de lui que vient un mot passé dans le langage courant : grimdark. Un récit grimdark est un récit où tout est sombre, où il n'y a pas de gentils, où l'espoir est un luxe.
 
 Mais Warhammer 40 000 n'est pas qu'une machine à violence. C'est aussi une satire, souvent féroce, d'une civilisation qui a tout sacrifié pour survivre : la liberté, la raison, la pitié. Et c'est un monde d'une profondeur folle, avec dix mille ans d'histoire, des dizaines de peuples, des religions, des hérésies, des guerres civiles.
@@ -26,6 +28,8 @@ Ce livre te fait entrer par la grande porte : l'Imperium, son Empereur, la trahi
 # Ceux qui l'ont fait
 
 **Games Workshop.** C'est une entreprise britannique, fondée en 1975 pour distribuer des jeux de rôle comme Donjons et Dragons. Elle s'associe à un fabricant de figurines, Citadel. Bryan Ansell, qui prend la tête des deux sociétés et les installe à Nottingham, a une conviction : un jeu de grandes batailles fera vendre beaucoup plus de figurines qu'un jeu de rôle. Il lance d'abord Warhammer, un jeu de bataille dans un monde de fantasy.
+
+@art g 2
 
 **Rick Priestley.** Concepteur de jeux, il travaillait dans les figurines depuis le début des années 1980. Il avait imaginé un jeu de combat spatial mêlé de jeu de rôle, Rogue Trader. En 1987, ce projet devient Warhammer 40,000: Rogue Trader, le livre de règles qui fonde tout l'univers.
 
@@ -55,6 +59,8 @@ Le savoir se perd. Plus personne ne comprend les machines. On se met à les vén
 
 C'est de ce chaos que surgit l'Empereur. Personne ne sait vraiment qui il est. Un homme d'une puissance psychique immense, peut-être immortel, peut-être né il y a très longtemps, qui a attendu son heure. Sur Terre, il unifie les tribus et les royaumes par la guerre. Puis il s'allie à Mars, où des prêtres-ingénieurs gardent les derniers secrets de la technologie, et qui deviendront l'Adeptus Mechanicus.
 
+@art 5
+
 Pour reconquérir la galaxie, il crée deux choses. D'abord, vingt fils, les Primarques : des êtres génétiquement façonnés à partir de son propre patrimoine, chacun d'une puissance et d'un génie surhumains. Puis, à partir de leur code génétique, des légions de surhommes : les Space Marines, les Astartes, des guerriers transformés dès l'adolescence par des organes implantés, plus grands, plus forts, presque immortels. Plus qu'humains, disait Priestley, et à certains égards moins.
 
 Mais avant que les Primarques ne soient prêts, une force mystérieuse les arrache à leur laboratoire et les disperse à travers la galaxie. Chacun grandit sur un monde différent, élevé par des inconnus, dans des cultures très différentes.
@@ -64,6 +70,8 @@ L'Empereur part alors à la conquête des étoiles. C'est la Grande Croisade. Un
 # L'Hérésie d'Horus
 
 Le plus aimé des fils de l'Empereur s'appelle Horus. Il est le premier retrouvé, le plus brillant, le plus charismatique. Quand l'Empereur rentre sur Terre pour mener un mystérieux projet, il nomme Horus Maître de Guerre, commandant de toutes les armées de la Croisade.
+
+@art g 3
 
 Sur une lune nommée Davin, Horus est gravement blessé par une arme corrompue. Pendant sa convalescence, les puissances du Chaos l'atteignent. Elles lui montrent un avenir où l'Empereur est devenu un dieu adoré, et où ses fils sont oubliés. Elles lui promettent la galaxie. Horus se retourne contre son père.
 
@@ -76,6 +84,8 @@ La guerre dure des années. Elle s'achève par le siège de la Terre elle-même.
 # Le Trône d'or
 
 L'Empereur ne meurt pas. Il est mourant, son corps détruit, mais son esprit vit encore. On l'installe sur le Trône d'or, une machine ancienne qui maintient son corps en vie.
+
+@art 6
 
 Il y est depuis dix mille ans.
 
@@ -90,6 +100,8 @@ Personne ne sait vraiment s'il est encore conscient. S'il souffre. S'il voudrait
 # Le Warp et ses dieux
 
 Pour comprendre cet univers, il faut comprendre le Warp. C'est une dimension parallèle, faite non pas de matière mais d'émotions, de pensées, de rêves. Tout ce que ressentent les êtres vivants de la galaxie s'y reflète. Les vaisseaux le traversent pour voyager vite, protégés par des boucliers, guidés par la lumière de l'Astronomican. Les psykers y puisent leurs pouvoirs, au risque d'y perdre leur âme.
+
+@art g 4
 
 Et dans le Warp, les émotions accumulées depuis des millénaires ont pris forme. Elles sont devenues des dieux. Les dieux du Chaos.
 
@@ -119,6 +131,8 @@ Les mondes eux-mêmes sont de toutes sortes : mondes-forges couverts d'usines, m
 
 L'humanité n'est pas seule. Et elle n'est pas la plus ancienne.
 
+@art 7
+
 Les **Aeldari** étaient autrefois les maîtres de la galaxie. Une civilisation raffinée, aux pouvoirs psychiques immenses, qui avait tout et s'ennuyait. Leur société a sombré dans l'excès, la quête de sensations toujours plus fortes. Ces excès, reflétés dans le Warp pendant des siècles, ont fini par donner naissance à un dieu : Slaanesh. À sa naissance, il a dévoré l'âme de presque tout le peuple Aeldari. C'est la Chute. Les survivants errent dans d'immenses vaisseaux-mondes, ou se sont réfugiés dans une cité cachée, où ils vivent de cruauté.
 
 Les **Orks** sont des brutes vertes, joyeuses et belliqueuses, qui vivent pour se battre. Leur technologie fonctionne parce qu'ils croient qu'elle fonctionne. C'est la partie la plus comique de l'univers, et une des plus redoutables.
@@ -133,6 +147,8 @@ Les **T'au** sont un jeune empire, optimiste, technologique, qui prêche le Bien
 
 Pendant longtemps, l'univers de Warhammer 40 000 était figé à la fin du quarante-et-unième millénaire, à minuit moins une. En 2017, Games Workshop a fait avancer l'horloge.
 
+@art g 5
+
 Abaddon le Fléau, le successeur d'Horus à la tête des traîtres, lance sa treizième Croisade noire. Il détruit Cadia, la forteresse qui gardait depuis des millénaires la sortie de l'Œil de la Terreur, la grande blessure du Warp d'où viennent les armées du Chaos. Peu après, une immense déchirure s'ouvre à travers toute la galaxie : la Grande Faille. Une moitié de l'Imperium est coupée de la lumière de l'Astronomican, plongée dans le noir.
 
 Mais un miracle arrive. Roboute Guilliman, l'un des Primarques fidèles, blessé à mort peu après l'Hérésie et figé depuis dans une stase, est ramené à la vie. Il se réveille dix mille ans plus tard dans un Imperium qu'il ne reconnaît pas, devenu une théocratie fanatique. Il prend la tête de l'Imperium et lance une nouvelle croisade, la Croisade Indomitus, avec une nouvelle génération de Space Marines, plus grands et plus forts.
@@ -142,6 +158,8 @@ C'est l'Ère Indomitus. C'est dans cette époque que se passe Darktide.
 # Atoma Prime
 
 Darktide se passe sur Atoma Prime, un monde-ruche, capitale d'une petite région de l'Imperium, le Domaine de Moebius. Ce domaine se trouve aux confins du Segmentum Solar, le secteur qui entoure la Terre. Depuis des siècles, il est attaqué par des forces du Chaos et des extraterrestres qui surgissent des marges de la galaxie. L'administration impériale appelle ces vagues d'attaques la Marée noire : le Darktide. Les régiments de la Garde levés sur place, les régiments moebiens, mènent contre elle une guerre sans fin qu'on appelle la Guerre des confins.
+
+@art 8
 
 Atoma Prime est importante pour une raison très concrète : ses usines produisent des chars, des Leman Russ, essentiels à l'effort de guerre.
 
@@ -163,6 +181,8 @@ Un régiment de la Garde, le Sixième moebien, est détourné vers Atoma Prime p
 
 Le jeu commence dans un vaisseau-prison, le Tancred Bastion, qui transporte des condamnés. Les fidèles de Nurgle et les traîtres du Sixième moebien l'attaquent pour libérer leur chef, le capitaine Wolfer. Dans le chaos, le personnage du joueur, un prisonnier, sauve une femme de l'Inquisition : l'Explicatrice Orgustine Zola, de l'Ordo Hereticus, l'ordre qui chasse les hérétiques.
 
+@art g 6
+
 Zola décide de recruter ce prisonnier. Il n'a pas le choix. Il devient un acolyte de l'Inquisition, au service d'un inquisiteur nommé Grendyl. Avec d'autres recrues aussi peu recommandables que lui, il forme une équipe qu'on surnomme les Rejetés.
 
 On ne voit jamais Grendyl. Les recrues ne reçoivent de lui qu'un message enregistré, délivré par un serviteur mécanique dont le visage holographique change sans arrêt. On ne sait pas ce qu'il cherche vraiment. On sait qu'il a beaucoup investi dans Atoma Prime, qu'il s'intéresse de près aux maladies de Nurgle, et qu'il ne veut pas la détruire. Pour l'instant.
@@ -170,6 +190,8 @@ On ne voit jamais Grendyl. Les recrues ne reçoivent de lui qu'un message enregi
 # Le Mourningstar
 
 La base des Rejetés est un vaisseau, le Mourningstar, une frégate en orbite au-dessus d'Atoma. Elle appartient à une libre-marchande, Emora Brahms, qui a accepté d'accueillir à son bord l'équipe de l'inquisiteur.
+
+@art 9
 
 À bord, toute une galerie de personnages. L'Interrogateur Iven Rannick, bras droit de Grendyl, qui dirige les opérations et méprise les recrues. L'Explicatrice Zola, qui les a sauvées et les défend. Le sergent-major Vincent Morrow, un vétéran qui les entraîne. La lieutenante d'aviation Gilia Masozi, qui pilote le vaisseau de transport et les dépose dans la ruche. Sefoni, psyker au service de l'Inquisition. Hadron, une technoarchéologue qui modifie les armes. Et d'autres, intendants, chirurgiens, prêtres.
 
@@ -181,11 +203,15 @@ Chaque mission part du Mourningstar. Les Rejetés sont largués dans un quartier
 
 Au départ, les Rejetés sont de quatre sortes. Le **Vétéran**, un ancien soldat de la Garde, tireur d'élite, discipliné. Le **Zélote**, un fanatique religieux, qui se jette au corps à corps en hurlant le nom de l'Empereur. Le **Psyker**, un humain doté de pouvoirs psychiques, sanctionné par l'Imperium, qui risque à chaque instant de laisser entrer quelque chose dans son esprit. Et l'**Ogryn**, issu d'une sous-espèce humaine géante, simple, loyal, et terrifiant.
 
+@art g 7
+
 Le jeu se joue à quatre, en coopération, contre des centaines d'ennemis à la fois : marcheurs pestiférés, traîtres du Sixième, ogryns infectés, créatures du Chaos. Les missions sont violentes, rapides, chaotiques. Les personnages commentent ce qu'ils voient, se disputent, plaisantent. Et c'est dans ces dialogues, entre deux massacres, que le monde prend vie.
 
 # La ruche
 
 Ce qui frappe dans Darktide, c'est la ruche elle-même. Fatshark a construit Tertium avec une démesure qui rend justice à l'univers. Des usines gigantesques. Des cathédrales immenses, où des statues de saints de cent mètres veillent sur des bancs vides. Des raffineries d'eau, des quartiers d'habitation empilés sur des kilomètres, des gares de transport, des ponts suspendus au-dessus de gouffres de plusieurs kilomètres, où l'on aperçoit, très loin en bas, les lumières des sous-ruches.
+
+@art 10
 
 Partout, il y a les traces de la vie ordinaire. Des affiches de propagande. Des slogans pieux. Des cantines. Des files d'attente devant des distributeurs de rations. Des milliards de vies minuscules, au service d'un Imperium qui ne les connaît pas.
 
@@ -208,6 +234,8 @@ Et au milieu, il y a les gens ordinaires : les soldats de la Garde, les ouvriers
 # Ce que tu peux en prendre
 
 Warhammer 40 000 t'apprend qu'un univers peut naître d'un objet. Tout est parti de petites figurines qu'il fallait vendre. Pour leur donner une raison d'exister, on leur a inventé une histoire, puis une histoire à cette histoire. Quarante ans plus tard, c'est une des mythologies les plus riches du monde.
+
+@art g 8
 
 Il t'apprend la puissance d'un mythe fondateur. L'Hérésie d'Horus, le fils préféré qui trahit son père, le père qui hésite à frapper, la victoire qui ressemble à une défaite. Tout l'univers en découle. Une seule tragédie bien construite peut porter dix mille ans d'histoire.
 

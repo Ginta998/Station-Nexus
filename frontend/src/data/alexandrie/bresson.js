@@ -1,6 +1,6 @@
 const book = {
   id: "bresson", title: "Bresson", sub: "Le cinématographe", room: "cinema", type: "pensee", cote: "CI-002", color: 95, emblem: "手",
-  about: "Treize films en quarante ans, aucun acteur, pas un geste de trop. Robert Bresson raconte sa méthode et ses films, du Journal d'un curé de campagne à L'Argent : les modèles, les mains, les sons, les ellipses.",
+  about: "Treize films en quarante ans, aucun acteur, pas un geste de trop. Robert Bresson raconte sa méthode et ses films, du Journal d'un curé de campagne à L'Argent : les modèles, les mains, les sons, les ellipses. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Robert Bresson, Notes sur le cinématographe (1975)", note: "Cent pages de phrases courtes. Il se lit en une heure et se relit toute une vie." },
     { label: "Bresson par Bresson : entretiens 1943-1983", note: "Il y explique chaque film, patiemment, à des journalistes qui ne comprennent pas." },
@@ -44,7 +44,17 @@ Mes deux premiers longs métrages, je les ai faits avec des acteurs. *Les Anges 
 
 Je ne les renie pas. Mais en les tournant, j'ai senti quelque chose de faux. Les acteurs jouaient. Ils savaient ce qu'ils voulaient exprimer, et ils l'exprimaient. On voyait la volonté derrière le geste. On voyait le métier. Et dès qu'on voit le métier, on ne croit plus.
 
-Casarès souffrait. Elle voulait jouer, et je l'en empêchais, sans savoir encore pourquoi.
+Casarès souffrait. Elle voulait jouer, et je l'en empêchais, sans savoir encore pourquoi. Un soir, après la vingtième prise d'une réplique de quatre mots, elle s'est tournée vers moi.
+
+— Monsieur Bresson, qu'est-ce que vous voulez ? Dites-le-moi, je vous le donnerai.
+
+— Rien. Je veux que vous ne donniez rien.
+
+— Alors pourquoi m'avoir prise, moi ? Je suis actrice.
+
+— C'est bien ce que je commence à comprendre.
+
+Elle est partie dans sa loge. Elle avait raison d'être en colère. Je lui demandais d'être une autre chose que ce qu'elle était, et c'est moi qui m'étais trompé de personne. Je ne l'ai plus jamais refait.
 
 # Les modèles
 
@@ -59,6 +69,18 @@ L'acteur part de l'intérieur : il fabrique une émotion et la montre. Le modèl
 On m'a dit que c'était cruel. Que je traitais les gens comme des objets. C'est l'inverse. L'acteur se cache derrière son personnage. Le modèle ne peut pas se cacher. Je ne lui prends rien. Je lui rends son mystère.
 
 Je ne prenais jamais deux fois le même modèle. Une fois qu'il avait été filmé, il était devenu conscient de lui-même. Il n'était plus vierge. Il aurait joué.
+
+Sur *Pickpocket*, le garçon qui jouait Michel, Martin LaSalle, venait d'Uruguay. Il me demandait sans cesse ce que pensait le personnage.
+
+— Il pense à quoi, quand il ouvre le sac ?
+
+— À rien. Ouvrez le sac.
+
+— Mais il a peur, non ? Il a honte ?
+
+— Peut-être. Ce n'est pas votre affaire. Ouvrez-le. Encore. Plus lentement. Encore.
+
+Au bout de trente fois, il ne pensait plus à rien. Ses mains, elles, savaient. Sur l'écran, on voit la honte. Il ne l'a pas jouée. Elle est venue toute seule, quand il a cessé de la chercher.
 
 # Journal d'un curé de campagne
 

@@ -15,6 +15,8 @@ const book = {
 
 Tu arrives dans l'Entre-terre comme un mort qu'on a rappelé. Tu es un Sans-éclat : le descendant d'exilés à qui la lumière de la grâce a été retirée autrefois, et à qui on la rend soudain. Une lueur dorée te montre une direction. On te dit de devenir Seigneur d'Elden. Personne ne t'explique ce que cela veut dire.
 
+@art 4
+
 @yt K_03kFqWfqs | Elden Ring (2022), bande-annonce de l'histoire.
 
 Autour de toi, tout est après. Les châteaux sont tenus par des fous, les soldats montent la garde devant des portes que plus personne n'attaque, un arbre de lumière haut comme le ciel domine un pays où rien ne meurt tout à fait et où rien ne naît plus. Quelque chose s'est cassé, il y a longtemps, et le monde continue par habitude.
@@ -25,6 +27,8 @@ Ce livre remet cette cassure dans l'ordre. Je donne les noms en français couran
 # Ceux qui l'ont fait
 
 Elden Ring est développé par FromSoftware et édité par Bandai Namco en 2022. Il est dirigé par Hidetaka Miyazaki. Pour la première fois, le studio fait appel à un écrivain extérieur : George R. R. Martin, l'auteur du Trône de fer, a écrit l'histoire ancienne de l'Entre-terre, celle qui s'est passée avant le jeu. Miyazaki et son équipe ont écrit le jeu lui-même par-dessus.
+
+@art g 2
 
 La musique est signée Tsukasa Saitoh, Shoi Miyazawa, Yuka Kitamura, Tai Tomisawa, Yoshimi Kudo et Soma Tanizaki. L'extension Shadow of the Erdtree est sortie en 2024.
 
@@ -46,6 +50,8 @@ Le jeu s'est vendu à plus de vingt millions d'exemplaires. C'est le plus grand 
 
 L'Entre-terre est faite de régions très différentes, et chacune raconte un morceau de l'histoire.
 
+@art 5
+
 **Nécrolimbe**, où l'on arrive, est une terre verte, paisible en apparence, dominée par le château de Voilorage, tenu par Godrick le Greffé, un demi-dieu faible qui coud sur son corps les membres de ses ennemis pour paraître plus fort.
 
 **Liurnia des Lacs** est un pays d'eau et de brume, au nord, autour de l'académie de Raya Lucaria où règne Rennala. C'est là que commence la quête de Ranni.
@@ -64,6 +70,8 @@ Sous la terre, il y a d'autres mondes : des rivières souterraines sous un ciel 
 
 L'Entre-terre n'a pas toujours été dorée. Le jeu laisse voir, sous l'ordre présent, plusieurs mondes plus anciens.
 
+@art g 3
+
 Il y eut un âge des dragons. Dans une cité qui s'effrite au milieu d'une tempête hors du temps, Farum Azula, un dragon à plusieurs têtes attend encore le retour de son dieu. Il s'appelle Placidusax, et le jeu le dit clairement : il fut Seigneur d'Elden avant qu'il y ait un Arbre. Son dieu est parti. Lui est resté.
 
 Il y eut le Creuset. C'est le nom que le jeu donne à la vie d'avant, quand tout était mêlé : des hommes à cornes, à ailes, à queue, des formes qui n'étaient pas encore séparées. L'Arbre-Monde, à ses débuts, portait cette couleur rouge et or. Plus tard, l'ordre nouveau tiendra ces mélanges pour une souillure, et ceux qui naissent avec des cornes, les Présages, seront mutilés ou jetés aux égouts. Retiens cela : la religion de ce monde a honte de sa propre origine.
@@ -75,6 +83,8 @@ Et il y eut d'autres puissances venues du ciel. C'est un des fils les plus étra
 # La femme du village
 
 Qui était Marika avant d'être une déesse ? Le jeu de base ne le disait pas. Il la disait seulement issue d'un peuple venu d'ailleurs, les Numen. L'extension a répondu, et la réponse éclaire tout le reste.
+
+@art 6
 
 Dans le Royaume des ombres, une terre cachée, tu trouves un village vide, couvert de fleurs. C'était un village de chamanes. Leur chair avait une propriété : elle se mêlait harmonieusement à d'autres chairs. Un peuple voisin, les Cornus, qui se croyait élu parce qu'il portait la marque du Creuset, s'en est servi. Ils enfermaient des gens dans de grandes jarres pour en faire, disaient-ils, des saints, et ils y ajoutaient la chair des chamanes pour que le mélange prenne. Tu marches dans leurs geôles. Les jarres y sont encore.
 
@@ -104,6 +114,8 @@ La seconde : quand Godfrey a gagné sa dernière bataille et qu'il ne reste plus
 
 Au nord, un royaume résiste : celui de la reine Rennala, à l'académie de Raya Lucaria, où l'on étudie les étoiles et la lune. Marika envoie contre elle un champion aux cheveux rouges, Radagon. Deux guerres, pas de vainqueur. Radagon et Rennala tombent amoureux, se marient, et les deux royaumes font la paix. Ils ont trois enfants : Radahn, Rykard et Ranni.
 
+@art g 4
+
 Puis, quand Godfrey est exilé, Radagon quitte Rennala sans un mot et monte à la capitale pour devenir le second époux de Marika. Rennala en perd la raison. Tu la trouves berçant un œuf d'ambre dans une bibliothèque, entourée d'étudiants qui rampent.
 
 Et voici le secret que le jeu ne te livre que tard, par une phrase gravée au pied d'une statue : Radagon est Marika.
@@ -117,6 +129,8 @@ De cette union naissent des jumeaux, Miquella et Malenia. Tous deux sont maudits
 # La nuit des couteaux noirs
 
 Tout tient encore. Puis vient une nuit.
+
+@art 7
 
 Parmi les enfants des dieux, certains sont des Empyréens : ils peuvent succéder à Marika, devenir à leur tour le réceptacle. Ranni est l'une d'eux. Les Deux Doigts l'ont choisie, et lui ont donné, comme à tout Empyréen, une ombre chargée de la servir et de la surveiller. Ranni ne veut pas de ce destin. Elle ne veut pas être l'instrument d'une volonté qui se sert de son corps.
 
@@ -132,6 +146,8 @@ Ce qui est établi, c'est la suite. Marika, quand son fils meurt, brise le Cercl
 
 Pourquoi l'a-t-elle fait ? Par chagrin, dit la version que l'on raconte. Par dessein, pensent ceux qui se souviennent qu'elle avait préparé le retour des exilés. Les deux se tiennent, et le jeu te laisse choisir.
 
+@art g 5
+
 Radagon, dans le même corps, tente de réparer l'anneau à coups de marteau. Il échoue. Pour ce crime, Marika est emprisonnée à l'intérieur de l'Arbre. C'est là que tu la trouveras : un torse de pierre fendu, suspendu à une rune.
 
 Les morceaux du Cercle, les Grandes Runes, tombent aux mains de ses enfants. Chacun en veut davantage. C'est la guerre de l'Éclatement, et elle n'a pas de héros.
@@ -146,6 +162,8 @@ La guerre n'a pas de vainqueur. La Volonté suprême se détourne de ces enfants
 
 Te voici. Et tu dois apprendre à te méfier de tous ceux qui te montrent le chemin.
 
+@art 8
+
 Les Deux Doigts te disent de réunir les Grandes Runes et de réparer l'anneau. Mais quand tu arrives enfin devant l'Arbre, des ronces en ferment l'entrée. L'Arbre refuse tout le monde. Les Doigts se taisent, sans réponse. L'ordre que tu sers ne sait plus ce qu'il veut.
 
 Une jeune fille à l'œil clos, Melina, t'accompagne depuis le début. Elle dit être née au pied de l'Arbre et avoir reçu de sa mère une mission. Elle sait ce qu'il faut faire : commettre le péché capital. Brûler l'Arbre avec la flamme des géants, celle que Marika avait fait éteindre. Et pour allumer ce feu, il faut une offrande. Ce sera elle.
@@ -159,6 +177,8 @@ Sens la logique de l'ensemble. La déesse avait ôté la mort pour bâtir son or
 # Les cités éternelles
 
 Sous l'Entre-terre, dans des grottes immenses, on trouve des cités en ruine sous un ciel d'étoiles. Ce ciel est faux : un plafond de pierre où brillent des lumières. On les appelle les cités éternelles, et elles appartenaient à un peuple disparu, les Nox.
+
+@art g 6
 
 Les Nox ont tenté, il y a très longtemps, de créer leur propre Seigneur, sans l'accord de la Volonté suprême. Pour les punir, elle les a enfouis sous la terre et leur a retiré le ciel. Ils ont continué à vivre dans le noir, en fabriquant des étoiles, et en cherchant à la fois à imiter la vie et à défier les dieux. C'est à eux qu'on doit le Miroir d'imitation, une larme d'argent qui prend la forme de qui la regarde.
 
@@ -184,6 +204,8 @@ C'est cette quête qui mène à la fin de l'âge des Étoiles, celle où Ranni e
 
 Comme dans tous les jeux de Miyazaki, les personnages secondaires portent des histoires aussi fortes que les grandes. Quelques-unes, parmi des dizaines.
 
+@art 9
+
 **Alexandre le Poing de fer** est une jarre de guerrier. Littéralement : une grande jarre de terre, vivante, qui parle avec une bonne humeur inébranlable. On le trouve coincé dans le sol, et il faut le sortir de là. Ces jarres sont remplies des restes de grands guerriers, et Alexandre veut devenir le plus grand de tous. On le croise sans cesse au fil du voyage, toujours enthousiaste, toujours en quête de combats. À la fin, au bout du monde, il te demande un dernier duel, pour éprouver sa valeur. Quand il se brise, il te parle avec fierté et sans rancune. C'est un des adieux les plus touchants du jeu.
 
 **Millicent** est une jeune femme rongée par la Pourriture écarlate. On la soigne avec une aiguille d'or. On découvre peu à peu qu'elle est un bourgeon de Malenia, une de ses filles, née de la fleur de pourriture. Un vieil homme qui l'a aidée voulait en réalité qu'elle s'épanouisse, qu'elle devienne une nouvelle déesse de la pourriture. Millicent refuse. Elle choisit de rester elle-même, malgré ce qu'elle porte en elle, et affronte ses propres sœurs pour garder ce choix.
@@ -197,6 +219,8 @@ Et il y a les autres : un homme qui coud des vêtements et rêve d'être beau, u
 # Le dernier combat
 
 Dans l'Arbre, le corps de pierre se relève. C'est Radagon qui se bat, pas Marika : le fidèle défend jusqu'au bout la loi que sa propre moitié a brisée. Quand il tombe, la Bête d'Elden sort de lui, faite d'étoiles et d'or. Tu affrontes l'anneau lui-même.
+
+@art g 7
 
 Puis tu te tiens devant ce qui reste de la reine, et tu choisis quel monde vient après. Le jeu offre six fins. Elles valent d'être comprises, car chacune est une réponse à la question que pose toute l'histoire : que fait-on d'un ordre qui a échoué ?
 
@@ -215,6 +239,8 @@ Et tu peux suivre Ranni. Si tu as servi la sorcière dans sa longue quête, elle
 # Messmer et le Royaume des ombres
 
 L'extension Shadow of the Erdtree t'emmène dans le Royaume des ombres, la terre que Marika avait scellée. C'est un pays immense, sous un arbre noir, couvert de ruines, de cimetières, de croix brûlées.
+
+@art 10
 
 Il est gardé par **Messmer l'Empaleur**, le fils caché de Marika, celui qui a mené pour elle la croisade contre les Cornus. Il porte une flamme, et un serpent vit enroulé en lui. Ses soldats ont brûlé, empalé, massacré le peuple cornu. Il a obéi à sa mère, puis elle l'a laissé là, enfermé dans le pays qu'il avait dévasté. On le trouve dans un château fait pour lui, qu'il n'a jamais pu quitter. Le jeu laisse entendre que Marika le craignait, parce qu'il portait en lui ce serpent, une part de ce qu'elle voulait oublier.
 
@@ -243,6 +269,8 @@ Regarde le parallèle. Marika a bâti un monde sans mort après avoir vu mourir 
 # Ce que tu peux en prendre
 
 Trois choses, pour toi qui écris des mondes.
+
+@art g 8
 
 La première : un monde se raconte par ce qui manque. Le personnage principal de cette histoire, Marika, n'a pas une seule scène. Tu ne la vois que brisée. Tout ce que tu sais d'elle vient de ce qu'elle a laissé : des paroles gravées, un village, des enfants abîmés. Et c'est pour cela qu'elle obsède. Un personnage absent dont tout porte la trace est plus grand que celui qu'on te montre.
 

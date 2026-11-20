@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoExpandOutline, IoContractOutline, IoLibraryOutline } from "react-icons/io5";
+import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoExpandOutline, IoContractOutline, IoLibraryOutline, IoMailOutline, IoStatsChartOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAtelier } from "@/lib/atelier";
 import { SoundBtn } from "@/components/StationMenu";
@@ -27,7 +27,8 @@ import BunnyBrains from "@/components/atelier/BunnyBrains";
 import BunnySprite from "@/components/atelier/BunnySprite";
 import FocusView from "@/components/atelier/FocusView";
 import RadioView, { useRadio, RadioEngine, RadioBar, RadioMini } from "@/components/atelier/Radio";
-import { IoRadioOutline } from "react-icons/io5";
+import { IoRadioOutline, IoBookOutline, IoMoonOutline, IoCodeSlashOutline } from "react-icons/io5";
+import { PiRabbit } from "react-icons/pi";
 import OeuvreView from "@/components/atelier/OeuvreView";
 import OeuvreForm from "@/components/atelier/OeuvreForm";
 import DevLogView from "@/components/atelier/DevLogView";
@@ -36,6 +37,16 @@ import { useLabFx } from "@/components/atelier/labFx";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { LabDialogHost } from "@/components/atelier/LabDialog";
 import Alexandrie from "@/components/atelier/Alexandrie";
+import JournalView from "@/components/atelier/JournalView";
+import NewsletterView from "@/components/atelier/NewsletterView";
+import StatsView from "@/components/atelier/StatsView";
+import PublishView from "@/components/atelier/PublishView";
+import NetworkView from "@/components/atelier/NetworkView";
+import { IoGitNetworkOutline } from "react-icons/io5";
+import { IoCloudUploadOutline as IoPubIcon } from "react-icons/io5";
+import { PublishHost, oeuvreOfCreation, oeuvreFromCreation } from "@/components/atelier/StationLink";
+import { getCreation } from "@/lib/api";
+import { IoJournalOutline } from "react-icons/io5";
 
 const Dock = ({ icon, label, sub, on, onClick, testid, color, kanji, badge, drop }) => (
   <button className={"at-dock-b" + (on ? " on" : "")} onClick={onClick} data-testid={testid} title={label} {...(drop ? itemDrop(drop) : {})}>
@@ -105,6 +116,17 @@ export default function AtelierApp({ onLeave }) {
   const pinned = at.universes.filter((u) => u.pinned);
   const cur = view.name === "universe" ? at.universes.find((u) => u.id === view.id) : null;
   const importDocs = (defaults = {}) => { pickDefaults.current = defaults; pick.current?.click(); };
+  // arrivée depuis la station (« Ouvrir dans l'atelier ») : l'œuvre de la création, créée et reliée si elle n'existe pas encore
+  useEffect(() => {
+    if (!at.data) return;
+    let cid = ""; try { cid = sessionStorage.getItem("nx-at-open") || ""; sessionStorage.removeItem("nx-at-open"); } catch (_) {}
+    if (!cid) return;
+    (async () => {
+      let o = oeuvreOfCreation(at, cid);
+      if (!o) { try { const c = await getCreation(cid); o = await oeuvreFromCreation(at, c, at.universes.find((u) => (u.creation_ids || []).includes(cid))?.id || null); } catch (_) { return; } }
+      setView({ name: "oeuvre", id: o.id });
+    })();
+  }, [!!at.data]); // eslint-disable-line react-hooks/exhaustive-deps
   const ctx = { at, go, open, launch, mini: (s) => setMini(s), editUniverse: setUForm, editOeuvre: setOForm, importDocs, openBrains: () => setBrains(true) };
 
   useEffect(() => {
@@ -163,17 +185,22 @@ export default function AtelierApp({ onLeave }) {
           <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" sub="IDÉES EN VRAC" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" drop={dropToUniverse(at, null)} />
           <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" sub="MES TÂCHES" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
           <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
-          <Dock kanji="兎" label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
+          <Dock icon={<PiRabbit size={18} />} label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
           <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
-          <Dock kanji="書" label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
+          <Dock icon={<IoJournalOutline size={17} />} label="Journal de bord" sub="MES COULISSES PUBLIQUES" on={view.name === "journal"} onClick={() => go({ name: "journal" })} testid="atelier-nav-journal" />
+          <Dock icon={<IoStatsChartOutline size={17} />} label="Tes chiffres" sub="CE QUI MARCHE" on={view.name === "stats"} onClick={() => go({ name: "stats" })} testid="atelier-nav-stats" />
+          <Dock icon={<IoMailOutline size={17} />} label="Newsletter" sub="LETTRE AUX ABONNÉS" on={view.name === "newsletter"} onClick={() => go({ name: "newsletter" })} testid="atelier-nav-newsletter" />
+          <Dock icon={<IoPubIcon size={17} />} label="Publication" sub="ATELIER → STATION" on={view.name === "publish"} onClick={() => go({ name: "publish" })} testid="atelier-nav-publish" />
+          <Dock icon={<IoGitNetworkOutline size={17} />} label="Réseau narratif" sub="QUI EST RELIÉ À QUOI" on={view.name === "network"} onClick={() => go({ name: "network" })} testid="atelier-nav-network" />
+          <Dock icon={<IoBookOutline size={17} />} label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
           <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
-          <Dock kanji="禅" label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
+          <Dock icon={<IoMoonOutline size={17} />} label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
           <div className="at-dock-unis">
             {pinned.map((u) => <Dock key={u.id} kanji={u.kanji || u.name[0]} color={u.color} label={u.name} on={view.id === u.id} onClick={() => go({ name: "universe", id: u.id })} testid={`atelier-nav-universe-${u.id}`} drop={dropToUniverse(at, u.id)} />)}
           </div>
           <div className="at-dock-foot">
-            <Dock kanji="開" label="Dev" sub="BACKLOG · PATCH NOTES" on={view.name === "devlog"} onClick={() => go({ name: "devlog" })} testid="atelier-nav-devlog" />
+            <Dock icon={<IoCodeSlashOutline size={17} />} label="Dev" sub="BACKLOG · PATCH NOTES" on={view.name === "devlog"} onClick={() => go({ name: "devlog" })} testid="atelier-nav-devlog" />
             <Dock icon={<IoSettingsOutline size={18} />} label="Réglages" sub="COMPTE · THÈME" on={view.name === "settings"} onClick={() => go({ name: "settings" })} testid="atelier-nav-settings" />
             <Dock icon={<IoExitOutline size={18} />} label="Station" sub="RETOUR PUBLIC" onClick={() => { sfx("back"); onLeave(); }} testid="atelier-leave" />
           </div>
@@ -199,6 +226,11 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
           {view.name === "radio" && <RadioView radio={radio} />}
           {view.name === "alexandrie" && <Alexandrie {...ctx} radio={radio} room={view.room} book={view.book} />}
+          {view.name === "newsletter" && <NewsletterView />}
+          {view.name === "stats" && <StatsView />}
+          {view.name === "journal" && <JournalView key={view.edit || "j"} initialEdit={view.edit ?? null} />}
+          {view.name === "publish" && <PublishView {...ctx} />}
+          {view.name === "network" && <NetworkView {...ctx} />}
           {view.name === "devlog" && <DevLogView at={at} />}
         </main>
       </div>
@@ -219,6 +251,7 @@ export default function AtelierApp({ onLeave }) {
       <ContextMenuHost />
       {viewing && <FileViewer at={at} id={viewing} onClose={() => setViewing(null)} edit={(id) => { setViewing(null); setEditing(id); }} />}
       {editing && <ItemEditor {...ctx} id={editing} onClose={() => setEditing(null)} />}
+      <PublishHost at={at} />
       {uForm && <UniverseForm {...ctx} universe={uForm} onClose={(u) => { setUForm(null); if (u?.id) setView({ name: "universe", id: u.id }); }} />}
       {oForm && <OeuvreForm {...ctx} oeuvre={oForm} onClose={(o) => { setOForm(null); if (o?.id) setView({ name: "oeuvre", id: o.id }); }} />}
       <LabDialogHost />

@@ -14,6 +14,8 @@ const book = {
 
 Tu l'aimes, et tu sais qu'on te regarde de travers quand tu le dis. Final Fantasy XIII est le plus contesté de la série. Il est sorti au Japon fin 2009, puis dans le reste du monde début 2010, après une attente immense : on l'avait annoncé dès 2006, avec des images qui faisaient rêver, et il était le premier grand Final Fantasy de la nouvelle génération de consoles. Il s'est très bien vendu. Et il a profondément divisé.
 
+@art 4
+
 On lui a reproché d'être un couloir. Pendant une vingtaine d'heures, le joueur avance en ligne droite, d'un combat à l'autre, sans ville à visiter, sans marchand à qui parler, sans carte à explorer, avant que le monde s'ouvre enfin. On lui a reproché de ne rien expliquer : les mots fal'Cie, l'Cie, Cie'th pleuvent dès la première heure, et le jeu range la moitié de son histoire dans des archives à lire dans un menu. On lui a reproché des personnages agaçants, un scénario confus, un système de combat qui joue presque tout seul au début.
 
 @yt wgWz9y8eWYY | Final Fantasy XIII (2010), la bande-annonce de lancement.
@@ -58,6 +60,8 @@ Retiens cette image avant tout le reste : un paradis fermé, suspendu au-dessus 
 # La marque
 
 Les fal'Cie, qu'ils viennent de Pulse ou de Cocoon, ont un pouvoir sur les hommes. Ils peuvent en choisir un, n'importe lequel, et le marquer.
+
+@art g 2
 
 Celui qui est marqué devient un l'Cie. Un signe noir apparaît sur sa peau, quelque part sur son corps. Il reçoit la magie, une force qu'aucun homme ordinaire ne possède. Et il reçoit une mission, que le jeu appelle une Tâche.
 
@@ -116,6 +120,8 @@ C'est tout le milieu du jeu : six personnes qui ne se sont pas choisies, enchaî
 
 Lightning part seule, vers la capitale, pour abattre le fal'Cie qui gouverne. Elle n'a plus d'autre plan que la colère. Hope, le garçon de quatorze ans, s'accroche à elle, parce qu'elle a l'air de savoir se battre et que lui ne sait rien faire.
 
+@art 5
+
 C'est une des paires les plus réussies du jeu. Lightning, au début, le traite comme un poids. Puis elle lui apprend à se battre. Elle lui dit d'être dur, de ne compter que sur lui-même, de ne pas pleurer. Elle lui donne, en somme, ce qu'elle s'est donné à elle-même à quinze ans. Et Hope l'écoute. Il se durcit. Il prépare sa vengeance contre Snow.
 
 Un jour, Lightning s'aperçoit, avec horreur, de ce qu'elle est en train de faire. Elle est en train de fabriquer une arme. Elle a donné à un enfant la force de tuer, et elle comprend que c'est exactement ce qu'elle a fait d'elle-même. Elle essaie de revenir en arrière. Elle lui dit qu'elle s'est trompée.
@@ -144,6 +150,8 @@ Fang, elle, a été recueillie par une unité rebelle de l'armée, la Cavalerie,
 # Le plan
 
 Il reste à comprendre pourquoi. Et celui qui l'explique est l'homme le plus respecté du cocon : le vieux chef du gouvernement, le Primarque Galenth Dysley, celui qui a ordonné la Purge.
+
+@art g 3
 
 Sur son vaisseau, devant les six réunis, il se révèle. Il n'est pas un homme. Il est le fal'Cie Barthandelus, l'un des plus anciens fal'Cie du cocon, qui règne depuis des siècles sous ce déguisement. Et au lieu de les tuer, il les aide. Il leur ouvre le chemin.
 
@@ -196,6 +204,8 @@ Vanille et Fang restent dans le pilier, endormies, les mains jointes. Elles tien
 
 Final Fantasy XIII a eu deux suites, qui font une trilogie. Elles divisent encore plus que le premier, mais elles complètent sa mythologie, et il faut les connaître.
 
+@art 6
+
 Dans **Final Fantasy XIII-2**, en 2011, trois ans ont passé. Les habitants de Cocoon vivent maintenant sur Pulse. Mais Lightning a disparu. Tout le monde croit qu'elle est restée dans le cristal avec Vanille et Fang. Seule Serah se souvient qu'elle était là, au pied du pilier. En vérité, Lightning a été emportée à Valhalla, le monde hors du temps où vit Etro, et elle est devenue la gardienne de la déesse.
 
 Un jeune homme venu du futur, Noel, apparaît à Serah. Ils voyagent ensemble à travers le temps pour réparer des paradoxes, ces anomalies qui défont l'histoire. Face à eux, un homme, Caius, et une petite fille, Yeul. Yeul est une voyante qui voit l'avenir, et chaque vision raccourcit sa vie. Elle meurt jeune, puis renaît, encore et encore, depuis des siècles. Caius, son gardien immortel, l'a vue mourir des dizaines de fois. Il veut tuer Etro, pour briser le cycle du temps et libérer Yeul.
@@ -229,6 +239,8 @@ Toute la trilogie, ensuite, pousse cette idée jusqu'au bout. Le premier jeu lib
 # Ce que tu peux en prendre
 
 Trois choses, pour toi qui construis des mondes.
+
+@art g 4
 
 La première est une mise en garde. Ce jeu a une mythologie superbe, et il l'a rangée dans un menu. Les mots fal'Cie, l'Cie, Cie'th, Tâche pleuvent dès la première heure sans qu'on te les donne. Beaucoup de joueurs ont décroché avant de comprendre qu'il y avait quelque chose à comprendre. Retiens-le pour tes propres univers : une idée qui n'est pas dans la scène n'existe pas pour celui qui regarde. Ce que tu sais de ton monde ne compte que si un personnage le vit devant nous. Les plus belles idées de Final Fantasy XIII, les Eidolons envoyés par pitié, les Cie'th qui attendent qu'on finisse leur Tâche, le dieu qui a rejeté sa propre fille, sont des idées que la plupart des joueurs n'ont jamais vues.
 

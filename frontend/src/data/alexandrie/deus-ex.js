@@ -14,6 +14,8 @@ const book = {
 
 Dans presque tous les jeux, l'auteur a décidé comment tu passes. Il y a une porte, et la clé est là où il l'a mise. Deus Ex, sorti en l'an 2000, a pris le parti inverse. Devant chaque obstacle, il te demande : comment veux-tu faire ? Tu peux forcer la serrure, trouver le code dans un courrier, passer par le conduit d'aération, convaincre le garde, l'assommer, ou empiler des caisses et sauter le mur. Le jeu n'a pas prévu chaque solution. Il a posé des règles assez cohérentes pour que les solutions existent.
 
+@art 4
+
 @yt wwLLN_ZQUM0 | Deus Ex (2000), bande-annonce d'origine.
 
 Je te parle de cela avant l'histoire parce que la forme et le fond disent ici la même chose. C'est un jeu sur la liberté : qui la détient, qui la surveille, à qui on la confie. Et il te la donne dans les mains pendant qu'il t'en parle.
@@ -66,6 +68,8 @@ Ce qui rend ces premières heures si fortes, c'est que le jeu ne te dit pas que 
 # Le frère et le compte à rebours
 
 Au sommet de la statue, le chef des rebelles se rend sans combattre. Il te dit une chose que tu n'es pas censé entendre : la peste n'est pas naturelle. On l'a fabriquée. Et ceux qui la répandent sont ceux qui vendent le remède.
+
+@art g 2
 
 Tu continues. Tu traques le vaccin volé dans les bas-fonds de New York, dans les égouts où vivent des gens, à l'aéroport. Et à chaque étape, quelque chose grince. Les ordres deviennent plus durs.
 
@@ -157,6 +161,8 @@ Le chaos libre, la tutelle des sages, ou le dieu juste. Tu choisis, tu accomplis
 
 Onze ans après le premier jeu, en 2011, un nouveau studio, Eidos Montréal, reprend la série. Il ne fait pas une suite, mais une préquelle : Deus Ex: Human Revolution se passe en 2027, vingt-cinq ans avant JC Denton. Le jeu est dirigé par Jean-François Dugas. Sa direction artistique, conçue par Jonathan Jacques-Belletête, invente une esthétique qu'on n'oublie pas : un futur noir et or, inspiré de la Renaissance, où les prothèses ressemblent à des œuvres d'art et où tout baigne dans une lumière dorée. La musique de Michael McCann, sombre et électronique, avec des voix lointaines, complète l'atmosphère.
 
+@art 5
+
 À cette époque, l'augmentation n'est pas encore faite de machines microscopiques. Elle est mécanique, visible : des bras en carbone, des jambes, des yeux, des implants dans le crâne. Elle est en train de changer le monde. Les augmentés sont plus forts, plus rapides, plus productifs. Les entreprises qui les fabriquent sont devenues aussi puissantes que des États. Et une partie de l'humanité a peur : peur d'être dépassée, peur de perdre ce qui fait l'humain. Un mouvement politique, le Front de l'humanité, réclame qu'on encadre les augmentations.
 
 Mais il y a un problème : le corps rejette les prothèses. Pour vivre avec, les augmentés doivent prendre chaque jour un médicament coûteux, la neuropozyne. Sans lui, ils souffrent, puis meurent. Ils sont libres et surpuissants, et ils dépendent à vie d'une drogue vendue par une poignée de laboratoires. Tu reconnais le schéma de l'Ambroisie, vingt-cinq ans plus tôt.
@@ -194,6 +200,8 @@ Je remarque aussi ce que le jeu dit du corps. Les augmentés d'acier sont les ou
 # Ce que tu peux en prendre
 
 Trois choses pour un conteur.
+
+@art g 3
 
 La première : donne le choix avant de donner le discours. Quand le barman te demande ce que tu penses du pouvoir, tu as déjà, depuis des heures, décidé d'épargner ou non des hommes, d'obéir ou non à ton chef. Le jeu ne t'enseigne pas une idée. Il te fait agir, puis il te demande de nommer ce que tu as fait. Une histoire gagne à poser ses questions à des personnages qui y ont déjà répondu par leurs actes. Si tu écris un film, la leçon tient aussi : ne fais pas expliquer le sujet par un personnage avant que ton héros ne l'ait vécu dans son corps. Le discours qui arrive après le geste est une révélation ; celui qui arrive avant est un cours.
 

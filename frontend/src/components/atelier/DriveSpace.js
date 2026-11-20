@@ -5,7 +5,8 @@ import { KINDS, imgSrc, isFolder, isOeuvre, fileType, mediaFromText } from "@/li
 import { templateHtml, templateMenuEntries, allTemplates, typeContent, typeMenuEntries } from "@/lib/templates";
 import ItemCard from "@/components/atelier/ItemCard";
 import { itemDrop, pressMenu, showMenu } from "@/components/atelier/ContextMenu";
-import { dropToFolder } from "@/components/atelier/itemActions";
+import { dropToFolder, itemMenu, canPublish } from "@/components/atelier/itemActions";
+import { askBatch } from "@/components/atelier/StationLink";
 import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
 import { archiveCodes, words, fmtDate } from "@/lib/archive";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
@@ -49,9 +50,9 @@ function ArchiveList({ at, open, all, folders, folderMenu, items, setFolderId, f
           </button>
         ))}
         {rows.map((i) => (
-          <button key={i.id} className={"ar-tr" + (sel.has(i.id) ? " sel" : "")} onClick={() => open(i.id)} data-testid={`archive-row-${i.id}`}>
+          <button key={i.id} className={"ar-tr" + (sel.has(i.id) ? " sel" : "")} onClick={() => open(i.id)} {...pressMenu(() => itemMenu(i, at, open))} data-testid={`archive-row-${i.id}`}>
             <span className="c mono">{codes[i.id]}</span>
-            <span className="t"><b><i aria-hidden="true">{KINDS[i.kind]?.kanji}</i>{i.title || "Sans titre"}{i.pinned && <em className="mono"> · ÉPINGLÉ</em>}</b>{(i.tags || []).length > 0 && <small className="mono">{i.tags.slice(0, 4).map((t) => "#" + t).join("  ")}</small>}</span>
+            <span className="t"><b><i aria-hidden="true">{KINDS[i.kind]?.kanji}</i>{i.title || "Sans titre"}{i.pinned && <em className="mono"> · ÉPINGLÉ</em>}{(i.fields?.published || i.fields?.published_j) && <em className="mono st-on"> · EN LIGNE</em>}</b>{(i.tags || []).length > 0 && <small className="mono">{i.tags.slice(0, 4).map((t) => "#" + t).join("  ")}</small>}</span>
             <span className="y">{isOeuvre(i) ? "Œuvre" : KINDS[i.kind]?.label}</span>
             <span className="w mono">{words(i.content).toLocaleString("fr-FR")}</span>
             <span className="d mono">{fmtDate(i.updated_at)}</span>
@@ -155,7 +156,7 @@ export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_i
     { id: "nf", label: "Nouveau dossier", icon: <IoFolderOutline size={14} />, onClick: newFolder },
     { id: "nn", label: "Nouveau", icon: <IoDocumentTextOutline size={14} />, sub: typeMenuEntries(createType) },
     { id: "tpl", label: "Depuis un template", icon: <IoLibraryOutline size={14} />, sub: templateMenuEntries(fromTemplate, allTemplates(at)) },
-    { id: "up", label: "Déposer des fichiers", icon: <IoCloudUploadOutline size={14} />, onClick: dropFiles },
+    { id: "up", label: "Importer des fichiers (privé)", icon: <IoCloudUploadOutline size={14} />, onClick: dropFiles },
     { id: "ln", label: "Coller un lien", icon: <IoLinkOutline size={14} />, onClick: addLink },
     ...(!fid && items.some((i) => !i.fields?.folder_id) ? ["-", { id: "org", label: "Organiser par type", icon: <IoSparklesOutline size={14} />, onClick: organizeByType }] : []),
   ] });
@@ -210,6 +211,7 @@ export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_i
         </>
       )}
       <BulkBar sel={sel} all={sortedItems.map((i) => i.id)}>
+        {picked().some(canPublish) && <button onClick={() => askBatch(sel.ids.filter((id) => { const i = at.items.find((x) => x.id === id); return i && canPublish(i); }))} data-testid="bulk-publish"><IoCloudUploadOutline size={14} /> Publier comme chapitres</button>}
         <button onClick={bulkMove} data-testid="bulk-move"><IoFolderOutline size={14} /> Déplacer</button>
         <button className="danger" onClick={bulkDelete} data-testid="bulk-delete"><IoTrashOutline size={14} /> Supprimer</button>
       </BulkBar>

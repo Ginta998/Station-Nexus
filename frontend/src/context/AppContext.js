@@ -47,7 +47,11 @@ export function AppProvider({ children }) {
   const [theme, setThemeState] = useState(() => storedTheme || "abysse");
   // admin = uniquement le compte administrateur connecté
   const { user: authUser } = useAuth();
-  const isAdmin = !!authUser?.is_admin || DEV_LOCAL;
+  const realAdmin = !!authUser?.is_admin || DEV_LOCAL;
+  // Mode spectateur : l'admin voit la station comme un visiteur (sans les boutons d'admin), le temps de vérifier
+  const [spectator, setSpectatorS] = useState(() => { try { return sessionStorage.getItem("sx_spectator") === "1"; } catch (_) { return false; } });
+  const setSpectator = (v) => { setSpectatorS(v); try { sessionStorage.setItem("sx_spectator", v ? "1" : "0"); } catch (_) {} };
+  const isAdmin = realAdmin && !spectator;
   useEffect(() => { localStorage.removeItem(LS.admin); }, []);
   const [musicVolume, setMusicVolumeState] = useState(() => {
     const v = parseFloat(localStorage.getItem(LS.music) ?? localStorage.getItem("sx_volume")); return Number.isFinite(v) ? v : 0.2;
@@ -414,8 +418,15 @@ export function AppProvider({ children }) {
 
   // Play a specific reading track (per-chapter music). Fades between sources and
   // dedupes so switching chapters that share the same fallback track won't restart it.
+  // Musique YouTube (repère inséré par recherche) : lue par le lecteur intégré de YouTube, dans une petite fenêtre visible.
+  // Une seule musique à la fois : lancer YouTube coupe la musique de lecture, et inversement.
+  const [ytMini, setYtMini] = useState(null); // { vid, title, key }
+  const ytOf = (u = "") => (String(u).match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/) || [])[1] || "";
   const playReadingUrl = useCallback((url, key, opts = {}) => {
     const a = cardAudio.current; if (!a) return;
+    const vid = ytOf(url);
+    if (vid) { cardActiveRef.current = true; stopAppAmbience(true); if (!a.paused) fadeTo(a, 0, 200, () => a.pause()); setIsPlaying(false); setYtMini({ vid, title: opts.title || "Musique", key }); return; }
+    setYtMini(null);
     const loop = opts.loop !== false;
     cardActiveRef.current = true;      // own the channel; blocks app ambience
     stopAppAmbience(true);
@@ -436,13 +447,15 @@ export function AppProvider({ children }) {
 
   const toggleReadingUrl = useCallback((url, key, opts = {}) => {
     const a = cardAudio.current; if (!a) return;
+    if (ytOf(url)) { if (ytMini?.key === key) { setYtMini(null); return; } playReadingUrl(url, key, opts); return; }
     if (playingId === key && isPlaying) { fadeTo(a, 0, 200, () => a.pause()); setIsPlaying(false); return; }
     playReadingUrl(url, key, opts);
-  }, [playingId, isPlaying, playReadingUrl]);
+  }, [playingId, isPlaying, playReadingUrl, ytMini]);
 
   // Stop whatever reading track is playing (immersive OR an inline music cue),
   // without leaving reading mode — used by the reader top-bar stop button.
   const pauseReading = useCallback(() => {
+    setYtMini(null);
     const a = cardAudio.current; if (!a) return;
     if (!a.paused) fadeTo(a, 0, 200, () => a.pause());
     setIsPlaying(false);
@@ -460,6 +473,7 @@ export function AppProvider({ children }) {
 
   // Called when leaving the chapter reader: restore the card ambient (or app ambience).
   const endReading = useCallback((creationId, hasCardAudio) => {
+    setYtMini(null);
     const a = cardAudio.current;
     const resume = () => {
       cardActiveRef.current = false;
@@ -472,13 +486,13 @@ export function AppProvider({ children }) {
   }, [playAmbient, startAppAmbience]);
 
   const value = {
-    theme, setTheme, isAdmin,
+    theme, setTheme, isAdmin, realAdmin, spectator, setSpectator,
     musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute,
     muteSfx, muteMusic, toggleSfx, toggleMusic,
     soundPack, setPack, themeSfx, setThemeSfx, customSounds, setCustom, sfx,
     ambienceId, selectAmbience, appPlaying, playMode, setPlayMode, nextAmbience,
     profile, saveProfile, clearProfile,
-    favorites, toggleFavorite, isFavorite,
+    favorites, toggleFavorite, isFavorite, ytMini, setYtMini,
     seenAnnouncements, markAnnouncementsSeen,
     playingId, isPlaying, playAmbient, stopAmbient, playReading, endReading, primeAudio,
     playReadingUrl, toggleReadingUrl, pauseReading, resumeReading, getReadingAudio,

@@ -15,6 +15,8 @@ const book = {
 
 Skyrim est l'un des jeux les plus joués de l'histoire. Beaucoup y ont passé des centaines d'heures sans jamais suivre l'histoire principale, à couper du bois, à cambrioler des maisons, à chercher le meilleur fromage de Blancherive.
 
+@art 4
+
 C'est justement pour ça qu'il mérite un livre épais. Sous la liberté, il y a une des mythologies les plus riches du jeu vidéo, construite sur trente ans et cinq jeux. Les dieux y sont des acteurs de l'histoire. Des princes venus d'autres mondes jouent avec les mortels comme avec des pièces. Une puissance elfique travaille, patiemment, à effacer un dieu. Les livres qu'on trouve sur les étagères se contredisent, et les contradictions sont voulues. Le temps lui-même peut se briser.
 
 Je vais te raconter Skyrim de loin d'abord, depuis le commencement du monde, puis de près, depuis la charrette où tout commence. Ensuite je t'ouvrirai les portes que le jeu laisse entrouvertes : les Daedra, le Thalmor, les guildes, les peuples disparus, les vampires, et l'île où un autre Enfant de dragon attend depuis des millénaires.
@@ -25,6 +27,8 @@ Je vais te raconter Skyrim de loin d'abord, depuis le commencement du monde, pui
 # Ceux qui l'ont fait
 
 Skyrim est développé par Bethesda Game Studios, dans le Maryland, aux États-Unis, et sort en novembre 2011. Il est dirigé par Todd Howard, déjà responsable d'Oblivion et de Fallout 3. Le concepteur principal est Bruce Nesmith, et l'écriture des quêtes est dirigée par Emil Pagliarulo.
+
+@art g 2
 
 La musique est de Jeremy Soule, qui avait déjà composé celles de Morrowind et d'Oblivion. Le thème Dragonborn, chanté par un chœur en langue des dragons, a été enregistré en superposant les voix d'une poignée de chanteurs.
 
@@ -46,6 +50,8 @@ C'est la meilleure ouverture de la série, parce qu'elle annonce les trois histo
 
 Pour comprendre, il faut remonter très loin, avant le monde.
 
+@art 5
+
 Selon les mythes de Tamriel, il y avait au début deux forces : Anu, le principe de ce qui est, de la stabilité, de la lumière ; et Padomay, le principe du changement, du vide, de l'obscurité. De leur rencontre est né tout le reste. Leurs sangs mêlés ont donné les esprits, qu'on appelle les et'Ada, les Originels.
 
 Parmi ces esprits, il y en avait un qui ne ressemblait à aucun autre. Les hommes l'appellent Shor, les Impériaux Shezarr, les elfes Lorkhan. C'est lui qui a eu l'idée d'un monde mortel, Mundus, et qui a convaincu, ou trompé, les autres esprits de le construire avec lui.
@@ -64,6 +70,8 @@ Puis les Aedra ont compris ce que la création leur avait coûté. Ils ont jugé
 
 L'Empire vénère neuf dieux, les Neuf Divins.
 
+@art g 3
+
 Akatosh, le dragon du temps, le premier d'entre eux, celui dont l'existence a rendu le temps possible. Arkay, le dieu des cycles de la vie et de la mort, ennemi des nécromanciens. Dibella, la beauté. Julianos, la sagesse et la logique. Kynareth, le ciel, les vents et la pluie, qui est particulièrement aimée en Bordeciel. Mara, l'amour et la mère. Stendarr, la miséricorde et la justice. Zénithar, le travail et le commerce.
 
 Et le neuvième, Talos. Un homme. Nous y reviendrons, car c'est autour de lui que tourne la guerre.
@@ -76,6 +84,8 @@ Et Shor, le Lorkhan des Nordiques, est un héros. C'est lui qui garde Sovngarde,
 
 Les Daedra ne sont pas des démons, même si les prêtres de l'Empire aiment le dire. Ce sont des êtres d'une autre nature : ils n'ont pas d'âme au sens mortel, ils ne meurent pas vraiment. Quand on en tue un en Mundus, son essence retourne dans son royaume et se reforme.
 
+@art 6
+
 Les plus puissants sont les seize princes daedriques. Chacun règne sur un plan d'Oblivion, un royaume entier façonné à son image, et chacun incarne une sphère : le savoir, la folie, la domination, la chasse, le désir. Ils ne peuvent pas entrer librement dans le monde mortel. Alors ils passent par des fidèles, des sanctuaires, des invocations, des artefacts. Ils proposent des pactes. Et ils s'ennuient, je crois. Les mortels sont leur distraction favorite.
 
 Certains peuples les vénèrent. Les Elfes noirs de Morrowind honorent depuis toujours trois princes qu'ils jugent bons : Azura, Boethiah et Mephala. Les Orques ont pour dieu Malacath. Les sorcières et les cultes interdits en adorent d'autres.
@@ -85,6 +95,8 @@ Dans Skyrim, presque tous les princes ont une quête. Chacune est une petite his
 # Seize princes
 
 **Azura**, princesse de l'aube et du crépuscule, la plus aimée des Elfes noirs. Sur une montagne près de Fortdhiver, sa prêtresse Aranea t'attend devant une statue immense. Azura veut qu'on retrouve son Étoile, une pierre d'âme sans fin, corrompue par un mage qui y a enfermé sa propre âme pour échapper à la mort.
+
+@art g 4
 
 **Boethiah**, prince de la trahison et des complots. Elle exige un sacrifice : que tu attires un de tes compagnons dans son sanctuaire, et que tu le tues. Le jeu ne te juge pas. Il te laisse faire.
 
@@ -124,6 +136,8 @@ Reste **Jyggalag**, prince de l'ordre absolu, qui n'apparaît pas dans Skyrim. L
 
 Les dragons ne parlent pas comme nous. Leur langue est une magie. Chaque mot est une force, et quand un dragon parle, le monde change. Ce cri, on l'appelle le Thu'um.
 
+@art 7
+
 Il y a des milliers d'années, à l'époque merethique, les dragons régnaient sur Bordeciel. Les premiers hommes, les Nordiques, les vénéraient comme des dieux. Des prêtres-dragons gouvernaient en leur nom, avec des masques de métal et des pouvoirs prêtés. Leurs tombeaux sont encore là, sous les montagnes, gardés par des draugr, des morts qui ne dorment pas. Le chef des dragons s'appelait Alduin. On le surnommait le Dévoreur de mondes.
 
 Puis un dragon a trahi les siens. Paarthurnax, le lieutenant d'Alduin, a pris pitié des hommes, ou s'est lassé de son maître, et il leur a appris le Thu'um. Pour la première fois, les hommes pouvaient crier comme des dragons. Ce fut la Guerre des dragons.
@@ -133,6 +147,8 @@ Les dragons eux-mêmes ne disent jamais « vaincre » un ennemi. Ils disent qu'o
 # Le parchemin
 
 Même avec le Thu'um, les hommes ne pouvaient pas tuer Alduin. Alors trois héros nordiques, Gormlaith Crinière-d'or, Hakon Œil-Unique et Felldir le Vieux, ont fait quelque chose d'impensable. Au sommet de la Gorge du Monde, la plus haute montagne de Bordeciel, ils ont lu un Parchemin des Anciens.
+
+@art g 5
 
 Les Parchemins des Anciens, les Elder Scrolls qui donnent son nom à la série, sont des objets impossibles. Ils ne contiennent pas un récit : ils contiennent le temps. Ce qui a été, ce qui sera, ce qui aurait pu être. Les lire rend aveugle, sauf les prêtres-papillons de l'Empire, qui s'y préparent toute leur vie et perdent la vue un peu plus à chaque lecture.
 
@@ -156,6 +172,8 @@ Et les ruines de Saarthal, la cité de la Nuit des larmes, sont toujours là, pr
 
 Toi, tu es un Dovahkiin, un Enfant de dragon. Tu as un corps de mortel et une âme de dragon. Quand tu tues un dragon, tu absorbes son âme, et avec elle sa connaissance des mots. Tu apprends à crier sans des années d'étude.
 
+@art 8
+
 Les Grises-Barbes, des moines qui vivent à Haut-Hrothgar, sur la Gorge du Monde, l'entendent. Ils t'appellent, d'un cri qui fait trembler toute la province. Tu montes les sept mille marches. Ils t'enseignent la Voie de la Voix : le Thu'um doit servir à la contemplation, jamais à la guerre.
 
 Les Lames, elles, ont une autre idée. Ce sont les anciens gardes du corps des empereurs, presque exterminées par le Thalmor pendant la Grande Guerre. Il en reste deux en Bordeciel, cachés : Delphine, à Rivebois, et le vieil archiviste Esbern, terré dans les égouts de Faillaise. Les Lames ont toujours servi les Enfants de dragon. Elles veulent faire de toi une arme.
@@ -168,6 +186,8 @@ Esbern te conduit à un temple oublié, Sky Haven, où un mur sculpté il y a de
 
 Au sommet de la Gorge du Monde, au-dessus des Grises-Barbes, tu rencontres leur maître. Un vieux dragon gris, perché sur un mur de mots. Paarthurnax. Le traître de la Guerre des dragons, qui médite depuis des millénaires pour dompter sa propre nature de dominateur.
 
+@art g 6
+
 > Qu'est-ce qui vaut mieux : naître bon, ou vaincre sa nature mauvaise au prix d'un grand effort ? | Paarthurnax, The Elder Scrolls V: Skyrim (traduit de la version originale anglaise)
 
 Les Lames exigent que tu le tues. Pour elles, un dragon reste un dragon, et Paarthurnax a commis des atrocités au service d'Alduin. Les Grises-Barbes te supplient de l'épargner. Le jeu ne te dit pas qui a raison. C'est un des rares choix vraiment moraux du jeu, et il pose la question de Paarthurnax lui-même : le passé d'un être définit-il ce qu'il est ?
@@ -176,6 +196,8 @@ Les Lames exigent que tu le tues. Pour elles, un dragon reste un dragon, et Paar
 
 Pour vaincre Alduin, tu dois apprendre le cri que les anciens héros ont inventé contre les dragons, un cri fait de mots qu'un dragon ne peut pas comprendre, parce qu'ils parlent de mortalité : Joor, Zah, Frul. Tu dois lire le même Parchemin des Anciens, au même endroit, pour voir dans le passé comment ils ont fait.
 
+@art 9
+
 Alduin, blessé, s'enfuit à Sovngarde, le paradis des Nordiques, où les âmes des guerriers festoient dans le Hall de la Valeur. Il y dévore les âmes des morts pour reprendre des forces. Tsun, le gardien du pont de baleine, te laisse passer.
 
 Le combat final se passe dans le brouillard du paradis, avec à tes côtés les trois héros qui l'avaient vaincu il y a des millénaires. Quand Alduin meurt, il ne te donne pas son âme. Il disparaît. Personne ne sait vraiment s'il est mort, ou s'il est retourné à son rôle : dévorer le monde à la fin des temps, comme il est écrit.
@@ -183,6 +205,8 @@ Le combat final se passe dans le brouillard du paradis, avec à tes côtés les 
 # Talos
 
 Revenons à l'homme qui est devenu dieu.
+
+@art g 7
 
 Il y a plus de six siècles, à la fin de la Deuxième Ère, un général de Bordeciel, Hjalti Barbe-Précoce, a réussi à unifier Tamriel entier sous un seul empire. Il a pris le nom de Tiber Septim. Selon la légende, les Grises-Barbes auraient reconnu en lui un Enfant de dragon, et sa voix aurait été capable de faire tomber les murs.
 
@@ -196,6 +220,8 @@ Et c'est, pour les Hauts-Elfes, le pire des blasphèmes. Leur île a été écra
 
 La dynastie de Tiber Septim a régné pendant des siècles. Le sang des Septim avait un pouvoir : grâce à une alliance très ancienne avec Akatosh, et à une amulette, l'Amulette des Rois, l'empereur pouvait allumer les Feux du dragon, dans le Temple de l'Unique, à la Cité impériale. Tant qu'ils brûlaient, les portes d'Oblivion restaient fermées.
 
+@art 10
+
 En 3E 433, l'empereur Uriel Septim VII et tous ses fils sont assassinés par une secte, l'Aube mythique, qui adore Mehrunes Dagon. Les feux s'éteignent. Des portes s'ouvrent partout en Cyrodiil, et les armées de Dagon envahissent le monde. C'est l'histoire d'Oblivion, le jeu précédent.
 
 Un fils illégitime de l'empereur, Martin, est retrouvé dans une chapelle. Au dernier moment, face à Dagon lui-même dans la Cité impériale, il brise l'Amulette des Rois et devient l'avatar d'Akatosh, un dragon de feu qui renvoie le prince dans son royaume. Martin meurt. La lignée des Septim s'éteint. Les Feux du dragon ne seront jamais rallumés.
@@ -205,6 +231,8 @@ Beaucoup de joueurs pensent que c'est pour cela que les dragons reviennent, deux
 # Le Thalmor
 
 Pendant la Crise d'Oblivion, sur l'île de Summerset, un petit mouvement politique gagne en influence : le Thalmor. Il prétend avoir sauvé les Hauts-Elfes des armées de Dagon. Il prêche la supériorité des elfes sur toutes les autres races.
+
+@art g 8
 
 En 4E 22, il renverse la monarchie et prend le pouvoir dans l'archipel, qu'il rebaptise Alinor. En 4E 29, il s'empare du Val-Boisé, la forêt des Elfes des bois. Le Domaine aldmeri est reformé.
 
@@ -223,6 +251,8 @@ Le traité impose deux choses. Une partie de Lenclume, au sud, est cédée aux e
 # Ce que veut le Thalmor
 
 Officiellement, le Thalmor défend la vraie foi. Mais pourquoi tant d'acharnement contre un dieu en particulier ?
+
+@art 11
 
 Dans l'ambassade, si tu fouilles bien, tu trouves des dossiers. L'un d'eux concerne Ulfric Sombrage. On y apprend qu'Ulfric a été prisonnier du Thalmor pendant la Grande Guerre, qu'il a parlé sous la torture, et que ses aveux ont aidé à la chute de la Cité impériale. Le Thalmor le considère comme un atout. La guerre civile en Bordeciel l'arrange : tant que l'Empire saigne, il ne se relève pas. Le dossier recommande de ne surtout pas laisser la guerre se terminer trop vite.
 
@@ -248,6 +278,8 @@ Le jeu te fait choisir. Aucun camp n'est propre. Et quel que soit ton choix, le 
 
 Les Parjures sont les grands oubliés de la guerre. Ce sont des Brétons de la Crevasse, les montagnes autour de Markarth, un peuple plus ancien que l'arrivée des Nordiques, qui vénère des dieux anciens et des sorcières-corbeaux.
 
+@art g 9
+
 À Markarth, une enquête t'entraîne dans un complot. Tout mène à la mine d'argent de Cidhna, une prison où travaille, enchaîné, le roi des Parjures, Madanach, le Roi en haillons. Et derrière lui, une riche famille de la ville, les Sang-d'Argent, qui contrôle la mine, la garde et le jarl.
 
 Dans Skyrim, même la ville la plus ordonnée cache une guerre que personne ne veut voir. C'est une des meilleures quêtes du jeu, et elle n'a rien à voir avec les dragons.
@@ -255,6 +287,8 @@ Dans Skyrim, même la ville la plus ordonnée cache une guerre que personne ne v
 # Les guildes
 
 Les guildes de Skyrim sont des histoires complètes, souvent plus fortes que la quête principale.
+
+@art 12
 
 **La Confrérie noire** est une secte d'assassins qui vénère Sithis, le Vide, le principe du néant que certains rattachent à Padomay. On la contacte par un rituel : on dessine un cercle, on y place un cœur humain, des ossements, et on prie la Mère de la nuit. Dans Skyrim, la Confrérie est en déclin. Une nouvelle recrue la ramène vers un contrat impossible : tuer l'empereur Titus Mede II lui-même, sur son navire, pendant sa visite en Bordeciel. Et un bouffon fou, Cicero, transporte de ville en ville le cercueil de la Mère de la nuit.
 
@@ -268,6 +302,8 @@ Les guildes de Skyrim sont des histoires complètes, souvent plus fortes que la 
 
 Bordeciel est pleine de ruines, et chaque ruine raconte un peuple disparu.
 
+@art g 10
+
 Les cités dwemer, sous terre : des machines de bronze, des tuyaux, des automates qui fonctionnent encore. Les Dwemers, les elfes des profondeurs, étaient des ingénieurs athées. Ils ne priaient pas les dieux : ils les étudiaient. Leur chef, Kagrenac, a découvert le Cœur de Lorkhan sous la Montagne Rouge, et il a construit des outils pour en tirer le pouvoir, peut-être pour faire de son peuple des dieux, peut-être pour construire Numidium. En 1E 700, pendant une bataille sous la montagne, il a utilisé ses outils. Tous les Dwemers ont disparu, d'un coup, partout dans le monde. Personne ne sait où ils sont allés.
 
 Et dans les profondeurs de leurs cités, les Falmers : des créatures aveugles et hostiles. Ce sont les descendants des elfes des neiges, ceux-là mêmes qu'Ysgramor avait chassés. Réfugiés sous terre, ils ont demandé asile aux Dwemers. Ceux-ci les ont acceptés, à condition qu'ils mangent un champignon qui les a rendus aveugles, puis ils les ont réduits en esclavage. Quand les Dwemers ont disparu, les Falmers sont restés, dans le noir, pendant des milliers d'années.
@@ -277,6 +313,8 @@ Dans Blackreach, une immense caverne lumineuse sous la province, avec ses champi
 # Dawnguard
 
 L'extension Dawnguard, en 2012, raconte une guerre secrète entre vampires et chasseurs de vampires.
+
+@art 13
 
 Les vampires viennent de Molag Bal. La légende dit que le prince a violé une mortelle, Lamae Beolfag, et que la première vampire est née de cette souillure. Dans Skyrim, un clan très ancien, les Volkihar, vit dans un château sur une île gelée. Leur seigneur, Harkon, veut accomplir une prophétie : la Tyrannie du soleil. Éteindre le soleil, pour que les vampires puissent régner en plein jour.
 
@@ -290,6 +328,8 @@ Tu peux choisir ton camp : chasser les vampires avec la Garde de l'aube, ou deve
 
 L'extension Dragonborn, en 2012 aussi, emmène sur l'île de Solstheim, au nord-est, entre Bordeciel et Morrowind. L'île est couverte de cendres depuis l'Année rouge, en 4E 5, quand la Montagne Rouge a explosé et dévasté le pays des Elfes noirs.
 
+@art g 11
+
 On y découvre que tu n'es pas le premier Enfant de dragon. Le premier s'appelait Miraak. C'était un prêtre-dragon, à l'époque merethique, qui a trahi ses maîtres en apprenant à dominer les dragons. Hermaeus Mora lui a offert un refuge dans son royaume, Apocrypha : une bibliothèque infinie, verte et noire, avec des tentacules qui sortent de l'eau noire et des livres qui chuchotent.
 
 Miraak y est resté des milliers d'années. Il veut revenir. Il a pris le contrôle des esprits des habitants de Solstheim, qui construisent pour lui, en dormant, un temple. Les seuls à résister sont les Skaal, un peuple nordique qui vénère le Tout-Créateur et protège des pierres sacrées.
@@ -301,6 +341,8 @@ Apocrypha pose la même question que Bloodborne, autrement : que coûte le savoi
 # Pour aller plus loin
 
 Sous le lore des jeux, il existe un lore plus profond, écrit en partie par d'anciens développeurs, surtout Michael Kirkbride, et disséminé dans des textes étranges.
+
+@art 14
 
 On y lit que le monde entier est le rêve d'un être, le Rêveur, qu'on appelle aussi le Dieu-Tout. Que certains mortels ont compris cela, et qu'ils ont atteint un état appelé CHIM : savoir qu'on est rêvé, et continuer d'exister quand même, en disant « je suis ». Que Talos l'aurait atteint. Que Vivec, le dieu-poète de Morrowind, l'aurait atteint aussi, et qu'il l'enseigne dans un livre de trente-six sermons, Les Trente-six leçons de Vivec, qui est un des textes les plus étranges jamais écrits pour un jeu vidéo.
 
@@ -321,6 +363,8 @@ Sa faiblesse, c'est la même chose : à force de tout permettre, le jeu oblige r
 # Ce que tu peux en prendre
 
 Skyrim t'apprend une chose sur la construction d'un univers : les contradictions sont une richesse.
+
+@art g 12
 
 Les livres du jeu ne disent pas tous la même chose, et c'est voulu. Chaque peuple a sa version de l'histoire, ses dieux, ses héros, ses traîtres. Lorkhan est un sauveur ou un geôlier. Talos est un dieu ou un blasphème. Le Thalmor défend une foi, ou prépare la fin du monde. Le joueur doit comparer, douter, choisir. Un univers devient vivant quand il a plusieurs voix.
 

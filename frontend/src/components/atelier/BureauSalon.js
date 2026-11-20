@@ -1,11 +1,12 @@
 import { useRef, useState } from "react";
 import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
-import { IoAdd, IoTrashOutline, IoPlay, IoContractOutline, IoCloudUploadOutline, IoOpenOutline, IoClose, IoListOutline, IoArrowUp, IoArrowDown, IoCreateOutline } from "react-icons/io5";
+import { IoAdd, IoTrashOutline, IoPlay, IoContractOutline, IoCloudUploadOutline, IoOpenOutline, IoClose, IoListOutline, IoArrowUp, IoArrowDown, IoCreateOutline, IoLinkOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { DEFAULT_APPS, toEmbed, popOut } from "@/lib/embed";
 import { atelierApi } from "@/lib/atelier";
 import { EmbedFrame } from "@/components/atelier/AppScreens";
 import { YtSearch, ContinueRow } from "@/components/atelier/SalonExtras";
+import VhsShelf from "@/components/atelier/VhsShelf";
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import { addShortcut, appShortcut } from "@/components/atelier/Shortcuts";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
@@ -153,6 +154,10 @@ export function SalonView({ at, launch, mini }) {
     const u = (await labPrompt("Lien (au cas où il ne fonctionne plus)", l.url || "")); if (u === null) return;
     at.saveLink({ ...l, title: t.trim() || l.title, url: u.trim() || l.url }).then(() => toast.success("Modifié"));
   };
+  const relink = async (l) => {
+    const u = (await labPrompt("Nouveau lien de l'intégration (adresse complète)", l.url || "")); if (u === null || !u.trim()) return;
+    at.saveLink({ ...l, url: u.trim() }).then(() => toast.success("Lien changé"));
+  };
   const savePl = (pl) => { setPlaylists(pl); at.saveConfig({ playlists: pl }); try { localStorage.setItem(PL_KEY, JSON.stringify(pl)); } catch (_) {} };
   const newPlaylist = async () => { const name = (await labPrompt("Nom de la playlist (ex. One Piece)")); if (name && name.trim()) savePl([...playlists, { id: "pl-" + Date.now(), name: name.trim(), ids: [] }]); };
   const renamePl = async (p) => { const n = (await labPrompt("Nom de la playlist", p.name)); if (n && n.trim()) savePl(playlists.map((x) => x.id === p.id ? { ...x, name: n.trim() } : x)); };
@@ -176,7 +181,7 @@ export function SalonView({ at, launch, mini }) {
         </div>
         <div className="meta"><b>{l.title}</b><small className="mono">{(em.provider || "").toUpperCase()}</small></div>
         <div className="acts">
-          <button className="at-icon" title="Renommer" onClick={() => renameLink(l)}><IoCreateOutline size={14} /></button>
+          <button className="at-icon" title="Modifier le titre et le lien" onClick={() => renameLink(l)}><IoCreateOutline size={14} /></button>
           <button className="at-icon" title="Ajouter à une playlist" onClick={() => setAddTo(l.id)}><IoAdd size={15} /></button>
           {!em.blocked && <button className="at-icon" title="Mini-lecteur" onClick={() => mini({ title: l.title, url: l.url })} data-testid={`atelier-show-mini-${l.id}`}><IoContractOutline size={14} /></button>}
           <button className="at-icon danger" title="Retirer du Salon" onClick={() => at.removeLink(l.id)}><IoTrashOutline size={14} /></button>
@@ -252,7 +257,8 @@ export function SalonView({ at, launch, mini }) {
               <div className="sx-integ-h">
                 <b>{l.title}</b>
                 <span className="sx-integ-acts">
-                  <button className="at-icon" title="Renommer" onClick={() => renameLink(l)}><IoCreateOutline size={14} /></button>
+                  <button className="at-icon" title="Modifier le titre et le lien" onClick={() => renameLink(l)}><IoCreateOutline size={14} /></button>
+                  <button className="at-icon" title="Changer le lien" onClick={() => relink(l)} data-testid={`atelier-integ-relink-${l.id}`}><IoLinkOutline size={14} /></button>
                   <button className="at-icon" title="Ouvrir à côté" onClick={() => popOut(l.url)}><IoOpenOutline size={14} /></button>
                   <button className="at-icon danger" title="Retirer" onClick={() => at.removeLink(l.id)}><IoTrashOutline size={14} /></button>
                 </span>
@@ -287,6 +293,7 @@ export function SalonView({ at, launch, mini }) {
         </header>
       )}
 
+      <YtSearch at={at} launch={launch} />
       <form className="at-tadd" onSubmit={add} data-testid="atelier-salon-add">
         <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Lien YouTube, Spotify, Twitch, un site web à parcourir…" data-testid="atelier-salon-url" />
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre (optionnel)" style={{ flex: "0 1 220px" }} />
@@ -299,8 +306,8 @@ export function SalonView({ at, launch, mini }) {
 
       {links.length === 0 && playlists.length === 0 && <p className="at-empty big">Ajoute un premier lien ou importe une vidéo. Crée des playlists (ex. les épisodes d'un anime), intègre des sites web à parcourir, et réorganise tes rubriques avec les flèches.</p>}
 
-      <YtSearch at={at} launch={launch} />
       <ContinueRow links={links} launch={launch} />
+      <VhsShelf at={at} launch={launch} links={links} />
       {order.map((k) => {
         if (k === "playlists") return <PlaylistsSec key={k} />;
         if (k === "integrations") return <IntegrationsSec key={k} />;

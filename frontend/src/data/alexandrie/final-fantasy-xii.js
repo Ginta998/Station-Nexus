@@ -103,6 +103,8 @@ Car Cid ne parle pas tout seul. Il parle à Venat. Venat est un être immortel, 
 
 Les dieux qui ont donné les fragments à Raithwall existent. Ils s'appellent les Occuria. Ce sont des êtres immortels qui vivent à l'écart, dans une cité cachée nommée Giruvegan. Depuis des millénaires, ils guident l'histoire des humains. Ils choisissent un roi, lui donnent la puissance, le laissent unifier le monde, puis l'abandonnent quand il ne leur sert plus. Raithwall était leur instrument. L'histoire d'Ivalice, avec ses dynasties, ses guerres et ses paix, a été en grande partie écrite par eux.
 
+@art 7
+
 Venat est une Occuria qui a refusé ce rôle. Elle pense que les humains doivent écrire leur histoire eux-mêmes. Pour cela, il faut briser le pouvoir des Occuria, et donc leur arme : la néthicite. En aidant Cid à fabriquer de la néthicite artificielle, Venat donne aux humains une puissance qui ne dépend plus des dieux. Et c'est Vayne, l'héritier des Solidor, que Venat et Cid ont choisi pour la porter. Vayne n'est donc pas seulement un tyran ambitieux. C'est un homme qui veut libérer l'humanité de ses maîtres invisibles, et qui le fait par la conquête.
 
 Pendant ce temps, Ashe avance. Elle a retrouvé le Fragment de l'Aube. Elle a visité le tombeau de Raithwall, dans le désert, et y a reçu la pierre de son ancêtre. Elle a vu, avec horreur, ce que la néthicite pouvait faire, quand un vaisseau de guerre impérial a été détruit d'un seul coup par la puissance du fragment. Elle a été trahie par son plus fidèle chevalier, Vossler, qui s'était allié à l'empire en croyant sauver Dalmasca par un compromis. Elle a erré, avec ses compagnons, de royaume en royaume.

@@ -1,6 +1,6 @@
 const book = {
   id: "kitano", title: "Kitano", sub: "Je déteste mes films", room: "cinema", type: "pensee", cote: "CI-003", color: 212, emblem: "北",
-  about: "Le comique le plus célèbre du Japon et l'un de ses cinéastes les plus tristes raconte sa vie film par film : Adachi, Asakusa, le plan fixe, la mer, la nuit d'août 1994, Hana-bi, Aniki mon frère, Zatoichi, Kubi. Une heure de lecture.",
+  about: "Le comique le plus célèbre du Japon et l'un de ses cinéastes les plus tristes raconte sa vie film par film : Adachi, Asakusa, le plan fixe, la mer, la nuit d'août 1994, Hana-bi, Aniki mon frère, Zatoichi, Kubi. Une heure de lecture. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Takeshi Kitano et Michel Temman, Kitano par Kitano (Grasset, 2010)", note: "Ses mémoires, racontés à Michel Temman." },
     { label: "Coffret Takeshi Kitano, bande-annonce du BFI", url: "https://www.youtube.com/watch?v=NH8VFNhyGA0", note: "Les films restaurés en 2020." },
@@ -35,6 +35,20 @@ Mon père s'appelait Kikujirō. Il était peintre. Pas un artiste : il peignait 
 
 Ma mère s'appelait Saki. C'était l'inverse. Elle parlait beaucoup, elle commandait tout, et elle avait une seule idée dans la tête : que ses enfants fassent des études et sortent d'Adachi. Elle nous faisait travailler le soir. Elle cachait les mangas. Elle a gagné, d'ailleurs. Mes frères sont devenus des gens sérieux. L'un d'eux est professeur d'université. Moi, j'étais bon en mathématiques et en dessin, et ma mère m'a envoyé à l'université Meiji étudier la mécanique.
 
+Un soir, elle m'a trouvé en train de dessiner au lieu de faire mes exercices. Elle n'a pas crié. Elle criait rarement quand c'était grave.
+
+— Takeshi. Tu veux finir comme ton père ? À peindre les portes des autres ?
+
+— Je dessine, c'est pas pareil.
+
+— C'est pire. Lui, au moins, on le paie. Fais tes maths.
+
+— Et si je deviens célèbre avec mes dessins ?
+
+— Alors tu me rembourseras les cahiers. Fais tes maths, idiot.
+
+Je les ai faites. Elle avait gagné. Des années plus tard, quand j'étais célèbre, elle a demandé de l'argent à mon agence, en secret. Après sa mort, on m'a remis une enveloppe : elle avait tout gardé, pour moi, au cas où je tomberais. Elle me connaissait mieux que moi.
+
 Si tu veux comprendre mes films, garde ces deux personnes dans la tête. Un homme qui ne sait pas dire ce qu'il ressent, et qui le dit avec ses poings ou pas du tout. Une femme qui a tout sacrifié pour que ses enfants deviennent autre chose qu'elle. Presque tous mes personnages sont l'un ou l'autre. Les yakuzas qui ne parlent pas, c'est mon père. Les mères qu'on cherche et qu'on ne trouve pas, c'est la mienne, d'une certaine façon. Elle était là, mais je n'ai jamais su la trouver.
 
 # Asakusa
@@ -48,6 +62,20 @@ Je suis entré comme garçon d'ascenseur. Je montais et je descendais les client
 Il y en avait un qui était au-dessus des autres. Il s'appelait Senzaburō Fukami. Tout le monde l'appelait le maître. Il savait tout faire : la comédie, les claquettes, la chanson, le mime. Il n'avait jamais voulu passer à la télévision. Il méprisait ça. Pour lui, un comique devait être capable de faire rire une salle vivante, sans montage, sans rires enregistrés, sans deuxième prise.
 
 Je lui ai demandé de m'apprendre. Il a accepté. Il m'a appris les claquettes, le rythme, comment entrer en scène, comment se taire. Surtout comment se taire. Il disait qu'un bon comique ne court pas après le rire. Il le laisse venir. Il attend que le public soit au bord, et à ce moment-là seulement, il pousse.
+
+Le premier soir, dans les coulisses, il m'a fait faire mon entrée dix fois de suite.
+
+— Trop vite. Recommence.
+
+— Maître, je n'ai même pas encore parlé.
+
+— Justement. Tu arrives comme un type qui a peur qu'on parte. Le public le sent. Arrive comme si tu avais tout ton temps, et qu'ils avaient payé pour t'attendre.
+
+— Ils ont payé pour voir des filles.
+
+— Alors fais-les attendre les filles. C'est ça, le métier, idiot.
+
+J'ai mis vingt ans à comprendre qu'il venait de m'apprendre à monter un film.
 
 Maintenant, pense au public du France-za. Ce sont des hommes qui ont payé pour voir des femmes nues. Ils n'ont aucune envie de voir un type comme moi. Ils parlent, ils mangent, ils me crient de dégager. Et il faut les faire rire quand même. Tout de suite. Ou partir sous les sifflets.
 
@@ -76,6 +104,18 @@ Je ne te raconte pas ça pour me vanter. Je te le raconte parce que celui qui fa
 En 1983, Nagisa Ōshima m'a demandé de jouer dans *Furyo*. Un film de guerre, un camp de prisonniers anglais à Java, avec David Bowie et Ryūichi Sakamoto. Je jouais le sergent Hara, une brute qui frappe les prisonniers et qui, d'un coup, par caprice ou par bonté, en sauve deux. À la fin, après la guerre, c'est lui qu'on va pendre. Le dernier plan, c'est mon visage, en gros plan. Je souris, et je dis à un prisonnier anglais : joyeux Noël.
 
 Ōshima m'avait choisi pour ça : il voulait un visage que tout le monde connaissait, pour que le spectateur ne sache pas sur quel pied danser.
+
+Le premier jour de tournage, sur l'île de Rarotonga, je lui ai demandé ce qu'il attendait de moi.
+
+— Ōshima-san, je suis un comique. Je ne sais pas jouer.
+
+— Je sais. C'est pour ça que je t'ai pris. Ne joue pas. Sois le sergent Hara, et laisse les spectateurs se débrouiller avec ta tête.
+
+— Ils vont rire.
+
+— Au début. Après, ils auront peur d'avoir ri. C'est ce que je veux.
+
+Il avait raison. J'ai tout appris sur le cinéma en regardant cet homme refuser de m'expliquer quoi que ce soit.
 
 Il a été servi. On m'a raconté qu'au Japon, quand j'apparaissais à l'écran, des gens riaient. Pas parce que la scène était drôle. Parce que c'était moi. Ils ne pouvaient pas voir Beat Takeshi sans rire.
 

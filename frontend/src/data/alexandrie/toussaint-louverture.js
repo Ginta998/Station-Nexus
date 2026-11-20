@@ -1,6 +1,6 @@
 const book = {
   id: "toussaint-louverture", title: "Toussaint Louverture", sub: "Celui qui ouvre", room: "histoire", type: "pensee", cote: "HI-010", color: 200, emblem: "門",
-  about: "Toussaint Louverture raconte depuis sa cellule du fort de Joux : l'habitation Bréda, l'incendie de la plaine du Nord en 1791, le nom qu'il s'est donné, la guerre contre l'Espagne et l'Angleterre, la constitution de 1801, le travail forcé qu'il a imposé, l'expédition de Leclerc, et l'arbre dont on n'a abattu que le tronc.",
+  about: "Toussaint Louverture raconte depuis sa cellule du fort de Joux : l'habitation Bréda, l'incendie de la plaine du Nord en 1791, le nom qu'il s'est donné, la guerre contre l'Espagne et l'Angleterre, la constitution de 1801, le travail forcé qu'il a imposé, l'expédition de Leclerc, et l'arbre dont on n'a abattu que le tronc. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "C. L. R. James, Les Jacobins noirs (1938)", note: "Le grand livre sur la révolution de Saint-Domingue et sur Toussaint. Il a formé des générations de militants des indépendances." },
     { label: "Sudhir Hazareesingh, Toussaint Louverture (2020)", note: "La biographie la plus récente et la plus complète, en français chez Flammarion." },
@@ -37,7 +37,17 @@ Le sucre tue. Sur les plantations de canne, on travaillait du lever au coucher d
 
 Moi, j'ai eu de la chance, si l'on peut appeler ainsi le fait d'être un esclave mieux traité que les autres. Je n'ai pas coupé la canne. J'étais petit, maigre, chétif ; on m'appelait Fatras-Bâton, le bâton fragile. Je me suis endurci en courant, en nageant, en montant à cheval. J'ai soigné les chevaux et les mulets de l'habitation, puis je suis devenu cocher. J'ai appris à soigner les bêtes, puis les gens, avec les plantes que mon père m'avait montrées. Mon parrain, un vieil esclave nommé Pierre-Baptiste, m'a appris à lire, un peu de français, un peu de latin. Plus tard, j'ai lu des livres que je n'aurais pas dû avoir. Épictète, l'esclave philosophe. Les Commentaires de César. Et un livre de l'abbé Raynal sur les deux Indes, où il était écrit qu'un jour viendrait un chef noir pour venger son peuple.
 
-Le gérant de l'habitation, Bayon de Libertat, m'a pris en confiance. Vers l'âge de trente ans, j'ai été affranchi. J'étais libre.
+Le gérant de l'habitation, Bayon de Libertat, m'a pris en confiance. Vers l'âge de trente ans, j'ai été affranchi. Il m'a fait venir dans son bureau, un matin, et il a posé un papier sur la table, sans s'asseoir.
+
+— Toussaint, tu es libre. C'est écrit.
+
+— Je vous remercie, monsieur.
+
+— Tu restes, bien sûr. Les chevaux, les mulets, les malades. Personne ne s'en occupe comme toi.
+
+— Je reste, monsieur. Pour le moment.
+
+Il a levé les yeux, à cause de ces trois mots. Je les avais dits doucement. Il n'a pas osé me demander ce qu'ils voulaient dire. J'étais libre.
 
 Et maintenant, il faut que je te dise une chose qu'on oublie souvent dans les récits qu'on fait de moi. Une fois libre, j'ai pris en location une petite plantation de café. Et pour la cultiver, j'ai eu des esclaves. Quelques-uns. Comme tous les affranchis qui voulaient s'élever dans cette société, j'ai fait ce que la société faisait. Je ne te le dis pas pour me salir, ni pour m'excuser. Je te le dis parce que c'est vrai, et parce que cela te fera comprendre d'où je suis parti. Je ne suis pas né révolutionnaire. Je suis devenu révolutionnaire.
 
@@ -54,6 +64,18 @@ Ils ne les avaient pas lus. Ils les avaient entendus. Dans les cuisines, les éc
 Dans la nuit du 22 au 23 août 1791, la plaine du Nord s'est soulevée. Quelques jours plus tôt, dans un bois, on avait tenu une assemblée, puis une cérémonie, avec un prêtre du vaudou, un grand homme nommé Boukman, et une prêtresse. On a juré. On a dit que le dieu des Blancs commandait le crime, et que le nôtre voulait la vengeance. On appelle ce lieu le Bois-Caïman. Et cette nuit-là, des dizaines de milliers d'esclaves ont mis le feu aux champs de canne, aux moulins, aux maisons des maîtres. En quelques jours, la plus riche plaine du monde n'était plus qu'une fumée qu'on voyait depuis la mer. Des colons ont été tués, des familles entières. Les colons ont répondu en massacrant à leur tour, en pendant des esclaves par centaines.
 
 Je n'étais pas au Bois-Caïman. Je n'ai pas allumé le premier feu. J'ai attendu. J'ai protégé la famille de mon ancien maître, je l'ai aidée à quitter l'habitation Bréda en sûreté. Puis j'ai rejoint l'insurrection. Je n'étais pas un chef au début. J'étais un médecin, un conseiller, un homme qui savait écrire, dans le camp de Georges Biassou, l'un des chefs de la révolte. J'ai regardé, j'ai appris.
+
+Le soir où j'ai décidé de rejoindre le camp, Suzanne m'attendait dans la case, les enfants endormis. Elle ne m'a pas demandé où j'allais. Elle le savait.
+
+— Ou ap pati ? Tu pars ?
+
+— Je pars. Si je reste, ils viendront me chercher de toute façon, les uns ou les autres. Mieux vaut choisir ceux qui me chercheront.
+
+— Et si tu meurs ?
+
+— Alors tu diras aux enfants que je suis mort debout. Et tu prieras pour moi à la messe, comme une bonne chrétienne. Le bon Dieu entend aussi les nègres, Suzanne. Il les entend même mieux, je crois : ils crient plus fort.
+
+Elle m'a fait un signe de croix sur le front. Je l'ai gardé toute la guerre.
 
 Ce que j'ai vu m'a beaucoup appris. Les insurgés étaient courageux et nombreux, mais ils n'étaient pas une armée. Ils attaquaient en masse et reculaient en désordre. Ils n'avaient pas de plan au-delà de la vengeance. Et leurs chefs, Jean-François, Biassou, étaient prêts à négocier avec les colons : ils demandaient la liberté pour eux-mêmes et pour quelques centaines de leurs officiers, et proposaient de renvoyer les autres au travail. J'ai participé à ces négociations. J'ai même accepté, pour obtenir la paix, de ne réclamer d'abord la liberté que pour quelques-uns. Je ne m'en suis jamais vanté. Les colons ont refusé, par orgueil. Ils ont eu tort, et moi j'ai compris que ce qu'on obtiendrait, on ne l'obtiendrait que par la force, et pour tous.
 
@@ -91,6 +113,20 @@ Et maintenant, la partie la plus difficile. Il fallait que l'île vive. Les plan
 
 Beaucoup des miens ont pensé que j'avais trahi. Que j'avais remplacé le fouet du commandeur par le sabre du soldat. Mon propre neveu, Moïse, qui commandait le Nord, a pris le parti des cultivateurs. En octobre 1801, une révolte a éclaté dans les plantations, on a tué des Blancs. J'ai écrasé la révolte. J'ai fait juger Moïse, et je l'ai fait fusiller. Mon neveu, que j'aimais comme un fils.
 
+La veille de l'exécution, je suis allé le voir dans sa prison du Port-de-Paix. Il s'est levé quand je suis entré, par respect, malgré les fers.
+
+— Mon oncle.
+
+— Moïse. Pourquoi ? Je t'avais tout donné. Le Nord. Mon nom.
+
+— Vous m'avez donné le Nord, et vous avez rendu les cultivateurs aux plantations. Les mêmes plantations, mon oncle. Les mêmes champs. Seulement, le fouet a changé de main.
+
+— Le pays doit vivre. Sans sucre, sans café, il n'y a pas d'armée, et sans armée, les Blancs reviendront avec des chaînes.
+
+— Alors vous les attendrez avec des cultivateurs enchaînés par vous. C'est plus propre, peut-être.
+
+Je n'ai rien répondu. J'ai signé le lendemain. Je n'ai jamais, de toute ma vie, signé quelque chose qui m'ait coûté autant.
+
 Je te le dis sans détour : je ne sais toujours pas si j'avais raison. Je voulais une île libre et forte, capable de se défendre. J'ai cru qu'il fallait pour cela produire, discipliner, rassurer les Blancs et les puissances. Je me suis peut-être trompé de peur. Ceux qui travaillaient la terre voulaient la terre, pas un salaire sur la terre des autres. Je les ai fait obéir. Et quand l'heure est venue de me défendre, certains ne se sont pas battus pour moi.
 
 # Leclerc
@@ -110,6 +146,18 @@ Elle est venue. Les soldats français ont commencé à mourir par centaines, pui
 C'est en montant à bord que j'ai parlé de l'arbre et de ses racines.
 
 Le Héros a traversé l'océan. À Brest, on m'a séparé de ma famille. Je ne les ai plus revus. On m'a conduit, sous escorte, à travers la France, jusqu'au Jura. Jusqu'ici.
+
+Un général de Bonaparte, Caffarelli, est venu plusieurs fois m'interroger dans ma cellule. Un homme poli, qui avait froid lui aussi.
+
+— Le Premier consul veut savoir où vous avez caché vos trésors, général.
+
+— Mes trésors ? J'ai perdu des enfants, des amis, une île. Voilà ce que j'avais.
+
+— On parle de millions, enterrés dans les mornes.
+
+— Dites au Premier consul que si j'avais enterré des millions, je les aurais déterrés pour acheter des fusils. Il le sait. Il aurait fait la même chose. Ce qu'il veut, ce n'est pas mon or. C'est que je dise que je l'ai volé.
+
+Il a noté. Il est reparti. Il n'est jamais revenu.
 
 # Les racines
 

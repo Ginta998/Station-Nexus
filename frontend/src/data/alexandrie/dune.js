@@ -10,10 +10,13 @@ const book = {
     { label: "T. E. Lawrence, Les Sept Piliers de la sagesse", note: "L'étranger qui prend la tête d'une révolte du désert. Une des sources du personnage de Paul." },
     { label: "Ibn Khaldoun, la Muqaddima", note: "L'idée que les peuples durs du désert renversent les empires amollis, puis s'amollissent à leur tour. Herbert en a fait le moteur de son histoire." },
   ],
+  pics: ["sgdb:Dune: Spice Wars", "ol:Dune Frank Herbert", "ol:Dune Messiah Frank Herbert"],
   text: String.raw`
 # Le malentendu, et ceux qui l'ont fait
 
 On te racontera Dune comme l'histoire d'un jeune duc trahi qui se réfugie au désert, gagne l'amour d'un peuple opprimé, monte un ver géant et reprend ce qu'on lui a volé. C'est exact, et c'est un piège.
+
+@art 1
 
 Frank Herbert l'a tendu exprès. Il a écrit une histoire de héros si bien faite que le lecteur veut que le héros gagne. Puis il a écrit la suite pour montrer ce que cette victoire coûte : des dizaines de milliards de morts. Il a dit et répété qu'il avait voulu mettre en garde contre les chefs charismatiques, et que les peuples devraient se méfier d'eux d'autant plus qu'ils semblent bons.
 
@@ -34,6 +37,8 @@ Le cinéma s'y est cassé les dents, puis a fini par réussir. Dans les années 
 # Un futur sans machines
 
 L'histoire se passe dans plus de vingt mille ans. Et la première chose qui frappe, c'est ce qui n'y est pas : il n'y a pas d'ordinateurs. Pas de robots, pas d'intelligences artificielles.
+
+@art g 1
 
 Il y en a eu. Des millénaires avant le récit, les hommes avaient confié leur pensée à des machines, et ceux qui possédaient les machines avaient asservi les autres. Une révolte, à moitié guerre et à moitié croisade religieuse, a tout détruit : le Jihad butlérien. Il en est resté un commandement, inscrit dans le livre sacré de l'empire, la Bible catholique orange, qui a fondu en un seul texte les religions de l'ancienne Terre.
 
@@ -59,6 +64,8 @@ Les combats eux-mêmes portent la marque de ce monde. Chacun se protège par un 
 
 Elle s'appelle le Mélange, ou l'épice. Elle allonge la vie. Elle ouvre l'esprit. Elle donne aux navigateurs leur vision, aux Bene Gesserit leurs pouvoirs les plus hauts. Sans elle, plus de voyage, donc plus de commerce, donc plus d'empire. Ceux qui en prennent longtemps ont les yeux qui deviennent bleus sur bleu, et ne peuvent plus s'en passer sans mourir.
 
+@art 2
+
 Et elle ne se trouve que sur une seule planète de tout l'univers connu : Arrakis, que ses habitants appellent Dune.
 
 Tu vois ce que Herbert écrit, en 1965 : une ressource unique, enfouie sous un désert, dont dépend toute une civilisation, et autour de laquelle les puissances se déchirent pendant que le peuple qui vit dessus compte pour rien. Il n'a pas eu besoin de la nommer.
@@ -80,6 +87,8 @@ Il faut ajouter une chose, parce que Herbert y tenait. Le peuple du désert parl
 # Le fief empoisonné
 
 Le pouvoir, dans cet empire, tient sur trois pieds : l'empereur, les grandes maisons nobles, et la Guilde. Deux de ces maisons se haïssent depuis toujours.
+
+@art g 2
 
 Les Harkonnen sont des prédateurs. Leur maison tient Arrakis depuis quatre-vingts ans, et leur chef, le baron Vladimir, en tire une fortune par la terreur. Il est si gros qu'il se déplace porté par des suspenseurs, de petits appareils qui allègent son corps. Il est intelligent, patient, cruel par goût. Il a deux neveux : Rabban, une brute qu'il charge d'écraser Arrakis pour que la population le haïsse, et Feyd-Rautha, un jeune homme beau et vicieux qu'il destine au trône, et qui paraîtra en sauveur après la tyrannie de son frère. Son conseiller est un Mentat dévoyé, Piter de Vries, qui aime le mal comme un problème bien posé.
 
@@ -111,6 +120,8 @@ Les premières semaines sur Arrakis sont un huis clos politique. On découvre le
 
 Elle vient vite. Un traître ouvre les boucliers de la ville. C'est le docteur Yueh, le médecin de la famille, un homme que son conditionnement rendait incapable de nuire, et que le baron a brisé en torturant sa femme. Les Harkonnen attaquent de nuit, et avec eux, déguisés, les soldats de l'empereur lui-même, les Sardaukars, élevés sur une planète-prison si cruelle que les survivants sont invincibles.
 
+@art 3
+
 Le duc Leto meurt en essayant de tuer le baron. Yueh lui avait placé dans la bouche une dent empoisonnée, en lui disant de la briser devant son ennemi : le traître, sans espoir pour lui-même, offrait à son maître une dernière vengeance. Le gaz tue Piter de Vries ; le baron, lui, en réchappe. Thufir Hawat, capturé, passe au service des Harkonnen, persuadé que c'est Jessica qui a trahi. Paul et Jessica sont abandonnés dans le désert pour que le sable les efface.
 
 Duncan Idaho les retrouve et meurt en couvrant leur fuite, l'épée à la main, contre des Sardaukars. Liet-Kynes les aide à leur tour, en pleine connaissance de cause, puis les Harkonnen le capturent et l'abandonnent sans eau dans le désert. Herbert lui donne une des plus belles morts du livre : en délirant, Kynes entend la voix de son père qui lui parle d'écologie, de systèmes, de conséquences, jusqu'à ce que le sable s'ouvre sous lui. Le savant meurt en récitant sa leçon.
@@ -140,6 +151,8 @@ Mais lis la page d'avant. Paul regarde ses Fremen, qui le contemplent, et il com
 
 Herbert a vu que ses lecteurs applaudissaient. Il a écrit la suite contre eux. *Le Messie de Dune* est court, sombre, et commence douze ans plus tard.
 
+@art g 3
+
 Le jihad a eu lieu. Les légions de Muad'Dib ont soumis l'univers connu. Paul fait lui-même le compte, dans une conversation glaçante : soixante et un milliards de morts, quatre-vingt-dix planètes stérilisées, quarante religions anéanties. Il se compare aux tyrans de l'histoire ancienne et constate qu'ils étaient des amateurs. Il est empereur, il est dieu, et il ne contrôle rien : une bureaucratie de prêtres gouverne en son nom, et sa légende marche toute seule.
 
 Cette Église a un nom, le Qizarat. Elle a ses missionnaires, ses inquisiteurs, ses pèlerinages vers Arrakis, et une pompe que Paul déteste. Alia, adulte maintenant, en est la grande prêtresse, et l'on vénère jusqu'à sa jeunesse. Les Fremen eux-mêmes ont changé : les guerriers du désert sont devenus des gouverneurs de planètes, des fonctionnaires, des fanatiques. Ils vivent dans des maisons, ils boivent de l'eau sans compter. Herbert montre le prix de la victoire sur ceux qui l'ont gagnée. Le peuple qu'on a libéré devient, une fois au pouvoir, ce qu'il combattait.
@@ -161,6 +174,8 @@ C'est la vraie fin de l'histoire de Paul, et c'est une abdication.
 # Le Sentier d'or
 
 Les deux romans suivants poussent l'idée jusqu'à son terme, et ils sont vertigineux.
+
+@art 4
 
 *Les Enfants de Dune* commence neuf ans plus tard. Paul a disparu dans le désert. Alia gouverne l'empire comme régente des jumeaux, et elle sombre. Parce qu'elle est née consciente, avec toutes les mémoires de ses ancêtres dans la tête, elle n'a jamais pu les tenir à distance. L'une de ces voix finit par prendre le dessus : celle du baron Harkonnen, son grand-père, qu'elle a tué enfant. Les Bene Gesserit ont un mot pour cela, l'Abomination. L'empire de Paul est désormais gouverné, à travers sa sœur, par le pire ennemi de sa maison.
 
@@ -185,6 +200,8 @@ Herbert appelle cela le Sentier d'or. Te voilà devant la question la plus déra
 # Ce que Herbert a vu, et ce que tu peux en prendre
 
 Herbert a mis dans ce cycle trois idées, et je te les donne, parce qu'elles servent à qui fabrique des mondes.
+
+@art g 4
 
 La première est l'écologie. Dune est l'un des premiers romans où une planète est un système : l'eau, le sable, les vers, l'épice, les hommes, tout se tient. Tu ne peux rien toucher sans que le reste bouge. Le rêve des Fremen, verdir le désert, finira par détruire ce qui faisait leur force. Un monde bien construit a cette propriété : chaque désir y a un prix ailleurs.
 

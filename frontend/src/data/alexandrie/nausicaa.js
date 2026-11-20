@@ -8,10 +8,13 @@ const book = {
     { label: "Homère, L'Odyssée, chant VI", note: "La Nausicaa d'origine, la princesse des Phéaciens qui recueille Ulysse naufragé. Miyazaki l'a découverte dans un dictionnaire de mythologie." },
     { label: "La princesse qui aimait les insectes", note: "Un conte japonais ancien, celui d'une jeune noble qui préfère les chenilles aux fleurs. L'autre ancêtre de l'héroïne." },
   ],
+  pics: ["manga:Nausicaä of the Valley of the Wind", "anime:Nausicaä of the Valley of the Wind"],
   text: String.raw`
 # Avant de commencer
 
 Si tu connais Nausicaä, c'est sans doute par le film de 1984 : une princesse qui vole sur un planeur blanc, une forêt toxique, des insectes géants aux yeux bleus, et une fin où elle se sacrifie et ressuscite sur un champ doré. C'est un très beau film. Ce n'est presque rien de l'histoire.
+
+@art g 1
 
 Car avant le film, et longtemps après, il y a le manga. Hayao Miyazaki l'a commencé en 1982 et ne l'a terminé qu'en 1994. Douze ans, entrecoupés de longues pauses pendant lesquelles il réalisait ses films, Le Château dans le ciel, Mon voisin Totoro, Kiki la petite sorcière, Porco Rosso. Il revenait chaque fois à sa table, et l'histoire devenait plus vaste, plus noire, plus difficile. Il en est sorti sept volumes, plus de mille pages, dessinées au crayon dans un style serré, foisonnant, imprimé en sépia. Beaucoup de ceux qui l'ont lu le tiennent pour l'œuvre la plus profonde de Miyazaki, plus que tous ses films.
 
@@ -28,6 +31,8 @@ Je vais te raconter le manga. Je ne te cacherai pas sa fin, parce que c'est elle
 # Le monde après le feu
 
 Mille ans avant l'histoire, une civilisation industrielle immense couvrait la terre. Elle a fini dans une guerre que les survivants appellent les Sept Jours de Feu. Des créatures artificielles, des géants de plusieurs dizaines de mètres, les Guerriers divins, ont brûlé les villes, les plaines et les peuples, en crachant une lumière qui détruisait tout. Il en reste des squelettes, fossilisés, à demi enfouis, que l'on croise dans le désert comme des cathédrales mortes.
+
+@art g 2
 
 Sur la terre empoisonnée par cette guerre est apparue une forêt. On l'appelle la Fukaï, la mer de la décomposition. Ce n'est pas une forêt comme les nôtres. Elle est faite de champignons géants, de moisissures hautes comme des arbres, de mousses et de fougères étranges. Elle respire des spores, et ses spores dégagent un air mortel : cinq minutes sans masque suffisent à brûler les poumons d'un homme. Elle avance, lentement, siècle après siècle, et recouvre les royaumes. Ceux qui vivent à sa lisière doivent brûler la moindre spore qui s'installe chez eux, sinon la forêt pousse dans les murs.
 
@@ -46,6 +51,8 @@ Elle a un maître, aussi, un homme qui passe parfois par la Vallée. Il s'appell
 # La guerre
 
 La paix de la Vallée ne dure pas. Le monde est en guerre, et la Vallée doit y prendre part.
+
+@art g 3
 
 Deux empires se disputent le continent. Au sud et à l'ouest, Torumekia, un royaume militaire, dur, gouverné par un vieil empereur, Vu, et ses trois fils. La Vallée est son vassal : un ancien traité l'oblige, en cas de guerre, à fournir à l'empereur son unique vieux vaisseau de combat et ses pilotes. À l'est, les Doroks, un empire religieux formé de dizaines de petites principautés, gouverné depuis la ville sainte de Shuwa par un empereur sacré, dont le pouvoir tient de la théocratie et de la sorcellerie.
 
@@ -69,6 +76,8 @@ Le manga, ici, ne ressemble plus à un récit d'aventure. Il montre des famines,
 
 Au milieu de la guerre, Nausicaä tombe dans la forêt. Littéralement : son planeur s'écrase, et elle se retrouve sous la canopée, puis plus bas encore, sous les racines.
 
+@art g 4
+
 Là, elle découvre ce qu'elle soupçonnait depuis l'enfance. Au fond de la Fukaï, sous des siècles de champignons, il y a des grottes où l'air est pur. Les arbres de la forêt, en mourant, se pétrifient en un sable fin, propre, sans poison. L'eau qui coule là est claire. La forêt est une immense machine à nettoyer : elle absorbe dans ses racines le poison laissé par l'ancienne civilisation, le concentre, l'enferme, et rend une terre saine. Les spores ne sont pas une attaque. Ce sont les cendres d'un travail de purification qui dure depuis mille ans.
 
 Elle rencontre aussi les gens de la forêt. Ce sont des hommes et des femmes qui ont choisi, il y a longtemps, de vivre à l'intérieur de la Fukaï. Ils ont renoncé au feu, parce que le feu détruit la forêt. Ils se nourrissent de ce que donnent les insectes, s'habillent de leur soie, voyagent à dos de bêtes que personne d'autre n'ose approcher. Ils vivent sans empire, sans guerre, sans ambition. L'un d'eux, Selm, un jeune homme calme, devient le guide de Nausicaä. Il possède, comme elle, le don de sentir les esprits. Il la conduit dans des visions où ils marchent ensemble, hors de leurs corps, dans un monde fait de lumière et de silence.
@@ -86,6 +95,8 @@ Il faut te dire ici un mot de la manière dont Miyazaki dessine cette forêt. Le
 # La Crypte
 
 Dans les derniers volumes, Nausicaä réveille un monstre, et ce monstre l'appelle maman.
+
+@art g 5
 
 Les Torumekiens avaient trouvé, dans les ruines d'une ville détruite, un embryon de Guerrier divin, l'un de ces géants qui avaient brûlé le monde. Une pierre sacrée, un artefact ancien, permet de commander à la créature. Le hasard la met entre les mains de Nausicaä. Le géant s'éveille, inachevé, la chair encore molle, et il reconnaît en elle sa mère. Il parle comme un enfant. Elle lui donne un nom, Ôma, qui veut dire innocence dans la vieille langue.
 
@@ -111,6 +122,8 @@ Elle ne révèle pas ce qu'elle sait. Elle garde le secret de l'air pur, et elle
 
 Il faut maintenant revenir au film, pour mesurer ce que l'un et l'autre racontent.
 
+@art g 6
+
 Le film de 1984 suit à peu près les deux premiers volumes. La Vallée, l'arrivée des Torumekiens, la mort du roi, la découverte du jardin secret, la chute dans la forêt avec un jeune homme d'une ville voisine, Asbel, et une grande fin inventée pour le cinéma : un troupeau d'Ômus furieux fonce sur la Vallée, Nausicaä se place devant eux, est piétinée, puis ressuscitée par les Ômus apaisés, qui la soulèvent sur leurs antennes dorées. Elle marche alors sur un champ d'or, vêtue de bleu, et accomplit une vieille prophétie. Le Guerrier divin, réveillé trop tôt, fond comme de la cire.
 
 C'est une fin magnifique, et Miyazaki n'en a jamais été satisfait. Il trouvait qu'elle faisait de Nausicaä une sainte, presque une figure religieuse, alors qu'il voulait une jeune femme. Le manga, poursuivi pendant dix ans après le film, est en partie sa réponse. La prophétie du personnage vêtu de bleu y revient, mais elle se révèle fabriquée, plantée dans les légendes par ceux qui voulaient guider l'humanité. Nausicaä refuse d'être une messie. Le manga défait ce que le film avait construit.
@@ -124,6 +137,8 @@ Miyazaki a dit qu'en finissant le manga, il avait dû renoncer à des choses aux
 # Ce que tu peux en prendre
 
 Trois choses, et une plus intime.
+
+@art g 7
 
 La première est le monde qui a une logique. Rien n'est gratuit dans la Fukaï. Les spores, les insectes, les Ômus, la pétrification des arbres, le sable pur des profondeurs : tout obéit à une écologie cohérente que l'on découvre en même temps que Nausicaä. Le merveilleux y tient parce qu'il a des causes. Quand tu inventes un univers, demande-toi d'abord comment il fonctionne, puis laisse ton personnage le découvrir comme un naturaliste.
 

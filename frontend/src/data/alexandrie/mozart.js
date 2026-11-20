@@ -1,6 +1,6 @@
 const book = {
   id: "mozart", title: "Mozart", sub: "Mes lettres", room: "musique", type: "pensee", cote: "MU-005", color: 340, emblem: "笛",
-  about: "Wolfgang raconte, comme dans les centaines de lettres qu'il a écrites à son père, à sa sœur, à sa cousine et à sa femme : les voyages d'enfant prodige, Paris où meurt sa mère, le coup de pied de l'archevêque, Vienne, Figaro, Don Giovanni, la Flûte et le Requiem inachevé.",
+  about: "Wolfgang raconte, comme dans les centaines de lettres qu'il a écrites à son père, à sa sœur, à sa cousine et à sa femme : les voyages d'enfant prodige, Paris où meurt sa mère, le coup de pied de l'archevêque, Vienne, Figaro, Don Giovanni, la Flûte et le Requiem inachevé. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Mozart, Correspondance complète (Flammarion, sept volumes)", note: "Les lettres de toute la famille. Drôles, crues, tendres, angoissées." },
     { label: "Mozart, Les Noces de Figaro, Don Giovanni, Così fan tutte", note: "Les trois opéras écrits avec Lorenzo Da Ponte." },
@@ -22,6 +22,18 @@ J'étais petit, j'avais le teint marqué par la petite vérole, de grands yeux u
 Je suis né à Salzbourg le 27 janvier 1756. Salzbourg était alors une principauté gouvernée par un archevêque. Mon père, Leopold, était violoniste à la cour, et il avait écrit une méthode de violon qu'on lisait dans toute l'Europe. Il était sévère, intelligent, inquiet, et il m'aimait d'un amour qui ne me laissait pas respirer.
 
 J'avais une sœur, Maria Anna, qu'on appelait Nannerl. Elle avait quatre ans et demi de plus que moi. Elle jouait du clavecin merveilleusement. Je l'écoutais, et je voulais faire pareil. À quatre ans, je jouais des petits menuets. À cinq ans, j'en composais. Mon père les écrivait sous ma dictée, dans le cahier de ma sœur.
+
+Un soir, je suis monté sur le tabouret pendant qu'elle travaillait une sonate, et j'ai mis mes doigts sur les touches d'en haut.
+
+— Wolferl, descends ! Papa va se fâcher.
+
+— Papa ne se fâchera pas. Écoute, Nannerl : toi tu fais la mélodie, moi je fais les oiseaux.
+
+— Il n'y a pas d'oiseaux dans cette sonate.
+
+— Il y en a maintenant. Tu vois ? Ça sonne mieux avec des oiseaux.
+
+Elle a ri, et elle a recommencé, et j'ai fait les oiseaux. Papa est entré. Il ne s'est pas fâché. Il a sorti son carnet. Je crois que c'est ce jour-là qu'il a compté combien je pourrais rapporter, et c'est aussi ce jour-là que ma sœur a commencé à disparaître derrière moi. Pardonne-moi, Nannerl. Tu jouais mieux que tous les princes qui nous applaudissaient.
 
 Je ne me souviens pas d'avoir appris la musique. Je me souviens de l'avoir toujours sue.
 
@@ -67,7 +79,17 @@ Quand je suis rentré par Mannheim, Aloysia ne voulait plus de moi. Je me suis a
 
 En 1781, l'archevêque était à Vienne, et il m'avait fait venir. À Vienne, il y avait tout ce que Salzbourg n'avait pas : un empereur qui aimait la musique, des théâtres, des nobles qui payaient des concerts, des éditeurs.
 
-L'archevêque m'interdisait de jouer chez les autres. Il m'a insulté devant tout le monde. Il m'a traité de voyou, de crétin. J'ai demandé mon congé. On me l'a refusé. J'ai insisté. Et en juin, son intendant, le comte Arco, m'a mis à la porte d'un coup de pied au derrière. Je l'ai raconté à mon père. Je n'ai jamais pardonné.
+L'archevêque m'interdisait de jouer chez les autres. Il m'a insulté devant tout le monde. Il m'a traité de voyou, de crétin. J'ai demandé mon congé. On me l'a refusé. J'ai insisté. Et en juin, son intendant, le comte Arco, m'a reçu dans l'antichambre.
+
+— Monsieur Mozart, Son Altesse ne veut plus entendre parler de votre démission.
+
+— Alors que Son Altesse se bouche les oreilles, monsieur le comte. Je pars.
+
+— Un domestique ne part pas. On le renvoie.
+
+— Je ne suis pas un domestique. Je suis musicien. Le domestique, c'est celui qui porte les plats. Moi, je porte la musique, et elle est plus lourde.
+
+Il m'a mis à la porte d'un coup de pied au derrière. Je l'ai raconté à mon père. Je n'ai jamais pardonné.
 
 Mais j'étais libre. Pour la première fois, je ne servais personne. J'étais un musicien indépendant, à Vienne, à vingt-cinq ans. C'était un pari que presque personne ne faisait à l'époque.
 
@@ -108,6 +130,16 @@ Il est mort le 28 mai. Je ne suis pas allé à Salzbourg.
 Cette année-là, avec Da Ponte, j'ai écrit *Don Giovanni*, pour Prague. Un séducteur qui ment, tue, rit, refuse de se repentir, et qu'une statue de pierre vient chercher pour l'emmener en enfer. On a dit que la statue, c'était mon père. Je ne sais pas. Je sais que l'ouverture commence par les accords de la statue, terribles, et qu'ensuite la musique se met à rire. C'est la vie : la mort, puis le rire, puis la mort.
 
 On raconte que j'ai écrit l'ouverture dans la nuit qui précédait la première, pendant que Constanze me racontait des histoires et me faisait boire du punch pour me tenir éveillé. C'est à peu près vrai.
+
+— Wolfgang, il est deux heures. Les copistes viennent à sept.
+
+— Raconte-moi Aladin, Stanzi. Celui avec la lampe.
+
+— Je te l'ai raconté hier.
+
+— Raconte-le mal, alors. Si tu le racontes bien, je t'écoute, et je n'écris plus.
+
+Elle l'a raconté mal, exprès, avec des fautes et des bêtises, et je riais, et j'écrivais. À cinq heures, je dormais sur la table. À sept, les copistes avaient leur ouverture. L'encre n'était pas sèche. La musique, elle, l'était depuis longtemps : elle était dans ma tête, il fallait seulement la recopier.
 
 # L'argent
 

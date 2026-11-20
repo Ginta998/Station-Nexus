@@ -64,3 +64,9 @@ body:has(.cine-win) .bn-fab,body:has(.cine-win) .rd-bar{display:none}
 .cine-next span{display:flex;gap:8px}
 .cine-btn{padding:8px 14px;border-radius:999px;border:0;background:#fff;color:#000;font-weight:700;font-size:12px;cursor:pointer}.cine-btn.ghost{background:rgba(255,255,255,.12);color:#fff}
 @media(max-width:767px){.cine-top,.cine-bot{padding:12px}.cine-vol input,.cine-time i{display:none}.cine-row{gap:0}.cine-panel li{grid-template-columns:110px 1fr}.cine-next{left:12px;right:12px;bottom:100px}.cine-next img{width:110px}}
+/* 0.43 · pendant un film, la barre du lanceur (téléphone) laisse la place aux commandes du lecteur */
+body:has(.at-appwin.cine-win) .nx-launcher:not(.open){display:none}
+/* aperçu sur claude.ai : YouTube y est bloqué, on le dit clairement */
+.cine-prevnote{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;color:#eee;background:radial-gradient(circle at 50% 40%,#1b1d24,#000 70%);font-size:15px;line-height:1.5}
+.cine-prevnote b{font-size:18px}
+.cine-prevnote a{color:#fff;border:1px solid rgba(255,255,255,.35);padding:9px 16px;border-radius:4px;text-decoration:none}

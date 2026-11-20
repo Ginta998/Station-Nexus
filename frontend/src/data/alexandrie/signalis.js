@@ -15,6 +15,8 @@ const book = {
 
 Je dois être honnête avec toi avant de commencer. Les autres livres de cette aile remettent une histoire dans l'ordre. Celui-ci ne le peut pas tout à fait, et il serait malhonnête de le prétendre.
 
+@art 4
+
 Signalis est construit pour qu'on ne puisse pas décider ce qui est arrivé. Les lieux se répètent, les mortes reviennent, le jeu finit trois fois avant de finir, et ses deux auteurs ont toujours refusé de donner la clé. Ce n'est pas une coquetterie. C'est le sujet : une mémoire qui se défait et qui recommence.
 
 Je vais donc faire deux choses séparées. D'abord te dire ce que le jeu établit, ce qu'on y lit noir sur blanc. Ensuite te proposer la lecture que la plupart des joueurs partagent, et qui me paraît la plus juste. Quand je passerai de l'un à l'autre, tu le sauras.
@@ -86,6 +88,8 @@ Remarque aussi les nombres eux-mêmes. Le vaisseau porte le numéro 512 ; ce der
 # Le réveil à Sierpinski
 
 Le jeu commence après.
+
+@art g 2
 
 Une Elster ouvre les yeux dans un caisson, dans l'épave du Penrose-512, posé dans la neige de Leng. Le vaisseau est revenu, sans qu'on sache comment, à la planète où sa pilote est née. Le second caisson est vide. Elle sort. Dans la neige, il y a un trou, et au fond du trou, une porte. Derrière la porte, un petit bureau, un livre à couverture jaune. Elle le touche.
 
@@ -170,6 +174,8 @@ Il existe une dernière fin, l'artefact, cachée derrière une énigme que la co
 # Ce que tu peux en prendre
 
 Trois choses.
+
+@art 5
 
 La première est l'économie. Ce jeu a été fait par deux personnes. Il a l'allure d'un jeu de 1998 : vue de dessus, gros pixels, quelques modèles. Ses moments les plus forts sont des cartons de texte, un mot blanc sur fond noir, une photo fixe, trois notes de piano. Il prouve que l'émotion ne vient pas des moyens mais du montage : ce qu'on montre une seconde, et ce qu'on coupe aussitôt. Tu peux en tirer une leçon directe pour tes formats courts.
 

@@ -8,6 +8,7 @@ const book = {
     { label: "Phoolan Devi, Moi, Phoolan Devi, reine des bandits (1996)", note: "Son autobiographie, dictée à deux journalistes." },
     { label: "Jacques Mesrine, L'Instinct de mort (1977)", note: "Le seul livre écrit par l'un d'eux, en prison. À lire en sachant qu'il se met en scène." },
     { label: "Laurence Bergreen, Capone: The Man and the Era (1994)", note: "La biographie de référence." },
+    { label: "Robert Lacey, Little Man: Meyer Lansky and the Gangster Life (1991)", note: "Meyer Lansky, l'ami d'enfance et le cerveau de Luciano, vu de près." },
     { label: "Mayme Hatcher Johnson, Harlem Godfather (2008)", note: "Bumpy Johnson raconté par sa veuve." },
     { label: "Cocaine Cowboys (2006)", note: "Le documentaire sur la guerre de la cocaïne à Miami, où apparaît Griselda Blanco." },
     { label: "F. Scott Fitzgerald, Gatsby le Magnifique (1925)", note: "Le personnage de Meyer Wolfsheim, l'homme qui a truqué les World Series, est inspiré d'Arnold Rothstein." },
@@ -20,6 +21,8 @@ Les journaux qui suivent sont imaginés. Aucune de ces femmes, aucun de ces homm
 On croit connaître les rois les plus célèbres de l'ombre : Al Capone, Lucky Luciano, Jacques Mesrine. Le cinéma, les séries et les chansons les ont transformés en légendes, et ce livre leur donne la parole, comme aux autres. Mais il va aussi chercher des figures moins évidentes, et des femmes, car le crime organisé n'a jamais été une affaire d'hommes seulement, même si les récits l'ont souvent oublié. Une pirate chinoise du XIXe siècle qui commandait plus de navires que bien des marines. Une immigrée antillaise qui a tenu tête à la mafia de New York, avec à ses côtés un jeune homme de Harlem qui deviendra son parrain, Bumpy Johnson. Une jeune fille de basse caste devenue la hors-la-loi la plus célèbre de l'Inde.
 
 Leur langue aussi est imaginée, à partir de ce qu'on sait de leur caractère : certains jurent comme des charretiers, d'autres ne haussent jamais le ton, et ce sont souvent les plus inquiétants.
+
+Les dialogues aussi. Personne n'a noté ce que Lucky Luciano a dit à Meyer Lansky dans une rue du Lower East Side, ni ce que Zheng Yi Sao a répondu au gouverneur de Canton. Mais ces rencontres ont eu lieu, entre ces personnes-là, à ces dates-là. Les paroles sont reconstruites à partir de ce qu'on sait d'eux ; les faits, eux, ne le sont pas.
 
 À la fin de chaque journal, un encadré dit ce qui s'est réellement passé, et ce que cela a coûté.
 
@@ -37,13 +40,49 @@ J'ai grandi sur un bateau de fleurs. Tu sais ce que c'est. Je ne vais pas te le 
 
 Les capitaines pirates venaient chez nous comme les autres. Des brutes, pour la plupart. Des chiens qui aboient fort et qui se mordent entre eux pour un os. Beaucoup avaient fait la guerre au Viêt Nam, payés par les rebelles Tây Sơn. En 1802, les Tây Sơn sont tombés. Des centaines de jonques sont rentrées dans nos eaux, pleines d'hommes qui ne savaient plus rien faire que tuer. Parmi eux, Zheng Yi. Une vieille famille de pirates, des oncles, des cousins, tous voleurs de mer depuis trois générations. Il était grand, il était dur, et il n'était pas idiot. C'est rare. Il m'a voulue pour femme.
 
-J'ai dit oui. J'ai posé mes conditions. Je ne serais pas une épouse qu'on laisse à terre à attendre en brodant. Je voulais ma part, et ma place au conseil quand les capitaines se réunissaient. Il a ri. Puis il a vu que je ne riais pas. Il a accepté. Ce jour-là, Shi Yang est morte. Je suis devenue Zheng Yi Sao. La femme de Zheng Yi. Les hommes ont cru que c'était un titre de propriété. C'était un grade.
+Il est venu me le dire lui-même, un soir, sans cadeau, en s'asseyant comme un homme qui achète.
+
+— Tu viendras sur ma jonque.
+
+Ce n'était pas une question. Je lui ai servi du vin et je n'ai pas bougé.
+
+— Je viendrai. Avec ma part de chaque prise. Et une place au conseil quand tes capitaines parlent.
+
+— Une femme au conseil ? Ils vont rire.
+
+— Qu'ils rient. Moi, je compterai. Dans un an, on verra ce qui t'a rapporté le plus : leurs rires ou mes comptes.
+
+Il a ri, lui aussi. Puis il a vu que je ne riais pas. Il a accepté. Ce jour-là, Shi Yang est morte. Je suis devenue Zheng Yi Sao. La femme de Zheng Yi. Les hommes ont cru que c'était un titre de propriété. C'était un grade.
 
 Mon mari a eu la seule grande idée de sa vie, et je la lui ai peut-être soufflée. Réunir les chiens. En 1805, les grands capitaines ont signé un pacte, et la mer s'est partagée en flottes, chacune sous sa couleur. Rouge, noir, blanc, vert, bleu, jaune. La nôtre était rouge. La plus grande. À partir de là, on ne volait plus au hasard comme des gamins. On vendait des laissez-passer aux marchands. On taxait le sel. Les villages de la côte payaient pour qu'on les laisse en paix. Un navire avec notre papier passait. Un navire sans papier, on le prenait. Ce n'est pas du vol. C'est un impôt. L'empereur fait exactement la même chose, avec plus de cérémonie.
 
 Un jour, nos hommes ont ramené un garçon de quinze ans, fils de pêcheur. Zhang Bao. Vif, beau, il apprenait tout plus vite que les autres. Mon mari l'a pris sous sa protection. Nous l'avons adopté. Je l'ai regardé grandir sur le pont et je me suis dit : celui-là, je le garde.
 
+Un soir de tempête, il est venu me trouver à l'arrière, trempé, furieux. Un capitaine de la flotte l'avait traité de garçon de cabine devant les hommes.
+
+— Je vais lui ouvrir le ventre.
+
+— Et demain, ses cousins t'ouvriront le tien. Assieds-toi. Un ennemi qu'on tue, on n'en tire rien. Un ennemi qu'on humilie devant toute la flotte en lui prenant ses navires, on en tire des navires.
+
+— Comment ?
+
+— Gagne plus que lui. Le reste, je m'en charge.
+
+Trois mois plus tard, ce capitaine commandait une barque de ravitaillement. Zhang Bao n'a jamais su exactement comment. Il ne me l'a jamais demandé. C'est pour cela que je l'aimais.
+
 En novembre 1807, Zheng Yi s'est noyé dans une tempête au large du Viêt Nam. La mer prend ce qu'elle veut. Le lendemain, les capitaines me regardaient comme des corbeaux regardent un buffle mort. Ils comptaient déjà les navires. Je ne leur ai pas laissé une nuit. J'ai réuni la famille de mon mari, j'ai acheté ceux qu'il fallait acheter, j'ai fait comprendre aux autres ce qui leur arriverait. J'ai pris la Flotte rouge. J'ai donné les combats à Zhang Bao. Lui commandait les canons. Moi, je commandais tout le reste. Peu après, je l'ai épousé. Une veuve seule, c'est une proie. Une veuve mariée à son meilleur capitaine, c'est un trône.
+
+Le soir où je lui ai proposé de m'épouser, il a baissé les yeux.
+
+— Tu étais la femme de mon père.
+
+— J'étais la femme d'un homme qui est au fond de la mer. Les capitaines ne respectent ni un fils adoptif ni une veuve. Ils respecteront un mari et une femme qui tiennent ensemble la plus grande flotte de cette côte.
+
+— Et si je dis non ?
+
+— Alors l'un de nous deux sera mort avant la fin de la lune, et ce ne sera pas toi qui choisiras lequel.
+
+Il a dit oui. Il a toujours été intelligent.
 
 Ensuite, il a fallu des lois. Des dizaines de milliers d'hommes sans loi, c'est une foule, et une foule finit toujours au fond de l'eau. Désobéir à un ordre : la tête tranchée. Voler la caisse commune : puni. Le butin était inscrit, compté, partagé. Une petite part pour celui qui l'avait pris, la grande pour la flotte. Et celui qui forçait une captive mourait. On me dit que c'était de la vertu. Ce n'était pas de la vertu. Un équipage qui se conduit en porcs devient un équipage de porcs, et les porcs ne gagnent pas les batailles.
 
@@ -51,7 +90,21 @@ L'empereur a envoyé sa marine. Nous l'avons coulée. Ses officiers se tuaient d
 
 À notre sommet, la confédération comptait plus de mille navires et peut-être soixante-dix mille hommes. C'est à ce moment-là que j'ai su qu'il fallait s'arrêter. Les imbéciles s'arrêtent quand ils perdent. Les autres s'arrêtent quand ils gagnent encore. Le nouveau gouverneur de Canton, Bai Ling, était malin. Il fermait les ports, il nous affamait, et il offrait le pardon à ceux qui se rendaient. Les capitaines commençaient à partir. La Flotte noire s'est rendue. Une coque qui prend l'eau, on ne voit d'abord qu'une goutte.
 
-Au printemps 1810, je suis allée moi-même au bureau du gouverneur. Sans armes. Sans soldats. Avec quelques femmes et des enfants de nos équipages. Si tu avais vu leurs têtes, aux mandarins. Une ancienne fille des bateaux de fleurs, assise en face du représentant de l'empereur, qui discute les conditions comme on discute le prix du poisson. Je ne me suis pas rendue. J'ai vendu ma flotte. Cher.
+Au printemps 1810, je suis allée moi-même au bureau du gouverneur. Sans armes. Sans soldats. Avec quelques femmes et des enfants de nos équipages. Si tu avais vu leurs têtes, aux mandarins. Bai Ling m'a laissée attendre, debout, le temps qu'il faut pour qu'une personne comprenne où elle est. J'ai attendu en regardant ses tapis. Ils étaient beaux. J'en avais pris de plus beaux.
+
+— On me dit que tu viens offrir la soumission de la Flotte rouge.
+
+— Je viens vous vendre la paix, Excellence. Vous n'avez pas pu la gagner avec vos navires. Vous pouvez l'acheter avec un pardon.
+
+— Le pardon de l'empereur ne s'achète pas.
+
+— Tout s'achète. La question est le prix. Le mien est simple : la vie de mes hommes, leurs navires, leur argent. Un grade pour mon mari. En échange, vous aurez la mer.
+
+— Et si je te fais arrêter, là, tout de suite ?
+
+— Alors demain, mille navires apprendront que l'empereur fait arrêter les femmes qui viennent lui parler sans armes. Et plus aucun pirate de cette côte ne se rendra jamais. Vous êtes un homme intelligent, Excellence. C'est pour cela que je suis venue vous voir, vous.
+
+Il a souri. C'est là que j'ai su que j'avais gagné. Je ne me suis pas rendue. J'ai vendu ma flotte. Cher.
 
 Le pardon pour mes hommes. Un grade d'officier impérial pour Zhang Bao, et des dizaines de navires pour chasser ceux qui n'avaient pas suivi. Et notre argent, intact. Combien de pirates, dans toute l'histoire de la mer, sont descendus à terre vivants, riches et pardonnés ? Compte-les. Tu n'auras pas besoin de tes deux mains.
 
@@ -75,13 +128,45 @@ J'ai pris dans la caisse pour jouer. On m'a chassé. J'ai dormi sous des porches
 
 J'ai couru les paris, collecté pour la protection des boutiques, revendu de l'opium en petites boulettes. Je n'étais rien. J'écoutais. Je ne parlais jamais trop. C'est une qualité que je vous recommande, d'ailleurs.
 
-Mon maître s'appelait Huang Jinrong. Huang le Grêlé. Un homme remarquable : chef des inspecteurs chinois de la police de la Concession française, et l'un des patrons de la Bande verte. Le même homme, le même jour, le même bureau. Dans cette ville découpée en morceaux, chacun avec sa police et ses lois, la loi et le crime portaient souvent le même uniforme, et c'était beaucoup plus simple ainsi. Sa femme, madame Lin Guisheng, une ancienne tenancière de maison close, m'a remarqué la première. Elle trouvait que j'étais fin et loyal. Elle avait raison sur un point. Elle a poussé son mari à me confier plus. Une fumerie. Puis plusieurs. Pendant plus de dix ans, j'ai servi Huang. Il m'a appris la règle la plus précieuse de toutes : on paie la police avant qu'elle ne le demande. Ainsi, elle ne demande jamais.
+Mon maître s'appelait Huang Jinrong. Huang le Grêlé. Un homme remarquable : chef des inspecteurs chinois de la police de la Concession française, et l'un des patrons de la Bande verte. Le même homme, le même jour, le même bureau. Dans cette ville découpée en morceaux, chacun avec sa police et ses lois, la loi et le crime portaient souvent le même uniforme, et c'était beaucoup plus simple ainsi. Sa femme, madame Lin Guisheng, une ancienne tenancière de maison close, m'a remarqué la première. Elle trouvait que j'étais fin et loyal. Elle avait raison sur un point. Elle a poussé son mari à me confier plus. Une fumerie. Puis plusieurs. Pendant plus de dix ans, j'ai servi Huang. Il m'a appris la règle la plus précieuse de toutes. Je me souviens du jour exact. Il comptait des billets dans son bureau de la rue du Consulat, sous le portrait du président de la République française, et il a glissé une enveloppe vers moi.
+
+— Pour le commissaire. Ce soir.
+
+— Il ne nous a rien demandé, maître.
+
+— Justement. On paie la police avant qu'elle ne demande, Yuesheng. Ainsi, elle ne demande jamais. Et le jour où elle voudrait demander, elle se souvient qu'elle a déjà accepté.
+
+Je n'ai jamais oublié. Les commissaires changeaient. Les enveloppes, jamais.
 
 En 1924, Huang a eu la mauvaise idée d'humilier, dans un théâtre, le fils d'un seigneur de la guerre. On l'a battu, on l'a enfermé. C'est moi, avec Zhang Xiaolin, qui ai réuni l'argent et les appuis pour le sortir. Après cela, voyez-vous, il pouvait difficilement continuer à me traiter comme un domestique. Nous sommes devenus trois. Nous avons fondé une société pour contrôler l'opium de la Concession. Chaque pipe allumée, chaque nuit, dans chaque fumerie, nous rapportait quelques sous. Faites le calcul. Des milliers de fumeries. Des centaines de milliers de fumeurs. Je vous laisse le temps.
 
+Le soir de sa libération, il est venu chez moi. Il avait encore des marques au visage. Il s'est assis sans attendre qu'on l'y invite, comme il l'avait toujours fait.
+
+— Tu m'as sorti de là. Que veux-tu ?
+
+— Rien, maître. Seulement m'asseoir à la même table que vous, désormais. Pas derrière votre chaise.
+
+Il m'a regardé longtemps. Puis il a demandé du thé. Il n'a jamais plus parlé de cette nuit-là, et je n'en ai jamais parlé à personne. C'est cela, la reconnaissance, à Shanghai : un silence partagé.
+
 Alors j'ai changé d'habit. La longue robe de soie des lettrés. J'ai fondé une école dans mon bourg natal, donné aux hôpitaux, financé des troupes d'opéra. Les banquiers se sont mis à me saluer, d'abord du bout des lèvres, ensuite très bas. Dans mon salon, on croisait des généraux, des consuls, des poètes. Ce qu'ils savaient de moi, ils préféraient l'oublier. Je les aidais à l'oublier. C'est une forme de politesse.
 
-En avril 1927, le général Tchang Kaï-chek est arrivé. Les syndicats ouvriers, menés par les communistes, tenaient la ville chinoise avec leurs milices. Le général voulait s'en débarrasser, mais pas de ses propres mains, pas devant les étrangers. Il avait besoin d'amis. J'étais son ami. Le 11 avril au soir, j'ai invité à dîner le chef des syndicats, Wang Shouhua. Un homme courageux. Il est venu seul. Il n'est pas reparti. Je ne vous en dirai pas davantage, vous comprendrez. Le lendemain, le 12, mes hommes, avec des brassards blancs, ont attaqué les milices ouvrières dans toute la ville. Les soldats ont suivi. Les rues de Zhabei se sont couvertes de corps. On n'a jamais su combien. Personne n'a beaucoup cherché.
+En avril 1927, le général Tchang Kaï-chek est arrivé. Les syndicats ouvriers, menés par les communistes, tenaient la ville chinoise avec leurs milices. Le général voulait s'en débarrasser, mais pas de ses propres mains, pas devant les étrangers. Il avait besoin d'amis. J'étais son ami. Quelques jours plus tôt, un envoyé du général était venu me voir. Un homme jeune, en uniforme impeccable, qui ne s'est pas assis.
+
+— Le général compte sur ses amis de Shanghai pour rétablir l'ordre.
+
+— L'ordre a un coût.
+
+— Le général le sait. Il sait aussi se souvenir de ceux qui l'ont aidé.
+
+Il n'a jamais prononcé le mot communiste. Je n'ai jamais prononcé le mot argent. Nous nous sommes parfaitement compris.
+
+Le 11 avril au soir, j'ai invité à dîner le chef des syndicats, Wang Shouhua. Un homme courageux. Il est venu seul, en voiture, et il a monté les marches de ma maison de la rue Wagner sans se retourner.
+
+— Monsieur Du. Vous m'avez invité, je suis venu. Je suppose que nous allons parler de l'avenir de Shanghai.
+
+— Nous allons en parler, monsieur Wang. Entrez donc.
+
+Il est entré. Il n'est pas reparti. Je ne vous en dirai pas davantage, vous comprendrez. Je pense parfois à sa politesse. Elle était sincère. La mienne aussi, d'ailleurs. C'est cela, le plus difficile à expliquer aux étrangers. Le lendemain, le 12, mes hommes, avec des brassards blancs, ont attaqué les milices ouvrières dans toute la ville. Les soldats ont suivi. Les rues de Zhabei se sont couvertes de corps. On n'a jamais su combien. Personne n'a beaucoup cherché.
 
 Le général m'a été reconnaissant. Général honoraire. Membre des conseils de banques, de la Croix-Rouge, de la chambre de commerce. On m'a même confié un bureau chargé de lutter contre l'opium. Oui. Moi. Vous pouvez sourire, je le fais aussi. En juin 1931, j'ai inauguré à Gaoqiao un temple pour mes ancêtres. Un cortège de plusieurs kilomètres, des fanfares, des soldats, des ministres. Trois jours de fête dans le bourg où ma mère lavait le linge des autres. Ce jour-là, j'ai regardé le fleuve longtemps. Je pensais à ma sœur. Quelque part, peut-être, elle a vu passer le cortège sans savoir.
 
@@ -101,6 +186,18 @@ Tout se calcule. Retiens au moins ça, si tu ne retiens rien d'autre. La chance 
 
 Je suis né à New York en janvier 1882. Mon père, Abraham, faisait le commerce du tissu et du coton. Un saint. Je ne plaisante pas : on l'appelait Abe le Juste. Les patrons et les ouvriers du textile venaient lui demander d'arbitrer leurs disputes, parce qu'il ne mentait jamais. Il priait matin et soir, il donnait aux pauvres, il ne touchait pas un sou qui ne fût pas propre. Je l'ai respecté toute ma vie. Je n'ai jamais compris à quoi ça lui servait.
 
+Un soir, j'avais douze ou treize ans, il m'a trouvé dans l'escalier en train de compter mes gains de la journée. Des pièces, quelques billets. Il s'est assis à côté de moi, sur la marche, dans son long manteau noir.
+
+— D'où vient cet argent, Arnold ?
+
+— Des dés, papa.
+
+— Et tu crois qu'il ne porte pas la trace de ceux qui l'ont perdu ?
+
+— Si. Ils sont tristes. Mais moi, je suis riche.
+
+Il n'a rien répondu. Il a posé sa main sur ma tête, comme on bénit, et il est monté se coucher. Je crois qu'il a prié pour moi ce soir-là. Il n'a pas dû être exaucé.
+
 Mon frère aîné, Harry, était le fils parfait. Doux, studieux, pieux. Mon père le regardait comme on regarde un trésor. Moi, j'étais la petite monnaie. On raconte dans la famille qu'à trois ans, mon père m'a trouvé debout près du lit de Harry endormi, un couteau à la main, et que je lui ai dit tranquillement que je détestais mon frère. Je ne m'en souviens pas. Je trouve l'histoire plausible. Quand Harry a décidé d'étudier pour devenir rabbin, mon père rayonnait comme une lampe de Hanoucca. Moi, j'ai tourné le dos à la synagogue et je suis descendu dans la rue.
 
 La rue, c'était les dés. Accroupi contre un mur avec les gamins du quartier, je gagnais presque toujours. Pas par chance, je viens de te le dire. Les autres jouaient avec leur chance. Moi, je jouais avec la leur. Je regardais qui avait faim, qui avait peur de rentrer chez lui les poches vides, qui doublait la mise par orgueil. L'orgueil, c'est le meilleur ami du banquier. Je ne buvais pas, je ne fumais pas, je ne me battais pas. Je regardais, et je ramassais.
@@ -117,11 +214,25 @@ Les courses de chevaux, c'était ma science. Je savais avant tout le monde quel 
 
 En 1919, les World Series, la finale du championnat de baseball. Des joueurs des White Sox de Chicago ont accepté de perdre exprès contre de l'argent. Le pays entier m'a regardé. Je suis allé de moi-même devant le grand jury de Chicago. Costume gris, voix calme. J'ai expliqué que des escrocs s'étaient servis de mon nom. J'ai presque eu l'air offensé. Ils n'ont rien pu prouver. Cette semaine-là, j'avais beaucoup gagné. Ce n'est pas moi qui ai corrompu l'Amérique, mon ami. Je lui ai simplement présenté la facture.
 
-Puis la Prohibition est arrivée, en janvier 1920. Le plus beau cadeau qu'un gouvernement ait jamais fait à un homme comme moi. Des millions d'Américains qui veulent boire, et une loi qui leur dit non. Entre les deux, il y a un marché. Je ne vendais pas l'alcool, c'est vulgaire. Je finançais ceux qui le vendaient. Le whisky arrivait d'Europe par bateaux entiers. Je prêtais aux jeunes de la ville, je leur apprenais à s'habiller, à parler, à acheter un policier plutôt qu'à le tuer. Un flic qu'on paie vaut mieux que dix qu'on enterre : les morts, ça attire les journalistes. Ils s'appelaient Luciano, Lansky, Costello, Legs Diamond. Des gosses doués. Grossiers, mais doués. J'ai fait avec le crime ce que J. P. Morgan a fait avec l'acier. J'ai organisé.
+Puis la Prohibition est arrivée, en janvier 1920. Le plus beau cadeau qu'un gouvernement ait jamais fait à un homme comme moi. Des millions d'Américains qui veulent boire, et une loi qui leur dit non. Entre les deux, il y a un marché. Je ne vendais pas l'alcool, c'est vulgaire. Je finançais ceux qui le vendaient. Le whisky arrivait d'Europe par bateaux entiers. Je prêtais aux jeunes de la ville, je leur apprenais à s'habiller, à parler, à acheter un policier plutôt qu'à le tuer. Je me souviens du jour où le petit Luciano est entré dans mon bureau pour la première fois, avec une cravate rouge à pois et une épingle en faux diamant. Je l'ai laissé parler cinq minutes. Puis je l'ai interrompu.
+
+— Charlie. Avant de parler affaires, va chez mon tailleur. Tu lui dis que tu viens de ma part.
+
+— Qu'est-ce qu'elle a, ma cravate ?
+
+— Elle crie. Un homme qui a de l'argent n'a pas besoin de crier. Les flics regardent ceux qui crient. Les juges aussi. Habille-toi comme un banquier, et on te parlera comme à un banquier.
+
+Il est revenu la semaine suivante en costume gris. Il apprenait vite. Meyer Lansky, lui, n'a jamais eu besoin de la leçon : il est arrivé déjà habillé comme un comptable, et il pensait comme un. Un flic qu'on paie vaut mieux que dix qu'on enterre : les morts, ça attire les journalistes. Ils s'appelaient Luciano, Lansky, Costello, Legs Diamond. Des gosses doués. Grossiers, mais doués. J'ai fait avec le crime ce que J. P. Morgan a fait avec l'acier. J'ai organisé.
 
 La violence, je ne l'ai jamais aimée. Je l'ai toujours payée chez les autres, au tarif. J'ai des bureaux, des avocats, des comptables, des sociétés immobilières, des compagnies d'assurances. Le crime n'est pas une bagarre de rue, c'est un marché. Et sur un marché, celui qui gagne, c'est celui qui a l'argent et l'information. J'ai toujours eu les deux.
 
-En septembre 1928, j'ai joué une partie de poker qui a duré plusieurs jours, dans un appartement de Manhattan. J'ai perdu. Beaucoup. Des centaines de milliers de dollars. J'ai refusé de payer. La partie était truquée, j'en suis certain. Oui, je sais. Moi. Ris si tu veux. Depuis, on me fait passer des messages. Ce soir, le 4 novembre, on m'a appelé au restaurant où je tiens mes rendez-vous : un des joueurs veut me voir à l'hôtel Park Central. J'y vais. Je n'ai jamais eu peur d'une conversation. Les gens qui me doivent de l'argent sont trop nombreux pour qu'un seul ose me faire du mal. C'est mathématique.
+En septembre 1928, j'ai joué une partie de poker qui a duré plusieurs jours, dans un appartement de Manhattan. J'ai perdu. Beaucoup. Des centaines de milliers de dollars. J'ai refusé de payer. La partie était truquée, j'en suis certain. Oui, je sais. Moi. Ris si tu veux. Depuis, on me fait passer des messages. Ce soir, le 4 novembre, on m'a appelé au restaurant où je tiens mes rendez-vous, chez Lindy, sur Broadway. Le serveur m'a apporté le téléphone à table.
+
+— A.R. ? C'est McManus. Monte me voir au Park Central, chambre 349. Il faut qu'on parle de cette histoire.
+
+— J'arrive, George.
+
+J'y vais. Je n'ai jamais eu peur d'une conversation. Les gens qui me doivent de l'argent sont trop nombreux pour qu'un seul ose me faire du mal. C'est mathématique.
 
 !! CE QUI S'EST PASSÉ :: Arnold Rothstein a été blessé par balle le 4 novembre 1928 à l'hôtel Park Central de New York et est mort deux jours plus tard. Il a refusé de dire à la police qui avait tiré. Le joueur George McManus a été jugé et acquitté. Le rôle de Rothstein dans le scandale des « Black Sox » de 1919 n'a jamais été prouvé devant un tribunal. Il est considéré comme celui qui a transformé les bandes new-yorkaises en un crime organisé, financé et structuré comme une entreprise, et il a inspiré à Fitzgerald le personnage de Meyer Wolfsheim.
 
@@ -135,7 +246,17 @@ Ma mère, elle, c'est une sainte. Je veux que tu l'écrives. Une sainte. Quoi qu
 
 À l'école, au début, j'étais pas mauvais, je te jure. Et puis j'ai commencé à sécher. À quatorze ans, une maîtresse m'a collé une baffe. Je lui en ai rendu une. Le directeur m'a tabassé, et j'y suis plus jamais retourné. Fini l'école. J'ai bossé dans une confiserie, puis dans une salle de bowling. Et dans la rue, j'ai rencontré le type qui m'a tout appris : Johnny Torrio.
 
-Johnny, c'était la classe. Petit, propre sur lui, poli comme un curé. Il buvait pas, il jurait pas, il rentrait bouffer chez sa femme tous les soirs à l'heure. Et il tenait des tripots, des bars, des filles, la moitié du quartier. Il me faisait faire des courses, il me regardait. Un jour il m'a dit, en gros, qu'un patron a pas besoin de gueuler. Moi je gueulais tout le temps. J'ai mis des années à piger.
+Johnny, c'était la classe. Petit, propre sur lui, poli comme un curé. Il buvait pas, il jurait pas, il rentrait bouffer chez sa femme tous les soirs à l'heure. Et il tenait des tripots, des bars, des filles, la moitié du quartier. Il me faisait faire des courses, il me regardait. Un jour, je débarque dans son bureau en gueulant, parce qu'un type m'avait doublé sur une livraison.
+
+— Je vais le crever, Johnny. Je te jure que je vais le crever.
+
+— Assieds-toi, Al. Tu veux un café ?
+
+— J'veux pas de café, j'veux...
+
+— Assieds-toi. Ce type, demain, il te doit de l'argent. Mort, il te doit rien. Et un patron, ça gueule pas. Si t'as besoin de gueuler pour qu'on t'obéisse, c'est que t'es pas le patron.
+
+Je me suis assis. J'ai bu le café. J'ai mis des années à piger.
 
 À dix-huit ans, je faisais le videur au Harvard Inn, à Coney Island, chez Frankie Yale. Un soir, j'ai balancé une remarque à une fille assise avec son frère. Une connerie, d'accord, je le reconnais. Le frère a sorti un couteau et m'a ouvert la joue gauche, trois coups, de l'oreille jusqu'à la bouche. Le sang partout sur ma chemise neuve. Ces enfoirés de journalistes m'ont appelé Scarface après, et je peux pas encaisser ce nom. Sur les photos, je tourne toujours le bon profil. Et quand on me demande, je dis que c'est la guerre, en France. J'ai jamais mis les pieds en France. Et alors ? Tout le monde ment sur sa gueule.
 
@@ -147,7 +268,15 @@ Johnny était parti à Chicago. Il m'a appelé. Chicago, mon pote, c'est pas Bro
 
 En 1924, on a pris Cicero, une ville de la banlieue ouest. Le jour des élections, mes gars ont surveillé les bureaux de vote, le flingue à la ceinture, bien poliment. Notre candidat a gagné, comme par miracle. La police de Cicero, elle mangeait dans ma main. Mais les flics de Chicago ont débarqué, et mon frère Frank s'est fait descendre dans la fusillade. Mon petit frère. Je l'ai enterré dans un cercueil d'argent, sous des montagnes de fleurs. Pendant les funérailles, tous les bars de Cicero ont fermé. Par respect. Voilà ce que c'est, le respect.
 
-En janvier 1925, les Irlandais du North Side ont flingué Johnny devant chez lui. Ces fils de pute. Il s'en est sorti, de justesse, mais il avait eu peur, et un homme qui a eu peur, c'est fini. Il est parti, et il m'a tout laissé. J'avais vingt-six ans. Des brasseries, des centaines de bars, des bordels, des tripots, une ville entière et la moitié des flics. Vingt-six ans, bordel.
+En janvier 1925, les Irlandais du North Side ont flingué Johnny devant chez lui. Ces fils de pute. Il s'en est sorti, de justesse, mais il avait eu peur, et un homme qui a eu peur, c'est fini. Je suis allé le voir à l'hôpital. Il avait des tuyaux partout, la peau grise, et pour la première fois de ma vie je l'ai vu avoir peur.
+
+— C'est fini pour moi, Al. Je rentre en Italie avec ma femme. Tout est à toi.
+
+— Johnny, tu vas te remettre, on va les retrouver, ces...
+
+— Écoute-moi. Tout. Les brasseries, les bars, les flics, les échevins. Et un conseil, le dernier : le jour où ils commencent à t'aimer dans les journaux, méfie-toi. Un homme qu'on regarde finit toujours par être visé.
+
+Il est parti, et il m'a tout laissé. J'avais vingt-six ans. Des brasseries, des centaines de bars, des bordels, des tripots, une ville entière et la moitié des flics. Vingt-six ans, bordel.
 
 Les journalistes, je les recevais dans ma suite, au milieu des tapis et des portraits de George Washington. Je leur disais la vérité : je suis un homme d'affaires. Je rends service. Quand je vends de l'alcool, c'est de la contrebande. Quand mes clients le servent sur des plateaux d'argent sur Lake Shore Drive, c'est de l'hospitalité. Ils l'écrivaient, ces cons, et le lendemain les gens me saluaient dans la rue. Au stade, la foule m'applaudissait. Moi, Al.
 
@@ -161,6 +290,16 @@ Ce sont les comptables qui m'ont eu. Des binoclards. Pendant des années, ils on
 
 À Alcatraz, sur ce caillou au milieu de la baie de San Francisco, j'étais plus personne. Un numéro. J'ai bossé à la blanchisserie, puis aux douches, avec une serpillière. Moi. Je jouais du banjo dans le petit orchestre des détenus. Le vent froid entrait par les fenêtres. La nuit, quand le brouillard se levait, on entendait la ville de l'autre côté de l'eau, la musique, les gens qui riaient. Et ma tête a commencé à me lâcher. Des fois, je sais plus quel jour on est. Des fois, je sais plus où je suis. Ça va passer. Ça passe toujours.
 
+Mae venait me voir. Le train depuis la Floride, puis le bateau. Elle s'asseyait de l'autre côté de la vitre, avec son chapeau, et on se parlait dans un téléphone, sous les yeux d'un gardien.
+
+— Sonny va bien. Il travaille bien à l'école. Il te dit bonjour.
+
+— Dis-lui que son vieux va sortir. Dis-lui que je vais lui acheter une bagnole.
+
+— Al, il a pas besoin d'une voiture. Il a besoin que tu rentres.
+
+Elle pleurait pas. Elle pleurait jamais devant moi, Mae. C'est moi qui chialais, après, dans la cellule, quand le brouillard tombait. Ça, tu l'écris pas.
+
 @yt 2J5OE16C_zY | Capone (2020), de Josh Trank, avec Tom Hardy : les dernières années, en Floride, quand la mémoire s'en va. Bande-annonce.
 
 !! CE QUI S'EST PASSÉ :: Le 14 février 1929, sept hommes liés au gang de Bugs Moran ont été alignés contre un mur d'un garage de Chicago et tués à la mitraillette par des hommes déguisés en policiers. Le massacre de la Saint-Valentin est attribué à l'organisation de Capone, qui n'a jamais été inculpé. Les guerres de la Prohibition ont fait des centaines de morts à Chicago. Condamné en octobre 1931 pour fraude fiscale, Capone a été envoyé à Atlanta, puis à Alcatraz en 1934. Libéré en 1939, rongé par une syphilis qui avait atteint son cerveau, il a fini sa vie dans sa villa de Floride avec l'esprit d'un enfant. Il est mort le 25 janvier 1947, à quarante-huit ans.
@@ -173,7 +312,17 @@ Salvatore Lucania. Né le 24 novembre 1897 à Lercara Friddi, en Sicile. Un vill
 
 1906. Le bateau. J'ai huit ans. L'entrepont, le vomi, les gens qui prient. Ellis Island, les médecins qui te retournent les paupières avec un crochet pour voir si tu es malade. Puis le Lower East Side. Des immeubles si serrés qu'on voit à peine le ciel. Du linge tendu d'une fenêtre à l'autre. L'italien, le yiddish, l'irlandais, tout le monde gueule. Chaque rue a sa bande. Je ne parle pas un mot d'anglais. À l'école, ils me mettent avec les petits. Ils se foutent de moi. J'arrête d'y aller. Problème réglé.
 
-Mon premier commerce, je l'ai trouvé dans la rue. Les petits juifs du quartier me payaient un sou par jour pour aller à l'école sans se faire tabasser. Protection. Un bon produit : tout le monde en a besoin, et personne ne peut vérifier ce qu'il achète. La plupart payaient. Un jour, un gamin refuse. Maigre, plus petit que moi. Il me regarde dans les yeux. On se bat. Il ne lâche rien. Rien. Il s'appelle Meyer Lansky. Le meilleur cerveau que j'aie jamais connu, et le seul homme à qui j'aie fait confiance toute ma vie. Comme quoi, un mauvais client peut faire un bon associé.
+Mon premier commerce, je l'ai trouvé dans la rue. Les petits juifs du quartier me payaient un sou par jour pour aller à l'école sans se faire tabasser. Protection. Un bon produit : tout le monde en a besoin, et personne ne peut vérifier ce qu'il achète. La plupart payaient. Un jour, un gamin refuse. Maigre, plus petit que moi, des livres sous le bras. On était quatre autour de lui, dans une ruelle derrière Grand Street.
+
+— Un sou par jour, et personne te touche.
+
+— Va te faire voir.
+
+— T'es tout seul, le petit. On est quatre.
+
+— Alors frappez. Mais je paierai pas. Ni aujourd'hui, ni demain.
+
+On se bat. Il ne lâche rien. Rien. À la fin, je saigne du nez, lui de la bouche, et il me regarde comme si c'était lui qui avait gagné. Je lui demande son nom. Il s'appelle Meyer Lansky. Le meilleur cerveau que j'aie jamais connu, et le seul homme à qui j'aie fait confiance toute ma vie. Comme quoi, un mauvais client peut faire un bon associé.
 
 Quatorze ans. Fini l'école pour de bon. Livreur dans une fabrique de chapeaux. Quelques dollars la semaine. Un jour, à la pause, je joue aux dés. Je gagne plus que ce que la fabrique me paie en un mois. Je rentre, je pose l'argent sur la table, je n'y retourne jamais. Mon père me regarde comme on regarde un fils mort. Il avait quitté les mines pour que je gagne ma vie honnêtement. Moi je venais de comprendre un truc simple : l'honnêteté, c'est le salaire des pauvres.
 
@@ -183,15 +332,53 @@ Puis la Prohibition. Un gouvernement qui interdit l'alcool à cent millions de p
 
 Octobre 1929. On m'embarque dans une voiture. On me cogne. On me taille le visage. On me laisse pour mort sur une plage de Staten Island. Je me réveille dans le sable, avec du sang et du sel plein la bouche. Je marche jusqu'à une route. Je vis. Depuis, on m'appelle Lucky. Le chanceux. Et ma paupière droite tombe un peu. Qui a fait ça ? Je ne l'ai jamais dit. Je ne le dirai pas à toi non plus.
 
-Ce que j'ai compris cette nuit-là : les vieux allaient nous faire tuer tous. Joe Masseria d'un côté. Salvatore Maranzano de l'autre. Deux vieux cons de Siciliens avec leurs moustaches, leurs histoires d'honneur et de village d'origine. Ils se faisaient la guerre pour des conneries et ils butaient des gars qui rapportaient de l'argent. Ils refusaient de bosser avec les juifs, avec les Irlandais, avec quiconque n'était pas né sur leur île. Le monde avait changé. Pas eux. On les appelait les moustachus. Les moustachus étaient un coût. Un coût, ça se supprime.
+Ce que j'ai compris cette nuit-là : les vieux allaient nous faire tuer tous. Joe Masseria d'un côté. Salvatore Maranzano de l'autre. Deux vieux cons de Siciliens avec leurs moustaches, leurs histoires d'honneur et de village d'origine. Ils se faisaient la guerre pour des conneries et ils butaient des gars qui rapportaient de l'argent. Ils refusaient de bosser avec les juifs, avec les Irlandais, avec quiconque n'était pas né sur leur île. Le monde avait changé. Pas eux. On les appelait les moustachus. Les moustachus étaient un coût.
+
+C'est Meyer qui l'a dit le premier, un soir, dans la cuisine d'un appartement de la Cinquième Avenue, pendant que Bugsy faisait les cent pas à la fenêtre. Meyer ne faisait jamais les cent pas. Il s'asseyait, et il posait les choses sur la table comme des chiffres.
+
+— Charlie, combien de nos gars sont morts cette année dans leur guerre ?
+
+— Trop.
+
+— Combien ça nous a rapporté ?
+
+— Rien.
+
+— Alors c'est simple. Masseria et Maranzano, ce sont des frais. On ne peut pas faire d'affaires avec des gens qui se tuent pour savoir de quel village on vient. Le jour où ils disparaissent, on se met autour d'une table, les Italiens, les juifs, les Irlandais, tout le monde, et on partage. Comme une banque.
+
+— Et qui sera le patron ?
+
+— Personne. Ou plutôt toi, mais sans le titre. Les titres, ça fait des cibles.
+
+J'ai regardé Bugsy. Il souriait. Bugsy souriait toujours quand il entendait le mot cible. Un coût, ça se supprime.
 
 15 avril 1931. Je déjeune avec Joe Masseria, mon patron, dans un restaurant de Coney Island. On mange beaucoup. On joue aux cartes. Je me lève pour aller aux toilettes. Quand je reviens, il est mort. Ceux qui ont tiré sont partis. Je me suis lavé les mains, si tu veux tout savoir. 10 septembre. Maranzano, qui se faisait appeler le chef de tous les chefs, reçoit dans son bureau de Park Avenue des hommes qui se présentent comme des inspecteurs des impôts. Il avait prévu de me faire buter le jour même. J'ai été plus rapide. C'est tout.
 
 Plus de chef de tous les chefs. Une Commission. Comme le conseil d'administration d'une grande boîte. Les cinq familles de New York, plus celles des autres villes. On se partage les territoires. On règle les problèmes autour d'une table. On ne tue plus personne sans autorisation. Les juifs de Meyer bossent avec nous. Moi, j'habite au Waldorf-Astoria, sous le nom de Charles Ross, dans une suite au-dessus de Park Avenue. Je suis le type le plus puissant d'Amérique. Et je n'ai même pas de titre. Le titre, c'est pour les vaniteux. Les vaniteux, on les vise en premier.
 
-1936. Un procureur qui veut devenir gouverneur, Thomas Dewey, me fait tomber pour proxénétisme. Des putes qu'il a fait parler. Trente à cinquante ans. Ce salaud. Dannemora, une prison glaciale près du Canada. Les détenus l'appellent la Sibérie. Je continue à diriger depuis ma cellule. Les ordres sortent, l'argent rentre. Une cellule, c'est un bureau avec une mauvaise vue.
+1936. Un procureur qui veut devenir gouverneur, Thomas Dewey, me fait tomber pour proxénétisme. Des putes qu'il a fait parler. Trente à cinquante ans. Ce salaud. Dannemora, une prison glaciale près du Canada. Les détenus l'appellent la Sibérie. Je continue à diriger depuis ma cellule. Les ordres sortent, l'argent rentre. Une cellule, c'est un bureau avec une mauvaise vue. Meyer vient me voir. Il traverse tout l'État, en hiver, pour s'asseoir en face de moi dans le parloir.
+
+— Frank tient la boutique, me dit-il. Costello fait ça bien. Il parle aux politiques mieux que toi.
+
+— Tout le monde parle mieux que moi aux politiques. Et toi ?
+
+— Moi, je regarde vers le sud. Cuba, Charlie. Des casinos. Légaux. Un colonel, Batista, qui aime l'argent. Un jour, tu viendras là-bas, et on fera ce qu'on fait ici, mais au soleil, avec une licence.
+
+— Un jour.
+
+— Un jour. J'ai le temps. Toi aussi, apparemment.
 
 La guerre. La marine américaine a peur des sabotages dans le port de New York. Le port, c'est nous, des dockers aux pêcheurs. On vient me voir en prison. Des officiers, en uniforme, polis comme des enfants de chœur. Je fais passer le mot. Février 1946 : mon pays me libère pour services rendus, et m'expulse dans le même mouvement. L'Italie, sur un cargo. Sur le quai, mes amis viennent me dire adieu, avec du homard et du champagne. Les journalistes ne peuvent pas monter à bord. Ça, c'est l'Amérique. Elle te met dehors, mais elle te laisse finir ton verre.
+
+Quelques mois plus tard, je suis à La Havane. Décembre 1946. L'hôtel Nacional, sur la mer. Les palmiers, les orchestres, les femmes en robe blanche. Tous les patrons d'Amérique sont venus me voir, soi-disant pour écouter Sinatra. Meyer m'attend sur la terrasse, en chemise claire, avec un verre de jus d'orange. Il ne buvait pas d'alcool, ce type. Toute sa vie dans l'alcool, et il n'en buvait pas.
+
+— Bienvenue chez toi, Charlie. Cent cinquante kilomètres de la Floride. Ils ne peuvent plus te toucher.
+
+— Ils peuvent toujours toucher, Meyer. Ils ont toujours pu.
+
+— Pas ici. Ici, c'est nous qui payons le gouvernement. Pas l'inverse.
+
+Ensuite, on a parlé de Bugsy. Il avait construit un casino en plein désert, à Las Vegas, avec notre argent, et l'argent disparaissait. Meyer a parlé de lui doucement, comme d'un frère malade. Je ne te dirai pas ce qui s'est décidé à cette table. Je dirai seulement que Meyer a perdu ce soir-là le seul ami qu'il avait depuis l'enfance à part moi, et qu'il ne l'a jamais montré. Six mois plus tard, Bugsy était mort, abattu à travers la fenêtre d'une villa de Beverly Hills. Et moi, les Américains avaient obtenu que Cuba me mette dehors. Retour à Naples. Meyer et moi, on s'écrivait. Des lettres qui ne disaient rien, au cas où. Entre nous, c'était assez.
 
 @img https://commons.wikimedia.org/wiki/Special:FilePath/Mulberry_Street_NYC_c1900_LOC_3g04637u_edit.jpg?width=1280 | Mulberry Street, au cœur du quartier italien de New York, vers 1900 : le monde où les enfants d'immigrés comme Salvatore Lucania ont grandi. | Wikimedia Commons
 
@@ -217,9 +404,33 @@ Alors j'ai eu une idée toute simple. Si les banques ne veulent pas de nous, je 
 
 Je n'avais pas la langue dans ma poche. Je payais des encarts dans les journaux de Harlem pour dire ce que je pensais. Je défendais les Antillais qu'on traitait comme des chiens. Je dénonçais les flics qui cognaient nos garçons. Ces mêmes flics me rançonnaient, prenaient mon argent, et m'arrêtaient quand même, les salauds. Alors j'ai imprimé leurs noms. Et les sommes. Noir sur blanc. Personne n'avait jamais osé. Ils m'ont jetée en prison. À ma sortie, je suis allée raconter devant une commission d'enquête comment la police de New York se faisait graisser la patte. Des policiers ont perdu leur place. Ils ne m'avaient pas vue venir, ces imbéciles.
 
-Au début des années trente, la Prohibition finissait, et les gangsters blancs cherchaient un nouveau gâteau. Dutch Schultz, une petite frappe du Bronx, violent, crasseux, sans manières, a décidé de prendre nos loteries. Ses hommes sont arrivés. Ils menaçaient, ils frappaient, ils enlevaient nos collecteurs. Ils en tuaient. Les autres banquiers noirs ont plié l'un après l'autre, comme des roseaux. Moi, j'ai dit non. Publiquement. Les numéros, c'est mon jeu. Il ne l'aura pas. J'ai fait savoir partout que Schultz était un voleur, et j'ai dit à Harlem : jouez noir. Ne pariez qu'avec les vôtres.
+Au début des années trente, la Prohibition finissait, et les gangsters blancs cherchaient un nouveau gâteau. Dutch Schultz, une petite frappe du Bronx, violent, crasseux, sans manières, a décidé de prendre nos loteries. Ses hommes sont arrivés. Ils menaçaient, ils frappaient, ils enlevaient nos collecteurs. Ils en tuaient. Les autres banquiers noirs ont plié l'un après l'autre, comme des roseaux. Moi, j'ai dit non. Publiquement. Les numéros, c'est mon jeu. Il ne l'aura pas. Un jour, un de ses hommes est venu me voir. Un grand Irlandais rougeaud, dans un costume trop serré, qui a posé son chapeau sur ma table sans qu'on l'y invite.
 
-Pour cette guerre, j'avais engagé un homme. Un petit gars du Sud, sec, dur, malin comme un singe, qui sortait tout juste de prison. Bumpy Johnson. Garde du corps, puis chef de mes hommes. Les boutiques de Schultz flambaient, ses collecteurs disparaissaient. Il a mis un prix sur ma tête, ce porc. Il y a eu des jours où j'ai dû me cacher dans une cave, sous un tas de charbon, avec mes fourrures, oui, mes fourrures, en écoutant les bottes au-dessus de moi. L'odeur du charbon, je l'ai encore. Et le bruit de mon cœur, comme un tambour. Je n'ai pas prié. J'ai compté. Je comptais les jours qu'il lui restait.
+— Monsieur Schultz vous fait une offre généreuse, madame. Vous gardez votre appartement, vos fourrures, une part. Il prend le reste.
+
+— Dites à monsieur Schultz qu'il est entré dans ma maison sans s'essuyer les pieds. Comme vous.
+
+— Je dois lui rapporter une réponse.
+
+— En voici une. Les numéros de Harlem, c'est l'argent de Harlem. Ce n'est pas un juif du Bronx qui va nous le prendre, pas plus qu'un Italien ou un Irlandais. Reprenez votre chapeau. Il est sur ma nappe.
+
+Il a repris son chapeau. Le lendemain, deux de mes collecteurs ont disparu. J'ai fait savoir partout que Schultz était un voleur, et j'ai dit à Harlem : jouez noir. Ne pariez qu'avec les vôtres.
+
+Pour cette guerre, j'avais engagé un homme. Un petit gars du Sud, sec, dur, malin comme un singe, qui sortait tout juste de prison. Il s'est présenté chez moi, au 409, chapeau à la main. Il a regardé mes tableaux avant de me regarder moi. Ça m'a plu.
+
+— On me dit que vous cherchez quelqu'un qui n'a pas peur des Blancs, madame.
+
+— Je cherche quelqu'un qui n'a peur de personne. Les Blancs, c'est un détail.
+
+— Alors c'est moi.
+
+— On verra. Combien de fois êtes-vous allé en prison, monsieur Johnson ?
+
+— Assez pour savoir que je n'aime pas ça.
+
+— Parfait. Moi non plus. On va s'entendre.
+
+Bumpy Johnson. Garde du corps, puis chef de mes hommes. Les boutiques de Schultz flambaient, ses collecteurs disparaissaient. Il a mis un prix sur ma tête, ce porc. Il y a eu des jours où j'ai dû me cacher dans une cave, sous un tas de charbon, avec mes fourrures, oui, mes fourrures, en écoutant les bottes au-dessus de moi. L'odeur du charbon, je l'ai encore. Et le bruit de mon cœur, comme un tambour. Je n'ai pas prié. J'ai compté. Je comptais les jours qu'il lui restait.
 
 En octobre 1935, Dutch Schultz s'est fait descendre par les siens, dans un restaurant de Newark. Il agonisait à l'hôpital. Je lui ai envoyé un télégramme, avec une phrase de la Bible : « Ce que tu sèmes, tu le récolteras. » Signé Madame Queen. Les journaux l'ont publié. Il est mort peu après. Moi, je suis toujours là. Les petites frappes passent, mon chéri. Les reines restent.
 
@@ -241,11 +452,49 @@ Harlem, pour un gamin du Sud, c'était le paradis. Des Noirs partout, qui marcha
 
 Un gars du quartier, Bub Hewlett, m'a pris comme garde du corps pour les banquiers de la loterie. Puis les cambriolages. Les filles qui travaillaient pour moi. Les menaces. Les coups. La prison, encore et encore. À trente ans, j'avais passé presque la moitié de ma vie derrière les barreaux. Et c'est là que j'ai lu. Tout. L'histoire, la philosophie, la poésie. Les murs ne t'empêchent pas de voyager, ils t'obligent seulement à choisir où. J'ai commencé à écrire des vers sur des cahiers d'écolier. J'ai joué aux échecs, des heures, des mois, et j'y suis devenu très fort. Les échecs, c'est la rue sans le bruit.
 
-En 1932, je suis sorti sans un sou. Une femme m'attendait. Madame Stephanie St. Clair. La reine des loteries de Harlem. Un accent français à couper au couteau, des fourrures en plein été, et la seule personne de Harlem à ne pas plier devant Dutch Schultz, ce chien enragé du Bronx qui voulait tous nos numéros. Elle m'a regardé une minute. Elle m'a engagé. Garde du corps, puis chef de ses hommes. Et on a fait la guerre. Ses collecteurs disparaissaient. Ses boutiques brûlaient. Il envoyait des tueurs. On tenait. Mais lui avait la police et les juges, et nous, on n'avait que Harlem. En 1935, ce sont les siens qui l'ont abattu. Je n'ai pas pleuré. J'ai joué une partie d'échecs, ce soir-là. Je l'ai gagnée.
+En 1932, je suis sorti sans un sou. Une femme m'attendait. Madame Stephanie St. Clair. La reine des loteries de Harlem. Un accent français à couper au couteau, des fourrures en plein été, et la seule personne de Harlem à ne pas plier devant Dutch Schultz, ce chien enragé du Bronx qui voulait tous nos numéros. Elle m'a regardé une minute, des pieds à la tête, comme on regarde un cheval.
 
-Après, il a fallu s'asseoir avec les Italiens. Ils avaient gagné la guerre des Blancs et ils voulaient leur morceau de Harlem. Luciano et moi, on s'était fait la guerre. On s'est assis à la même table. J'ai posé les choses simplement : vous ne pouvez pas tenir Harlem sans moi, et je ne peux pas vous mettre dehors. Alors on partage. Vous prenez votre pourcentage, et Harlem reste à moi. Personne n'y travaille sans mon accord. Personne. On s'est mis à m'appeler le parrain de Harlem. Moi, je préférais dire que j'étais le propriétaire.
+— Vous jouez aux échecs, monsieur Johnson ?
 
-En 1948, j'ai rencontré Mayme Hatcher. Serveuse, puis hôtesse dans un club. Belle, drôle, pas impressionnée pour un sou. Trois mois plus tard, je l'épousais. Je lui lisais mes poèmes. Quand elle riait, je savais qu'ils étaient mauvais. Quand elle se taisait, je savais qu'ils étaient bons.
+— Oui, madame.
+
+— Alors vous savez qu'on ne gagne pas avec les pièces qu'on a. On gagne avec les coups que l'autre n'a pas vus.
+
+— Et on sacrifie celles qu'il faut.
+
+— Non. Moi, je ne sacrifie personne. Je n'en ai pas les moyens. Vous allez me garder tout le monde en vie.
+
+Elle m'a engagé. Garde du corps, puis chef de ses hommes. Et on a fait la guerre. Ses collecteurs disparaissaient. Ses boutiques brûlaient. Il envoyait des tueurs. On tenait. Mais lui avait la police et les juges, et nous, on n'avait que Harlem. En 1935, ce sont les siens qui l'ont abattu. Je n'ai pas pleuré. J'ai joué une partie d'échecs, ce soir-là. Je l'ai gagnée.
+
+Après, il a fallu s'asseoir avec les Italiens. Ils avaient gagné la guerre des Blancs et ils voulaient leur morceau de Harlem. Luciano et moi, on s'était fait la guerre. On s'est assis à la même table, dans l'arrière-salle d'un restaurant de Mulberry Street. Lui en costume gris, la paupière qui tombe. Moi en costume bleu nuit. Personne d'autre ne parlait.
+
+— On me dit que tu es un homme raisonnable, Bumpy.
+
+— On me dit la même chose de vous. On va vérifier si c'est vrai pour tous les deux.
+
+— Harlem rapporte. On veut notre part.
+
+— Vous ne pouvez pas tenir Harlem sans moi. Vos hommes ne passent pas la 110e Rue sans qu'on le sache dans la minute. Et moi, je ne peux pas vous mettre dehors, vous avez les juges. Alors on partage. Vous prenez votre pourcentage. Et Harlem reste à moi. Personne n'y travaille sans mon accord. Personne.
+
+Il m'a regardé longtemps. Puis il a souri, juste d'un côté.
+
+— Tu joues aux échecs, il paraît.
+
+— Tous les jours.
+
+— Moi, je joue aux cartes. Aux cartes, on ne voit pas le jeu de l'autre. Ça me convient mieux.
+
+On s'est serré la main. On s'est mis à m'appeler le parrain de Harlem. Moi, je préférais dire que j'étais le propriétaire.
+
+En 1948, j'ai rencontré Mayme Hatcher. Serveuse, puis hôtesse dans un club. Belle, drôle, pas impressionnée pour un sou. Le premier soir, je lui ai demandé si elle savait qui j'étais.
+
+— Tout le monde sait qui vous êtes, monsieur Johnson.
+
+— Et ça ne vous fait pas peur ?
+
+— Ce qui me ferait peur, c'est que vous soyez ennuyeux. Pour l'instant, ça va.
+
+Trois mois plus tard, je l'épousais. Je lui lisais mes poèmes. Quand elle riait, je savais qu'ils étaient mauvais. Quand elle se taisait, je savais qu'ils étaient bons.
 
 Je jouais aux échecs dans les parcs avec les vieux, et je les battais presque tous. Je portais des costumes taillés au millimètre. À Thanksgiving, je faisais distribuer des dindes aux familles pauvres. À Noël, des cadeaux pour les gosses. Les gens m'aimaient, et ils avaient peur de moi. À Harlem, c'est souvent la même chose. L'amour qui n'a pas un peu peur, c'est de la familiarité. Et la familiarité, on la fait payer.
 
@@ -273,11 +522,35 @@ J'ai commencé à piquer très tôt. Des bricoles, d'abord, une poule, des sous 
 
 En revenant, je suis monté à Paris. Pigalle, Montmartre. Les bars où on cause bas, les filles sous les réverbères, les mecs en chapeau mou qui se saluent d'un signe de tête. Là, j'étais chez moi. J'étais grand, j'avais des paluches énormes, et je buvais comme un trou. Et quand je bois, mon pote, y a plus de frein. C'est comme ça. Les autres ont des limites. Moi, j'ai une soif.
 
-En juin 40, les Boches sont entrés dans Paris. Pour un voyou, c'était Noël en plein été. Les Allemands avaient besoin de types qui connaissaient la ville, les caves, les combines, les adresses. Ils payaient bien, et sur le reste, ils fermaient leur gueule. Je suis entré à la Carlingue, la Gestapo française de la rue Lauriston. On arrêtait des résistants. On vidait des appartements. On faisait du marché noir avec des camions entiers. On frappait aux portes à l'aube, et on repartait avec les bijoux, le pognon, les tableaux, et des fois avec les gens. Ce qui leur arrivait après, je m'en foutais. C'est là qu'on m'a appelé Pierrot le Fou. Parce que je tirais avant de réfléchir, et que je rigolais en tirant. La France, l'Allemagne, j'en avais rien à branler. Je croyais au pognon, et à la trouille que je foutais aux gens. C'est tout. C'est déjà pas mal.
+En juin 40, les Boches sont entrés dans Paris. Pour un voyou, c'était Noël en plein été. Les Allemands avaient besoin de types qui connaissaient la ville, les caves, les combines, les adresses. Ils payaient bien, et sur le reste, ils fermaient leur gueule. Je suis entré à la Carlingue, la Gestapo française de la rue Lauriston. Le patron, Henri Lafont, un ancien taulard qui portait l'uniforme allemand comme un costume du dimanche, m'a reçu dans son bureau, derrière une table couverte de tampons et de pistolets.
+
+— Tu sais tirer ?
+
+— Mieux que vos Boches.
+
+— Tu sais te taire ?
+
+— Quand on me paie.
+
+— On paie. Bienvenue chez les seigneurs, Loutrel. Ici, on arrête les gens au nom de la loi, et c'est nous, la loi.
+
+J'ai rigolé. Lui aussi. On était faits pour s'entendre, ces années-là. On arrêtait des résistants. On vidait des appartements. On faisait du marché noir avec des camions entiers. On frappait aux portes à l'aube, et on repartait avec les bijoux, le pognon, les tableaux, et des fois avec les gens. Ce qui leur arrivait après, je m'en foutais. C'est là qu'on m'a appelé Pierrot le Fou. Parce que je tirais avant de réfléchir, et que je rigolais en tirant. La France, l'Allemagne, j'en avais rien à branler. Je croyais au pognon, et à la trouille que je foutais aux gens. C'est tout. C'est déjà pas mal.
 
 En 44, j'ai senti que le vent tournait. Même les Boches commençaient à me regarder de travers. Alors j'ai changé de crèmerie. À Toulouse, j'ai descendu un officier allemand à la terrasse d'un café. Pan. Ticket d'entrée chez les résistants. Quelques semaines avant, je donnais leurs copains. Personne a posé de questions. À la Libération, c'était le bordel complet, tout le monde avait un brassard et une mitraillette, et les héros poussaient comme des champignons. J'en étais un. Ça m'a fait marrer pendant des semaines.
 
-Après, j'ai trouvé des gars comme moi. Des types qui avaient traversé la guerre de tous les côtés à la fois. Jo Attia, revenu des camps, costaud comme un bœuf et fidèle comme un clebs. Abel Danos, le Mammouth. Raymond Naudy. Georges Boucheseiche. On allait être les rois.
+Après, j'ai trouvé des gars comme moi. Des types qui avaient traversé la guerre de tous les côtés à la fois. Jo Attia, revenu des camps, costaud comme un bœuf et fidèle comme un clebs. Je l'ai rencontré dans un bar de la rue de la Gaîté. Il pesait vingt kilos de moins qu'avant la guerre, et il avait des yeux qui avaient vu Mauthausen.
+
+— Toi, t'étais à Lauriston, qu'il m'a dit. Je le sais.
+
+— Et alors ?
+
+— Alors rien. Là-bas, dans le camp, j'ai appris un truc. Ceux qui te sauvent la peau, c'est pas toujours les gentils. Si tu me payes et que tu me trahis pas, je me fous de ce que t'as fait.
+
+— Et si je te trahis ?
+
+— Tu le feras pas.
+
+Il avait raison. Je l'ai jamais trahi. C'était peut-être le seul. Abel Danos, le Mammouth. Raymond Naudy. Georges Boucheseiche. On allait être les rois.
 
 En 46, la France crevait de faim. Les bagnoles des flics roulaient encore au gazogène, elles toussaient comme des vieillards. Nous, on avait des Tractions Avant de chez Citroën, volées, noires, basses, rapides, qui tenaient la route comme sur des rails. Et des mitraillettes. On braquait les fourgons qui transportaient la paye et les recettes des banques. En plein jour. Paris, la banlieue, la Côte d'Azur. Et on se barrait dans un crissement de pneus avant que les poulets aient fini d'enfiler leurs pantalons. Les journaux nous ont appelés le gang des Tractions Avant. Et moi, ils m'ont inventé un titre exprès : ennemi public numéro un. Numéro un, mon salaud. Pas deux. Un.
 
@@ -285,7 +558,17 @@ En 46, la France crevait de faim. Les bagnoles des flics roulaient encore au gaz
 
 Un petit inspecteur, Roger Borniche, me collait au train. Ce fouille-merde. La police a encerclé à Champigny une maison où une partie de la bande se planquait. Y a eu des morts, des arrestations. Moi, j'étais ailleurs. J'étais toujours ailleurs. Mais je sentais le filet se resserrer, et je buvais de plus en plus. Le matin, l'après-midi, la nuit. Pour pas entendre.
 
-Le 6 novembre 1946, j'étais rond comme une queue de pelle. Avec deux potes, on est entrés dans une bijouterie de l'avenue Kléber, près de l'Étoile. Le bijoutier a voulu faire le malin. J'ai tiré. En repartant, j'ai voulu fourrer mon flingue dans ma ceinture, et le coup est parti. Dans le ventre. Putain. Putain de putain. Les autres m'ont traîné jusqu'à la bagnole. J'ai le ventre en feu. Je sais que je verrai pas de vrai toubib. Faut pas qu'on sache. Donne-moi la bouteille. La bouteille, je te dis. Et arrête de me regarder comme ça.
+Le 6 novembre 1946, j'étais rond comme une queue de pelle. Avec deux potes, on est entrés dans une bijouterie de l'avenue Kléber, près de l'Étoile. Le bijoutier a voulu faire le malin. J'ai tiré. En repartant, j'ai voulu fourrer mon flingue dans ma ceinture, et le coup est parti. Dans le ventre. Putain. Putain de putain. Les autres m'ont traîné jusqu'à la bagnole. J'ai le ventre en feu. Un des gars conduit, l'autre me tient la tête.
+
+— On t'emmène chez un toubib, Pierrot. Un vrai.
+
+— Pas d'hosto. Pas de vrai toubib. Ils vont causer.
+
+— Tu vas crever, connard.
+
+— Alors je crèverai entre potes. C'est mieux que la guillotine, non ?
+
+Personne a répondu. Le chauffeur a écrasé l'accélérateur. Je sais que je verrai pas de vrai toubib. Faut pas qu'on sache. Donne-moi la bouteille. La bouteille, je te dis. Et arrête de me regarder comme ça.
 
 !! CE QUI S'EST PASSÉ :: Pierre Loutrel a été membre de la Gestapo française pendant l'Occupation, puis a dirigé le gang des Tractions Avant, auteur de nombreux braquages sanglants en 1946. Le 6 novembre 1946, lors du braquage d'une bijouterie de l'avenue Kléber, il a tué le bijoutier, puis s'est blessé avec sa propre arme. Il est mort le 11 novembre. Ses complices l'ont enterré en secret sur une île de la Seine, près de Limay ; son corps n'a été retrouvé qu'en mai 1949. Sa bande a fait plusieurs victimes, dont des policiers et des passants.
 
@@ -305,11 +588,39 @@ Les années soixante, c'est un film en boucle. Cambriolage, braquage, prison, so
 
 1968, le Canada, avec ma compagne, Jeanne Schneider. On se fait embaucher comme domestiques chez un millionnaire de Montréal, Georges Deslauriers. Il nous vire. On l'enlève pour une rançon. Logique, non ? On me reprend. Le pénitencier de Saint-Vincent-de-Paul, soi-disant imprenable. Le 21 août 1972, je me tire avec d'autres, à travers les clôtures, en plein jour. Une semaine après, on revient, armés jusqu'aux dents, pour libérer les copains restés dedans. Ça foire, ça canarde de partout. Les journaux du monde entier parlent de moi. Le monde entier, tu entends ? J'aime ça plus que le fric. Le mois suivant, deux gardes forestiers nous reconnaissent dans un bois, près de la frontière.
 
-Retour en France. Juin 1973, je passe en jugement à Compiègne pour une vieille affaire. Un complice a planqué un pistolet dans les chiottes du palais de justice. En pleine audience, je le sors et je prends le président du tribunal en otage. Le président ! Je sors avec lui, le canon contre sa tempe, sous le nez des gendarmes qui ne savent plus où se mettre. Du grand art. En septembre, le commissaire Broussard me coince dans un appartement à Paris. Des heures de siège. À la fin, je lui ouvre la porte en souriant, et je lui offre le champagne. Il faut savoir perdre avec panache. Les flics, ça n'a pas de panache. Moi, si.
+Retour en France. Juin 1973, je passe en jugement à Compiègne pour une vieille affaire. Un complice a planqué un pistolet dans les chiottes du palais de justice. En pleine audience, je le sors et je prends le président du tribunal en otage. Le président ! Je sors avec lui, le canon contre sa tempe, sous le nez des gendarmes qui ne savent plus où se mettre. Du grand art. En septembre, le commissaire Broussard me coince dans un appartement à Paris, rue Vergniaud. Des heures de siège. Lui derrière la porte, moi derrière la mienne. On se parle à travers le bois.
+
+— Mesrine, c'est fini. L'immeuble est cerné.
+
+— Je sais, commissaire. Je vous ai entendus monter. Vous êtes nombreux, c'est flatteur.
+
+— Ouvre, et personne n'est blessé.
+
+— Donnez-moi le temps de m'habiller correctement. On ne se rend pas en pantoufles.
+
+À la fin, je lui ouvre la porte en souriant, une coupe à la main, et je lui offre le champagne. Il faut savoir perdre avec panache. Les flics, ça n'a pas de panache. Moi, si.
 
 À la Santé, en quartier de haute sécurité, j'écris un bouquin. L'Instinct de mort. J'y raconte tout, ou presque. J'y avoue des meurtres. Pour qu'on comprenne qui je suis. Ou pour qu'on ait encore plus peur, je ne sais plus très bien, et franchement, quelle différence ? Le livre se vend comme des petits pains, les lycéens le lisent sous la table. Et j'y dénonce ces putains de quartiers de haute sécurité, l'isolement total, la lumière allumée jour et nuit, des hommes qu'on rend fous à petit feu. Là-dessus, désolé, j'ai raison.
 
-Le 8 mai 1978, je me fais la belle de la Santé avec François Besse. Par-dessus le mur, avec une échelle, en plein jour. Depuis, je change de tête comme de chemise. Perruques, lunettes, moustaches, faux noms. Je donne des interviews aux magazines, je pose avec mes flingues, je nargue les poulets en première page. En 1979, j'enlève un milliardaire pour une rançon. J'attire dans une grotte un journaliste qui avait écrit sur moi des conneries. Je le dis à qui veut l'entendre : on ne me prendra jamais vivant. Je sais comment ça va finir, va. Mais ce sera beau. Il faut toujours soigner la dernière scène. Coupe le magnéto.
+Le 8 mai 1978, je me fais la belle de la Santé avec François Besse. Besse, c'est le seul type que j'ai connu qui parle moins que les murs. La veille, dans la cour, je lui ai glissé à l'oreille.
+
+— Demain, au parloir avec l'avocat. Tu suis, tu ne réfléchis pas.
+
+— Et si ça foire ?
+
+— Si ça foire, on sera célèbres. Si ça marche, on sera libres et célèbres.
+
+Il a hoché la tête. C'est tout ce qu'il a dit. Par-dessus le mur, avec une échelle, en plein jour. Depuis, je change de tête comme de chemise. Perruques, lunettes, moustaches, faux noms. Je donne des interviews aux magazines, je pose avec mes flingues, je nargue les poulets en première page. En 1979, j'enlève un milliardaire pour une rançon. J'attire dans une grotte un journaliste qui avait écrit sur moi des conneries. Avec Sylvia, ma compagne, on vit dans des appartements loués sous de faux noms. Un soir, elle me demande, en me coupant les cheveux pour une nouvelle tête :
+
+— Jacques, et si on partait ? Vraiment. Loin. Pour toujours.
+
+— Pour aller où ? Faire quoi ? Planter des tomates ?
+
+— Vivre.
+
+— Je vis, Sylvia. Je n'ai jamais autant vécu.
+
+Elle n'a rien dit. Elle a continué à couper. Je le dis à qui veut l'entendre : on ne me prendra jamais vivant. Je sais comment ça va finir, va. Mais ce sera beau. Il faut toujours soigner la dernière scène. Coupe le magnéto.
 
 @yt SYJ2JDbjLF0 | Mesrine, L'Instinct de mort (2008), de Jean-François Richet, avec Vincent Cassel. Bande-annonce.
 
@@ -325,17 +636,43 @@ Mon père, Alberto, et mon oncle Vincenzo, c'étaient des hommes. Des vrais. Res
 
 J'étais belle. Je le savais, tout le monde me le disait, les garçons sifflaient sur mon passage et je ne me retournais pas. Ça les rendait fous. On m'appelait Pupetta, la petite poupée. En 1954, j'ai gagné un concours de beauté. Une robe blanche, une écharpe, des fleurs plein les bras, et toute la ville est venue me voir. Je me croyais Sophia Loren. Che bella giornata.
 
-À dix-neuf ans, j'ai épousé Pasquale Simonetti. Pascalone 'e Nola, le grand Pascal de Nola. Un colosse. Des épaules comme une porte, des mains comme des pelles, et un sourire, mamma mia, un sourire. Il fixait les prix des fruits et des légumes qui arrivaient de la campagne au grand marché de Naples. Les paysans vendaient au prix qu'il disait. Les marchands achetaient au prix qu'il disait. Ceux qui n'étaient pas d'accord ne vendaient plus rien. C'est comme ça que ça marche, le commerce. Notre témoin de mariage s'appelait Antonio Esposito. L'ami de Pasquale. Son associé. Son rival. Ce serpent.
+À dix-neuf ans, j'ai épousé Pasquale Simonetti. Pascalone 'e Nola, le grand Pascal de Nola. Un colosse. Des épaules comme une porte, des mains comme des pelles, et un sourire, mamma mia, un sourire. Il fixait les prix des fruits et des légumes qui arrivaient de la campagne au grand marché de Naples. Les paysans vendaient au prix qu'il disait. Les marchands achetaient au prix qu'il disait. Ceux qui n'étaient pas d'accord ne vendaient plus rien. C'est comme ça que ça marche, le commerce. Notre témoin de mariage s'appelait Antonio Esposito. L'ami de Pasquale. Son associé. Son rival. Ce serpent. Au banquet, il s'est levé, son verre à la main, devant deux cents invités.
+
+— À Pasquale et à Pupetta ! Cent ans de bonheur et beaucoup d'enfants !
+
+Il m'a embrassée sur les deux joues. Il sentait l'eau de Cologne et le tabac. Après, dans la cuisine, j'ai dit à Pasquale :
+
+— Cet homme ne t'aime pas.
+
+— Antonio ? C'est mon frère.
+
+— Les frères aussi se tuent, Pasquà. Lis la Bible.
+
+Il a ri et il m'a soulevée dans ses bras. Il riait de tout, mon Pasquale. Il avait tort.
 
 Mon mariage a duré à peine trois mois. Trois mois ! Un matin de juillet 1955, Pasquale a été abattu dans la rue, à Naples, comme un chien. J'étais enceinte. Et tout le monde savait qui avait donné l'ordre. Esposito. Le témoin de mon mariage, qui avait trinqué à notre bonheur, qui avait mangé à notre table. Ce bâtard voulait le marché pour lui seul. La police ? Elle n'a rien fait. Elle n'allait rien faire. Les carabiniers ont pris des notes et sont rentrés déjeuner. Chez nous, dans les familles comme la mienne, on n'attend pas les juges. On lave le sang soi-même.
 
-En octobre 1955, je suis allée en ville. Je portais encore le noir. Mon ventre était lourd. J'ai trouvé Esposito dans la rue. Il m'a vue. Il a compris. J'ai sorti le pistolet de mon sac, et j'ai tiré. Plusieurs fois. Je ne tremblais pas. Je pensais à Pasquale, à son sourire. Après, je n'ai pas couru.
+En octobre 1955, je suis allée en ville. Je portais encore le noir. Mon ventre était lourd. J'ai trouvé Esposito dans la rue. Il m'a vue. Il a compris.
+
+— Pupetta... Qu'est-ce que tu fais là ? Rentre chez toi, dans ton état...
+
+— Mon état, c'est toi qui l'as fait, Antò. Veuve à vingt ans.
+
+Il a voulu dire autre chose. J'ai sorti le pistolet de mon sac, et j'ai tiré. Plusieurs fois. Je ne tremblais pas. Je pensais à Pasquale, à son sourire. Après, je n'ai pas couru.
 
 Le procès, mon chéri, c'était l'opéra. La salle pleine à craquer, des femmes en larmes qui criaient mon nom, des photographes qui se battaient pour une image, des chanteurs qui écrivaient des chansons sur moi. Le juge m'a demandé si je regrettais. J'ai dit que je referais la même chose. Les femmes ont applaudi. Mon fils est né en prison. Je l'ai appelé Pasquale, comme son père. Pasqualino. Je le serrais contre moi dans la cellule, et je lui racontais son père, pour qu'il sache de quel sang il était fait.
 
 Ils m'ont donné une longue peine, réduite en appel à treize ans. Francesco Rosi, le grand cinéaste, a tourné un film inspiré de mon histoire, La Sfida. Et quand je suis sortie, j'ai joué moi-même dans un film, comme une vraie actrice. Toute l'Italie me connaissait. La reine de beauté qui avait vengé son mari. Je ne dis pas que ça me déplaisait.
 
-Ensuite, Umberto Ammaturo. Il était dans les affaires, les vraies. La contrebande, la drogue. Je l'ai épousé, on a eu des jumeaux. Mais Pasqualino, mon grand, il ne pouvait pas le sentir. Il le disait, il le criait dans la maison, il le menaçait. Il avait le sang de son père, ce petit. En 1974, il avait dix-neuf ans. Un jour, il est sorti de la maison. Il n'est jamais revenu. On n'a jamais retrouvé son corps. Jamais. Pas une tombe pour poser une fleur. Tu sais ce que c'est, pour une mère napolitaine, de ne pas avoir de tombe ? Je sais que c'était un message. Dans notre monde, la vengeance ne s'arrête jamais. Elle change seulement d'adresse.
+Ensuite, Umberto Ammaturo. Il était dans les affaires, les vraies. La contrebande, la drogue. Je l'ai épousé, on a eu des jumeaux. Mais Pasqualino, mon grand, il ne pouvait pas le sentir. Il le disait, il le criait dans la maison, il le menaçait. Un soir, à table, il a jeté sa fourchette.
+
+— Cet homme n'est pas mon père, et il ne le sera jamais !
+
+— Pasqualì, assieds-toi. Mange.
+
+— Tu as vengé mon père, maman. Et maintenant tu dors avec un homme comme ceux qui l'ont tué.
+
+Je l'ai giflé. C'est la seule fois de ma vie. Il est sorti en claquant la porte. Il est revenu le lendemain, il m'a embrassée sur le front sans un mot. C'était mon fils. Il avait le sang de son père, ce petit. En 1974, il avait dix-neuf ans. Un jour, il est sorti de la maison. Il n'est jamais revenu. On n'a jamais retrouvé son corps. Jamais. Pas une tombe pour poser une fleur. Tu sais ce que c'est, pour une mère napolitaine, de ne pas avoir de tombe ? Je sais que c'était un message. Dans notre monde, la vengeance ne s'arrête jamais. Elle change seulement d'adresse.
 
 Au début des années quatre-vingt, Raffaele Cutolo, le chef de la Nouvelle Camorra organisée, faisait la guerre à tout Naples depuis sa cellule. Des morts tous les jours, dans les rues, dans les bars, dans les voitures. Ce petit professeur de mes deux se prenait pour l'empereur. Il menaçait ma famille. En février 1982, j'ai convoqué les journalistes. Devant les caméras, je l'ai défié. J'ai dit que si tous ceux qui étaient contre lui formaient une famille, alors j'en étais. Qu'il vienne. Les hommes n'ont jamais compris une chose : ils ont peur de mourir. Une femme qui a déjà tout perdu, elle, n'a plus peur de rien.
 
@@ -359,17 +696,47 @@ Un oncle m'a pris chez lui, à Kobe, de l'autre côté de la mer intérieure. Po
 
 Je traînais sur les quais. Les hommes du Yamaguchi-gumi m'ont remarqué. La famille Yamaguchi tenait une partie du port. Elle fournissait les dockers aux compagnies maritimes. Elle organisait les combats de sumo et les spectacles de rue. Elle tenait les tripots. Son chef, Noboru Yamaguchi, aimait les garçons sans peur. On m'a appelé Kuma. L'Ours. À cause de ma façon de me battre : droit sur l'adversaire, sans reculer, et je visais les yeux. Pour la première fois, quelqu'un me donnait une place. Une famille. Un père. Ce n'était pas le mien. C'était mieux. Celui-là, je l'avais choisi.
 
+Le jour où Noboru Yamaguchi m'a fait venir, il était assis en tailleur, très droit, devant un rouleau calligraphié. Il ne m'a pas invité à m'asseoir tout de suite.
+
+— On me dit que tu te bats comme un ours.
+
+— Je me bats comme je peux, oyabun.
+
+— Un ours, ça ne recule pas. Mais ça ne réfléchit pas non plus. Ici, je te demanderai les deux. Avancer quand je te le dis. Attendre quand je te le dis.
+
+— Oui.
+
+— Et si je te demande de mourir ?
+
+— Je vous demanderai seulement où.
+
+Il a hoché la tête, une seule fois. Puis il a fait apporter le saké.
+
 Chez nous, quand on entre dans une famille, on échange des coupes de saké avec le chef. On devient son enfant. On lui doit tout. L'obéissance. La loyauté. La vie, si nécessaire. Lui doit la protection. C'est simple. Les Occidentaux trouvent cela barbare. Ils ont des contrats de cent pages et ils se trahissent quand même. Nous avons une coupe de saké.
 
 En 1937, j'ai tué un homme d'une bande rivale. On m'a jugé. Prison. Je n'ai rien dit. Je n'ai donné personne. Pas un nom. Les années de cellule, je les ai passées assis droit, en silence. Le silence est une forme de parole. Dehors, la famille l'a entendu. Pendant ce temps, le Japon est entré en guerre contre la Chine, puis contre l'Amérique. Quand je suis sorti, le pays entier était tendu vers une victoire qui ne viendrait pas.
 
 En 1945, Kobe n'était plus qu'un champ de cendres. Le Japon avait perdu. Les Américains occupaient le pays. Plus de riz. Plus d'État. Plus de police qui tienne. Le marché noir partout. Des bandes de toutes sortes se battaient sur les ruines. Dans ce chaos, seuls ceux qui avaient des hommes et de la discipline pouvaient mettre de l'ordre. Nous avions les deux. En 1946, le chef de notre famille était mort. On m'a choisi. Trente-trois ans. Troisième oyabun du Yamaguchi-gumi. Nous étions quelques dizaines. Je n'ai pas fait de discours. J'ai donné des ordres.
 
-On me traite de voyou. Je n'aime pas ce mot. J'ai bâti des entreprises. Une compagnie de chargement des navires. Des chantiers. Une agence de spectacles, à Kobe, qui organisait les tournées des plus grands chanteurs du pays, dont Hibari Misora, la voix que tout le Japon aimait. Je porte un costume sombre et des lunettes. Je règle les conflits du port. Je fournis des hommes aux employeurs. Je garde la paix dans les rues. À ma façon. La police garde la paix pour l'État. Moi, je la garde pour ceux qui paient. Il n'y a pas tant de différence.
+On me traite de voyou. Je n'aime pas ce mot. J'ai bâti des entreprises. Une compagnie de chargement des navires. Des chantiers. Une agence de spectacles, à Kobe, qui organisait les tournées des plus grands chanteurs du pays, dont Hibari Misora, la voix que tout le Japon aimait. Je l'ai connue enfant, une petite fille de Yokohama qui chantait comme une femme qui a déjà tout perdu. Un soir, après un concert, elle est venue me voir dans les coulisses, encore maquillée.
+
+— Les journaux disent que vous êtes un homme dangereux, Taoka-san. Ils disent que je ne devrais pas travailler avec vous.
+
+— Les journaux ont raison.
+
+— Alors pourquoi est-ce que je n'ai pas peur ?
+
+— Parce que personne, dans ce pays, ne te fera de mal tant que je serai là. C'est cela, être dangereux. Va chanter. Le reste n'est pas ton affaire.
+
+Elle a chanté. Toute sa vie. Je porte un costume sombre et des lunettes. Je règle les conflits du port. Je fournis des hommes aux employeurs. Je garde la paix dans les rues. À ma façon. La police garde la paix pour l'État. Moi, je la garde pour ceux qui paient. Il n'y a pas tant de différence.
 
 Nous avons grandi. Ville après ville. Région après région. Des centaines de groupes. Dans chaque ville, il a fallu choisir : nous rejoindre, ou disparaître. Beaucoup ont choisi. Certains ont mal choisi. Nos guerres ont fait des morts. La police a lancé contre nous de grandes opérations. Les journaux m'appelaient l'empereur de l'ombre. Les journaux exagèrent. Je ne me cachais pas. Mon nom était sur la porte de mes bureaux. Ma photo était sur les murs de ceux qui me devaient obéissance. Un homme qui se cache avoue qu'il a peur. Je n'avais rien à avouer.
 
-En juillet 1978, dans une boîte de nuit de Kyoto, un homme d'une famille rivale m'a tiré une balle dans le cou. J'ai survécu. Quelques semaines plus tard, le tireur a été retrouvé mort dans la montagne, au-dessus de Kobe. Je ne m'en suis pas occupé. Je n'ai pas eu besoin. Mes enfants s'en sont occupés. C'est à cela qu'on reconnaît une famille.
+En juillet 1978, dans une boîte de nuit de Kyoto, un homme d'une famille rivale m'a tiré une balle dans le cou. J'ai survécu. Quelques semaines plus tard, le tireur a été retrouvé mort dans la montagne, au-dessus de Kobe. À l'hôpital, mon second, Kenichi Yamamoto, est venu s'agenouiller au pied du lit. Yamaken. Mon fils le plus fidèle.
+
+— Oyabun. Donnez-moi un mot.
+
+Je n'ai rien dit. J'avais la gorge bandée. Mais même sans bandage, je n'aurais rien dit. Il est reparti. Je ne m'en suis pas occupé. Je n'ai pas eu besoin. Mes enfants s'en sont occupés. C'est à cela qu'on reconnaît une famille.
 
 @img https://commons.wikimedia.org/wiki/Special:FilePath/Port_of_Kobe02s4100.jpg?width=1280 | Le port de Kobe aujourd'hui. C'est sur ces quais que le Yamaguchi-gumi a bâti sa puissance, en fournissant les dockers aux compagnies maritimes. | Wikimedia Commons
 
@@ -385,13 +752,33 @@ Mon père avait un petit bout de terre, avec un grand neem. Tu connais le neem ?
 
 Peu après, mes parents m'ont mariée à un homme beaucoup plus vieux que moi, dans un autre village. J'avais onze ans. Ce qu'il m'a fait, je ne l'écrirai pas. Ne me le demande pas. Je me suis enfuie. On m'a ramenée. Je me suis enfuie encore, et je suis rentrée chez mes parents. Une fille qui revient chez ses parents, au village, c'est une honte. Les vieilles crachaient par terre quand je passais. Mauvaise fille. Fille perdue. Mayadin m'a accusée de vol, et la police m'a jetée dans une cellule pendant quelques jours. La police, la justice, les anciens du village, les dieux : tous du même côté. Pas du mien. Alors j'ai compris. Pour une fille comme moi, il n'y a pas de justice. Il faut en fabriquer une.
 
-En 1979, des dacoïts m'ont enlevée. Des bandits. Qui leur avait demandé ? Je ne le sais toujours pas. Je peux deviner. Ils m'ont emmenée dans les ravins de la Chambal. Imagine un labyrinthe de terre rouge, des milliers de ravins creusés par les pluies, des falaises, des buissons d'épines, des sentiers que seuls les bergers et les bandits connaissent. La police n'y entre pas. Ou elle n'en ressort pas. Le chef de la bande voulait me faire du mal. Un autre bandit, Vikram, un mallah comme moi, l'a tué pour me protéger. Vikram est devenu mon homme. Il m'a appris à tirer. La première fois que j'ai tenu un fusil, j'ai senti quelque chose que je n'avais jamais senti de ma vie. Le poids. Le pouvoir. Les hommes baissaient les yeux devant moi. Les hommes ! Devant moi ! On allait punir tous ceux qui avaient fait du mal. J'ai retrouvé mon ancien mari, ce porc. Je lui ai fait payer. Je ne dirai pas comment. Il s'en souvient.
+En 1979, des dacoïts m'ont enlevée. Des bandits. Qui leur avait demandé ? Je ne le sais toujours pas. Je peux deviner. Ils m'ont emmenée dans les ravins de la Chambal. Imagine un labyrinthe de terre rouge, des milliers de ravins creusés par les pluies, des falaises, des buissons d'épines, des sentiers que seuls les bergers et les bandits connaissent. La police n'y entre pas. Ou elle n'en ressort pas. Le chef de la bande voulait me faire du mal. Un autre bandit, Vikram, un mallah comme moi, l'a tué pour me protéger. Vikram est devenu mon homme. Il m'a appris à tirer. Un matin, dans un ravin, il a posé le fusil dans mes mains.
+
+— Tiens-le contre ton épaule. Pas comme un bâton. Comme si c'était ton bras.
+
+— Il est lourd.
+
+— Tout ce qui compte est lourd, Phoolan. Respire. Vise la cruche, là-bas, sur le rocher.
+
+J'ai tiré. La cruche a volé en morceaux. J'ai éclaté de rire, et lui aussi.
+
+— Maintenant, plus personne ne te touchera sans ta permission. La première fois que j'ai tenu un fusil, j'ai senti quelque chose que je n'avais jamais senti de ma vie. Le poids. Le pouvoir. Les hommes baissaient les yeux devant moi. Les hommes ! Devant moi ! On allait punir tous ceux qui avaient fait du mal. J'ai retrouvé mon ancien mari, ce porc. Je lui ai fait payer. Je ne dirai pas comment. Il s'en souvient.
 
 Dans la bande, il y avait des thakurs, de la caste des propriétaires. Deux frères, Shri Ram et Lala Ram, sortis de prison. Ces salauds ne supportaient pas qu'un mallah commande des hommes de leur caste. Ils ont tué Vikram. Ils m'ont emmenée dans un village, Behmai, et ils m'y ont gardée prisonnière pendant des semaines. Ce qu'ils m'ont fait là, je ne l'écrirai pas non plus. Le village a regardé. Les hommes ont regardé. Personne n'a bougé un doigt. Personne. Je vois encore leurs visages. Chaque nuit, je les vois. Je me suis échappée, avec l'aide d'un homme de bien et d'anciens compagnons de Vikram. J'ai formé ma propre bande. Des mallahs, des hommes de rien, comme moi.
 
 Le 14 février 1981, nous sommes revenus à Behmai.
 
-Après Behmai, toute l'Inde a parlé de moi. La reine des bandits, qu'ils m'appelaient. Pour les journaux, j'étais un monstre ou une déesse, jamais une femme. Les pauvres m'aimaient. Les puissants voulaient ma tête. Des milliers de policiers fouillaient les ravins. Mes hommes tombaient un à un. J'étais malade, épuisée, chassée comme une bête. Alors j'ai décidé de me rendre. Mais pas à genoux. Debout. À mes conditions. Pas de peine de mort. Pas de corde pour mes hommes. Un bout de terre pour ma famille, un travail pour mon frère. Et pas à la police de l'Uttar Pradesh, ces chiens. Au gouvernement du Madhya Pradesh.
+Après Behmai, toute l'Inde a parlé de moi. La reine des bandits, qu'ils m'appelaient. Pour les journaux, j'étais un monstre ou une déesse, jamais une femme. Les pauvres m'aimaient. Les puissants voulaient ma tête. Des milliers de policiers fouillaient les ravins. Mes hommes tombaient un à un. J'étais malade, épuisée, chassée comme une bête. Alors j'ai décidé de me rendre. Mais pas à genoux. Debout. Un policier du Madhya Pradesh, le chef de la police de Bhind, Rajendra Chaturvedi, est venu dans les ravins. Seul, ou presque. Sans uniforme. Il a mis des mois à gagner ma confiance. La première fois, je l'ai fait attendre une journée entière sous le soleil, avec un fusil pointé sur lui.
+
+— Pourquoi est-ce que je te croirais ? Les policiers de l'Uttar Pradesh veulent me tuer, pas me juger.
+
+— Je ne suis pas de l'Uttar Pradesh. Et je suis venu sans arme.
+
+— Un homme sans arme, chez moi, c'est un homme mort.
+
+— Ou un homme qui a confiance. Choisis.
+
+Je n'ai pas tiré. Nous avons parlé. Plusieurs fois. À mes conditions. Pas de peine de mort. Pas de corde pour mes hommes. Un bout de terre pour ma famille, un travail pour mon frère. Et pas à la police de l'Uttar Pradesh, ces chiens. Au gouvernement du Madhya Pradesh.
 
 En février 1983, à Bhind, devant des milliers de gens venus me voir comme on vient voir une procession, j'ai déposé mon fusil devant les portraits de Gandhi et de la déesse Durga. Je portais un bandeau rouge sur le front. J'avais dix-neuf ans. Je n'ai pas baissé les yeux. Pas une seconde.
 
@@ -419,9 +806,29 @@ Très jeune, j'ai épousé Carlos Trujillo. Un petit faussaire, qui fabriquait d
 
 Les gringos voulaient de la cocaïne. Ils avaient l'argent. Moi, j'avais une idée. J'ai fait fabriquer à Medellín des soutiens-gorge, des gaines, des corsets avec des poches cachées. Des jeunes femmes les portaient sous leurs vêtements et prenaient l'avion. Les douaniers ne regardent pas les femmes. Ou ils regardent ailleurs, et toujours au mauvais endroit. Les hommes sont faciles, mijo. Prévisibles. Nous étions parmi les premiers à faire passer la poudre en si grosses quantités. Dans le milieu, on m'appelait la Madrina. La Marraine.
 
-En 1975, la police de New York a démantelé une partie de mon réseau. Des dizaines d'inculpés. Moi aussi, sur le papier. Mais j'étais déjà partie. Retour en Colombie. Alberto et moi, on a eu une dispute d'argent, à Bogotá. Lui n'en est pas reparti vivant. Moi, si. Ne me regarde pas comme ça. Il savait avec qui il était marié.
+En 1975, la police de New York a démantelé une partie de mon réseau. Des dizaines d'inculpés. Moi aussi, sur le papier. Mais j'étais déjà partie. Retour en Colombie. Alberto et moi, on a eu une dispute d'argent, à Bogotá. Des millions qui manquaient. Il m'a donné rendez-vous sur un parking, la nuit.
+
+— Griselda, cet argent, je l'ai pas. Il est parti dans les frais.
+
+— Les frais. Tu me parles comme à une cliente, Alberto ?
+
+— Je te parle comme à ma femme.
+
+— Justement. Ta femme sait compter.
+
+Lui n'en est pas reparti vivant. Moi, si. Ne me regarde pas comme ça. Il savait avec qui il était marié.
 
 À la fin des années soixante-dix, je me suis installée à Miami. La coke arrivait par avions entiers, par bateaux de pêche, par valises. Des dizaines de bandes se disputaient la ville, et les billets s'entassaient dans les banques comme des feuilles mortes. Je n'avais aucune intention de partager. Partager, c'est pour les pauvres et pour les curés. Mes hommes tiraient en plein jour. Dans la rue. Sur les parkings. Dans les centres commerciaux. Et les motos, c'est moi. Un tueur assis derrière, qui tire, et la moto qui disparaît dans la circulation avant que quelqu'un ait crié. Simple. Propre. Pas cher. On m'appelait la Veuve noire, parce que mes maris ne vivaient pas vieux. Ce n'est pas faux.
+
+Mon tueur le plus fidèle s'appelait Jorge Ayala. Rivi. Un garçon qui ne posait jamais de questions. Un jour, je lui ai demandé :
+
+— Rivi, si un jour la police te prend, tu parles ?
+
+— Jamais, Madrina. Je mourrai avant.
+
+— Bien. Parce que si tu parles, c'est moi qui m'occuperai de mourir à ta place. De ta mère, de tes sœurs.
+
+Il a souri. Il a toujours souri quand j'étais gentille avec lui. Plus tard, en prison, il a parlé. Tout. Pendant des jours. On apprend toujours trop tard qui t'aime et qui te craint. Les deux ne tiennent pas pareil.
 
 Mon plus jeune fils, je l'ai appelé Michael Corleone, comme dans Le Parrain. J'ai vu les films je ne sais combien de fois. Tout le monde pleure à la fin. Moi, je les trouve trop doux. Don Vito parle trop. Michael hésite trop. Moi, je n'hésitais pas.
 

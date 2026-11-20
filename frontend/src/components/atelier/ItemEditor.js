@@ -8,6 +8,12 @@ import { TaskRow, TaskQuickAdd } from "@/components/atelier/TasksView";
 import MediaGallery from "@/components/atelier/MediaGallery";
 import DocView from "@/components/atelier/DocView";
 import DocEdit from "@/components/atelier/DocEdit";
+import Mentions from "@/components/atelier/Mentions";
+import { REL, relOf, guessRel, withLink, syncMentions } from "@/lib/network";
+import { IoCloudUploadOutline as IoPublish } from "react-icons/io5";
+import { askPublish } from "@/components/atelier/StationLink";
+import { liveTag } from "@/lib/publish";
+import { canPublish } from "@/components/atelier/itemActions";
 import DocStylePanel from "@/components/atelier/DocStylePanel";
 import { styleOf, styleVars, DOC_CSS, DOC_FORMATS, docFonts } from "@/lib/docStyles";
 import "@/components/atelier/docs.css";
@@ -42,9 +48,13 @@ function Versions({ id, onRestore, onClose }) {
   );
 }
 
+// Brouillons gardés en mémoire pendant la session : si l'éditeur se recharge pendant qu'une sauvegarde est en route,
+// on repart de ce que tu viens d'écrire, pas de l'ancienne version du serveur (le texte effacé ne revient plus).
+const DRAFTS = new Map();
+
 export default function ItemEditor({ at, id, open, onClose }) {
   const src = at.items.find((i) => i.id === id);
-  const [it, setIt] = useState(src);
+  const [it, setIt] = useState(() => { const d = DRAFTS.get(id); return d && src && (!src.updated_at || d.t > Date.parse(src.updated_at)) ? { ...src, ...d.patch } : src; });
   const [status, setStatus] = useState("saved");
   const [rev, setRev] = useState(0);
   const [panel, setPanel] = useState(null);
@@ -67,6 +77,7 @@ export default function ItemEditor({ at, id, open, onClose }) {
   const [wide, setWide] = useState(() => { try { return localStorage.getItem("nx-doc-wide") === "1"; } catch (_) { return false; } });
   const toggleWide = () => setWide((v) => { const nv = !v; try { localStorage.setItem("nx-doc-wide", nv ? "1" : "0"); } catch (_) {} return nv; });
   const change = (patch) => {
+    DRAFTS.set(id, { t: Date.now(), patch: { ...(DRAFTS.get(id)?.patch || {}), ...patch } });
     setIt((x) => ({ ...x, ...patch })); setStatus("dirty");
     clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
@@ -80,6 +91,9 @@ export default function ItemEditor({ at, id, open, onClose }) {
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   });
   if (!it) return null;
+  // un texte modifié : ses @mentions deviennent des liens (réseau narratif)
+  const withMentions = (html) => { const n = syncMentions(latest.current || it, html); return { content: html, links: n.links, fields: n.fields }; };
+  const setRel = (lid, rel) => change({ fields: { ...(it.fields || {}), rel: { ...(it.fields?.rel || {}), [lid]: rel } } });
 
   const close = async () => { await flush(); onClose(); };
   const goTo = async (lid) => { await flush(); onClose(); setTimeout(() => open(lid), 0); };
@@ -116,6 +130,7 @@ export default function ItemEditor({ at, id, open, onClose }) {
 
   return (
     <div className="at-editor" data-testid="atelier-editor" onDragOver={(e) => e.preventDefault()} onDrop={onDrop} style={{ "--u": at.universes.find((u) => u.id === it.universe_id)?.color || "var(--brand)" }}>
+      <Mentions at={at} scope={it.universe_id} selfId={it.id} onOpen={goTo} />
       <div className="at-ed-bar">
         <button className="at-btn ghost" onClick={close} data-testid="atelier-editor-close"><IoArrowBack size={16} /> <span className="hide-sm">Retour</span></button>
         <select value={it.kind} onChange={(e) => change({ kind: e.target.value })} data-testid="atelier-editor-kind">{Object.entries(KINDS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select>
@@ -123,11 +138,13 @@ export default function ItemEditor({ at, id, open, onClose }) {
           <option value="">Inbox (sans univers)</option>{at.universes.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
         </select>
         <span className={"at-status mono s-" + status} data-testid="atelier-editor-status">{statusLabel}</span>
+        {liveTag(it) && <span className="at-status mono st-live" title="Ce document est en ligne sur la station">● EN LIGNE · {liveTag(it)}</span>}
         <span className="grow" />
         <button className="at-icon" onClick={() => change({ pinned: !it.pinned })} title="Épingler" data-testid="atelier-editor-pin">{it.pinned ? <IoPin size={17} /> : <IoPinOutline size={17} />}</button>
         <button className="at-icon" onClick={() => setPanel(panel === "versions" ? null : "versions")} title="Versions" data-testid="atelier-editor-versions"><IoTimeOutline size={17} /></button>
         <button className="at-icon" onClick={() => setPanel(panel === "style" ? null : "style")} title="Mise en forme" data-testid="atelier-editor-style"><IoColorPaletteOutline size={17} /></button>
         <button className="at-icon" onClick={async () => { await flush(); setPanel("view"); }} title="Visualiser" data-testid="atelier-editor-view"><IoEyeOutline size={17} /></button>
+        {canPublish(it) && <button className="at-icon" onClick={async () => { await flush(); askPublish(it.id); }} title={liveTag(it) ? "Republier sur la station" : "Publier sur la station"} data-testid="atelier-editor-publish"><IoPublish size={17} /></button>}
         <button className="at-icon" onClick={() => printItem(it, uname)} title="Exporter en PDF" data-testid="atelier-editor-pdf"><IoPrintOutline size={17} /></button>
         <button className="at-icon txt" onClick={async () => { await flush(); try { await atelierApi.downloadDocx(it.id, it.title); } catch { toast.error("Export Word impossible"); } }} title="Exporter en Word (.docx)" data-testid="atelier-editor-docx">W</button>
         <button className="at-icon danger" onClick={remove} title="Supprimer" data-testid="atelier-editor-delete"><IoTrashOutline size={17} /></button>
@@ -143,8 +160,8 @@ export default function ItemEditor({ at, id, open, onClose }) {
             <button className={"at-ed-wide" + (wide ? " on" : "")} onClick={toggleWide} data-testid="atelier-format-wide" title={wide ? "Largeur page" : "Pleine largeur"}>{wide ? "Pleine largeur" : "Page"}</button>
           </div>
           {fmt === "flow"
-            ? <RichTextEditor key={it.id + ":" + rev} value={it.content} onChange={(html) => change({ content: html })} page eyebrow={`${KINDS[it.kind]?.kanji} ${KINDS[it.kind]?.label.toUpperCase()}${uname ? ` · ${uname.toUpperCase()}` : " · INBOX"}`} title={it.title} onTitle={(t) => change({ title: t })} placeholder="Écris, colle depuis Google Docs, développe ton idée…" />
-            : <DocEdit key={it.id + ":" + rev + ":" + fmt} value={it.content} onChange={(html) => change({ content: html })} format={fmt} styleKey={it.fields?.doc?.style} eyebrow={`${KINDS[it.kind]?.label || ""}${uname ? " · " + uname : ""}`} title={it.title} onTitle={(t) => change({ title: t })} image={it.image} />}
+            ? <RichTextEditor key={it.id + ":" + rev} value={it.content} onChange={(html) => change(withMentions(html))} page eyebrow={`${KINDS[it.kind]?.kanji} ${KINDS[it.kind]?.label.toUpperCase()}${uname ? ` · ${uname.toUpperCase()}` : " · INBOX"}`} title={it.title} onTitle={(t) => change({ title: t })} placeholder="Écris, colle depuis Google Docs, développe ton idée…" />
+            : <DocEdit key={it.id + ":" + rev + ":" + fmt} value={it.content} onChange={(html) => change(withMentions(html))} format={fmt} styleKey={it.fields?.doc?.style} eyebrow={`${KINDS[it.kind]?.label || ""}${uname ? " · " + uname : ""}`} title={it.title} onTitle={(t) => change({ title: t })} image={it.image} />}
         </article>
 
         <aside className="at-ed-side">
@@ -183,11 +200,11 @@ export default function ItemEditor({ at, id, open, onClose }) {
             <div className="at-chips">
             </div>
             <ul className="ar-links">
-              {links.map((l) => <li key={l.id}><button className="ar-row" onClick={() => goTo(l.id)}><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>{KINDS[l.kind]?.label}</small><i aria-hidden="true">↗</i></button><button className="ar-x" onClick={() => change({ links: it.links.filter((x) => x !== l.id) })} aria-label={`Retirer le lien vers ${l.title || "Sans titre"}`}><IoClose size={12} /></button></li>)}
-              {backlinks.map((l) => <li key={l.id} className="back"><button className="ar-row" onClick={() => goTo(l.id)} title="Relié depuis cet élément"><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>↩ RENVOI</small><i aria-hidden="true">↗</i></button></li>)}
+              {links.map((l) => <li key={l.id}><select className="ar-rel mono" value={relOf(it, l.id)} onChange={(e) => setRel(l.id, e.target.value)} title="Nature du lien" data-testid={`atelier-rel-${l.id}`}>{Object.entries(REL).map(([k, v]) => <option key={k} value={k}>{v.t}</option>)}</select><button className="ar-row" onClick={() => goTo(l.id)}><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>{KINDS[l.kind]?.label}</small><i aria-hidden="true">↗</i></button><button className="ar-x" onClick={() => change({ links: it.links.filter((x) => x !== l.id) })} aria-label={`Retirer le lien vers ${l.title || "Sans titre"}`}><IoClose size={12} /></button></li>)}
+              {backlinks.map((l) => <li key={l.id} className="back"><button className="ar-row" onClick={() => goTo(l.id)} title="Relié depuis cet élément"><span className="mono">{codes[l.id]}</span><b>{l.title || "Sans titre"}</b><small>↩ {(REL[relOf(l, it.id)]?.back || "lié à").toUpperCase()}</small><i aria-hidden="true">↗</i></button></li>)}
             </ul>
             {others.length > 0 && (
-              <select value="" onChange={(e) => e.target.value && change({ links: [...(it.links || []), e.target.value] })} data-testid="atelier-editor-link-add">
+              <select value="" onChange={(e) => { const o = at.items.find((x) => x.id === e.target.value); if (o) { const n = withLink(it, o.id, guessRel(it, o)); change({ links: n.links, fields: n.fields }); } }} data-testid="atelier-editor-link-add">
                 <option value="">+ Relier un élément…</option>
                 {others.map((o) => <option key={o.id} value={o.id}>{KINDS[o.kind]?.label} · {o.title || "Sans titre"}</option>)}
               </select>

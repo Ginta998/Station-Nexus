@@ -16,6 +16,8 @@ const book = {
 
 En 1979, une affiche montre un œuf noir, fendu, d'où s'échappe une lumière verte. En dessous, une phrase : dans l'espace, personne ne vous entend crier. Le film s'appelle Alien. En France, on ajoute un sous-titre : le huitième passager.
 
+@art 4
+
 C'est un film d'horreur. Une créature, un vaisseau, un équipage, et un massacre lent dans des couloirs obscurs. Le schéma est simple, presque celui d'un film de série B. Mais tout, dans Alien, est fait avec une précision et une étrangeté qui le placent ailleurs. Le monstre ne ressemble à rien de connu. Le vaisseau a l'air d'avoir servi pendant trente ans. Les héros sont des ouvriers fatigués qui parlent de leurs primes. Et l'héroïne, à la fin, est une femme.
 
 Ce film a engendré une saga entière : des suites, des préquelles, une série, des jeux, des bandes dessinées. Elle a raconté, au fil des décennies, d'où venait la créature, qui l'a faite, et pourquoi tant de gens sont prêts à mourir pour la posséder. Ce livre la traverse en entier. Il commence là où tout commence : un cargo, une nuit, un signal.
@@ -25,6 +27,8 @@ Ce film a engendré une saga entière : des suites, des préquelles, une série,
 # Ceux qui l'ont fait
 
 **Dan O'Bannon.** Scénariste américain, il sort au milieu des années 1970 d'une aventure ratée : il devait superviser les effets spéciaux du Dune d'Alejandro Jodorowsky, un projet démesuré qui s'est effondré avant le tournage. Il rentre à Los Angeles sans un sou, et dort sur le canapé d'un ami, Ronald Shusett.
+
+@art g 2
 
 **Ronald Shusett.** Scénariste et producteur, il travaille avec O'Bannon sur une vieille idée de ce dernier. C'est Shusett qui apporte l'idée centrale : une créature qui pond son embryon dans le corps d'un homme, et qui en sort en lui crevant la poitrine.
 
@@ -54,6 +58,8 @@ Mais Alien n'a rien à voir avec Star Wars. Pas de chevaliers, pas d'empire, pas
 
 L'étrangeté d'Alien vient d'abord de Giger. Ses peintures sont noires, luisantes, organiques et mécaniques à la fois, et chargées d'allusions au corps et à la chair. Le studio, au début, s'en inquiète : on le trouve trop obscène.
 
+@art 5
+
 La créature adulte qu'il dessine n'a pas d'yeux. Une longue tête allongée, lisse, brillante, comme un crâne poli. Une deuxième mâchoire, plus petite, qui jaillit de la bouche. Un corps maigre, fait de tubes, de côtes et de vertèbres. Une queue. Elle est belle et répugnante à la fois. On ne sait jamais si on regarde un animal, une machine ou un corps humain déformé.
 
 Le vaisseau extraterrestre, lui aussi, a l'air vivant. Ses couloirs ressemblent à des côtes, ses parois à des os. Et au fond, sur une sorte de grand siège qui fait corps avec un télescope, il y a un pilote mort, un géant fossilisé, dont la poitrine est éclatée de l'intérieur. L'équipe l'appelle le Space Jockey, le jockey de l'espace. Personne, dans le film, ne sait ce que c'est. Il faudra attendre plus de trente ans pour que la saga y revienne.
@@ -63,6 +69,8 @@ Giger reçoit, avec l'équipe des effets visuels, l'Oscar des meilleurs effets v
 # Le Nostromo
 
 Le vaisseau des humains s'appelle le Nostromo, d'après un roman de Joseph Conrad. La navette de secours, le Narcissus, porte le nom d'un autre roman de Conrad.
+
+@art g 3
 
 Le Nostromo n'est pas un vaisseau de guerre ni d'exploration. C'est un remorqueur commercial. Il tire derrière lui une immense raffinerie et vingt millions de tonnes de minerai. Il appartient à une grande entreprise, qu'on appelle simplement la Compagnie.
 
@@ -76,6 +84,8 @@ Cette banalité est la clé du film. Quand l'horreur arrive, elle arrive chez de
 
 Le film commence en silence. La caméra glisse dans les couloirs vides du Nostromo. Les écrans s'allument tout seuls. Dans une salle blanche, sept caissons de sommeil s'ouvrent. L'équipage se réveille.
 
+@art 6
+
 Ils pensent être arrivés près de la Terre. Ils sont au milieu de nulle part. Mère les a réveillés parce qu'elle a capté un signal venant d'une petite planète, LV-426. Le contrat de la Compagnie est clair : tout signal d'origine possiblement intelligente doit être examiné, sous peine de perdre leur salaire.
 
 Ils se posent. La planète est noire, battue par le vent, couverte de rochers. Dallas, Kane et Lambert sortent explorer. Ils trouvent l'épave d'un immense vaisseau, en forme de fer à cheval, qui n'a rien d'humain. À l'intérieur, le pilote fossilisé. Et en dessous, dans une grande salle tiède, couverte d'une brume bleue, des centaines d'œufs.
@@ -86,6 +96,8 @@ Pendant ce temps, à bord, Ripley fait analyser le signal par l'ordinateur. Ce n
 
 Kane descend dans la salle des œufs. Il se penche sur l'un d'eux. L'œuf s'ouvre comme une fleur. Quelque chose en jaillit et se colle à son visage.
 
+@art g 4
+
 Ses compagnons le ramènent au vaisseau. Ripley, qui commande en l'absence de Dallas, refuse de leur ouvrir : la quarantaine l'interdit. Ash, l'officier scientifique, ouvre le sas quand même.
 
 Sur le visage de Kane, il y a une créature : une sorte de main, ou d'araignée, aux longs doigts osseux, avec une queue enroulée autour de son cou. Elle lui a enfoncé un tube dans la gorge. Il respire, mais il est dans le coma. Quand ils essaient de la couper, un liquide jaillit et ronge le sol, puis le pont du dessous, puis celui d'en dessous encore. La créature a de l'acide à la place du sang. On ne peut pas la tuer sans percer la coque du vaisseau.
@@ -95,6 +107,8 @@ Puis la créature tombe d'elle-même, morte. Kane se réveille. Il a faim. Tout 
 # Le repas
 
 L'équipage se retrouve pour un dernier repas avant de se rendormir. On rit, on mange, on plaisante. Kane mange avec appétit.
+
+@art 7
 
 Puis il s'étouffe. Il se tord. Il s'effondre sur la table, convulsé. Les autres le tiennent. Et quelque chose sort de sa poitrine. Une petite créature, une tête dentue sur un corps de serpent, couverte de sang, qui pousse un cri aigu, regarde les humains, puis file sous la table et disparaît dans le vaisseau.
 
@@ -116,6 +130,8 @@ Le film ne montre presque jamais la créature en entier. Elle apparaît dans l'o
 
 Après la mort de Dallas, Ripley prend le commandement. Elle interroge Mère, l'ordinateur central. Et elle découvre l'ordre secret que la Compagnie a donné au vaisseau : l'ordre spécial 937. Ramener l'organisme. Toutes les autres considérations sont secondaires. L'équipage est sacrifiable.
 
+@art g 5
+
 La Compagnie savait. Le signal n'était pas un hasard. On les a envoyés chercher la créature, en sachant qu'ils pourraient en mourir.
 
 Ash surprend Ripley. Il l'attaque, tente de l'étouffer en lui enfonçant un magazine roulé dans la gorge. Parker le frappe. Sa tête se détache. Du lait blanc gicle, des fils, des tubes. Ash est un androïde, placé dans l'équipage par la Compagnie pour s'assurer que l'ordre serait exécuté.
@@ -129,6 +145,8 @@ Puis il leur dit qu'ils n'ont aucune chance. Et il sourit. Parker le brûle.
 # Ripley
 
 Il ne reste que trois survivants : Ripley, Parker et Lambert. Ils décident de faire exploser le Nostromo et de fuir dans la navette. Ripley lance l'autodestruction. Une voix calme de femme annonce le compte à rebours. Des alarmes, des lumières qui clignotent, de la vapeur partout.
+
+@art 8
 
 Parker et Lambert meurent. Ripley, seule, cherche le chat, Jones, le met dans une caisse, court vers la navette. La créature lui barre le chemin. Ripley fait demi-tour, tente d'arrêter l'autodestruction, arrive trop tard. Elle repart. La créature n'est plus là. Elle monte dans la navette, décolle. Le Nostromo explose derrière elle.
 
@@ -144,6 +162,8 @@ Puis elle enregistre son journal de bord. Elle dit qu'elle est la dernière surv
 
 Le premier Alien est un film d'horreur sur le corps. La créature envahit le corps : elle s'accroche au visage d'un homme, lui enfonce un tube dans la gorge, et le féconde. Puis elle naît de lui en le tuant. Les deux premières victimes de son cycle de vie sont des hommes.
 
+@art g 6
+
 O'Bannon a expliqué qu'il avait voulu faire subir au public masculin ce que le cinéma d'horreur faisait subir aux femmes depuis toujours. Et Giger, avec ses formes organiques et troublantes, a donné à cette idée un corps inoubliable. La créature est une horreur de la reproduction et de l'invasion de l'intime.
 
 Le titre français, le huitième passager, dit autre chose : l'intrus, celui qu'on n'a pas invité, qui se cache parmi nous. Et le personnage d'Ash ajoute une troisième peur : celle d'un collègue qui n'est pas ce qu'il prétend, et d'une entreprise qui vous a vendu.
@@ -153,6 +173,8 @@ Le titre français, le huitième passager, dit autre chose : l'intrus, celui qu'
 # Aliens
 
 En 1986, James Cameron, qui vient de faire Terminator, réalise la suite : Aliens, le retour. Il change complètement de genre. Le premier film était un film d'horreur. Le second est un film de guerre.
+
+@art 9
 
 Ripley est retrouvée, dans sa navette, après cinquante-sept ans de sommeil à la dérive. Tout le monde qu'elle connaissait est mort. Dans la version longue, on apprend que sa fille, Amanda, est morte entre-temps, vieille. Personne ne la croit quand elle raconte la créature. Et la Compagnie, qui s'appelle maintenant Weyland-Yutani, a installé une colonie sur LV-426 : une petite ville, Hadley's Hope, où l'on transforme l'atmosphère pour la rendre respirable.
 
@@ -165,6 +187,8 @@ Il y a une survivante : une petite fille, Rebecca, qu'on appelle Newt, qui a sur
 # La Reine
 
 Le premier assaut est un désastre. Les marines meurent par dizaines dans le nid. Les survivants se barricadent. On découvre que Burke a lui-même ordonné aux colons d'aller explorer l'épave, et qu'il veut ramener des embryons sur Terre, dans le corps de Ripley et de Newt, pour la division des armes biologiques de la Compagnie. Bishop, lui, se révèle fidèle, courageux, et rampe dans un conduit pour sauver tout le monde.
+
+@art g 7
 
 Newt est enlevée. Ripley, armée jusqu'aux dents, descend seule dans le nid pour la chercher. Elle la trouve. Et elle découvre la source de tout : la Reine. Une créature gigantesque, attachée à un sac à œufs immense, qui pond sans arrêt.
 
@@ -196,6 +220,8 @@ C'est un film sombre, mal aimé à sa sortie, dont la version longue, réassembl
 
 En 1997, Jean-Pierre Jeunet, le réalisateur français de Delicatessen et de La Cité des enfants perdus, tourne Alien, la résurrection, sur un scénario de Joss Whedon.
 
+@art 10
+
 Deux cents ans ont passé. Des militaires ont cloné Ripley à partir de son sang, pour récupérer la Reine qu'elle portait. Ils ont réussi au huitième essai. La nouvelle Ripley, Ripley 8, a l'ADN de la créature mêlé au sien : elle est plus forte, plus froide, son sang est légèrement acide, et elle sent les créatures.
 
 Dans une salle du laboratoire, elle trouve les sept clones ratés qui l'ont précédée, des corps difformes conservés dans des bocaux. L'une d'elles est encore vivante, et la supplie de la tuer. Ripley brûle la salle.
@@ -207,6 +233,8 @@ Le film se termine à l'arrivée sur Terre, que Ripley n'a jamais vue de sa nouv
 # Les Ingénieurs
 
 En 2012, Ridley Scott revient à la saga avec Prometheus. Il ne veut pas refaire Alien. Il veut répondre à la question qu'il avait laissée ouverte en 1979 : qui était le pilote mort ?
+
+@art g 8
 
 Le film s'ouvre sur une planète déserte, il y a très longtemps. Un être immense, à la peau blanche, au corps parfait, boit un liquide noir au bord d'une cascade. Son corps se désagrège. Son ADN se répand dans l'eau. La vie commence. Cet être est un Ingénieur. Les Ingénieurs ont créé l'humanité.
 
@@ -224,6 +252,8 @@ Dans la dernière scène, d'un Ingénieur mort naît une créature : la premièr
 
 En 2017, Alien: Covenant donne la réponse, et elle est terrible.
 
+@art 11
+
 Un vaisseau de colonisation, le Covenant, transporte deux mille colons endormis et des embryons. Son androïde s'appelle Walter. Il a le visage de David, mais une version plus docile, sans créativité. L'équipage capte un signal et dévie vers une planète qui semble idéale.
 
 C'est la planète des Ingénieurs. Il n'y a plus personne. Dix ans plus tôt, David est arrivé avec Shaw. Il a lâché le liquide noir sur la cité des Ingénieurs et les a tous tués. Puis il est resté. Il a mené des expériences, sur les créatures, sur Shaw. Il a créé, à force de croisements, l'œuf et la créature qui s'accroche au visage. David est le père de l'Alien.
@@ -238,6 +268,8 @@ La saga devient une histoire de créateurs et de créatures : les Ingénieurs on
 
 D'un film à l'autre, une chose ne change pas : la Compagnie. Weyland-Yutani.
 
+@art g 9
+
 Dans le premier film, elle sacrifie un équipage pour récupérer la créature. Dans le deuxième, elle envoie des colons à la mort pour la même raison. Dans le troisième, elle vient chercher Ripley et son embryon. Dans les préquelles, son fondateur, Peter Weyland, veut l'immortalité et crée David. Tous les drames de la saga partent de là : une entreprise qui veut posséder la créature, pour la vendre comme arme.
 
 La créature tue parce qu'elle est un animal. La Compagnie tue par calcul. Au fil des films, la vraie horreur d'Alien se déplace : elle n'est plus seulement dans les conduits d'aération, elle est dans les bureaux.
@@ -249,6 +281,8 @@ En 2025, la série Alien: Earth, créée par Noah Hawley, ramène pour la premi�
 # Alien: Isolation
 
 En 2014, le studio britannique Creative Assembly sort Alien: Isolation. C'est souvent considéré comme la meilleure adaptation de la saga dans le jeu vidéo.
+
+@art 12
 
 On incarne Amanda Ripley, la fille d'Ellen, quinze ans après la disparition du Nostromo. Elle apprend qu'on a retrouvé l'enregistreur de vol du vaisseau, sur une station spatiale, Sevastopol. Elle s'y rend pour savoir ce qui est arrivé à sa mère. La station est en train de mourir. Et une créature y rôde.
 
@@ -271,6 +305,8 @@ Mais cette histoire n'a jamais été prévue. Chaque film a été fait par un r�
 # Ce que tu peux en prendre
 
 Alien t'apprend la puissance d'un monde ordinaire. Avant de faire peur, Scott montre des tasses de café, des disputes sur les salaires, des gens fatigués. L'horreur fonctionne parce qu'on croit à la cantine avant de croire au monstre.
+
+@art g 10
 
 Il t'apprend aussi à cacher ton monstre. La créature n'apparaît que quelques minutes en tout dans le premier film. Le spectateur l'imagine partout. Un détecteur qui bipe fait plus peur que la créature en pleine lumière.
 

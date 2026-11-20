@@ -27,5 +27,22 @@ import "@fontsource/vt323/latin-400.css";
 import "@fontsource/sora/latin-400.css"; import "@fontsource/sora/latin-600.css"; import "@fontsource/sora/latin-700.css";
 import "@fontsource/rajdhani/latin-400.css"; import "@fontsource/rajdhani/latin-600.css"; import "@fontsource/rajdhani/latin-700.css";
 
+
+// 0.25 · pour l'atelier des thèmes de monde
+import "@fontsource/special-elite/latin-400.css";
+import "@fontsource/courier-prime/latin-400.css"; import "@fontsource/courier-prime/latin-700.css";
+import "@fontsource/orbitron/latin-400.css"; import "@fontsource/orbitron/latin-700.css";
+import "@fontsource/oswald/latin-400.css"; import "@fontsource/oswald/latin-700.css";
+import "@fontsource/syne/latin-400.css"; import "@fontsource/syne/latin-700.css";
+import "@fontsource/teko/latin-400.css"; import "@fontsource/teko/latin-700.css";
+import "@fontsource/eb-garamond/latin-400.css"; import "@fontsource/eb-garamond/latin-700.css";
+import "@fontsource/im-fell-english/latin-400.css";
+import "@fontsource/dm-serif-display/latin-400.css";
+import "@fontsource/josefin-sans/latin-400.css"; import "@fontsource/josefin-sans/latin-700.css";
+import "@fontsource/silkscreen/latin-400.css"; import "@fontsource/silkscreen/latin-700.css";
+import "@fontsource/major-mono-display/latin-400.css";
+import "@fontsource/archivo-black/latin-400.css";
+import "@fontsource/audiowide/latin-400.css";
 export const LOCAL_FONTS = new Set(["Anton", "Azeret Mono", "Bebas Neue", "Bodoni Moda", "Cormorant Garamond", "Inter", "JetBrains Mono", "Manrope", "Outfit", "Playfair Display", "Spectral", "Work Sans",
-  "Unbounded", "Space Grotesk", "Shippori Mincho", "Press Start 2P", "Monoton", "Michroma", "Marcellus", "Cinzel", "Chakra Petch", "Zen Kaku Gothic New", "VT323", "Sora", "Rajdhani"]);
+  "Unbounded", "Space Grotesk", "Shippori Mincho", "Press Start 2P", "Monoton", "Michroma", "Marcellus", "Cinzel", "Chakra Petch", "Zen Kaku Gothic New", "VT323", "Sora", "Rajdhani",
+  "Special Elite", "Courier Prime", "Orbitron", "Oswald", "Syne", "Teko", "EB Garamond", "IM Fell English", "DM Serif Display", "Josefin Sans", "Silkscreen", "Major Mono Display", "Archivo Black", "Audiowide"]);

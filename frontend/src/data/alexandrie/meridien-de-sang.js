@@ -9,10 +9,13 @@ const book = {
     { label: "La Horde sauvage de Sam Peckinpah (1969)", note: "Des hommes de trop dans un monde qui se ferme, et la violence filmée sans excuse." },
     { label: "Les vidéos et essais sur le juge", note: "Cherche les lectures gnostiques du roman. Elles ne sont pas les seules possibles, mais elles éclairent les épigraphes." },
   ],
+  pics: ["ol:Blood Meridian Cormac McCarthy"],
   text: String.raw`
 # Un livre qui ne te veut pas de bien
 
 Il y a des romans qui t'accueillent. Celui-ci ne le fait pas. Il n'a presque pas de dialogues marqués, pas de pensées intérieures, pas un personnage auquel t'accrocher. Il avance comme le paysage qu'il décrit : immense, minéral, indifférent. Et dans ce paysage, des hommes en tuent d'autres, page après page, sans que la phrase change de ton.
+
+@art g 1
 
 Cormac McCarthy l'a publié en 1985. Presque personne ne l'a lu. Vingt ans plus tard, on le tenait pour l'un des plus grands romans américains du siècle. Tu comprendras pourquoi il a fallu du temps.
 
@@ -22,7 +25,11 @@ Je vais te le raconter en entier, puis te dire ce que j'y vois. Tu sais d'où je
 
 Il n'a pas de nom. Le livre l'appelle le gamin, puis, à la fin, l'homme.
 
+@art g 2
+
 Il naît en 1833 dans le Tennessee, une nuit où le ciel est rayé d'étoiles filantes. Sa mère meurt en le mettant au monde. Son père, un ancien maître d'école, boit et cite des poètes oubliés. L'enfant ne sait ni lire ni écrire. Et McCarthy te donne, dès la première page, la seule chose qu'il dira jamais de son âme : il y a déjà en lui le goût d'une violence sans motif.
+
+!! LA RÉPLIQUE :: La toute première phrase du roman, au chapitre I : un ordre de trois mots, qui te demande de regarder l'enfant. Tout le livre tient dans ce geste. On te montre ce garçon, et on ne t'expliquera jamais rien d'autre. Lis-la dans le texte, en anglais si tu peux.
 
 À quatorze ans, il s'enfuit. Il descend le fleuve, travaille, se bat, reçoit une balle dans le dos, guérit, et dérive vers l'ouest, vers le Texas. Il ne veut rien. Il va.
 
@@ -31,6 +38,8 @@ Retiens cette construction. McCarthy prend la forme la plus aimée de la littér
 # Sous la tente
 
 À Nacogdoches, il pleut depuis des semaines. Un prédicateur a dressé une tente et y prêche devant une foule serrée. Le gamin y entre pour être au sec.
+
+@art g 3
 
 Un homme entre à son tour. Il est gigantesque, près de sept pieds. Il est chauve comme une pierre : ni barbe, ni sourcils, ni cils. Son visage est serein, presque enfantin. Il porte un beau manteau. Il prend la parole d'une voix posée et annonce à la foule que le révérend est un imposteur, recherché dans plusieurs États, qui a abusé d'une fillette et pire encore. La foule se rue sur le prédicateur. Des coups de feu partent. La tente s'effondre.
 
@@ -42,6 +51,8 @@ Voilà le juge Holden. C'est sa première apparition, et elle le contient tout e
 
 Le gamin s'engage dans une troupe d'irréguliers menée par un capitaine nommé White. Ces hommes veulent envahir le Mexique pour leur propre compte, deux ans après la guerre que les États-Unis viennent de lui faire. Le capitaine tient des discours sur la race incapable de se gouverner et sur le devoir des Américains.
 
+@art g 4
+
 Ils s'enfoncent dans le désert. Et un matin, une troupe apparaît à l'horizon. McCarthy la décrit dans une seule phrase interminable, l'une des plus célèbres du roman : des cavaliers comanches vêtus des dépouilles de leurs pillages, uniformes en loques, robes de mariée, chapeaux hauts de forme, un parapluie, une armure de conquistador, peints, hurlants, comme une armée sortie d'un enfer plus affreux que celui des chrétiens.
 
 En quelques minutes, la troupe du capitaine White n'existe plus. Le gamin survit sous les cadavres.
@@ -51,6 +62,8 @@ Tout le discours du capitaine, sa race et son devoir, est effacé en une page. L
 # Les chasseurs de scalps
 
 Le gamin erre, est arrêté, jeté en prison à Chihuahua. C'est là qu'on vient le chercher.
+
+@art g 5
 
 L'histoire est vraie, et il faut que tu le saches. À la fin des années 1840, les États du nord du Mexique, ravagés par les raids apaches, offrent une prime pour chaque scalp d'Indien. Des bandes d'aventuriers américains se font payer à la pièce. La plus connue est celle d'un nommé John Joel Glanton. Un de ses hommes, Samuel Chamberlain, a laissé des mémoires. Il y décrit le second de la bande : un géant sans un poil, instruit, parlant plusieurs langues, excellent danseur et musicien, et d'une cruauté sans fond. Il le nomme Holden. Il dit qu'on l'appelait le juge.
 
@@ -66,6 +79,8 @@ Aucun d'eux ne décide jamais de devenir un monstre. Il n'y a pas de seuil. C'es
 
 Qui est le juge ? Un soir, l'ancien prêtre raconte au gamin comment la bande l'a rencontré.
 
+@art g 6
+
 Ils étaient en fuite, poursuivis par des Apaches, sans une once de poudre. Des hommes morts. Et au milieu d'une plaine nue, ils trouvent le juge assis sur un rocher, seul, sans cheval, sans gourde, comme s'il les attendait. Il n'y avait pas d'autre rocher à des lieues. Tobin dit qu'il n'a jamais su d'où il venait.
 
 Le juge prend leur tête. Il les mène à une grotte où il recueille du salpêtre, puis au sommet d'un volcan où il gratte du soufre. Il a du charbon de bois. Il fait étaler le mélange sur la roche, et il leur ordonne d'uriner dessus. Il pétrit cette pâte de ses mains, la fait sécher au soleil, la découpe. Les Apaches montent la pente, croyant tenir des hommes désarmés. Le juge charge les fusils.
@@ -74,11 +89,17 @@ C'est l'un des sommets du livre, et tu dois l'entendre comme il est écrit : c'e
 
 Et Tobin ajoute ce que tous dans la bande ont remarqué. Chacun d'eux se souvient d'avoir déjà croisé le juge, autrefois, ailleurs, avant de le connaître.
 
+!! LA RÉPLIQUE :: Le récit de la poudre, au chapitre X. C'est Tobin, l'ancien prêtre, qui parle, et c'est l'un des rares longs passages du livre où quelqu'un raconte une histoire à un autre. Lis-le à voix haute, comme on lit un sermon : il est écrit pour ça.
+
 # Le registre
 
 Le juge sait tout. Il parle le hollandais et l'espagnol, cite les juristes et les géologues, joue du violon, danse mieux que personne. Le soir, il sort un carnet. Il y dessine ce qu'il a trouvé dans la journée : une plante, un oiseau qu'il a tué et empaillé, une armure espagnole vieille de trois siècles, des peintures sur une paroi. Il les dessine avec un grand talent.
 
+@art g 7
+
 Puis il jette l'armure au feu. Il gratte la peinture de la roche jusqu'à ce qu'il n'en reste rien.
+
+!! LA RÉPLIQUE :: Au chapitre XIV, autour du feu, le juge explique pourquoi il consigne tout dans son carnet. Sa phrase sur ce qui existe dans la création sans qu'il le sache, et donc sans son consentement, est la plus commentée du roman. Cherche-la : quelques lignes, et tout le personnage y est.
 
 Un homme lui demande pourquoi il fait cela. Sa réponse est le cœur noir du livre. Tout ce qui existe dans la création à son insu, dit-il, existe sans son consentement. La moindre miette de monde qui lui échappe est une liberté laissée à autre chose que lui. Il veut tout connaître pour tout tenir. Et ce qu'il a connu, consigné, il n'a plus besoin que cela existe.
 
@@ -90,11 +111,15 @@ Sa seconde leçon, il la donne un soir, devant le feu, et c'est sa théologie :
 
 Il s'explique. Les hommes aiment les jeux, dit-il, et un jeu vaut par ce qu'on y mise. Le jeu suprême est celui où l'on mise sa vie contre celle d'un autre, car il tranche de manière absolue lequel des deux devait exister. La guerre n'est donc pas un accident de l'histoire. Elle est ce qui décide, la seule cour sans appel, et elle attendait l'homme avant qu'il existe. Quant à la morale, c'est une invention des faibles pour priver les forts de leur droit. Un des hommes proteste que les livres saints disent autre chose. Le juge sourit : les livres mentent, mais les pierres et les os ne mentent pas, et il leur montre le sol.
 
+!! LA RÉPLIQUE :: Le sermon sur la guerre, au chapitre XVII. Le juge parle longtemps, et personne ne lui répond vraiment. Repère le moment où il compare la guerre à un jeu dont l'enjeu est l'existence même des joueurs : c'est là que le livre bascule de l'Ouest vers la métaphysique.
+
 Personne, dans le roman, ne le réfute. C'est cela qui fait peur. McCarthy ne lui oppose aucun discours. Il ne lui oppose qu'un silence, celui du gamin.
 
 # Le gué
 
 La bande finit là où l'histoire vraie la fait finir. En 1850, sur le fleuve Colorado, à l'endroit où les chercheurs d'or passent vers la Californie, Glanton s'empare d'un bac. Il rançonne les voyageurs, les dépouille, tue ceux qui protestent, et trahit les Indiens yumas qui tenaient le passage avant lui.
+
+@art g 8
 
 Un matin, les Yumas entrent dans le camp. Glanton est tué dans son lit. Presque toute la bande meurt.
 
@@ -110,6 +135,8 @@ C'est vrai, et tu peux le vérifier en relisant. Trois ou quatre fois, sans un m
 
 Le gamin atteint la côte. Puis le livre saute par-dessus presque trente ans, et tu retrouves un homme d'âge mûr qui a erré dans tout l'Ouest. Il porte sur lui une Bible qu'il ne peut pas lire.
 
+@art g 9
+
 Un jour, il trouve dans le désert une vieille femme agenouillée parmi des morts. Il s'accroupit près d'elle et lui parle, longuement, pour la première fois du livre. Il lui dit d'où il vient, ce qu'il a vu, et qu'il va l'emmener en lieu sûr. Il la touche. C'est une enveloppe sèche, morte depuis des années. Il avait enfin quelque chose à dire, et il n'y avait personne.
 
 En 1878, il entre dans un saloon de Fort Griffin, au Texas, une ville de chasseurs de bisons où l'on vend des montagnes d'os. Et le juge est là. Il n'a pas vieilli d'un jour.
@@ -124,9 +151,13 @@ McCarthy ne dit pas ce qui se passe. Lui qui a tout montré pendant trois cents 
 
 Dans le saloon, le juge danse. Il est nu, blanc, énorme, léger sur ses petits pieds. Il joue du violon, il salue les dames, il est le favori de tous. Il ne dort jamais, dit le texte. Il dit qu'il ne mourra jamais. Ce sont les derniers mots.
 
+!! LA RÉPLIQUE :: Les toutes dernières lignes du chapitre XXIII. Le juge danse, et le texte répète, en boucle, ce qu'il dit de lui-même : qu'il ne dort jamais, qu'il ne mourra jamais. Lis le paragraphe d'un seul souffle. Puis tourne la page pour l'épilogue de l'homme aux trous.
+
 # Qu'est-ce que le juge ?
 
 On en discute depuis quarante ans. Je te donne les lectures, et la mienne.
+
+@art g 10
 
 Certains le prennent pour le diable. Tout y est : il surgit du désert, il fabrique le feu, tout le monde l'a déjà rencontré, il ne vieillit pas. Mais le livre ne le dit jamais, et le juge lui-même se moque des démons.
 
@@ -142,6 +173,8 @@ Et pourtant il y a ce défaut dans la bande, ce garçon muet qui n'a pas tiré m
 
 Après la fin, il y a encore une page, en italique, que presque tout le monde oublie.
 
+@art g 11
+
 Un homme avance dans une plaine, à l'aube. Il tient un outil d'acier à deux poignées. Il l'enfonce dans la roche, et l'acier fait jaillir le feu que Dieu y a mis. Il fait un trou, puis un autre, en ligne. Derrière lui, d'autres hommes suivent cette ligne de trous, sans bien savoir ce qu'ils cherchent.
 
 L'explication la plus simple est qu'il creuse pour des poteaux. La clôture arrive. Le fil barbelé va découper la plaine, et le monde ouvert de Glanton sera fini. Le temps des bandes est passé ; celui des propriétés commence.
@@ -151,6 +184,8 @@ Mais demande-toi qui a gagné. Le juge voulait que rien n'existe sans son consen
 # Ce que tu peux en prendre
 
 Je ne te dirai pas d'écrire comme McCarthy. Personne ne le peut. Mais regarde trois de ses choix.
+
+@art g 12
 
 Il te refuse l'intérieur. Tu ne sais jamais ce que le gamin ressent, et c'est pour cela que ses rares gestes pèsent si lourd. Un personnage qu'on n'explique pas oblige à le regarder agir. Souviens-toi de Kitano : c'est la même pudeur, au service d'autre chose.
 

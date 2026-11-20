@@ -49,7 +49,7 @@ function PortalAmbience({ at, onUpload }) {
 export default function AtelierSettings({ at, openBrains }) {
   const THEMES = useThemeList();
   const [studio, setStudio] = useState(false);
-  const { theme, setTheme, sfx } = useApp();
+  const { theme, setTheme, sfx, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, muteSfx, muteMusic, toggleSfx, toggleMusic } = useApp();
   const [code, setCode] = useState(at.config.code || "");
   const [busy, setBusy] = useState(false);
   const file = useRef(null);
@@ -102,6 +102,15 @@ export default function AtelierSettings({ at, openBrains }) {
             <button key={k} className={"at-btn" + ((at.config.cover_ratio || "std") === k ? "" : " ghost")} onClick={() => at.saveConfig({ cover_ratio: k })} data-testid={`atelier-cover-${k}`}>{l}</button>
           ))}
         </div>
+      </div>
+      <div className="at-panel" data-testid="atelier-sound">
+        <div className="at-panel-h"><h2><IoMusicalNotes size={16} /> Son de l'Atelier</h2></div>
+        <p className="at-sub">Les mêmes réglages que la station : ils s'appliquent partout. Le volume de la Radio se règle dans sa barre.</p>
+        <label className="at-check"><input type="checkbox" checked={!muted} onChange={toggleMute} data-testid="atelier-sound-on" /> Son activé</label>
+        <div className="at-vol"><span>Musique et ambiances</span><input type="range" min="0" max="1" step="0.01" value={musicVolume} disabled={muted || muteMusic} onChange={(e) => setMusicVolume(+e.target.value)} data-testid="atelier-vol-music" /><b className="mono">{Math.round(musicVolume * 100)}</b>
+          <button className={"at-btn ghost" + (muteMusic ? " on" : "")} onClick={toggleMusic}>{muteMusic ? "Coupée" : "Couper"}</button></div>
+        <div className="at-vol"><span>Sons de l'interface</span><input type="range" min="0" max="1" step="0.01" value={uiVolume} disabled={muted || muteSfx} onChange={(e) => { setUiVolume(+e.target.value); sfx("nav"); }} data-testid="atelier-vol-ui" /><b className="mono">{Math.round(uiVolume * 100)}</b>
+          <button className={"at-btn ghost" + (muteSfx ? " on" : "")} onClick={toggleSfx}>{muteSfx ? "Coupés" : "Couper"}</button></div>
       </div>
       <div className="at-panel">
         <div className="at-panel-h"><h2><IoKeypadOutline size={16} /> Code du portail</h2></div>

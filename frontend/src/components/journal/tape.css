@@ -1,0 +1,338 @@
+/* La cassette audio du journal de bord : plastique fumé, étiquette crème, bobines qui tournent */
+.tp{position:fixed;inset:0;z-index:1250;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(20px,4vw,60px);align-items:center;
+  padding:clamp(24px,5vh,60px) max(16px,4vw);overflow-y:auto;color:#ece4d4;
+  background:radial-gradient(70% 60% at 30% 40%,#2a2118,#120e0b 70%),#0d0a08;animation:tpIn .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes tpIn{from{opacity:0}}
+.tp::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.tp-x{position:fixed;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));z-index:3;display:grid;place-items:center;width:40px;height:40px;border:1px solid rgba(236,228,212,.25);background:rgba(0,0,0,.3);color:inherit;cursor:pointer}
+.tp-deck{display:flex;flex-direction:column;align-items:center;gap:22px}
+/* la cassette */
+.tp-cass{position:relative;width:min(520px,100%);aspect-ratio:1.58;border-radius:14px 14px 10px 10px;padding:6% 5.5% 14%;
+  background:linear-gradient(180deg,#3a3633,#262321 60%,#1c1a18);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -2px 6px rgba(0,0,0,.6),0 30px 60px -20px rgba(0,0,0,.9),0 0 0 1px #0d0c0b;
+  transform:rotate(-1.2deg);transition:transform .4s}
+.tp.on .tp-cass{transform:rotate(-.6deg) translateY(-2px)}
+.tp-screw{position:absolute;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#8b857d,#3d3936);box-shadow:inset 0 0 0 1px rgba(0,0,0,.5)}
+.tp-screw::after{content:"";position:absolute;inset:4px 1px;background:#1b1918;transform:rotate(35deg)}
+.tp-screw.a{top:9px;left:9px}.tp-screw.b{top:9px;right:9px}.tp-screw.c{bottom:9px;left:9px}.tp-screw.d{bottom:9px;right:9px}
+.tp-label{position:relative;height:100%;display:flex;flex-direction:column;gap:4px;padding:5% 6%;border-radius:6px;
+  background:linear-gradient(180deg,#efe5cf 0 26%,#d9a441 26% 31%,#efe5cf 31% 100%);color:#2a2219;box-shadow:inset 0 0 18px rgba(120,90,40,.25)}
+.tp-label b{font-family:"Special Elite","Courier Prime",monospace;font-weight:400;font-size:clamp(15px,2.2vw,21px);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:30px}
+.tp-label small{font-family:"Courier Prime",monospace;font-size:11px;opacity:.75;padding-left:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-side{position:absolute;top:7%;left:5%;display:grid;place-items:center;width:22px;height:22px;border:2px solid #2a2219;border-radius:50%;font:700 12px/1 "Courier Prime",monospace}
+.tp-win{position:relative;flex:1;margin:6% 8% 0;display:flex;align-items:center;justify-content:space-between;padding:0 6%;border-radius:40px;
+  background:linear-gradient(180deg,rgba(30,25,22,.92),rgba(52,45,40,.92));box-shadow:inset 0 2px 6px rgba(0,0,0,.7)}
+.tp-tape{position:absolute;left:20%;right:20%;bottom:18%;height:3px;background:#3b2618;opacity:.85}
+.tp-reel{position:relative;display:grid;place-items:center;width:34%;aspect-ratio:1}
+.tp-reel::before{content:"";position:absolute;width:var(--tape);height:var(--tape);max-width:100%;max-height:100%;border-radius:50%;background:radial-gradient(circle,#4a3020 0 30%,#2c1c12 70%);transition:width .5s,height .5s}
+.tp-reel i{position:relative;width:38%;aspect-ratio:1;border-radius:50%;background:conic-gradient(#f2eadb 0 10%,transparent 10% 16.6%,#f2eadb 16.6% 26.6%,transparent 26.6% 33.3%,#f2eadb 33.3% 43.3%,transparent 43.3% 50%,#f2eadb 50% 60%,transparent 60% 66.6%,#f2eadb 66.6% 76.6%,transparent 76.6% 83.3%,#f2eadb 83.3% 93.3%,transparent 93.3%);
+  -webkit-mask:radial-gradient(circle,transparent 26%,#000 28%);mask:radial-gradient(circle,transparent 26%,#000 28%)}
+.tp.on .tp-reel i{animation:tpSpin 1.6s linear infinite}
+.tp.starting .tp-reel i{animation:tpSpin 1.6s cubic-bezier(.5,0,.5,1) infinite}
+@keyframes tpSpin{to{transform:rotate(-360deg)}}
+.tp-mouth{position:absolute;left:22%;right:22%;bottom:0;height:11%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#191715,#100f0e);box-shadow:inset 0 2px 3px rgba(0,0,0,.8)}
+/* les touches du magnéto */
+.tp-ctl{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center}
+.tp-count{min-width:62px;padding:6px 10px;background:#0b0a09;border:1px solid #3a332b;color:#e8c27a;font-size:20px;letter-spacing:.2em;text-align:center;box-shadow:inset 0 0 10px rgba(0,0,0,.8)}
+.tp-keys{display:flex;gap:3px;padding:4px;background:#1b1714;border-radius:4px;box-shadow:0 2px 0 #0b0a09}
+.tp-keys button{display:grid;place-items:center;width:52px;height:44px;border:0;border-radius:3px;background:linear-gradient(180deg,#d8d0c2,#a9a092);color:#2a2219;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #6b6358,inset 0 1px 0 #fff;transition:transform .08s,box-shadow .08s}
+.tp-keys button:active,.tp-keys button.down{transform:translateY(3px);box-shadow:0 1px 0 #6b6358,inset 0 1px 0 #fff}
+.tp-keys button.play{background:linear-gradient(180deg,#e7b866,#b98636)}
+.tp-time{font-size:12px;letter-spacing:.14em;opacity:.75}
+.tp-bar{position:relative;width:min(520px,100%);height:6px;background:rgba(236,228,212,.12);cursor:pointer}
+.tp-bar i{position:absolute;inset:0 auto 0 0;background:#e0a24a}
+.tp-none{margin:0;font-size:13px;opacity:.7}
+/* la transcription */
+.tp-script{max-width:62ch;max-height:80vh;overflow-y:auto;padding-right:6px}
+.tp-k{margin:0 0 8px;font-size:10px;letter-spacing:.24em;color:#e0a24a}
+.tp-script h1{margin:0 0 6px;font-family:"Special Elite","Courier Prime",monospace;font-weight:400;font-size:clamp(24px,3vw,34px);line-height:1.15}
+.tp-sub{margin:0 0 18px;opacity:.7;font-style:italic}
+.tp-text{font-family:"Courier Prime","Spectral",serif;font-size:16px;line-height:1.75;color:#ddd3c1}
+.tp-text img{max-width:100%}
+@media (max-width:860px){.tp{grid-template-columns:1fr;align-items:start}.tp-script{max-height:none}}
+@media (prefers-reduced-motion:reduce){.tp.on .tp-reel i{animation-duration:6s}}
+.tp-text *::first-letter{font:inherit!important;color:inherit!important;float:none!important;font-size:inherit!important;margin:0!important;padding:0!important;line-height:inherit!important}
+.tp-text *{border-left:0!important}
+.tp-reel::before{background:radial-gradient(circle,#7a5235 0 30%,#4a3020 75%)!important;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+/* sans transcription : la cassette seule, au centre */
+.tp.solo{grid-template-columns:1fr;justify-items:center;align-content:center}
+.tp.solo .tp-cass{width:min(620px,100%)}
+.tp-solo-t{display:flex;flex-direction:column;align-items:center;gap:6px;margin:0;text-align:center}
+.tp-solo-t b{font-family:"Special Elite","Courier Prime",monospace;font-weight:400;font-size:clamp(18px,2.4vw,26px)}
+.tp-solo-t small{opacity:.7;font-style:italic}
+.tp.solo .tp-solo-t{order:-1}
+/* la cassette-objet (vignette) */
+.tpo{position:relative;display:block;width:100%;max-width:340px;aspect-ratio:1.58;border-radius:8px 8px 6px 6px;padding:6% 5.5% 13%;
+  background:linear-gradient(180deg,#3a3633,#24211f);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 14px 26px -10px rgba(0,0,0,.8),0 0 0 1px #0d0c0b;transform:rotate(-2deg);margin:auto}
+.tpo-label{display:flex;flex-direction:column;gap:6%;height:100%;padding:6% 7%;border-radius:4px;background:linear-gradient(180deg,#efe5cf 0 30%,#d9a441 30% 36%,#efe5cf 36%);color:#2a2219}
+.tpo-label b{font-family:"Special Elite","Courier Prime",monospace;font-weight:400;font-size:clamp(10px,1.4vw,15px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tpo-win{flex:1;display:flex;align-items:center;justify-content:space-around;border-radius:30px;background:#2a231f}
+.tpo-win i{width:22%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#f2eadb 0 22%,#4a3020 24% 60%,#2c1c12 62%)}
+.tpo-mouth{position:absolute;left:22%;right:22%;bottom:0;height:10%;border-radius:3px 3px 0 0;background:#141210}
+.tpo.sm{max-width:none}
+/* sur la carte du journal : la cassette posée sur un fond chaud */
+.jr-card-img.is-tape{display:grid;place-items:center;padding:8% 12%;background:radial-gradient(70% 70% at 50% 40%,#2a2118,#120e0b) !important}
+.nw-pane-tape{display:grid;place-items:center;padding:10% 8%;background:radial-gradient(70% 70% at 50% 40%,#2a2118,#120e0b)}
+.nw-tapei{display:inline-block;width:16px;height:11px;margin-right:6px;vertical-align:-1px;border-radius:2px;background:linear-gradient(180deg,#efe5cf 0 40%,#d9a441 40% 55%,#efe5cf 55%);box-shadow:0 0 0 1.5px currentColor}
+
+/* =====================================================================
+   0.28 · La cassette, version réaliste (coque transparente, étiquette imprimée, mécanique visible)
+   ===================================================================== */
+.cs{position:relative;display:block;width:100%;aspect-ratio:1.6;container-type:inline-size;border-radius:3.2cqw 3.2cqw 2.4cqw 2.4cqw;transform:rotate(-1.5deg);
+  filter:drop-shadow(0 6cqw 6cqw rgba(0,0,0,.55))}
+.cs-shell{position:absolute;inset:0;border-radius:inherit;
+  background:
+    radial-gradient(120% 80% at 30% 0%,rgba(255,255,255,.28),transparent 55%),
+    linear-gradient(180deg,rgba(210,222,230,.42),rgba(150,165,175,.32) 60%,rgba(110,120,130,.4)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 3px);
+  box-shadow:inset 0 0 0 .5cqw rgba(255,255,255,.35),inset 0 -1.2cqw 2cqw rgba(0,0,0,.25),0 0 0 .3cqw rgba(30,35,40,.55);backdrop-filter:blur(1px)}
+.cs-shell::after{content:"";position:absolute;inset:0;border-radius:inherit;opacity:.35;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* la mécanique qu'on voit par transparence */
+.cs-gear{position:absolute;bottom:10%;width:9cqw;height:9cqw;border-radius:50%;background:repeating-conic-gradient(rgba(240,240,235,.55) 0 8deg,transparent 8deg 20deg);-webkit-mask:radial-gradient(circle,transparent 35%,#000 37%);mask:radial-gradient(circle,transparent 35%,#000 37%);opacity:.6}
+.cs-gear.l{left:7%}.cs-gear.r{right:7%}
+.cs-screw{position:absolute;width:3.2cqw;height:3.2cqw;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f4f4f2,#9a9c9e 55%,#5d6062);box-shadow:0 .2cqw .4cqw rgba(0,0,0,.4)}
+.cs-screw::after{content:"";position:absolute;left:18%;right:18%;top:44%;height:12%;background:#3a3c3e;transform:rotate(40deg)}
+.cs-screw.a{top:3%;left:3%}.cs-screw.b{top:3%;right:3%}.cs-screw.c{bottom:4%;left:3%}.cs-screw.d{bottom:4%;right:3%}.cs-screw.e{bottom:4%;left:48.4%}
+/* l'étiquette imprimée */
+.cs-label{position:absolute;left:6%;right:6%;top:7%;height:66%;border-radius:1.2cqw;overflow:hidden;background:#f1ece2;color:#1d1d1f;
+  box-shadow:inset 0 0 0 .3cqw rgba(0,0,0,.08),0 .2cqw .4cqw rgba(0,0,0,.25)}
+.cs-label::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .45 0 0 0 0 .3 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+.cs-disc{position:absolute;left:-14%;top:12%;width:46%;aspect-ratio:1;border-radius:50%;
+  background:conic-gradient(from 180deg,#e8902a 0 25%,#2f7fd0 25% 75%,#e8902a 75%);box-shadow:0 0 0 1.6cqw #f1ece2,0 0 0 2cqw #1d1d1f}
+.cs-brand{position:absolute;left:4%;top:5%;display:flex;align-items:center;gap:1.4cqw;font:800 3.4cqw/1 "Archivo Black","Anton",sans-serif;letter-spacing:.04em}
+.cs-brand i{display:grid;place-items:center;width:5cqw;height:5cqw;background:#c8202a;color:#fff;font:800 2.4cqw/1 "Archivo Black",sans-serif;font-style:normal;border-radius:.6cqw}
+.cs-brand em{font:600 1.8cqw/1 "Josefin Sans","Inter",sans-serif;font-style:normal;letter-spacing:.2em;color:#555}
+.cs-side{position:absolute;right:4%;top:4%;display:grid;place-items:center;width:5.4cqw;height:5.4cqw;border:.5cqw solid #1d1d1f;border-radius:50%;font:800 3cqw/1 "Archivo Black",sans-serif}
+.cs-title{position:absolute;left:34%;right:20%;top:18%;font:400 3.6cqw/1.1 "Special Elite","Courier Prime",monospace;color:#1b2a6b;transform:rotate(-1.2deg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:.2cqw solid rgba(0,0,0,.18);padding-bottom:.8cqw}
+.cs-sub{position:absolute;left:34%;right:20%;top:27%;font:400 2.2cqw/1 "Courier Prime",monospace;color:#1b2a6b;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-type{position:absolute;left:34%;bottom:6%;font:600 1.9cqw/1 "Josefin Sans","Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#333}
+.cs-type b{display:inline-block;padding:.4cqw 1cqw;margin-right:1cqw;background:#1d1d1f;color:#f1ece2;font-weight:700}
+.cs-len{position:absolute;right:3%;bottom:5%;padding:.4cqw 1.6cqw;background:#1d1d1f;color:#f1ece2;font:italic 700 5cqw/1 "DM Serif Display",Georgia,serif}
+/* la fenêtre : bobines dentées et bande */
+.cs-win{position:absolute;left:30%;right:14%;top:38%;height:34%;display:flex;align-items:center;justify-content:space-between;padding:0 4%;border-radius:8cqw;
+  background:linear-gradient(180deg,rgba(40,44,48,.85),rgba(70,76,82,.8));box-shadow:inset 0 .6cqw 1.2cqw rgba(0,0,0,.7),0 0 0 .4cqw #1d1d1f}
+.cs-tape{position:absolute;left:24%;right:24%;bottom:16%;height:.6cqw;background:#5a3420}
+.cs-reel{position:relative;display:grid;place-items:center;height:100%;aspect-ratio:1}
+.cs-reel::before{content:"";position:absolute;width:var(--tape);height:var(--tape);min-width:46%;min-height:46%;border-radius:50%;background:radial-gradient(circle,#8a5a38 0 35%,#4a2c1a 72%);transition:width .5s,height .5s;box-shadow:inset 0 0 .6cqw rgba(0,0,0,.6)}
+.cs-reel i{position:relative;width:46%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,transparent 0 28%,#f4f2ec 30% 100%);
+  -webkit-mask:conic-gradient(#000 0 14%,transparent 14% 20%,#000 20% 47%,transparent 47% 53%,#000 53% 80%,transparent 80% 86%,#000 86%);mask:conic-gradient(#000 0 14%,transparent 14% 20%,#000 20% 47%,transparent 47% 53%,#000 53% 80%,transparent 80% 86%,#000 86%);box-shadow:0 0 0 .3cqw rgba(0,0,0,.2)}
+.cs.spin .cs-reel i,.cs.spin .cs-gear{animation:tpSpin 1.4s linear infinite}
+.cs.starting .cs-reel i{animation:tpSpin 1.4s cubic-bezier(.6,0,.4,1) infinite}
+/* la bouche de la cassette, en bas, avec la bande et les guides */
+.cs-mouth{position:absolute;left:21%;right:21%;bottom:0;height:13%;display:flex;align-items:flex-end;justify-content:space-around;padding:0 6% .8cqw;
+  clip-path:polygon(6% 0,94% 0,100% 100%,0 100%);background:linear-gradient(180deg,rgba(120,130,138,.55),rgba(70,76,82,.7))}
+.cs-mouth i{width:4cqw;height:4cqw;border-radius:50%;background:rgba(20,22,24,.75)}
+.cs-mouth::after{content:"";position:absolute;left:8%;right:8%;bottom:1.2cqw;height:.6cqw;background:#5a3420}
+.cs-gloss{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.18) 42%,transparent 50%,transparent 70%,rgba(255,255,255,.08) 76%,transparent 82%)}
+.cs.sm{transform:rotate(-2.5deg)}
+.tpo{display:block;width:100%;max-width:360px;margin:auto}
+/* le grand lecteur utilise la même cassette */
+.tp-cassw{width:min(560px,100%)}
+.tp.solo .tp-cassw{width:min(660px,100%)}
+/* animation d'ouverture : la cassette glisse dans le lecteur et s'enclenche */
+.tp-cassw{animation:tpInsert .85s cubic-bezier(.2,.9,.25,1.15) both}
+@keyframes tpInsert{0%{transform:translateY(60vh) rotate(-14deg);opacity:0}55%{opacity:1}80%{transform:translateY(-6px) rotate(1deg)}100%{transform:none}}
+.tp-ctl,.tp-bar{animation:tpUp .5s .55s cubic-bezier(.2,.8,.2,1) both}
+.tp-script,.tp-solo-t{animation:tpUp .6s .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes tpUp{from{opacity:0;transform:translateY(18px)}}
+@media (prefers-reduced-motion:reduce){.tp-cassw,.tp-ctl,.tp-bar,.tp-script,.tp-solo-t{animation:none}}
+.cs-disc{top:30%;left:-16%;width:42%}.cs-brand{z-index:1}
+
+/* =====================================================================
+   0.29 · La cassette comme les VHS d'Alexandrie : plastique noir mat, étiquette usée, rayures, grain
+   ===================================================================== */
+.cs{--ax-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --ax-grain-soft:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' seed='9'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 .5 0 0 0 -.14'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --ax-scuff:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='600'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.16 .012' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 9 0 0 0 -6.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.cs-shell{background:radial-gradient(120% 70% at 25% 0%,rgba(255,255,255,.08),transparent 55%),linear-gradient(180deg,#24211e,#171513 60%,#100f0e)!important;
+  box-shadow:inset 0 0 0 .4cqw rgba(255,255,255,.06),inset 0 .5cqw 0 rgba(255,255,255,.07),inset 0 -1.2cqw 2cqw rgba(0,0,0,.5),0 0 0 .3cqw #0a0908!important;backdrop-filter:none!important}
+.cs-shell::after{background-image:var(--ax-grain)!important;opacity:.55!important;mix-blend-mode:soft-light!important}
+.cs-gear{opacity:.25}
+.cs-screw{background:radial-gradient(circle at 35% 30%,#b9b6b0,#5e5b57 55%,#2c2a28)}
+.cs-label{background:#e4d8bf!important;box-shadow:inset 0 0 0 .3cqw rgba(60,40,10,.12),inset 0 0 4cqw rgba(110,80,30,.28),0 .2cqw .4cqw rgba(0,0,0,.35)!important}
+.cs-label::after{background-image:var(--ax-grain-soft),radial-gradient(40% 30% at 85% 20%,rgba(120,80,20,.22),transparent),radial-gradient(30% 25% at 12% 85%,rgba(90,60,20,.18),transparent)!important;opacity:.9!important}
+.cs-disc,.cs-brand,.cs-side,.cs-type,.cs-len{display:none!important}
+.cs-band{position:absolute;left:0;right:0;top:0;height:16%;display:flex;align-items:center;gap:1.6cqw;padding:0 2.4cqw;background:hsl(var(--h) 45% 26%);color:#f1e8d6;font:600 1.8cqw/1 "Josefin Sans","Inter",sans-serif;letter-spacing:.2em;box-shadow:0 .2cqw 0 rgba(0,0,0,.35)}
+.cs-band b{padding:.4cqw 1cqw;background:#f1e8d6;color:#111;font:italic 800 2.6cqw/1 "Archivo Black","Arial Black",sans-serif;letter-spacing:0}
+.cs-band span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-band i{display:grid;place-items:center;width:4.6cqw;height:4.6cqw;border:.4cqw solid #f1e8d6;border-radius:50%;font:800 2.4cqw/1 "Archivo Black",sans-serif;font-style:normal}
+.cs-title{left:5%!important;right:5%!important;top:21%!important;color:#1d1a16!important;font-size:4.2cqw!important;border-bottom:.25cqw solid rgba(30,25,20,.3)!important;transform:rotate(-.8deg)}
+.cs-sub{left:5%!important;right:5%!important;top:32%!important;color:#3d3830!important}
+.cs-stripes{position:absolute;left:0;right:0;bottom:8%;height:9%;background:linear-gradient(180deg,hsl(var(--h) 60% 42%) 0 30%,transparent 30% 40%,hsl(calc(var(--h) + 28) 60% 46%) 40% 70%,transparent 70% 78%,hsl(calc(var(--h) + 56) 55% 50%) 78%);opacity:.85}
+.cs-win{left:24%!important;right:24%!important;top:44%!important;height:30%!important;background:linear-gradient(180deg,rgba(18,17,16,.92),rgba(40,38,36,.9))!important;box-shadow:inset 0 .6cqw 1.2cqw rgba(0,0,0,.8),0 0 0 .4cqw #0f0e0d!important}
+.cs-mouth{background:linear-gradient(180deg,#1f1d1b,#121110)!important}
+/* l'usure, comme sur les VHS : éraflures, coins frottés, grain */
+.cs-wear{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;
+  background:var(--ax-scuff) -40px -80px,linear-gradient(90deg,rgba(255,255,255,.22),transparent 1.2cqw),linear-gradient(270deg,rgba(255,255,255,.14),transparent 1.2cqw),linear-gradient(180deg,rgba(255,255,255,.2),transparent 1.4cqw),
+    radial-gradient(circle at 0 0,rgba(255,255,255,.35),transparent 5cqw),radial-gradient(circle at 100% 100%,rgba(255,255,255,.3),transparent 5cqw),radial-gradient(circle at 100% 0,rgba(255,255,255,.22),transparent 4cqw);opacity:.6;mix-blend-mode:screen}
+.cs-gloss{background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.08) 45%,transparent 52%)!important}
+/* l'ouverture : la cassette arrive de face en se redressant, un reflet passe sur le plastique */
+.tp{background:radial-gradient(70% 60% at 50% 42%,color-mix(in srgb,var(--bg-secondary,#1b1c20) 80%,#000),#040405 78%)!important}
+.tp-cassw{perspective:1400px;animation:none!important}
+.tp-cassw .cs{animation:csIn 1.15s cubic-bezier(.16,1,.3,1) both}
+@keyframes csIn{0%{opacity:0;transform:translateY(30px) rotateX(58deg) rotateZ(-9deg) scale(.86)}35%{opacity:1}100%{opacity:1;transform:rotate(-1.5deg)}}
+.tp-cassw .cs-gloss{background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.28) 45%,transparent 55%) -150% 0/250% 100% no-repeat!important;animation:csSheen 1.2s .7s cubic-bezier(.4,0,.2,1) both}
+@keyframes csSheen{to{background-position:150% 0}}
+.tp-ctl,.tp-bar{animation:tpUp .55s .9s cubic-bezier(.2,.8,.2,1) both!important}
+.tp-script,.tp-solo-t{animation:tpUp .6s 1s cubic-bezier(.2,.8,.2,1) both!important}
+.jr-card-img.is-tape,.nw-pane-tape{background:radial-gradient(70% 70% at 50% 40%,#202124,#0b0b0c)!important}
+@media (prefers-reduced-motion:reduce){.tp-cassw .cs,.tp-cassw .cs-gloss{animation:none}}
+.cs-wear{opacity:.32!important}
+
+/* 0.30 — une image sur la cassette : imprimée sur l'étiquette (sous le bandeau), le papier et l'usure restent par-dessus */
+.cs-photo{position:absolute;left:0;right:0;top:16%;bottom:0;background:center/cover no-repeat;filter:saturate(.8) contrast(1.05) sepia(.12)}
+.cs.has-img .cs-stripes{display:none}
+.cs.has-img .cs-label::after{mix-blend-mode:multiply;opacity:.55!important}
+.cs.has-img .cs-title,.cs.has-img .cs-sub{background:#e9dfc8;padding:.4cqw 1.4cqw;width:max-content;max-width:90%;box-shadow:0 .2cqw .5cqw rgba(0,0,0,.25)}
+.cs.has-img .cs-sub{top:33.5%!important}
+.cs.has-img .cs-win{box-shadow:inset 0 .6cqw 1.2cqw rgba(0,0,0,.8),0 0 0 .4cqw #0f0e0d,0 0 0 1.1cqw #e9dfc8!important}
+/* l'image de la cassette, floutée, en fond du lecteur */
+.tp-bgimg{position:fixed;inset:-40px;z-index:-1;background:center/cover no-repeat;filter:blur(40px) saturate(.9) brightness(.45);opacity:.6;pointer-events:none}
+.tp{isolation:isolate}
+/* 0.30 — les éraflures répétées ressemblaient à de la pluie : on garde seulement les coins et bords frottés, et deux rayures isolées */
+.cs-wear{background:linear-gradient(104deg,transparent 61.8%,rgba(255,255,255,.18) 62%,transparent 62.3%) 0 0/100% 40% no-repeat,linear-gradient(77deg,transparent 22%,rgba(255,255,255,.14) 22.15%,transparent 22.4%) 0 100%/60% 30% no-repeat,
+  linear-gradient(90deg,rgba(255,255,255,.22),transparent 1.2cqw),linear-gradient(270deg,rgba(255,255,255,.14),transparent 1.2cqw),linear-gradient(180deg,rgba(255,255,255,.2),transparent 1.4cqw),
+  radial-gradient(circle at 0 0,rgba(255,255,255,.35),transparent 5cqw),radial-gradient(circle at 100% 100%,rgba(255,255,255,.3),transparent 5cqw),radial-gradient(circle at 100% 0,rgba(255,255,255,.22),transparent 4cqw)!important;opacity:.45!important}
+
+/* =====================================================================
+   0.31 · Une vraie cassette en volume : coins presque droits, biseau, tranche épaisse,
+   bas trapézoïdal en relief, posée légèrement inclinée pour qu'on voie son épaisseur.
+   ===================================================================== */
+.cs{border-radius:1cqw!important;transform-style:preserve-3d}
+.cs-shell{border-radius:1cqw!important;
+  box-shadow:inset 0 .35cqw 0 rgba(255,255,255,.13),inset .35cqw 0 0 rgba(255,255,255,.05),inset -.35cqw 0 0 rgba(0,0,0,.45),inset 0 -.5cqw 0 rgba(0,0,0,.6),
+    inset 0 0 0 .9cqw rgba(255,255,255,.025),inset 0 -1.4cqw 2.4cqw rgba(0,0,0,.45),0 0 0 .25cqw #050505!important}
+/* la tranche : l'épaisseur du boîtier, avec les stries de prise en main */
+.cs::before{content:"";position:absolute;left:.4cqw;right:.4cqw;top:calc(100% - 1cqw);height:3.4cqw;z-index:-1;border-radius:0 0 1.2cqw 1.2cqw;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 .25cqw,transparent .25cqw 1.1cqw) 32% 0/36% 100% no-repeat,
+    linear-gradient(180deg,#0e0d0c,#1b1917 30%,#0b0a09 85%,#000);box-shadow:0 1.6cqw 3cqw rgba(0,0,0,.6),inset 0 -.2cqw 0 rgba(255,255,255,.06)}
+/* le bas en trapèze qui dépasse (tête de lecture) : en relief, avec ses biseaux */
+.cs-mouth{left:19%!important;right:19%!important;height:15%!important;clip-path:polygon(6% 0,94% 0,100% 100%,0 100%);
+  background:linear-gradient(180deg,#2a2724,#191715 55%,#0f0e0d)!important;box-shadow:inset 0 .3cqw 0 rgba(255,255,255,.12),inset 0 -.4cqw 0 rgba(0,0,0,.7)}
+.cs-mouth i{border-radius:.4cqw!important;background:#070707!important;box-shadow:inset 0 .3cqw .4cqw rgba(0,0,0,.9)}
+/* étiquette : coins nets, légèrement surélevée */
+.cs-label{border-radius:.5cqw!important}
+.cs-screw{box-shadow:inset 0 -.2cqw .3cqw rgba(0,0,0,.5),0 .15cqw 0 rgba(255,255,255,.08)!important}
+/* dans le lecteur : posée en légère perspective, on voit le dessus et la tranche */
+.tp-cassw{perspective:1600px}
+.tp-cassw .cs{transform:rotateX(16deg) rotateZ(-1.5deg)}
+@keyframes csIn{0%{opacity:0;transform:translateY(40px) rotateX(64deg) rotateZ(-9deg) scale(.86)}35%{opacity:1}100%{opacity:1;transform:rotateX(16deg) rotateZ(-1.5deg)}}
+.tp.on .tp-cassw .cs{transform:rotateX(12deg) rotateZ(-1deg) translateY(-1px);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+/* en liste (journal, Making of) : un peu de volume aussi */
+.tpo .cs{transform:perspective(900px) rotateX(14deg) rotate(-2deg)}
+
+/* modifier la cassette directement dessus */
+.tp-ed-btn{right:max(64px,calc(env(safe-area-inset-right) + 64px))!important}
+.tp-cassw.editing .cs{outline:1px dashed color-mix(in srgb,#e9c46a 70%,transparent);outline-offset:1.4cqw}
+.tp-edit{width:min(560px,100%);display:flex;flex-direction:column;gap:10px;padding:16px 16px 14px;border:1px solid rgba(236,228,210,.18);border-top:2px solid #e9b04d;background:rgba(10,10,11,.82);backdrop-filter:blur(8px);color:#ece4d2;
+  animation:tpUp .35s cubic-bezier(.2,.8,.2,1) both}
+.tp-edit-k,.tp-edit-s{margin:0;font:500 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.22em;color:rgba(236,228,210,.6)}
+.tp-edit-k{color:#e9b04d}.tp-edit-s{margin-top:6px}
+.tp-edit-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tp-edit-row label{display:flex;flex-direction:column;gap:5px;font:500 10px/1 "JetBrains Mono",monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(236,228,210,.6)}
+.tp-edit input{padding:9px 11px;border:1px solid rgba(236,228,210,.2);background:rgba(0,0,0,.4);color:#ece4d2;font:400 15px/1.2 "Special Elite","Courier Prime",monospace;letter-spacing:0;text-transform:none;border-radius:2px}
+.tp-edit input:focus{outline:none;border-color:#e9b04d}
+.tp-edit-acts{display:flex;flex-wrap:wrap;gap:8px}
+.tp-edit .jr-pick,.tp-edit .mic-rec{border-radius:2px}
+.tp-edit-au{width:100%;height:34px}
+.tp-edit-end{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+@media (max-width:520px){.tp-edit-row{grid-template-columns:1fr}}
+
+/* enregistrer au micro */
+.mic-rec{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid color-mix(in srgb,#e5484d 60%,var(--border-c,#444));border-radius:2px;background:color-mix(in srgb,#e5484d 10%,transparent);color:var(--text-primary,#ece4d2);font-size:13px;cursor:pointer}
+.mic-rec svg{color:#e5484d}
+.mic-rec:disabled{opacity:.6;cursor:wait}
+.mic-rec.on{cursor:default;border-color:#e5484d;background:color-mix(in srgb,#e5484d 14%,rgba(0,0,0,.4))}
+.mic-rec.on b{font:600 12px/1 "JetBrains Mono",monospace;letter-spacing:.12em;color:#ff6b6f}
+.mic-dot{width:9px;height:9px;border-radius:50%;background:#e5484d;box-shadow:0 0 8px #e5484d;animation:micBlink 1s steps(2) infinite}
+@keyframes micBlink{50%{opacity:.25}}
+.mic-vu{display:inline-flex;align-items:flex-end;gap:2px;height:14px}
+.mic-vu i{width:3px;height:100%;background:rgba(255,255,255,.14)}
+.mic-vu i:nth-child(-n+5).lit{background:#7bd88f}.mic-vu i:nth-child(n+6).lit{background:#f2c14e}.mic-vu i:nth-child(8).lit{background:#e5484d}
+.mic-stop,.mic-x{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border:1px solid rgba(255,255,255,.25);border-radius:2px;color:inherit;font-size:12px;cursor:pointer;background:transparent}
+.mic-stop:hover{border-color:#e5484d}.mic-x{padding:4px 6px}
+@media (prefers-reduced-motion:reduce){.mic-dot{animation:none}}
+.tp-edit .jr-pick{color:#ece4d2;border-color:rgba(236,228,210,.2);background:rgba(0,0,0,.35);font-size:13px}
+.cs::before{height:4.4cqw!important;top:calc(100% - 1.2cqw)!important}
+.tp-cassw .cs{transform:rotateX(22deg) rotateZ(-1.5deg)}
+@keyframes csIn{0%{opacity:0;transform:translateY(40px) rotateX(64deg) rotateZ(-9deg) scale(.86)}35%{opacity:1}100%{opacity:1;transform:rotateX(22deg) rotateZ(-1.5deg)}}
+.tp.on .tp-cassw .cs{transform:rotateX(18deg) rotateZ(-1deg) translateY(-1px)}
+.tp-cassw.editing .cs{transform:rotateX(10deg) rotateZ(-1deg);animation:none}
+@media (max-width:860px){.tp{padding-top:max(70px,calc(env(safe-area-inset-top) + 62px))!important}}
+/* atelier : « Modifier l'entrée » à côté du crayon de la cassette */
+.tp-ed-full{right:max(116px,calc(env(safe-area-inset-right) + 116px))!important;width:auto!important;padding:0 14px!important;font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase}
+
+/* =====================================================================
+   0.40 · Une cassette qui a vécu : plastique frotté aux coins et sur les arêtes, poussière dans les creux,
+   étiquette jaunie, tachée, déchirée au bord, un morceau de scotch, impression passée. Rien de répété.
+   ===================================================================== */
+.cs-shell::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:
+    radial-gradient(14cqw 9cqw at 2% 3%,rgba(255,255,255,.16),transparent 70%),
+    radial-gradient(12cqw 8cqw at 98% 97%,rgba(255,255,255,.13),transparent 70%),
+    radial-gradient(10cqw 6cqw at 99% 2%,rgba(255,255,255,.1),transparent 70%),
+    radial-gradient(9cqw 6cqw at 1% 98%,rgba(255,255,255,.09),transparent 70%),
+    linear-gradient(90deg,rgba(255,255,255,.12),transparent 1.6cqw),linear-gradient(180deg,rgba(255,255,255,.1),transparent 1.4cqw)}
+.cs-dirt{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;mix-blend-mode:screen;opacity:.85;
+  background:
+    linear-gradient(97deg,transparent 48.2%,rgba(255,255,255,.22) 48.35%,transparent 48.6%) 0 82%/34% 14% no-repeat,
+    linear-gradient(81deg,transparent 30%,rgba(255,255,255,.16) 30.2%,transparent 30.5%) 88% 90%/22% 16% no-repeat,
+    linear-gradient(170deg,transparent 60%,rgba(255,255,255,.12) 60.3%,transparent 60.7%) 96% 30%/10% 50% no-repeat,
+    radial-gradient(.35cqw .35cqw at 21% 88%,rgba(255,255,255,.5),transparent),radial-gradient(.3cqw .3cqw at 73% 93%,rgba(255,255,255,.45),transparent),
+    radial-gradient(.25cqw .25cqw at 91% 79%,rgba(255,255,255,.4),transparent),radial-gradient(.3cqw .3cqw at 6% 60%,rgba(255,255,255,.35),transparent)}
+/* un bout de scotch jauni qui retient le coin de l'étiquette */
+.cs-scotch{position:absolute;z-index:4;right:3%;top:4.5%;width:12%;height:6%;transform:rotate(28deg);pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,240,190,.38),rgba(230,205,140,.3));box-shadow:0 .1cqw .3cqw rgba(0,0,0,.25);
+  clip-path:polygon(0 8%,6% 0,12% 10%,20% 2%,30% 9%,100% 0,100% 100%,92% 90%,84% 100%,76% 92%,0 100%)}
+/* l'étiquette : jaunie, des taches de café et de doigts, le bord bas-droit déchiré */
+.cs-label{clip-path:polygon(0 0,100% 0,100% 82%,98.6% 86%,99.4% 89%,97.8% 92%,98.9% 96%,96.5% 100%,0 100%)}
+.cs-stain{position:absolute;inset:0;z-index:5;pointer-events:none;mix-blend-mode:multiply;
+  background:
+    radial-gradient(7cqw 5.5cqw at 86% 78%,transparent 62%,rgba(120,72,20,.32) 66%,rgba(120,72,20,.1) 72%,transparent 76%),
+    radial-gradient(10cqw 6cqw at 12% 84%,rgba(140,96,40,.22),transparent 70%),
+    radial-gradient(6cqw 3cqw at 64% 8%,rgba(90,60,25,.18),transparent 70%),
+    linear-gradient(180deg,rgba(150,110,50,.12),rgba(120,80,30,.22)),
+    radial-gradient(3cqw 2cqw at 30% 30%,rgba(80,60,40,.12),transparent 70%)}
+.cs-band{filter:saturate(.75) contrast(.92)}
+.cs-title{opacity:.9}
+.cs.has-img .cs-photo{filter:saturate(.62) contrast(1.02) sepia(.28) brightness(.95)!important}
+.cs-wear{opacity:.7!important}
+.tp:has(.tp-edit){overflow-y:auto;align-items:flex-start}
+.tp:has(.tp-edit) .tp-deck{width:min(720px,100%)}
+.tp-edit{width:min(720px,100%)!important}
+.tp-edit-row.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tp-edit select{padding:9px 11px;border:1px solid rgba(236,228,210,.2);background:rgba(0,0,0,.4);color:#ece4d2;font:inherit;font-size:14px;letter-spacing:0;text-transform:none;border-radius:2px}
+.tp-edit-checks{display:flex;flex-wrap:wrap;gap:16px;align-items:center;color:#ece4d2;font-size:14px}
+.tp-edit-checks label{display:flex;align-items:center;gap:8px}
+.tp-edit-blocks{border:1px solid rgba(236,228,210,.14);padding:10px;background:rgba(0,0,0,.25)}
+@media (max-width:520px){.tp-edit-row.three{grid-template-columns:1fr}}
+
+/* ---- 0.41 · le grain de la cassette : neuve, usée (par défaut), très usée ---- */
+.cs.w-neuve .cs-dirt,.cs.w-neuve .cs-scotch,.cs.w-neuve .cs-stain,.cs.w-neuve .cs-wear{display:none}
+.cs.w-neuve .cs-shell::after{opacity:.35;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.14) 42%,transparent 50%)}
+.cs.w-neuve .cs-label{clip-path:none}
+.cs.w-neuve .cs-band{filter:saturate(1.15) contrast(1.05)}
+.cs.w-neuve.has-img .cs-photo{filter:none!important}
+.cs.w-tres .cs-wear{opacity:1!important}
+.cs.w-tres .cs-dirt{opacity:1;filter:contrast(1.4)}
+.cs.w-tres .cs-dirt::after{content:"";position:absolute;inset:0;background:
+  linear-gradient(64deg,transparent 40%,rgba(255,255,255,.25) 40.2%,transparent 40.5%) 20% 20%/40% 30% no-repeat,
+  linear-gradient(118deg,transparent 52%,rgba(255,255,255,.2) 52.2%,transparent 52.5%) 70% 60%/35% 40% no-repeat,
+  radial-gradient(.4cqw .4cqw at 45% 12%,rgba(255,255,255,.5),transparent),radial-gradient(.35cqw .35cqw at 58% 70%,rgba(255,255,255,.45),transparent)}
+.cs.w-tres .cs-stain{opacity:1;filter:saturate(1.4) contrast(1.25)}
+.cs.w-tres .cs-stain::after{content:"";position:absolute;inset:0;background:radial-gradient(9cqw 6cqw at 35% 60%,rgba(110,70,20,.28),transparent 70%),linear-gradient(180deg,rgba(150,110,50,.18),rgba(120,80,30,.3))}
+.cs.w-tres .cs-label{clip-path:polygon(0 4%,3% 0,100% 0,100% 74%,97.5% 79%,99% 84%,96.2% 89%,98% 95%,94% 100%,6% 100%,3.5% 96%,1.5% 98%,0 93%)}
+.cs.w-tres .cs-band{filter:saturate(.45) contrast(.85) sepia(.3)}
+.cs.w-tres .cs-title{opacity:.75}
+.cs.w-tres.has-img .cs-photo{filter:saturate(.35) sepia(.5) contrast(.95) brightness(.9)!important}
+.cs.w-tres .cs-scotch{width:16%;background:linear-gradient(180deg,rgba(235,205,130,.55),rgba(200,160,80,.45))}
+.tp-wear{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tp-wear button{display:flex;flex-direction:column;gap:3px;padding:10px 12px;text-align:left;border:1px solid rgba(236,228,210,.2);background:rgba(0,0,0,.3);color:#ece4d2;cursor:pointer;border-radius:2px;font:inherit}
+.tp-wear button b{font-size:14px}.tp-wear button small{font-size:11px;opacity:.6}
+.tp-wear button.on{border-color:#e8b04b;box-shadow:inset 0 0 0 1px #e8b04b}
+.jr-wear{margin:10px 0}
+.jr-wear button{border-color:var(--border-c);background:var(--bg-secondary);color:var(--text-primary)}
+.jr-wear button.on{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}

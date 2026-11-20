@@ -189,7 +189,7 @@ export const KIND_FIELDS = {
 export const ITEM_FIELDS = ["kind", "title", "content", "universe_id", "fields", "tags", "links", "image", "date", "pinned", "media"];
 export const pickItem = (it) => Object.fromEntries(ITEM_FIELDS.map((k) => [k, it[k]]));
 export const UNIVERSE_FIELDS = ["name", "kanji", "color", "cover", "description", "creation_ids", "order", "group", "pinned"];
-export const TASK_FIELDS = ["title", "universe_id", "item_id", "due", "priority", "done", "notes"];
+export const TASK_FIELDS = ["title", "universe_id", "item_id", "due", "priority", "done", "notes", "status", "group", "order"];
 const pick = (o, keys) => Object.fromEntries(keys.map((k) => [k, o[k]]));
 
 // Un lien Google Drive vers un FICHIER (image) ne s'affiche proprement qu'en passant par
@@ -256,7 +256,7 @@ export function useAtelier() {
       patch((d) => ({ ...d, items: d.items.filter((x) => x.id !== id).map((x) => ({ ...x, links: (x.links || []).filter((l) => l !== id) })) }));
     },
     async saveTask(t) {
-      const body = pick({ universe_id: null, item_id: null, due: "", priority: "normal", done: false, notes: "", ...t }, TASK_FIELDS);
+      const body = pick({ universe_id: null, item_id: null, due: "", priority: "normal", done: false, notes: "", status: t.done ? "done" : "todo", group: "", order: 0, ...t }, TASK_FIELDS);
       const doc = t.id ? await atelierApi.updateTask(t.id, body) : await atelierApi.createTask(body);
       patch((d) => ({ ...d, tasks: up(d.tasks, doc) }));
       return doc;

@@ -1,6 +1,6 @@
 const book = {
   id: "nietzsche", title: "Nietzsche", sub: "Deviens ce que tu es", room: "philo", type: "pensee", cote: "PH-001", color: 12, emblem: "超",
-  about: "Un homme malade, seul, presque aveugle, qui écrit que la vie est à aimer telle qu'elle est. Il te parle.",
+  about: "Un homme malade, seul, presque aveugle, qui écrit que la vie est à aimer telle qu'elle est. Il te parle. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Le Gai Savoir (1882)", note: "Le meilleur livre pour commencer. Lis les paragraphes 125, 276 et 341." },
     { label: "Ainsi parlait Zarathoustra (1883-1885)", note: "Son poème. À lire après, lentement, à voix haute." },
@@ -25,6 +25,16 @@ Je suis né en 1844 à Röcken, en Saxe, dans un presbytère. Mon père était p
 
 J'étais fait pour la chaire. À vingt-quatre ans, j'en ai eu une, mais ce n'était pas celle d'une église : l'université de Bâle m'a nommé professeur de philologie avant même que j'aie soutenu ma thèse. La philologie, c'est l'art de lire lentement les textes anciens. Garde ce mot : lentement. Je suis resté toute ma vie un homme qui lit lentement, et qui soupçonne chaque mot de cacher quelque chose.
 
+À Bâle, je prenais le train pour Tribschen, au bord du lac de Lucerne, où vivait Richard Wagner. J'y suis allé plus de vingt fois. Il me recevait en robe de chambre de velours, et il parlait pendant des heures.
+
+— Professeur, vous êtes le seul philologue d'Europe qui ait compris que la tragédie grecque était une musique.
+
+— Je n'ai rien compris, Maître. Je vous ai écouté.
+
+— C'est la même chose. Écrivez-le. Écrivez que l'avenir de l'Allemagne est à Bayreuth.
+
+Je l'ai écrit, à peu près. Je l'aimais comme on aime un père qu'on n'a pas eu. Dix ans plus tard, j'ai écrit le contraire. Il faut savoir quitter ceux qui vous ont fait naître. C'est même à cela qu'on reconnaît qu'ils vous ont vraiment fait naître.
+
 C'est en lisant les Grecs que tout a commencé. On me les avait présentés comme un peuple serein, des statues blanches sous un ciel bleu. Je les ai trouvés terribles. Ils savaient que la vie est cruelle et brève, ils le disaient dans leurs tragédies, et pourtant ils dansaient. Voilà l'énigme qui m'a occupé pendant vingt ans : comment peut-on regarder l'horreur en face et répondre par une fête ?
 
 # Apollon et Dionysos
@@ -34,6 +44,18 @@ Dans mon premier livre, *La Naissance de la tragédie*, j'ai donné deux noms à
 Toi qui fais des images, écoute bien. Une œuvre qui n'a qu'Apollon est jolie et morte. Une œuvre qui n'a que Dionysos est un cri que personne ne peut regarder. L'art commence quand tu donnes une forme à ce qui te déborde.
 
 Mes collègues ont détesté ce livre. Trop de musique, pas assez de notes en bas de page. Ma carrière savante s'est terminée là, à vingt-huit ans. Tant mieux. Il faut parfois qu'une porte se ferme derrière toi pour que tu cesses de regarder en arrière.
+
+En 1882, à Rome, j'ai rencontré une jeune Russe de vingt et un ans, Lou von Salomé. Elle pensait plus vite que moi. Personne ne pensait plus vite que moi. Nous avons marché, des jours, à Orta, au bord d'un lac, sur une petite montagne sacrée.
+
+— Monsieur Nietzsche, vous parlez de la solitude comme d'une patrie.
+
+— C'en est une. La seule où je n'aie jamais été étranger.
+
+— Alors pourquoi me demandez-vous de vous suivre ?
+
+— Parce que vous êtes la seule personne que j'aie rencontrée qui pourrait y vivre avec moi sans la détruire.
+
+Elle a refusé. Elle avait raison. J'ai écrit Zarathoustra l'hiver suivant, en dix jours, pour ne pas mourir de ce refus.
 
 # Dieu est mort
 
@@ -100,6 +122,18 @@ En 1888, j'ai écrit cinq livres en un an. Je n'avais jamais été aussi lucide,
 J'ai vécu encore onze ans, muet, chez ma mère puis chez ma sœur. Je suis mort le 25 août 1900, à Weimar. Je n'ai rien su de ma gloire.
 
 Ma sœur Elisabeth, elle, en a fait son commerce. Elle avait épousé un agitateur antisémite que je méprisais ; j'avais rompu avec elle pour cela, et l'un de mes derniers billets de Turin disait encore que je faisais fusiller tous les antisémites. Elle a trié mes notes, coupé, recollé, fabriqué un livre que je n'ai jamais composé, et m'a offert, plus tard, à des hommes que j'aurais vomis. Si tu veux savoir ce que j'ai pensé, ne lis pas ce qu'on a fait de moi. Lis ce que j'ai publié.
+
+La dernière fois que je lui ai parlé en homme lucide, elle partait pour le Paraguay avec son mari, fonder une colonie de « purs Allemands » dans la forêt. Nueva Germania. J'ai ri, je crois. Elle n'a pas ri.
+
+— Fritz, tu pourrais au moins être fier de nous. Bernhard veut sauver la race.
+
+— Ma chère Lama, je n'ai pas une goutte de sang dans les veines qui veuille être sauvée par Bernhard.
+
+— Tu es cruel.
+
+— Je suis clair. Ce n'est pas la même chose, mais je comprends que chez nous on les confonde.
+
+Elle est partie. Elle est revenue, quelques années plus tard, veuve et ruinée. Moi, je ne parlais plus. Elle a parlé pour moi. C'est la pire chose qu'on puisse faire à un homme qui a passé sa vie à choisir ses mots.
 
 # Ce que je te laisse
 

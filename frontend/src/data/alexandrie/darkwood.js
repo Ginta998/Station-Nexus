@@ -13,6 +13,8 @@ const book = {
 
 Darkwood est un jeu d'horreur vu de dessus. On ne voit que ce qui est dans le champ de vision du personnage, un cône de lumière, et tout le reste est dans l'ombre. On entend des choses. On ne les voit pas.
 
+@art 4
+
 Les créateurs ont expliqué qu'ils n'aimaient pas les ficelles habituelles du genre, les monstres qui sautent à l'écran avec un bruit fort. Ils ont voulu faire peur autrement : par ce qu'on ne voit pas, par l'attente, par la nuit. Beaucoup de joueurs le considèrent comme un des jeux les plus éprouvants qu'ils aient touchés.
 
 @yt OU-mR3LY-OI | Darkwood, la bande-annonce de l'annonce du jeu.
@@ -20,6 +22,8 @@ Les créateurs ont expliqué qu'ils n'aimaient pas les ficelles habituelles du g
 # Ceux qui l'ont fait
 
 Darkwood est l'œuvre d'Acid Wizard Studio, un tout petit studio polonais fondé par trois amis d'études : Gustaw Stachaszewski, Artur Kordas et Paweł Gutowski. Ils n'avaient pas de département artistique, pas de programmeurs à part : à trois, ils ont tout fait, sans avoir jamais sorti de jeu auparavant.
+
+@art g 2
 
 En 2013, ils lancent une campagne de financement sur Indiegogo. Près de trois mille personnes y participent, et la campagne dépasse son objectif. Le jeu sort en accès anticipé sur Steam en juillet 2014, puis dans sa version complète en août 2017, après quatre ans de travail.
 
@@ -41,6 +45,8 @@ La forêt n'est pas un décor. On sent qu'elle veut quelque chose.
 
 Le jeu s'ouvre sur un prologue. On incarne un médecin, un homme qui vit dans une maison au milieu des bois. Il veut partir. Il pense avoir trouvé un moyen. Il garde précieusement une clé.
 
+@art 5
+
 Le prologue l'emmène à travers la forêt, à la rencontre d'êtres étranges, et il se termine mal pour lui. Un inconnu l'attaque et lui prend sa clé.
 
 C'est cet inconnu qu'on va incarner ensuite. Le jeu l'appelle simplement l'Étranger.
@@ -59,6 +65,8 @@ Ces nuits sont le cœur du jeu. On les redoute dès que la lumière baisse.
 
 La forêt est habitée par des personnages inoubliables, tous un peu hors du monde.
 
+@art g 3
+
 Il y a l'Homme-loup, une figure inquiétante qui semble régner sur les habitants des bois. Il y a le Marchand, qui vient chaque matin échanger des objets contre d'autres, et qui ne pose pas de questions. Il y a un musicien. Il y a une femme dans une maison au milieu des bois, qui sait beaucoup trop de choses.
 
 Chacun demande quelque chose à l'Étranger. Et chaque fois, il faut choisir : aider, trahir, tuer, ignorer. Ces choix changent le monde. Des personnages disparaissent, des lieux se ferment, et l'histoire prend des chemins différents.
@@ -66,6 +74,8 @@ Chacun demande quelque chose à l'Étranger. Et chaque fois, il faut choisir : a
 # Les champignons
 
 Dans la forêt poussent des plantes et des champignons étranges. En les transformant, l'Étranger peut fabriquer un liquide qu'il s'injecte. Chaque injection lui donne un pouvoir : voir mieux dans le noir, encaisser plus de coups, pousser un cri qui fait fuir les ennemis.
+
+@art 6
 
 Mais chaque pouvoir s'accompagne d'une contrepartie, un défaut, une faiblesse. Plus l'Étranger devient fort, plus il devient comme la forêt.
 
@@ -85,6 +95,8 @@ Et c'est ce qui se passe. Au bout de quelques jours, on connaît ses chemins, se
 
 À mesure qu'il avance, l'Étranger s'enfonce plus loin dans la forêt, vers des régions de plus en plus étranges. Il découvre que la clé du docteur mène quelque part. Il découvre que la forêt a un centre, et que quelque chose y vit.
 
+@art g 4
+
 Le jeu a plusieurs fins, selon les choix faits en route. Aucune n'est vraiment heureuse. Darkwood ne promet pas de sortie. Il demande seulement ce qu'on est prêt à devenir pour la chercher.
 
 !! CE QUE LE JEU RACONTE :: Une région isolée, des habitants qui survivent comme ils peuvent, des autorités absentes, un monde extérieur qu'on ne voit plus. Darkwood ne parle jamais directement de la Pologne des années 1980. Mais la forêt qui enferme tout le monde, et qui transforme les gens, a quelque chose d'un pays coupé du reste du monde.
@@ -98,6 +110,8 @@ En 2017, les créateurs ont fait un geste rare. Ils ont mis eux-mêmes leur jeu 
 # Ce que tu peux en prendre
 
 Darkwood t'apprend que la peur vient de ce qu'on ne voit pas. Un cône de lumière, un son derrière un mur, une porte qui grince. Le monstre qu'on imagine est toujours pire que celui qu'on montre.
+
+@art 7
 
 Il t'apprend aussi la force du rythme. Le jour pour respirer, la nuit pour trembler. Une œuvre qui alterne le calme et la tension fait monter l'angoisse bien mieux qu'une suite de chocs.
 

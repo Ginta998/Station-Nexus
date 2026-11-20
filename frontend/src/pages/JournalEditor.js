@@ -3,13 +3,40 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { IoArrowBack, IoSaveOutline } from "react-icons/io5";
 import { toast } from "sonner";
+import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexandrie/looks";
 import { getJournalEntry, createJournalEntry, updateJournalEntry, listJournalCategories, listCreations, mediaUrl,
   createJournalCategory, updateJournalCategory, deleteJournalCategory } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
-import { BlocksEditor, ImagePick } from "@/components/journal/BlocksEditor";
+import { BlocksEditor, ImagePick, ArtSearch, FilePick } from "@/components/journal/BlocksEditor";
+import { IoMusicalNotes } from "react-icons/io5";
+import { Face } from "@/components/atelier/AlexCore";
+import { Cassette, WEARS } from "@/components/journal/TapeObject";
+import MicRecorder from "@/components/journal/MicRecorder";
+import LabHead from "@/components/LabHead";
+
+// Le format de l'entrée, choisi en voyant l'objet : livre, VHS, vinyle (on la lit) ou cassette audio (on l'écoute).
+const FORMATS = [
+  { k: "livre", t: "Livre", d: "Des pages qu'on tourne" },
+  { k: "vhs", t: "VHS", d: "Une bande vidéo, écran cathodique" },
+  { k: "vinyle", t: "Vinyle", d: "Un disque, sa pochette" },
+  { k: "cassette", t: "Enregistreur", d: "Une cassette audio à écouter" },
+];
+function FormatPick({ f, set }) {
+  const title = f.title || "Sans titre"; const cover = f.cover ? mediaUrl(f.cover) : "";
+  return (
+    <div className="jr-fmts" role="radiogroup" aria-label="Format de l'entrée" data-testid="journal-format-pick">
+      {FORMATS.map((o) => (
+        <button key={o.k} type="button" role="radio" aria-checked={(f.format || "livre") === o.k} className={"jr-fmt" + ((f.format || "livre") === o.k ? " on" : "")} onClick={() => set({ format: o.k })} data-testid={`journal-format-${o.k}`}>
+          <span className="jr-fmt-obj">{o.k === "cassette" ? <Cassette title={f.tape_label || title} small img={f.cover} wear={f.tape_wear} /> : <Face b={{ id: "jr", title, format: o.k, room: "lore" }} cover={cover} />}</span>
+          <b>{o.t}</b><small>{o.d}</small>
+        </button>
+      ))}
+    </div>
+  );
+}
 
 const today = () => new Date().toISOString().slice(0, 10);
-const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true };
+const blank = { title: "", subtitle: "", category_id: "", creation_id: "", date: today(), cover: "", blocks: [{ type: "text", _k: "t0" }], show_home: false, published: true, format: "livre", look: "presse", tape_url: "", tape_label: "", tape_voice: "", tape_wear: "usee" };
 
 function CategoryManager({ cats, refetch }) {
   const [name, setName] = useState(""); const [color, setColor] = useState("#3f86ff");
@@ -28,8 +55,10 @@ function CategoryManager({ cats, refetch }) {
   );
 }
 
-export default function JournalEditor() {
-  const { id } = useParams();
+// Page de la station (/journal/nouveau, /journal/:id/modifier) ou, dans l'atelier, avec `id` et `onDone` :
+// on reste alors dans l'atelier, « Retour » et « Enregistrer » ramènent à la liste.
+export default function JournalEditor({ id: idProp, onDone }) {
+  const params = useParams(); const id = idProp !== undefined ? idProp || undefined : params.id;
   const nav = useNavigate(); const qc = useQueryClient();
   const { sfx, isAdmin } = useApp();
   const [f, setF] = useState(blank); const [saving, setSaving] = useState(false); const [showCats, setShowCats] = useState(false);
@@ -50,28 +79,51 @@ export default function JournalEditor() {
       const r = id ? await updateJournalEntry(id, payload) : await createJournalEntry(payload);
       qc.invalidateQueries({ queryKey: ["journal"] }); qc.invalidateQueries({ queryKey: ["journal-entry", r.id] });
       toast.success(id ? "Entrée mise à jour" : f.published ? "Entrée publiée — les abonnés sont notifiés" : "Brouillon enregistré");
-      sfx("select"); nav(`/journal/${r.id}`);
+      sfx("select"); if (onDone) onDone(r); else nav(`/journal/${r.id}`);
     } catch (e) { toast.error(e?.response?.data?.detail || "Enregistrement impossible"); }
     setSaving(false);
   };
 
   return (
-    <div className="relative min-h-screen w-full jr-page" data-testid="journal-editor">
+    <div className={"relative w-full jr-page" + (onDone ? " jr-embed" : " min-h-screen")} data-testid="journal-editor">
       <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
         <div className="flex items-center justify-between gap-2 mb-8">
-          <button onClick={() => { sfx("back"); nav(id ? `/journal/${id}` : "/journal"); }} className="jr-btn" aria-label="Retour" data-testid="journal-editor-back"><IoArrowBack /></button>
+          <button onClick={() => { sfx("back"); if (onDone) onDone(null); else nav(id ? `/journal/${id}` : "/journal"); }} className="jr-btn" aria-label="Retour" data-testid="journal-editor-back"><IoArrowBack /></button>
           <button onClick={save} disabled={saving} className="jr-btn jr-btn-brand" data-testid="journal-save"><IoSaveOutline /> {saving ? "Enregistrement…" : id ? "Enregistrer" : "Publier"}</button>
         </div>
-        <p className="mono jr-k mb-3">{id ? "MODIFIER L'ENTRÉE" : "NOUVELLE ENTRÉE"}</p>
+        <LabHead label="JOURNAL DE BORD" code={id ? "J-MOD" : "J-NEW"} title={id ? "Modifier l'entrée" : "Nouvelle entrée"} />
+        <p className="jr-sec mono"><b>01</b> COUVERTURE</p>
 
         <div className="jr-cover-edit" style={f.cover ? { backgroundImage: `url(${mediaUrl(f.cover)})` } : undefined}>
           <ImagePick label={f.cover ? "Changer la couverture" : "Ajouter une image de couverture"} onDone={([u]) => set({ cover: u })} testid="journal-cover-pick" />
+          <ArtSearch term={f.title} label="Chercher une couverture" onPick={(u) => set({ cover: u })} />
           {f.cover && <button className="jr-pick" onClick={() => set({ cover: "" })}>Retirer</button>}
         </div>
 
+        <p className="jr-sec mono"><b>02</b> TITRE</p>
         <input className="jr-in jr-in-title font-display" placeholder="Titre de l'entrée" value={f.title} onChange={(e) => set({ title: e.target.value })} data-testid="journal-title-input" />
         <input className="jr-in" placeholder="Sous-titre / chapeau (facultatif)" value={f.subtitle} onChange={(e) => set({ subtitle: e.target.value })} data-testid="journal-subtitle-input" />
 
+        <p className="jr-sec mono"><b>03</b> FORMAT <i>/</i> COMMENT ON LA DÉCOUVRE</p>
+        <FormatPick f={f} set={set} />
+        {f.format === "cassette" && (
+          <div className="jr-tape-ed" data-testid="journal-tape">
+            <p className="jr-sec mono"><b>03·B</b> L'ENREGISTREMENT</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <MicRecorder onDone={(u) => set({ tape_url: u })} label={f.tape_url ? "Réenregistrer au micro" : "Enregistrer au micro"} testid="journal-tape-mic" />
+              <FilePick accept="audio/*" icon={<IoMusicalNotes />} label={f.tape_url ? "Remplacer l'enregistrement" : "Ou déposer un fichier (mp3, m4a, wav…)"} onDone={([u]) => set({ tape_url: u })} testid="journal-tape-pick" />
+              {f.tape_url && <audio controls preload="none" src={mediaUrl(f.tape_url)} />}
+            </div>
+            <div className="jr-opts">
+              <label>Étiquette<input className="jr-in" value={f.tape_label || ""} onChange={(e) => set({ tape_label: e.target.value })} placeholder="Enregistrement n°1" data-testid="journal-tape-label" /></label>
+              <label>Voix<input className="jr-in" value={f.tape_voice || ""} onChange={(e) => set({ tape_voice: e.target.value })} placeholder="Brichel" /></label>
+            </div>
+            <div className="tp-wear jr-wear" role="radiogroup" aria-label="Grain de la cassette">{WEARS.map(([k, t, sub]) => <button type="button" key={k} role="radio" aria-checked={(f.tape_wear || "usee") === k} className={(f.tape_wear || "usee") === k ? "on" : ""} onClick={() => set({ tape_wear: k })}><b>{t}</b><small>{sub}</small></button>)}</div>
+            <p className="jr-hint">L'image de couverture (en haut) s'imprime sur l'étiquette et colore le fond du lecteur. Le texte, s'il y en a, sert de transcription ; une cassette peut très bien ne contenir que la voix.</p>
+          </div>
+        )}
+
+        <p className="jr-sec mono"><b>04</b> RÉGLAGES</p>
         <div className="jr-opts">
           <label>Date<input type="date" className="jr-in" value={f.date} onChange={(e) => set({ date: e.target.value })} data-testid="journal-date-input" /></label>
           <label>Catégorie
@@ -84,6 +136,11 @@ export default function JournalEditor() {
               <option value="">Aucune</option>{creations.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
             </select>
           </label>
+          {f.format !== "cassette" && <label>Page du lecteur
+            <select className="jr-in" value={f.look || "presse"} onChange={(e) => set({ look: e.target.value })} data-testid="journal-look-select">
+              {Object.keys(BOOK_LOOKS).map((k) => <option key={k} value={k}>{k[0].toUpperCase() + k.slice(1)}{BOOK_LOOK_INFO[k] ? ` · ${BOOK_LOOK_INFO[k]}` : ""}</option>)}
+            </select>
+          </label>}
         </div>
         {showCats && <CategoryManager cats={cats} refetch={refetchCats} />}
         <div className="jr-toggles">
@@ -92,6 +149,7 @@ export default function JournalEditor() {
         </div>
         {f.creation_id && <p className="jr-hint">Elle apparaîtra aussi sur la fiche de la création.</p>}
 
+        <p className="jr-sec mono"><b>05</b> CONTENU{f.format === "cassette" ? <> <i>/</i> TRANSCRIPTION, FACULTATIVE</> : null}</p>
         <BlocksEditor blocks={f.blocks} onChange={(blocks) => set({ blocks })} />
       </div>
     </div>

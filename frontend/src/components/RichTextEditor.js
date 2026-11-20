@@ -4,7 +4,71 @@ import {
   IoArrowUndo, IoArrowRedo, IoListOutline, IoLinkOutline, IoBrushOutline, IoChevronDown, IoMenuOutline, IoClose,
 } from "react-icons/io5";
 import { MdFormatAlignLeft, MdFormatAlignCenter, MdFormatAlignRight, MdFormatAlignJustify, MdFormatListNumbered, MdFormatIndentIncrease, MdFormatIndentDecrease, MdFormatClear, MdStrikethroughS } from "react-icons/md";
-import { uploadAsset, listAssets, assetUrl, listAmbiences, ambienceUrl } from "@/lib/api";
+import { uploadAsset, listAssets, assetUrl, listAmbiences, ambienceUrl, uploadJournalImage } from "@/lib/api";
+import { atelierApi } from "@/lib/atelier";
+import { CoverDialog } from "@/components/atelier/AlexCore";
+import { IoLogoYoutube, IoSearch } from "react-icons/io5";
+
+// Insérer une image : depuis l'appareil, par un lien, ou en cherchant (Wikipédia, SteamGridDB avec ta clé du serveur), avec Pinterest et Google Images à portée.
+function ImageMenu({ onFile, onUrl, onFull }) {
+  const [url, setUrl] = useState(""); const [q, setQ] = useState(""); const [src, setSrc] = useState("wiki"); const [res, setRes] = useState(null); const [busy, setBusy] = useState(false);
+  const search = async (e) => {
+    e?.preventDefault(); if (!q.trim()) return; setBusy(true); setRes(null);
+    try {
+      if (src === "sgdb") { const r = await atelierApi.sgdbSearch(q.trim()); setRes((r.items || []).map((a) => ({ id: a.id, url: a.url, thumb: a.thumb }))); }
+      else { const d = await fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${encodeURIComponent(q.trim())}&gsrlimit=16&prop=pageimages&piprop=thumbnail%7Coriginal&pithumbsize=500`).then((r) => r.json());
+        setRes(Object.values(d.query?.pages || {}).filter((x) => x.thumbnail).map((x) => ({ id: x.pageid, url: x.original?.source || x.thumbnail.source, thumb: x.thumbnail.source }))); }
+    } catch (_) { setRes([]); }
+    setBusy(false);
+  };
+  return (
+    <div className="absolute z-30 mt-1 p-3 border rte-pop" style={{ width: 320, background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} data-testid="rte-image-menu">
+      <button type="button" className="w-full px-3 py-2 border text-sm mb-2" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }} onMouseDown={(e) => e.preventDefault()} onClick={onFile}>Depuis l'appareil…</button>
+      {onFull && <button type="button" className="w-full px-3 py-2 border text-sm mb-2 font-semibold" style={{ borderColor: "var(--brand)", color: "var(--brand)" }} onMouseDown={(e) => e.preventDefault()} onClick={onFull} data-testid="rte-image-full">Chercher un artwork (SteamGridDB, affiches, manga, domaine public…)</button>}
+      <form className="flex gap-1 mb-2" onSubmit={(e) => { e.preventDefault(); if (/^https?:\/\//.test(url.trim())) onUrl(url.trim()); }}>
+        <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Coller le lien d'une image" className="flex-1 min-w-0 px-2 py-1.5 border text-sm outline-none" style={{ borderColor: "var(--border-c)", background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid="rte-image-url" />
+        <button type="submit" className="px-2 border text-sm" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }}>OK</button>
+      </form>
+      <form className="flex gap-1" onSubmit={search}>
+        <select value={src} onChange={(e) => setSrc(e.target.value)} className="px-1 border text-xs" style={{ borderColor: "var(--border-c)", background: "var(--bg-primary)", color: "var(--text-primary)" }}><option value="wiki">Wikipédia</option><option value="sgdb">SteamGridDB</option></select>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher une image" className="flex-1 min-w-0 px-2 py-1.5 border text-sm outline-none" style={{ borderColor: "var(--border-c)", background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid="rte-image-q" />
+        <button type="submit" className="px-2 border" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }}>{busy ? "…" : <IoSearch size={14} />}</button>
+      </form>
+      {res && <div className="grid grid-cols-4 gap-1 mt-2 max-h-48 overflow-y-auto">{res.length ? res.map((x) => <button type="button" key={x.id} onMouseDown={(e) => e.preventDefault()} onClick={() => onUrl(x.url)} className="aspect-square bg-cover bg-center border" style={{ backgroundImage: `url(${x.thumb})`, borderColor: "var(--border-c)" }} />) : <p className="col-span-4 text-xs" style={{ color: "var(--text-secondary)" }}>Aucun résultat{src === "sgdb" ? " (SteamGridDB demande la clé sur le serveur)" : ""}.</p>}</div>}
+      <p className="text-xs mt-2" style={{ color: "var(--text-secondary)" }}>Ailleurs : <a href={`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(q)}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)" }}>Pinterest ↗</a> · <a href={`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--brand)" }}>Google Images ↗</a> (copie l'adresse de l'image, puis colle-la au-dessus)</p>
+    </div>
+  );
+}
+
+// Insérer une vidéo YouTube : on cherche, on clique, elle se place dans le texte (vignette cliquable).
+// Recherche YouTube (ou lien collé) : réutilisée pour les vidéos et pour les musiques
+export function YtSearchBox({ onPick, placeholder = "Chercher sur YouTube ou coller un lien", testid }) {
+  const [q, setQ] = useState(""); const [res, setRes] = useState(null); const [busy, setBusy] = useState(false);
+  const go = async (e) => {
+    e?.preventDefault(); const t = q.trim(); if (!t) return;
+    const id = (t.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1]; if (id) return onPick({ id, title: "" });
+    setBusy(true); try { setRes(await atelierApi.ytSearch(t)); } catch (_) { setRes([]); } setBusy(false);
+  };
+  return (
+    <div data-testid={testid}>
+      <div className="flex gap-1">
+        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") go(e); }} placeholder={placeholder} className="flex-1 min-w-0 px-2 py-1.5 border text-sm outline-none" style={{ borderColor: "var(--border-c)", background: "var(--bg-primary)", color: "var(--text-primary)" }} data-testid={testid ? testid + "-q" : undefined} />
+        <button type="button" onClick={go} className="px-2 border" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }} aria-label="Chercher">{busy ? "…" : <IoSearch size={14} />}</button>
+      </div>
+      {res && <div className="flex flex-col gap-1 mt-2 max-h-60 overflow-y-auto">{res.length ? res.slice(0, 10).map((v) => (
+        <button type="button" key={v.id} onMouseDown={(e) => e.preventDefault()} onClick={() => onPick(v)} className="flex gap-2 items-center text-left p-1 border" style={{ borderColor: "var(--border-c)", color: "var(--text-primary)" }} data-testid={testid ? `${testid}-r-${v.id}` : undefined}>
+          <span className="flex-shrink-0 w-20 aspect-video bg-cover bg-center" style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} /><span className="text-xs line-clamp-2">{v.title}{v.length ? <em className="block opacity-60 not-italic">{v.length}</em> : null}</span>
+        </button>)) : <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Aucun résultat.</p>}</div>}
+    </div>
+  );
+}
+function YoutubeMenu({ onPick }) {
+  return (
+    <div className="absolute z-30 mt-1 p-3 border rte-pop" style={{ width: 340, background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} data-testid="rte-yt-menu">
+      <YtSearchBox onPick={onPick} />
+    </div>
+  );
+}
 
 const COLORS = ["#ffffff", "var(--brand)", "#e60012", "#ff7a00", "#ffd400", "#00e5a0", "#4d8dff", "#c4b5fd", "#ff4dcb", "#9aa0a6"];
 const HILITES = ["transparent", "rgba(255,212,0,0.35)", "rgba(0,229,160,0.3)", "rgba(77,141,255,0.35)", "rgba(255,77,203,0.3)", "rgba(230,0,18,0.35)"];
@@ -98,6 +162,8 @@ function MusicMenu({ creationId, onInsert }) {
     <div className="absolute z-30 mt-1 right-0 p-3 border w-72" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="rte-music-menu" onMouseDown={(e) => e.target.tagName !== "INPUT" && e.preventDefault()}>
       <p className="text-[10px] uppercase tracking-widest mb-2" style={{ color: "var(--text-secondary)" }}>Repère musique (le lecteur le lance d'un toucher)</p>
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titre affiché (ex : Thème de bataille)" className="w-full px-2 py-1.5 border outline-none text-sm mb-2" style={fs} data-testid="rte-cue-title" />
+      <p className="text-[10px] uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>Depuis YouTube (lu par le lecteur intégré)</p>
+      <div className="mb-3"><YtSearchBox placeholder="Chercher une musique : Hisaishi, lo-fi, OST…" testid="rte-cue-yt" onPick={(v) => onInsert(`https://www.youtube.com/watch?v=${v.id}`, title.trim() || v.title || "Musique")} /></div>
       <div className="mb-2 max-h-40 overflow-y-auto flex flex-col gap-1">
         {assets.length > 0 && <p className="text-[10px]" style={{ color: "var(--text-secondary)" }}>Pistes de cette création :</p>}
         {assets.map((a) => item(a.id, a.name, () => onInsert(assetUrl(a.id), title || a.name), `rte-cue-existing-${a.id}`))}
@@ -116,6 +182,7 @@ function MusicMenu({ creationId, onInsert }) {
 
 // Éditeur complet façon traitement de texte. `page` : écriture directement dans la mise en page du lecteur.
 export default function RichTextEditor({ value, onChange, placeholder = "Écris ton chapitre…", creationId, page = false, title, eyebrow, onTitle }) {
+  const [artPick, setArtPick] = useState(false); // la recherche d'artworks d'Alexandrie
   const ref = useRef(null);
   const [menu, setMenu] = useState(null); // color | hilite | music
   const [busy, setBusy] = useState(false);
@@ -165,11 +232,16 @@ export default function RichTextEditor({ value, onChange, placeholder = "Écris 
   const toggle = (m) => { saveSel(); setMenu((v) => (v === m ? null : m)); };
 
   const onPickImage = async (file) => {
-    if (!file || !creationId) return;
+    if (!file) return;
     setBusy(true);
-    try { const a = await uploadAsset(creationId, file, "image"); insertHTML(`<img src="${assetUrl(a.id)}" class="sx-rich-img" alt=""/><p><br/></p>`); }
+    try {
+      const src = creationId ? assetUrl((await uploadAsset(creationId, file, "image")).id) : (await uploadJournalImage(file)).url;
+      insertHTML(`<img src="${src}" class="sx-rich-img" alt=""/><p><br/></p>`);
+    } catch (_) { /* image refusée : rien n'est inséré */ }
     finally { setBusy(false); }
   };
+  const insertImageUrl = (u) => { setMenu(null); insertHTML(`<img src="${u.replace(/"/g, "&quot;")}" class="sx-rich-img" alt=""/><p><br/></p>`); };
+  const insertYt = (v) => { setMenu(null); insertHTML(`<p><a class="sx-yt" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener noreferrer"><img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" class="sx-rich-img" alt="${(v.title || "Vidéo YouTube").replace(/"/g, "&quot;")}"/></a></p><p>${v.title ? "▶ " + v.title.replace(/</g, "&lt;") : ""}</p><p><br/></p>`); };
   const insertCue = (url, title) => {
     const t = (title || "Musique").trim().replace(/[<>&"]/g, "");
     insertHTML(`<span class="sx-music-cue" contenteditable="false" data-track="${url}" data-title="${t}">${t}</span>&nbsp;`);
@@ -236,9 +308,15 @@ export default function RichTextEditor({ value, onChange, placeholder = "Écris 
       <Btn testid="rte-p" title="Paragraphe normal" onClick={() => exec("formatBlock", "P")}><IoText size={15} /></Btn>
       <Btn testid="rte-clear" title="Effacer la mise en forme" onClick={() => exec("removeFormat")}><MdFormatClear size={17} /></Btn>
       <Sep />
-      <Btn testid="rte-image" title={creationId ? "Insérer une image ici" : "Enregistre d'abord la création"} onClick={() => { if (!creationId) return; saveSel(); imgInput.current?.click(); }}>
-        {busy ? "…" : <IoImageOutline size={16} />}
-      </Btn>
+      <div className="relative">
+        <Btn testid="rte-image" title="Insérer une image ici" onClick={() => toggle("image")}>{busy ? "…" : <IoImageOutline size={16} />}</Btn>
+        {menu === "image" && <ImageMenu onFile={() => { setMenu(null); imgInput.current?.click(); }} onUrl={insertImageUrl} onFull={() => { setMenu(null); setArtPick(true); }} />}
+        {artPick && <CoverDialog b={{ id: "rte", title: title || eyebrow || "Artwork", room: "cinema", format: "livre" }} current="" onSave={(u) => { setArtPick(false); if (u) insertImageUrl(u); }} onClose={() => setArtPick(false)} />}
+      </div>
+      <div className="relative">
+        <Btn testid="rte-youtube" title="Insérer une vidéo YouTube" onClick={() => toggle("yt")}><IoLogoYoutube size={16} /></Btn>
+        {menu === "yt" && <YoutubeMenu onPick={insertYt} />}
+      </div>
       <input ref={imgInput} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; onPickImage(f); }} />
       <div className="relative">
         <Btn testid="rte-music" title="Insérer une musique ici" onClick={() => toggle("music")}><IoMusicalNotes size={16} /></Btn>

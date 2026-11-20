@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoPlay, IoSearch, IoCreateOutline, IoTrashOutline, IoStar, IoStarOutline, IoArrowForward, IoColorPaletteOutline } from "react-icons/io5";
@@ -11,10 +11,15 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import TopBar from "@/components/TopBar";
-import EditorDialog from "@/components/EditorDialog";
+// l'éditeur d'œuvre (admin) ne se charge qu'à l'ouverture
+const EditorDialog = lazy(() => import("@/components/EditorDialog"));
+import StationSearch from "@/components/StationSearch";
+import JournalOverlay from "@/components/journal/JournalOverlay";
 import ProfileDialog from "@/components/ProfileDialog";
 import HomeCountdown from "@/components/HomeCountdown";
 import HomeCustomizer from "@/components/home/HomeCustomizer";
+import NexusHome from "@/components/nexus/NexusHome";
+import { useExperience } from "@/lib/experience";
 
 /* ---------- Compte à rebours vers la prochaine sortie (dim. 20h) ---------- */
 function nextSunday() {
@@ -91,6 +96,9 @@ export default function Home() {
   const THEMES = useThemeList();
   const nav = useNavigate();
   const { isAdmin, sfx, theme, setTheme, playAmbient } = useApp();
+  const [tapeId, setTapeId] = useState(""); // une cassette du journal s'écoute sur place
+  const nexus = useExperience() === "nexus"; // en Nexus, une entrée se lit directement (livre, VHS, vinyle, cassette)
+  const openJournal = (e) => { sfx("select"); if (e.format === "cassette" || nexus) setTapeId(e.id); else nav(`/journal/${e.id}`); };
   const { user, openAuth } = useAuth();
   const { membershipActive } = useEntitlements();
 
@@ -103,7 +111,10 @@ export default function Home() {
   const { data: journalCats = [] } = useQuery({ queryKey: ["journal-cats"], queryFn: listJournalCategories });
 
   const [view, setView] = useState("rails");      // rails | map | arcade
-  const [query, setQuery] = useState("");
+  const [query] = useState(""); // la recherche passe par le panneau (StationSearch)
+  const [searchOpen, setSearchOpen] = useState(false);
+  // Ctrl/Cmd + K : la recherche de la station
+  useEffect(() => { const k = (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setSearchOpen(true); } }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, []);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -114,6 +125,7 @@ export default function Home() {
   const [arcSel, setArcSel] = useState(0);
   const [openJ, setOpenJ] = useState(null);
   const [themeOpen, setThemeOpen] = useState(false);
+  const experience = useExperience();
 
   const requireProfile = () => { if (!user) { toast.info("Crée un compte pour sauvegarder ton profil partout."); openAuth(); } else setProfileOpen(true); };
   useEffect(() => { document.body.classList.toggle("sx-picking", themeOpen); return () => document.body.classList.remove("sx-picking"); }, [themeOpen]);
@@ -183,11 +195,11 @@ export default function Home() {
 
   // clavier (navigation arcade)
   const onKey = useCallback((e) => {
-    if (editorOpen || view !== "arcade") return;
+    if (editorOpen || view !== "arcade" || experience === "nexus") return;
     if (e.key === "ArrowRight") { e.preventDefault(); sfx("nav"); setArcSel((i) => Math.min(i + 1, arcItems.length - 1)); }
     else if (e.key === "ArrowLeft") { e.preventDefault(); sfx("nav"); setArcSel((i) => Math.max(i - 1, 0)); }
     else if (e.key === "Enter" && arcCur) { sfx("select"); nav(`/oeuvre/${arcCur.id}`); }
-  }, [editorOpen, view, arcItems.length, arcCur, sfx, nav]);
+  }, [editorOpen, view, arcItems.length, arcCur, sfx, nav, experience]);
   useEffect(() => { window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [onKey]);
 
   useEffect(() => {
@@ -198,7 +210,7 @@ export default function Home() {
 
   // actions
   const pushRecent = (id) => { try { const r = JSON.parse(localStorage.getItem("sx_recent") || "[]"); const nx = [id, ...r.filter((x) => x !== id)].slice(0, 8); localStorage.setItem("sx_recent", JSON.stringify(nx)); } catch (_) {} };
-  const open = (id) => { sfx("select"); pushRecent(id); nav(`/oeuvre/${id}`); };
+  const open = (id) => { pushRecent(id); if (experience === "nexus" && all.some((c) => c.id === id)) { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id } })); return; } sfx("select"); nav(`/oeuvre/${id}`); };
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
   const openEditItem = (it) => { setEditing(it); setEditorOpen(true); };
   const doDeleteItem = async (it) => {
@@ -252,10 +264,56 @@ export default function Home() {
 
   let gi = 0; // compteur d'index global pour les affiches
 
+  // Barre de l'explorateur (recherche, thèmes, choix de la vue) : la même en Classique et en Nexus
+  const explorerBar = (<>
+        {/* EXPLORER */}
+        <div className="seclabel sx-explore-head">
+          <div className="lt"><h2>Explorer</h2><span className="kj">探</span></div>
+          <span className="all mono">{experience === "nexus" ? "RAYONS" : "RAILS"} · CARTE · ARCADE</span>
+        </div>
+
+        {/* RECHERCHE */}
+        <div className="sx-search">
+          <button type="button" className="field sx-search-open" onClick={() => { sfx("nav"); setSearchOpen(true); }} data-testid="home-search-open">
+            <IoSearch size={14} style={{ color: "var(--text-secondary)" }} />
+            <span>Rechercher une œuvre, un chapitre, le journal…</span>
+            <kbd>Ctrl K</kbd>
+          </button>
+          <button className="sbtn" data-testid="home-theme-toggle" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }}>
+            <IoColorPaletteOutline size={14} style={{ marginRight: 5 }} /> Thèmes
+          </button>
+          {themeOpen && (
+            <>
+              <div style={{ position: "fixed", inset: 0, zIndex: 89 }} onClick={() => setThemeOpen(false)} />
+              <div className="sx-themepick">
+                {THEMES.map((t) => (
+                  <button type="button" key={t.key} data-testid={`home-theme-pick-${t.key}`} className={"sx-tpk" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); setThemeOpen(false); }}>
+                    <span className="sw" style={{ background: `linear-gradient(135deg, ${t.swatch[0]}, ${t.swatch[1]} 55%, ${t.swatch[2]})` }} />
+                    <span className="nm">{t.name}</span>
+                    <span className="kj">{t.kanji}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* VIEW TOGGLE */}
+        <div className="vtog">
+          {[["rails", experience === "nexus" ? "⊞ Rayons" : "⊞ Rails"], ["map", "✦ Carte"], ["arcade", "▶ Arcade"]].map(([v, label]) => (
+            <button key={v} aria-pressed={view === v} onClick={() => { sfx("nav"); setView(v); }}>{label}</button>
+          ))}
+        </div>
+
+  </>);
+
+
   return (
     <div style={{ minHeight: "calc(100vh / var(--uiz, 1))", background: "transparent", color: "var(--text-primary)", position: "relative" }}>
       <div style={{ position: "relative", zIndex: 1 }}>
       <TopBar onAdd={openCreate} onProfile={requireProfile} />
+      {searchOpen && <StationSearch onClose={() => setSearchOpen(false)} />}
+      {tapeId && <JournalOverlay id={tapeId} onClose={() => setTapeId("")} />}
       <HomeCountdown />
 
       <div className="sx-exp">
@@ -337,7 +395,7 @@ export default function Home() {
         )}
 
         {/* REPRENDRE */}
-        {resumeItems.length > 0 && (
+        {experience !== "nexus" && resumeItems.length > 0 && (
           <section className="sx-resume">
             <div className="seclabel"><div className="lt"><h2>Reprendre</h2><span className="kj">続</span></div></div>
             <div className="resume">
@@ -351,43 +409,11 @@ export default function Home() {
           </section>
         )}
 
-        {/* EXPLORER */}
-        <div className="seclabel sx-explore-head">
-          <div className="lt"><h2>Explorer</h2><span className="kj">探</span></div>
-          <span className="all mono">RAILS · CARTE · ARCADE</span>
-        </div>
+        {/* NEXUS : accès rapide + rayons d'objets à la place de l'explorateur classique */}
+        {experience === "nexus" && <NexusHome all={all} cats={cats} settings={settings} query={query} view={view} toolbar={explorerBar} />}
 
-        {/* RECHERCHE */}
-        <div className="sx-search">
-          <div className="field">
-            <IoSearch size={14} style={{ color: "var(--text-secondary)" }} />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher une création…" />
-          </div>
-          <button className="sbtn" data-testid="home-theme-toggle" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }}>
-            <IoColorPaletteOutline size={14} style={{ marginRight: 5 }} /> Thèmes
-          </button>
-          {themeOpen && (
-            <>
-              <div style={{ position: "fixed", inset: 0, zIndex: 89 }} onClick={() => setThemeOpen(false)} />
-              <div className="sx-themepick">
-                {THEMES.map((t) => (
-                  <button type="button" key={t.key} data-testid={`home-theme-pick-${t.key}`} className={"tp" + (t.key === theme ? " on" : "")} onClick={() => { sfx("select"); setTheme(t.key); setThemeOpen(false); }}>
-                    <span className="sw" style={{ background: `linear-gradient(135deg, ${t.swatch[0]}, ${t.swatch[1]} 55%, ${t.swatch[2]})` }} />
-                    <span className="nm">{t.name}</span>
-                    <span className="kj">{t.kanji}</span>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* VIEW TOGGLE */}
-        <div className="vtog">
-          {[["rails", "⊞ Rails"], ["map", "✦ Carte"], ["arcade", "▶ Arcade"]].map(([v, label]) => (
-            <button key={v} aria-pressed={view === v} onClick={() => { sfx("nav"); setView(v); }}>{label}</button>
-          ))}
-        </div>
+        {experience !== "nexus" && (<>
+        {explorerBar}
 
         {isLoading && <div className="empty">Chargement…</div>}
         {!isLoading && filtered.length === 0 && <div className="empty">Aucune création{query ? " pour cette recherche." : "."}</div>}
@@ -479,6 +505,8 @@ export default function Home() {
           </div>
         )}
 
+        </>)}
+
         {/* ---------- JOURNAL DE BORD ---------- */}
         <section className="sx-journal">
           <div className="seclabel"><div className="lt"><h2>Journal de bord</h2><span className="kj">録</span></div><span className="all mono" data-testid="home-journal-all" onClick={() => { sfx("nav"); nav("/journal"); }}>TOUT VOIR →</span></div>
@@ -486,7 +514,7 @@ export default function Home() {
             {homeJournal.length ? homeJournal.map((e) => {
               const c = journalCats.find((k) => k.id === e.category_id);
               return (
-                <article key={e.id} className="btc" data-testid={`home-journal-${e.id}`} onClick={() => { sfx("select"); nav(`/journal/${e.id}`); }}>
+                <article key={e.id} className="btc" data-testid={`home-journal-${e.id}`} onClick={() => openJournal(e)}>
                   <div className={"bv" + (e.cover ? " bimg" : "")} style={e.cover ? { backgroundImage: `url(${mediaUrl(e.cover)})`, backgroundSize: "cover", backgroundPosition: "center" } : { "--c1": c?.color || "#2b3a60", "--c2": "#0a1020" }}><span className="tag">{(c?.name || "JOURNAL").toUpperCase()}</span></div>
                   <div className="bi"><div className="bt">{e.title}</div><div className="bs">{fmtJournalDate(e.date).toUpperCase()}</div></div>
                 </article>
@@ -536,7 +564,7 @@ export default function Home() {
 
       </div>
 
-      <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} />
+      {editorOpen && <Suspense fallback={null}><EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} /></Suspense>}
       <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
       <HomeCustomizer open={customizerOpen} onClose={() => setCustomizerOpen(false)} isAdmin={isAdmin} onSaveDefault={() => {}} saving={false} />
     </div>

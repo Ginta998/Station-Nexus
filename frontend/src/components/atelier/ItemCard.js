@@ -2,6 +2,7 @@ import { IoPin } from "react-icons/io5";
 import { KINDS, imgSrc, stripHtml, fileType, fileNature } from "@/lib/atelier";
 import { pressMenu, ITEM_MIME } from "@/components/atelier/ContextMenu";
 import { itemMenu } from "@/components/atelier/itemActions";
+import { liveTag } from "@/lib/publish";
 
 const FT = { image: "IMAGE", pdf: "PDF", office: "OFFICE", video: "VIDÉO", audio: "AUDIO", text: "TEXTE", link: "LIEN", drive: "DRIVE", other: "FICHIER", none: "" };
 
@@ -32,6 +33,7 @@ export default function ItemCard({ it, at, open, sel }) {
       <div className="at-card-b">
         <p className="at-card-k mono"><span className="kj">{k.kanji}</span> {k.label.toUpperCase()}{u ? ` · ${u.name}` : " · INBOX"}{it.pinned && <IoPin size={11} />}</p>
         <h3>{it.title || "Sans titre"}</h3>
+        {liveTag(it) && <span className="at-card-pub mono" title="Publié sur la station">● EN LIGNE · {liveTag(it)}</span>}
         {it.kind === "character" && it.fields?.role && <p className="at-card-f">{it.fields.role}</p>}
         {it.kind === "event" && it.date && <p className="at-card-f">{it.date}</p>}
         {excerpt && <p className="at-card-x">{excerpt}</p>}

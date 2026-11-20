@@ -74,10 +74,13 @@ export const baseOf = (key) => { const d = themeDef(key); return isCustomKey(key
 const swatchOf = (d) => [d.colors?.bg, d.colors?.brand, d.colors?.brand2];
 
 // Liste fusionnée pour tous les sélecteurs de thèmes
+export const DEFAULT_MASKED = ["akira"];
 export function useThemeList() {
   const s = useThemeState();
   const over = (t) => { const d = s.docs.find((x) => x.key === t.key); return d?.colors ? { ...t, name: d.name || t.name, kanji: d.kanji || t.kanji, tagline: d.tagline || t.tagline, swatch: swatchOf(d) } : t; };
-  const builtins = THEMES.filter((t) => !s.hidden.includes(t.key)).map(over);
+  // Masqués par défaut (gardés pour l'Atelier des thèmes, où on peut les réactiver) : Akira
+  const masked = (t) => DEFAULT_MASKED.includes(t.key) && !s.docs.some((d) => d.key === t.key && d.enabled === true);
+  const builtins = THEMES.filter((t) => !s.hidden.includes(t.key) && !masked(t)).map(over);
   const customs = s.docs.filter((d) => isCustomKey(d.key) && d.enabled !== false).map((d) => ({ key: d.key, name: d.name, kanji: d.kanji, tagline: d.tagline || "Thème personnalisé", swatch: swatchOf(d) }));
   return [...builtins, ...customs];
 }

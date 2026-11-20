@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { IoArrowBack, IoCreateOutline, IoTrashOutline, IoClose } from "react-icons/io5";
+import { IoArrowBack, IoCreateOutline, IoTrashOutline, IoClose, IoBookOutline, IoRadioOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { getJournalEntry, listJournal, listJournalCategories, listCreations, deleteJournalEntry, mediaUrl, posterUrl } from "@/lib/api";
 import { useApp } from "@/context/AppContext";
 import MobileMenu from "@/components/MobileMenu";
+import WorkReader from "@/components/nexus/WorkReader";
+import TapePlayer from "@/components/journal/TapePlayer";
+import { useExperience } from "@/lib/experience";
 import { JournalBlocks, CategoryTag, fmtDate } from "@/components/journal/JournalParts";
 
 export default function JournalEntry() {
@@ -13,9 +16,11 @@ export default function JournalEntry() {
   const nav = useNavigate();
   const qc = useQueryClient();
   const { sfx, isAdmin, toggleReadingUrl, playingId, isPlaying } = useApp();
-  const onMusic = (url) => { sfx("select"); toggleReadingUrl(url, "cue:" + url, { loop: false }); };
+  const onMusic = (url, title) => { sfx("select"); toggleReadingUrl(url, "cue:" + url, { loop: false, title }); };
   const playingUrl = isPlaying && playingId?.startsWith("cue:") ? playingId.slice(4) : "";
   const [lightbox, setLightbox] = useState("");
+  const nexus = useExperience() === "nexus";
+  const [reading, setReading] = useState(false); // Nexus : l'entrée se lit dans le lecteur d'Alexandrie (livre, VHS ou vinyle)
   const { data: e, isError } = useQuery({ queryKey: ["journal-entry", id], queryFn: () => getJournalEntry(id) });
   const { data: all = [] } = useQuery({ queryKey: ["journal", isAdmin], queryFn: () => listJournal() });
   const { data: cats = [] } = useQuery({ queryKey: ["journal-cats"], queryFn: listJournalCategories });
@@ -46,6 +51,7 @@ export default function JournalEntry() {
       </div>
 
       <article className="jr-article">
+        <p className="lab-kick jr-kick">STATION NEXUS <i>/</i> JOURNAL DE BORD <b>{e.format === "cassette" ? "CASSETTE" : e.format === "vhs" ? "VHS" : e.format === "vinyle" ? "VINYLE" : "LIVRE"}</b></p>
         <div className="jr-meta"><CategoryTag cat={cat} /><span className="mono" data-testid="journal-entry-date">{fmtDate(e.date)}</span>{!e.published && <span className="jr-draft static">Brouillon</span>}</div>
         <h1 className="jr-title font-display" data-testid="journal-entry-title">{e.title}</h1>
         {e.subtitle && <p className="jr-sub">{e.subtitle}</p>}
@@ -55,6 +61,8 @@ export default function JournalEntry() {
             <span><small className="mono">CRÉATION LIÉE</small>{crea.title}</span>
           </button>
         )}
+        {e.format === "cassette" && <button className="jr-read" onClick={() => { sfx("select"); setReading(true); }} data-testid="journal-entry-listen"><IoRadioOutline /> Écouter la cassette</button>}
+        {nexus && e.format !== "cassette" && <button className="jr-read" onClick={() => { sfx("select"); setReading(true); }} data-testid="journal-entry-read"><IoBookOutline /> Lire {e.format === "vhs" ? "en cassette" : e.format === "vinyle" ? "sur le disque" : "comme un livre"}</button>}
         <div className="jr-rule" />
         <div className="jr-body"><JournalBlocks blocks={e.blocks} onImage={setLightbox} onMusic={onMusic} playingUrl={playingUrl} /></div>
 
@@ -70,6 +78,8 @@ export default function JournalEntry() {
           <img src={lightbox} alt="" />
         </div>
       )}
+      {e.format === "cassette" && reading && <TapePlayer entry={e} onClose={() => setReading(false)} />}
+      {reading && e.format !== "cassette" && <WorkReader entry={e} onClose={() => setReading(false)} noPdf={!isAdmin} />}
     </div>
   );
 }

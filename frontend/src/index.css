@@ -1111,12 +1111,12 @@ html[data-motion="reduced"] body::after{opacity:.035}
 .sx-exp .sx-search{position:relative}
 .sx-themepick{position:absolute;z-index:90;top:calc(100% + 8px);left:0;width:min(560px,92vw);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 26px 64px -26px #000;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 @media(min-width:560px){.sx-themepick{grid-template-columns:repeat(4,1fr)}}
-.sx-themepick .tp{font:inherit;color:inherit;text-align:left;display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);cursor:pointer;transition:transform .15s,border-color .2s}
-.sx-themepick .tp:hover{transform:translateY(-2px)}
-.sx-themepick .tp.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
-.sx-themepick .tp .sw{width:22px;height:22px;border-radius:6px;flex:0 0 22px;border:1px solid rgba(255,255,255,.18)}
-.sx-themepick .tp .nm{font-size:11px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sx-themepick .tp .kj{margin-left:auto;font-size:11px;color:var(--muted)}
+.sx-themepick .sx-tpk{font:inherit;color:inherit;text-align:left;display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);cursor:pointer;transition:transform .15s,border-color .2s}
+.sx-themepick .sx-tpk:hover{transform:translateY(-2px)}
+.sx-themepick .sx-tpk.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sx-themepick .sx-tpk .sw{width:22px;height:22px;border-radius:6px;flex:0 0 22px;border:1px solid rgba(255,255,255,.18)}
+.sx-themepick .sx-tpk .nm{font-size:11px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sx-themepick .sx-tpk .kj{margin-left:auto;font-size:11px;color:var(--muted)}
 
 /* overlay cyber par thème (HUD type NieR) */
 .sx-cyber{position:fixed;inset:0;z-index:38;pointer-events:none}
@@ -3056,3 +3056,181 @@ html[data-theme="abysse"] .cb-halo{opacity:.2}
 .gx-enter{font-family:var(--font-display);font-size:clamp(15px,2.2vmin,20px);letter-spacing:.32em;text-transform:uppercase;padding:14px 46px 14px calc(46px + .32em);color:#fff;background:color-mix(in srgb,var(--gx-a) 22%,transparent);border:1px solid var(--gx-a);border-radius:999px;box-shadow:0 0 34px color-mix(in srgb,var(--gx-a) 55%,transparent),inset 0 0 18px color-mix(in srgb,var(--gx-a) 35%,transparent);backdrop-filter:blur(6px);animation:introWord .6s ease both,gxBreath 2.6s ease-in-out .6s infinite;transition:transform .2s,background .2s}
 .gx-enter:hover{transform:scale(1.05);background:color-mix(in srgb,var(--gx-a) 40%,transparent)}
 @keyframes gxBreath{50%{box-shadow:0 0 60px var(--gx-a),inset 0 0 26px color-mix(in srgb,var(--gx-a) 50%,transparent)}}
+/* Vidéo YouTube insérée dans un texte : vignette cliquable avec un bouton lecture */
+a.sx-yt{position:relative;display:inline-block;line-height:0}
+a.sx-yt::after{content:"▶";position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;display:grid;place-items:center;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:22px;line-height:1;pointer-events:none}
+
+/* Le bouton Thèmes porte la couleur du thème actif, pour qu'on le repère tout de suite */
+.sx-exp .sx-search .sbtn[data-testid="home-theme-toggle"]{background:color-mix(in srgb,var(--brand) 22%,var(--surface));border-color:color-mix(in srgb,var(--brand) 70%,transparent);color:var(--text-primary);box-shadow:0 0 0 1px color-mix(in srgb,var(--brand) 25%,transparent),0 6px 22px color-mix(in srgb,var(--brand) 22%,transparent)}
+.sx-exp .sx-search .sbtn[data-testid="home-theme-toggle"] svg{color:var(--brand)}
+.sx-exp .sx-search .sbtn[data-testid="home-theme-toggle"]:hover{background:color-mix(in srgb,var(--brand) 34%,var(--surface))}
+/* Journal (Nexus) : lire l'entrée dans le lecteur d'Alexandrie */
+.jr-read{margin-top:22px;margin-left:10px;display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border:1px solid var(--brand);background:color-mix(in srgb,var(--brand) 18%,transparent);color:var(--text-primary);font-weight:600;font-size:14px;cursor:pointer;border-radius:var(--radius-base);transition:background .2s}
+.jr-read:hover{background:color-mix(in srgb,var(--brand) 30%,transparent)}
+.jr-read svg{color:var(--brand)}
+/* Recherche : le champ ouvre le panneau d'index (esprit Rhine Lab) */
+.sx-exp .sx-search .sx-search-open{cursor:pointer;text-align:left;font:inherit;color:var(--text-secondary)}
+.sx-exp .sx-search .sx-search-open span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px}
+.sx-exp .sx-search .sx-search-open kbd{font:10px "JetBrains Mono",monospace;padding:2px 6px;border:1px solid var(--border-c);border-radius:4px;opacity:.7}
+.sx-exp .sx-search .sx-search-open:hover{border-color:var(--brand)}
+.sx-pal{--lab-mono:"JetBrains Mono","Space Mono",ui-monospace,monospace;--lab-ink:var(--text-primary);--lab-mute:var(--text-secondary);--lab-acc:var(--brand);--lab-hair:color-mix(in srgb,var(--text-primary) 13%,transparent);--lab-hair-2:color-mix(in srgb,var(--text-primary) 26%,transparent);--lab-panel:color-mix(in srgb,var(--bg-primary) 88%,transparent);--lab-ease:cubic-bezier(.2,.8,.2,1)}
+@media (max-width:640px){.sx-exp .sx-search .sx-search-open kbd{display:none}}
+.sx-exp .sx-search .sx-search-open{height:38px}
+
+/* Passe Rhine Lab : en-têtes de page de la station publique */
+.lab-head{position:relative;margin:0 0 28px;padding:18px 20px 16px;border:1px solid color-mix(in srgb,var(--text-primary) 12%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--bg-secondary) 70%,transparent),transparent);backdrop-filter:blur(6px)}
+.lab-head-c{position:absolute;width:12px;height:12px;border:solid var(--text-primary);opacity:.6;pointer-events:none}
+.lab-head-c.tl{top:-1px;left:-1px;border-width:2px 0 0 2px}.lab-head-c.br{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+.lab-head-k{margin:0 0 8px;font:500 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.24em;color:var(--text-secondary);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lab-head-k i{font-style:normal;opacity:.5}
+.lab-head-k b{margin-left:auto;font-weight:500;padding:3px 7px;border:1px solid color-mix(in srgb,var(--text-primary) 22%,transparent);color:var(--brand)}
+.lab-head-t{display:flex;align-items:center;gap:12px;margin:0;font-size:clamp(34px,5vw,56px);line-height:1;color:var(--text-primary)}
+.lab-head-ic{display:inline-flex;color:var(--brand);font-size:.62em}
+.lab-head-rule{display:block;height:1px;margin-top:14px;background:linear-gradient(90deg,var(--brand) 0 72px,color-mix(in srgb,var(--text-primary) 14%,transparent) 72px)}
+.lab-head p:not(.lab-head-k){margin-top:12px}
+/* Mode spectateur */
+.sx-spectator{position:fixed;left:max(14px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));z-index:2000;display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid var(--brand);border-radius:999px;background:color-mix(in srgb,var(--bg-primary) 88%,transparent);color:var(--text-primary);font:600 11px/1 "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.sx-spectator svg:first-child{color:var(--brand)}
+
+/* =====================================================================
+   Passe Rhine Lab — station publique
+   Repères en chasse fixe, filets fins avec segment de couleur, crochets d'angle, coins nets.
+   ===================================================================== */
+.lab-kick{margin:0 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:500 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.24em;color:var(--text-secondary)}
+.lab-kick i{font-style:normal;opacity:.5}
+.lab-kick b{font-weight:500;padding:3px 7px;border:1px solid color-mix(in srgb,var(--text-primary) 22%,transparent);color:var(--brand)}
+.lab-rule{display:block;width:min(100%,520px);height:1px;margin:14px 0 18px;background:linear-gradient(90deg,var(--brand) 0 72px,color-mix(in srgb,var(--text-primary) 16%,transparent) 72px)}
+/* Journal : en-tête et cartes */
+.jr-head{position:relative;padding:20px 22px 18px;border:1px solid color-mix(in srgb,var(--text-primary) 12%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--bg-secondary) 70%,transparent),transparent);max-width:none}
+.jr-head::before,.jr-head::after{content:"";position:absolute;width:12px;height:12px;border:solid var(--text-primary);opacity:.6;pointer-events:none}
+.jr-head::before{top:-1px;left:-1px;border-width:2px 0 0 2px}.jr-head::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+.jr-head .jr-k{letter-spacing:.24em;font-size:10.5px}
+.jr-head h1{margin:12px 0 0}
+.jr-head p{position:relative;margin-top:14px;padding-top:14px}
+.jr-head p::before{content:"";position:absolute;left:0;top:0;width:min(100%,520px);height:1px;background:linear-gradient(90deg,var(--brand) 0 72px,color-mix(in srgb,var(--text-primary) 16%,transparent) 72px)}
+.jr-card{position:relative;border-radius:2px;transition:transform .25s,border-color .25s}
+.jr-card::before,.jr-card::after{content:"";position:absolute;z-index:2;width:10px;height:10px;border:solid var(--brand);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none}
+.jr-card::before{top:-1px;left:-1px;border-width:2px 0 0 2px;transform:translate(4px,4px)}.jr-card::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0;transform:translate(-4px,-4px)}
+.jr-card:hover::before,.jr-card:hover::after{opacity:1;transform:none}
+.jr-card:hover{border-color:color-mix(in srgb,var(--brand) 50%,transparent)}
+/* Pages légales */
+.lg-title{position:relative;padding-top:22px}
+.lg-title::before{content:"STATION NEXUS / DOCUMENT";position:absolute;top:0;left:0;font:500 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.24em;color:var(--text-secondary)}
+.lg-title::after{content:"";display:block;width:min(100%,520px);height:1px;margin-top:14px;background:linear-gradient(90deg,var(--brand) 0 72px,color-mix(in srgb,var(--text-primary) 16%,transparent) 72px)}
+/* Menu de la station : coins nets et repères en chasse fixe */
+.sx-menu-list button{border-radius:2px}
+.sx-menu .sx-menu-list button small,.sx-menu .sx-menu-list .sub{font-family:"JetBrains Mono",monospace;letter-spacing:.16em}
+/* 0.22 · Bunny en Rhine Lab : fiche nette, bords droits, étiquettes en mono, sans émoji */
+.cb-bubble{border-radius:0 !important;padding:16px 18px 14px !important;background:color-mix(in srgb,var(--bg-primary) 94%,transparent) !important;border:1px solid var(--border-c) !important;border-top:2px solid var(--brand) !important;box-shadow:0 18px 40px rgba(0,0,0,.45) !important;backdrop-filter:blur(14px)}
+.cb-bubble::after{background:color-mix(in srgb,var(--bg-primary) 94%,transparent) !important;border-radius:0 !important}
+.cb-name{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 22px 10px 0 !important;padding-bottom:8px;border-bottom:1px solid var(--border-c);font-family:"JetBrains Mono",ui-monospace,monospace !important;font-size:10px !important;letter-spacing:.2em !important;color:var(--brand)}
+.cb-name i{font-style:normal;color:var(--text-secondary);letter-spacing:.14em}
+.cb-text{font-size:.93rem !important;line-height:1.55}
+.cb-cta{border-radius:0 !important;border:1px solid color-mix(in srgb,var(--brand) 45%,transparent) !important;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.72rem !important;letter-spacing:.12em;text-transform:uppercase}
+.cb-next{border-radius:0 !important;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.7rem !important;letter-spacing:.14em;text-transform:uppercase;padding:9px 14px !important}
+.cb-mute{text-decoration:none !important;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.64rem !important;letter-spacing:.14em;text-transform:uppercase}
+.cb-close{border-radius:0 !important}
+/* Musique YouTube : petite fenêtre du lecteur intégré, au-dessus de tout (lecture comprise) */
+.yt-mini{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(70px,calc(env(safe-area-inset-bottom) + 70px));z-index:3200;width:min(260px,62vw);background:#0d0e10;border:1px solid rgba(255,255,255,.16);border-top:2px solid var(--brand);box-shadow:0 18px 40px rgba(0,0,0,.55)}
+.yt-mini-h{display:flex;align-items:center;gap:7px;padding:6px 6px 6px 9px;color:#e9e6df;font:600 9.5px/1.2 "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase}
+.yt-mini-h b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.yt-mini-h svg:first-child{color:var(--brand);flex:none}
+.yt-mini-h button{display:grid;place-items:center;width:26px;height:26px;border:0;background:none;color:inherit;cursor:pointer}
+.yt-mini iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+body:has(.pw) .ax-fiche-wrap,body:has(.rl) .ax-fiche-wrap{z-index:2700}
+.jr-pick-s{border-color:var(--brand) !important;color:var(--brand) !important}
+.jr-ytfind{display:flex;flex-direction:column;gap:8px;padding:10px;border:1px solid var(--border-c)}
+.jr-yt-note{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary)}
+@media (max-width:700px){.yt-mini{width:190px}}
+/* 0.26 · Fluidité de la lecture : pendant qu'un livre est ouvert, rien ne s'anime derrière lui
+   (monde, fond de la station, particules, effets du thème). Sur téléphone, ces calques cachés
+   occupaient l'écran pendant qu'on tournait les pages et laissaient des morceaux noirs. */
+body:has(.ax-reader) :is(.nw,.cosmic-bg,.nx-tlayer,.nx-tfx,.cyber-ov,.sx-cyber){visibility:hidden!important}
+body:has(.ax-reader) :is(.nw,.cosmic-bg,.nx-tlayer) *{animation-play-state:paused!important}
+.ax-book{contain:layout paint}
+.jr-tape-ed{display:flex;flex-direction:column;gap:12px;margin:6px 0 16px;padding:14px 16px;border:1px dashed var(--border-c)}
+.jr-tape-ed audio{height:34px}
+/* 0.30 — format d'une entrée du journal, choisi en voyant l'objet */
+.jr-fmts-k{margin:18px 0 8px}
+.jr-fmts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:6px}
+.jr-fmt{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px 10px;border:1px solid var(--border-c);background:color-mix(in srgb,var(--bg-secondary) 70%,transparent);color:var(--text-secondary);cursor:pointer;transition:border-color .2s,background .2s,transform .2s}
+.jr-fmt:hover{border-color:color-mix(in srgb,var(--brand) 50%,var(--border-c));transform:translateY(-2px)}
+.jr-fmt.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,var(--bg-secondary));color:var(--text-primary)}
+.jr-fmt b{font-size:14px;color:var(--text-primary)}
+.jr-fmt small{font-size:11px;line-height:1.3;text-align:center}
+.jr-fmt-obj{height:120px;display:grid;place-items:center;margin-bottom:6px;pointer-events:none}
+.jr-fmt-obj .ax-face{--z:.34;--zv:.3}
+.jr-fmt-obj .cs{width:150px}
+.jr-fmt:not(.on) .jr-fmt-obj{filter:saturate(.5) brightness(.85)}
+@media (max-width:640px){.jr-fmts{grid-template-columns:repeat(2,minmax(0,1fr))}.jr-fmt-obj{height:104px}.jr-fmt-obj .ax-face{--z:.29;--zv:.26}.jr-fmt-obj .cs{width:130px}}
+.jr-cover-edit{flex-wrap:wrap;align-content:flex-end}
+
+/* =====================================================================
+   0.31 · Passe Rhine Lab : Journal (entrée, éditeur) et Salon
+   Coins nets, repères en chasse fixe, filets fins avec segment de couleur, crochets d'angle.
+   ===================================================================== */
+/* journal : boutons, champs et étiquettes à angles droits */
+.jr-page .jr-btn,.jr-page .jr-pick,.jr-page .jr-in,.jr-page .jr-catman,.jr-page .jr-catman button,.jr-page .jr-cover-edit,.jr-page .jr-tape-ed,.jr-page .jr-read,.jr-page .jr-crea{border-radius:2px!important}
+.jr-page .jr-tag{border-radius:1px;font-family:"JetBrains Mono",monospace;font-weight:500;letter-spacing:.16em}
+.jr-page .jr-btn{font-size:13px}
+/* entrée : repère au-dessus du titre, crochets, filet */
+.jr-kick{margin-bottom:14px}
+.jr-meta{font:500 11px/1 "JetBrains Mono",monospace;letter-spacing:.14em}
+.jr-title{position:relative;padding-bottom:16px}
+.jr-title::after{content:"";position:absolute;left:0;bottom:0;width:min(100%,520px);height:1px;background:linear-gradient(90deg,var(--brand) 0 72px,color-mix(in srgb,var(--text-primary) 16%,transparent) 72px)}
+.jr-article::before,.jr-article::after{content:"";position:absolute;width:14px;height:14px;border:solid var(--text-primary);opacity:.45;pointer-events:none}
+.jr-article::before{top:-14px;left:4px;border-width:2px 0 0 2px}.jr-article::after{bottom:52px;right:4px;border-width:0 2px 2px 0}
+.jr-crea{padding:6px 14px 6px 6px}.jr-crea small{font-family:"JetBrains Mono",monospace;letter-spacing:.2em}
+.jr-read{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.jr-pn{border-top:none;position:relative}
+.jr-pn::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,var(--brand) 0 72px,color-mix(in srgb,var(--text-primary) 16%,transparent) 72px)}
+.jr-pn small{font-family:"JetBrains Mono",monospace!important}
+.jr-rule{height:1px;background:color-mix(in srgb,var(--text-primary) 14%,transparent)}
+/* éditeur : sections numérotées comme l'atelier de l'œuvre */
+.jr-sec{display:flex;align-items:center;gap:8px;margin:26px 0 10px;font:500 10.5px/1 "JetBrains Mono",monospace;letter-spacing:.22em;color:var(--text-secondary)}
+.jr-sec b{font-weight:500;padding:3px 6px;border:1px solid color-mix(in srgb,var(--text-primary) 22%,transparent);color:var(--brand);letter-spacing:.08em}
+.jr-sec i{font-style:normal;opacity:.5}
+.jr-sec::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--text-primary) 12%,transparent)}
+.jr-page .lab-head + .jr-sec{margin-top:0}
+.jr-in-title{margin-top:0!important}
+.jr-fmts-k{display:none}
+.jr-fmt{border-radius:2px;position:relative}
+.jr-fmt.on::before,.jr-fmt.on::after{content:"";position:absolute;width:10px;height:10px;border:solid var(--brand)}
+.jr-fmt.on::before{top:-1px;left:-1px;border-width:2px 0 0 2px}.jr-fmt.on::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+.jr-fmt b{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.jr-tape-ed{border-style:solid!important;border-color:color-mix(in srgb,var(--text-primary) 12%,transparent)!important;border-left:2px solid #e5484d!important}
+
+/* Salon : en-tête en repères, onglets soulignés, canaux en étiquettes nettes */
+.chat-kick{margin:0 0 6px;font:500 9.5px/1 "JetBrains Mono",monospace;letter-spacing:.22em;color:var(--text-secondary);display:flex;gap:6px;align-items:center}
+.chat-kick i{font-style:normal;opacity:.5}
+.chat-kick b{font-weight:500;padding:2px 5px;border:1px solid color-mix(in srgb,var(--text-primary) 22%,transparent);color:var(--brand)}
+[data-testid="chat-page"] button,[data-testid="chat-page"] input,[data-testid="chat-page"] textarea,[data-testid="chat-page"] img,[data-testid="chat-poll-builder"],[data-testid="chat-pinned"] > div{border-radius:2px!important}
+[data-testid="chat-page"] .rounded-full{border-radius:2px!important}
+[data-testid="chat-tab-salon"],[data-testid="chat-tab-dm"]{background:transparent!important;border:none!important;border-bottom:1px solid color-mix(in srgb,var(--text-primary) 14%,transparent)!important;color:var(--text-secondary)!important;font:500 11px/1 "JetBrains Mono",monospace!important;letter-spacing:.18em;text-transform:uppercase;padding:12px 0!important}
+[data-testid="chat-tab-salon"].on,[data-testid="chat-tab-dm"].on{color:var(--text-primary)!important;border-bottom:2px solid var(--brand)!important}
+[data-testid^="chat-channel-"]:not([data-testid^="chat-channel-del"]):not([data-testid="chat-channel-add"]){font:500 11.5px/1 "JetBrains Mono",monospace!important;letter-spacing:.06em;padding:8px 11px!important}
+[data-testid="chat-pinned"] > div{border-left:2px solid var(--brand)!important}
+[data-testid^="chat-msg-"]{position:relative;padding:8px 10px;margin-left:-10px;margin-right:-10px;border:1px solid transparent;transition:border-color .2s,background .2s}
+[data-testid^="chat-msg-"]:hover{border-color:color-mix(in srgb,var(--text-primary) 10%,transparent);background:color-mix(in srgb,var(--bg-secondary) 50%,transparent)}
+[data-testid^="chat-msg-"] .text-\[10px\]{font-family:"JetBrains Mono",monospace;letter-spacing:.1em}
+[data-testid="chat-online"]{font-family:"JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;font-size:9.5px!important;margin-top:4px}
+[data-testid^="dm-convo-"]{border-radius:2px!important}
+.jr-tape-ed .jr-sec{margin-top:0}
+.jr-tape-ed{margin-top:12px!important}
+[data-testid="chat-locked"] .max-w-md{border-radius:2px!important;position:relative}
+[data-testid="chat-locked"] .max-w-md > div:first-child{border-radius:2px!important}
+[data-testid="chat-locked"] button{border-radius:2px!important}
+[data-testid="chat-locked"] .max-w-md::before,[data-testid="chat-locked"] .max-w-md::after{content:"";position:absolute;width:12px;height:12px;border:solid var(--text-primary);opacity:.6}
+[data-testid="chat-locked"] .max-w-md::before{top:-1px;left:-1px;border-width:2px 0 0 2px}[data-testid="chat-locked"] .max-w-md::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+/* 0.34 — menu contextuel en tiroir sur téléphone, au-dessus de la barre du bas */
+.at-ctx-wrap.sheet{z-index:2600;background:rgba(2,4,8,.55);backdrop-filter:blur(3px)}
+.at-ctx-wrap.sheet .at-ctx{left:0!important;right:0;top:auto!important;bottom:0;min-width:0;max-width:none;width:100%;max-height:78dvh;padding:8px 10px calc(14px + env(safe-area-inset-bottom));border-radius:0;border-width:1px 0 0;border-top:2px solid var(--brand);animation:ctxUp .22s cubic-bezier(.2,.8,.2,1) both}
+.at-ctx-wrap.sheet .at-ctx-t{padding:10px 8px 12px;font-size:11px}
+.at-ctx-wrap.sheet .at-ctx button:not(.at-ctx-t button){padding:14px 10px;font-size:15.5px}
+@keyframes ctxUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+/* l'éditeur du journal ouvert par-dessus un lecteur (admin, station publique) */
+.jr-editlayer{position:fixed;inset:0;z-index:1600;overflow-y:auto;background:var(--bg-primary)}
+/* 0.46 · le temps qu'une page se charge (chargement à la demande) */
+.route-loading{min-height:60vh;display:grid;place-items:center}
+.route-loading span{width:34px;height:34px;border-radius:50%;border:2px solid color-mix(in srgb,var(--text-primary) 18%,transparent);border-top-color:var(--brand);animation:routeSpin .8s linear infinite}
+@keyframes routeSpin{to{transform:rotate(360deg)}}

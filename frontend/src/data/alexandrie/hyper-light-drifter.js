@@ -13,6 +13,8 @@ const book = {
 
 Hyper Light Drifter ne contient pas un mot. Pas de dialogue, pas de texte d'histoire. Quand les personnages te parlent, ils le font avec des images, des suites de petits dessins, comme des bandes dessinées sans bulles. Le reste, il faut le lire dans les paysages.
 
+@art 4
+
 C'est un jeu d'action en pixel art, rapide, difficile, d'une beauté de couleurs rare : des roses, des cyans, des verts acides, des violets. Et sous cette beauté, il y a une histoire de fin du monde, et de maladie.
 
 @yt Xy_i4eB2Jrg | L'histoire de Hyper Light Drifter résumée en une minute, par Lore in a Minute (en anglais).
@@ -20,6 +22,8 @@ C'est un jeu d'action en pixel art, rapide, difficile, d'une beauté de couleurs
 # Ceux qui l'ont fait
 
 Hyper Light Drifter est conçu par Alx Preston, un artiste et concepteur américain, qui fonde pour cela un petit studio, Heart Machine. En 2013, il lance une campagne sur Kickstarter en espérant réunir quelques dizaines de milliers de dollars. Il en obtient plus de six cent mille. Le jeu sort en 2016, après plusieurs années de travail avec une petite équipe, dont le concepteur Teddy Dief et le programmeur Beau Blyth.
+
+@art g 2
 
 Preston vit depuis l'enfance avec une maladie cardiaque, et il a expliqué que le Drifter, ce voyageur malade qui crache du sang et continue d'avancer, venait en partie de là. Le nom même du studio, Heart Machine, en porte la trace.
 
@@ -38,6 +42,8 @@ Il est seul, près d'un feu, dans une forêt. Il tousse. Du sang. Il est malade,
 # Le monde
 
 Le monde du Drifter est une ruine magnifique. Une ville centrale, presque déserte, entourée de quatre régions, au nord, à l'est, au sud, à l'ouest. Chacune a ses habitants, ses ruines, ses secrets.
+
+@art 5
 
 Partout, il y a des cadavres de titans. Des corps colossaux, à moitié enfouis, couverts de mousse, des têtes de métal, des bras plus grands que des immeubles. Ils sont morts depuis longtemps. Personne ne sait plus qui les a construits, ni pourquoi ils se sont battus.
 
@@ -63,6 +69,8 @@ Et il y a une figure qui l'accompagne : un être à tête de chacal, comme un di
 
 Dans chaque région, le Drifter cherche des modules, des fragments d'énergie qui ouvriront le chemin vers l'Abîme. Dans chaque région, il affronte des gardiens, souvent d'anciens héros corrompus.
 
+@art g 3
+
 Au nord, des montagnes enneigées. À l'est, des ruines à moitié englouties. Au sud et à l'ouest, des laboratoires, des forêts, des temples. Chaque région a ses victimes et ses bourreaux.
 
 Le jeu ne raconte presque rien de tout cela en clair. On le comprend par les cadavres, les tableaux, les images que montrent les survivants.
@@ -82,6 +90,8 @@ Puis il s'effondre. Le chacal s'approche. Il prend le Drifter dans ses bras, et 
 # Ce que tu peux en prendre
 
 Hyper Light Drifter t'apprend à raconter par l'image seule. Les personnages s'expriment en dessins. Les paysages portent l'histoire. On sort du jeu avec le sentiment d'avoir compris quelque chose de grand, sans avoir lu une phrase.
+
+@art 6
 
 Il t'apprend aussi à mettre de soi dans une œuvre sans la transformer en confession. Preston n'explique jamais sa maladie. Il la donne à un personnage, en cape rouge, dans un monde de rêve, et chacun peut y reconnaître sa propre lutte.
 

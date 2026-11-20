@@ -1,14 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { openInAtelier } from "@/lib/publish";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoHome, IoPlay, IoPause, IoClose, IoCart, IoCreateOutline, IoTrashOutline, IoMusicalNotes, IoOpenOutline, IoBookOutline, IoLogoYoutube, IoHeart, IoHeartOutline, IoFilmOutline, IoLockClosed, IoDownloadOutline, IoSparklesOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl, startCheckout, getMembershipPlan, assetDownloadUrl, getSettings } from "@/lib/api";
+import { getCreation, deleteCreation, listCategories, listCreations, posterUrl, bgUrl, videoUrl, startCheckout, getMembershipPlan, assetDownloadUrl, getSettings, hit } from "@/lib/api";
+import { markSeen } from "@/lib/shelf";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
 import { resolveVideoEmbed } from "@/lib/video";
-import EditorDialog from "@/components/EditorDialog";
+import StationCinema, { canStationPlay } from "@/components/StationCinema";
+import JournalOverlay from "@/components/journal/JournalOverlay";
+// l'éditeur d'œuvre (admin) ne se charge qu'à l'ouverture
+const EditorDialog = lazy(() => import("@/components/EditorDialog"));
 import MovixSelector from "@/components/MovixSelector";
 import CommentsSection from "@/components/CommentsSection";
 import { FicheSupport } from "@/components/SupportersWall";
@@ -20,6 +25,17 @@ import ShareMenu from "@/components/ShareMenu";
 import MobileMenu from "@/components/MobileMenu";
 import { confirmCheckout } from "@/components/CheckoutConfirm";
 import CreationJournal from "@/components/journal/CreationJournal";
+import { useExperience, worldAmbientAuto } from "@/lib/experience";
+import { fmtOfCreation } from "@/components/nexus/NexusHome";
+import NexusWorld from "@/components/nexus/NexusWorld";
+import WorkReader, { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
+import ChapterQuickEdit, { deleteUnit } from "@/components/nexus/ChapterQuickEdit";
+import TapePlayer from "@/components/journal/TapePlayer";
+import { useWorldDraft, worldThemeOf } from "@/lib/worldThemes";
+import { useThemeState } from "@/lib/themeStore";
+import WorldComments from "@/components/nexus/WorldComments";
+import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
+import { listJournal, getJournalEntry } from "@/lib/api";
 
 export default function Detail() {
   const { id } = useParams();
@@ -31,6 +47,8 @@ export default function Detail() {
   const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
   const { data: siteSettings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const { data: item, refetch, isLoading } = useQuery({ queryKey: ["creation", id], queryFn: () => getCreation(id) });
+  // Tes chiffres : une ouverture par œuvre et par visite (tes propres visites ne comptent pas, le serveur les écarte)
+  useEffect(() => { if (item?.id) hit("open", { creation_id: item.id }); }, [item?.id]);
   const { data: cats = [] } = useQuery({ queryKey: ["categories"], queryFn: listCategories });
   const { data: allCreations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
 
@@ -39,6 +57,9 @@ export default function Detail() {
   const [chaptersOpen, setChaptersOpen] = useState(false);
   const [gameOpen, setGameOpen] = useState(false);
   const [cinemaKind, setCinemaKind] = useState(null); // "film" | "trailer" | null
+  useEffect(() => { if (item?.id && cinemaKind === "film") { hit("play", { creation_id: item.id, unit_index: -1 }); markSeen(item.id); } }, [cinemaKind]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [epPlay, setEpPlay] = useState(null);
+  const [jEntry, setJEntry] = useState(""); // une entrée du Making of, ouverte par-dessus (l'admin la modifie d'un seul bouton) // épisode lu dans le lecteur de la station (index)
   const [readerStart, setReaderStart] = useState(null);
   const [readerUnit, setReaderUnit] = useState("chapters");
   const [showEpisodes, setShowEpisodes] = useState(false);
@@ -46,9 +67,25 @@ export default function Detail() {
   const [lightbox, setLightbox] = useState(null);
   const [buying, setBuying] = useState(false);
   const cardRef = useRef(null);
+  // Expérience Nexus : la fiche devient le « monde » de l'œuvre (l'objet en grand, puis des onglets)
+  const nexus = useExperience() === "nexus";
+  const [editorSec, setEditorSec] = useState("id");
+  const [workRead, setWorkRead] = useState(null); // Nexus : lecture dans le lecteur d'Alexandrie
+  const [quickEdit, setQuickEdit] = useState(null); // Nexus admin : modifier un chapitre sur place ({ key, i } ; i = null : nouveau)
+  const [toComments, setToComments] = useState(0);
+  const [tape, setTape] = useState(null); // entrée du journal au format cassette
+  const wdraft = useWorldDraft();
+  useThemeState(); // les thèmes de monde sont chargés avec ceux de la station : on se met à jour quand ils arrivent
+  const [pvw, setPvw] = useState(null); // aperçu en direct : le monde suit les réglages de l'atelier ouvert
+  useEffect(() => { window.scrollTo(0, 0); }, [id]);
+  const accentSrc = nexus && item ? (item.poster && item.poster.length > 4 ? item.poster : item.has_poster ? posterUrl(item.id, item.updated_at, 200) : null) : null;
+  const accent = usePosterAccent(accentSrc);
+  const { data: making = [] } = useQuery({ queryKey: ["journal", "creation", id], queryFn: () => listJournal({ creation_id: id }).then((l) => l.filter((e) => e.published)), enabled: nexus });
 
   // l'ambiance de la création ne démarre qu'au bouton ; on la coupe en quittant la fiche
   useEffect(() => () => stopAmbient(), [item?.id]); // eslint-disable-line
+  // Nexus : l'ambiance sonore démarre seule en entrant dans le monde (réglable dans Paramètres)
+  useEffect(() => { if (nexus && item?.has_audio && worldAmbientAuto()) { const t = setTimeout(() => playAmbient(item.id), 600); return () => clearTimeout(t); } }, [item?.id, nexus]); // eslint-disable-line
 
   // Cosmic Bunny special context on her own creation page ("Cosmic Bunny")
   useEffect(() => {
@@ -63,8 +100,9 @@ export default function Detail() {
   // resume reading directly when navigated from a card's progress bar
   useEffect(() => {
     if (location.state?.resume && item && item.launch_type === "chapters") {
-      setReaderStart(null);
-      setChaptersOpen(true);
+      // Nexus : on reprend dans le lecteur d'Alexandrie, le monde de l'œuvre derrière
+      if (nexus) { let sp = null; try { sp = JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) {} setWorkRead({ unitKey: "chapters", start: sp?.chapter ?? 0, resume: true }); }
+      else { setReaderStart(null); setChaptersOpen(true); }
       nav(location.pathname, { replace: true, state: {} });
     }
     // eslint-disable-next-line
@@ -98,7 +136,14 @@ export default function Detail() {
   const thisPlaying = isPlaying && playingId === item.id;
   const catLabel = cats.find((c) => c.key === item.category)?.label || item.category;
   const savedProgress = item.launch_type === "chapters" ? (() => { try { return JSON.parse(localStorage.getItem("sx_progress_" + item.id) || "null"); } catch (_) { return null; } })() : null;
-  const canResume = savedProgress && ((savedProgress.chapter || 0) > 0 || (savedProgress.ratio || 0) > 0.02);
+  const view = pvw && pvw.id === item.id ? { ...item, ...pvw } : item; // l'œuvre telle que l'atelier la modifie
+  const wtSaved = worldThemeOf(view.world_style);
+  const wtNow = wdraft && wdraft.forId === item.id ? wdraft : wtSaved; // le brouillon de l'atelier des thèmes passe devant
+  const wsNow = wtNow?.base || worldStyleOf(view, catLabel);
+  const accNow = view.accent || accent;
+  const viewCover = view.poster && view.poster.length > 4 ? view.poster : hasImg ? posterSrc : null;
+  const viewBg = view.bg_image && view.bg_image.length > 4 ? view.bg_image : (item.has_bg ? bgSrc : viewCover);
+  const canResume = savedProgress && (savedProgress.opened || (savedProgress.chapter || 0) > 0 || (savedProgress.ratio || 0) > 0.02);
 
   // Prochain à regarder (reprise de lecture) — affiché en haut de la fiche
   const continueTarget = (() => {
@@ -191,6 +236,7 @@ export default function Detail() {
     if (!ep) return;
     try { localStorage.setItem("sx_eplast_" + item.id, String(i)); } catch (_) {}
     if (ep.content) { sfx("select"); setReaderUnit("episodes"); setReaderStart(i); setChaptersOpen(true); }
+    else if (canStationPlay(ep.url)) { sfx("select"); stopAmbient(); setEpPlay(i); }
     else if (ep.url) { sfx("select"); window.open(ep.url, "_blank", "noopener,noreferrer"); }
     else { toast.info("Aucun lien pour cet épisode."); }
   };
@@ -211,6 +257,112 @@ export default function Detail() {
   };
 
   const btn = { borderColor: "color-mix(in srgb, var(--brand) 30%, var(--border-c))", borderRadius: "var(--radius-base)", color: "var(--on-media)", background: "color-mix(in srgb, var(--bg-primary) 42%, transparent)" };
+
+  const readerFormat = ["livre", "vhs", "vinyle"].includes(item.reader_format) ? item.reader_format : ({ vinyle: "vinyle", vhs: "vhs" })[fmtOfCreation(item, catLabel)] || "livre";
+  // Œuvre suivante : la suivante du même rayon, sinon la suivante de la station
+  const nextWork = (() => { const list = (allCreations || []).filter((c) => !c.coming_soon && c.id !== item.id).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    return list.find((c) => c.category === item.category && (c.order ?? 0) > (item.order ?? 0)) || list.find((c) => (c.order ?? 0) > (item.order ?? 0)) || list[0] || null; })();
+  const overlays = (<>
+      {workRead && <WorkReader key={(workRead.entry?.id || workRead.unitKey || "t") + (workRead.start ?? "")} item={item} entry={workRead.entry} unitKey={workRead.unitKey} catLabel={catLabel}
+        format={readerFormat} look={item.reader_look || LOOK_OF_WORLD[worldStyleOf(item, catLabel)] || "didone"} cover={hasImg ? posterSrc : null} startUnit={workRead.start ?? null} resume={!!workRead.resume}
+        locked={(i) => workRead.unitKey === "chapters" && chapterLocked(item, i)} onClose={() => setWorkRead(null)}
+        next={nextWork} nextCover={nextWork ? (nextWork.has_poster ? posterUrl(nextWork.id, nextWork.updated_at, 360) : null) : null}
+        onNext={(n) => { setWorkRead(null); stopAmbient(); nav(`/oeuvre/${n.id}`); }}
+        onComment={() => { setWorkRead(null); setToComments((n) => n + 1); }}
+        onEditUnit={isAdmin ? (i) => setQuickEdit({ key: workRead.unitKey || "chapters", i }) : undefined} noPdf={!isAdmin} />}
+      {tape && <TapePlayer entry={tape} onClose={() => setTape(null)} />}
+      {quickEdit && <ChapterQuickEdit creationId={item.id} unitKey={quickEdit.key} index={quickEdit.i} onClose={() => setQuickEdit(null)} onSaved={() => refetch()} />}
+      {gateOpen && <LaunchGate onClose={() => setGateOpen(false)} />}
+
+      {readerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(4px)" }} data-testid="reader-modal">
+          <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto border p-8" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-2xl" style={{ color: "var(--text-primary)" }}>{item.title}</h2>
+              <button data-testid="reader-close" onClick={() => setReaderOpen(false)} style={{ color: "var(--text-secondary)" }}><IoClose size={24} /></button>
+            </div>
+            <p className="whitespace-pre-wrap leading-relaxed" style={{ color: "var(--text-primary)" }}>{item.launch_content || "Contenu à venir."}</p>
+          </div>
+        </div>
+      )}
+
+      {chaptersOpen && <ChapterReader key={readerUnit} item={item} unitKey={readerUnit} startChapter={readerStart} onClose={() => setChaptersOpen(false)} onComment={goToComments} />}
+
+      {cinemaKind && (() => {
+        // le beau lecteur (YouTube caché derrière nos contrôles) dès que la source s'y prête ; sinon l'ancien lecteur (Vimeo, Dailymotion…)
+        const link = ((cinemaKind === "film" ? item.film_url : item.trailer_url) || "").trim();
+        const up = cinemaKind === "film" ? item.has_film : item.has_trailer;
+        const src = link || (up ? videoUrl(item.id, cinemaKind, item.updated_at) : "");
+        if (canStationPlay(src) || (!link && up)) return <StationCinema queue={[{ url: src, title: cinemaKind === "trailer" ? `${item.title} · bande-annonce` : item.title }]} vertical={item.video_ratio === "9:16" ? true : undefined} onClose={() => setCinemaKind(null)} />;
+        return <CinemaPlayer item={item} kind={cinemaKind} onClose={() => setCinemaKind(null)} />;
+      })()}
+      {jEntry && <JournalOverlay id={jEntry} onClose={() => setJEntry("")} />}
+      {epPlay != null && (() => {
+        // les épisodes qui ont une vidéo, à la suite : « Épisode suivant » et compte à rebours
+        const eps = (item.episodes || []).map((e, i) => ({ e, i })).filter((x) => canStationPlay(x.e.url) && !x.e.content);
+        const start = Math.max(0, eps.findIndex((x) => x.i === epPlay));
+        return <StationCinema queue={eps.map((x) => ({ url: x.e.url, title: x.e.title || `Épisode ${x.i + 1}`, image: x.e.image || "" }))} start={start}
+          vertical={item.video_ratio === "9:16" ? true : item.video_ratio === "16:9" ? false : undefined}
+          onIndex={(k) => { const ix = eps[k]?.i; if (ix != null) { hit("play", { creation_id: item.id, unit_index: ix, unit_id: item.episodes[ix]?.id || "" }); markSeen(item.id); try { localStorage.setItem("sx_eplast_" + item.id, String(ix)); } catch (_) {} } }}
+          onClose={() => setEpPlay(null)} />;
+      })()}
+
+      {gameOpen && <CosmicBunnyGame item={item} onClose={() => setGameOpen(false)} />}
+
+      {lightbox && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.92)" }} onClick={() => setLightbox(null)} data-testid="lightbox">
+          <button className="absolute top-4 right-4" style={{ color: "#fff" }} onClick={() => setLightbox(null)}><IoClose size={28} /></button>
+          <img src={lightbox} alt="" className="max-w-full max-h-[90vh] object-contain" />
+        </div>
+      )}
+
+      {editorOpen && <Suspense fallback={null}><EditorDialog open={editorOpen} onClose={() => { setEditorOpen(false); setPvw(null); }} initial={item} categories={cats} onSaved={refetch} cover={hasImg ? posterSrc : null} onPeek={nexus ? setPvw : undefined} section={editorSec} /></Suspense>}
+  </>);
+
+  // Expérience Nexus : l'œuvre devient un monde en plein écran, avec ses écrans imbriqués
+  if (nexus) {
+    const unitsCount = item.launch_type === "chapters" ? item.chapters?.length || 0 : item.episodes?.length || 0;
+    let lastEp = null; let epRec = null; try { lastEp = JSON.parse(localStorage.getItem("sx_eplast_" + item.id) ?? "null"); epRec = JSON.parse(localStorage.getItem("sx_progress_" + item.id + "_ep") || "null"); } catch (_) {}
+    // Épisodes : on reprend l'épisode en cours de lecture (texte), sinon le suivant du dernier vu (vidéo)
+    const epCur = epRec && epRec.ratio < 0.97 ? epRec.chapter : lastEp != null ? Math.min(Number(lastEp) + 1, unitsCount - 1) : null;
+    const current = item.launch_type === "chapters" ? (canResume ? Math.min(savedProgress.chapter || 0, unitsCount - 1) : null)
+      : item.launch_type === "episodes" ? epCur : null;
+    const rec = item.launch_type === "chapters" ? savedProgress : epRec;
+    const word = item.launch_type === "chapters" ? "Chapitre" : "Épisode";
+    const progress = current == null ? null : { label: `${word} ${current + 1} / ${unitsCount}`, ratio: (current + (rec?.chapter === current ? rec.ratio || 0 : 0)) / unitsCount,
+      inUnit: rec?.chapter === current ? rec.ratio || 0 : 0, excerpt: rec?.chapter === current ? rec.excerpt || "" : "" };
+    const catOf = (c) => cats.find((x) => x.key === c.category)?.label || c.category;
+    return (
+      <>
+        <NexusWorld key={item.id} onAtelier={() => openInAtelier(nav, item.id)} item={view} ws={wsNow} wt={wtNow && (editorOpen || workRead || quickEdit) ? { ...wtNow, cursor: "none" } : wtNow} catLabel={catLabel} style={accNow ? { "--brand": accNow } : undefined}
+          cover={viewCover} bg={viewBg}
+          box={{ id: item.id, title: view.title, sub: view.tagline || "", format: fmtOfCreation(view, catLabel), emblem: view.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }}
+          making={making} trailer={trailerSource}
+          launchLabel={item.launch_label && item.launch_label !== "Lancer" ? item.launch_label : "Lancer"} onLaunch={() => (item.launch_type === "reader" && item.launch_content ? (sfx("select"), setWorkRead({ unitKey: null })) : launch())}
+          current={current} progress={progress}
+          locked={isPaidLocked} unitLocked={(i) => item.launch_type === "chapters" && chapterLocked(item, i)}
+          onChapter={(i, o) => { sfx("select"); setWorkRead({ unitKey: "chapters", start: i, resume: !!o?.resume }); }}
+          onEpisode={(i, o) => { const ep = item.episodes?.[i]; try { localStorage.setItem("sx_eplast_" + item.id, String(i)); } catch (_) {} if (ep?.content) { sfx("select"); setWorkRead({ unitKey: "episodes", start: i, resume: !!o?.resume }); } else openEpisode(i); }}
+          onEntry={(e) => { sfx("select"); setJEntry(e.id); }}
+          unlock={{ price: `${Number(item.price_eur || 0).toFixed(2)} €`, buying, onBuy: buyThis, onSubscribe: plan?.enabled ? subscribe : null,
+            subLabel: plan?.enabled ? `S'abonner · dès ${Math.min(...((plan.tiers && plan.tiers.length ? plan.tiers.map((t) => t.price_eur) : [plan.price_eur || 5])))} €/mois` : "",
+            note: item.launch_type === "chapters" && (item.free_chapters || 0) > 0 ? `Les ${item.free_chapters} premiers chapitres sont libres. Pour la suite : accès définitif à l'œuvre, ou l'abonnement pour tout le catalogue.` : null }}
+          comments={<WorldComments creationId={item.id} ws={wsNow} units={item.launch_type === "chapters" ? (item.chapters || []) : (item.episodes || [])} term={item.launch_type === "chapters" ? "Chapitre" : "Épisode"} />}
+          neighbors={recommendations.map((c) => ({ ...c, catLabel: catOf(c), fmt: fmtOfCreation(c, catOf(c)) }))}
+          coverOf={(c) => (c.poster && c.poster.length > 4 ? c.poster : c.has_poster ? posterUrl(c.id, c.updated_at, 360) : null)}
+          onNeighbor={(cid) => nav(`/oeuvre/${cid}`)}
+          intentionUrl={item.intention_file_id ? assetDownloadUrl(item.intention_file_id) : null}
+          fav={isFavorite(item.id)} onFav={() => { sfx("nav"); toggleFavorite(item.id); }}
+          onAmbient={item.has_audio ? () => { sfx("nav"); playAmbient(item.id); } : null} ambientOn={thisPlaying}
+          onAmbientSetup={() => { setEditorSec("sound"); setEditorOpen(true); }}
+          isAdmin={isAdmin} onEdit={() => { sfx("select"); setEditorSec("id"); setEditorOpen(true); }}
+          onExit={(n = 1) => { stopAmbient(); if (window.history.length > n) nav(-n); else nav("/"); }} onHome={() => { stopAmbient(); nav("/"); }} sfx={sfx} toComments={toComments}
+          onEditUnit={isAdmin ? (i) => setQuickEdit({ key: item.launch_type === "episodes" ? "episodes" : "chapters", i }) : undefined}
+          onDeleteUnit={isAdmin ? async (i) => { try { await deleteUnit(item.id, item.launch_type === "episodes" ? "episodes" : "chapters", i); toast.success("Supprimé"); refetch(); } catch (_) { toast.error("Suppression impossible"); } } : undefined} />
+        {overlays}
+      </>
+    );
+  }
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden" style={{ background: "transparent", color: "var(--text-primary)" }}>
@@ -236,6 +388,7 @@ export default function Detail() {
             {isAdmin && (
               <>
                 <button data-testid="detail-edit" onClick={() => setEditorOpen(true)} className="p-2.5 border" style={btn}><IoCreateOutline size={18} /></button>
+                <button data-testid="detail-atelier" onClick={() => openInAtelier(nav, item.id)} className="p-2.5 border" style={btn} title="Ouvrir son œuvre dans l'atelier" aria-label="Ouvrir dans l'atelier"><span style={{ display: "inline-block", width: 18, lineHeight: "18px", fontSize: 15 }}>工</span></button>
                 <button data-testid="detail-delete" onClick={doDelete} className="p-2.5 border" style={{ ...btn, color: "var(--brand)" }}><IoTrashOutline size={18} /></button>
               </>
             )}
@@ -244,6 +397,7 @@ export default function Detail() {
         </div>
 
         <div className="max-w-7xl mx-auto px-5 md:px-12 py-8 md:py-14 flex flex-col md:flex-row gap-8 md:gap-14 items-center md:items-start">
+          {(
           <div ref={cardRef} className="group flex-shrink-0 w-72 sm:w-96 md:w-[28rem] lg:w-[34rem] aspect-[2/3] overflow-hidden border relative poster-in sx-fxcard"
             style={{ borderColor: "var(--card-bd, color-mix(in srgb, var(--brand) 40%, var(--border-c)))", borderRadius: "var(--card-r, calc(var(--radius-base)*1.3))", boxShadow: "0 30px 80px rgba(0,0,0,0.6), var(--card-sh, 0 0 60px -14px color-mix(in srgb, var(--brand) 55%, transparent))" }} data-testid="detail-poster">
             <span className="poster-scan" aria-hidden="true" />
@@ -265,8 +419,10 @@ export default function Detail() {
               <p className="text-[10px] tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.72)", fontFamily: "var(--font-mono, monospace)" }}>// STATION NEXUS · 天</p>
             </div>
           </div>
+          )}
 
           <div className="w-full md:flex-1 min-w-0 fade-up" style={{ animationDelay: ".12s" }}>
+            {(<>
             <div className="mb-3" style={{ fontSize: 10, letterSpacing: "0.3em", color: "var(--brand)", fontFamily: "var(--font-mono, monospace)" }}>// FICHE DE CRÉATION</div>
             <div className="flex items-center gap-3 mb-3 flex-wrap">
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5" style={{ background: "var(--brand)", color: "var(--bg-primary)" }} data-testid="detail-category">{catLabel}</span>
@@ -320,6 +476,7 @@ export default function Detail() {
                 {isFavorite(item.id) ? <IoHeart size={18} /> : <IoHeartOutline size={18} />} {isFavorite(item.id) ? "Favori" : "Favoris"}
               </button>
             </div>
+            </>)}
 
             {/* Reprise de lecture — prochain chapitre/épisode à regarder */}
             {continueTarget && (
@@ -531,34 +688,7 @@ export default function Detail() {
           </div>
       </div>
 
-      {gateOpen && <LaunchGate onClose={() => setGateOpen(false)} />}
-
-      {readerOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(4px)" }} data-testid="reader-modal">
-          <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto border p-8" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-2xl" style={{ color: "var(--text-primary)" }}>{item.title}</h2>
-              <button data-testid="reader-close" onClick={() => setReaderOpen(false)} style={{ color: "var(--text-secondary)" }}><IoClose size={24} /></button>
-            </div>
-            <p className="whitespace-pre-wrap leading-relaxed" style={{ color: "var(--text-primary)" }}>{item.launch_content || "Contenu à venir."}</p>
-          </div>
-        </div>
-      )}
-
-      {chaptersOpen && <ChapterReader key={readerUnit} item={item} unitKey={readerUnit} startChapter={readerStart} onClose={() => setChaptersOpen(false)} onComment={goToComments} />}
-
-      {cinemaKind && <CinemaPlayer item={item} kind={cinemaKind} onClose={() => setCinemaKind(null)} />}
-
-      {gameOpen && <CosmicBunnyGame item={item} onClose={() => setGameOpen(false)} />}
-
-      {lightbox && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.92)" }} onClick={() => setLightbox(null)} data-testid="lightbox">
-          <button className="absolute top-4 right-4" style={{ color: "#fff" }} onClick={() => setLightbox(null)}><IoClose size={28} /></button>
-          <img src={lightbox} alt="" className="max-w-full max-h-[90vh] object-contain" />
-        </div>
-      )}
-
-      <EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={item} categories={cats} onSaved={refetch} />
+      {overlays}
     </div>
   );
 }

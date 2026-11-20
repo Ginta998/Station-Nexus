@@ -6,6 +6,8 @@ import { toEmbed, popOut } from "@/lib/embed";
 import { exportUniverseBible } from "@/lib/exportPdf";
 import { listCreations, posterUrl } from "@/lib/api";
 import DriveSpace from "@/components/atelier/DriveSpace";
+import { oeuvreFromCreation, oeuvreOfCreation } from "@/components/atelier/StationLink";
+import { pressMenu, showMenu } from "@/components/atelier/ContextMenu";
 
 export default function UniverseView({ at, open, go, launch, mini, universe: u, editUniverse, editOeuvre, importDocs }) {
   const nav = useNavigate();
@@ -13,6 +15,16 @@ export default function UniverseView({ at, open, go, launch, mini, universe: u, 
   const playPlaylist = () => { if (!playlist) return; const em = toEmbed(playlist); if (em?.blocked) return popOut(playlist); (mini || launch)?.({ title: `Playlist · ${u.name}`, url: playlist }); };
   const { data: creations = [] } = useQuery({ queryKey: ["creations", "all"], queryFn: () => listCreations() });
   if (!u) return null;
+  // une création en ligne : ouvrir son œuvre dans l'atelier, ou la créer (déjà reliée)
+  const workOf = async (c) => { const o = oeuvreOfCreation(at, c.id) || (await oeuvreFromCreation(at, c, u.id)); go({ name: "oeuvre", id: o.id }); };
+  const crMenu = (c) => ({ title: c.title, entries: [
+    { id: "work", label: oeuvreOfCreation(at, c.id) ? "Ouvrir son œuvre dans l'atelier" : "Créer son œuvre dans l'atelier", onClick: () => workOf(c) },
+    { id: "see", label: "Voir sur la station", onClick: () => nav(`/oeuvre/${c.id}`) },
+  ] });
+  const fromStation = (e) => {
+    const free = creations.filter((c) => !oeuvreOfCreation(at, c.id)); const r = e.currentTarget.getBoundingClientRect();
+    showMenu(r.left, r.bottom + 4, free.length ? [...free.filter((c) => (u.creation_ids || []).includes(c.id)), ...free.filter((c) => !(u.creation_ids || []).includes(c.id))].map((c) => ({ id: `fs-${c.id}`, label: c.title, onClick: () => workOf(c) })) : [{ id: "none", label: "Toutes tes créations ont déjà leur œuvre", disabled: true }], "Créer l'œuvre d'une création en ligne");
+  };
   const oeuvres = at.items.filter((i) => i.universe_id === u.id && isOeuvre(i));
   const allEls = at.items.filter((i) => i.universe_id === u.id && !isOeuvre(i) && !isFolder(i));
   const linked = creations.filter((c) => (u.creation_ids || []).includes(c.id));
@@ -36,13 +48,13 @@ export default function UniverseView({ at, open, go, launch, mini, universe: u, 
         </div>
         {linked.length > 0 && (
           <div className="at-works">
-            {linked.map((c) => <button key={c.id} onClick={() => nav(`/oeuvre/${c.id}`)} title={c.title}><img src={posterUrl(c.id, c.updated_at, 200)} alt={c.title} /></button>)}
+            {linked.map((c) => <button key={c.id} onClick={() => { const o = oeuvreOfCreation(at, c.id); if (o) go({ name: "oeuvre", id: o.id }); else nav(`/oeuvre/${c.id}`); }} {...pressMenu(() => crMenu(c))} title={`${c.title} · ${oeuvreOfCreation(at, c.id) ? "ouvrir son œuvre" : "voir sur la station"} (clic droit : plus)`}><img src={posterUrl(c.id, c.updated_at, 200)} alt={c.title} /></button>)}
           </div>
         )}
       </header>
 
       <section className="at-oeuvres-sec" data-testid="atelier-universe-oeuvres">
-        <div className="at-sechead"><div className="tt"><p className="at-eyebrow mono">// LES ŒUVRES DE CET UNIVERS</p><h2>Œuvres</h2></div><span className="at-link" onClick={() => editOeuvre({ universe_id: u.id })} data-testid="atelier-oeuvre-new"><IoAdd size={13} /> Nouvelle œuvre</span></div>
+        <div className="at-sechead"><div className="tt"><p className="at-eyebrow mono">// LES ŒUVRES DE CET UNIVERS</p><h2>Œuvres</h2></div><span className="at-link" onClick={() => editOeuvre({ universe_id: u.id })} data-testid="atelier-oeuvre-new"><IoAdd size={13} /> Nouvelle œuvre</span><span className="at-link" onClick={fromStation} data-testid="atelier-oeuvre-from-station"><IoAdd size={13} /> Depuis la station</span></div>
         {oeuvres.length > 0 ? (
           <div className="at-unis-big">
             {oeuvres.map((o) => {

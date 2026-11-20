@@ -15,6 +15,8 @@ const book = {
 
 Avant d'entrer à Yharnam, il faut que tu saches comment ce jeu raconte, parce que c'est une leçon d'écriture.
 
+@art 4
+
 @yt G203e1HhixY | Bloodborne (2015), la bande-annonce qui l'a révélé.
 
 Il ne raconte pas. Tu te réveilles sur une table d'opération, on t'a transfusé un sang inconnu, tu as signé un contrat dont tu ne te souviens pas, et quelqu'un te dit de partir à la chasse. Personne ne t'expliquera rien de plus. L'histoire est en morceaux : une phrase dans la description d'une arme, une note clouée sur un mur, l'emplacement d'un cadavre, le nom d'une musique.
@@ -27,6 +29,8 @@ Je vais donc faire quelque chose d'un peu contraire à l'esprit du jeu : remettr
 # Ceux qui l'ont fait
 
 Bloodborne est développé par FromSoftware, à Tokyo, et coproduit avec Japan Studio, le studio japonais de Sony, qui l'édite sur PlayStation 4 en mars 2015. Le producteur côté Sony est Masaaki Yamagiwa. L'extension, The Old Hunters, sort en novembre de la même année.
+
+@art g 2
 
 Il est dirigé par Hidetaka Miyazaki. Son parcours est inhabituel : il n'est entré dans le jeu vidéo qu'à vingt-neuf ans, après un premier métier dans l'informatique de gestion. Chez FromSoftware, il a pris en main un projet en difficulté, Demon's Souls, déjà en collaboration avec Japan Studio, puis a créé Dark Souls. Bloodborne arrive entre Dark Souls et Dark Souls III. C'est le premier jeu où il quitte la fantasy médiévale pour un XIXe siècle gothique.
 
@@ -52,6 +56,8 @@ Savoir, dans Bloodborne, est littéralement dangereux.
 
 Tout commence sous terre.
 
+@art 5
+
 Bien avant Yharnam, il y avait là une autre civilisation, les Pthumériens. Ils ont laissé un labyrinthe immense de tombes et de calices. Ces gens gardaient quelque chose : le sommeil d'êtres que le jeu appelle les Grands, les *Great Ones*.
 
 Les Grands ne sont pas des dieux qui jugent ou qui sauvent. Ce sont des êtres d'un autre plan, venus du cosmos, que l'esprit humain ne peut pas regarder sans se briser. Ils ne sont ni bons ni méchants. Une note du jeu dit d'eux une chose capitale, et c'est établi : chaque Grand perd son enfant, puis en désire un autre pour le remplacer. Ils sont puissants, ils sont presque éternels, et ils sont stériles, ou peu s'en faut.
@@ -64,6 +70,8 @@ Les Pthumériens ont eu une reine, Yharnam, qui a donné son nom à la ville. Tu
 
 Sous Yharnam, le jeu cache un monde entier, presque optionnel : les donjons des calices. On y descend par des rituels, en posant sur un autel une coupe ancienne, un calice, et des ingrédients rares. Chaque rituel ouvre un labyrinthe de tombes, de couloirs et de salles de pierre, qui s'enfoncent de plus en plus profondément.
 
+@art g 3
+
 Ces labyrinthes sont ceux des Pthumériens. On y croise leurs descendants, des êtres très grands, très maigres, aux gestes lents, qui gardent encore les lieux. On y croise des gardiens, des prêtres, des bêtes. Et au fond du plus profond d'entre eux, la reine Yharnam elle-même, celle qui pleure, son ventre ensanglanté, que tu reverras ailleurs, dans les derniers lieux du jeu.
 
 Les calices disent une chose importante : les Pthumériens n'ont pas seulement gardé le sommeil des Grands. Ils ont vécu avec eux, à leur contact. Et leurs descendants, transformés, déformés, montrent ce qui arrive à un peuple qui côtoie trop longtemps ce qu'il ne comprend pas. Les savants de Byrgenwerth descendront dans ces mêmes tombes. Ils y trouveront le sang.
@@ -71,6 +79,8 @@ Les calices disent une chose importante : les Pthumériens n'ont pas seulement g
 # Les Grands
 
 Il faut prendre le temps de les nommer, car ce sont eux, au fond, les personnages principaux.
+
+@art 6
 
 Ebrietas, la Fille du Cosmos, est une grande créature à la peau grise et aux ailes membraneuses, abandonnée par les siens. L'Église la garde dans une salle cachée au sommet de son quartier le plus haut, et l'adore. Elle pleure devant un autel. Elle ne t'attaque que si tu l'attaques.
 
@@ -92,6 +102,8 @@ Tous ces êtres ont une chose en commun, et c'est l'un des rares faits que le je
 
 Des siècles plus tard, des savants descendent dans le labyrinthe. Ils viennent d'une université bâtie au bord d'un lac, Byrgenwerth. Leur maître s'appelle Willem.
 
+@art g 4
+
 Ils trouvent en bas deux choses. La preuve que les Grands existent. Et un sang, le vieux sang, qui a des pouvoirs prodigieux.
 
 L'université se déchire alors, et cette querelle est le vrai sujet du jeu.
@@ -107,6 +119,8 @@ Laurence promet de s'en souvenir. Puis il va fonder une Église.
 # L'Église du remède
 
 Voilà Yharnam telle que tu la découvres : une ville de flèches gothiques, toute tournée vers une cathédrale. L'Église du Remède y pratique la transfusion. Le sang qu'elle distribue soigne tout. Les malades viennent de très loin, et toi aussi : tu es un étranger venu chercher une guérison.
+
+@art 7
 
 D'où vient ce sang ? L'Église ne le dit pas. Dans ses étages supérieurs, on garde une Grande abandonnée par les siens, Ebrietas, et un chœur de savants l'étudie. Dans ses couvents, on élève des femmes dont le sang est particulièrement pur. Tout repose sur un secret.
 
@@ -142,6 +156,8 @@ Chaque groupe a sa vérité. Aucun ne s'est demandé ce que ses recherches coût
 
 Au nord de Yharnam, au bout d'un lac gelé, il y a un château qu'on n'atteint qu'en carrosse, sur invitation : Cainhurst. Une noblesse ancienne y vivait, raffinée, cruelle, qui buvait du sang dans des coupes de cristal.
 
+@art g 5
+
 Selon les descriptions du jeu, un savant de Byrgenwerth, un traître, a apporté à Cainhurst un sang interdit. Les nobles s'en sont nourris et sont devenus les Vilains, les *Vilebloods*. Pour l'Église, c'était un blasphème : quelqu'un d'autre possédait le secret du sang. Elle a envoyé contre eux une troupe de chasseurs fanatiques, les Exécuteurs, menés par Martyr Logarius. Ils ont massacré le château.
 
 Logarius s'est assis ensuite sur le toit, devant la porte de la salle du trône, et il y est resté jusqu'à sa mort, pour garder ce qui restait dedans. Car il restait quelqu'un. La reine, Annalise, ne peut pas mourir. Elle attend, voilée, sur son trône, que des chasseurs lui apportent du sang impur, pour porter un enfant de sang qui relèvera sa lignée.
@@ -154,6 +170,8 @@ C'est encore la même histoire : des hommes qui veulent garder pour eux le pouvo
 
 L'extension The Old Hunters t'emmène dans le Cauchemar du Chasseur, ce lieu où les anciens chasseurs tombés dans l'ivresse du sang continuent de chasser pour l'éternité.
 
+@art 8
+
 Tu y croises Ludwig, le premier chasseur de l'Église, celui qui a eu l'idée de recruter des gens du peuple pour chasser les bêtes. Il a toujours été guidé par une épée, la Lame de clair de lune, qui lui montrait la voie dans une lumière verte. Tu le trouves transformé en une bête immense, couverte de visages. Au milieu du combat, il retrouve la raison, reconnaît sa lame, et se relève, presque humain.
 
 Plus loin, il y a la Salle de recherche. L'Église y gardait des malades. Elle essayait de faire pousser en eux ce que Willem cherchait : des yeux à l'intérieur. Les patients ont la tête gonflée d'eau. Certains disent qu'ils deviennent la mer. Une note sur un mur supplie qu'on les laisse dormir. Maria venait les voir, et elle avait pitié d'eux.
@@ -163,6 +181,8 @@ On comprend que l'Église, qui se présentait comme une religion de guérison, a
 # Le village de pêcheurs
 
 Il faut maintenant que je te raconte le crime originel. Le jeu le cache dans son extension, et tu ne le trouves qu'à la toute fin.
+
+@art g 6
 
 Un jour, la mer rejette sur une côte le corps d'une Grande, Kos. Elle est morte, ou mourante, et elle porte un enfant. Les habitants d'un hameau de pêcheurs la vénèrent.
 
@@ -180,6 +200,8 @@ Derrière elle, sur la grève, près du cadavre de Kos, quelque chose rampe hors
 
 Reviens à la ville. Quand tu sors de la clinique, c'est la nuit de la chasse, et quelque chose ne va pas : elle ne finit pas.
 
+@art 9
+
 Voici pourquoi. Une autre branche de savants, l'école de Mensis, a voulu obtenir une audience avec un Grand. Ils y sont parvenus, par un rituel qui les a tous tués. Leurs corps sont assis en cercle dans un village caché, leurs esprits partis dans un cauchemar où leur chef, Micolash, court en riant et supplie qu'on lui accorde des yeux. Leur rituel a fait descendre la lune. Il tourne autour de l'enfant Mergo, dont la nourrice garde le berceau.
 
 Mais tu ne vois rien de cela au début, et c'est la plus belle idée du jeu. Une créature nommée Rom, une ancienne savante à qui Kos, dit-on, a jadis accordé des yeux, et qui ressemble à une araignée stupide, flotte dans le lac de Byrgenwerth. Elle maintient un voile. Tant qu'elle vit, les hommes ne voient pas ce qui est là.
@@ -191,6 +213,8 @@ Le jeu que tu croyais jouer, une histoire de loups-garous, n'était que le voile
 # Yahar'gul et le Cauchemar de Mensis
 
 Quand la lune devient rouge, un village jusque-là inaccessible s'ouvre : Yahar'gul, le village invisible, celui de l'école de Mensis. On y entre souvent malgré soi, enlevé par un de leurs serviteurs, et l'on se réveille dans une cellule.
+
+@art g 7
 
 Yahar'gul est un cauchemar de pierre. Des ruelles en pente, des cages, des prisonniers, des chasseurs de l'école qui portent sur la tête une cage de fer, comme pour enfermer leur propre esprit. Au sommet, sur une place, des cloches sonnent, et un être monstrueux descend d'une falaise : le Réincarné, un amas de corps fondus ensemble, né d'un de leurs rituels.
 
@@ -220,6 +244,8 @@ Et la clinique d'Iosefka, où tu t'es réveillé, n'est plus tenue par Iosefka. 
 
 Dans l'extension, un chasseur t'aide à plusieurs reprises. Il s'appelle Simon. Il porte un arc qui se transforme en lame, et il se méfie de l'Église. Il cherche la même chose que toi : le secret du Cauchemar.
 
+@art 10
+
 Il te parle par énigmes. Il te met en garde contre l'Église. Et il avance, comme toi, vers le village de pêcheurs.
 
 Tu le retrouves une dernière fois, tout près du but, blessé à mort. Il te confie ce qu'il a compris, et te demande de terminer à sa place. Il meurt avant d'avoir vu ce qu'il cherchait. Dans Bloodborne, même ceux qui ont raison n'arrivent pas au bout.
@@ -228,6 +254,8 @@ Tu le retrouves une dernière fois, tout près du but, blessé à mort. Il te co
 
 Dès le début, dans tes notes, il y a une phrase que ton personnage semble avoir écrite lui-même avant de tout oublier : cherche le sang pâle pour dépasser la chasse.
 
+@art g 8
+
 On ne sait pas ce qu'est le sang pâle. Tout le jeu est une enquête là-dessus. Et la réponse la plus partagée vient d'une note trouvée bien plus tard, qui s'exclame devant un ciel de sang pâle. Le ciel de la fin, avec sa lune immense et blanche, celui que le rituel de Mensis a fait descendre.
 
 Le sang pâle, ce serait donc la Présence lunaire elle-même, ou ce qu'elle représente. Ton personnage est venu à Yharnam en la cherchant. Il l'a trouvée, ou c'est elle qui l'a trouvé. Ce que tu fais dans la dernière fin, la plus secrète, c'est exactement ce que la note demandait : dépasser la chasse.
@@ -235,6 +263,8 @@ Le sang pâle, ce serait donc la Présence lunaire elle-même, ou ce qu'elle rep
 # Le Rêve
 
 Reste l'endroit le plus doux et le plus trompeur : le Rêve du Chasseur.
+
+@art 11
 
 Chaque fois que tu meurs, tu t'y réveilles. C'est un jardin avec un atelier, des tombes, et deux habitants. Gehrman, le premier des chasseurs, un vieil homme en fauteuil roulant qui t'accueille en te disant que cet endroit sera ta maison. Et une Poupée grandeur nature, qui te parle avec tendresse et te rend plus fort. Elle a les traits de Dame Maria. Presque tout le monde pense que Gehrman l'a fabriquée.
 
@@ -245,6 +275,8 @@ Pourquoi la Présence fait-elle cela ? Ici, on interprète. La lecture la plus r
 # Gehrman et Maria
 
 Il y a une histoire d'amour dans Bloodborne, et elle n'est jamais racontée. Elle se devine.
+
+@art g 9
 
 Gehrman a formé les premiers chasseurs. Parmi ses élèves, il y avait Maria, une femme que bien des indices rattachent à la noblesse de Cainhurst, élégante, redoutable, qui maniait une lame double faite d'une épée et d'une dague. Elle était au village de pêcheurs. Elle a vu ce qu'on y a fait. Elle a jeté son arme dans un puits. Et elle est morte, seule, dans une tour d'horloge.
 
@@ -257,6 +289,8 @@ On ne sait pas s'il l'aimait comme une élève, une fille, ou autrement. On sait
 # Trois réveils
 
 Quand la nourrice est morte et que les pleurs se sont tus, Gehrman t'attend sous un grand arbre, dans un champ de fleurs blanches. Il te propose sa miséricorde : il va te tuer dans le rêve, et tu te réveilleras au matin, libre, sans souvenir.
+
+@art 12
 
 Si tu acceptes, c'est ce qui arrive. Le soleil se lève sur Yharnam. Tu as survécu à la nuit, et tu n'as rien appris.
 

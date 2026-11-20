@@ -14,6 +14,8 @@ const book = {
 
 Dark Souls est le jeu qui a donné son nom à un genre. On en parle pour sa difficulté, pour ses morts à répétition, pour les messages laissés au sol par d'autres joueurs. On en parle moins pour ce qu'il raconte. Pourtant, c'est un des plus beaux récits de fin du monde du jeu vidéo.
 
+@art 4
+
 Comme dans Bloodborne, rien n'est dit en face. L'histoire est en morceaux, dans les descriptions d'objets, dans les répliques de personnages à moitié fous, dans l'architecture. Je vais remettre les morceaux dans l'ordre. Quand quelque chose est écrit dans le jeu, je te le dis. Quand c'est une lecture partagée par presque tous les joueurs, je te le dis aussi. Et quand c'est une hypothèse, je te préviens.
 
 Je te raconte les trois jeux, parce qu'ils forment une seule histoire : celle d'un feu qu'on ne veut pas laisser mourir.
@@ -24,6 +26,8 @@ Je te raconte les trois jeux, parce qu'ils forment une seule histoire : celle d'
 # Ceux qui l'ont fait
 
 Dark Souls est développé par FromSoftware, un studio de Tokyo, et édité par Namco Bandai. Le premier jeu et le troisième sont dirigés par Hidetaka Miyazaki, qui avait déjà signé Demon's Souls en 2009 et qui deviendra président du studio. Le deuxième est dirigé par Tomohiro Shibuya et Yui Tanimura, pendant que Miyazaki travaillait sur Bloodborne.
+
+@art g 2
 
 La musique du premier jeu est de Motoi Sakuraba, un vétéran du jeu vidéo japonais. Pour le troisième, c'est surtout Yuka Kitamura qui prend le relais, avec Sakuraba, Tsukasa Saitoh et Nobuyoshi Suzuki. Les combats contre Gwyn et contre l'Âme des cendres leur doivent beaucoup.
 
@@ -51,6 +55,8 @@ Et le pygmée furtif, si facilement oublié. L'introduction le nomme à peine. R
 
 Avec la puissance des âmes de seigneur, ils ont défié les dragons. Les éclairs de Gwyn ont fendu leurs écailles de pierre. Les tempêtes de feu de la Sorcière les ont brûlés. Nito a répandu sur eux la mort et la maladie. Et un dragon a trahi les siens : Seath l'Écorché, un dragon blanc né sans écailles, donc mortel, qui jalousait ses frères.
 
+@art 5
+
 Les dragons ont été vaincus. Ainsi commença l'âge du Feu.
 
 Gwyn a bâti une cité pour les dieux, Anor Londo, toute de pierre blanche et de lumière dorée. Il a récompensé Seath en le faisant duc, et en lui donnant une part de son âme de seigneur. Il a distribué des fragments de sa propre âme à ses proches : ses enfants, ses chevaliers, ses alliés.
@@ -60,6 +66,8 @@ Le pygmée furtif, lui, a disparu de l'histoire. Il avait reçu une âme particu
 # L'Âme sombre
 
 L'âme du pygmée ne brillait pas. Elle était faite de ténèbres. Et le pygmée l'a partagée entre ses descendants. Ces descendants, ce sont les hommes. Nous.
+
+@art g 3
 
 C'est ce que révèle, à la fin du premier jeu, un serpent primordial nommé Kaathe : l'humanité est l'héritière de l'Âme sombre. Les hommes portent en eux un fragment des ténèbres. Ce que le jeu appelle l'humanité, une petite chose noire qui palpite dans ta main et que tu consommes pour redevenir humain, c'est cela.
 
@@ -71,6 +79,8 @@ Et le Feu, comme tout feu, ne dure pas. Il faiblit. Quand il s'éteindra, l'âge
 
 Mille ans après la guerre contre les dragons, la Première Flamme commence à s'éteindre.
 
+@art 6
+
 La Sorcière d'Izalith a voulu la recréer. Avec son âme de seigneur, elle a tenté d'allumer une nouvelle flamme. L'expérience a échoué. Elle a produit une flamme du Chaos, un feu déformé qui a englouti sa cité et transformé la Sorcière et la plupart de ses filles en monstres. De ce feu sont nés les démons. Sa fille Quelaag, devenue moitié femme moitié araignée, garde le sanctuaire de sa sœur aveugle, malade, qui a avalé l'infection des marais pour soulager les morts-vivants.
 
 Gwyn, lui, a choisi une autre voie. Il est descendu dans le Four de la Première Flamme, avec ses chevaliers, et il s'est offert lui-même comme combustible. Il a lié le feu. Son corps a brûlé pendant des siècles, et il est devenu un seigneur des cendres, une carcasse vide qui garde le foyer. Ses chevaliers, brûlés avec lui, errent dans le monde en armure noire.
@@ -80,6 +90,8 @@ Mais le feu, même ravivé, continue de faiblir. Et à mesure qu'il faiblit, un 
 # Le Signe des ténèbres
 
 Le Signe des ténèbres est un anneau de feu noir qui s'ouvre sur la peau. Ceux qui le portent ne meurent plus. Ils se relèvent, encore et encore, au dernier feu de camp où ils se sont arrêtés. Mais à chaque mort, ils perdent un peu de leur humanité, de leur mémoire, de leur raison. Quand il ne reste plus rien, ils deviennent des carcasses : des corps sans esprit, qui errent et attaquent tout ce qui vit.
+
+@art g 4
 
 On les appelle les morts-vivants. On les enferme. On les envoie dans un asile au nord, pour qu'ils y attendent la fin du monde.
 
@@ -99,6 +111,8 @@ Tu sonnes la première cloche, au sommet d'une église, et la seconde, au fond d
 
 Anor Londo, la cité des dieux, est un des moments les plus célèbres du jeu. Tu y arrives porté par des gargouilles, et tu découvres une ville baignée d'une lumière de fin d'après-midi, immense, vide.
 
+@art 7
+
 Au bout du chemin, dans la cathédrale, deux gardiens t'attendent : Ornstein, le tueur de dragons, et Smough, le bourreau, un géant qui broyait les os de ses victimes pour les mélanger à son pain. C'est l'un des combats les plus durs du jeu.
 
 Derrière eux, dans une chambre dorée, la princesse Gwynevere, fille de Gwyn, immense, souriante, te remet le Réceptacle.
@@ -110,6 +124,8 @@ Mais rien de tout cela n'est vrai. Si tu frappes la princesse, elle disparaît. 
 # Les seigneurs
 
 Pour remplir le Réceptacle, il faut les âmes des anciens seigneurs, ou de ceux qui en ont hérité.
+
+@art g 5
 
 Nito, au fond du Tombeau des géants, une fosse noire où l'on ne voit rien sans lumière.
 
@@ -123,6 +139,8 @@ Et les Quatre Rois de la Nouvelle-Londo, une cité inondée exprès pour noyer c
 
 Si tu ne suis pas Frampt, si tu tues les Quatre Rois avant d'avoir rempli le Réceptacle, tu rencontres Kaathe, dans l'Abîme.
 
+@art 8
+
 Il te raconte une autre histoire. Gwyn a eu peur des ténèbres, et de l'âge des hommes qui devait venir. Il a lié le feu pour retarder la fin de son règne, contre l'ordre naturel des choses. Les hommes, héritiers de l'Âme sombre, devraient régner. Kaathe te propose de devenir le seigneur des ténèbres.
 
 Qui dit vrai ? Frampt, qui veut prolonger l'âge du Feu, ou Kaathe, qui veut l'âge des Ténèbres ? Les deux serpents ont chacun manipulé des hommes. Les deux ont leurs raisons. Le jeu te laisse seul avec le choix.
@@ -130,6 +148,8 @@ Qui dit vrai ? Frampt, qui veut prolonger l'âge du Feu, ou Kaathe, qui veut l'�
 # Artorias
 
 L'extension Artorias of the Abyss raconte une légende que tout Lordran connaît, et la corrige.
+
+@art g 6
 
 Les Quatre chevaliers de Gwyn étaient : Ornstein, le tueur de dragons ; Gough, l'archer géant au regard de faucon ; Ciaran, la lame silencieuse ; et Artorias, le marcheur des abîmes, qui combattait avec son grand loup gris, Sif.
 
@@ -157,6 +177,8 @@ Et Patches, une hyène sourire aux lèvres, qui te pousse dans un trou et revien
 
 Au bout du chemin, tu descends dans le Four de la Première Flamme. Tout est blanc, recouvert de cendres. Les chevaliers noirs de Gwyn t'y attendent, ceux qui ont brûlé avec lui. Et au centre, Gwyn lui-même.
 
+@art 9
+
 C'est un des combats finaux les plus tristes du jeu vidéo. La musique ne joue pas un thème épique, mais un air de piano lent, presque une berceuse. Le seigneur de la lumière est devenu un vieillard brûlé, qui frappe comme un fou. Il est très fort, et très fragile.
 
 Puis tu choisis.
@@ -169,6 +191,8 @@ Si tu t'éloignes, le feu s'éteint. Les serpents s'inclinent devant toi. Tu es 
 
 Le deuxième jeu se passe longtemps après, dans un royaume nommé Drangleic, si loin qu'on ne sait plus où se trouvait Lordran. Tout a été oublié, sauf la malédiction.
 
+@art g 7
+
 Le roi Vendrick a bâti son royaume en cherchant un moyen de briser la malédiction des morts-vivants. Il a fait la guerre aux géants venus de l'autre côté de la mer, pour leur prendre leur pouvoir. Il a épousé une reine venue de nulle part, Nashandra, qui l'a poussé à cette guerre. Nashandra est un fragment de Manus, une des ténèbres sorties de l'Abîme. Elle veut s'asseoir sur le Trône du désir, et faire venir l'âge des Ténèbres à son profit.
 
 Le frère du roi, Aldia, a voulu comprendre la malédiction par la science. Il a fait des expériences monstrueuses. À la fin, dans l'édition Scholar of the First Sin, il te parle. Il te demande si l'on doit forcément choisir entre la lumière et les ténèbres. S'il n'existe pas une troisième voie : refuser le trône, refuser le cycle, partir.
@@ -178,6 +202,8 @@ Dark Souls II est mal aimé par une partie des joueurs. Mais il a eu une idée p
 # Dark Souls III
 
 Le troisième jeu se passe à la toute fin. La flamme est presque morte. Le monde lui-même se rétracte : des royaumes entiers se sont écrasés les uns sur les autres, et la terre de Lothric est devenue l'endroit où tout converge.
+
+@art 10
 
 Le feu a été lié de nombreuses fois. Ceux qui l'ont fait sont devenus des seigneurs des cendres. Mais les seigneurs des cendres actuels refusent de reprendre leur rôle. Alors on réveille les cendres, des morts-vivants si faibles qu'ils n'ont même pas réussi à lier le feu de leur vivant, et on les envoie ramener les seigneurs à leur trône, de force.
 
@@ -190,6 +216,8 @@ Il y a un autre fils de Gwyn, que le premier jeu ne nommait pas : son aîné, le
 # La ville annelée
 
 La dernière extension, The Ringed City, va jusqu'à la toute fin du monde. Tout est cendres. Une seule ville tient encore debout, au bout du temps : la ville annelée, construite par Gwyn pour les descendants du pygmée, les premiers hommes, pour les garder loin de tout. Une de ses filles, Filianore, y dort, et son sommeil maintient l'illusion de la ville.
+
+@art g 8
 
 Un vieil esclave chevalier, Gael, cherche l'Âme sombre. Il a une raison : une petite fille, la Peintre, qui vit dans un monde peint, a besoin d'un pigment pour peindre un monde nouveau. Un monde froid, sombre, doux, où l'on pourrait vivre. Gael veut lui apporter le sang des seigneurs pygmées. Il dévore l'Âme sombre, il devient un monstre, et tu dois le tuer pour ramener le pigment.
 
@@ -206,6 +234,8 @@ Aucune fin n'est une victoire. Le jeu suggère seulement qu'il faut, un jour, ac
 # Ce que tu peux en prendre
 
 Dark Souls t'apprend que la fin du monde peut être un sujet doux, mélancolique, presque tendre. Ce n'est pas une apocalypse. C'est un feu qui s'éteint dans une cheminée, et des gens qui refusent d'aller se coucher.
+
+@art 11
 
 Il t'apprend aussi la force des petits personnages. Tu oublies les seigneurs. Tu te souviens de Solaire, de Siegmeyer, d'une gardienne du feu muette, d'un loup devant une tombe. Les grands récits passent par les gens qui marchent à côté.
 

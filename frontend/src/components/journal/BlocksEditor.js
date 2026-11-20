@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { IoArrowUp, IoArrowDown, IoTrashOutline, IoImageOutline, IoMusicalNotes } from "react-icons/io5";
+import { IoArrowUp, IoArrowDown, IoTrashOutline, IoImageOutline, IoMusicalNotes, IoSearch, IoLogoYoutube } from "react-icons/io5";
 import { toast } from "sonner";
 import { uploadJournalImage, mediaUrl, listAmbiences, ambienceUrl } from "@/lib/api";
 import { ytId } from "@/lib/blocks";
+import { CoverDialog } from "@/components/atelier/AlexCore";
+import { YtSearchBox } from "@/components/RichTextEditor";
 import AutoTextarea from "@/components/AutoTextarea";
 
 export const BLOCK_TYPES = [
@@ -33,12 +35,29 @@ export function FilePick({ multiple, onDone, upload = journalUpload, accept = "i
 }
 export const ImagePick = (p) => <FilePick {...p} />;
 
+// Chercher une image comme dans Alexandrie (SteamGridDB, affiches, manga, livres, domaine public, Commons…)
+export function ArtSearch({ onPick, label = "Chercher un artwork", term = "" }) {
+  const [open, setOpen] = useState(false);
+  return (<>
+    <button type="button" className="jr-pick jr-pick-s" onClick={() => setOpen(true)} data-testid="jr-art-search"><IoSearch /> {label}</button>
+    {open && <CoverDialog b={{ id: "jr", title: term || "Inspiration", room: "cinema", format: "livre" }} current="" onSave={(u) => { setOpen(false); if (u) onPick(u); }} onClose={() => setOpen(false)} />}
+  </>);
+}
+// Chercher sur YouTube (vidéo ou musique)
+function YtFind({ onPick, placeholder }) {
+  const [open, setOpen] = useState(false);
+  return open
+    ? <div className="jr-ytfind"><YtSearchBox placeholder={placeholder} onPick={(v) => { setOpen(false); onPick(v); }} testid="jr-yt" /><button type="button" className="jr-pick" onClick={() => setOpen(false)}>Fermer</button></div>
+    : <button type="button" className="jr-pick jr-pick-s" onClick={() => setOpen(true)} data-testid="jr-yt-open"><IoLogoYoutube /> Chercher sur YouTube</button>;
+}
+
 function MusicFields({ b, set, uploadAudio }) {
   const { data: ambiences = [] } = useQuery({ queryKey: ["ambiences"], queryFn: listAmbiences });
   return (
     <>
       <input className="jr-in" placeholder="Titre affiché (ex. « Thème de la bataille »)" value={b.caption || ""} onChange={(e) => set({ caption: e.target.value })} />
       <div className="flex flex-wrap items-center gap-2">
+        <YtFind placeholder="Une musique : Hisaishi, lo-fi, OST…" onPick={(v) => set({ url: `https://www.youtube.com/watch?v=${v.id}`, caption: b.caption || v.title || "Musique" })} />
         <FilePick accept="audio/*" icon={<IoMusicalNotes />} label={b.url ? "Remplacer le fichier" : "Importer une musique"} upload={uploadAudio}
           onDone={([u], [f]) => set({ url: u, caption: b.caption || f.name.replace(/\.[^.]+$/, "") })} />
         <select className="jr-in" style={{ width: "auto" }} value="" onChange={(e) => { const a = ambiences.find((x) => x.id === e.target.value); if (a) set({ url: ambienceUrl(a.id), caption: b.caption || a.title }); }}>
@@ -46,7 +65,7 @@ function MusicFields({ b, set, uploadAudio }) {
           {ambiences.map((a) => <option key={a.id} value={a.id}>{a.title}</option>)}
         </select>
       </div>
-      {b.url && <audio className="w-full" controls preload="none" src={mediaUrl(b.url)} />}
+      {b.url && (ytId(b.url) ? <small className="jr-yt-note"><IoLogoYoutube /> Musique YouTube : lue dans le lecteur intégré quand on touche le repère.</small> : <audio className="w-full" controls preload="none" src={mediaUrl(b.url)} />)}
       <small style={{ color: "var(--text-secondary)" }}>Le lecteur touche ce repère pour lancer la musique pendant sa lecture.</small>
     </>
   );
@@ -59,12 +78,12 @@ function BlockFields({ b, set, uploadImage, uploadAudio, page }) {
       return <><textarea className="jr-in" rows={7} placeholder="Écris ici… (ligne vide = nouveau paragraphe)" value={b.text || ""} onChange={(e) => set({ text: e.target.value })} /><small style={{ color: "var(--text-secondary)" }}>**gras** · *italique*</small></>;
     case "heading": return <input className="jr-in jr-in-h" placeholder="Intertitre" value={b.text || ""} onChange={(e) => set({ text: e.target.value })} />;
     case "quote": return <><textarea className="jr-in" rows={3} placeholder="Citation" value={b.text || ""} onChange={(e) => set({ text: e.target.value })} /><input className="jr-in" placeholder="Auteur (facultatif)" value={b.author || ""} onChange={(e) => set({ author: e.target.value })} /></>;
-    case "youtube": return <><input className="jr-in" placeholder="Lien YouTube" value={b.url || ""} onChange={(e) => set({ url: e.target.value })} />{b.url && !ytId(b.url) && <small className="jr-warn">Lien YouTube non reconnu</small>}{cap}</>;
+    case "youtube": return <><YtFind placeholder="Chercher une vidéo ou coller un lien" onPick={(v) => set({ url: `https://www.youtube.com/watch?v=${v.id}`, caption: b.caption || v.title || "" })} /><input className="jr-in" placeholder="Lien YouTube" value={b.url || ""} onChange={(e) => set({ url: e.target.value })} />{b.url && !ytId(b.url) && <small className="jr-warn">Lien YouTube non reconnu</small>}{cap}</>;
     case "music": return <MusicFields b={b} set={set} uploadAudio={uploadAudio} />;
     case "gallery": return (
       <>
         <div className="jr-thumbs">{(b.urls || []).map((u, i) => <span key={u + i}><img src={mediaUrl(u)} alt="" /><button onClick={() => set({ urls: b.urls.filter((_, k) => k !== i) })} aria-label="Retirer">×</button></span>)}</div>
-        <FilePick multiple upload={uploadImage} label="Ajouter des images" onDone={(urls) => set({ urls: [...(b.urls || []), ...urls] })} />{cap}
+        <div className="flex flex-wrap items-center gap-3"><FilePick multiple upload={uploadImage} label="Ajouter des images" onDone={(urls) => set({ urls: [...(b.urls || []), ...urls] })} /><ArtSearch onPick={(u) => set({ urls: [...(b.urls || []), u] })} /></div>{cap}
       </>
     );
     default: return ( // image / croquis
@@ -72,6 +91,7 @@ function BlockFields({ b, set, uploadImage, uploadAudio, page }) {
         {b.url && <img className="jr-prev" src={mediaUrl(b.url)} alt="" />}
         <div className="flex flex-wrap items-center gap-3">
           <FilePick upload={uploadImage} label={b.url ? "Remplacer" : b.type === "sketch" ? "Importer le croquis" : "Choisir une image"} onDone={([u]) => set({ url: u })} />
+          <ArtSearch onPick={(u) => set({ url: u })} />
           {b.type === "image" && <label className="jr-check"><input type="checkbox" checked={!!b.wide} onChange={(e) => set({ wide: e.target.checked })} /> Pleine largeur</label>}
         </div>
         {cap}

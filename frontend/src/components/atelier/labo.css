@@ -464,3 +464,4 @@ html:is([data-theme="labo"],[data-theme="laboclair"]).in-atelier .at-root :is(in
 /* Éditeur : fond du thème (il était sombre en dur, illisible sur les thèmes clairs) */
 .at-root .at-editor{background:color-mix(in srgb,var(--bg-primary) 92%,transparent)}
 .at-root .at-ed-bar{border-bottom:1px solid var(--lab-hair)}
+.at-vol{display:grid;grid-template-columns:minmax(120px,190px) 1fr 36px auto;align-items:center;gap:10px;margin-top:10px}.at-vol input[type=range]{width:100%;accent-color:var(--brand)}@media (max-width:600px){.at-vol{grid-template-columns:1fr 36px auto}.at-vol span{grid-column:1/-1}}

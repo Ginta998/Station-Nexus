@@ -1,6 +1,6 @@
 const book = {
   id: "saint-just", title: "Saint-Just", sub: "L'Archange de la Terreur", room: "histoire", type: "pensee", cote: "HI-012", color: 352, emblem: "劍",
-  about: "Saint-Just raconte : Blérancourt, la lettre de cachet, le poème qu'on a saisi, la Convention à vingt-cinq ans, le discours contre le roi, le Comité de salut public, Strasbourg et Fleurus, les décrets de ventôse, l'accusation de Danton qu'il a écrite, et le silence du 9 thermidor.",
+  about: "Saint-Just raconte : Blérancourt, la lettre de cachet, le poème qu'on a saisi, la Convention à vingt-cinq ans, le discours contre le roi, le Comité de salut public, Strasbourg et Fleurus, les décrets de ventôse, l'accusation de Danton qu'il a écrite, et le silence du 9 thermidor. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Saint-Just, Œuvres complètes (Folio, 2004)", note: "Ses discours, ses rapports, Organt et les fragments des Institutions républicaines, édités par Anne Kupiec et Miguel Abensour." },
     { label: "Albert Ollivier, Saint-Just et la force des choses (1954)", note: "La biographie classique, adaptée ensuite pour la télévision." },
@@ -28,6 +28,20 @@ Je suis né à Decize, dans le Nivernais, mais j'ai grandi en Picardie, à Blér
 J'étais un enfant difficile. Orgueilleux, rêveur, violent parfois. On m'a envoyé au collège des Oratoriens, à Soissons, où j'ai lu les Anciens : Plutarque surtout, les vies des hommes illustres, les Spartiates, les Romains de la République, Lycurgue, Brutus, Caton. Je rêvais d'être l'un d'eux. Je voulais une vie qui ait la forme d'un exemple.
 
 À dix-neuf ans, j'ai fait la bêtise qui m'a appris ce que pèse un ordre du roi. J'aimais une jeune fille de Blérancourt, Thérèse Gellé. Son père, notaire, la trouvait trop bien pour moi, et l'a mariée à un autre. J'ai pris la fuite. Je suis parti pour Paris en emportant l'argenterie de ma mère, que j'ai vendue pour vivre. Ma mère, désespérée, a obtenu contre moi une lettre de cachet : un ordre royal, sans jugement, qui permettait d'enfermer n'importe qui à la demande de sa famille. On m'a mis six mois dans une maison de correction, au faubourg Saint-Antoine. Je n'avais rien fait d'autre qu'être un fils ingrat. Je suis entré dans la Révolution avec ce souvenir : un royaume où l'on enfermait un garçon sur un papier signé, sans le juger.
+
+Quelques jours avant son mariage avec l'autre, je l'ai vue derrière l'église, à la tombée du jour. Elle avait les yeux rouges.
+
+— Mon père a signé. Je n'y peux rien, Antoine.
+
+— Tu y peux tout. Dis non.
+
+— Une fille ne dit pas non à son père. Ce n'est pas la loi.
+
+— Alors la loi est mauvaise. Un jour, elle changera.
+
+— Un jour. Moi, je me marie demain.
+
+Quelques semaines plus tard, je suis parti pour Paris. Je n'ai jamais oublié cette phrase, je crois même que tout ce que j'ai fait ensuite tient dans la distance entre ces deux mots : un jour, demain.
 
 En sortant, j'ai étudié le droit, à Reims. J'ai écrit un long poème, Organt, en vingt chants, plein de chevaliers, de moines, de démons et de scènes que les dévots ont trouvées obscènes. Il a paru en 1789. On l'a saisi. Il ne s'est pas vendu. C'était une œuvre de jeune homme, insolente, maladroite, où je me moquais du roi, de l'Église et de la noblesse sous le couvert de la fable. Je n'en suis pas fier. Mais je ne la renie pas : elle disait déjà ce que je pensais.
 
@@ -69,6 +83,18 @@ En octobre 1793, on m'a envoyé à Strasbourg, avec mon ami Philippe Le Bas. L'a
 
 J'ai fait ce que je savais faire. J'ai réquisitionné. J'ai exigé des riches de Strasbourg un emprunt forcé de neuf millions de livres. J'ai ordonné qu'on prenne dans les maisons des aristocrates des milliers de paires de souliers et des manteaux pour les soldats, et qu'on les leur porte en vingt-quatre heures. J'ai fait arrêter des officiers incapables, j'en ai fait fusiller, devant la troupe, pour l'exemple. J'ai mangé avec les soldats, je dormais peu, je montais à cheval au premier rang. J'ai écrit un ordre que les soldats ont retenu : que tout officier qui se plaindrait de la misère de ses hommes devait d'abord la partager. J'ai aussi fait arrêter des révolutionnaires de Strasbourg qui terrorisaient la ville pour leur propre compte. Les armées ont repris l'offensive. À la fin de décembre, Landau était délivrée.
 
+Deux négociants de la ville sont venus me voir, en perruque poudrée, pour protester contre l'emprunt forcé. Le Bas lisait des dépêches dans un coin.
+
+— Citoyen représentant, neuf millions, c'est la ruine de la ville. Les négociants ne pourront pas.
+
+— Les soldats de l'armée du Rhin marchent pieds nus dans la neige. Ils peuvent, eux.
+
+— Laisse-nous au moins un délai.
+
+— Vingt-quatre heures. Après, ceux qui n'auront pas payé iront travailler aux fortifications, et c'est eux qui marcheront dans la neige. Tu vois, citoyen, je ne demande rien d'impossible. Je demande l'égalité.
+
+Ils ont payé. Le Bas m'a regardé, après, sans rien dire. C'était le seul homme qui pouvait me regarder ainsi sans que j'en sois blessé.
+
 Puis l'armée du Nord. Au printemps de 1794, je suis reparti aux frontières. Avec le général Jourdan, avec Kléber, avec Marceau, nous avons franchi la Sambre, plusieurs fois, et plusieurs fois nous avons été repoussés. J'ai fait recommencer. Le 26 juin 1794, à Fleurus, l'armée de la République a battu les Autrichiens. Pour la première fois dans une bataille, on a utilisé un ballon captif pour observer l'ennemi. Fleurus a ouvert la Belgique. La République ne serait plus envahie.
 
 Je suis rentré à Paris, quelques jours après. Il me restait un mois à vivre.
@@ -97,6 +123,18 @@ Nous avons frappé les deux. Les Hébertistes d'abord, en mars. Puis les Indulge
 
 Robespierre hésitait. Il avait été l'ami de Danton, il avait été le témoin de mariage de Desmoulins, il était le parrain de son fils. C'est moi qui ai rédigé le rapport d'accusation, à partir de notes que Robespierre m'avait données. Je l'ai lu à la Convention, le 31 mars 1794. J'y faisais de Danton un traître depuis toujours, un ami des rois, un corrompu. J'ai exagéré. J'ai réuni des faits vrais et des soupçons, des rumeurs et des fautes, pour en faire une conspiration. Je savais ce que je faisais. Je croyais que la République ne pouvait pas se permettre de laisser vivre un homme qui voulait l'arrêter.
 
+Je me souviens du soir où il m'a remis ses notes, dans sa petite chambre de la rue Saint-Honoré, chez le menuisier Duplay. Il avait écrit en marge, de sa fine écriture, des souvenirs, des phrases de Danton, des soupçons.
+
+— Tu en feras ce que tu jugeras bon, Saint-Just.
+
+— Tu es sûr, Robespierre ? C'était ton ami.
+
+— C'était. Je ne sais plus ce qu'il est. C'est ce que je te demande de dire à la Convention.
+
+— Je dirai plus que tu n'as écrit. Il faut que ce soit sans appel.
+
+Il n'a pas répondu. Il a rangé ses lunettes vertes dans leur étui. Je suis rentré écrire toute la nuit.
+
 Le procès a eu lieu au Tribunal révolutionnaire. Danton y a été magnifique. Sa voix passait par les fenêtres, et la foule l'entendait sur les quais. On a craint qu'il ne retourne le peuple. J'ai obtenu de la Convention un décret qui permettait au tribunal de mettre hors des débats tout accusé qui manquerait de respect à la justice. On l'a fait taire. Il a été guillotiné le 5 avril, avec Desmoulins et les autres. En passant devant la maison de Robespierre, dans la charrette, on raconte qu'il a crié que Robespierre le suivrait.
 
 Il avait raison. Quatre mois plus tard, je suivais aussi.
@@ -104,6 +142,18 @@ Il avait raison. Quatre mois plus tard, je suivais aussi.
 Au printemps de 1794, la Terreur a atteint son sommet. En juin, la loi du 22 prairial a supprimé presque toutes les garanties des accusés devant le Tribunal révolutionnaire : plus d'avocats, plus de témoins obligatoires, une seule peine, la mort. À Paris, en quelques semaines, on a guillotiné plus que pendant toute l'année précédente. Et pourtant, les armées gagnaient. Fleurus avait sauvé la République. Beaucoup ont commencé à se demander pourquoi il fallait encore tuer.
 
 Au Comité, nous nous déchirions. Robespierre ne venait plus aux séances. Carnot, qui dirigeait la guerre, me reprochait de me mêler de ses affaires ; nous nous sommes insultés devant les autres. Billaud et Collot haïssaient Robespierre. À la Convention, des députés qui avaient du sang sur les mains, rappelés de mission pour leurs excès, Fouché, Tallien, Barras, Fréron, savaient qu'ils étaient sur les listes. Ils avaient peur. La peur les a unis.
+
+Un soir, dans la salle du Comité, aux Tuileries, Carnot a jeté ses papiers sur la table.
+
+— Tu te mêles de la guerre, Saint-Just. Tu donnes des ordres aux généraux par-dessus ma tête.
+
+— Je donne des ordres là où il y a des victoires à prendre. Fleurus, ce n'est pas ton bureau qui l'a gagné.
+
+— Vous êtes trois, Robespierre, Couthon et toi, à vouloir être les maîtres de tout.
+
+— Et vous êtes huit à avoir peur de nous. Lequel des deux est le plus dangereux pour la République, Carnot ?
+
+Personne n'a répondu. C'est ce silence-là, je crois, qui nous a tués un mois plus tard.
 
 Le 8 thermidor, Robespierre a fait un long discours à la Convention. Il a dit qu'il y avait des traîtres jusque dans les comités, sans donner leurs noms. Chacun a cru que c'était lui. C'était une erreur. Le soir même, ils se sont entendus.
 

@@ -1,6 +1,6 @@
 const book = {
   id: "soundiata-keita", title: "Soundiata Keïta", sub: "Le lion du Manding", room: "histoire", type: "pensee", cote: "HI-011", color: 34, emblem: "獅",
-  about: "Soundiata raconte, comme le racontent les griots depuis huit siècles : Sogolon la femme-buffle, l'enfant qui rampait jusqu'à sept ans, le baobab arraché, l'exil, Soumaoro le roi forgeron et l'ergot du coq blanc, la bataille de Kirina, la Charte du Manden, puis l'or du Mali et Mansa Moussa.",
+  about: "Soundiata raconte, comme le racontent les griots depuis huit siècles : Sogolon la femme-buffle, l'enfant qui rampait jusqu'à sept ans, le baobab arraché, l'exil, Soumaoro le roi forgeron et l'ergot du coq blanc, la bataille de Kirina, la Charte du Manden, puis l'or du Mali et Mansa Moussa. Récit imaginé à la première personne, à partir de l'épopée que chantent les griots : les dialogues sont reconstruits.",
   links: [
     { label: "Djibril Tamsir Niane, Soundjata ou l'épopée mandingue (1960)", note: "La version recueillie auprès du griot Mamadou Kouyaté. Courte, belle, la porte d'entrée." },
     { label: "Le Sosso Bala, à Niagassola (Guinée)", note: "Le balafon que la tradition attribue à Soumaoro, gardé par la famille Kouyaté. Patrimoine oral de l'humanité depuis 2001." },
@@ -40,6 +40,16 @@ Mon père est mort. Malgré son vœu, les grands du royaume ont choisi Dankaran 
 
 Un matin, ma mère n'avait plus de feuilles de baobab pour la sauce. Elle est allée en demander à Sassouma, qui en avait. Sassouma lui en a donné une poignée, en riant. Elle lui a dit : mon fils à moi va cueillir les feuilles pour sa mère. Le tien ? Il rampe. Ma mère est rentrée en pleurant, et elle m'a frappé avec un bâton, de colère et de honte.
 
+Les griots chantent ce qui s'est dit ensuite. Écoute.
+
+— Mère, pourquoi pleures-tu ?
+
+— Je pleure parce que j'ai mendié des feuilles de baobab à la femme qui m'insulte, et que mon fils, à sept ans, ne sait pas marcher jusqu'au baobab.
+
+— Mère, ne pleure plus. Aujourd'hui, ce n'est pas des feuilles que je te rapporterai. C'est le baobab tout entier. Et c'est devant ta case que les femmes de Niani viendront mendier.
+
+Ma mère m'a regardé comme on regarde un fou, ou un roi. Chez nous, c'est parfois le même regard.
+
 Alors je me suis levé.
 
 J'ai dit à ma mère : aujourd'hui, je vais marcher. Et j'ai envoyé chercher les forgerons. Je leur ai demandé de me forger une barre de fer, la plus lourde qu'ils pourraient faire. Ils l'ont apportée, à plusieurs, en la portant sur leurs épaules. Je me suis appuyé dessus, et elle a plié. Je me suis redressé. Mes jambes ont tremblé, puis elles m'ont porté. La barre était devenue un arc. Balla Fasséké a improvisé, sur-le-champ, l'hymne de l'arc, que les griots chantent encore. Et je suis allé jusqu'au baobab, je l'ai arraché de terre avec ses racines, et je l'ai porté devant la case de ma mère. Désormais, lui ai-je dit, ce n'est pas devant la case de Sassouma qu'on viendra chercher les feuilles de baobab. C'est devant la tienne.
@@ -70,7 +80,33 @@ Je suis rentré. Le roi de Mema m'a donné une partie de son armée. Sur le chem
 
 Nous nous sommes battus plusieurs fois. Soumaoro était difficile à vaincre. Ses troupes étaient nombreuses, ses forgerons lui fabriquaient des armes que nous n'avions pas. Et, disait-on, il était invulnérable. À chaque bataille, mes flèches ne le touchaient pas, et il disparaissait au moment où je croyais l'atteindre.
 
+Avant la dernière bataille, nous nous sommes parlé, Soumaoro et moi. Pas face à face : par la bouche de nos messagers, et les griots ont gardé ces paroles comme on garde l'or. Les voici, à peu près telles qu'ils les chantent.
+
+— Je suis le roi du Sosso, a fait dire Soumaoro. Je suis le champignon vénéneux qui fait vomir l'homme courageux.
+
+— Et moi, ai-je fait répondre, je suis le coq affamé. Le poison ne me fait rien.
+
+— Je suis le feu de brousse, qui brûle tout sur son passage.
+
+— Et moi la pluie qui éteint le feu.
+
+Les griots disent que nous avons parlé ainsi longtemps. Puis il n'y a plus eu de mots. Seulement les tambours.
+
 Il fallait connaître son secret. C'est ma sœur, Nana Triban, qui l'a appris. Elle était retenue prisonnière dans sa tour, et Soumaoro voulait l'épouser. Elle l'a séduit, elle l'a fait boire, elle l'a fait parler. Et il lui a confié ce qui pouvait le tuer : l'ergot d'un coq blanc. Elle s'est enfuie de la tour et elle est venue me le dire.
+
+Elle est arrivée au camp de nuit, à bout de souffle, les pieds en sang, avec Balla Fasséké qui s'était enfui avec elle.
+
+— Mon frère, je sais. Je sais ce qui le tue.
+
+— Assieds-toi, Nana. Bois d'abord.
+
+— Je ne boirai pas avant de l'avoir dit. Il ne craint ni le fer, ni le feu, ni les flèches. Il craint l'ergot d'un coq blanc. C'est son totem qui le dit. Il me l'a avoué en riant, parce qu'il croyait que je l'aimais.
+
+— Et tu ne l'aimais pas ?
+
+— J'aime le Manding, Soundiata. Je l'ai laissé croire le reste.
+
+Balla Fasséké a pris sa kora. Il a chanté pour elle, cette nuit-là, le premier chant de la victoire, avant même la bataille. Un griot sait toujours avant les autres comment l'histoire finira.
 
 Nous avons fixé un ergot de coq blanc au bout d'une flèche.
 

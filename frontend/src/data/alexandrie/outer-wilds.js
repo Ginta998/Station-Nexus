@@ -12,6 +12,8 @@ const book = {
 
 Il faut que je te dise une chose avant tout : si tu n'as pas joué à Outer Wilds, ne lis pas ce livre. Ferme-le. Joue.
 
+@art 4
+
 Ce jeu a une particularité presque unique : tout ce qu'on y obtient, c'est de la connaissance. Pas d'arme, pas d'équipement, pas d'expérience à gagner. Dès la première minute, tu as tout ce qu'il faut pour aller jusqu'à la fin. Ce qui te manque, c'est de savoir. Et une fois qu'on sait, on ne peut plus jamais découvrir. Ce livre te volerait le jeu.
 
 Si tu y as joué, ou si tu sais que tu n'y joueras pas, alors entre. Je vais remettre dans l'ordre une histoire que le jeu te laisse reconstruire toi-même, dans le désordre, en mourant beaucoup.
@@ -22,6 +24,8 @@ Si tu y as joué, ou si tu sais que tu n'y joueras pas, alors entre. Je vais rem
 # Ceux qui l'ont fait
 
 Outer Wilds est développé par Mobius Digital, un studio de Los Angeles, et édité par Annapurna Interactive en 2019. Le jeu est né d'un projet d'études d'Alex Beachum à l'université de Californie du Sud. Beachum en est devenu le directeur créatif. Loan Verneau en a été l'un des principaux concepteurs. Le studio a été fondé par l'acteur et producteur Masi Oka.
+
+@art g 2
 
 La musique, faite de banjo, de guitare, d'harmonica et de cordes, est d'Andrew Prahlow. Ses morceaux sont joués dans le jeu par les autres astronautes, chacun avec son instrument.
 
@@ -43,6 +47,8 @@ Tu te réveilles près du feu de camp.
 
 À chaque fois, c'est la même chose. Vingt-deux minutes. Puis le soleil devient une supernova, et une onde bleue engloutit tout le système. Et tu te réveilles, au même endroit, le même matin, avec le souvenir de tout ce que tu as vu.
 
+@art 5
+
 Personne d'autre ne s'en souvient. Tes amis astronautes répètent les mêmes phrases. Le monde recommence. Toi seul te souviens, depuis que la statue t'a regardé.
 
 Alors tu fais ce que font les Âtriens : tu explores. Chaque boucle, tu vas quelque part. Tu lis les murs. Tu prends des notes dans le journal de ta fusée, qui relie automatiquement les indices entre eux. Lentement, une histoire se dessine.
@@ -50,6 +56,8 @@ Alors tu fais ce que font les Âtriens : tu explores. Chaque boucle, tu vas quel
 # Le système
 
 Le système est minuscule, et chaque planète est une énigme mécanique.
+
+@art g 3
 
 Les Jumelles du sablier, deux planètes qui tournent l'une autour de l'autre : l'une perd son sable, qui coule dans l'autre par une colonne, au fil des vingt-deux minutes. Ce qui est enterré au début est découvert à la fin.
 
@@ -77,6 +85,8 @@ Leur vaisseau a reçu le signal ici. Il s'est perdu dans Sombronce. Les survivan
 
 Les Nomaï ne trouvaient pas l'Œil. Ils ont construit un canon géant pour envoyer une sonde dans toutes les directions possibles. Mais une sonde a très peu de chances de tomber sur la bonne.
 
+@art 6
+
 Alors ils ont imaginé un projet fou. Envoyer la sonde, et si elle ne trouve pas l'Œil, renvoyer l'information vingt-deux minutes dans le passé, et recommencer, encore et encore, jusqu'à ce qu'une sonde le trouve. Une boucle temporelle. C'est le Projet des Jumelles, caché au cœur de la Jumelle de cendre, l'une des deux planètes du sablier.
 
 Mais pour envoyer des informations dans le passé, il faut une énergie colossale. L'énergie d'une supernova.
@@ -86,6 +96,8 @@ Les Nomaï ont donc construit une station à côté du soleil, pour le faire exp
 # L'Intrus
 
 Puis la comète est passée.
+
+@art g 4
 
 Les Nomaï y ont envoyé une expédition. À l'intérieur de l'Intrus, ils ont trouvé de la matière fantôme, une substance invisible et mortelle. Le noyau de la comète s'est ouvert sous la chaleur du soleil, et la matière s'est répandue dans tout le système.
 
@@ -109,6 +121,8 @@ La supernova a enfin alimenté le projet des Nomaï. La boucle s'est déclenché
 
 Il reste un mystère. La sixième position. Les Nomaï pensaient que l'Œil se trouvait dans un lieu qu'aucune sonde ne pouvait atteindre, et que la lune quantique, la lune qui change de place quand on ne la regarde pas, savait où.
 
+@art 7
+
 La lune obéit à des règles quantiques : elle n'existe à un endroit que si on l'observe. Pour atteindre son sommet, il faut apprendre ces règles, ne jamais la quitter des yeux, fermer les yeux au bon moment.
 
 Et là-haut, dans la sixième position, il y a quelqu'un. Une Nomaï vivante. Solanum. Elle était sur la lune quand la matière fantôme s'est répandue, dans un état quantique qui l'a protégée. Elle t'attend. Elle ne parle pas ta langue, mais vous écrivez ensemble sur une pierre. Elle te demande si son peuple a trouvé l'Œil. Elle te demande ce qui est arrivé.
@@ -118,6 +132,8 @@ C'est une des rencontres les plus bouleversantes du jeu vidéo.
 # L'Œil
 
 Pour rejoindre l'Œil, il faut entrer dans le vaisseau des Nomaï, perdu au cœur de Sombronce, avec le cœur du projet qui alimente la boucle. On l'emporte. Ce faisant, on arrête la boucle. Ce sera la dernière.
+
+@art g 5
 
 On ouvre les coordonnées. On saute.
 
@@ -144,6 +160,8 @@ C'est l'autre réponse à la même question. Les Nomaï voulaient voir, et sont 
 # Ce que tu peux en prendre
 
 Outer Wilds t'apprend que la curiosité peut être un moteur dramatique complet. Pas de méchant, pas de quête, pas de récompense. Seulement l'envie de savoir. Et elle suffit à porter des dizaines d'heures.
+
+@art 8
 
 Il t'apprend aussi la tendresse des traces. Les Nomaï n'apparaissent jamais vivants, sauf une. Tu ne vois que leurs mots sur des murs. Et pourtant, tu les aimes. Il suffit de quelques blagues, d'une dispute, d'une inquiétude, pour qu'un peuple disparu devienne des gens.
 

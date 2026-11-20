@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks, Header, Depends, Request
-from fastapi.responses import Response, RedirectResponse, JSONResponse
+from fastapi.responses import Response, RedirectResponse, JSONResponse, HTMLResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -112,6 +112,10 @@ class Episode(BaseModel):
     image: Optional[str] = ""  # data uri / url — vignette de l'épisode (style Canal+)
     content: Optional[str] = ""  # texte rédigé de l'épisode (HTML du lecteur)
     rich: bool = False
+    release_at: Optional[str] = ""  # sortie programmée (ISO, UTC) : caché au public avant cette date
+    early_days: int = 0             # avant-première : visible X jours plus tôt pour les soutiens
+    early_tier: Optional[str] = ""  # palier minimum pour l'avant-première ("" = tout abonné actif)
+    early: bool = False             # calculé : visible en avant-première pour ce visiteur
 
 
 class Chapter(BaseModel):
@@ -122,6 +126,10 @@ class Chapter(BaseModel):
     image: Optional[str] = ""  # data uri / url
     rich: bool = False          # content is sanitized HTML (WYSIWYG) vs plain text
     has_music: bool = False     # dedicated per-chapter reading music
+    release_at: Optional[str] = ""  # sortie programmée (ISO, UTC) : caché au public avant cette date
+    early_days: int = 0             # avant-première : visible X jours plus tôt pour les soutiens
+    early_tier: Optional[str] = ""  # palier minimum pour l'avant-première ("" = tout abonné actif)
+    early: bool = False             # calculé : visible en avant-première pour ce visiteur
     locked: bool = False        # computed: chapter requires purchase/subscription (content stripped)
 
 
@@ -150,6 +158,7 @@ class Creation(BaseModel):
     launch_label: Optional[str] = "Lancer"
     launch_content: Optional[str] = ""
     launch_url: Optional[str] = ""
+    video_ratio: Optional[str] = ""     # "9:16" pour une série verticale ; vide = 16:9 (ou détecté depuis les liens Shorts)
     film_url: Optional[str] = ""          # main film link (YouTube/Vimeo/Dailymotion/embed/direct .mp4)
     trailer_url: Optional[str] = ""       # trailer link
     has_film: bool = False                # an uploaded main film exists in object storage
@@ -160,6 +169,11 @@ class Creation(BaseModel):
     unit_label: Optional[str] = ""   # libellé de section personnalisable (Épisodes, Saisons, Tomes, Volumes…)
     chapter_size: str = "md"         # sm | md | lg | xl — size of chapter/episode cards on the fiche
     button_size: str = "md"          # md | lg — size of the main action buttons
+    world_style: Optional[str] = ""
+    reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
+    reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
+    units_cols: Optional[int] = 0      # vignettes de chapitres par ligne sur ordinateur (0 = automatique, 1 à 5)
+    units_cols_phone: Optional[int] = 0  # vignettes par ligne sur téléphone (0 = automatique, 1 à 3)
     episodes: List[Episode] = Field(default_factory=list)
     chapters: List[Chapter] = Field(default_factory=list)
     chapters_count: int = 0
@@ -184,6 +198,7 @@ class Creation(BaseModel):
     has_intention: bool = False          # computed for list responses
     locked: bool = False                # computed for the requesting user: no access to paid content
     owned: bool = False                 # computed: current user owns this creation (unit purchase)
+    next_release: Optional[Dict[str, Any]] = None  # calculé : la prochaine sortie programmée (compte à rebours)
     created_at: str = Field(default_factory=now_iso)
     updated_at: str = Field(default_factory=now_iso)
 
@@ -205,12 +220,19 @@ class CreationInput(BaseModel):
     launch_label: Optional[str] = "Lancer"
     launch_content: Optional[str] = ""
     launch_url: Optional[str] = ""
+    video_ratio: Optional[str] = ""     # "9:16" pour une série verticale ; vide = 16:9 (ou détecté depuis les liens Shorts)
     film_url: Optional[str] = ""
     trailer_url: Optional[str] = ""
     buy_url: Optional[str] = ""
     chapter_display: str = "button"
     chapter_size: str = "md"
     button_size: str = "md"
+    # Expérience Nexus : ambiance du monde de l'œuvre (cinema, vhs, arcade, manga, vinyle, roman ; vide = automatique)
+    world_style: Optional[str] = ""
+    reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
+    reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
+    units_cols: Optional[int] = 0      # vignettes de chapitres par ligne sur ordinateur (0 = automatique, 1 à 5)
+    units_cols_phone: Optional[int] = 0  # vignettes par ligne sur téléphone (0 = automatique, 1 à 3)
     unit_display: str = "movix"
     unit_label: Optional[str] = ""
     episodes: List[Episode] = Field(default_factory=list)
@@ -253,6 +275,12 @@ class Comment(BaseModel):
     text: str
     episode_index: int = -1
     episode_label: str = ""
+    parent_id: str = ""        # réponse à un commentaire (un seul niveau)
+    chapter_id: str = ""       # commentaire sur un passage : le chapitre ou l'épisode
+    quote: str = ""            # la phrase surlignée
+    anchor: int = -1           # sa position dans le texte du chapitre (en caractères)
+    user_id: str = ""          # auteur connecté (pour le prévenir d'une réponse)
+    is_author: bool = False    # réponse du créateur de la station
     created_at: str = Field(default_factory=now_iso)
 
 
@@ -262,6 +290,10 @@ class CommentInput(BaseModel):
     text: str
     episode_index: int = -1
     episode_label: str = ""
+    parent_id: str = ""
+    chapter_id: str = ""
+    quote: str = ""
+    anchor: int = -1
 
 
 class Ambience(BaseModel):
@@ -336,6 +368,8 @@ DEFAULT_SITE_DESCRIPTION = "Station Nexus — la station cosmique de Brichel Lou
 
 class SiteSettings(BaseModel):
     site_description: str = DEFAULT_SITE_DESCRIPTION
+    launch_sounds: Dict[str, str] = Field(default_factory=dict)
+    release_mail_all: bool = False  # à chaque sortie, prévenir aussi tous les abonnés de la newsletter (pas seulement « Me prévenir »)  # son du lancement par format (livre, vhs, vinyle) : choisi par l'admin, entendu par tous
     name: str = "Brichel Louzala"
     bio: str = "Créateur d'histoires, d'univers et d'émotions. Bienvenue dans ma station."
     avatar: Optional[str] = ""
@@ -554,6 +588,65 @@ async def _user_has_access(uid: Optional[str], doc: dict) -> bool:
     return await _membership_active(uid)
 
 
+def _parse_iso(v: str) -> Optional[datetime]:
+    v = (v or "").strip()
+    if not v:
+        return None
+    try:
+        t = datetime.fromisoformat(v.replace("Z", "+00:00"))
+        return t if t.tzinfo else t.replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
+def _tier_rank(tiers: List[dict], tid: Optional[str]) -> int:
+    ids = [t.get("id") for t in (tiers or [])]
+    return ids.index(tid) if tid in ids else -1
+
+
+def _hide_unreleased(doc: dict, member_tier: Optional[str] = None, tiers: Optional[List[dict]] = None) -> dict:
+    """Sorties programmées : un chapitre ou un épisode dont release_at est dans le futur n'existe pas encore pour le public.
+    Avant-première : un abonné du bon palier le voit early_days jours plus tôt (marqué early).
+    La prochaine sortie cachée est donnée dans next_release, pour le compte à rebours et « Me prévenir »."""
+    now = datetime.now(timezone.utc)
+    nxt = None
+    for key in ("chapters", "episodes"):
+        keep = []
+        for i, u in enumerate(doc.get(key) or []):
+            t = _parse_iso(u.get("release_at"))
+            if not t or t <= now:
+                keep.append(u)
+                continue
+            days = int(u.get("early_days") or 0)
+            early_at = t - timedelta(days=days) if days > 0 else None
+            need = (u.get("early_tier") or "").strip()
+            eligible = bool(member_tier) and (not need or _tier_rank(tiers or [], member_tier) >= _tier_rank(tiers or [], need))
+            if early_at and eligible and early_at <= now:
+                keep.append({**u, "early": True})
+                continue
+            if not nxt or t < _parse_iso(nxt["at"]):
+                tier_name = next((x.get("name") for x in (tiers or []) if x.get("id") == need), "") if need else ""
+                nxt = {"at": t.isoformat(), "unit": "episode" if key == "episodes" else "chapter", "index": i + 1,
+                       "title": u.get("title") or "", "id": u.get("id"),
+                       "early_at": early_at.isoformat() if early_at else "", "early_tier": need, "early_tier_name": tier_name}
+        doc[key] = keep
+    doc["next_release"] = nxt
+    return doc
+
+
+async def _member_tier(uid: Optional[str]) -> Optional[str]:
+    """Le palier de l'abonnement actif du visiteur (None sinon)."""
+    if not uid or not await _membership_active(uid):
+        return None
+    m = await db.memberships.find_one({"user_id": uid, "status": "active"}, {"_id": 0, "tier_id": 1})
+    return (m or {}).get("tier_id") or "soutien"
+
+
+async def _site_tiers() -> List[dict]:
+    st = await db.settings.find_one({"key": "site"}, {"_id": 0, "membership_tiers": 1}) or {}
+    return st.get("membership_tiers") or SiteSettings().membership_tiers
+
+
 def _gate_creation(doc: dict, has_access: bool, owned: bool) -> dict:
     """Strip locked chapter content and flag the creation for the frontend paywall."""
     doc["owned"] = owned
@@ -615,10 +708,15 @@ async def get_creation(cid: str, media: bool = False, authorization: Optional[st
     # Resolve viewer entitlement (optional auth) for paywall gating
     uid = await _optional_uid(authorization)
     has_access = await _user_has_access(uid, doc)
-    if not has_access and uid:
-        # admin must always receive full content, otherwise saving the editor would wipe locked chapters
+    is_admin = False
+    if uid:
         u = await db.users.find_one({"id": uid}, {"_id": 0, "is_admin": 1})
-        has_access = bool(u and u.get("is_admin"))
+        is_admin = bool(u and u.get("is_admin"))
+    if not has_access and is_admin:
+        # admin must always receive full content, otherwise saving the editor would wipe locked chapters
+        has_access = True
+    if not is_admin:
+        doc = _hide_unreleased(doc, await _member_tier(uid), await _site_tiers())
     owned = await _user_owns(uid, cid)
     if media:
         doc["has_poster"] = bool(doc.get("poster"))
@@ -985,11 +1083,30 @@ async def list_comments(cid: str):
 
 
 @api_router.post("/comments", response_model=Comment, status_code=201)
-async def create_comment(payload: CommentInput):
+async def create_comment(payload: CommentInput, authorization: Optional[str] = Header(None)):
     if not payload.name.strip() or not payload.text.strip():
         raise HTTPException(400, "Nom et commentaire requis")
-    obj = Comment(**payload.model_dump())
+    user = await _optional_user(authorization)
+    parent = None
+    if payload.parent_id:
+        parent = await db.comments.find_one({"id": payload.parent_id, "creation_id": payload.creation_id}, {"_id": 0})
+        if not parent:
+            raise HTTPException(404, "Commentaire introuvable")
+        if parent.get("parent_id"):  # on répond toujours au fil principal
+            payload.parent_id = parent["parent_id"]
+    payload.quote = (payload.quote or "").strip()[:400]
+    obj = Comment(**payload.model_dump(), user_id=(user or {}).get("id", ""), is_author=bool(user and user.get("is_admin")))
     await db.comments.insert_one(obj.model_dump())
+    # Prévenir l'auteur du commentaire qu'on lui a répondu (s'il est connecté et a activé les notifications)
+    if parent and parent.get("user_id") and parent.get("user_id") != obj.user_id:
+        try:
+            data = {"title": f"↩ {obj.name} vous a répondu", "body": obj.text[:140], "url": f"/oeuvre/{obj.creation_id}#commentaires",
+                    "tag": f"reply-{parent['id']}", "kind": "reply"}
+            subs = await db.push_subscriptions.find({"user_id": parent["user_id"], "pref": {"$ne": "off"}}, {"_id": 0}).to_list(50)
+            for sub in subs:
+                await _send_push_sub(sub, data)
+        except Exception as e:  # noqa: BLE001
+            logger.error("reply push failed: %s", e)
     return obj
 
 
@@ -998,6 +1115,7 @@ async def delete_comment(cid: str, _admin=Depends(require_admin)):
     res = await db.comments.delete_one({"id": cid})
     if res.deleted_count == 0:
         raise HTTPException(404, "Commentaire introuvable")
+    await db.comments.delete_many({"parent_id": cid})  # ses réponses partent avec lui
     return {"ok": True}
 
 
@@ -1188,9 +1306,9 @@ def _announcement_email_html(title: str, text: str, link: Optional[str]) -> str:
 
 
 async def _broadcast_email(subject: str, html: str):
-    if not RESEND_API_KEY:
+    if not _resend_key():
         logger.warning("RESEND_API_KEY manquant — email non envoyé")
-        return
+        return {"sent": 0, "failed": 0}
     subs = await db.subscribers.find({}, {"_id": 0, "email": 1, "token": 1}).to_list(10000)
     sent = 0
     for s in subs:
@@ -1199,7 +1317,7 @@ async def _broadcast_email(subject: str, html: str):
             tok = secrets.token_urlsafe(16)
             await db.subscribers.update_one({"email": s["email"]}, {"$set": {"token": tok}})
         unsub = f"{_site_url()}/api/newsletter/unsubscribe?t={tok}"
-        params = {"from": SENDER_EMAIL, "to": [s["email"]], "subject": subject, "html": html.replace("%%UNSUB%%", unsub),
+        params = {"from": _sender(), "to": [s["email"]], "subject": subject, "html": html.replace("%%UNSUB%%", unsub),
                   "headers": {"List-Unsubscribe": f"<{unsub}>", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"}}
         if REPLY_TO_EMAIL:
             params["reply_to"] = REPLY_TO_EMAIL
@@ -1208,7 +1326,9 @@ async def _broadcast_email(subject: str, html: str):
             sent += 1
         except Exception as e:
             logger.error("Echec envoi email à %s: %s", s.get("email"), e)
+        await asyncio.sleep(0.6)  # Resend (offre gratuite) : 2 envois par seconde au plus
     logger.info("Broadcast email '%s' envoyé à %d/%d abonnés", subject, sent, len(subs))
+    return {"sent": sent, "failed": len(subs) - sent}
 
 
 # ---------------- Emails transactionnels (confirmations légales) ----------------
@@ -1289,9 +1409,113 @@ async def _cancel_subscription_now(sub_id: str):
         logger.warning("Résiliation immédiate Stripe impossible (%s): %s", sub_id, e)
 
 
+def _resend_key() -> str:
+    """La clé Resend relue à chaque fois : la poser sur Emergent suffit, sans attendre un redémarrage."""
+    k = os.environ.get('RESEND_API_KEY') or RESEND_API_KEY or ""
+    if k:
+        resend.api_key = k
+    return k
+
+
+def _sender() -> str:
+    return os.environ.get('SENDER_EMAIL') or SENDER_EMAIL
+
+
 @api_router.get("/email/status")
 async def email_status():
-    return {"configured": bool(RESEND_API_KEY), "sender": SENDER_EMAIL if RESEND_API_KEY else ""}
+    k = _resend_key()
+    snd = _sender()
+    return {"configured": bool(k), "sender": snd if k else "",
+            "key_ok": k.startswith("re_") if k else False,
+            "test_sender": "@resend.dev" in snd,
+            "subscribers": await db.subscribers.count_documents({})}
+
+
+@api_router.post("/email/test")
+async def email_test(body: Dict[str, Any] = None, admin=Depends(require_admin)):
+    """Envoie un email d'essai à l'admin et renvoie l'erreur exacte de Resend s'il y en a une."""
+    k = _resend_key()
+    if not k:
+        return {"ok": False, "error": "RESEND_API_KEY n'est pas posée dans les variables du serveur."}
+    to = ((body or {}).get("to") or admin.get("email") or "").strip()
+    if not to:
+        return {"ok": False, "error": "Aucune adresse de destination."}
+    html = (body or {}).get("html") or _mail_html("Test d'envoi", "Si tu lis ceci, la newsletter de la Station peut partir.")
+    subject = (body or {}).get("subject") or "Test · Station Nexus"
+    params = {"from": _sender(), "to": [to], "subject": subject, "html": html.replace("%%UNSUB%%", _site_url())}
+    if REPLY_TO_EMAIL:
+        params["reply_to"] = REPLY_TO_EMAIL
+    try:
+        r = await asyncio.to_thread(resend.Emails.send, params)
+        return {"ok": True, "to": to, "id": (r or {}).get("id") if isinstance(r, dict) else None}
+    except Exception as e:
+        return {"ok": False, "to": to, "error": str(e)}
+
+
+# ---------------- Newsletter (le studio de l'atelier) ----------------
+# Le HTML de l'email est composé côté atelier (le même que l'aperçu) ; le serveur garde les brouillons et envoie.
+class NewsletterIn(BaseModel):
+    subject: str = ""
+    preheader: str = ""
+    blocks: List[Dict[str, Any]] = Field(default_factory=list)
+    html: str = ""
+    theme: str = "nuit"
+
+
+@api_router.get("/newsletters")
+async def list_newsletters(_admin=Depends(require_admin)):
+    return await db.newsletters.find({}, {"_id": 0}).sort("updated_at", -1).to_list(500)
+
+
+@api_router.post("/newsletters", status_code=201)
+async def create_newsletter(body: NewsletterIn, _admin=Depends(require_admin)):
+    now = datetime.now(timezone.utc).isoformat()
+    doc = {**body.model_dump(), "id": str(uuid.uuid4()), "status": "draft", "created_at": now, "updated_at": now}
+    await db.newsletters.insert_one(dict(doc))
+    doc.pop("_id", None)
+    return doc
+
+
+@api_router.put("/newsletters/{nid}")
+async def update_newsletter(nid: str, body: NewsletterIn, _admin=Depends(require_admin)):
+    cur = await db.newsletters.find_one({"id": nid}, {"_id": 0})
+    if not cur:
+        raise HTTPException(404, "Newsletter introuvable")
+    if cur.get("status") in ("sending", "sent"):
+        raise HTTPException(409, "Déjà envoyée : duplique-la pour la modifier")
+    await db.newsletters.update_one({"id": nid}, {"$set": {**body.model_dump(), "updated_at": datetime.now(timezone.utc).isoformat()}})
+    return await db.newsletters.find_one({"id": nid}, {"_id": 0})
+
+
+@api_router.delete("/newsletters/{nid}")
+async def delete_newsletter(nid: str, _admin=Depends(require_admin)):
+    await db.newsletters.delete_one({"id": nid})
+    return {"ok": True}
+
+
+async def _send_newsletter(nid: str):
+    n = await db.newsletters.find_one({"id": nid}, {"_id": 0})
+    if not n:
+        return
+    res = await _broadcast_email(n.get("subject") or "Station Nexus", n.get("html") or "")
+    await db.newsletters.update_one({"id": nid}, {"$set": {"status": "sent", "sent_at": datetime.now(timezone.utc).isoformat(), **(res or {})}})
+
+
+@api_router.post("/newsletters/{nid}/send")
+async def send_newsletter(nid: str, background_tasks: BackgroundTasks, _admin=Depends(require_admin)):
+    n = await db.newsletters.find_one({"id": nid}, {"_id": 0})
+    if not n:
+        raise HTTPException(404, "Newsletter introuvable")
+    if n.get("status") in ("sending", "sent"):
+        raise HTTPException(409, "Déjà envoyée")
+    if not _resend_key():
+        raise HTTPException(400, "Resend n'est pas configuré (RESEND_API_KEY)")
+    if not (n.get("subject") or "").strip() or not n.get("html"):
+        raise HTTPException(400, "Il manque l'objet ou le contenu")
+    total = await db.subscribers.count_documents({})
+    await db.newsletters.update_one({"id": nid}, {"$set": {"status": "sending", "total": total}})
+    background_tasks.add_task(_send_newsletter, nid)
+    return {"ok": True, "total": total}
 
 
 # ---------------- Profiles (visitor social profiles) ----------------
@@ -2628,6 +2852,12 @@ class JournalEntryInput(BaseModel):
     blocks: List[Dict[str, Any]] = Field(default_factory=list)
     show_home: bool = False
     published: bool = True
+    format: str = ""          # lecture en Nexus : "livre", "vhs" ou "vinyle" ("" = livre)
+    look: str = ""            # thème de page du lecteur (ambiances d'Alexandrie) ("" = presse)
+    tape_url: str = ""        # format « cassette » : l'enregistrement à écouter (/api/journal-files/…)
+    tape_label: str = ""      # étiquette de la cassette (ex. « Enregistrement n°3 »)
+    tape_voice: str = ""      # qui parle (ex. « Brichel »)
+    tape_wear: str = "usee"   # grain de la cassette : neuve | usee | tres
 
 
 class JournalEntry(JournalEntryInput):
@@ -2800,6 +3030,383 @@ async def _migrate_announcements_to_journal():
 
 
 from atelier import build_atelier_router, build_public_files_router  # noqa: E402
+# ---------------- Aperçus de lien (WhatsApp, Messages, Discord…) : une page et une image par œuvre ----------------
+# Le lien à partager est /api/s/{œuvre} (ou /api/s/{œuvre}?u=3 pour un chapitre / épisode).
+# Les messageries lisent ses balises Open Graph (titre, texte, image 1200 × 630) ; un humain est envoyé aussitôt sur la page de l'œuvre.
+_OG_CACHE: Dict[str, bytes] = {}
+_FONT_DIR = ROOT_DIR / "assets" / "fonts"
+
+
+def _og_font(name: str, size: int):
+    from PIL import ImageFont
+    for f in (_FONT_DIR / name, Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")):
+        try:
+            return ImageFont.truetype(str(f), size)
+        except Exception:  # noqa: BLE001
+            continue
+    return ImageFont.load_default()
+
+
+def _img_of(data: str):
+    from PIL import Image
+    if not data or not data.startswith("data:"):
+        return None
+    try:
+        return Image.open(io.BytesIO(base64.b64decode(data.split(",", 1)[1]))).convert("RGB")
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _og_wrap(draw, text: str, font, max_w: int, max_lines: int) -> List[str]:
+    words, lines, cur = (text or "").split(), [], ""
+    for w in words:
+        t = (cur + " " + w).strip()
+        if draw.textlength(t, font=font) > max_w and cur:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = t
+    if cur:
+        lines.append(cur)
+    if len(lines) > max_lines:
+        lines = lines[:max_lines]
+        lines[-1] = lines[-1].rstrip(" .,;:") + "…"
+    return lines
+
+
+def _og_card(c: dict, kicker: str, accent: str) -> bytes:
+    from PIL import Image, ImageDraw, ImageFilter, ImageOps
+    W, H = 1200, 630
+    poster = _img_of(c.get("poster") or "") or _img_of(c.get("bg_image") or "")
+    if poster:
+        bg = ImageOps.fit(poster, (W, H)).filter(ImageFilter.GaussianBlur(28))
+        bg = Image.blend(bg, Image.new("RGB", (W, H), (6, 7, 10)), 0.62)
+    else:
+        bg = Image.new("RGB", (W, H), (11, 12, 16))
+    d = ImageDraw.Draw(bg)
+    try:
+        acc = tuple(int(accent.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4)) if accent and len(accent.lstrip("#")) == 6 else (212, 178, 106)
+    except ValueError:
+        acc = (212, 178, 106)
+    x = 64
+    if poster:
+        ph = H - 110
+        pw = int(ph * 0.72)
+        p = ImageOps.fit(poster, (pw, ph))
+        shadow = Image.new("RGBA", (pw + 60, ph + 60), (0, 0, 0, 0))
+        ImageDraw.Draw(shadow).rectangle([30, 40, pw + 30, ph + 40], fill=(0, 0, 0, 170))
+        bg.paste(shadow.filter(ImageFilter.GaussianBlur(16)), (40, 25), shadow.filter(ImageFilter.GaussianBlur(16)))
+        bg.paste(p, (64, 55))
+        x = 64 + pw + 60
+    d = ImageDraw.Draw(bg)
+    mw = W - x - 64
+    d.text((x, 70), "STATION NEXUS", font=_og_font("SpaceGrotesk-SemiBold.ttf", 24), fill=acc)
+    y = 140
+    if kicker:
+        d.text((x, y), kicker.upper()[:46], font=_og_font("SpaceGrotesk-SemiBold.ttf", 28), fill=acc)
+        y += 56
+    size = 84
+    while size > 46:
+        tf = _og_font("PlayfairDisplay-ExtraBold.ttf", size)
+        lines = _og_wrap(d, c.get("title") or "", tf, mw, 3)
+        if all(d.textlength(line, font=tf) <= mw for line in lines) and len(_og_wrap(d, c.get("title") or "", tf, mw, 9)) <= 3:
+            break
+        size -= 6
+    for line in lines:
+        d.text((x, y), line, font=tf, fill=(255, 255, 255))
+        y += int(size * 1.12)
+    tag = (c.get("tagline") or c.get("synopsis") or "").strip()
+    if tag:
+        for line in _og_wrap(d, tag, _og_font("SpaceGrotesk-Regular.ttf", 28), mw, 3):
+            y += 6
+            d.text((x, y + 10), line, font=_og_font("SpaceGrotesk-Regular.ttf", 28), fill=(220, 222, 228))
+            y += 38
+    d.rectangle([x, H - 92, x + 90, H - 87], fill=acc)
+    d.text((x, H - 72), _site_url().replace("https://", "").replace("http://", ""), font=_og_font("SpaceGrotesk-Regular.ttf", 24), fill=(200, 202, 210))
+    buf = io.BytesIO()
+    bg.save(buf, "JPEG", quality=86, optimize=True, progressive=True)
+    return buf.getvalue()
+
+
+def _released_unit(c: dict, u: Optional[int]):
+    if u is None or u < 0:
+        return None, ""
+    for key, word in (("chapters", (c.get("unit_label") or "Chapitre").strip() or "Chapitre"), ("episodes", "Épisode")):
+        if c.get("launch_type") == key or (key == "episodes" and c.get("launch_type") != "chapters"):
+            units = c.get(key) or []
+            if 0 <= u < len(units):
+                x = units[u]
+                t = _parse_iso(x.get("release_at"))
+                if t and t > datetime.now(timezone.utc):
+                    return None, ""  # pas encore sorti : on ne dévoile rien
+                base = f"{word} {u + 1}"
+                return x, base + (f" · {x.get('title')}" if x.get("title") and x.get("title").strip().lower() != base.lower() else "")
+    return None, ""
+
+
+@api_router.get("/s/{cid}")
+async def share_page(cid: str, u: Optional[int] = None):
+    """La page que lisent WhatsApp, Messages, Discord, X… : titre, texte et image. Les humains repartent tout de suite vers l'œuvre."""
+    import html as _h
+    c = await db.creations.find_one({"id": cid}, {"_id": 0, "id": 1, "title": 1, "tagline": 1, "synopsis": 1, "updated_at": 1, "launch_type": 1,
+                                                  "unit_label": 1, "chapters.title": 1, "chapters.release_at": 1, "episodes.title": 1, "episodes.release_at": 1})
+    site = _site_url()
+    if not c:
+        return RedirectResponse(site)
+    _, label = _released_unit(c, u)
+    target = f"{site}/oeuvre/{cid}"
+    title = f"{c.get('title', '')}" + (f" · {label}" if label else "")
+    desc = (c.get("tagline") or c.get("synopsis") or "Une œuvre à découvrir sur Station Nexus.")[:200]
+    img = f"{site}/api/s/{cid}/card.jpg?u={u if u is not None else ''}&v={_h.escape(str(c.get('updated_at') or ''))[:30]}"
+    e = _h.escape
+    page = f"""<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>{e(title)} · Station Nexus</title>
+<meta name="description" content="{e(desc)}">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Station Nexus">
+<meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}">
+<meta property="og:image" content="{e(img)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="{e(target)}"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{e(title)}"><meta name="twitter:description" content="{e(desc)}"><meta name="twitter:image" content="{e(img)}">
+<link rel="canonical" href="{e(target)}"><meta http-equiv="refresh" content="0;url={e(target)}">
+</head><body style="background:#0b0c10;color:#eee;font-family:Arial"><p><a href="{e(target)}" style="color:#d4b26a">Ouvrir « {e(c.get('title', ''))} » sur Station Nexus</a></p>
+<script>location.replace({json.dumps(target)})</script></body></html>"""
+    return HTMLResponse(page, headers={"Cache-Control": "public, max-age=600"})
+
+
+@api_router.get("/s/{cid}/card.jpg")
+async def share_card(cid: str, u: Optional[str] = None, v: str = ""):
+    c = await db.creations.find_one({"id": cid}, {"_id": 0})
+    if not c:
+        raise HTTPException(404, "Œuvre introuvable")
+    ui = int(u) if (u or "").lstrip("-").isdigit() else None
+    _, label = _released_unit(c, ui)
+    key = f"{cid}:{ui}:{c.get('updated_at')}"
+    if key not in _OG_CACHE:
+        if len(_OG_CACHE) > 200:
+            _OG_CACHE.clear()
+        _OG_CACHE[key] = await asyncio.to_thread(_og_card, c, label or "", c.get("accent") or "")
+    return Response(content=_OG_CACHE[key], media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
+
+
+# ---------------- Alertes de sortie : « Me prévenir », notification et email automatiques ----------------
+class WatchIn(BaseModel):
+    email: str = ""
+
+
+def _unit_label(c: dict, u: dict, kind: str, i: int) -> str:
+    word = "Épisode" if kind == "episode" else ((c.get("unit_label") or "Chapitre").strip() or "Chapitre")
+    return f"{word} {i}" + (f" · {u.get('title')}" if u.get("title") else "")
+
+
+@api_router.get("/creations/{cid}/watch")
+async def get_watch(cid: str, authorization: Optional[str] = Header(None)):
+    uid = await _optional_uid(authorization)
+    if not uid:
+        return {"watching": False}
+    return {"watching": bool(await db.release_watch.find_one({"creation_id": cid, "user_id": uid}))}
+
+
+@api_router.post("/creations/{cid}/watch")
+async def add_watch(cid: str, body: WatchIn, authorization: Optional[str] = Header(None)):
+    if not await db.creations.find_one({"id": cid}, {"_id": 0, "id": 1}):
+        raise HTTPException(404, "Œuvre introuvable")
+    user = await _optional_user(authorization)
+    email = ((user or {}).get("email") or body.email or "").strip().lower()
+    if not user and (not email or "@" not in email or len(email) > 200):
+        raise HTTPException(400, "Adresse email invalide")
+    q = {"creation_id": cid, **({"user_id": user["id"]} if user else {"email": email})}
+    if not await db.release_watch.find_one(q):
+        await db.release_watch.insert_one({**q, "id": str(uuid.uuid4()), "email": email, "user_id": (user or {}).get("id", ""),
+                                           "token": uuid.uuid4().hex, "created_at": now_iso()})
+    return {"watching": True}
+
+
+@api_router.delete("/creations/{cid}/watch")
+async def remove_watch(cid: str, authorization: Optional[str] = Header(None)):
+    uid = await _optional_uid(authorization)
+    if uid:
+        await db.release_watch.delete_many({"creation_id": cid, "user_id": uid})
+    return {"watching": False}
+
+
+@api_router.get("/watch/unsubscribe")
+async def watch_unsubscribe(t: str):
+    await db.release_watch.delete_one({"token": t})
+    return HTMLResponse("<html><body style='font-family:Arial;background:#0b0c10;color:#eee;padding:40px'>"
+                        "<h2>C'est noté.</h2><p>Tu ne recevras plus d'alerte de sortie pour cette œuvre.</p></body></html>")
+
+
+def _release_mail(c: dict, label: str, url: str, early: bool = False) -> str:
+    head = "En avant-première pour toi" if early else "C'est sorti"
+    body = (f"<p style='margin:0 0 14px'><b>{label}</b> de <b>{c.get('title', '')}</b> est en ligne.</p>"
+            + (f"<p style='margin:0 0 18px;color:#bbb'>{(c.get('tagline') or '')[:200]}</p>" if c.get("tagline") else "")
+            + f"<p><a href='{url}' style='display:inline-block;padding:11px 20px;background:#d4b26a;color:#111;font-weight:bold;"
+              "text-decoration:none;border-radius:4px'>Lire maintenant</a></p>"
+              "<p style='margin-top:22px;font-size:12px;color:#888'><a href='%%UNSUB%%' style='color:#888'>Ne plus être prévenu</a></p>")
+    return _mail_html(head, body)
+
+
+async def _notify_release(c: dict, u: dict, kind: str, i: int, early: bool = False, tier: str = ""):
+    """Une sortie vient d'arriver : notification et email à ceux qui suivent l'œuvre."""
+    label = _unit_label(c, u, kind, i)
+    url = f"{_site_url()}/oeuvre/{c['id']}"
+    tiers = await _site_tiers()
+    # destinataires : « Me prévenir » + ceux qui ont l'œuvre en coup de cœur
+    watchers = await db.release_watch.find({"creation_id": c["id"]}, {"_id": 0}).to_list(5000)
+    fav_users = await db.users.find({"favorites": c["id"]}, {"_id": 0, "id": 1}).to_list(5000)
+    uids = {w["user_id"] for w in watchers if w.get("user_id")} | {f["id"] for f in fav_users}
+    if early:  # l'avant-première ne prévient que les abonnés éligibles
+        ok = set()
+        for uid in uids:
+            mt = await _member_tier(uid)
+            if mt and (not tier or _tier_rank(tiers, mt) >= _tier_rank(tiers, tier)):
+                ok.add(uid)
+        uids = ok
+        watchers = [w for w in watchers if w.get("user_id") in ok]
+    data = {"title": ("⭐ Avant-première · " if early else "🚀 ") + c.get("title", ""), "body": f"{label} est en ligne.",
+            "url": f"/oeuvre/{c['id']}", "tag": f"rel-{u.get('id')}{'-e' if early else ''}", "kind": "public"}
+    pushed = 0
+    for uid in uids:
+        for sub in await db.push_subscriptions.find({"user_id": uid, "pref": {"$ne": "off"}}, {"_id": 0}).to_list(20):
+            await _send_push_sub(sub, data)
+            pushed += 1
+    mailed = 0
+    if _resend_key():
+        sent_to = set()
+        for w in watchers:
+            em = (w.get("email") or "").lower()
+            if not em or em in sent_to:
+                continue
+            html = _release_mail(c, label, url, early).replace("%%UNSUB%%", f"{_site_url()}/api/watch/unsubscribe?t={w.get('token', '')}")
+            if await _send_email(em, f"{'Avant-première · ' if early else ''}{c.get('title', '')} · {label}", html):
+                mailed += 1
+            sent_to.add(em)
+            await asyncio.sleep(0.6)
+        st = await db.settings.find_one({"key": "site"}, {"_id": 0, "release_mail_all": 1}) or {}
+        if st.get("release_mail_all") and not early:
+            await _broadcast_email(f"{c.get('title', '')} · {label}", _release_mail(c, label, url))
+    logger.info("Sortie %s · %s : %d notifications, %d emails", c.get("title"), label, pushed, mailed)
+    return {"push": pushed, "mail": mailed}
+
+
+async def _release_loop():
+    """Toutes les minutes : les sorties programmées qui viennent d'arriver (et les avant-premières) préviennent leurs lecteurs.
+    Une sortie de plus de 2 jours n'est jamais annoncée (au premier déploiement, rien d'ancien ne part)."""
+    await asyncio.sleep(30)
+    while True:
+        try:
+            now = datetime.now(timezone.utc)
+            async for c in db.creations.find({"$or": [{"chapters.release_at": {"$gt": ""}}, {"episodes.release_at": {"$gt": ""}}]},
+                                             {"_id": 0, "id": 1, "title": 1, "tagline": 1, "unit_label": 1, "chapters.id": 1, "chapters.title": 1,
+                                              "chapters.release_at": 1, "chapters.early_days": 1, "chapters.early_tier": 1, "episodes.id": 1,
+                                              "episodes.title": 1, "episodes.release_at": 1, "episodes.early_days": 1, "episodes.early_tier": 1}):
+                for key, kind in (("chapters", "chapter"), ("episodes", "episode")):
+                    for i, u in enumerate(c.get(key) or []):
+                        t = _parse_iso(u.get("release_at"))
+                        if not t or not u.get("id"):
+                            continue
+                        steps = [("pub", t, False)]
+                        days = int(u.get("early_days") or 0)
+                        if days > 0:
+                            steps.append(("early", t - timedelta(days=days), True))
+                        for tag, when, early in steps:
+                            if when > now or now - when > timedelta(days=2):
+                                continue
+                            sid = f"{tag}:{u['id']}"
+                            if await db.release_sent.find_one({"id": sid}):
+                                continue
+                            await db.release_sent.insert_one({"id": sid, "creation_id": c["id"], "at": now_iso()})
+                            await _notify_release(c, u, kind, i + 1, early, u.get("early_tier") or "")
+        except Exception as ex:  # noqa: BLE001
+            logger.error("release loop: %s", ex)
+        await asyncio.sleep(60)
+
+
+# ---------------- Tes chiffres : visites anonymes, sans service extérieur ----------------
+class HitIn(BaseModel):
+    kind: str                      # open | read | end | play | time
+    creation_id: str = ""
+    unit_id: str = ""
+    unit_index: int = -1
+    seconds: int = 0
+    vid: str = ""                  # identifiant anonyme du navigateur (aléatoire, sans lien avec un compte)
+    ref: str = ""                  # d'où vient le visiteur (domaine seulement)
+
+
+@api_router.post("/stats/hit")
+async def stats_hit(h: HitIn, authorization: Optional[str] = Header(None)):
+    if h.kind not in ("open", "read", "end", "play", "time", "visit"):
+        return {"ok": False}
+    uid = await _optional_uid(authorization)
+    if uid:
+        u = await db.users.find_one({"id": uid}, {"_id": 0, "is_admin": 1})
+        if u and u.get("is_admin"):
+            return {"ok": True, "skipped": "admin"}  # tes propres visites ne comptent pas
+    ref = (h.ref or "").lower().strip()[:120]
+    ref = ref.split("//")[-1].split("/")[0].replace("www.", "") if ref else ""
+    await db.stats_events.insert_one({"kind": h.kind, "creation_id": h.creation_id[:64], "unit_id": h.unit_id[:64],
+                                      "unit_index": h.unit_index, "seconds": max(0, min(h.seconds, 1800)), "vid": h.vid[:40],
+                                      "ref": ref, "day": datetime.now(timezone.utc).strftime("%Y-%m-%d"), "at": now_iso()})
+    return {"ok": True}
+
+
+@api_router.get("/stats")
+async def stats(days: int = 30, _admin=Depends(require_admin)):
+    since = (datetime.now(timezone.utc) - timedelta(days=max(1, min(days, 365)))).strftime("%Y-%m-%d")
+    evs = await db.stats_events.find({"day": {"$gte": since}}, {"_id": 0}).to_list(300000)
+    titles = {c["id"]: c.get("title", "") async for c in db.creations.find({}, {"_id": 0, "id": 1, "title": 1})}
+    per, daily, refs, visitors = {}, {}, {}, set()
+    for e in evs:
+        visitors.add(e.get("vid"))
+        d = daily.setdefault(e["day"], {"day": e["day"], "visitors": set(), "reads": 0})
+        d["visitors"].add(e.get("vid"))
+        if e["kind"] == "visit" and e.get("ref"):
+            refs.setdefault(e["ref"], set()).add(e.get("vid"))
+        cid = e.get("creation_id")
+        if not cid:
+            continue
+        p = per.setdefault(cid, {"id": cid, "title": titles.get(cid, "Œuvre supprimée"), "opens": set(), "readers": set(), "seconds": 0, "units": {}})
+        if e["kind"] == "open":
+            p["opens"].add(e.get("vid"))
+        if e["kind"] in ("read", "play", "end", "time"):
+            p["readers"].add(e.get("vid"))
+        if e["kind"] == "time":
+            p["seconds"] += e.get("seconds") or 0
+        if e["kind"] in ("read", "play", "end") and e.get("unit_index", -1) >= 0:
+            un = p["units"].setdefault(e["unit_index"], {"index": e["unit_index"], "readers": set(), "ends": set()})
+            (un["ends"] if e["kind"] == "end" else un["readers"]).add(e.get("vid"))
+            if e["kind"] == "read":
+                d["reads"] += 1
+    works = []
+    for p in per.values():
+        units = sorted(p["units"].values(), key=lambda x: x["index"])
+        works.append({"id": p["id"], "title": p["title"], "opens": len(p["opens"]), "readers": len(p["readers"]),
+                      "minutes": round(p["seconds"] / 60), "avg_minutes": round(p["seconds"] / 60 / max(1, len(p["readers"])), 1),
+                      "units": [{"index": u["index"], "readers": len(u["readers"] | u["ends"]), "ends": len(u["ends"])} for u in units]})
+    works.sort(key=lambda w: -w["opens"])
+    return {"days": days, "visitors": len(visitors), "works": works,
+            "daily": [{"day": k, "visitors": len(v["visitors"]), "reads": v["reads"]} for k, v in sorted(daily.items())],
+            "refs": sorted([{"ref": k, "visitors": len(v)} for k, v in refs.items()], key=lambda r: -r["visitors"])[:15]}
+
+
+# ---------------- Sauvegarde complète de la station ----------------
+BACKUP_COLLECTIONS = ["creations", "categories", "journal_entries", "journal_categories", "settings", "roadmap", "announcements",
+                      "comments", "ambiences", "newsletters", "subscribers", "profiles", "release_watch",
+                      "atelier_items", "atelier_universes", "atelier_records", "atelier_tasks", "atelier_links", "atelier_config",
+                      "atelier_files", "atelier_versions", "creation_versions", "media_assets"]
+
+
+@api_router.get("/admin/backup")
+async def backup(_admin=Depends(require_admin)):
+    """Tout le contenu de la station dans un seul fichier JSON (sans mots de passe ni paiements)."""
+    out = {"station": "Station Nexus", "version": 1, "exported_at": now_iso(), "collections": {}}
+    for name in BACKUP_COLLECTIONS:
+        out["collections"][name] = await db[name].find({}, {"_id": 0}).to_list(200000)
+    out["collections"]["users"] = await db.users.find({}, {"_id": 0, "password_hash": 0, "google_sub": 0}).to_list(200000)
+    data = json.dumps(out, ensure_ascii=False, default=str).encode("utf-8")
+    fname = f"station-nexus-{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
+    return Response(content=data, media_type="application/json", headers={"Content-Disposition": f'attachment; filename="{fname}"'})
+
+
 api_router.include_router(build_atelier_router(db, require_admin, _storage_put, OBJ_APP_NAME))
 api_router.include_router(build_public_files_router(db, _storage_get))
 from bunny import build_bunny_router  # noqa: E402
@@ -2851,6 +3458,7 @@ async def startup():
     except Exception as e:
         logger.error("Object storage init failed: %s", e)
     asyncio.create_task(_roadmap_reminder_loop())
+    asyncio.create_task(_release_loop())
 
 
 @app.on_event("shutdown")

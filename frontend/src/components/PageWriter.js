@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import "@/components/pagewriter.css";
 import { createPortal } from "react-dom";
 import { IoArrowBack, IoSaveOutline, IoEyeOutline, IoCreateOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
@@ -12,51 +13,43 @@ export const FONTS = {
 };
 export const WIDTHS = { narrow: "max-w-xl", normal: "max-w-2xl", wide: "max-w-4xl" };
 
-const ghost = { color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", background: "rgba(255,255,255,0.06)" };
 
 // Page d'écriture plein écran : on rédige directement dans la mise en page du lecteur
 export default function PageWriter({ kicker, title, onTitle, html, onHtml, image, creationId, onClose, onSave, saving, saveLabel = "Enregistrer", note }) {
-  const { readerFont, readerSize, readerLine, readerWidth, sfx } = useApp();
+  const { readerFont, readerWidth, sfx } = useApp();
   const [preview, setPreview] = useState(false);
-  const article = { fontFamily: FONTS[readerFont] || FONTS.serif, fontSize: `${readerSize}px`, lineHeight: readerLine, color: "var(--text-primary)" };
-  const tab = (on) => ({ ...ghost, color: on ? "var(--bg-primary)" : "var(--text-primary)", background: on ? "var(--brand)" : "transparent", borderColor: on ? "var(--brand)" : "var(--border-c)" });
+  const words = String(html || "").replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
+  const W = { narrow: 640, normal: 760, wide: 980 }[readerWidth] || 760;
+  useEffect(() => { const k = (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); if (!saving) onSave?.(); } }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [saving, onSave]);
 
+  // Écrire un chapitre, en Rhine Lab : une barre d'atelier, et une vraie feuille de papier où l'on écrit.
   return createPortal(
-    <div className="fixed inset-0 z-[70] flex flex-col reader-root" style={{ background: "var(--bg-primary)" }} data-testid="page-writer">
-      <div className="reader-aurora" aria-hidden="true" />
-      <div className="sx-reader-header relative z-20 flex items-center justify-between gap-2 px-3 md:px-8 py-3 border-b"
-        style={{ borderColor: "var(--border-c)", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(12px)" }}>
-        <button data-testid="page-writer-back" onClick={() => { sfx?.("nav"); onClose(); }} disabled={saving} className="flex items-center gap-2 px-3 py-2 border text-sm" style={ghost}>
-          <IoArrowBack size={18} /> <span className="hidden sm:inline">Retour</span>
-        </button>
-        <div className="flex items-center p-0.5 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
-          <button data-testid="page-writer-mode-write" onClick={() => setPreview(false)} className="flex items-center gap-1.5 px-3 py-1.5 text-sm" style={tab(!preview)}><IoCreateOutline size={15} /> Écrire</button>
-          <button data-testid="page-writer-mode-preview" onClick={() => setPreview(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-sm" style={tab(preview)}><IoEyeOutline size={15} /> Aperçu</button>
+    <div className="pw" data-testid="page-writer">
+      <header className="pw-bar">
+        <button className="pw-b" data-testid="page-writer-back" onClick={() => { sfx?.("nav"); onClose(); }} disabled={saving}><IoArrowBack size={15} /> <span>Retour</span></button>
+        <p className="pw-path"><span>ATELIER</span><i>/</i><b>{String(kicker || "").toUpperCase()}</b></p>
+        <span className="pw-grow" />
+        <div className="pw-seg" role="radiogroup" aria-label="Mode">
+          <button role="radio" aria-checked={!preview} className={!preview ? "on" : ""} data-testid="page-writer-mode-write" onClick={() => setPreview(false)}><IoCreateOutline size={14} /> <span>Écrire</span></button>
+          <button role="radio" aria-checked={preview} className={preview ? "on" : ""} data-testid="page-writer-mode-preview" onClick={() => setPreview(true)}><IoEyeOutline size={14} /> <span>Aperçu</span></button>
         </div>
-        <button data-testid="page-writer-save" onClick={onSave} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 font-semibold text-sm disabled:opacity-50" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-          <IoSaveOutline size={16} /> <span className="hidden sm:inline">{saving ? "Enregistrement…" : saveLabel}</span>
-        </button>
-      </div>
+        <button className="pw-b go" data-testid="page-writer-save" onClick={onSave} disabled={saving}><IoSaveOutline size={15} /> <span>{saving ? "Enregistrement…" : saveLabel}</span></button>
+      </header>
 
-      <div className="relative z-10 flex-1 overflow-y-auto" data-testid="page-writer-pane">
-        <article className={`${WIDTHS[readerWidth] || WIDTHS.normal} mx-auto px-5 md:px-8 pt-6 pb-24`} style={article}>
-          <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "var(--brand)", fontFamily: "var(--font-body)" }}>{kicker}</p>
-          {preview ? (
-            <h1 className="font-display leading-tight mb-8" style={{ fontSize: "1.9em" }}>{title || "Sans titre"}</h1>
-          ) : (
-            <input data-testid="page-writer-title" value={title || ""} onChange={(e) => onTitle(e.target.value)} placeholder="Titre…"
-              className="pw-title font-display leading-tight mb-6 w-full" style={{ fontSize: "1.9em" }} />
-          )}
-          {image ? <img src={image} alt="" className="w-full mb-10 border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} /> : null}
-          {preview ? (
-            html ? <div className="reader-rich" data-testid="page-writer-preview" dangerouslySetInnerHTML={{ __html: html }} />
-              : <p style={{ color: "var(--text-secondary)" }}>Rien d'écrit pour l'instant.</p>
-          ) : (
-            <RichTextEditor value={html} onChange={onHtml} creationId={creationId} page placeholder="Écris ou colle ton texte ici (la mise en forme de Google Docs / Word est conservée)…" />
-          )}
-          {note && <p className="text-xs mt-10" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-body)" }}>{note}</p>}
+      <div className="pw-desk" data-testid="page-writer-pane">
+        <article className="pw-sheet" style={{ maxWidth: W, fontFamily: FONTS[readerFont] || FONTS.serif }}>
+          <p className="pw-k">{kicker}</p>
+          {preview ? <h1 className="pw-title">{title || "Sans titre"}</h1>
+            : <input data-testid="page-writer-title" value={title || ""} onChange={(e) => onTitle(e.target.value)} placeholder="Titre du chapitre…" className="pw-title pw-title-in" />}
+          <span className="pw-rule" aria-hidden="true" />
+          {image ? <img src={image} alt="" className="pw-img" /> : null}
+          {preview
+            ? (html ? <div className="reader-rich pw-prev" data-testid="page-writer-preview" dangerouslySetInnerHTML={{ __html: html }} /> : <p className="pw-empty">Rien d'écrit pour l'instant.</p>)
+            : <RichTextEditor value={html} onChange={onHtml} creationId={creationId} page placeholder="Écris ou colle ton texte ici (la mise en forme de Google Docs / Word est conservée)…" />}
+          {note && <p className="pw-note">{note}</p>}
         </article>
       </div>
+      <footer className="pw-foot"><span>{words} MOT{words > 1 ? "S" : ""}</span><span>~{Math.max(1, Math.round(words / 230))} MIN DE LECTURE</span><span className="pw-grow" /><span>CTRL + S ENREGISTRE</span></footer>
     </div>,
     document.body
   );

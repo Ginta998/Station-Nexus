@@ -1,6 +1,708 @@
 {
-  "version": "0.14",
+  "version": "0.54.2",
   "patches": [
+    {
+      "v": "0.54.2",
+      "date": "2026-11-19",
+      "title": "Le magnétoscope plus lisible",
+      "groups": {
+        "Corrigé": [
+          "Monde Magnétoscope : sur téléphone, l'écran prend toute la largeur (plus de téléviseur dans l'écran) ; ailleurs, un cadre plus fin. Fond plus sombre, lignes de balayage plus légères, texte du menu et des descriptions sans dédoublement rouge et bleu. Le « ▶ PLAY SP » a sa propre bande en haut et ne passe plus sur le titre.",
+          "Monde Magnétoscope sur téléphone : un seul fond du haut jusqu'en bas, l'affiche assombrie qui court sous le bandeau et sous l'écran, sans bloc ni bord qui dénote."
+        ]
+      }
+    },
+    {
+      "v": "0.54.1",
+      "date": "2026-11-19",
+      "title": "Le choix du thème réparé",
+      "groups": {
+        "Corrigé": [
+          "Accueil : le bouton Thèmes affichait un écran noir avec un seul thème. Les boutons de la liste portaient le même nom de style que l'écran de lecture des cassettes du journal, qui les étalait en plein écran. Ils ont maintenant leur propre nom."
+        ]
+      }
+    },
+    {
+      "v": "0.54",
+      "date": "2026-11-19",
+      "title": "Les lots, et le badge « À compléter »",
+      "groups": {
+        "Ajouté": [
+          "Alexandrie : les lots. Dans « Coller des livres ou des lots », un texte qui contient des lignes « LOT : livre » met à jour autant de livres qu'on veut en un seul collage : remplacer ou ajouter un chapitre, l'ajouter après un autre, compléter la fin d'un chapitre, insérer après un paragraphe précis, supprimer un chapitre, changer le résumé ou ajouter des liens, ou créer un livre à paraître. Avant d'appliquer, chaque lot montre le livre visé, ce qui change, les mots avant et après, et les erreurs. Modèle « Lot » dans la fenêtre, et format complet dans le guide du collage.",
+          "Badge orange « À COMPLÉTER » sur tout livre de 2 000 mots ou moins (couverture, tranche, fiche, page de titre). Il disparaît tout seul quand le livre dépasse ce seuil. Aujourd'hui : 21 livres du Lore, plus Moebius, Ramanujan, N.W.A et Michael Jackson."
+        ]
+      }
+    },
+    {
+      "v": "0.53",
+      "date": "2026-11-19",
+      "title": "Lumumba en entier",
+      "groups": {
+        "Changé": [
+          "Patrice Lumumba passe de 7 000 à plus de 10 000 mots : l'école des missions, Pauline, le jeune roi Baudouin à Stanleyville en 1955, la prison, la bière Polar, la fondation du MNC avec Ileo et Adoula, la rupture avec Kalonji, la campagne de 1960 et Andrée Blouin, Kasa-Vubu au sortir du discours, les soldats du camp Léopold, Ralph Bunche et Hammarskjöld, Washington, la conférence panafricaine, le vote du Parlement, les enfants envoyés au Caire, la fuite sous l'orage, Tshombe et Munongo, ce que l'agent de la CIA a raconté, Rajeshwar Dayal, les noms des exécutants, Mulele, Che Guevara, Fanon, les regrets du roi Philippe, et un chapitre pour Pauline.",
+          "Méridien de sang : cinq encadrés « La réplique », qui disent quel passage retenir et où le trouver (chapitre), sans recopier le texte."
+        ]
+      }
+    },
+    {
+      "v": "0.52",
+      "date": "2026-11-19",
+      "title": "Kanungu, et Robespierre jusqu'au bout",
+      "groups": {
+        "Ajouté": [
+          "Guru : Kanungu, en Ouganda. Le journal de Credonia Mwerinde, ancienne vendeuse de bière de banane devenue la voix de la Vierge pour le Mouvement pour la restauration des dix commandements de Dieu, avec Joseph Kibwetere et le père Kataribabo : la grotte de Nyabugoto, le silence et les signes, la fin du monde repoussée, la dernière fête, et le 17 mars 2000 (près de 780 morts en tout, avec les fosses découvertes ensuite)."
+        ],
+        "Changé": [
+          "Robespierre est maintenant raconté par lui-même, à la première personne, allongé sur la table du Comité, la mâchoire brisée, le 10 thermidor : Arras, le juge qui ne mangeait plus, Versailles, la maison Duplay, la guerre qu'il refusait, le roi, la vertu et la terreur, Camille et Danton, l'Être suprême, le 9 thermidor, la feuille signée « Ro », la charrette. Avec des dialogues dans la langue de 1794 (Charlotte, Duplay, Brissot, Camille, Carnot, Éléonore, Couthon)."
+        ]
+      }
+    },
+    {
+      "v": "0.51",
+      "date": "2026-11-19",
+      "title": "Illustrer en un clic, des voix qui se répondent",
+      "groups": {
+        "Ajouté": [
+          "Alexandrie : « Illustrer » (dans la barre de lecture et au clic droit sur un livre). La station cherche des images (SteamGridDB et MyAnimeList pour le Lore, Open Library pour les romans, Wikimedia Commons pour l'histoire, la philosophie, la musique), en place une après le premier paragraphe de chaque chapitre qui n'en a pas, jamais deux fois la même, ni celle de la couverture, puis ouvre le texte dans la fenêtre de collage pour relecture avant d'enregistrer.",
+          "Guru : les femmes. Deux nouveaux journaux, Anne Hamilton-Byrne (la Famille, en Australie) et Bonnie Nettles (Ti, co-fondatrice de Heaven's Gate), une nouvelle partie « Les mères », et celles qui ont dit non : Christine Miller à Jonestown, Sarah Hamilton-Byrne. Des scènes de dialogue dans chaque journal : Jones et Marceline, Koresh et Lois Roden, Manson et Lynette Fromme, Asahara et Hisako Ishii, Sheela et Bhagwan, Di Mambro et Luc Jouret, Applewhite après la mort de Ti.",
+          "Des dialogues dans quinze autres journaux, chacun dans la langue de son époque : Danton et Camille Desmoulins, Saint-Just et Carnot, Toussaint et son neveu Moïse, Kimpa Vita et le capucin, Soundiata et Nana Triban, Lumumba et Mobutu, Musashi et le seigneur Hosokawa, Spinoza et Leibniz, Nietzsche et Lou Salomé, Mozart et Constanze, Debussy et Chouchou, Bresson et Maria Casarès, Tarkovski et Lem, Kitano et sa mère, Rodriguez et sa fille. Chaque livre dit en présentation que les dialogues sont reconstruits."
+        ]
+      }
+    },
+    {
+      "v": "0.50",
+      "date": "2026-11-19",
+      "title": "Les rois des ombres se parlent, les lore s'illustrent",
+      "groups": {
+        "Ajouté": [
+          "Les rois des ombres : des scènes de dialogue dans chaque journal, avec les personnes qui ont compté dans leur vie. Lucky Luciano et Meyer Lansky, de la ruelle du Lower East Side à l'hôtel Nacional de La Havane ; Capone et Johnny Torrio, puis Mae au parloir d'Alcatraz ; Rothstein et son père, puis le petit Luciano à qui il apprend à s'habiller ; Zheng Yi Sao face au gouverneur de Canton ; Du Yuesheng et Huang le Grêlé ; Stephanie St. Clair et Bumpy Johnson ; Bumpy et Luciano à la même table ; Mesrine, Broussard et Besse ; Pupetta et le témoin de son mariage ; Taoka et Hibari Misora ; Phoolan Devi et Vikram, puis le policier venu négocier sa reddition ; Griselda Blanco et Rivi. Le livre dit dès la première page que ces paroles sont reconstruites ; les rencontres, elles, ont eu lieu.",
+          "Illustrations dans tous les livres du Lore : chaque chapitre a son image. En plus de SteamGridDB (jeux), deux sources : MyAnimeList pour les mangas et les animes (affiches, couvertures des tomes), Open Library pour les romans (couvertures des éditions). Nouvelle ligne de collage : ILLUSTRATIONS : anime:Titre, manga:Titre, ol:Titre auteur, sgdb:Jeu."
+        ],
+        "Changé": [
+          "Jamais deux fois la même image dans un livre. Chaque illustration garde l'image demandée si elle est libre, sinon prend la suivante qui ne sert nulle part ailleurs (ni dans le livre, ni sur la couverture) ; s'il n'en reste plus, l'emplacement disparaît au lieu de répéter une image. Avant, un livre qui demandait plus d'images que la source n'en avait (Dragon Ball GT, par exemple) revenait à la première.",
+          "Coller un livre : l'aperçu signale une image demandée deux fois (même @art ou même @img)."
+        ]
+      }
+    },
+    {
+      "v": "0.49",
+      "date": "2026-11-19",
+      "title": "Partager depuis le monde, guide à jour",
+      "groups": {
+        "Changé": [
+          "En bas de l'accueil d'un monde (avec Autres mondes, Commentaires, Soutenir) : Partager ouvre les cartes et l'envoi. Dans Soutenir, « Partager l'œuvre » ouvre aussi le partage. Le bouton Menu de la station est retiré du monde (on sort par « Quitter l'univers »).",
+          "Le guide « Comment ça marche » est à jour : la sortie d'un chapitre de bout en bout, faire connaître la station, les nouvelles pièces de l'atelier, ce qui vit dans le navigateur ou sur le serveur, les clés à régler sur Emergent."
+        ]
+      }
+    },
+    {
+      "v": "0.48",
+      "date": "2026-11-19",
+      "title": "Partager, en vrai",
+      "groups": {
+        "Ajouté": [
+          "Aperçu des liens : un lien d'œuvre ou de chapitre envoyé dans WhatsApp, Messages, Discord, X ou Facebook s'affiche avec une belle image (l'affiche, le titre, la sortie) et le résumé. L'image est dessinée par la station pour chaque œuvre ; un chapitre pas encore sorti n'est jamais dévoilé.",
+          "Menu › Partager : une page qui rassemble tout. La station (carte et lien de bio, reconnu dans Tes chiffres), chaque œuvre et sa dernière sortie, chaque carte aux couleurs du monde de l'œuvre. Le bouton Partager du monde reste là aussi."
+        ]
+      }
+    },
+    {
+      "v": "0.47",
+      "date": "2026-11-19",
+      "title": "Partager en beauté, lire à son aise",
+      "groups": {
+        "Ajouté": [
+          "Partager : six dessins de carte (Affiche, Plein cadre, Citation, Billet, Compte à rebours, Typo) en trois formats (story, post, carré), aux couleurs du monde, et toutes les façons d'envoyer : partage du téléphone (Instagram, WhatsApp, Snap…), WhatsApp, Messages, Telegram, email, X, Facebook, copier le lien ou le message. Le message est modifiable ; la Citation prend une phrase que tu choisis. Le bouton Partager est ouvert à tous les visiteurs.",
+          "Confort de lecture (Aa dans le lecteur) : taille du texte, interligne, police (Livre, Moderne, Très lisible), couleur de page (du livre, claire, sépia, nuit) et marges. Le réglage est gardé pour la prochaine lecture."
+        ],
+        "Corrigé": [
+          "Sur téléphone, les pages d'une œuvre ne sont plus coupées à droite : la barre d'outils du monde défile au doigt au lieu d'élargir la page.",
+          "Sur téléphone, le bouton Aa du lecteur ouvrait un panneau caché sous la barre : il s'affiche maintenant par-dessus la page."
+        ]
+      }
+    },
+    {
+      "v": "0.46",
+      "date": "2026-11-19",
+      "title": "Faire venir, faire revenir, savoir ce qui marche",
+      "groups": {
+        "Ajouté": [
+          "Alerte de sortie : dans le monde d'une œuvre, la prochaine sortie programmée avec son compte à rebours et « Me prévenir » (un clic avec un compte, sinon un email). À l'heure dite, la station envoie toute seule une notification et un email à ceux qui l'ont demandé et à ceux qui ont l'œuvre en coup de cœur. Option dans Newsletter : prévenir aussi toute la liste à chaque sortie.",
+          "Avant-première : en programmant un chapitre ou un épisode, « X jours plus tôt pour les soutiens » (tous, ou à partir d'un palier). Ces soutiens le lisent en avance, marqué AVANT-PREMIÈRE, et sont prévenus à ce moment-là ; les autres voient le compte à rebours et la date de l'avant-première.",
+          "Cartes Instagram : une image au format story (1080 × 1920) aux couleurs du monde, avec l'affiche, le titre, la sortie (maintenant ou la date) et le lien. Bouton dans le monde (admin) et clic droit sur un chapitre ; télécharger ou partager directement depuis le téléphone.",
+          "Atelier › Tes chiffres : visiteurs par jour, œuvres ouvertes et lues, temps de lecture, provenance (Instagram, YouTube…), et pour chaque œuvre où les lecteurs décrochent, chapitre par chapitre. Comptés par la station elle-même, anonymes, sans tes propres visites.",
+          "Réagir à un passage : double-clic sur une phrase (ou sélection au doigt) dans le lecteur, puis « Réagir ». Les passages commentés sont surlignés avec une bulle ; on ouvre le fil en la touchant. Ces réactions apparaissent aussi dans les commentaires, avec la phrase citée.",
+          "Mon étagère (menu de la station) : les œuvres terminées, en cours (avec la progression) et les films lancés, rangés comme une collection.",
+          "Paramètres › Admin › Sauvegarde : toute la station dans un fichier (œuvres, chapitres, journal, atelier, réglages, newsletters, abonnés, commentaires), sans mots de passe ni paiements."
+        ],
+        "Changé": [
+          "La station est environ trois fois plus légère à l'ouverture : l'atelier, Alexandrie et sa bibliothèque, l'éditeur d'œuvre, les paramètres et les autres pages ne se chargent plus qu'au moment où l'on y entre."
+        ]
+      }
+    },
+    {
+      "v": "0.45",
+      "date": "2026-11-19",
+      "title": "Le son de lancement, c'est la station qui le choisit",
+      "groups": {
+        "Changé": [
+          "Le son de lancement (livre, VHS, vinyle) se règle seulement par l'admin, dans Paramètres › Son, et vaut pour toute la station : tous les visiteurs entendent ce choix. Le choix n'est plus gardé dans le navigateur de chacun."
+        ]
+      }
+    },
+    {
+      "v": "0.44",
+      "date": "2026-11-19",
+      "title": "Habillages de lettre et recherche en haut",
+      "groups": {
+        "Ajouté": [
+          "Newsletter : une trentaine d'habillages, dont toutes les ambiances d'Alexandrie (gothique, washi, presse, cosmos, néon, western…) avec leurs couleurs, leur police de titre et leur ornement de séparation."
+        ],
+        "Changé": [
+          "Salon : la recherche YouTube est en haut, juste sous l'affiche.",
+          "Plus de mention « Rhine Lab » dans la station (atelier de l'œuvre, paramètres, historique des versions)."
+        ]
+      }
+    },
+    {
+      "v": "0.43",
+      "date": "2026-11-19",
+      "title": "Des séries faciles à ranger",
+      "groups": {
+        "Changé": [
+          "Vidéothèque : une série se remplit sans taper de liste. Cherche sur YouTube et ajoute les épisodes un par un ou « Tout ajouter dans cet ordre », colle plusieurs liens d'un coup, ou prends-les dans le Salon. Chaque épisode a sa vignette, son titre modifiable, et se range avec ↑ ↓.",
+          "Une série peut aussi être une playlist YouTube : un seul lien, tous les épisodes dans l'ordre.",
+          "Un film se trouve aussi par la recherche YouTube."
+        ],
+        "Corrigé": [
+          "Sur téléphone, la barre du lanceur ne cache plus les commandes du lecteur pendant un film, ni le bas de la fiche d'une cassette.",
+          "Aperçu sur claude.ai : à la place de l'erreur du navigateur, le lecteur explique que YouTube y est bloqué (sur la station, la vidéo se lit normalement)."
+        ]
+      }
+    },
+    {
+      "v": "0.42",
+      "date": "2026-11-19",
+      "title": "Le studio de la newsletter",
+      "groups": {
+        "Ajouté": [
+          "Atelier › Newsletter : compose une lettre en blocs (titre, texte avec **gras** et *italique*, image, une œuvre de la station avec son affiche et son bouton, bouton, séparateur), trois habillages (Nuit, Papier, Néon), l'aperçu exact de l'email (ordinateur ou téléphone) avec l'objet et la phrase d'aperçu comme dans une boîte de réception. Brouillons gardés, duplication, envoi test à toi, puis envoi à tous les abonnés avec le compte rendu (envoyés / total).",
+          "Diagnostic d'envoi : la Station dit si Resend est branché, si l'adresse d'envoi est une adresse de test, et affiche la réponse exacte de Resend quand un test échoue.",
+          "Les trois nouvelles entrées (néon, porte de baie, une qui se déplie) se choisissent dans l'atelier des thèmes, pour n'importe quel monde.",
+          "Jaquettes de la vidéothèque : « Chercher un artwork », la même recherche qu'Alexandrie.",
+          "Alexandrie : ouvrir un livre joue l'animation d'ouverture et le son de lancement de son format."
+        ],
+        "Changé": [
+          "Envois groupés au rythme permis par Resend (2 par seconde), et la clé Resend est relue sans redémarrer le serveur."
+        ]
+      }
+    },
+    {
+      "v": "0.41",
+      "date": "2026-11-19",
+      "title": "Rester dans le monde, le soutenir, et la vidéothèque VHS",
+      "groups": {
+        "Ajouté": [
+          "Dans chaque œuvre, quel que soit le monde : « Soutenir la station », une page aux couleurs du monde avec les paliers, les autres façons d'aider (acheter l'œuvre, partager, laisser un mot, coup de cœur) et le mur des soutiens. On ne sort pas du monde ; « Débloquer › S'abonner » y mène aussi.",
+          "Une entrée propre à chacun des trois nouveaux mondes : l'enseigne qui s'allume et l'éclair de néon (Shibuya), les portes de la baie qui s'écartent (Hangar), la une qui se déplie (Gazette).",
+          "Grain de la cassette au choix : neuve, usée ou très usée (sur la cassette en la modifiant, ou dans l'éditeur du journal).",
+          "Salon de l'atelier : la Vidéothèque. Range tes films et tes séries en cassettes VHS sur une étagère ; un clic glisse la cassette dans le magnétoscope (le son de lancement VHS) et ton lecteur s'ouvre. Une série enchaîne ses épisodes ; clic droit pour choisir un épisode.",
+          "Appui long (ou clic droit) sur un monde dans « Monde » : supprimer un de tes mondes, ou retirer un monde d'origine de la liste (il reste dans « Ambiances masquées » et peut être remis)."
+        ],
+        "Changé": [
+          "Le retour (flèche, Échap, bouton retour du téléphone ou du navigateur) remonte d'un cran dans le monde, ou ferme la lecture ouverte ; il ne fait plus quitter l'univers. On sort par « Quitter l'univers ».",
+          "Entrer dans une œuvre par la une (ou la prochaine sortie) joue aussi l'animation de lancement (livre, VHS, vinyle) et son son.",
+          "Export PDF : visible seulement pour l'admin, aussi dans les entrées du journal ; jamais pour le public."
+        ],
+        "Corrigé": [
+          "Le menu de la station se ferme avec Échap."
+        ]
+      }
+    },
+    {
+      "v": "0.40",
+      "date": "2026-11-19",
+      "title": "Un seul crayon, et trois mondes qui ont du caractère",
+      "groups": {
+        "Ajouté": [
+          "Cassette : vraie usure (coins frottés, rayures, poussière, scotch jauni, étiquette déchirée et tachée, couleurs passées).",
+          "Un seul bouton pour modifier une entrée du journal, partout (station publique, accueil, atelier) : sur une cassette, le crayon ouvre l'édition complète sur la cassette elle-même (titre, voix, image, enregistrement, date, catégorie, création, publiée, accueil, format, transcription). Pour les autres formats, le crayon ouvre l'éditeur complet par-dessus la page.",
+          "Sons de lancement : trois nouveaux (Velours, Prisme, Horizon), huit en tout, et un son différent au choix pour le livre, la VHS et le vinyle (Réglages).",
+          "Trois mondes refaits avec un caractère propre : Shibuya (néons sous la pluie, enseigne verticale, sol mouillé, barre de verre), Hangar (baie de vaisseau, sol quadrillé, balayage, repères de visée, télémétrie ambre), Gazette (journal des années 30 : manchette, numéro du jour, tampon rouge, photos en trame, colonnes)."
+        ],
+        "Retiré": [
+          "Le second bouton « Modifier l'entrée » sous la cassette."
+        ]
+      }
+    },
+    {
+      "v": "0.39",
+      "date": "2026-11-19",
+      "title": "Le Cockpit qui se remplit tout seul",
+      "groups": {
+        "Ajouté": [
+          "Cockpit › Aujourd'hui : Bunny dit ce qui compte, trois choses à faire (en retard, prévu aujourd'hui, en cours, document prêt, brouillon du journal), la semaine (tâches, rendez-vous, sorties programmées) et ce qui arrive sur la station. Rien à paramétrer.",
+          "Tableau (À faire / En cours / Fait, glisser une carte pour changer son état), Calendrier (le mois ; double-clic pour une tâche, glisser pour changer sa date), Liste (recherche, filtres, rangée par lot).",
+          "Modèles : six cartes (Sortie du dimanche, Épisode vertical, Reel, Tournage, Chapitre de roman, Semaine d'écriture). Un nom, une date de sortie, et les étapes se créent avec leurs dates comptées à rebours. « Créer un modèle » pour les tiens.",
+          "Les anciens outils restent à côté : Carrière, Roadmap, Objectifs, Agenda, Budget, Collaborations. (Les nouveaux champs des tâches, état et lot, et les modèles personnels demandent la mise à jour du serveur.)"
+        ]
+      }
+    },
+    {
+      "v": "0.38",
+      "date": "2026-11-19",
+      "title": "Le réseau narratif",
+      "groups": {
+        "Ajouté": [
+          "Atelier › Réseau narratif : la constellation des fiches (personnages, lieux, scènes, lore, chronologie…), par univers ou par œuvre. Une étoile choisie éclaire ses liens et liste tout ce qui la touche ; glisser une étoile sur une autre les relie (on choisit la nature du lien) ; molette pour zoomer, glisser le fond pour se déplacer.",
+          "Des liens qui ont un sens : lié à, cite, apparaît dans, se passe à, allié, ennemi, famille, aime, appartient à, avant, après, inspiré de. Dans une fiche, chaque lien a sa nature, et les renvois disent « met en scène », « lieu de »…",
+          "@mentions : dans un texte de l'atelier, @ puis le début d'un nom propose les fiches ; la mention relie la fiche toute seule. Ctrl/⌘ + clic l'ouvre. Sur la station, la mention redevient du texte simple.",
+          "Chronologie (fiches datées, scènes et événements, avec leur lieu et leurs personnages) et Cohérence : personnage mort qui réapparaît après sa mort, alliés et ennemis à la fois, scène sans lieu, fiche reliée à rien."
+        ]
+      }
+    },
+    {
+      "v": "0.37",
+      "date": "2026-11-19",
+      "title": "Le son du lancement et trois mondes à naviguer autrement",
+      "groups": {
+        "Ajouté": [
+          "Un petit son au lancement d'une œuvre (quand le livre ou la VHS s'ouvre) : Halo, Élan, Clé, Aurore ou Seuil, à écouter et choisir dans Paramètres › Son (ou Aucun).",
+          "Trois nouveaux mondes, chacun avec sa façon de naviguer : Application (l'image en grand et une barre de rubriques fixe en bas, comme une appli), Panorama (le tableau de bord d'une console : rails horizontaux, épisodes et chapitres en accès direct), Revue (un magazine qui se lit en défilant, sommaire fixe, chapitres, making of et moodboard sur une seule page). Aussi en modèles dans l'atelier des thèmes de monde."
+        ]
+      }
+    },
+    {
+      "v": "0.36",
+      "date": "2026-11-19",
+      "title": "Le beau lecteur partout, les épisodes et les sorties programmées",
+      "groups": {
+        "Ajouté": [
+          "Sur la station, films, bandes-annonces et épisodes passent dans le lecteur de l'atelier : YouTube caché derrière nos contrôles (lecture, ±10 s, vitesse, sous-titres, reprise), « Épisode suivant », liste « À suivre » et compte à rebours à la fin. Avant, un épisode YouTube ouvrait YouTube dans un nouvel onglet.",
+          "Série verticale : format 9:16 automatique pour les liens Shorts, ou réglé sur la création (Éditeur › Format de l'image : Automatique, Horizontal 16:9, Vertical 9:16).",
+          "Publier des épisodes depuis l'atelier : un lien vidéo du Drive (ou un document qui contient un lien YouTube) devient un épisode, seul (« Publier comme épisode… ») ou en lot (« Épisodes (la vidéo) »).",
+          "Programmer une sortie : « Sortie maintenant » ou « Programmer » (le prochain dimanche 18 h par défaut), seul ou en lot. Le chapitre ou l'épisode part tout de suite mais reste caché au public jusqu'à l'heure dite ; toi tu le vois, marqué « SORTIE dim. 22 nov., 18:00 ». (Demande la mise à jour du serveur : champ release_at et filtrage public.)"
+        ],
+        "Changé": [
+          "« Déposer des fichiers » devient « Importer des fichiers (privé) » et la fenêtre dit « Privé · rien n'est publié ». L'aperçu sait maintenant montrer un fichier importé."
+        ]
+      }
+    },
+    {
+      "v": "0.35",
+      "date": "2026-11-19",
+      "title": "Consulter d'abord, sortir un lot, tout voir",
+      "groups": {
+        "Ajouté": [
+          "Sortir un lot : dans le Drive, « Sélectionner » plusieurs documents puis « Publier comme chapitres ». La fenêtre montre les numéros (ch. 8, 9, 10…), l'ordre se change avec ↑↓, tout part d'un coup ; ceux déjà publiés dans la création sont mis à jour sur place.",
+          "Panneau Publication › « Écrit sur la station » : les chapitres des œuvres reliées et les entrées du journal qui ne viennent pas de l'atelier. On les consulte et on les modifie d'ici sans copie, ou on les « ramène dans l'atelier » comme brouillon déjà relié."
+        ],
+        "Changé": [
+          "Atelier › Journal de bord : une entrée existante s'ouvre comme le public la voit (livre, VHS, vinyle, cassette), « Modifier » passe en édition. Une nouvelle entrée s'ouvre toujours en écriture."
+        ]
+      }
+    },
+    {
+      "v": "0.34",
+      "date": "2026-11-19",
+      "title": "Publication : le panneau et la protection du texte",
+      "groups": {
+        "Ajouté": [
+          "Atelier › Publication (menu et lanceur sur téléphone) : œuvres reliées ou à relier, tout ce qui est en ligne rangé par création puis le journal avec son état (à jour, modifié dans l'atelier, modifié en ligne, supprimé en ligne), les documents prêts à partir, et un bloc « À traiter » réglé en un geste (Mettre à jour, Récupérer, Recréer).",
+          "Protection du texte : si un chapitre ou une entrée du journal a été modifié sur la station depuis la dernière publication, la fenêtre le dit et propose « Récupérer la version en ligne dans le brouillon » ou « Écraser la version en ligne ».",
+          "Deux actions directes sur chaque élément : « Publier comme chapitre… » et « Mettre dans le journal de bord… » (ou « Mettre à jour le chapitre 8… » une fois en ligne)."
+        ],
+        "Corrigé": [
+          "Sur téléphone, le menu de l'appui long s'ouvre en tiroir au-dessus de la barre du bas : plus aucune action cachée."
+        ]
+      }
+    },
+    {
+      "v": "0.33",
+      "date": "2026-11-19",
+      "title": "La passerelle Atelier ↔ Station",
+      "groups": {
+        "Ajouté": [
+          "Une œuvre de l'atelier se relie à sa création publique (fiche de l'œuvre › Sur la station). Rien n'est copié : les chapitres en ligne s'affichent en direct et se modifient depuis l'atelier (clic, ou clic droit : renommer, voir sur la station, supprimer), avec « Nouveau chapitre ».",
+          "Publier un élément de l'atelier (clic droit ou bouton dans l'éditeur) : nouveau chapitre ou remplacement d'un chapitre de la création, ou entrée du journal de bord (rattachement, catégorie, format, publiée ou brouillon). Le texte est converti en blocs pour le journal (titres, paragraphes, listes, images, citations, YouTube, musiques).",
+          "Le lien reste : l'élément affiche « ● EN LIGNE · CH. 8 · JOURNAL », republier met à jour au même endroit, « Voir sur la station » y mène. Le brouillon peut être rangé dans un dossier « Publiés ».",
+          "Créer l'œuvre d'une création déjà en ligne : « Depuis la station » dans un univers, ou clic droit sur une affiche liée (titre, affiche et pitch repris, déjà reliée).",
+          "Sur la station (admin), le bouton 工 à côté du crayon ouvre l'œuvre dans l'atelier, et la crée si elle n'existe pas encore."
+        ]
+      }
+    },
+    {
+      "v": "0.32",
+      "date": "2026-11-19",
+      "title": "Le journal de bord dans l'atelier",
+      "groups": {
+        "Ajouté": [
+          "Atelier › Journal de bord (menu de l'atelier et lanceur sur téléphone) : toutes les entrées, brouillons compris, rangées comme leurs objets (livre, VHS, vinyle, cassette), avec leur état (publiée, brouillon, accueil) et un filtre Tout / Publiées / Brouillons.",
+          "On écrit et on modifie une entrée sans quitter l'atelier : l'éditeur du journal s'ouvre dedans, « Retour » et « Enregistrer » ramènent à la liste.",
+          "Clic droit (ou appui long, ou « ⋯ ») sur une entrée : Modifier, Lire / Écouter, Voir sur la station, Publier ou repasser en brouillon, Afficher sur l'accueil ou l'en retirer, Supprimer (avec confirmation)."
+        ]
+      }
+    },
+    {
+      "v": "0.31",
+      "date": "2026-11-19",
+      "title": "Enregistrer, modifier sur place, Laboratoire partout",
+      "groups": {
+        "Ajouté": [
+          "Enregistrer au micro : dans l'éditeur du journal et sur la cassette elle-même. Voyant rouge, compteur, vumètre, « Arrêter » pose l'enregistrement sur la cassette (le navigateur demande l'accès au micro la première fois).",
+          "Modifier une cassette directement dessus (crayon en haut à droite ou clic droit sur la cassette) : étiquette, voix, image (fichier ou artwork), enregistrement (micro ou fichier). La cassette se met à jour pendant qu'on écrit."
+        ],
+        "Changé": [
+          "La cassette a un vrai volume : coins presque droits, biseaux, tranche épaisse avec stries, bas en trapèze en relief, posée en légère perspective.",
+          "En Nexus, une entrée du journal s'ouvre directement dans son objet (livre, VHS, vinyle ou cassette), sans page intermédiaire ; fermer ramène à la liste.",
+          "Passe Laboratoire : l'entrée du journal (repère, filets, crochets, boutons nets), l'éditeur du journal (en-tête de labo, sections numérotées 01 à 05, l'enregistrement juste sous le format) et le Salon (repère S-01, onglets soulignés, canaux et messages à angles droits)."
+        ]
+      }
+    },
+    {
+      "v": "0.30",
+      "date": "2026-11-19",
+      "title": "L'enregistreur, sans détour",
+      "groups": {
+        "Ajouté": [
+          "Une image sur la cassette : la couverture de l'entrée s'imprime sur l'étiquette (le titre et la voix restent sur des bandes de papier), et colore en flou le fond du lecteur.",
+          "Éditeur du journal : le format se choisit en voyant l'objet. Quatre cartes, Livre, VHS, Vinyle et Enregistreur, dessinées avec le titre et la couverture de l'entrée."
+        ],
+        "Changé": [
+          "Une cassette s'écoute sur place depuis le journal, l'accueil et la fiche d'une création : la croix ramène exactement là où on était, sans page intermédiaire.",
+          "La page d'une entrée cassette ne lance plus le lecteur toute seule : elle garde son bouton « Écouter la cassette ».",
+          "Les éraflures de la cassette ressemblaient à de la pluie : il reste les coins et les bords frottés, et deux rayures isolées.",
+          "Le réglage « Page du lecteur » est masqué pour une cassette, qui n'a pas de pages."
+        ],
+        "Corrigé": [
+          "Éditeur du journal sur téléphone : les boutons de couverture passent à la ligne au lieu de déborder."
+        ]
+      }
+    },
+    {
+      "v": "0.29",
+      "date": "2026-11-18",
+      "title": "La cassette, comme une VHS",
+      "groups": {
+        "Changé": [
+          "La cassette prend l'allure des VHS d'Alexandrie : plastique noir mat, rayures et coins frottés, étiquette de papier usée et tachée, bandeau « C-46 », titre écrit à la main, bandes de couleur tirées du titre. Fini le bleu et l'orange.",
+          "Ouverture plus soignée : la cassette arrive de face en se redressant, un reflet passe sur le plastique, puis les touches et le texte apparaissent.",
+          "Fond du lecteur de cassette : neutre et sombre (le fond marron est retiré).",
+          "Son du magnéto retravaillé : clacs secs de plastique et de métal, petit sifflement de moteur qui oscille, bande qui glisse ; plus de grave qui traîne."
+        ],
+        "Corrigé": [
+          "Atelier des thèmes sur téléphone : les miniatures sont rendues à la taille d'un téléphone (elles s'affichaient de travers) et ne peuvent plus se décaler."
+        ]
+      }
+    },
+    {
+      "v": "0.28",
+      "date": "2026-11-18",
+      "title": "La vraie cassette",
+      "groups": {
+        "Nouveau": [
+          "Une vraie cassette, inspirée des cassettes japonaises : coque en plastique transparent qui laisse voir la mécanique, vis, étiquette imprimée (disque de couleur, marque, type, durée « 46 »), titre écrit à la main, bobines dentées et bande brune. La même dans le lecteur, le Making of et le journal.",
+          "Animation d'ouverture : la cassette glisse dans le lecteur, rebondit et s'enclenche (avec son), puis les touches et la transcription apparaissent.",
+          "Son de magnéto plus mécanique : clic de la touche, verrou qui accroche, clac de la tête, pignons qui s'engrènent, moteur qui monte en régime, bande qui frotte.",
+          "Atelier des thèmes : les vignettes (mes thèmes, modèles, thèmes d'origine) montrent le vrai monde de l'œuvre, figé."
+        ],
+        "Changé": [
+          "Une cassette s'ouvre directement depuis le journal : plus de page intermédiaire avec un bouton « Écouter » ; la refermer ramène en arrière.",
+          "Lecture sur téléphone : les mêmes animations qu'à l'ordinateur accompagnent chaque page (reflet du papier, bande VHS « ▶▶ FF », sillons du disque)."
+        ],
+        "Corrigé": [
+          "Magnétoscope sur téléphone : « ▶ PLAY » ne se pose plus sur le titre."
+        ]
+      }
+    },
+    {
+      "v": "0.27",
+      "date": "2026-11-18",
+      "title": "Des thèmes qui changent vraiment le monde",
+      "groups": {
+        "Nouveau": [
+          "Atelier des thèmes de monde › Structure : effet du titre (néon, contour, ombre décalée, glitch, tampon) et sa taille, cadre de l'écran (écran, coins de visée, double filet), décor (grille, HUD, lignes), image de fond (noir et blanc, sépia, bichromie, sans image), style des boutons du menu (soulignés, pilules, blocs, encadrés).",
+          "L'aperçu de l'atelier montre le vrai monde de l'œuvre en miniature ; les vignettes suivent la mise en page de chaque thème de base.",
+          "Cinq modèles refaits, chacun sur une base et une structure différentes : Jazz bar 2499 (Cathédrale), Terminal 1999 (Magnétoscope), Dossier classé (Archives, en miroir), Néon de minuit (Orbite), Encre et papier (Sengoku, sans image).",
+          "Les cassettes se reconnaissent avant de les ouvrir : petite cassette dans la liste du Making of, la cassette en grand dans l'aperçu (bouton « Écouter »), et sur les cartes du journal."
+        ],
+        "Changé": [
+          "Une cassette sans texte s'affiche seule, au centre, sans transcription vide.",
+          "Tourner une page sur téléphone : la page finit sa course en un glissement court et net (au lieu du défilement du navigateur) ; « Reprendre » n'est plus calculé qu'une fois qu'on s'arrête de tourner."
+        ]
+      }
+    },
+    {
+      "v": "0.26",
+      "date": "2026-11-18",
+      "title": "Cassettes, et un atelier des thèmes qu'on comprend",
+      "groups": {
+        "Nouveau": [
+          "Journal de bord : format « Cassette audio ». On dépose un enregistrement, on lui donne une étiquette et une voix. En l'ouvrant : une vraie cassette ; on appuie sur lecture, la touche s'enfonce, le moteur démarre doucement, puis la voix arrive. Les bobines tournent et se vident d'un côté pour se remplir de l'autre, le compteur avance, le texte de l'entrée sert de transcription.",
+          "Atelier de l'œuvre › Thèmes : l'atelier des thèmes de monde, refait sur le modèle de celui de la station. Bibliothèque (mes thèmes avec aperçu, utiliser, modifier, dupliquer, supprimer), cinq modèles pour démarrer (Jazz bar 2499, Terminal 1999, Dossier classé, Néon de minuit, Encre et papier), les douze thèmes d'origine ; éditeur en onglets (couleurs avec palettes, typo avec les polices dessinées, disposition, matière, effets, souris) avec un grand aperçu en direct, plein écran et « Voir dans le monde »."
+        ],
+        "Changé": [
+          "Le bouton palette en haut du monde disparaît : tout se fait dans l'atelier de l'œuvre."
+        ],
+        "Corrigé": [
+          "Lecture : pendant qu'un livre est ouvert, plus rien ne s'anime derrière lui (monde, fond de la station, particules) ; c'est ce qui faisait apparaître des morceaux noirs en tournant les pages sur téléphone.",
+          "Changer d'écran dans un monde : plus de flou sur tout l'écran pendant la transition (très coûteux), transitions plus courtes.",
+          "Lancer une œuvre : les grandes images du monde se chargent pendant l'animation de lancement."
+        ]
+      }
+    },
+    {
+      "v": "0.25",
+      "date": "2026-11-18",
+      "title": "L'atelier des thèmes de monde",
+      "groups": {
+        "Nouveau": [
+          "Atelier des thèmes de monde (bouton palette en haut du monde, admin) : un panneau posé sur le monde, qui le change en direct. On part d'un des douze thèmes ou d'un thème déjà créé et on règle : couleurs (encre, fond, accent), polices des titres, des menus et des textes, majuscules, disposition miroir, fenêtre façon Nier, coins, fond (assombrir, flou), grain, lignes d'écran, vignette, particules, transition d'entrée (avec « Rejouer »), effet de souris. « Enregistrer », puis « Appliquer à l'œuvre ».",
+          "Les thèmes créés apparaissent dans l'atelier de l'œuvre › Monde, sous « Mes thèmes », avec un raccourci vers l'atelier des thèmes.",
+          "Effets de souris : Laboratoire (viseur fin et coordonnées, comme l'atelier), Lampe, Anneau, Traînée, Halo, Point, Réticule. Pour un monde (atelier des thèmes de monde) ou pour toute la station (atelier des thèmes › Effet de souris). Sur ordinateur seulement.",
+          "14 nouvelles polices hébergées par la station : Special Elite et Courier Prime (machine à écrire), Orbitron, Audiowide, Oswald, Teko, Syne, Archivo Black, EB Garamond, IM Fell English, DM Serif Display, Josefin Sans, Silkscreen, Major Mono Display."
+        ]
+      }
+    },
+    {
+      "v": "0.24",
+      "date": "2026-11-18",
+      "title": "Comme dans Alexandrie, pour tout",
+      "groups": {
+        "Nouveau": [
+          "Musique YouTube partout : dans l'éditeur de chapitre (bouton musique) et dans le journal de bord (bloc Musique), on cherche sur YouTube et le repère se place là où est le curseur. Le lecteur le lance d'un toucher, dans une petite fenêtre du lecteur YouTube intégré ; une seule musique à la fois.",
+          "Images comme dans Alexandrie : « Chercher un artwork » (SteamGridDB, affiches, manga, livres, musique, domaine public, Commons, Pinterest…) dans l'éditeur de chapitre, dans le journal (image, croquis, galerie, couverture) et dans l'atelier de l'œuvre.",
+          "Journal de bord : recherche YouTube pour les blocs vidéo et musique.",
+          "Grille des chapitres sur téléphone : 1, 2 ou 3 vignettes par ligne (Atelier › Monde) ; à une par ligne, le résumé s'affiche."
+        ],
+        "Changé": [
+          "Retour de la vitrine d'avant sur les rayons (la version bois est retirée) ; les livres gardent seulement un peu plus de grain et la charnière près du dos.",
+          "Le bouton « Chercher un artwork » de l'atelier est plus grand et coloré ; sur téléphone, la recherche passe en haut de la fenêtre."
+        ],
+        "Corrigé": [
+          "La rotation du livre et de la cassette au lancement était cassée (un effet d'ombre aplatissait la 3D).",
+          "Lecture sur téléphone : les pages saccadaient en tournant (le calcul de « Reprendre » se fait maintenant après l'animation, et la page ne se recale plus pendant qu'on la tourne)."
+        ]
+      }
+    },
+    {
+      "v": "0.23",
+      "date": "2026-11-18",
+      "title": "Plein écran, bois et papier",
+      "groups": {
+        "Nouveau": [
+          "Atelier › Monde : « Grille des chapitres », de 1 à 5 vignettes par ligne sur ordinateur (ou Automatique). Peu de chapitres : grandes vignettes ; beaucoup : plus compact.",
+          "Lecture en plein écran : le livre ou la cassette prend tout l'écran ; les barres et les flèches se cachent quand on ne bouge plus et reviennent au moindre mouvement (ou en touchant l'écran).",
+          "Écrire un chapitre en Laboratoire : barre d'atelier, vraie feuille de papier, compteur de mots et temps de lecture, Ctrl + S pour enregistrer."
+        ],
+        "Changé": [
+          "Rayons de l'accueil Nexus : un vrai meuble (bois sombre, planche en noyer, baguette de laiton) avec un fin filet de lumière ; plus de reflet de vitrine, une ombre d'objet posé.",
+          "Livres et cassettes plus usés : grain, éraflures, coins frottés, charnière du livre relié, couleurs légèrement patinées."
+        ],
+        "Corrigé": [
+          "Après un changement de taille de fenêtre, du texte ou un passage en plein écran, la page restait décalée (on voyait le bord de la page précédente)."
+        ]
+      }
+    },
+    {
+      "v": "0.22",
+      "date": "2026-11-18",
+      "title": "Modifier sur place, entrer sans à-coup",
+      "groups": {
+        "Nouveau": [
+          "Lecture : bouton Aa pour agrandir ou réduire le texte (de 80 % à 150 %), gardé pour toutes les lectures.",
+          "Admin : « Modifier » dans la lecture ouvre le chapitre en cours pour le corriger sur place ; dans la liste des chapitres, un crayon, une corbeille (deuxième clic pour confirmer) et « Nouveau chapitre ».",
+          "Accueil Nexus : section « Coups de cœur » avec les œuvres marquées d'un cœur.",
+          "Atelier : « Chercher » sur l'affiche, le fond, le moodboard et les images de chapitres, avec la recherche d'Alexandrie (SteamGridDB, affiches, manga, livres, musique) et deux sources libres : domaine public (Art Institute of Chicago) et Wikimedia Commons ; liens Pinterest, Google Images, The Met, Rijksmuseum.",
+          "Nouvelles transitions d'entrée : Cinéma (l'image s'ouvre en écran large) et Sengoku (coup de pinceau et sceau)."
+        ],
+        "Changé": [
+          "Seul l'accès rapide reprend la lecture : depuis la bibliothèque, on entre dans l'univers, sur son accueil.",
+          "La maison ramène à l'accueil de l'œuvre ; seul « Quitter l'univers » sort du monde.",
+          "Cinéma sur ordinateur : le menu est à gauche, comme dans les autres thèmes.",
+          "Messages de Bunny au style Laboratoire.",
+          "Lecture publique : plus d'export PDF.",
+          "Le thème de station Akira et l'ambiance Trait sont masqués (réactivables : Atelier des thèmes, et « Ambiances masquées » dans l'atelier)."
+        ],
+        "Corrigé": [
+          "Magnétoscope : le grain et « PLAY » ne clignotent plus sans arrêt.",
+          "Borne d'arcade : plus de cadre de couleur ; HI-SCORE ne chevauche plus le titre.",
+          "Lancement d'une œuvre : on ne revoit plus la station entre la pochette et l'entrée dans le monde.",
+          "« Laisser un mot à l'auteur » amène directement aux commentaires.",
+          "Les vignettes de chapitres, d'épisodes et du moodboard ne sont plus coupées en haut au survol ; les résumés sont lisibles sur tous les fonds.",
+          "Les tranches de livres bougent de nouveau au survol."
+        ]
+      }
+    },
+    {
+      "v": "0.21",
+      "date": "2026-11-18",
+      "title": "Reprendre, répondre, continuer",
+      "groups": {
+        "Nouveau": [
+          "Accueil de l'œuvre en Nexus : deux cartes, « Reprendre » (le chapitre, la première phrase de ta page et la part lue) et « Dernière sortie » (le dernier chapitre ou épisode publié), sur ordinateur comme sur téléphone.",
+          "Vraie reprise : le lecteur rouvre au chapitre et à la page où tu t'étais arrêté.",
+          "Commentaires dessinés par le thème du monde (lettres, transmissions, high scores…), avec réponses ; la réponse du créateur porte la marque « Auteur ».",
+          "Notification quand quelqu'un répond à ton commentaire (si les notifications sont activées).",
+          "Fin de lecture : écran de fin avec « Laisser un mot à l'auteur » et l'œuvre suivante de la même catégorie.",
+          "Chaque thème a sa transition d'entrée (rideau, insert coin, sceau, iris, encre, éclats…).",
+          "Thème de page : on choisit une des ambiances d'Alexandrie dans l'Atelier › Contenu ; par défaut, celle qui va avec le thème du monde.",
+          "Mode spectateur : « Voir comme un visiteur » dans le menu de la station ; une pastille en bas à gauche pour revenir en admin."
+        ],
+        "Corrigé": [
+          "« Dernière sortie » et les liens vers un chapitre ouvraient parfois le début du livre sur téléphone.",
+          "L'accès rapide ouvrait encore l'ancien lecteur en Nexus : tout passe par le lecteur d'Alexandrie.",
+          "Cathédrale sur téléphone : le menu débordait de l'écran.",
+          "Arcade sur téléphone : « HI-SCORE » chevauchait le titre.",
+          "Le monde se décalait vers la gauche après l'ouverture du menu.",
+          "Paramètres : le bleu des barres et des titres suit maintenant la couleur du thème de la station.",
+          "Répondre à un commentaire sans avoir encore donné son nom : le champ « Ton nom » apparaît dans la réponse."
+        ]
+      }
+    },
+    {
+      "v": "0.20",
+      "date": "2026-11-18",
+      "title": "Un seul lecteur, des mondes plus vivants",
+      "groups": {
+        "Nouveau": [
+          "Nexus : chapitres, épisodes en texte, extraits et entrées du journal de bord se lisent dans le lecteur d'Alexandrie, en livre, en cassette VHS ou en disque. Améliorer le lecteur améliore toutes les lectures.",
+          "Musique de lecture : celle du chapitre, sinon celle de l'œuvre ; les musiques insérées dans un texte deviennent un bouton dans la page. Jamais deux musiques à la fois.",
+          "Atelier › Contenu : choisir l'habillage de lecture (Auto, Livre, VHS, Vinyle). Journal : même choix pour chaque entrée, et bouton « Lire » sur l'entrée en Nexus.",
+          "Dans tous les thèmes, une fenêtre façon Nier : l'image et le texte suivent le bouton choisi, avec « Reprendre » et son visuel.",
+          "Chaque thème a son effet de fond animé (braises, cendres, étoiles pixel, poussière de pellicule, parasites, spores, éclats…).",
+          "Thème Cristal refait : verre, lumière, typographie fine.",
+          "Monde : une maison pour revenir à l'accueil de la station et un bouton « Quitter l'univers ».",
+          "Les commentaires sont sous le menu de l'œuvre : on fait défiler, on lit, on écrit.",
+          "Recherche de la station : un panneau d'index façon Laboratoire (œuvres, chapitres, journal, pages), au clavier, aussi avec Ctrl/Cmd + K.",
+          "Paramètres de la station rangés comme l'atelier : sections numérotées, mode clair ou sombre.",
+          "Atelier de l'œuvre : mode sombre (bouton lune)."
+        ],
+        "Amélioré": [
+          "Intentions et Making of ne font plus qu'un : à l'enregistrement, les Intentions deviennent une entrée du journal liée à l'œuvre.",
+          "Le bouton Thèmes de l'accueil prend la couleur du thème actif.",
+          "En-têtes Laboratoire sur Membres, Planning et Bibliothèque.",
+          "Téléphone : les titres d'articles passent sur deux lignes au lieu d'être coupés."
+        ],
+        "Retiré": [
+          "Le bouton Paramètres dans le monde (il faisait quitter l'univers) ; la page Commentaires et la section Intentions."
+        ]
+      }
+    },
+    {
+      "v": "0.19",
+      "date": "2026-11-18",
+      "title": "Douze mondes, grand écran et outils de la station",
+      "groups": {
+        "Nouveau": [
+          "Six nouveaux thèmes d'œuvre : Cathédrale (noir et rouge sang), Couronne (noir et or), Trait (aplats et contours encrés), Sengoku (encre et sceau rouge), Survivance (tons sourds, notes scotchées), Cristal (bleu nuit et filigrane d'or). Douze au total.",
+          "Sur ordinateur, le menu de l'œuvre reste en colonne à gauche et chaque section s'ouvre dans un grand panneau, avec son titre, un filet et « Retour ».",
+          "Chapitres et épisodes en grille de vignettes, ou en liste avec visuel (le choix est gardé).",
+          "« Reprendre » montre le visuel du chapitre ou de l'épisode en cours, avec sa progression, dans tous les thèmes.",
+          "En haut à droite du monde : ambiance sonore de l'œuvre, son de la station, favori, modifier, paramètres, menu de la station, quitter.",
+          "Paramètres › Expérience : lancer ou non l'ambiance sonore en entrant dans une œuvre.",
+          "Sur téléphone, un bouton « ⋯ » sur chaque chapitre, épisode et image ouvre ses options.",
+          "Atelier : brouillon automatique, proposé à la réouverture si un onglet s'est fermé sans enregistrer."
+        ],
+        "Amélioré": [
+          "Images plus légères : moodboard, intentions, chapitres et épisodes partent en fichiers servis à part (et gardés en cache) ; les anciennes images sont converties au prochain enregistrement.",
+          "Accueil Nexus : recherche, thèmes et choix de vue sur une même ligne, bien séparés des rayons.",
+          "Le menu du son se ferme d'un clic ailleurs dans le monde ; la page ne bouge plus quand on parcourt une liste sur téléphone."
+        ]
+      }
+    },
+    {
+      "v": "0.18",
+      "date": "2026-11-18",
+      "title": "L'atelier de l'œuvre",
+      "groups": {
+        "Nouveau": [
+          "Un seul éditeur pour créer et modifier une œuvre : l'atelier, en plein écran, dans l'esprit Laboratoire. Sept sections : Identité, Monde, Contenu, Médias, Intentions, Son, Publication.",
+          "Monde : choix de l'ambiance sur des mini-scènes qui montrent ton titre, ta couleur et ton fond ; couleur tirée de l'affiche ou choisie ; fond du monde en glisser-déposer.",
+          "« Voir dans le monde » : l'atelier s'efface et le monde de l'œuvre affiche tes réglages en direct, avant d'enregistrer.",
+          "Chapitres et épisodes se déplacent (monter, descendre) ; images du moodboard aussi.",
+          "Colonne « Prêt à publier » : titre, affiche, résumé, contenu, fond ; un clic mène à ce qui manque.",
+          "Ctrl/Cmd + S enregistre ; Échap ferme, et demande avant de perdre des modifications."
+        ],
+        "Amélioré": [
+          "Le bouton Modifier est à côté du cœur dans le monde de l'œuvre, aussi sur téléphone.",
+          "La bande-annonce se règle pour toutes les œuvres (section Médias), plus seulement pour les films.",
+          "Les images sont réduites avant l'envoi : enregistrements plus légers."
+        ],
+        "Retiré": [
+          "Le panneau « Habiller ce monde » : tout est dans l'atelier."
+        ]
+      }
+    },
+    {
+      "v": "0.17",
+      "date": "2026-11-18",
+      "title": "Entrer dans le monde d'une œuvre",
+      "groups": {
+        "Nouveau": [
+          "Nexus : l'œuvre s'ouvre en plein écran, comme le menu d'un jeu. Chaque bouton ouvre un écran (Chapitres ou Épisodes, Making of, Moodboard, Intentions, Bande-annonce, Commentaires, Autres mondes), et chaque écran peut en ouvrir un autre : une entrée du Making of, une image du Moodboard, un chapitre.",
+          "Toujours repéré : le fil d'Ariane en haut (Station › l'œuvre › la section › l'élément) est cliquable à chaque niveau, ← ou Échap remonte d'un cran, et des losanges en bas montrent la profondeur.",
+          "Au clavier comme à la manette : ↑ ↓ pour choisir, Entrée pour valider, ← ou Échap pour revenir, ← → pour passer d'une image à l'autre.",
+          "Lancer une œuvre en chapitres ou en épisodes ouvre d'abord la liste, avec à droite l'aperçu de celui qu'on survole ; « Reprendre » relance directement là où tu t'étais arrêté.",
+          "Trois nouvelles ambiances remplacent Planche de manga, Platine et Bibliothèque : Archives (papier crème, menus à carrés, fenêtre de description), Orbite (verre sombre, lignes fines, losanges lumineux) et Arène (panneaux inclinés, grands caractères, couleurs vives). Les œuvres réglées sur les anciennes passent automatiquement sur la nouvelle la plus proche.",
+          "Magnétoscope : tout le monde de l'œuvre se passe dans l'écran cathodique ; Borne d'arcade : dans l'écran de la borne.",
+          "Autres mondes : passer directement dans l'univers d'une autre œuvre sans repasser par l'accueil.",
+          "Œuvre payante : « Débloquer » ouvre un écran d'achat dans le monde, et un chapitre réservé y mène aussi.",
+          "Clic droit (appui long sur téléphone) sur chaque élément : ouvrir, voir l'image, copier le lien, et pour l'admin modifier l'œuvre ou habiller le monde."
+        ],
+        "Amélioré": [
+          "Sur téléphone, les listes montrent une vignette par chapitre ou épisode, et les outils d'admin passent dans l'appui long pour laisser la place au fil d'Ariane."
+        ],
+        "Retiré": [
+          "Nexus : la fiche à onglets sous le menu (deux systèmes de navigation) est remplacée par les écrans imbriqués. La fiche Classique ne change pas."
+        ]
+      }
+    },
+    {
+      "v": "0.16",
+      "date": "2026-11-18",
+      "title": "Tes notes d'amélioration, corrigées",
+      "groups": {
+        "Nouveau": [
+          "Radio en plein écran : le disque en grand qui tourne, la pochette en fond, les commandes ; Espace pour lecture/pause, ← → pour changer de morceau, Échap pour sortir.",
+          "Ajouter à ta radio le morceau en cours, d'où qu'il vienne (recherche YouTube, musique lancée pendant une lecture, morceau d'une playlist) : bouton + dans la barre de la radio, dans la Radio et dans le panneau Musique du lecteur.",
+          "Son de l'Atelier (Réglages) : son activé ou coupé, volume de la musique et des ambiances, volume des sons de l'interface, chacun coupable à part.",
+          "Alexandrie : bouton « À paraître » dans chaque salle pour ajouter un titre à paraître avec son titre et son sous-titre (gardé sur le serveur).",
+          "Alexandrie : recherche YouTube intégrée pour ajouter une vidéo (on tape, on clique sur la vignette, la légende se remplit), et le bouton Changer d'une vidéo ouvre la même recherche.",
+          "Lecteur d'Alexandrie : bouton Artwork pour changer la couverture sans quitter la lecture, et lecture en plein écran.",
+          "Documents : insérer une vidéo YouTube (recherche ou lien, vignette cliquable dans le texte) et une image depuis l'appareil, par un lien, ou en cherchant (Wikipédia, SteamGridDB avec la clé du serveur), avec Pinterest et Google Images à portée.",
+          "Salon : bouton « Changer le lien » sur chaque intégration (et « Modifier le titre et le lien » sur chaque vidéo)."
+        ],
+        "Corrigé": [
+          "Menu de l'Atelier : plus de kanji pour Bunny, Alexandrie, Focus et Dev, mais des icônes distinctes (lapin, livre, lune, code) pour ne plus les confondre.",
+          "Radio : la pochette choisie pour une station reste sur le vinyle et dans les barres, au lieu d'être remplacée par la vignette YouTube du morceau.",
+          "Documents : l'image insérée ne fonctionnait pas dans l'Atelier (elle demandait d'enregistrer une création) ; elle s'envoie maintenant directement.",
+          "Rédaction : si l'éditeur se recharge pendant une sauvegarde, il repart de ce que tu viens d'écrire et non de l'ancienne version, pour qu'un texte effacé ne réapparaisse plus."
+        ]
+      }
+    },
+    {
+      "v": "0.15",
+      "date": "2026-11-18",
+      "title": "Station Nexus : les œuvres deviennent des objets",
+      "groups": {
+        "Nouveau": [
+          "Expérience Nexus (核) pour la station publique : à l'accueil, les œuvres deviennent des objets comme dans Alexandrie (livres, cassettes VHS, vinyles selon ce qu'elles sont). La une, la prochaine sortie, le journal de bord, la carte d'embarquement et le soutien restent en place, tout comme la barre de l'explorateur (recherche, Thèmes).",
+          "Trois manières de regarder, comme en Classique : Rayons (la première œuvre de chaque rayon est de face, les autres en tranche, et celle qu'on choisit se tourne de face), Carte (la constellation des secteurs, puis leurs œuvres en objets, notice au-dessus) et Arcade (l'objet en grand sur sa scène, la rangée en dessous, ← → pour défiler).",
+          "Rayons fondus dans le décor spatial : vitrine de verre sombre, lumière d'accent du thème qui tombe du haut, planche lumineuse.",
+          "Lancer une œuvre, c'est comme lancer un jeu : l'objet arrive en volume, de trois quarts (on voit sa tranche, comme quand on le sort du rayon), puis pivote face à toi ; un reflet passe sur sa couverture, le disque sort de sa pochette, puis tout s'efface vers l'œuvre. Un clic ou une touche passe l'animation ; coupée si les animations sont réduites.",
+          "Le monde de l'œuvre : en Nexus, la fiche s'ouvre sur le fond du monde (l'image de l'œuvre en grand), avec l'objet en volume et la couleur tirée de l'affiche. Onglets : Chapitres ou Épisodes, Bande-annonce, Moodboard (la galerie), Making of (les entrées du journal de bord liées à l'œuvre), Intentions, Réseaux, Commentaires, Tout ; seuls ceux qui ont du contenu apparaissent.",
+          "Chaque monde a son ambiance, comme le menu d'un jeu : Salle de cinéma pour un film (bandes noires, menu de DVD), Magnétoscope pour une série (balayage, « PLAY »), Borne d'arcade pour un jeu (écran cathodique, police pixel, PRESS START), Planche de manga (trame, cases à bord épais), Platine pour la musique (un disque qui tourne au fond, menu en pistes), Bibliothèque pour un livre.",
+          "Ordre des rayons : l'ordre est celui des créations (le même qu'en Classique). En admin, clic droit sur une œuvre › « Mettre de face » la place en tête de son rayon.",
+          "La notice de l'œuvre choisie s'ouvre sous son rayon : cote, format, nombre de chapitres ou d'épisodes, résumé, progression, Lancer ou Reprendre, Ambiance.",
+          "Accès rapide (remplace « Reprendre ») : les œuvres commencées d'abord, avec chapitre ou épisode en cours et barre de progression, puis les œuvres ouvertes récemment et la une. Chaque carte montre l'objet en miniature.",
+          "Clavier ou manette : ← → dans un rayon, ↑ ↓ d'un rayon à l'autre, Entrée pour lancer, Échap pour refermer. Clic droit (ou appui long) : lancer, voir la notice, ambiance, copier le lien.",
+          "Paramètres › Apparence › Expérience : Classique (la station d'origine, inchangée) ou Nexus. Le choix est propre à chaque visiteur ; Classique par défaut.",
+          "Chaque monde a maintenant sa propre mise en page, comme l'écran titre d'un jeu : Salle de cinéma (plein cadre, titre géant, menu de DVD), Magnétoscope (un téléviseur cathodique avec le menu à l'écran, la cassette posée à côté), Borne d'arcade (écran titre centré, menu pixel, PRESS START), Planche de manga (des cases, une bulle, une onomatopée), Platine (la pochette et le disque qui tourne, la liste des pistes), Bibliothèque (un livre ouvert, page de titre et sommaire). ↑ ↓ et Entrée naviguent dans le menu.",
+          "Habiller ce monde (admin, dans l'œuvre elle-même) : choisir l'ambiance (ou automatique), la couleur (tirée de l'affiche ou choisie), l'image de fond, le titre, l'accroche et le résumé, avec un aperçu en direct derrière le panneau ; l'éditeur complet reste à un clic."
+        ]
+      }
+    },
     {
       "v": "0.14",
       "date": "2026-11-13",
@@ -105,7 +807,8 @@
           "Xenoblade Chronicles et Psycho-Pass allongés : le nom du jeu et l'Opération Pluie, la Colonie 6, la Vallée de l'Épée, le réseau des liens, Future Redeemed ; les membres de l'unité un par un, la chasse, et tout ce qui a suivi la première saison.",
           "Guru et Les rois des ombres réécrits en vies complètes : chacun des vingt personnages raconte sa vie depuis l'enfance, comme s'il était assis en face de toi. Les premiers souvenirs (Lercara Friddi et ses mines de soufre, les bateaux de fleurs de Canton, Charleston avant le départ pour Harlem, le neem abattu du village de Phoolan Devi, les ravins de la Chambal), l'ascension, puis la chute, avec l'encadré des faits à la fin. Les deux livres passent à environ 56 000 et 82 000 signes.",
           "Images dans Guru et Les rois des ombres : des lieux et des objets, jamais des portraits (le Mont-Carmel vu d'avion, Haight-Ashbury, le mont Fuji, Rajneeshpuram, Salvan, la comète Hale-Bopp, les factoreries de Canton, le Bund de Shanghai, les tonneaux de la Prohibition, Mulberry Street, Lenox Avenue, Alcatraz, la libération de Paris, Naples, le port de Kobe, la Chambal, Medellín). Une image qui ne charge pas disparaît sans laisser de trou.",
-          "Les rois des ombres : chaque figure a maintenant sa propre voix. Capone gouailleur et ordurier, Luciano sec comme un rapport, Rothstein qui calcule tout, Du Yuesheng d'une politesse qui glace, Zheng Yi Sao tranchante, Stephanie St. Clair hautaine et piquante, Bumpy Johnson calme devant un échiquier, Loutrel ivre et argotique, Mesrine qui joue la vedette devant un magnétophone, Pupetta Maresca passionnée et napolitaine, Taoka avare de mots, Phoolan Devi en colère, Griselda Blanco glaciale. Les jurons varient selon le caractère, de beaucoup à pas du tout. Le livre passe à environ 92 000 signes."
+          "Les rois des ombres : chaque figure a maintenant sa propre voix. Capone gouailleur et ordurier, Luciano sec comme un rapport, Rothstein qui calcule tout, Du Yuesheng d'une politesse qui glace, Zheng Yi Sao tranchante, Stephanie St. Clair hautaine et piquante, Bumpy Johnson calme devant un échiquier, Loutrel ivre et argotique, Mesrine qui joue la vedette devant un magnétophone, Pupetta Maresca passionnée et napolitaine, Taoka avare de mots, Phoolan Devi en colère, Griselda Blanco glaciale. Les jurons varient selon le caractère, de beaucoup à pas du tout. Le livre passe à environ 92 000 signes.",
+          "Titres à paraître : deux boutons de plus dans la fiche et le clic droit. « Écrire ce livre » ouvre la fenêtre de collage avec le titre, la salle, le genre et le format déjà remplis ; une fois enregistré, le titre quitte les « à paraître ». « Retirer » l'enlève des rayons après confirmation ; les titres retirés se remettent d'un clic en bas de la bibliothèque. Un titre dont un de tes livres porte le même nom disparaît aussi tout seul."
         ],
         "Corrigé": [
           "Hub mobile : toutes les pastilles se calculent sur le thème, plus d'icônes noires sur fond noir ni de pastilles illisibles sur fond blanc. Le style Verre ne clignote plus (flou retiré).",

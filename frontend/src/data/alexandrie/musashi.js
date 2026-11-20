@@ -1,6 +1,6 @@
 const book = {
   id: "musashi", title: "Miyamoto Musashi", sub: "Le Livre des cinq anneaux", room: "japon", type: "pensee", cote: "JA-002", color: 210, emblem: "二",
-  about: "Musashi raconte depuis sa grotte, à la fin de sa vie : le premier homme tué à treize ans, la maison Yoshioka, le duel de l'île de Ganryū contre Sasaki Kojirō, les deux sabres, la peinture et l'encre, et le livre qu'il écrit pour qu'on comprenne qu'une seule voie, suivie jusqu'au bout, éclaire toutes les autres.",
+  about: "Musashi raconte depuis sa grotte, à la fin de sa vie : le premier homme tué à treize ans, la maison Yoshioka, le duel de l'île de Ganryū contre Sasaki Kojirō, les deux sabres, la peinture et l'encre, et le livre qu'il écrit pour qu'on comprenne qu'une seule voie, suivie jusqu'au bout, éclaire toutes les autres. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Miyamoto Musashi, Le Livre des cinq anneaux (1645)", note: "Le traité, en cinq rouleaux : la Terre, l'Eau, le Feu, le Vent, le Vide. Court, à relire toute sa vie." },
     { label: "Miyamoto Musashi, La Voie à suivre seul (Dokkōdō)", note: "Vingt et un préceptes écrits une semaine avant sa mort." },
@@ -36,6 +36,18 @@ Le combat dont on parle le plus eut lieu en 1612, sur une petite île du détroi
 
 Je suis arrivé en retard. Très en retard. On a dit que je l'avais fait exprès, pour l'impatienter. Pendant la traversée en barque, j'ai taillé dans une rame un sabre de bois plus long que le sien. Quand j'ai sauté sur le sable, Kojirō m'attendait, furieux. Il a tiré son sabre et jeté le fourreau dans l'eau. Je lui ai dit qu'il avait perdu, puisque celui qui gagne remet son sabre au fourreau. Il s'est jeté sur moi. Je l'ai frappé à la tête avec la rame. Il est tombé. Son sabre avait coupé le bandeau qui serrait mon front. Je suis remonté dans la barque et je suis parti.
 
+Pendant la traversée, le batelier me regardait tailler la rame avec mon petit sabre. Il n'osait pas parler. À mi-chemin, il a osé.
+
+— Seigneur, on dit que Sasaki-dono a le sabre le plus long du pays. Le Séchoir à linge.
+
+— Je sais.
+
+— Et vous, vous taillez un bâton.
+
+— Un bâton plus long que son sabre. Rame, s'il te plaît. Pas trop vite.
+
+Il a ramé. Pas trop vite. C'était un bon batelier.
+
 Les récits ont tout grossi, comme ils le font. On a raconté ce duel de cent manières, dans des pièces, des romans, des films. Le cœur en est vrai : un homme long, brillant, sûr de son art, et un autre qui avait compris que le combat commence bien avant le premier coup. Le soleil dans le dos de l'un, l'impatience de l'autre, le choix de l'arme, l'heure : tout cela fait partie du sabre.
 
 Après ce combat, j'ai cessé les duels à mort. J'avais vingt-neuf ans.
@@ -45,6 +57,20 @@ Après ce combat, j'ai cessé les duels à mort. J'avais vingt-neuf ans.
 Les années suivantes, je les ai passées à chercher pourquoi j'avais gagné. J'ai servi des seigneurs, j'ai conseillé, j'ai enseigné. J'ai adopté des fils, deux jeunes gens que j'ai élevés. L'un, Mikinosuke, s'est donné la mort à la mort de son seigneur, comme le voulait encore la coutume, pour le suivre. L'autre, Iori, est devenu un haut fonctionnaire au service d'un daimyō. En 1638, j'ai pris part, aux côtés de mon fils Iori, à la répression de la révolte de Shimabara, où des paysans chrétiens s'étaient soulevés contre leur seigneur. Une pierre lancée du haut des remparts m'a blessé à la jambe. Il n'y avait pas de gloire dans cette guerre.
 
 En 1640, le seigneur Hosokawa Tadatoshi m'a invité à Kumamoto. C'était la maison même que servait Kojirō, autrefois. J'y ai vécu mes dernières années, comme hôte, avec une pension. J'enseignais, je causais avec le seigneur, qui aimait la voie du sabre, et je peignais.
+
+Un soir d'hiver, il m'a fait venir dans son pavillon. Il y avait un brasero, du thé, une peinture de moi au mur, des oies sauvages.
+
+— Musashi, vous avez gagné soixante combats. Comment ?
+
+— Je ne sais pas, seigneur. Je l'ai su après. Pendant, on ne sait rien.
+
+— Alors écrivez ce que vous avez su après. Pour moi. Pour mes hommes.
+
+— Ce n'est pas difficile à écrire. C'est difficile à faire.
+
+— Écrivez-le quand même. Ce qui est difficile à faire, il faut d'abord que quelqu'un l'écrive.
+
+Je lui ai remis, quelques mois plus tard, trente-cinq articles sur la stratégie. Il est mort au printemps suivant. Je n'avais pas fini. Je suis parti dans la grotte pour finir.
 
 Car je peins. Il faut que tu le saches, parce qu'on l'oublie. J'ai peint à l'encre de Chine sur du papier et sur de la soie : des oiseaux, des bambous, Daruma, le moine qui a apporté le zen, des paysages. Le plus connu de mes tableaux montre une pie-grièche posée sur une branche morte, une seule branche fine et droite qui monte à travers le vide, et l'oiseau, immobile, au sommet, qui attend. On l'a classé, de nos jours, parmi les biens culturels importants du Japon. J'ai aussi sculpté, travaillé le métal, écrit des poèmes, fait de la calligraphie.
 
@@ -65,6 +91,16 @@ Le rouleau du Vent parle des autres écoles. Le vent, au Japon, veut dire aussi 
 Et le rouleau du Vide est le plus court. Le vide, c'est ce qui n'a pas de forme, ce qu'on ne peut pas connaître. Quand on a appris toutes les techniques, qu'on les a pratiquées jusqu'à ce qu'elles disparaissent dans le corps, l'esprit devient clair, sans nuage, et l'on agit sans hésitation. Le vide n'est pas l'ignorance. C'est ce qui reste quand on a tout appris et tout oublié.
 
 Le livre est fini. Je l'ai confié à un disciple, Terao Magonojō. Je suis malade. Le seigneur Hosokawa est mort, son fils m'a ramené de la grotte à Kumamoto.
+
+— Maître, faut-il le montrer ?
+
+— À ceux qui en ont besoin. Pas à ceux qui le veulent.
+
+— Comment les reconnaître ?
+
+— Ceux qui en ont besoin le liront dix fois. Les autres une seule, pour pouvoir dire qu'ils l'ont lu.
+
+Il s'est incliné. Il n'a pas posé d'autre question. C'est pour cela que je le lui ai donné.
 
 Une semaine avant de mourir, j'ai écrit une dernière feuille. Vingt et une lignes. On l'a appelée Dokkōdō, la voie à suivre seul. Ce sont des règles pour moi-même, pas pour les autres. Je les résume ici. Ne va pas contre l'ordre du monde. Ne cherche pas le plaisir pour lui-même. Ne te laisse pas aller à l'envie. Ne regrette rien de ce que tu as fait. N'éprouve ni envie ni ressentiment. Ne te lamente pas d'une séparation. Ne t'attache à aucun bien au point d'en dépendre. Respecte les dieux et les bouddhas, sans compter sur eux. Ne renonce jamais à la voie, même au prix de la vie.
 

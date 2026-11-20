@@ -1,6 +1,6 @@
 const book = {
   id: "rodriguez", title: "Rodriguez", sub: "L'homme qui ne savait pas", room: "musique", type: "pensee", cote: "MU-001", color: 28, emblem: "糖",
-  about: "Deux albums ignorés à Detroit, vendus par centaines de milliers à l'autre bout du monde. Sixto Rodriguez raconte le chantier, les clubs enfumés, la philosophie du soir, et la nuit où il a appris qu'il était une légende.",
+  about: "Deux albums ignorés à Detroit, vendus par centaines de milliers à l'autre bout du monde. Sixto Rodriguez raconte le chantier, les clubs enfumés, la philosophie du soir, et la nuit où il a appris qu'il était une légende. Récit imaginé à la première personne, à partir de ses écrits, de ses entretiens et des témoignages : les faits sont vérifiés, les dialogues sont reconstruits.",
   links: [
     { label: "Rodriguez, Cold Fact (Sussex, 1970)", note: "Produit par Dennis Coffey et Mike Theodore à Detroit. Trente minutes, pas une chanson de trop." },
     { label: "Rodriguez, Coming from Reality (Sussex, 1971)", note: "Enregistré à Londres avec Steve Rowland. Plus doux, plus triste." },
@@ -32,6 +32,18 @@ Au milieu des années 1960, je jouais dans les bars du sud-ouest de Detroit. Des
 En 1967, j'ai enregistré un premier disque, un 45 tours, sous le nom de Rod Riguez. Quelqu'un avait pensé que ça sonnerait moins mexicain. Ça n'a rien changé. Personne ne l'a acheté.
 
 Et puis un soir, dans un bar qui s'appelait le Sewer, deux producteurs sont venus m'écouter. Dennis Coffey et Mike Theodore. Coffey était un guitariste de studio, il jouait sur des disques de la Motown. Ils m'ont dit plus tard qu'ils ne voyaient presque rien de moi, juste un type de dos dans la fumée, et qu'ils avaient entendu des paroles qui les avaient arrêtés net. Ils m'ont proposé de faire un album.
+
+Après le set, Coffey est venu au comptoir. Je rangeais ma guitare.
+
+— Mec, pourquoi tu joues de dos ?
+
+— Je joue pour la chanson. Pas pour la salle.
+
+— La salle, elle, elle voudrait te voir.
+
+— Si elle écoute, elle me voit. Si elle n'écoute pas, me voir ne servira à rien.
+
+Il a ri. Il a dit à Mike qu'il fallait enregistrer ce type, même s'il était fou. Surtout s'il était fou.
 
 # Cold Fact
 
@@ -101,9 +113,35 @@ Pendant ce temps, Segerman avait ouvert un site internet, un des premiers sites 
 
 Segerman m'a téléphoné. Il était trois heures du matin chez lui, je crois. Il m'a dit que j'étais immense en Afrique du Sud. J'ai pensé qu'il exagérait.
 
+— Monsieur Rodriguez ? Sixto Rodriguez ? Le Rodriguez de « Sugar Man » ?
+
+— C'est moi. Qui êtes-vous ?
+
+— Je vous cherche depuis des années. Ici, au Cap, tout le monde croit que vous êtes mort.
+
+— Je ne suis pas mort. Je suis à Detroit. C'est parfois difficile à distinguer, mais non.
+
+— Monsieur, vous ne comprenez pas. Ici, vous êtes plus célèbre que les Rolling Stones.
+
+Je ne l'ai pas cru. Je l'ai remercié poliment, comme on remercie un homme qui vous appelle en pleine nuit pour vous dire que vous êtes roi d'un pays où vous n'êtes jamais allé.
+
 # Le Cap, 1998
 
 En mars 1998, je suis allé en Afrique du Sud avec deux de mes filles. Quand l'avion a atterri, il y avait des limousines qui nous attendaient. On ne savait pas pour qui c'était. C'était pour nous.
+
+Dans la limousine, ma fille Eva m'a pris la main.
+
+— Papa, tu as peur ?
+
+— Non. Je me demande seulement s'ils vont être déçus. Ils attendent un homme de vingt-sept ans.
+
+— Ils attendent tes chansons. Elles n'ont pas vieilli.
+
+— Moi si.
+
+— Toi aussi tu n'as pas vieilli. Tu as juste porté des briques.
+
+Je crois que c'est la plus belle chose qu'on m'ait dite de toute ma vie.
 
 Le premier concert était dans un vélodrome, à Bellville, près du Cap. Des milliers de personnes. Je suis monté sur scène. Le groupe a commencé à jouer l'introduction de « I Wonder ». Et la salle s'est mise à hurler. Ils ont hurlé si longtemps que je n'ai pas pu commencer à chanter. J'ai attendu. Je leur ai dit merci de me garder en vie. C'est ce que je pensais.
 

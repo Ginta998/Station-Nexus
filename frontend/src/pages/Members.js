@@ -1,4 +1,5 @@
 import { useState } from "react";
+import LabHead from "@/components/LabHead";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoLogoInstagram, IoTrashOutline, IoHome, IoPersonAdd, IoCreateOutline, IoHeart, IoStar, IoDiamond, IoSparkles, IoChatbubbleEllipsesOutline } from "react-icons/io5";
@@ -47,7 +48,7 @@ export default function Members() {
           <MobileMenu />
         </div>
 
-        <h1 className="font-display text-4xl md:text-5xl mb-2" style={{ color: "var(--text-primary)" }}>Membres</h1>
+        <LabHead label="COMMUNAUTÉ" code="M-01" title="Membres" />
         <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
           <p style={{ color: "var(--text-secondary)" }} data-testid="members-count">
             {isLoading ? "Chargement…" : `${list.length} membre${list.length > 1 ? "s" : ""} dans la communauté`}

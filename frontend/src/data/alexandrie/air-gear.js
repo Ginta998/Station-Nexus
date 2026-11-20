@@ -8,10 +8,13 @@ const book = {
     { label: "Oh! great, Tenjō Tenge (1997-2010)", note: "L'œuvre précédente de l'auteur : arts martiaux, même goût du mouvement." },
     { label: "Jet Set Radio (Sega, 2000)", note: "L'autre grand récit de la ville prise par les patins. Même esprit, mêmes graffitis." },
   ],
+  pics: ["manga:Air Gear", "anime:Air Gear"],
   text: String.raw`
 # Avant de commencer
 
 Il y a des œuvres qui changent de nature en route. Air Gear commence comme un manga de bande : un garçon de collège, une bagarre, une humiliation, une revanche. Il finit, dix ans et trente-sept volumes plus tard, sur une tour de trente-cinq kilomètres de haut, avec des enfants fabriqués en laboratoire, une arme capable de contrôler toutes les machines du monde, et un dieu à abattre : la gravité.
+
+@art g 1
 
 Entre les deux, il y a des courses, des combats en plein vol, des équipes qui s'affrontent pour des pièces de moteur, et un dessin qui ne tient pas en place.
 
@@ -24,11 +27,15 @@ Je vais te raconter le manga, pas seulement l'anime, qui s'arrête au premier ti
 
 Air Gear est un manga d'Oh! great, de son vrai nom Ōgure Itō. Il est publié dans le Weekly Shōnen Magazine de Kodansha de 2002 à 2012, en trente-sept volumes. Oh! great avait déjà signé Tenjō Tenge, et il est connu pour la virtuosité de son dessin et pour son goût des corps en mouvement.
 
+@art g 2
+
 L'anime de 2006 est produit par Toei Animation et réalisé par Hajime Kamegaki. Il ne couvre qu'une petite partie du manga. Des OVA, Break on the Sky, ont été produites ensuite par Satelight.
 
 # Les Air Treks
 
 Dans le monde d'Air Gear, une invention a transformé la jeunesse : les Air Treks, qu'on appelle A.T. Ce sont des rollers équipés de petits moteurs, capables de propulser leur porteur à des vitesses folles, de le faire sauter de toit en toit, de courir sur les murs.
+
+@art g 3
 
 Autour d'eux est née une culture. Des équipes, des territoires, des emblèmes. On les appelle les Storm Riders. Ils se défient pour des pièces, des emblèmes, des quartiers. Ils roulent la nuit, dans les rues, sur les toits, dans les parkings vides. Les adultes ne comprennent pas. La police les poursuit.
 
@@ -37,6 +44,8 @@ C'est une image de la jeunesse urbaine : vitesse, appartenance, territoires, et 
 # Ikki
 
 Itsuki Minami, qu'on appelle Ikki, est un collégien bagarreur. Il dirige une petite bande, les East Side Gunz. Il vit chez les quatre sœurs Noyamano, qui l'ont recueilli enfant : Rika, l'aînée, Mikan, Ringo, et la petite Ume. Il n'a pas de parents, ou du moins il n'en parle pas.
+
+@art g 4
 
 Un jour, une équipe de Storm Riders, les Skull Saders, l'humilie publiquement. Ikki découvre alors que les sœurs Noyamano cachent un secret : elles appartiennent toutes à une équipe légendaire du monde des A.T., le Sleeping Forest. Elles lui offrent une paire d'Air Treks.
 
@@ -48,6 +57,8 @@ L'équipe s'appelle Kogarasumaru.
 
 Le monde des A.T. a une hiérarchie secrète. Au sommet, il y a les rois. Chaque roi maîtrise une route, une façon particulière de rouler, liée à un élément ou à une force. La route du Vent, la route des Flammes, la route des Crocs, la route des Épines, la route du Tonnerre, et d'autres.
 
+@art g 5
+
 Chaque roi possède un Regalia, une paire d'A.T. unique, dont la technologie lui permet d'exprimer sa route. Le Regalia du Vent, le Regalia des Flammes, et ainsi de suite.
 
 Et au-dessus de tous, il y a une place vide : le Roi du ciel. Celui qui gouverne tous les rois et toutes les routes.
@@ -58,6 +69,8 @@ Et au-dessus de tous, il y a une place vide : le Roi du ciel. Celui qui gouverne
 
 Ringo Noyamano est la troisième sœur. Elle a l'âge d'Ikki. Elle a grandi avec lui comme une sœur, et elle est amoureuse de lui depuis toujours.
 
+@art g 6
+
 Elle est aussi, en secret, la Reine des épines, la reine de la route des Épines, et membre du Sleeping Forest. Quand Ikki commence à monter dans la hiérarchie, elle se retrouve contre lui. Elle le protège dans l'ombre, sous un masque, et elle le combat en face. Elle ne peut pas lui dire ce qu'elle sait, parce que ce qu'elle sait le dépasse.
 
 Leur histoire est le fil le plus humain du manga. Elle traverse les trente-sept volumes, et elle ne se règle qu'à la toute fin.
@@ -66,6 +79,8 @@ Leur histoire est le fil le plus humain du manga. Elle traverse les trente-sept 
 
 Toute la première moitié du manga suit l'ascension de Kogarasumaru dans ce qu'on appelle la guerre des pièces : des défis entre équipes, avec des règles, des enjeux, des emblèmes. On affronte Behemoth, une équipe de colosses. On affronte Sleipnir, Trident, et d'autres.
 
+@art g 7
+
 Chaque combat est une démonstration graphique. Oh! great dessine le mouvement comme peu de mangakas : des corps tordus en plein vol, des perspectives vertigineuses, des villes entières vues d'en haut, des décors d'une précision maniaque. Le dessin est aussi, il faut le dire, très chargé en fan-service, comme dans son œuvre précédente, Tenjō Tenge.
 
 Ikki progresse vite. Trop vite. Comme s'il avait été préparé.
@@ -73,6 +88,8 @@ Ikki progresse vite. Trop vite. Comme s'il avait été préparé.
 # Sora
 
 Pendant longtemps, Ikki a un mentor. Sora Takeuchi, un ancien roi, cloué dans un fauteuil roulant, l'air doux, presque lâche. Il est l'ancien Roi du ciel, qui aurait été trahi et blessé par Kilik, le chef du Sleeping Forest. Il entraîne Ikki, lui confie le Regalia du Vent, l'encourage.
+
+@art g 8
 
 C'est un mensonge.
 
@@ -86,6 +103,8 @@ Sora a aussi fait du mal à Rika, l'aînée des sœurs Noyamano, qui l'a aimé. 
 
 Parmi les rois, il y en a un que les lecteurs aiment plus que les autres. Spitfire, le Roi des flammes. Un des membres fondateurs du Sleeping Forest, élégant, calme, presque paternel. Il est ensuite passé du côté de Genesis, comme conseiller de Simca, sans jamais perdre sa droiture.
 
+@art g 9
+
 Il remarque Kazu, l'ami d'enfance d'Ikki, celui qui vit dans l'ombre du génie et doute de lui. Il voit en lui ce que personne ne voit : la vitesse, le travail, la patience. Il lui confie un programme d'entraînement et, avant de mourir, son Regalia des flammes.
 
 Spitfire meurt en affrontant Sora et Nike. Kazu devient le nouveau Roi des flammes, sur une route à lui, et c'est lui qui finira par vaincre Nike. C'est la plus belle ligne du manga : le garçon ordinaire qui hérite du feu d'un roi, parce qu'un roi a su le regarder.
@@ -93,6 +112,8 @@ Spitfire meurt en affrontant Sora et Nike. Kazu devient le nouveau Roi des flamm
 # Les enfants de la gravité
 
 La seconde moitié du manga bascule dans la science-fiction. On découvre l'origine des A.T. Ils n'ont pas été inventés pour des adolescents. Ils sont nés d'un programme de recherche.
+
+@art g 10
 
 Le manga le relie à un chercheur, le docteur Minami, qui porte le même nom qu'Ikki. Ce programme a produit des enfants modifiés. Les Gravity Children, nés en éprouvette ou transformés, faits pour rouler, pour voler. On les reconnaît à une croix dans la pupille. Kilik et Simca, la mystérieuse Storm Rider qu'Ikki admirait au début, en font partie. Ils sont jumeaux, fabriqués pour le même rêve.
 
@@ -104,6 +125,8 @@ Et Ikki ? Le manga révèle peu à peu que son don n'est pas un hasard non plus.
 
 Au cœur de la ville se dresse la tour Trophaeum, le lieu sacré des Storm Riders. Celui qui atteint son sommet devient le Roi du ciel. Tous les rois veulent y monter.
 
+@art g 11
+
 Sora s'empare du Regalia du ciel. Ce Regalia peut contrôler tout ce qui contient la technologie des A.T. Et cette technologie est partout : dans les véhicules, les machines, les armes. Avec lui, Sora fait monter la tour. Elle grandit jusqu'à trente-cinq mille mètres, jusqu'à la stratosphère.
 
 Le docteur Minami la compare à la tour de Babel. Les hommes avaient construit une tour pour atteindre Dieu. Ici, le dieu à vaincre, c'est la gravité elle-même, ce qui cloue les êtres au sol.
@@ -113,6 +136,8 @@ Sora se proclame Roi du ciel devant le monde entier. Il prononce un discours où
 # Le dernier combat
 
 La fin du manga se joue au sommet de la tour, dans l'air raréfié, au-dessus des nuages. Kogarasumaru, devenue une équipe de rois, affronte Genesis, l'équipe de Sora.
+
+@art g 12
 
 Ikki n'est plus seulement un roi parmi d'autres : il est devenu le Roi de la tempête, sur une route à lui, celle de l'Ouragan, capable de créer un espace sans vent. Le Regalia du Vent lui avait été volé ; il a trouvé autre chose. À la fin, il sera le Roi du ciel.
 
@@ -126,6 +151,8 @@ Ikki et Ringo deviennent un couple, après des années de non-dits. Un chapitre 
 
 Air Gear est une œuvre inégale. Son début est une comédie de bande, souvent vulgaire. Son milieu est une suite de tournois. Sa fin est une épopée confuse, chargée de concepts. Beaucoup de lecteurs ont décroché en route.
 
+@art g 13
+
 Mais il a une énergie rare, et quelques idées qui restent. L'idée que la jeunesse veut voler, littéralement, et que le monde des adultes la cloue au sol. L'idée que chaque façon de se déplacer est une philosophie. L'idée que les ailes ne servent à rien si l'on vit dans une cage, et qu'il faut parfois choisir entre la cage dorée et le ciel.
 
 Et le dessin d'Oh! great, qui a influencé une génération de dessinateurs de mouvement.
@@ -133,6 +160,8 @@ Et le dessin d'Oh! great, qui a influencé une génération de dessinateurs de m
 # Ce que tu peux en prendre
 
 Si tu filmes ou dessines du mouvement, Air Gear est une école.
+
+@art g 14
 
 Regarde comment Oh! great compose une case : la ville toujours présente, en dessous ou au-dessus, pour donner l'échelle. Le corps toujours en déséquilibre, jamais posé. La perspective qui bascule au moment du saut. C'est du sakuga sur papier.
 

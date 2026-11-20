@@ -1,8 +1,9 @@
 import { FAVICONS, faviconPng } from "@/lib/favicons";
+import { LAUNCH_SOUNDS, LAUNCH_FORMATS, getLaunchSound, setStationLaunchSounds, playLaunch, useLaunchSync } from "@/lib/launchSound";
 import { useState, useEffect, useRef } from "react";
 import { MyData, ReportsAdmin, LegalInfoAdmin } from "@/components/PrivacyTools";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { IoArrowBack, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline , IoDocumentTextOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { useThemeList, baseOf as baseOfTheme } from "@/lib/themeStore";
@@ -21,13 +22,14 @@ import {
   listSubscribers, deleteSubscriber, getSettings, updateSettings, api, API,
   uploadIntroVideo, deleteIntroVideo,
   listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations, emailStatus,
-  getLibrary, getMembershipPlan, pushTest,
-} from "@/lib/api";
+  getLibrary, getMembershipPlan, pushTest, downloadBackup } from "@/lib/api";
 import { pushSupported, getPermission, getNotifPref, getSoundPref, setSoundPref, enablePush, updatePref, disablePush, isSubscribed } from "@/lib/push";
-import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles } from "react-icons/io5";
+import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 import Celebration from "@/components/Celebration";
 import { StartupSetting } from "@/components/Startup";
 import { TOUR_STEPS } from "@/lib/tourSteps";
+import "@/components/editor.css";
+import { EXPERIENCES, useExperience, setExperience, worldAmbientAuto, setWorldAmbientAuto } from "@/lib/experience";
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const Section = ({ title, extra, children }) => (
@@ -884,6 +886,9 @@ export default function Settings() {
   const TEXT_SCALE_SIZE = { petit: 12, normal: 15, grand: 17, xl: 20, max: 23, ultra: 27 };
 
   const [tab, setTab] = useState("apparence");
+  const [setDark, setSetDark] = useState(() => { try { return localStorage.getItem("sx_atelier_dark") !== "0"; } catch (_) { return true; } });
+  const toggleSetDark = () => setSetDark((d) => { try { localStorage.setItem("sx_atelier_dark", d ? "0" : "1"); } catch (_) {} return !d; });
+  const experience = useExperience();
   const TABS = [
     { key: "apparence", label: "Apparence", icon: <IoColorPaletteOutline size={15} /> },
     { key: "son", label: "Son", icon: <IoMusicalNotes size={15} /> },
@@ -892,25 +897,51 @@ export default function Settings() {
     { key: "legal", label: "Légal", icon: <IoDocumentTextOutline size={15} /> },
     { key: "admin", label: "Admin", icon: <IoShieldHalfOutline size={15} />, admin: true },
   ];
+  const tabs = TABS.filter((t) => !t.admin || isAdmin);
+  const ti = Math.max(0, tabs.findIndex((t) => t.key === tab));
   return (
-    <div className="relative min-h-screen w-full" style={{ background: "transparent" }}>
-      <div className="max-w-3xl mx-auto px-5 md:px-8 py-8">
-        <div className="flex items-center justify-between gap-2 mb-8">
-          <button data-testid="settings-back" onClick={() => { sfx("back"); nav("/"); }} className="flex items-center gap-2 px-3 py-2 border" style={fs}><IoArrowBack /> <span className="text-sm">Retour</span></button>
+    // Les paramètres de la station, rangés comme l'atelier de l'œuvre (esprit Rhine Lab) : sections numérotées à gauche
+    <div className={"rl rl-set" + (setDark ? " rl-dark" : "")} style={{ "--rl-acc": "var(--brand)" }} data-testid="settings-page">
+      <header className="rl-top">
+        <button type="button" className="rl-ico" data-testid="settings-back" onClick={() => { sfx("back"); nav("/"); }} aria-label="Retour à l'accueil"><IoArrowBack size={18} /></button>
+        <div className="rl-brand"><small>STATION NEXUS · PARAMÈTRES</small><b>Paramètres</b></div>
+        <div className="rl-top-acts">
+          <button type="button" className="rl-ico" onClick={toggleSetDark} title={setDark ? "Mode clair" : "Mode sombre"} aria-label={setDark ? "Mode clair" : "Mode sombre"} data-testid="settings-dark">{setDark ? <IoSunnyOutline size={17} /> : <IoMoonOutline size={17} />}</button>
           <MobileMenu />
         </div>
-        <h1 className="font-display text-4xl md:text-5xl mb-2" style={{ color: "var(--text-primary)" }}>Paramètres</h1>
-        <p className="mb-10" style={{ color: "var(--text-secondary)" }}>Personnalise ta station.</p>
-
-        <div className="sx-set-tabs" data-testid="settings-tabs">
-          {TABS.filter((t) => !t.admin || isAdmin).map((t) => (
-            <button key={t.key} data-testid={`settings-tab-${t.key}`} className={"sx-set-tab" + (tab === t.key ? " on" : "")} onClick={() => { setTab(t.key); sfx("nav"); }}>
-              <span className="ic">{t.icon}</span>{t.label}
-            </button>
-          ))}
-        </div>
-
+      </header>
+      <nav className="rl-nav" aria-label="Sections" data-testid="settings-tabs">
+        {tabs.map((t, i) => (
+          <button type="button" key={t.key} data-testid={`settings-tab-${t.key}`} className={tab === t.key ? "on" : ""} onClick={() => { setTab(t.key); sfx("nav"); }}>
+            <i>{String(i + 1).padStart(2, "0")}</i><span>{t.label}</span>
+          </button>
+        ))}
+        <p className="rl-keys">Personnalise ta station : apparence, son, compte.</p>
+      </nav>
+      <main className="rl-main" key={tab}>
+       <section className="rl-sec rl-set-sec">
+        <header className="rl-sec-h"><i>{String(ti + 1).padStart(2, "0")}</i><h2>{tabs[ti]?.label}</h2></header>
         {tab === "apparence" && (<>
+        <Section title="Expérience" extra="— la manière de parcourir la station">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-testid="experience-grid">
+            {EXPERIENCES.map((x) => (
+              <button key={x.key} data-testid={`experience-${x.key}`} onClick={() => { setExperience(x.key); sfx("select"); toast.success(`Station ${x.label}`); }}
+                className="relative text-left p-4 border transition-transform hover:scale-[1.02]" style={{ ...fs, background: "var(--bg-secondary)", outline: experience === x.key ? "2px solid var(--brand)" : "none" }}>
+                <div className="flex items-baseline justify-between"><span className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{x.label}</span><span style={{ color: "var(--text-secondary)" }}>{x.kanji}</span></div>
+                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>{x.desc}</p>
+                {experience === x.key && <span className="flex items-center gap-1 text-xs mt-2" style={{ color: "var(--brand)" }}><IoCheckmarkCircle /> Active</span>}
+              </button>
+            ))}
+          </div>
+          {experience === "nexus" && (
+            <label className="flex items-center justify-between gap-4 mt-3 p-4 border cursor-pointer" style={{ ...fs, background: "var(--bg-secondary)" }} data-testid="world-amb-auto">
+              <span><span className="block font-semibold" style={{ color: "var(--text-primary)" }}>Lancer l'ambiance sonore en entrant dans une œuvre</span>
+                <span className="block text-sm" style={{ color: "var(--text-secondary)" }}>Sinon, elle se lance avec le bouton disque, en haut à droite du monde.</span></span>
+              <input type="checkbox" defaultChecked={worldAmbientAuto()} onChange={(e) => { setWorldAmbientAuto(e.target.checked); sfx("select"); }} style={{ width: 20, height: 20, accentColor: "var(--brand)" }} />
+            </label>
+          )}
+        </Section>
+
         <Section title="Thèmes" extra={`— ${THEMES.length} ambiances`}>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="theme-grid">
             {THEMES.map((t) => {
@@ -976,6 +1007,7 @@ export default function Settings() {
           <input data-testid="music-volume-slider" type="range" min="0" max="1" step="0.05" value={musicVolume} onChange={(e) => setMusicVolume(parseFloat(e.target.value))} className="w-full mt-2 mb-5" style={{ accentColor: "var(--brand)" }} />
           <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Volume de l'interface ({Math.round(uiVolume * 100)}%)</label>
           <input data-testid="ui-volume-slider" type="range" min="0" max="1" step="0.05" value={uiVolume} onChange={(e) => { setUiVolume(parseFloat(e.target.value)); }} onMouseUp={() => sfx("select")} onTouchEnd={() => sfx("select")} className="w-full mt-2" style={{ accentColor: "var(--brand)" }} />
+          {isAdmin && <LaunchSoundPick vol={muted ? 0 : uiVolume} />}
         </Section>
 
         <Section title="Pistes & ambiances" extra="— choisis ou ajoute">
@@ -1048,6 +1080,9 @@ export default function Settings() {
         </>)}
 
         {isAdmin && tab === "admin" && (<>
+        <Section title="Sauvegarde" extra="— toute ta station dans un fichier">
+          <BackupBox />
+        </Section>
         <Section title="Mes revenus" extra="— tableau de bord des abonnements et des ventes">
           <button data-testid="admin-revenue" onClick={() => nav("/revenus")} className="text-sm px-4 py-2 border" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>Ouvrir le tableau de bord</button>
         </Section>
@@ -1085,7 +1120,8 @@ export default function Settings() {
         </>)}
 
         <p className="mt-4 text-xs text-center" style={{ color: "var(--text-secondary)" }}>Astuce : installe Stationexus via « Ajouter à l'écran d'accueil ».</p>
-      </div>
+       </section>
+      </main>
     </div>
   );
 }
@@ -1167,6 +1203,60 @@ function SiteIdentity() {
           <button type="button" data-testid="site-description-save" onClick={saveDesc} className="text-sm px-4 py-2" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Enregistrer</button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Le son du lancement d'une œuvre (Nexus), un par format : on écoute en cliquant, le choix est gardé
+// Réservé à l'admin : le son de lancement de chaque format, enregistré pour toute la station (les visiteurs l'entendent)
+function LaunchSoundPick({ vol }) {
+  const qc = useQueryClient();
+  const settings = useLaunchSync();
+  const [cur, setCur] = useState(() => Object.fromEntries(LAUNCH_FORMATS.map(([f]) => [f, getLaunchSound(f)])));
+  useEffect(() => { if (settings) setCur(Object.fromEntries(LAUNCH_FORMATS.map(([f]) => [f, settings.launch_sounds?.[f] || getLaunchSound(f)]))); }, [settings]);
+  const pick = async (f, k) => {
+    const next = { ...cur, [f]: k }; setCur(next); setStationLaunchSounds(next);
+    if (k !== "none") playLaunch(Math.max(vol, 0.4), k);
+    try { await updateSettings({ ...(settings || {}), launch_sounds: next }); qc.invalidateQueries({ queryKey: ["settings"] }); toast.success("Son enregistré pour toute la station"); }
+    catch (_) { toast.error("Son non enregistré (reconnecte-toi en admin)"); }
+  };
+  return (
+    <div className="mt-2" data-testid="launch-sound-pick">
+      <label className="text-xs uppercase tracking-widest" style={{ color: "var(--text-secondary)" }}>Son du lancement (quand une œuvre s'ouvre) · pour tous les visiteurs</label>
+      {LAUNCH_FORMATS.map(([f, name]) => (
+        <div key={f} className="mt-3">
+          <p className="text-[11px] uppercase tracking-widest mb-1" style={{ color: "var(--text-secondary)" }}>{name}</p>
+          <div className="flex flex-wrap gap-2">
+            {[...LAUNCH_SOUNDS, { k: "none", t: "Aucun", d: "Lancement silencieux" }].map((o) => (
+              <button key={o.k} type="button" onClick={() => pick(f, o.k)} title={o.d} data-testid={`launch-sound-${f}-${o.k}`}
+                className="px-3 py-2 border text-sm" style={{ borderColor: cur[f] === o.k ? "var(--brand)" : "var(--border-c)", background: cur[f] === o.k ? "color-mix(in srgb, var(--brand) 14%, transparent)" : "transparent", color: "var(--text-primary)" }}>
+                {o.t}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <p className="text-[11px] mt-2" style={{ color: "var(--text-secondary)" }}>{LAUNCH_SOUNDS.map((o) => `${o.t} : ${o.d.toLowerCase()}`).join(" · ")}.</p>
+    </div>
+  );
+}
+
+// Sauvegarde complète : œuvres, chapitres, journal, atelier, réglages, abonnés… (sans mots de passe ni paiements)
+function BackupBox() {
+  const [busy, setBusy] = useState(false);
+  const go = async () => {
+    setBusy(true);
+    try { await downloadBackup(); toast.success("Sauvegarde téléchargée : range-la en lieu sûr (disque, Drive…)"); }
+    catch (e) { toast.error(e?.response?.status === 404 ? "Le serveur n'a pas encore cette mise à jour (à déployer sur Emergent)" : "Sauvegarde impossible pour l'instant"); }
+    setBusy(false);
+  };
+  return (
+    <div data-testid="backup-box">
+      <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Un fichier qui contient tout le contenu de la station : œuvres et chapitres, journal de bord, tout l'atelier (fiches, univers, tâches, Salon), réglages, newsletters et abonnés, commentaires. Sans les mots de passe ni les paiements. Les fichiers lourds (vidéos, musiques importées) restent sur le stockage et n'y sont pas copiés.</p>
+      <button onClick={go} disabled={busy} className="flex items-center gap-2 px-4 py-2.5 border text-sm" style={{ color: "var(--text-primary)", borderColor: "var(--border-c)" }} data-testid="backup-download">
+        <IoDownloadOutline /> {busy ? "Préparation…" : "Télécharger la sauvegarde"}
+      </button>
+      <p className="text-xs mt-2" style={{ color: "var(--text-secondary)" }}>Conseil : une fois par mois, et avant chaque grosse mise à jour.</p>
     </div>
   );
 }

@@ -14,6 +14,8 @@ const book = {
 
 Il y a des histoires qui naissent une fois, et d'autres qui se mettent à vivre toutes seules. Stalker est de la deuxième espèce. Au départ, c'est un petit roman de science-fiction soviétique, écrit par deux frères en 1971. Quelques années plus tard, c'est un des films les plus mystérieux de l'histoire du cinéma. Trente ans après, c'est une saga de jeux vidéo ukrainiens qui fait de la vraie zone d'exclusion de Tchernobyl un territoire de légende. Et entre-temps, le mot lui-même est sorti de la fiction : les gens qui pénètrent illégalement dans la zone de Tchernobyl se font appeler des stalkers.
 
+@art 4
+
 Ces trois œuvres ne racontent pas la même histoire. Elles ne disent même pas la même chose. Mais elles partagent un lieu, la Zone, et un personnage, l'homme qui sait y marcher. Une terre interdite, où le monde ne fonctionne plus comme ailleurs, où chaque pas peut tuer, et au centre de laquelle quelque chose, paraît-il, exauce les désirs.
 
 Ce livre te fait traverser les trois. D'abord le roman, parce que tout vient de là. Puis le film, parce qu'il a tout transformé. Puis les jeux, parce qu'ils ont rendu la Zone réelle. Prends ton temps. Dans la Zone, on n'avance jamais en ligne droite.
@@ -23,6 +25,8 @@ Ce livre te fait traverser les trois. D'abord le roman, parce que tout vient de 
 # Ceux qui l'ont fait
 
 **Les frères Strougatski.** Arcadi Strougatski est né en 1925, Boris en 1933. Arcadi est traducteur de japonais et d'anglais, il a servi dans l'armée comme interprète. Boris est astronome, il travaille à l'observatoire de Poulkovo, près de Léningrad. Ensemble, à partir de la fin des années 1950, ils deviennent les plus grands auteurs de science-fiction de l'Union soviétique. Leurs livres commencent par des utopies optimistes, puis deviennent de plus en plus inquiets, ironiques, et dérangeants pour le pouvoir.
+
+@art g 2
 
 Ils écrivent Pique-nique au bord du chemin en 1971. Les premiers plans sont jetés en janvier, à Léningrad, la version finale est terminée en novembre, à Komarovo. Le roman paraît en 1972 dans une revue littéraire de Léningrad, Avrora, en quatre livraisons.
 
@@ -50,6 +54,8 @@ L'une des Zones se trouve près de Harmont, une petite ville industrielle imagin
 
 La Zone de Harmont est entourée de barbelés, de miradors, de patrouilles de l'ONU. À l'intérieur, rien n'a changé en apparence. Des rues, des maisons, des garages, un cimetière, une usine. Mais tout est mort, et tout est piégé.
 
+@art 5
+
 Il y a des endroits où la gravité devient folle, où un homme est écrasé au sol comme sous une presse en une seconde. Les stalkers les appellent des concentrés gravitationnels. Il y a la gelée de sorcière, une substance qui ronge tout, qui dissout les os à travers la chair. Il y a la calvitie de moustique, la toile d'argent, le duvet. Il y a des zones qui brûlent sans flamme. Il y a des choses qu'on ne voit pas et qui tuent quand même.
 
 Et il y a les objets. La Zone est remplie de choses laissées par les visiteurs, que les hommes ramassent sans les comprendre. Les vides, deux disques de cuivre collés l'un à l'autre par rien, à quelques centimètres de distance. Les pleins, la même chose avec, entre les disques, une sorte de liquide bleu. Les bracelets, qui stimulent les processus vitaux. Les jets noirs. Les aiguilles. Les piles éternelles. Certains objets guérissent. D'autres servent à quelque chose qu'on ignore. D'autres encore sont des armes, et les militaires s'arrachent la gelée de sorcière.
@@ -62,6 +68,8 @@ On a classé tout cela, comme on peut. Il y a les objets utiles qu'on ne compren
 
 Le héros du roman s'appelle Redrick Schuhart, Red pour tout le monde. Il a vingt-trois ans au début du livre. Il est roux, nerveux, grossier, intelligent, drôle. Il boit trop. Il a grandi à Harmont, il connaît la Zone mieux que personne, et il la fréquente illégalement depuis l'adolescence.
 
+@art g 3
+
 Au début, il a un emploi officiel : il est assistant de laboratoire à l'Institut international des cultures extraterrestres, qui étudie la Zone. Il y accompagne les scientifiques en expédition. Son chef et ami s'appelle Kirill Panov, un jeune savant russe, idéaliste, qui croit que la Zone peut faire avancer l'humanité.
 
 Ensemble, ils entrent dans la Zone pour récupérer un plein, un objet très rare. Ils le trouvent. Mais en chemin, Kirill frôle une toile d'argent, un fil presque invisible accroché dans un garage. Il ne sent rien. Quelques heures plus tard, de retour en ville, il meurt d'une crise cardiaque.
@@ -71,6 +79,8 @@ Red ne se le pardonne pas. Il quitte l'Institut. Il redevient stalker à plein t
 # Guta et la petite Guenon
 
 Red aime une femme, Guta. Elle est enceinte de lui. Il l'épouse. Ils ont une fille.
+
+@art 6
 
 C'est là que le roman devient terrible. Les enfants des stalkers naissent souvent différents. La fille de Red est couverte d'un fin duvet doré, elle a les yeux entièrement noirs. On la surnomme la Guenon. Elle est douce, joyeuse, elle aime son père. Et peu à peu, au fil des années, elle devient moins humaine. Elle parle de moins en moins. Elle comprend de moins en moins.
 
@@ -82,6 +92,8 @@ La Zone ne reste pas dans la Zone. Elle entre dans les familles, dans les corps,
 
 Le deuxième grand personnage de stalker du roman s'appelle Burbridge, et on le surnomme le Vautour. C'est un vieux stalker, plus vieux que Red, rusé, sans scrupules. Il conduit des gens dans la Zone, et il revient souvent seul.
 
+@art g 4
+
 Un jour, Red et le Vautour entrent ensemble dans la Zone. Le Vautour marche dans la gelée de sorcière. Ses jambes se dissolvent de l'intérieur, les os deviennent comme du caoutchouc. Red pourrait l'abandonner. Il le porte sur son dos jusqu'à la sortie. Le Vautour perd ses deux jambes.
 
 Des années plus tard, Burbridge, cul-de-jatte, dirige à Harmont une entreprise de pique-niques pour touristes au bord de la Zone. Une couverture : en réalité, il forme de jeunes stalkers. Il a des enfants, une fille très belle, Dina, et un fils, Arthur, un garçon de vingt ans, beau, gentil, plein d'espoir. Ses enfants, lui, sont parfaitement normaux. On murmure que c'est parce qu'il est allé jusqu'à la Boule d'or, et qu'il lui a demandé des enfants en bonne santé.
@@ -89,6 +101,8 @@ Des années plus tard, Burbridge, cul-de-jatte, dirige à Harmont une entreprise
 # Le pique-nique
 
 Au milieu du roman, il y a une conversation, dans un restaurant. Le docteur Pilman déjeune avec Richard Noonan, un homme d'affaires de Harmont qui est en réalité un agent infiltré chargé de lutter contre la contrebande d'objets. Noonan lui demande ce qu'était vraiment la Visite. Et Pilman répond par une image.
+
+@art 7
 
 Imagine, dit-il, un pique-nique. Des gens arrivent en voiture au bord d'une route, dans une forêt. Ils s'installent dans une clairière, mangent, boivent, écoutent de la musique. Puis ils repartent. Derrière eux, ils laissent des déchets : des bouteilles, des bougies d'allumage usées, un filtre, des chiffons, une flaque d'huile. Le soir, les animaux de la forêt sortent de leur terrier. Ils trouvent ces objets. Ils ne savent pas ce que c'est. Certains se blessent, certains s'empoisonnent, certains les trouvent utiles.
 
@@ -101,6 +115,8 @@ C'est l'idée la plus vertigineuse du roman. Toute la science-fiction de l'époq
 # La Boule d'or
 
 La dernière partie du roman se passe quelques années plus tard. Red a fait de la prison. Sa fille ne parle presque plus. Il a besoin d'argent, et surtout, il a besoin d'un miracle.
+
+@art g 5
 
 Le Vautour lui donne la carte qui mène à la Boule d'or. Et il lui demande d'emmener Arthur, son fils, qui rêve d'y aller.
 
@@ -128,6 +144,8 @@ Le roman s'arrête là. On ne sait pas si la Boule a exaucé quoi que ce soit.
 
 Pique-nique au bord du chemin a eu une vie difficile en Union soviétique. Après sa publication en revue, en 1972, les Strougatski ont dû attendre huit ans pour qu'il paraisse en livre. Les éditeurs exigeaient des corrections sans fin : moins de grossièretés, moins de violence, moins de pessimisme, un héros plus présentable.
 
+@art 8
+
 Les versions publiées entre 1980 et 1990 sont lourdement censurées, et assez éloignées de ce que les frères avaient écrit. Il faut attendre les années 1990 pour lire en russe le texte qu'ils considéraient comme le vrai.
 
 À l'étranger, le roman a fait une carrière immense. Une première traduction anglaise paraît en 1977, avec une préface de l'écrivain américain Theodore Sturgeon. Une nouvelle traduction, complète, sort en 2012, avec une préface d'Ursula K. Le Guin et une postface de Boris Strougatski. Le livre est traduit dans des dizaines de langues.
@@ -136,6 +154,8 @@ Les versions publiées entre 1980 et 1990 sont lourdement censurées, et assez �
 
 En 1979 sort Stalker, d'Andreï Tarkovski. Il dure près de deux heures quarante. Il ne contient presque aucune action, presque aucun effet spécial. Et il est souvent cité parmi les plus grands films jamais tournés.
 
+@art g 6
+
 Le film commence en noir et blanc, ou plutôt dans un brun sale, sépia. Une chambre, un lit, un homme qui se lève sans bruit pour ne pas réveiller sa femme et sa fille. Un verre d'eau qui tremble sur la table au passage d'un train. Le Stalker s'en va. Sa femme le supplie de ne pas y retourner. Il y va quand même.
 
 Il a deux clients. On ne connaît pas leurs noms : l'un est l'Écrivain, un auteur à succès, cynique, en panne d'inspiration. L'autre est le Professeur, un physicien, silencieux, sérieux, qui porte un sac à dos. Les trois hommes forcent un barrage militaire, en voiture, sous les tirs, puis montent sur une draisine, un petit wagon à moteur, qui les emmène le long d'une voie ferrée, longtemps, dans un vacarme rythmé. Et soudain, la couleur apparaît. Ils sont dans la Zone.
@@ -143,6 +163,8 @@ Il a deux clients. On ne connaît pas leurs noms : l'un est l'Écrivain, un aute
 # La Zone de Tarkovski
 
 Dans le film, il n'y a ni extraterrestres, ni objets, ni pièges visibles. La Zone est un paysage. Des herbes hautes, des ruines envahies par la végétation, des tanks rouillés, des poteaux électriques, de l'eau partout, stagnante, sur laquelle flottent des objets abandonnés : une seringue, une pièce de monnaie, une icône.
+
+@art 9
 
 Le Stalker dit que la Zone est vivante. Qu'elle change sans cesse. Qu'un chemin sûr hier peut tuer aujourd'hui. Qu'on n'y va jamais tout droit. Pour savoir où marcher, il lance devant lui des écrous auxquels sont noués des bouts de bandage, et il avance là où l'écrou est tombé. C'est tout. Le danger n'est jamais montré. On ne voit pas un seul piège se déclencher. Et pourtant, on a peur à chaque pas.
 
@@ -154,6 +176,8 @@ Il y a un chien noir, aussi. Il apparaît dans la Zone, suit les trois hommes, e
 
 Au milieu du voyage, les trois hommes doivent traverser un long tunnel, que le Stalker appelle le hachoir à viande. Un couloir sombre, humide, interminable, au fond duquel coule de l'eau.
 
+@art g 7
+
 C'est là qu'on comprend le jeu cruel du Stalker. Il fait passer l'Écrivain en premier, sans lui dire ce que cela signifie.
 
 L'Écrivain y va. Il passe. Il comprendra plus tard qu'il a servi d'éclaireur. Mais il est vivant.
@@ -163,6 +187,8 @@ Le film garde l'idée du roman, celle du compagnon qu'on envoie en premier au pi
 # Porc-épic
 
 Pendant le voyage, le Stalker raconte l'histoire de son maître, un autre stalker qu'on surnommait Porc-épic.
+
+@art 10
 
 Porc-épic avait emmené son frère dans la Zone, et son frère y était mort à cause de lui. Alors il est allé jusqu'à la Chambre, au fond de la Zone, pour demander qu'on lui rende son frère. Il est rentré chez lui. Son frère n'est pas revenu. Mais Porc-épic est devenu immensément riche. Une semaine plus tard, il a mis fin à ses jours.
 
@@ -174,6 +200,8 @@ C'est la grande invention du film. Dans le roman, la Boule d'or exauce peut-êtr
 
 Ils arrivent enfin. Une salle en ruine, inondée, couverte de dunes de sable, puis un seuil, et derrière, la Chambre. Personne n'y entre.
 
+@art g 8
+
 Le Professeur sort de son sac ce qu'il transportait depuis le début : une bombe. Une charge de vingt kilotonnes. Il veut détruire la Chambre. Il explique : un endroit pareil, s'il tombe entre de mauvaises mains, si un fou, un dictateur, un fanatique y entre, peut détruire le monde. Il vaut mieux qu'elle n'existe pas.
 
 Le Stalker se jette sur lui, le supplie, pleure. La Chambre est la dernière chose qui donne de l'espoir aux malheureux. L'Écrivain frappe le Stalker, l'insulte, refuse d'entrer lui aussi : il a compris l'histoire de Porc-épic, et il ne veut pas savoir ce qu'il désire vraiment.
@@ -183,6 +211,8 @@ Finalement, le Professeur démonte sa bombe. Il en jette les morceaux dans l'eau
 # La femme du Stalker
 
 Ils rentrent. Le bar du début, les mêmes visages, la sépia revenue. Le Stalker rentre chez lui, épuisé, désespéré. Il dit à sa femme que plus personne ne croit à rien, que les intellectuels ne savent plus espérer.
+
+@art 11
 
 Puis la femme du Stalker, jouée par Alissa Freindlich, se tourne vers la caméra et parle. Directement au spectateur. Elle raconte comment elle a rencontré cet homme, comment sa mère l'avait prévenue que c'était un stalker, un condamné, un homme éternel, et comment elle l'a suivi quand même. Elle dit qu'elle a eu du malheur, beaucoup. Et qu'elle ne regrette rien, parce que sans malheur, il n'y aurait pas eu de bonheur non plus, ni d'espoir.
 
@@ -202,6 +232,8 @@ La fille a des pouvoirs. Elle est un enfant de la Zone. Le miracle que les trois
 
 Le tournage de Stalker est un des plus éprouvants de l'histoire du cinéma soviétique.
 
+@art g 9
+
 Tarkovski prévoit d'abord de tourner dans une région minière du Tadjikistan. Un tremblement de terre ravage la zone avant le tournage. L'équipe part pour l'Estonie.
 
 Le premier tournage, avec le directeur de la photographie Gueorgui Rerberg, dure des mois. Puis la pellicule est développée, et presque tout est inutilisable. On accuse une nouvelle pellicule Kodak que les laboratoires soviétiques ne savaient pas traiter. Tarkovski, déjà en conflit avec Rerberg, le renvoie. Il doit demander l'autorisation de recommencer presque tout le film. Le remplaçant de Rerberg s'en va à son tour, et c'est Alexandre Kniajinski qui termine. Tarkovski fait entre-temps un infarctus. Il neige en plein été.
@@ -214,6 +246,8 @@ L'ingénieur du son, Vladimir Charoune, a raconté plus tard que des liquides to
 
 Le 26 avril 1986, sept ans après la sortie du film, un réacteur de la centrale nucléaire de Tchernobyl, en Ukraine soviétique, explose. Une zone d'exclusion de trente kilomètres est évacuée. La ville de Pripiat, construite pour les employés de la centrale, est vidée de ses habitants en quelques heures. Elle reste telle quelle : les manèges de la fête foraine qui devait ouvrir quelques jours plus tard, les cahiers dans les écoles, les poupées dans les crèches.
 
+@art 12
+
 La ressemblance avec la Zone de Tarkovski a frappé tout le monde. Une terre interdite, gardée par l'armée, où la nature reprend tout, où le danger est invisible, et où l'on ne revient pas tout à fait le même. Les visiteurs clandestins qui ont commencé à s'y aventurer ont repris le mot. Ils se sont appelés des stalkers.
 
 La fiction avait inventé un lieu. L'histoire l'a fabriqué.
@@ -221,6 +255,8 @@ La fiction avait inventé un lieu. L'histoire l'a fabriqué.
 # S.T.A.L.K.E.R.
 
 En 2007, un studio de Kyiv, GSC Game World, sort S.T.A.L.K.E.R.: Shadow of Chernobyl. C'est un jeu de tir et de survie, en monde ouvert, qui se passe dans la zone de Tchernobyl, reconstituée d'après les lieux réels : Pripiat, la centrale, les villages abandonnés, les fermes collectives, le radar géant qu'on appelle le Pic-vert russe.
+
+@art g 10
 
 L'univers du jeu mélange tout. Il imagine qu'en 2006, une deuxième catastrophe a frappé la centrale. Une explosion d'une autre nature, qui a transformé la zone en une Zone, avec une majuscule. Il y a désormais des anomalies qui écrasent, brûlent, électrocutent, comme les pièges du roman. Il y a des artefacts, des objets étranges aux propriétés miraculeuses, que les stalkers ramassent et revendent. Il y a des mutants, des animaux déformés, des chiens aveugles, des créatures invisibles. Et régulièrement, des émissions : des vagues d'énergie qui balaient la Zone et tuent quiconque n'a pas trouvé d'abri.
 
@@ -234,6 +270,8 @@ Le jeu sort plein de bugs et de défauts techniques. Il se vend à environ deux 
 
 Dans Shadow of Chernobyl, on incarne un stalker sans mémoire, qu'on appelle le Marqué, parce qu'il a un tatouage sur le bras : le mot S.T.A.L.K.E.R. On l'a trouvé dans un camion de la mort, un convoi de cadavres. Son assistant numérique contient une seule mission : tuer Strelok.
 
+@art 13
+
 Strelok est une légende de la Zone. Le stalker qui est allé plus loin que tous les autres, vers le centre, vers la centrale. On raconte qu'au cœur de la centrale se trouve l'Exauceur, un artefact qui accorde n'importe quel vœu. C'est la Boule d'or des Strougatski, et la Chambre de Tarkovski.
 
 Le Marqué remonte la piste. Il explore des laboratoires souterrains, découvre des expériences secrètes sur le cerveau humain, une machine qu'on appelle le Brûle-cerveau, qui transforme ceux qui approchent en zombies. Et il découvre la vérité : le Marqué, c'est Strelok lui-même. On lui a effacé la mémoire.
@@ -246,6 +284,8 @@ Dans la fin considérée comme officielle, il les détruit. Puis il s'endort dan
 
 En 2008, Clear Sky raconte ce qui s'est passé avant. On incarne Balafre, un mercenaire qui survit aux émissions, recruté par une faction secrète de scientifiques, Ciel Clair. Leur chef, Lebedev, pense que Strelok et son groupe, en s'approchant trop du centre, provoquent les émissions. Balafre poursuit Strelok jusqu'à la centrale. Le jeu se termine sur une émission gigantesque, et Strelok qui perd la mémoire : c'est ainsi qu'il devient le Marqué.
 
+@art g 11
+
 En 2009, Call of Pripyat se passe juste après le premier jeu. Le gouvernement ukrainien, croyant la voie libre depuis que Strelok a désactivé le Brûle-cerveau, envoie une opération militaire en hélicoptère vers la centrale, l'opération Fairway. Tous les hélicoptères s'écrasent. On incarne le major Alexandre Degtiarev, envoyé discrètement pour comprendre pourquoi. Il retrouve les survivants à Pripiat. Il y rencontre Strelok. Toutes les fins laissent entendre la même chose : la Zone s'étend. Elle pourrait un jour dépasser l'Ukraine.
 
 C'est souvent le jeu préféré des fans : plus calme, plus libre, plus humain, avec ses stalkers qui racontent des blagues autour du feu, la nuit, une guitare à la main.
@@ -253,6 +293,8 @@ C'est souvent le jeu préféré des fans : plus calme, plus libre, plus humain, 
 # Heart of Chornobyl
 
 Pendant des années, une suite est annoncée, puis annulée, puis annoncée à nouveau. Le studio ferme en 2011, rouvre, reprend le projet. S.T.A.L.K.E.R. 2: Heart of Chornobyl est en plein développement quand, en février 2022, l'armée russe envahit l'Ukraine. Elle traverse justement la zone de Tchernobyl, et occupe la centrale pendant plusieurs semaines.
+
+@art 14
 
 Une partie de l'équipe quitte Kyiv pour Prague. D'autres restent. Certains s'engagent dans l'armée. Le studio continue de travailler, sous les sirènes et les coupures d'électricité. Le jeu sort finalement en novembre 2024.
 
@@ -275,6 +317,8 @@ Les jeux demandent : peux-tu survivre ici ? Leur Zone est physique, hostile, quo
 # Ce que tu peux en prendre
 
 La Zone t'apprend la puissance du danger invisible. Ni le roman ni le film ne montrent beaucoup de pièges. Un écrou lancé dans l'herbe, un fil d'argent dans un garage. Le spectateur remplit tout le reste avec sa peur. Moins on montre la menace, plus elle grandit.
+
+@art g 12
 
 Elle t'apprend aussi ce que l'adaptation peut faire. Tarkovski a gardé trois éléments du roman et jeté le reste. Il n'a pas trahi les Strougatski : il a extrait de leur livre une autre œuvre, qui ne pouvait exister qu'au cinéma. Adapter, ce n'est pas recopier. C'est trouver ce qui, dans une histoire, peut vivre ailleurs.
 

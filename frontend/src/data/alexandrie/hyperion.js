@@ -8,10 +8,13 @@ const book = {
     { label: "Geoffrey Chaucer, Les Contes de Canterbury (vers 1400)", note: "Des pèlerins qui se racontent leur histoire en chemin. Le modèle de la structure du roman." },
     { label: "John Keats, Hyperion et La Chute d'Hyperion", note: "Deux poèmes inachevés du poète romantique anglais, qui donnent leur titre aux deux romans et hantent toute l'œuvre." },
   ],
+  pics: ["ol:Hyperion Dan Simmons", "ol:The Fall of Hyperion Dan Simmons", "ol:Endymion Dan Simmons"],
   text: String.raw`
 # Avant de commencer
 
 Il y a des romans qui racontent une histoire, et d'autres qui en contiennent plusieurs. Hypérion appartient à la deuxième espèce. C'est un roman de science-fiction de 1989, et c'est aussi six romans en un : six récits très différents, racontés par six voyageurs, chacun dans un style, un ton, un genre différent. Un récit d'horreur religieuse. Un récit de guerre. Un récit de poète. Un récit de père, déchirant. Un polar cyberpunk. Une histoire d'amour à travers le temps.
+
+@art g 1
 
 Ces six récits ont un point commun : ils mènent tous au même endroit. Une planète lointaine nommée Hypérion, où se dressent d'étranges monuments, les Tombeaux du Temps, et où rôde une créature dont tout le monde parle à voix basse, le Gritche.
 
@@ -35,6 +38,8 @@ Hypérion est le premier volume de ce qu'on appelle les Cantos d'Hypérion : deu
 # Le monde et le pèlerinage
 
 Au XXIXe siècle, la Terre n'existe plus. Ou plutôt, c'est ce que tout le monde croit. Quelques siècles plus tôt, une expérience scientifique a mal tourné : un trou noir a été créé par accident, et il a dévoré la planète. On appelle cette catastrophe la Grande Erreur. L'humanité a dû fuir, dans un exode qu'on appelle l'Hégire, et s'est dispersée dans la galaxie.
+
+@art g 2
 
 Elle a fondé une civilisation immense, l'Hégémonie de l'Homme, qui s'étend sur des centaines de mondes. Ces mondes sont reliés entre eux par des portes, qu'on appelle les distrans : des passages instantanés, qu'on franchit comme on franchit une porte de maison. On peut avoir une maison dont chaque pièce donne sur une planète différente : le salon sur un océan, la chambre sur une forêt, la cuisine sur une montagne. Ce réseau de mondes reliés s'appelle le Retz.
 
@@ -65,6 +70,8 @@ Et en chemin, quelque chose arrive. Une nuit, au milieu du voyage, le Templier, 
 
 Le premier récit est celui du père Hoyt, un jeune prêtre catholique au visage marqué par la douleur, qui semble sans cesse lutter contre un mal intérieur. L'Église catholique, au XXIXe siècle, n'est plus qu'une petite confession presque oubliée, réfugiée sur un seul monde, Pacem, et réduite à quelques milliers de fidèles. Hoyt en est un des derniers serviteurs. Mais le récit qu'il fait n'est pas vraiment son histoire. C'est celle d'un autre prêtre, le père Paul Duré, dont Hoyt lit le journal.
 
+@art g 3
+
 Duré était un jésuite brillant, un archéologue, exilé sur Hypérion après un scandale. Il part, seul, explorer une région isolée, au-delà d'un plateau, où vit une tribu mystérieuse, les Bikuras. Ils ne sont que soixante-dix. Ils ne parlent presque pas, ne rient jamais, n'ont pas d'enfants, ne vieillissent pas. Ils vivent dans des grottes, et répètent qu'ils appartiennent à la croix.
 
 Duré découvre leur secret. Chacun d'eux porte sur la poitrine une petite croix de chair, un parasite qu'on appelle le cruciforme. Quand un Bikura meurt, le cruciforme le ressuscite. Mais chaque résurrection lui prend quelque chose : un peu d'intelligence, un peu de mémoire, un peu d'humanité. Les Bikuras sont morts et ressuscités tant de fois qu'ils ne sont plus que des corps vides. Ils ont la vie éternelle, et plus d'âme.
@@ -93,6 +100,8 @@ Son récit est celui d'un homme qui a aimé la guerre comme on aime une femme, e
 # Le poète et le savant
 
 Martin Silenus est le personnage le plus excessif du roman : un vieux poète grossier, alcoolique, provocateur, qui insulte tout le monde et dit des choses atroces avec un plaisir évident. Et c'est aussi l'un des plus émouvants.
+
+@art g 4
 
 Il est né sur la Vieille Terre, juste avant sa destruction, dans une famille riche. Il devait devenir poète. La Grande Erreur a tout emporté : sa famille, sa fortune, sa planète. Il s'est retrouvé ouvrier, puis esclave presque, sur un monde lointain. Puis il a écrit un livre, un roman sur la mort de la Terre, qui est devenu un immense succès populaire. Il est devenu milliardaire. Et il s'est méprisé pour cela, parce que ce livre était du commerce, et pas de l'art.
 
@@ -127,6 +136,8 @@ C'est l'un des récits les plus déchirants de toute la science-fiction. Il parl
 
 Brawne Lamia est une détective privée, née sur un monde à forte gravité, ce qui lui donne une force et une carrure hors du commun. Son récit est un polar, dans l'esprit des romans noirs américains, transposé dans le monde du Retz.
 
+@art g 5
+
 Un client vient la voir. Il s'appelle Johnny. C'est un cybride : un corps humain contrôlé à distance par une intelligence artificielle du TechnoCentre. Et sa personnalité n'est pas n'importe laquelle. Le TechnoCentre a reconstitué, à partir de tout ce qu'on sait de lui, l'esprit du poète John Keats. Johnny est Keats, recréé par des machines.
 
 Il veut que Lamia enquête sur un meurtre : le sien. Quelqu'un a tué sa conscience, au cœur du TechnoCentre, et il ne sait pas pourquoi.
@@ -155,6 +166,8 @@ Le premier roman s'arrête là, au moment où les six survivants descendent dans
 # La Chute d'Hypérion
 
 La suite, La Chute d'Hypérion, publiée en 1990, raconte ce qui arrive aux pèlerins dans la vallée, et ce qui arrive au même moment dans tout le Retz. Elle a un narrateur nouveau : un deuxième cybride de Keats, qui se fait appeler Joseph Severn, du nom de l'ami peintre qui avait veillé le poète à sa mort. Il voit en rêve ce que vivent les pèlerins, et il le raconte à la dirigeante de l'Hégémonie, Meina Gladstone, une femme d'État lucide et grave.
+
+@art g 6
 
 Pendant ce temps, la guerre éclate. Les Extros attaquent le Retz. Les fidèles du Gritche se soulèvent sur plusieurs planètes. L'Hégémonie vacille.
 
@@ -189,6 +202,8 @@ Les deux romans suivants, Endymion et L'Éveil d'Endymion, se passent près de t
 # Ce que tu peux en prendre
 
 Hypérion t'apprend la force de la structure. Six récits, six genres, six voix. Le roman d'horreur, le roman de guerre, le récit d'artiste, le drame familial, le polar, l'histoire d'amour. Chacun enrichit les autres. Le lecteur ne s'ennuie jamais, parce que chaque récit est un nouveau livre, et pourtant tout converge vers un seul lieu.
+
+@art g 7
 
 Il t'apprend à cacher ton monde dans les vies. On découvre l'Hégémonie, le Retz, le TechnoCentre, les Extros, non pas par des explications, mais par ce qu'ils font aux personnages. On comprend le prix des distrans en écoutant l'histoire d'amour de Merin et Siri. On comprend le TechnoCentre en suivant l'enquête de Lamia.
 

@@ -7,6 +7,7 @@ const book = {
     { label: "Fullmetal Alchemist (Bones, 2003) et le film Conqueror of Shamballa (2005)", note: "Une autre histoire, plus sombre, inventée avant la fin du manga." },
     { label: "Hiromu Arakawa, Silver Spoon", note: "Son manga suivant, dans un lycée agricole : on y comprend d'où vient tout le reste." },
   ],
+  pics: ["manga:Fullmetal Alchemist", "anime:Fullmetal Alchemist: Brotherhood", "anime:Fullmetal Alchemist"],
   text: String.raw`
 # Les créateurs, et la ferme de Hokkaido
 
@@ -130,6 +131,8 @@ Père, lui, finit comme il a commencé : renvoyé de l'autre côté de la porte,
 
 Fullmetal Alchemist est l'une des rares œuvres à avoir été adaptée deux fois en série par le même studio, avec deux histoires différentes. La première série, en 2003, réalisée par Seiji Mizushima, a rattrapé le manga au bout de quelques mois. Avec l'accord d'Arakawa, l'équipe a inventé sa propre suite. Les homoncules y naissent des transmutations humaines ratées, et l'un d'eux porte le visage de Trisha, la mère des Elric. Leur maîtresse est une alchimiste immortelle, Dante. Et la fin envoie Ed de l'autre côté de la porte, dans notre monde à nous, en Allemagne. Le film qui la prolonge, Conqueror of Shamballa, en 2005, se passe à Munich en 1923, au moment où un petit parti politique tente de prendre le pouvoir, et le cinéaste Fritz Lang y fait une apparition.
 
+@art g 3
+
 Cette version est plus sombre, plus mélancolique, et elle a ses défenseurs passionnés. Ses génériques sont restés célèbres, comme Melissa, du groupe Porno Graffitti, Ready Steady Go, de L'Arc-en-Ciel, ou Rewrite, d'Asian Kung-Fu Generation, et ses chansons de fin, comme Kesenai Tsumi, de Nana Kitade.
 
 Brotherhood, de 2009 à 2010, réalisée par Yasuhiro Irie, raconte l'histoire du manga, cette fois jusqu'à sa vraie fin, en soixante-quatre épisodes. Ses premiers épisodes passent vite sur des événements que la série de 2003 avait déjà montrés, puis le récit s'étend, avec tous les personnages, toutes les intrigues et la grande bataille finale. Ses génériques ont marqué une autre génération : Again, de Yui, Hologram, de Nico Touches the Walls, Golden Time Lover, de Sukima Switch, Period, de Chemistry, Rain, de SID. Pendant des années, Brotherhood a occupé la première place des classements établis par les spectateurs sur les grands sites consacrés à l'animation.
@@ -139,6 +142,8 @@ L'œuvre a eu d'autres vies : un film d'animation, L'Étoile sacrée de Milos, e
 # Ce que dit Fullmetal Alchemist
 
 Fullmetal Alchemist part d'une loi, l'échange équivalent, et la retourne. Au début, les frères croient qu'elle décrit tout : pour obtenir, il faut payer. À la fin, ils comprennent qu'il existe des choses qui ne s'échangent pas, et d'autres qu'on donne sans rien attendre. Ed choisit de rester humain, limité, mortel, plutôt que de devenir un dieu. Le méchant de l'histoire, Père, a voulu l'inverse, et il n'a jamais compris pourquoi les humains se battaient pour des choses aussi petites que leurs amis.
+
+@art g 4
 
 L'œuvre parle aussi du deuil. Toute l'histoire commence par deux enfants qui n'acceptent pas la mort de leur mère. Elle se termine par des adultes qui ont appris à vivre avec leurs pertes, leurs membres manquants, leurs crimes passés, leurs morts. Rien n'est effacé. Tout est porté.
 

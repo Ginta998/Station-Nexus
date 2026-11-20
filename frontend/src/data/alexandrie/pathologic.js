@@ -13,6 +13,8 @@ const book = {
 
 Pathologic est un jeu qui veut te faire souffrir. Pas par méchanceté : par principe. Il a été conçu par un petit studio moscovite, Ice-Pick Lodge, comme une expérience de théâtre interactif. Tu as faim, tu as froid, tu manques de tout, le temps passe trop vite, et tu sais que tu n'auras jamais le temps de tout faire.
 
+@art 4
+
 C'est justement le sujet. Une épidémie. Une ville qui meurt. Et toi, qui dois choisir qui sauver.
 
 Le jeu a eu deux vies : une première version en 2005, maladroite et fascinante, devenue culte en Russie puis ailleurs ; et une refonte en 2019, Pathologic 2, centrée sur l'un des trois personnages. Je te raconte le monde, qui est le même dans les deux.
@@ -23,6 +25,8 @@ Le jeu a eu deux vies : une première version en 2005, maladroite et fascinante,
 # Ceux qui l'ont fait
 
 Pathologic est développé par Ice-Pick Lodge, un petit studio de Moscou, et sort en 2005. Son auteur et directeur est Nikolay Dybovskiy, qui a fondé le studio et en écrit les mondes. La version de 2015, Classic HD, a été retravaillée avec l'éditeur tinyBuild, qui édite aussi Pathologic 2 en 2019.
+
+@art g 2
 
 Le studio revendique des influences théâtrales et littéraires plus que vidéoludiques. Il présente ses jeux comme des expériences, pas comme des divertissements.
 
@@ -40,6 +44,8 @@ Le plus fou de tous se dresse au bord de la ville : le Polyèdre. Une tour de ve
 
 Autour de la ville, dans la steppe, vit un autre peuple. Les Kin, des bergers, des bouchers, qui parlent une langue ancienne et vénèrent la Terre.
 
+@art 5
+
 Pour eux, la steppe est vivante. Sous la ville dort un taureau immense, Bos Turokh, le Taureau de la Terre, dont le sang coule dans les veines du sol. Les Kin ont leurs prêtres, leurs rites, leurs créatures : des hommes-vers qui creusent la terre et recueillent les herbes, des femmes qui dansent dans la steppe et qu'on appelle les Fiancées de l'herbe.
 
 La ville moderne, avec sa tour et ses usines, s'est construite contre eux, sur eux. Les deux mondes se tolèrent mal.
@@ -56,6 +62,8 @@ La ville est mise en quarantaine. Personne ne peut sortir. Les prix explosent. L
 
 Trois personnes arrivent, ou reviennent, au moment où tout commence. Chacune peut être jouée. Chacune voit la ville autrement.
 
+@art g 3
+
 **Le Bachelier**, Daniil Dankovsky. Un jeune médecin de la capitale, brillant, arrogant, rationaliste, qui dirige un laboratoire consacré à vaincre la mort. Il est venu voir Simon Kain, le patriarche de la famille Kain, un homme dont on dit qu'il ne vieillit pas. Il arrive le jour même où Simon meurt. Pour le Bachelier, la peste est une maladie, et la science la vaincra.
 
 **Le Haruspice**, Artemy Burakh. Le fils du chirurgien de la ville, qui était aussi un guérisseur des Kin. Il revient après des années d'études, appelé par une lettre de son père, et trouve son père assassiné. On l'accuse. Il connaît la médecine de la steppe, les herbes, le sang, les lignes du corps. Pour lui, la ville est un corps, et la peste une blessure de la Terre.
@@ -65,6 +73,8 @@ Trois personnes arrivent, ou reviennent, au moment où tout commence. Chacune pe
 # Douze jours
 
 Le jeu dure douze jours. Chaque jour, des événements ont lieu, que tu y sois ou non. Chaque jour, des quartiers s'infectent. Chaque jour, tu as des tâches principales, et des gens à protéger : une poignée de personnes qui te sont liées, que le jeu appelle les Bound, et que tu dois garder en vie. Tu n'y arriveras pas pour tous.
+
+@art 6
 
 Il faut manger, dormir, échanger, voler parfois. Les remèdes sont rares. Les antibiotiques coûtent une fortune. Une seule panacée, un remède capable de tout guérir, peut être fabriquée, et en très petites quantités.
 
@@ -86,11 +96,15 @@ Le jeu entier est construit comme une pièce. Tu es un acteur, qui doit jouer so
 
 Au milieu de la quarantaine, les autorités envoient leurs représentants. Une Inquisitrice, Aglaya Lilich, chargée de juger qui est responsable de l'épidémie, et qui a ses propres plans. Puis un général, Block, avec une armée et des canons.
 
+@art g 4
+
 Le pouvoir central a une solution simple pour une ville infectée : la raser. Les canons sont pointés.
 
 # La fin
 
 À la fin, le destin de la ville se joue sur un choix, et le choix porte sur le Polyèdre.
+
+@art 7
 
 Selon le Haruspice, la ville et la tour blessent la Terre. La peste vient de là. Pour sauver les gens, il faut abattre le Polyèdre et rendre à la steppe ce qu'on lui a pris. Mais c'est détruire le rêve, la seule chose miraculeuse que la ville ait bâtie.
 
@@ -109,6 +123,8 @@ Les autres personnages devaient suivre dans d'autres jeux. Le studio a toujours 
 # Ce que tu peux en prendre
 
 Pathologic t'apprend qu'un jeu peut faire de l'inconfort une forme d'art. Le manque, la fatigue, l'injustice du temps ne sont pas des défauts : ce sont le sujet. Le joueur ressent ce que vivent les personnages.
+
+@art g 5
 
 Il t'apprend aussi à raconter une même histoire depuis plusieurs regards. Le Bachelier, le Haruspice, la Changeline ne voient pas la même ville. Chacun a raison, à sa façon, et chacun ignore ce que voient les autres.
 
