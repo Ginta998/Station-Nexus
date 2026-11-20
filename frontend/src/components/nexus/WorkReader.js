@@ -8,7 +8,7 @@ import { markDone } from "@/lib/shelf";
 import PassageLayer from "@/components/nexus/PassageLayer";
 import { blocksToHtml } from "@/lib/blocks";
 import { useRadio, RadioEngine, artOf } from "@/components/atelier/Radio";
-import { IoPause, IoPlay, IoPlaySkipForward, IoChevronDown, IoChevronUp, IoMusicalNotes } from "react-icons/io5";
+import { IoPause, IoPlay, IoPlaySkipForward, IoChevronDown, IoMusicalNotes } from "react-icons/io5";
 import { holdAmbient } from "@/lib/ambient";
 
 const PUB_AT = { pub: true, config: { radio: [] }, saveConfig: async () => {} };
@@ -59,21 +59,44 @@ export function bookOfEntry(e) {
 const fmtT = (t) => { t = Math.max(0, Math.floor(t || 0)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
 function ReaderPlayer({ m }) {
   const [min, setMin] = useState(false);
+  const [slot, setSlot] = useState(null);
+  // Réduite : une pastille dans la barre du haut du lecteur, juste après « Retour »
+  useEffect(() => {
+    if (!min || !m) return undefined;
+    const bar = document.querySelector(".ax-reader .ax-rbar"); if (!bar) return undefined;
+    const el = document.createElement("span"); el.className = "wr-mini-slot"; bar.insertBefore(el, bar.children[1] || null); setSlot(el);
+    return () => { el.remove(); setSlot(null); };
+  }, [min, !!m]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!m) return null;
+  const pct = m.d ? (m.t / m.d) * 100 : 0;
+  if (min) return slot ? createPortal(
+    <div className="rd-mini wr-mini" data-testid="reader-player-mini">
+      <button className="rd-mini-now" onClick={() => setMin(false)} title={`${m.title} : agrandir`}>
+        <span className="rd-mini-art" style={m.art ? { backgroundImage: `url(${m.art})` } : undefined}>{m.playing && <span className="sx-eq"><i /><i /><i /><i /></span>}</span>
+        <span className="rd-mini-txt">{m.title}</span>
+      </button>
+      <button className="rd-ic" onClick={m.toggle} aria-label={m.playing ? "Pause" : "Lecture"} data-testid="reader-player-mini-toggle">{m.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>
+    </div>, slot) : null;
   return createPortal(
-    <div className={"wr-player" + (min ? " min" : "")} data-testid="reader-player">
-      <span className="wr-pl-art" style={m.art ? { backgroundImage: `url(${m.art})` } : undefined}>{!m.art && <IoMusicalNotes size={18} />}</span>
-      <div className="wr-pl-mid">
-        <b className="wr-pl-t">{m.title}</b>
-        {!min && <div className="wr-pl-prog"><span className="mono">{fmtT(m.t)}</span>
-          <input type="range" min="0" max={m.d || 1} step="1" value={Math.min(m.t || 0, m.d || 1)} onChange={(e) => m.seek(+e.target.value)} style={{ "--p": (m.d ? (m.t / m.d) * 100 : 0) + "%" }} data-testid="reader-player-seek" />
-          <span className="mono">{fmtT(m.d)}</span></div>}
+    <div className="rd-bar wr-bar" data-testid="reader-player">
+      <div className="rd-bar-now">
+        <span className="rd-bar-art" style={m.art ? { backgroundImage: `url(${m.art})` } : undefined}>{!m.art && <IoMusicalNotes size={18} />}</span>
+        <span className="rd-bar-txt"><b>{m.title}</b><small>{m.sub || "Musique de lecture"}</small></span>
       </div>
-      <button onClick={m.toggle} aria-label={m.playing ? "Pause" : "Lecture"} data-testid="reader-player-toggle">{m.playing ? <IoPause size={18} /> : <IoPlay size={18} />}</button>
-      {!min && m.next && <button onClick={m.next} aria-label="Suivant" data-testid="reader-player-next"><IoPlaySkipForward size={16} /></button>}
-      {!min && <input className="wr-pl-vol" type="range" min="0" max="100" value={m.vol} onChange={(e) => m.setVol(+e.target.value)} style={{ "--p": m.vol + "%" }} aria-label="Volume" data-testid="reader-player-volume" />}
-      <button onClick={() => setMin(!min)} aria-label={min ? "Agrandir" : "Réduire"} data-testid="reader-player-min">{min ? <IoChevronUp size={17} /> : <IoChevronDown size={17} />}</button>
-      <button onClick={m.stop} aria-label="Couper la musique" data-testid="reader-player-stop"><IoClose size={17} /></button>
+      <div className="rd-bar-mid">
+        <div className="rd-ctrl sm">
+          <button className="rd-play" onClick={m.toggle} aria-label={m.playing ? "Pause" : "Lecture"} data-testid="reader-player-toggle">{m.playing ? <IoPause size={20} /> : <IoPlay size={20} />}</button>
+          {m.next && <button className="rd-ic" onClick={m.next} aria-label="Suivant" data-testid="reader-player-next"><IoPlaySkipForward size={18} /></button>}
+        </div>
+        <div className="rd-prog"><span className="mono">{fmtT(m.t)}</span>
+          <input type="range" min="0" max={m.d || 1} step="1" value={Math.min(m.t || 0, m.d || 1)} onChange={(e) => m.seek(+e.target.value)} style={{ "--p": pct + "%" }} data-testid="reader-player-seek" />
+          <span className="mono">{fmtT(m.d)}</span></div>
+      </div>
+      <div className="rd-bar-r">
+        <input className="rd-vol" type="range" min="0" max="100" value={m.vol} onChange={(e) => m.setVol(+e.target.value)} style={{ "--p": m.vol + "%" }} aria-label="Volume" data-testid="reader-player-volume" />
+        <button className="rd-ic" onClick={() => setMin(true)} title="Réduire dans la barre du haut" data-testid="reader-player-min"><IoChevronDown size={18} /></button>
+        <button className="rd-ic" onClick={m.stop} title="Couper la musique" data-testid="reader-player-stop"><IoClose size={18} /></button>
+      </div>
     </div>, document.body);
 }
 // Avancée de la musique de l'œuvre (lecteur audio de la station)
@@ -125,7 +148,7 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
   const aud = getReadingAudio(); const audOn = !radio.pl && !!aud?.src && !!aud.dataset?.rsrc && (playingId === readingKey || String(playingId || "").startsWith("cue:"));
   useAudioClock(aud, audOn);
   const ri = radio.info;
-  const player = radio.pl ? { title: ri.title || radio.pl.title, art: artOf(radio.pl, ri.vid), playing: radio.playing, toggle: radio.toggle, t: ri.t, d: ri.d, seek: radio.seek,
+  const player = radio.pl ? { title: ri.title || radio.pl.title, sub: ri.author || "YouTube", art: artOf(radio.pl, ri.vid), playing: radio.playing, toggle: radio.toggle, t: ri.t, d: ri.d, seek: radio.seek,
       next: (ri.n || 0) > 1 ? radio.next : null, vol: radio.muted ? 0 : radio.vol, setVol: radio.setVol, stop: radio.stop }
     : audOn ? { title, art: cover || null, playing: on, toggle: () => (on ? pauseReading() : resumeReading()), t: aud.currentTime, d: Number.isFinite(aud.duration) ? aud.duration : 0,
       seek: (v) => { aud.currentTime = v; }, vol: Math.round(musicVolume * 100), setVol: (v) => setMusicVolume(v / 100), stop: () => { pauseReading(); aud.dataset.rsrc = ""; aud.removeAttribute("src"); aud.load(); } }

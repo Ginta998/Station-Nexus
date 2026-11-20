@@ -718,28 +718,14 @@ body:has(.ax-reader) .at-main{overflow:hidden!important}
 .ax-flow p.ax-kp{margin:0 0 .85em}
 .ax-flow p.ax-kp:not(.ax-al){text-indent:0}
 
-/* lecteur des œuvres : barre de musique sous le livre, moins de marge vide en bas de page */
-.wr-player{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));z-index:1300;width:min(640px,calc(100vw - 20px));
-  display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:14px;background:rgba(12,12,18,.92);border:1px solid rgba(255,255,255,.12);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 14px 40px rgba(0,0,0,.5);color:#fff;animation:wr-pl-in .25s ease-out}
-.wr-player.min{width:auto;max-width:calc(100vw - 20px)}
-.wr-player button{flex-shrink:0;width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:transparent;border:0;color:inherit;cursor:pointer;transition:background-color .15s}
-.wr-player button:hover{background:rgba(255,255,255,.1)}
-.wr-pl-art{flex-shrink:0;width:40px;height:40px;border-radius:8px;background:#222 center/cover}
-.wr-player.min .wr-pl-art{width:30px;height:30px}
-.wr-pl-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.wr-pl-t{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wr-player.min .wr-pl-mid{max-width:150px}
-.wr-player .rd-prog{display:flex;align-items:center;gap:6px;font-size:10px;opacity:.85}
-.wr-player .rd-prog input{flex:1}
-.wr-pl-vol{width:80px}
-@media (max-width:600px){.wr-pl-vol{display:none}}
-@keyframes wr-pl-in{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 @media (max-width:900px){.ax-flow{padding-bottom:6px!important}}
 @media (max-width:900px),(pointer:coarse){.ax-full:not(.ui) .ax-rbar,.ax-full:not(.ui) .ax-rfoot{opacity:1;transform:none;pointer-events:auto}.ax-full:not(.ui){cursor:auto}}
-.wr-pl-art{display:grid;place-items:center;color:rgba(255,255,255,.7)}
-.wr-pl-prog{display:flex;align-items:center;gap:6px;font-size:10px;opacity:.85}
-.wr-pl-prog input,.wr-pl-vol{-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;background:linear-gradient(to right,var(--brand,#e33) var(--p),rgba(255,255,255,.2) var(--p));cursor:pointer}
-.wr-pl-prog input{flex:1}
-.wr-pl-prog input::-webkit-slider-thumb,.wr-pl-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff}
-@media (max-width:600px){.wr-pl-vol{display:block;width:56px}}
+
+
+/* barre de musique du lecteur : le design de la Radio, au-dessus du livre */
+.rd-bar.wr-bar{z-index:1300;--rc:var(--brand)}
+@media(max-width:767px){.rd-bar.wr-bar{bottom:calc(8px + env(safe-area-inset-bottom,0px));grid-template-columns:minmax(0,1fr) auto auto;padding:8px 10px;gap:6px}.wr-bar .rd-bar-art{width:38px;height:38px}.wr-bar .rd-bar-mid{display:contents}.wr-bar .rd-prog{grid-column:1/-1;order:9}.wr-bar .rd-vol{display:none}}
+.wr-mini-slot{display:inline-flex;flex-shrink:0}
+.wr-mini{--rc:var(--brand);height:34px}
+.ax-music-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.ax-music-h p{margin:0}

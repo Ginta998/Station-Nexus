@@ -318,13 +318,12 @@ function ReaderMusic({ radio, onClose }) {
     radio.play({ id: "yt-q-" + Date.now(), url: `https://www.youtube.com/watch?v=${v.id}`, title: `Recherche : ${q.trim()}`, thumb: `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`, vids }); };
   return (
     <aside className="ax-music" data-testid="alex-music-panel">
-      <p className="mono">MUSIQUE DE LECTURE</p>
-      {radio.pl && <NowPlaying r={radio} />}
+      <div className="ax-music-h"><p className="mono">MUSIQUE DE LECTURE</p><button className="ax-rb" onClick={onClose} data-testid="alex-music-close">Fermer le menu</button></div>
+      {radio.pl && !radio.pub && <NowPlaying r={radio} />}
       {radio.pl && !radio.pub && radio.kept && !radio.kept() && <button className="ax-rb" style={{ marginBottom: 10 }} onClick={radio.keep} data-testid="alex-music-keep"><IoAdd size={14} /> Ajouter ce morceau à ma radio</button>}
       <form onSubmit={go} className="ax-ytq"><IoLogoYoutube size={17} /><input autoFocus={!radio.pl} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Chercher sur YouTube : Hisaishi, pluie, lo-fi…" data-testid="alex-music-input" /><button type="submit" disabled={busy}>{busy ? "…" : "Chercher"}</button></form>
       {res && (res.length ? res.slice(0, 12).map((v) => <button key={v.id} className={"ax-ytr" + (radio.info?.vid === v.id ? " on" : "")} onClick={() => play(v)} data-testid={`alex-yt-${v.id}`}><i style={{ backgroundImage: `url(https://i.ytimg.com/vi/${v.id}/mqdefault.jpg)` }} /><span><b>{v.title}</b><small>{v.author}{v.length ? ` · ${v.length}` : ""}</small></span></button>) : <p className="ax-empty">Aucun résultat.</p>)}
       {!res && (radio.list || []).length > 0 && <><p className="mono" style={{ marginTop: 14 }}>MES PLAYLISTS</p>{radio.list.slice(0, 8).map((p) => <button key={p.id} className={"ax-ytr" + (radio.pl?.id === p.id ? " on" : "")} onClick={() => radio.play(p)}><i style={{ backgroundImage: p.cover || p.thumb ? `url(${coverOf(p)})` : undefined }} /><span><b>{p.title}</b><small>Playlist de ta radio</small></span></button>)}</>}
-      <button className="ax-rb" style={{ marginTop: 12 }} onClick={onClose}>Fermer</button>
     </aside>
   );
 }
