@@ -7,7 +7,8 @@ import { chapterAudioUrl, readingAudioUrl, mediaUrl, hit } from "@/lib/api";
 import { markDone } from "@/lib/shelf";
 import PassageLayer from "@/components/nexus/PassageLayer";
 import { blocksToHtml } from "@/lib/blocks";
-import { useRadio, RadioEngine } from "@/components/atelier/Radio";
+import { useRadio, RadioEngine, Progress, artOf } from "@/components/atelier/Radio";
+import { IoPause, IoPlay, IoPlaySkipForward, IoVolumeHigh, IoVolumeMute, IoChevronDown, IoChevronUp } from "react-icons/io5";
 import { holdAmbient } from "@/lib/ambient";
 
 const PUB_AT = { pub: true, config: { radio: [] }, saveConfig: async () => {} };
@@ -54,6 +55,27 @@ export function bookOfEntry(e) {
     format: e.format || "livre", house: "JOURNAL DE BORD", chapters, words: words(chapters), links: [], look: { theme: e.look || "presse" } };
 }
 
+// Barre de musique pendant la lecture : avancée, pause, suivant, volume, réduire, couper
+function ReaderPlayer({ r }) {
+  const [min, setMin] = useState(false);
+  if (!r.pl) return null;
+  const i = r.info;
+  return createPortal(
+    <div className={"wr-player" + (min ? " min" : "")} data-testid="reader-player">
+      <span className="wr-pl-art" style={{ backgroundImage: `url(${artOf(r.pl, i.vid)})` }} />
+      <div className="wr-pl-mid">
+        <b className="wr-pl-t">{i.title || r.pl.title}</b>
+        {!min && <Progress r={r} />}
+      </div>
+      <button onClick={r.toggle} aria-label={r.playing ? "Pause" : "Lecture"} data-testid="reader-player-toggle">{r.playing ? <IoPause size={18} /> : <IoPlay size={18} />}</button>
+      {!min && (i.n || 0) > 1 && <button onClick={r.next} aria-label="Suivant" data-testid="reader-player-next"><IoPlaySkipForward size={16} /></button>}
+      {!min && <button onClick={r.mute} aria-label="Son" data-testid="reader-player-mute">{r.muted ? <IoVolumeMute size={17} /> : <IoVolumeHigh size={17} />}</button>}
+      {!min && <input className="rd-vol wr-pl-vol" type="range" min="0" max="100" value={r.muted ? 0 : r.vol} onChange={(e) => r.setVol(+e.target.value)} style={{ "--p": (r.muted ? 0 : r.vol) + "%" }} data-testid="reader-player-volume" />}
+      <button onClick={() => setMin(!min)} aria-label={min ? "Agrandir" : "Réduire"} data-testid="reader-player-min">{min ? <IoChevronUp size={17} /> : <IoChevronDown size={17} />}</button>
+      <button onClick={r.stop} aria-label="Couper la musique" data-testid="reader-player-stop"><IoClose size={17} /></button>
+    </div>, document.body);
+}
+
 export default function WorkReader({ item, entry, unitKey = "chapters", catLabel, format = "livre", look, cover, startUnit = null, resume = false, locked, onClose, next, nextCover, onNext, onComment, onEditUnit, noPdf = true }) {
   const [ended, setEnded] = useState(false); // fin de l'œuvre : écran de fin et œuvre suivante
   const { playReadingUrl, toggleReadingUrl, pauseReading, endReading, isPlaying, playingId } = useApp();
@@ -93,8 +115,7 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
     return () => clearInterval(t);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const on = isPlaying && (playingId === readingKey || (typeof playingId === "string" && playingId.startsWith("cue:")));
-  const hasCue = book.chapters.some((c) => c.blocks.some((b) => b.t === "mus"));
-  const music = trackFor(ci) || hasCue || on ? {
+  const music = trackFor(ci) || (on && !radio.pl) ? {
     playing: on, title,
     toggle: () => { if (on) pauseReading(); else { const t = trackFor(ci); if (t) { setTitle("Musique de lecture"); toggleReadingUrl(t, readingKey); } } },
   } : null;
@@ -135,6 +156,7 @@ export default function WorkReader({ item, entry, unitKey = "chapters", catLabel
   return (<>
     {endCard}
     <RadioEngine radio={radio} />
+    <ReaderPlayer r={radio} />
     {curUnit && <PassageLayer item={item} unit={curUnit} unitIndex={map[ci]} unitLabel={`${unitKey === "episodes" ? "Épisode" : "Chapitre"} ${map[ci] + 1}`} />}
     <Reader book={book} cover={cover || (entry?.cover ? mediaUrl(entry.cover) : null)} onClose={onClose} backLabel={entry ? "Retour" : "Retour au monde"} path={where}
       startCh={startCh} keepSaved={resume} onProgress={onProgress} workMusic={music} noPdf={noPdf}

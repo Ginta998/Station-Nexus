@@ -43,9 +43,10 @@ function itemToBook(it) {
 }
 // Texte d'un nœud avec l'italique gardé (*mot*)
 // gras / italique aussi quand ils viennent d'un style (texte collé), retours à la ligne gardés
+const wrapMk = (s, mk) => { const m = s.match(/^(\s*)([\s\S]*?)(\s*)$/); return m[2] ? `${m[1].includes("\n") ? "\n" : m[1]}${mk}${m[2]}${mk}${m[3].includes("\n") ? "\n" : m[3]}` : s; };
 const isB = (c) => /^(STRONG|B)$/.test(c.nodeName) || Number(c.style?.fontWeight) >= 600 || c.style?.fontWeight === "bold";
 const isI = (c) => /^(EM|I)$/.test(c.nodeName) || c.style?.fontStyle === "italic";
-const nodeText = (n) => [...n.childNodes].map((c) => (c.nodeType === 3 ? c.textContent.replace(/\s+/g, " ") : c.nodeName === "BR" ? "\n" : isB(c) ? `**${nodeText(c).trim()}**` : isI(c) ? `*${nodeText(c).trim()}*` : /^(DIV|P|LI)$/.test(c.nodeName) ? `\n${nodeText(c)}\n` : c.nodeType === 1 ? nodeText(c) : "")).join("").replace(/\s+/g, " ").trim();
+const nodeText = (n) => [...n.childNodes].map((c) => (c.nodeType === 3 ? c.textContent.replace(/\s+/g, " ") : c.nodeName === "BR" ? "\n" : isB(c) ? wrapMk(nodeText(c), "**") : isI(c) ? wrapMk(nodeText(c), "*") : /^(DIV|P|LI)$/.test(c.nodeName) ? `\n${nodeText(c)}\n` : c.nodeType === 1 ? nodeText(c) : "")).join("").replace(/\s+/g, " ").trim();
 const YT_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/;
 function itemToBookRaw(it, opt = {}) {
   const doc = new DOMParser().parseFromString(`<div>${it.content || ""}</div>`, "text/html").body.firstChild;
@@ -757,8 +758,8 @@ export function Reader({ book, onClose, onEdit, onModify, onIllustrate, onSwap, 
         {at && <button className={"ax-rb" + (notes ? " on" : "")} onClick={() => { setNotes((n) => !n); setToc(false); setMusic(false); }} aria-expanded={notes} title="Notes (touche N)" data-testid="alex-notes"><IoPencil size={14} /> <span>Notes{noteMarks.length ? ` · ${noteMarks.length}` : ""}</span></button>}
         {radio && <button className={"ax-rb" + (radio.playing ? " on" : "")} onClick={() => { setMusic((m) => !m); setToc(false); setNotes(false); }} aria-expanded={music} data-testid="alex-music" title={radio.pl ? radio.info?.title || radio.pl.title : "Musique"}><IoMusicalNotes size={15} /> <span>{radio.pl ? <span className="ax-rb-now">{radio.info?.title || radio.pl.title}</span> : "Musique"}</span></button>}
         {workMusic && <button className={"ax-rb" + (workMusic.playing ? " on" : "")} onClick={workMusic.toggle} title={workMusic.playing ? "Mettre la musique en pause" : "Lancer la musique de lecture"} data-testid="alex-work-music">{workMusic.playing ? <IoPause size={15} /> : <IoMusicalNotes size={15} />} <span>{workMusic.playing ? <span className="ax-rb-now">{workMusic.title || "Musique"}</span> : "Musique"}</span></button>}
-        {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.toggle} title={radio.playing ? "Pause" : "Lecture"} data-testid="alex-music-toggle">{radio.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>}
-        {radio?.pl && <button className="ax-rb ax-rb-sq" onClick={radio.next} title="Morceau suivant" data-testid="alex-music-next"><IoPlaySkipForward size={15} /></button>}
+        {radio?.pl && !radio.pub && <button className="ax-rb ax-rb-sq" onClick={radio.toggle} title={radio.playing ? "Pause" : "Lecture"} data-testid="alex-music-toggle">{radio.playing ? <IoPause size={15} /> : <IoPlay size={15} />}</button>}
+        {radio?.pl && !radio.pub && <button className="ax-rb ax-rb-sq" onClick={radio.next} title="Morceau suivant" data-testid="alex-music-next"><IoPlaySkipForward size={15} /></button>}
         {onAddVideo && <button className={"ax-rb" + (vid ? " on" : "")} onClick={() => { setVid((v) => !v); setToc(false); setMusic(false); setNotes(false); }} aria-expanded={vid} title="Ajouter une vidéo YouTube à cette page" data-testid="alex-addvid"><IoLogoYoutube size={15} /> <span>Vidéo</span></button>}
         {!noPdf && <button className="ax-rb" onClick={() => exportBook(book, cover, bookNotes(at, book.id, pages))} title="Exporter le livre en PDF, avec tes notes" data-testid="alex-pdf"><IoPrintOutline size={15} /> <span>PDF</span></button>}
         {onEditChapter && <button className="ax-rb" onClick={() => onEditChapter(chIdxAt())} title="Modifier ce chapitre ici même" data-testid="alex-edit-chapter"><IoCreateOutline size={15} /> <span>Modifier</span></button>}
