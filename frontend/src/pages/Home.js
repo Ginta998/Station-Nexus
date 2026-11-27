@@ -142,7 +142,7 @@ export default function Home() {
   const [themeOpen, setThemeOpen] = useState(false);
   const [studioOpen, setStudioOpen] = useState(false);
   const [univOpen, setUnivOpen] = useState(""); // fenêtre d'un univers
-  useEffect(() => { const h = (e) => { sfx("select"); setUnivOpen(e.detail?.name || ""); }; window.addEventListener("nx-univers", h); return () => window.removeEventListener("nx-univers", h); }, []); // eslint-disable-line // Nexus OS (admin) ouvert par-dessus l'accueil
+  useEffect(() => { const h = (e) => { sfx("select"); setUnivOpen(e.detail?.name || ""); }; window.addEventListener("nx-univers", h); return () => window.removeEventListener("nx-univers", h); }, []); // eslint-disable-line -- Nexus OS (admin) ouvert par-dessus l'accueil
   const experience = useExperience();
   // Nexus OS : le thème choisit l'ordre des blocs de l'accueil, ceux qu'il montre et leur présentation
   const blocs = useBlocs();
