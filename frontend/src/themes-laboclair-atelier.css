@@ -2,8 +2,8 @@
    L'Atelier a été dessiné pour des fonds sombres : on corrige les textes clairs posés sur le papier,
    sans toucher aux images. Sur les bandeaux à image, le voile devient graphite (et non blanc)
    pour que l'image reste visible et que le texte posé dessus reste clair. */
-html[data-theme="laboclair"] .cb-stars{opacity:0}
-html[data-theme="laboclair"] .cosmic-bg .layer{opacity:0}
+html[data-scene="laboclair"] .cb-stars{opacity:0}
+html[data-scene="laboclair"] .cosmic-bg .layer{opacity:0}
 html[data-theme="laboclair"]{--card-r:0px;--card-bd:rgba(28,31,33,.2);--card-sh:0 12px 26px -16px rgba(60,66,70,.45)}
 
 /* Textes courants */

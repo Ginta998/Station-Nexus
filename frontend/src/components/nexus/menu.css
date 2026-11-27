@@ -1,0 +1,200 @@
+/* Nexus OS : le cadre de la Station (menu) et le mouvement de la page. Réglés par le thème via des attributs sur <html>. */
+
+/* ---------- Matières de la barre ---------- */
+html[data-menu-mat] .sx-header{transition:background .4s,box-shadow .4s}
+html[data-menu-mat="verre"] .sx-header{background:color-mix(in srgb,var(--bg-primary) 52%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 1px 0 color-mix(in srgb,var(--border-c) 80%,transparent)}
+html[data-menu-mat="plein"] .sx-header{background:var(--bg-secondary);box-shadow:0 1px 0 var(--border-c),0 12px 30px -20px rgba(0,0,0,.6)}
+html[data-menu-mat="papier"] .sx-header{background:radial-gradient(rgba(43,36,29,.06) 1px,transparent 1.2px) 0 0/4px 4px,#f3ece0;box-shadow:0 1px 0 rgba(43,36,29,.18),0 14px 30px -22px rgba(0,0,0,.6);--on-media:#2b241d;--on-media-2:#6b5f52}
+html[data-menu-mat="papier"] .sx-header :is(button,a):not([data-testid=mobile-menu-btn]){background:transparent!important;border-color:rgba(43,36,29,.25)!important;color:#2b241d!important;text-shadow:none!important}
+html[data-menu-mat="papier"] .sx-header .sx-logo span{color:#2b241d!important;text-shadow:none!important}
+html[data-menu-mat="transparent"] .sx-header{background:linear-gradient(180deg,rgba(0,0,0,.35),transparent)}
+html[data-menu-mat="transparent"] .sx-header :is(button,a){background:transparent!important;border-color:rgba(255,255,255,.6)!important;color:#fff!important;box-shadow:none!important}
+html[data-menu-mat="transparent"] .sx-header [data-testid=mobile-menu-btn]{border:1px solid #fff!important}
+html[data-menu-mat] .sx-header{padding-bottom:14px}
+@media (min-width:768px){html[data-menu-mat] .sx-header{padding-bottom:18px}}
+
+/* ---------- Positions ---------- */
+html[data-menu-pos="fixe"] .sx-header{position:sticky!important;top:0;z-index:60}
+html[data-menu-pos="fixe"]:not([data-menu-mat]) .sx-header{background:color-mix(in srgb,var(--bg-primary) 60%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding-bottom:12px}
+
+/* Sur le côté (ordinateur) : une colonne fixe, l'index des sections en bas */
+@media (min-width:900px){
+  html[data-menu-pos="cote"]{--fullw:calc(100vw - 88px)}
+  html[data-menu-pos="cote"] body{padding-left:88px}
+  html[data-menu-pos="cote"] .sx-header{position:fixed!important;z-index:60;left:0;top:0;bottom:0;width:88px;flex-direction:column;justify-content:flex-start;gap:22px;padding:22px 0!important;box-shadow:1px 0 0 color-mix(in srgb,var(--border-c) 80%,transparent)}
+  html[data-menu-pos="cote"]:not([data-menu-mat]) .sx-header{background:color-mix(in srgb,var(--bg-primary) 70%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  html[data-menu-pos="cote"] .sx-header .sx-logo>span:not(.sx-emblem){display:none!important}
+  html[data-menu-pos="cote"] .sx-header>div{flex-direction:column;gap:10px}
+  html[data-menu-pos="cote"] .sx-header [data-testid=profile-btn]{padding:6px!important}
+  html[data-menu-pos="cote"] .sx-header [data-testid=profile-btn]>span{display:none}
+  html[data-menu-pos="cote"] .sx-header [data-testid=mobile-menu-btn]{flex-direction:column;gap:2px;padding:8px 10px!important;font-size:10px!important}
+  html[data-menu-pos="cote"] [data-testid=text-size-menu],html[data-menu-pos="cote"] .sx-sound-menu{left:calc(100% + 10px)!important;right:auto!important;top:0!important}
+}
+.nx-rail{position:fixed;z-index:61;left:0;bottom:22px;width:88px;display:none;flex-direction:column;align-items:center;gap:2px;color:var(--text-primary)}
+@media (min-width:900px){html[data-menu-pos="cote"] .nx-rail{display:flex}}
+.nx-rail-h{margin-bottom:8px;font:500 9px "Space Mono",monospace;letter-spacing:.2em;text-transform:uppercase;writing-mode:vertical-rl;transform:rotate(180deg);opacity:.55}
+.nx-rail button{position:relative;display:block;padding:5px 0;border:0;background:none;color:inherit;font:700 11px "Space Mono",monospace;letter-spacing:.08em;cursor:pointer;opacity:.45;transition:opacity .25s,color .25s}
+.nx-rail button.on,.nx-rail button:hover{opacity:1;color:var(--brand)}
+.nx-rail button span{position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(-6px);padding:5px 10px;border-radius:6px;background:var(--bg-secondary);border:1px solid var(--border-c);color:var(--text-primary);font:500 12px var(--font-body);letter-spacing:0;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.nx-rail button:hover span{opacity:1;transform:translateY(-50%)}
+.nx-rail-p{position:relative;width:2px;height:90px;margin-top:10px;background:color-mix(in srgb,var(--text-primary) 22%,transparent)}
+.nx-rail-p i{position:absolute;inset:0;background:var(--brand);transform-origin:0 0;transition:transform .15s linear}
+
+/* Dock en bas : barre fixe sur téléphone, pilule flottante sur ordinateur */
+html[data-menu-pos="dock"] .sx-header{position:fixed!important;z-index:60;left:0;right:0;bottom:0;top:auto;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px))!important;box-shadow:0 -1px 0 color-mix(in srgb,var(--border-c) 80%,transparent)}
+html[data-menu-pos="dock"]:not([data-menu-mat]) .sx-header{background:color-mix(in srgb,var(--bg-primary) 72%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+html[data-menu-pos="dock"] body{padding-bottom:78px}
+html[data-menu-pos="dock"] [data-testid=text-size-menu]{top:auto!important;bottom:calc(100% + 10px)!important}
+html[data-menu-pos="dock"] .sx-sound-menu{top:auto!important;bottom:calc(100% + 10px)!important}
+@media (min-width:900px){
+  html[data-menu-pos="dock"] .sx-header{left:50%;right:auto;bottom:18px;transform:translateX(-50%);gap:28px;padding:8px 10px 8px 14px!important;border-radius:999px;border:1px solid color-mix(in srgb,var(--border-c) 90%,transparent);box-shadow:0 20px 50px -20px rgba(0,0,0,.7)}
+  html[data-menu-pos="dock"] body{padding-bottom:0}
+  html[data-menu-pos="dock"] .sx-header .sx-emblem{width:40px;height:40px}
+}
+
+/* ---------- Icônes ---------- */
+html:is([data-icones="kanji"],[data-icones="texte"]) .sx-header :is([data-testid=profile-btn],[data-testid=sound-btn],[data-testid=fullscreen-toggle],[data-testid=mobile-menu-btn])>svg,
+html:is([data-icones="kanji"],[data-icones="texte"]) .sx-header [data-testid=text-size-btn]>span{display:none}
+html:is([data-icones="kanji"],[data-icones="texte"]) .sx-header :is([data-testid=profile-btn],[data-testid=sound-btn],[data-testid=fullscreen-toggle],[data-testid=text-size-btn])::before{font-size:15px;line-height:18px;min-width:18px;text-align:center;font-weight:600}
+html[data-icones="kanji"] .sx-header :is([data-testid=profile-btn],[data-testid=sound-btn],[data-testid=fullscreen-toggle],[data-testid=text-size-btn],[data-testid=mobile-menu-btn])::before{font-family:"Noto Serif JP","Shippori Mincho",serif}
+html[data-icones="kanji"] .sx-header [data-testid=profile-btn]::before{content:"人"}
+html[data-icones="kanji"] .sx-header [data-testid=sound-btn]:not(.on)::before{content:"音"}
+html[data-icones="kanji"] .sx-header [data-testid=fullscreen-toggle]::before{content:"全"}
+html[data-icones="kanji"] .sx-header [data-testid=text-size-btn]::before{content:"字"}
+html[data-icones="kanji"] .sx-header [data-testid=mobile-menu-btn]::before{content:"門";font-size:16px}
+html[data-icones="texte"] .sx-header :is([data-testid=sound-btn],[data-testid=fullscreen-toggle],[data-testid=text-size-btn])::before{font:600 11px/18px "Space Mono",monospace;letter-spacing:.08em;text-transform:uppercase}
+html[data-icones="texte"] .sx-header [data-testid=sound-btn]:not(.on)::before{content:"Son"}
+html[data-icones="texte"] .sx-header [data-testid=fullscreen-toggle]::before{content:"Écran"}
+html[data-icones="texte"] .sx-header [data-testid=text-size-btn]::before{content:"Taille"}
+html[data-icones="texte"] .sx-header [data-testid=profile-btn]>svg{display:none}
+
+.sx-header .nx-ic,.sx-menu .nx-ic{flex:none}
+/* Boutons du menu : sans cadre (juste le signe) ou ronds */
+html[data-cadre="sans"] .sx-header :is(button,a):not(.sx-logo){border-color:transparent!important;background:transparent!important;box-shadow:none!important}
+html[data-cadre="sans"] .sx-header :is(button,a):not(.sx-logo):hover{background:color-mix(in srgb,var(--text-primary) 10%,transparent)!important}
+html[data-cadre="rond"] .sx-header :is(button,a):not(.sx-logo){border-radius:999px!important}
+
+/* ---------- Mouvement ---------- */
+html[data-defile="sections"]{scroll-snap-type:y proximity}
+html[data-defile="sections"] .sx-exp>.nb{scroll-snap-align:start;scroll-margin-top:0}
+/* Entrée dans une œuvre : toujours autour de l'objet */
+html[data-lancement="tour"] .nx-lf-obj .nx-box-in{animation:lfSpin 1.45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes lfSpin{from{transform:rotateY(-560deg) scale(.55)}to{transform:rotateY(0) scale(1)}}
+html[data-lancement="plongee"] .nx-lf-obj{animation:lfDive 1.75s cubic-bezier(.6,0,.25,1) both}
+@keyframes lfDive{0%{transform:scale(.7);opacity:0}28%{transform:scale(1);opacity:1;filter:none}62%{transform:scale(1.04);opacity:1;filter:none}100%{transform:scale(7);opacity:0;filter:blur(8px)}}
+html[data-lancement="plongee"] .nx-lf-obj .nx-box-in{animation:lfFace 1.75s ease both}
+@keyframes lfFace{from{transform:rotateY(32deg)}40%,to{transform:rotateY(0)}}
+html[data-lancement="plongee"] .nx-launchfx .nx-lf-t{animation-delay:1.1s}
+html[data-lancement="envol"] .nx-lf-obj{animation:lfCome 1.5s cubic-bezier(.16,1,.3,1) both}
+@keyframes lfCome{from{transform:translateY(38vh) scale(.12);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
+html[data-lancement="envol"] .nx-lf-obj .nx-box-in{animation:lfTilt 1.5s cubic-bezier(.16,1,.3,1) both}
+@keyframes lfTilt{from{transform:rotateX(55deg) rotateY(-40deg) rotateZ(-12deg)}to{transform:none}}
+html[data-cadre="sans"] .sx-header [data-testid=mobile-menu-btn]{color:var(--brand)!important}
+/* Packs d'icônes dessinés */
+.nxi-neon{fill:none;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.nxi-neon .g{stroke:var(--brand);stroke-width:4.4;opacity:.55;filter:blur(2.2px)}
+.nxi-neon .t{stroke:var(--brand);stroke-width:1.9}
+.nxi-neon .c{stroke:#fff;stroke-width:.75;opacity:.9}
+.nxi-encre{fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.nxi-encre .d{stroke-width:1;opacity:.45}
+.nxi-pixel{fill:currentColor;shape-rendering:crispEdges}
+html[data-icones="neon"] .sx-header :is(button,a){text-shadow:0 0 8px color-mix(in srgb,var(--brand) 60%,transparent)}
+[data-testid=mobile-menu-btn] .nxi-neon :is(.g,.t){stroke:currentColor}
+/* Packs d'icônes d'artistes : un masque coloré par le thème */
+.nxi-img{display:inline-block;flex:none;background:currentColor;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;vertical-align:middle}
+.nxi-carnet{transform:scale(1.18)}
+/* Au téléphone, les étiquettes du pack Texte se serrent : la barre du haut ne dépasse plus de l'écran */
+@media (max-width:520px){
+  html[data-icones="texte"] .sx-header :is([data-testid=sound-btn],[data-testid=fullscreen-toggle],[data-testid=text-size-btn]){padding-left:7px!important;padding-right:7px!important}
+  html[data-icones="texte"] .sx-header :is([data-testid=sound-btn],[data-testid=fullscreen-toggle],[data-testid=text-size-btn])::before{font-size:9.5px;letter-spacing:.02em}
+}
+
+/* ===== Nexus OS › Menu : le tiroir (matière, apparition) et le voile ; les fenêtres de la Station ===== */
+/* Matière du tiroir (Techno = d'origine : grille, balayage, coins HUD) */
+html[data-tiroir] .sx-menu::after,html[data-tiroir] .sx-menu .sm-scan,html[data-tiroir] .sx-menu .sm-corner,html[data-tiroir] .sx-menu-sys{display:none}
+html[data-tiroir] .sx-menu::before{opacity:.35;animation:none}
+html[data-tiroir="verre"] .sx-menu{background:color-mix(in srgb,var(--bg-secondary) 52%,transparent);-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);border-color:rgba(255,255,255,.22);box-shadow:-30px 0 80px -30px rgba(0,0,0,.6),inset 1px 1px 0 rgba(255,255,255,.18)}
+html[data-tiroir="verre"] .sx-menu-card,html[data-tiroir="verre"] .sx-menu-profile{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.16);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+html[data-tiroir="papier"] .sx-menu{--text-primary:#2b241d;--text-secondary:#6d6152;--border-c:rgba(43,36,29,.18);--bg-primary:#f8f2e8;color:#2b241d;background:radial-gradient(rgba(43,36,29,.06) 1px,transparent 1.2px) 0 0/5px 5px,linear-gradient(180deg,#f6efe2,#ece2d1);border-color:rgba(43,36,29,.25);box-shadow:-30px 0 80px -30px rgba(0,0,0,.5)}
+html[data-tiroir="papier"] .sx-menu::before{display:none}
+html[data-tiroir="papier"] .sx-menu-card,html[data-tiroir="papier"] .sx-menu-profile,html[data-tiroir="papier"] .sx-menu-auth{background:rgba(255,255,255,.55);border-color:rgba(43,36,29,.16);box-shadow:0 1px 0 rgba(43,36,29,.08)}
+html[data-tiroir="papier"] .sx-menu-card:hover{background:#fff;box-shadow:0 8px 20px -12px rgba(43,36,29,.5)}
+html[data-tiroir="papier"] .sx-menu-wm{text-shadow:none}
+html[data-tiroir="papier"] .sx-menu-x{background:transparent;color:#2b241d}
+html[data-tiroir="plein"] .sx-menu{background:var(--bg-secondary);border-color:var(--border-c);box-shadow:-30px 0 80px -30px rgba(0,0,0,.7)}
+html[data-tiroir="plein"] .sx-menu::before{display:none}
+html[data-tiroir="plein"] .sx-menu-card{background:var(--bg-primary);border-color:transparent}
+html[data-tiroir="minimal"] .sx-menu{background:var(--bg-primary);border:0;box-shadow:none}
+html[data-tiroir="minimal"] .sx-menu::before{display:none}
+html[data-tiroir="minimal"] .sx-menu-card{background:transparent;border-color:transparent;padding-left:8px}
+html[data-tiroir="minimal"] .sx-menu-card::before{width:3px;border-radius:2px;box-shadow:none}
+html[data-tiroir="minimal"] .sx-menu-card:hover{background:color-mix(in srgb,var(--text-primary) 6%,transparent);box-shadow:none}
+html[data-tiroir="minimal"] .sx-menu-card .mc-ic{background:transparent}
+html[data-tiroir="minimal"] .sx-menu-card .mc-s,html[data-tiroir="minimal"] .sx-menu-cat .c-l{display:none}
+html[data-tiroir="minimal"] .sx-menu-profile{background:transparent;border-color:var(--border-c)}
+html[data-tiroir="minimal"] :is(.sx-menu-foot,.sx-menu-themes){border-top-color:var(--border-c)}
+
+/* Apparition du tiroir */
+html[data-tiroir-pos="haut"] .sx-menu-scrim{justify-content:center;align-items:flex-start}
+html[data-tiroir-pos="haut"] .sx-menu{width:100%;max-width:100%;height:auto;max-height:88dvh;border-left:0;border-bottom:1px solid color-mix(in srgb,var(--brand) 45%,var(--border-c));border-radius:0 0 22px 22px;animation:smDrop .5s cubic-bezier(.16,.84,.3,1)}
+@keyframes smDrop{from{transform:translateY(-100%)}to{transform:none}}
+html[data-tiroir-pos="centre"] .sx-menu-scrim{justify-content:center;align-items:center;padding:16px}
+html[data-tiroir-pos="centre"] .sx-menu{width:min(620px,100%);max-width:100%;height:auto;max-height:calc(100dvh - 32px);border:1px solid color-mix(in srgb,var(--brand) 45%,var(--border-c));border-radius:22px;animation:smPop .42s cubic-bezier(.2,.9,.3,1.15)}
+@keyframes smPop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:none}}
+html[data-tiroir-pos="plein"] .sx-menu-scrim{justify-content:center}
+html[data-tiroir-pos="plein"] .sx-menu{width:100%;max-width:100%;height:100%;border-left:0;animation:smFull .45s ease}
+@keyframes smFull{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+html[data-tiroir-pos="plein"] .sx-menu>*{width:100%;max-width:1100px;margin-left:auto;margin-right:auto;box-sizing:border-box}
+html[data-tiroir-pos="plein"] .sx-menu .sm-scan,html[data-tiroir-pos="plein"] .sx-menu .sm-corner{max-width:none}
+@media (min-width:640px){
+  html:is([data-tiroir-pos="haut"],[data-tiroir-pos="centre"],[data-tiroir-pos="plein"]) .sx-menu-group{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+  html:is([data-tiroir-pos="haut"],[data-tiroir-pos="centre"],[data-tiroir-pos="plein"]) .sx-menu-group .sx-menu-cat{grid-column:1/-1}
+  html:is([data-tiroir-pos="haut"],[data-tiroir-pos="centre"],[data-tiroir-pos="plein"]) .sx-menu-list:not(:has(.sx-menu-group)){display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));align-content:start}
+  html:is([data-tiroir-pos="haut"],[data-tiroir-pos="plein"]) .sx-menu-card:hover{transform:translateY(-3px)}
+}
+html[data-tiroir-pos="plein"] .sx-menu-list{flex:1}
+html[data-tiroir-pos="haut"] .sx-menu-list,html[data-tiroir-pos="centre"] .sx-menu-list{flex:0 1 auto}
+
+/* Voile derrière le menu (Flou = d'origine) */
+html[data-voile="sombre"] .sx-menu-scrim{background:rgba(2,4,10,.82);-webkit-backdrop-filter:none;backdrop-filter:none}
+html[data-voile="trame"] .sx-menu-scrim{-webkit-backdrop-filter:none;backdrop-filter:none;background:radial-gradient(color-mix(in srgb,var(--brand) 30%,transparent) 1px,transparent 1.4px) 0 0/6px 6px,repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 2px,transparent 2px 4px),rgba(2,4,10,.55)}
+html[data-voile="aucun"] .sx-menu-scrim{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+
+/* Les fenêtres : voile */
+html[data-ov-voile="flou"] .nx-ov{background:rgba(0,0,0,.42)!important;-webkit-backdrop-filter:blur(12px) saturate(1.2)!important;backdrop-filter:blur(12px) saturate(1.2)!important}
+html[data-ov-voile="sombre"] .nx-ov{background:rgba(0,0,0,.84)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html[data-ov-voile="trame"] .nx-ov{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:radial-gradient(color-mix(in srgb,var(--brand) 30%,transparent) 1px,transparent 1.4px) 0 0/6px 6px,repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 2px,transparent 2px 4px),rgba(2,4,10,.55)!important}
+html[data-ov-voile="aucun"] .nx-ov{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+/* Les fenêtres : matière */
+html[data-ov-mat="techno"] .nx-ov-panel{background:linear-gradient(180deg,color-mix(in srgb,var(--brand) 10%,var(--bg-secondary)),var(--bg-primary) 70%)!important;border:1px solid color-mix(in srgb,var(--brand) 55%,var(--border-c))!important;border-radius:10px!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--brand) 18%,transparent),0 0 40px -12px color-mix(in srgb,var(--brand) 60%,transparent),0 30px 70px -20px #000!important;
+  background-image:repeating-linear-gradient(0deg,transparent 0 3px,color-mix(in srgb,var(--brand) 4%,transparent) 3px 4px),linear-gradient(180deg,color-mix(in srgb,var(--brand) 10%,var(--bg-secondary)),var(--bg-primary) 70%)!important}
+html[data-ov-mat="verre"] .nx-ov-panel{background:color-mix(in srgb,var(--bg-secondary) 55%,transparent)!important;-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);border:1px solid rgba(255,255,255,.2)!important;border-radius:20px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 30px 70px -20px rgba(0,0,0,.6)!important}
+html[data-ov-mat="papier"] .nx-ov-panel{--bg-secondary:#f4ece0;--bg-primary:#f9f4ea;--text-primary:#2b241d;--text-secondary:#6d6152;--border-c:rgba(43,36,29,.18);color:#2b241d;border-color:rgba(43,36,29,.2)!important;border-radius:6px!important;box-shadow:0 2px 0 rgba(43,36,29,.08),0 30px 60px -20px rgba(0,0,0,.55)!important}
+html[data-ov-mat="plein"] .nx-ov-panel{background:var(--bg-secondary)!important;border-color:transparent!important;border-radius:var(--radius-base,14px)!important;box-shadow:0 30px 70px -20px rgba(0,0,0,.7)!important}
+html[data-ov-mat="minimal"] .nx-ov-panel{background:var(--bg-primary)!important;border-color:transparent!important;border-radius:0!important;box-shadow:none!important}
+/* Les fenêtres : apparition (translate/scale séparés : ne gêne pas le centrage des fenêtres) */
+html[data-ov-anim] .nx-ov-panel{animation:none}
+html[data-ov-anim="monte"] .nx-ov-panel{animation:ovUp .42s cubic-bezier(.16,.84,.3,1) both}
+html[data-ov-anim="zoom"] .nx-ov-panel{animation:ovZoom .36s cubic-bezier(.2,.9,.3,1.2) both}
+html[data-ov-anim="fondu"] .nx-ov-panel{animation:ovFade .4s ease both}
+html[data-ov-anim="glisse"] .nx-ov-panel{animation:ovSide .42s cubic-bezier(.16,.84,.3,1) both}
+@keyframes ovUp{from{translate:0 48px;opacity:0}to{translate:0 0;opacity:1}}
+@keyframes ovZoom{from{scale:.86;opacity:0}to{scale:1;opacity:1}}
+@keyframes ovFade{from{opacity:0}to{opacity:1}}
+@keyframes ovSide{from{translate:60px 0;opacity:0}to{translate:0 0;opacity:1}}
+@media (prefers-reduced-motion:reduce){html[data-ov-anim] .nx-ov-panel,html[data-tiroir-pos] .sx-menu{animation:none}}
+
+/* Le menu défile au lieu d'écraser ses lignes : chaque carte garde sa hauteur naturelle */
+.sx-menu-list>*,.sx-menu-group>*{flex-shrink:0}
+.sx-menu-list{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+@media (max-width:640px){
+  .sx-menu-list{gap:10px;padding-bottom:18px}
+  .sx-menu-group{gap:10px}
+  .sx-menu-card{padding-top:14px;padding-bottom:14px}
+}
+/* « Il y a encore des choses plus bas » : un fondu et une petite flèche qui respire */
+.sx-menu-more{position:relative;z-index:4;flex:none;height:52px;margin-top:-52px;width:100%;border:0;padding:0 0 6px;display:flex;align-items:flex-end;justify-content:center;cursor:pointer;color:var(--brand);
+  background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--bg-secondary,var(--bg-primary)) 92%,transparent) 70%)}
+.sx-menu-more svg{width:30px;height:30px;padding:6px;border-radius:999px;border:1px solid color-mix(in srgb,var(--brand) 45%,var(--border-c));background:color-mix(in srgb,var(--bg-primary) 80%,transparent);animation:smMore 1.6s ease-in-out infinite}
+@keyframes smMore{50%{transform:translateY(3px)}}
+html[data-tiroir="papier"] .sx-menu-more{background:linear-gradient(180deg,transparent,#f8f2e8 70%)}

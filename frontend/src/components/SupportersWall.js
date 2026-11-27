@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { IoSparkles, IoHeart, IoStar, IoDiamond, IoCheckmarkCircle } from "react-icons/io5";
-import { listProfiles, getSettings } from "@/lib/api";
+import { listProfiles, getSettings, getMembershipPlan } from "@/lib/api";
+import { pressMenu } from "@/components/atelier/ContextMenu";
 import { useApp } from "@/context/AppContext";
 
 const WALL_STYLE = {
@@ -9,39 +10,78 @@ const WALL_STYLE = {
   mecene: { color: "#ffcc33", Icon: IoStar },
   legende: { color: "#ff5d8f", Icon: IoDiamond },
 };
-const wallStyle = (id) => WALL_STYLE[id] || { color: "var(--brand)", Icon: IoSparkles };
+const PALETTE = ["#4d8dff", "#ffcc33", "#ff5d8f", "#57d39b", "#b98cff"];
+const ICONS = [IoHeart, IoStar, IoDiamond, IoSparkles];
 
-// Mur des soutiens réutilisable (identique à la page Soutien).
-export function SupportersWall({ compact = false }) {
+// Les soutiens, rangés du palier le plus haut au premier : même ordre que la page Soutien
+export function useSupporters() {
   const { data: allProfiles = [] } = useQuery({ queryKey: ["profiles"], queryFn: listProfiles });
-  const supporters = allProfiles.filter((p) => p.tier_name);
-  if (supporters.length === 0) return null;
+  const { data: plan } = useQuery({ queryKey: ["membership-plan"], queryFn: getMembershipPlan });
+  const tiers = plan?.tiers || [];
+  const rank = (id) => { const i = tiers.findIndex((t) => t.id === id); return i < 0 ? -1 : i; };
+  const style = (id) => { const i = rank(id); return WALL_STYLE[id] || { color: PALETTE[Math.max(0, i) % PALETTE.length], Icon: ICONS[Math.max(0, i) % ICONS.length] }; };
+  const list = allProfiles.filter((p) => p.tier_name).sort((a, b) => rank(b.tier_id) - rank(a.tier_id) || (a.name || "").localeCompare(b.name || ""));
+  const groups = [];
+  list.forEach((p) => { const g = groups.find((x) => x.id === p.tier_id); if (g) g.people.push(p); else groups.push({ id: p.tier_id, name: p.tier_name, people: [p], ...style(p.tier_id) }); });
+  return { list, groups, style };
+}
+
+const Avatar = ({ p, color, size }) => (
+  <span className="sw-av" style={{ "--c": color, width: size, height: size }}>
+    {p.avatar ? <img src={p.avatar} alt="" /> : <b>{(p.name || "?")[0].toUpperCase()}</b>}
+  </span>
+);
+
+// Clic droit / appui long sur un soutien : voir son profil chez les Membres, lui écrire
+const supMenu = (p, nav) => () => ({ title: p.name || "Soutien", entries: [
+  { label: "Voir son profil", onClick: () => nav(`/membres#m-${p.id}`) },
+  ...(p.account_id ? [{ label: "Lui écrire au Salon", onClick: () => nav(`/salon?tab=dm&to=${p.account_id}&name=${encodeURIComponent(p.name || "Membre")}`) }] : []),
+  ...(p.instagram ? [{ label: "Son Instagram", onClick: () => window.open(`https://instagram.com/${String(p.instagram).replace(/^@/, "")}`, "_blank", "noopener") }] : []),
+] });
+
+// Mur des soutiens : un étage par palier (le plus haut en premier, portraits plus grands), nom et palier sous chaque portrait.
+// Le même sur la page Soutien et sur la fiche des œuvres (compact).
+export function SupportersWall({ compact = false, title, eyebrow }) {
+  const nav = useNavigate();
+  const { list, groups } = useSupporters();
+  if (list.length === 0) return null;
   return (
-    <div data-testid="supporters-wall">
-      <div className="text-center mb-6">
-        <p className="text-xs uppercase tracking-[0.3em] mb-1" style={{ color: "var(--brand)" }}>✦ Rendue possible grâce à</p>
-        <h3 className="font-display text-2xl md:text-3xl" style={{ color: "var(--text-primary)" }}>Nos soutiens 💛</h3>
-        {!compact && <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>Ces voyageurs font grandir la station, œuvre après œuvre.</p>}
+    <div className={"sw" + (compact ? " compact" : "")} data-testid="supporters-wall">
+      <div className="sw-head">
+        <p className="sw-eye">{eyebrow || "✦ Rendue possible grâce à"}</p>
+        <h3 className="font-display">{title || "Nos soutiens"}</h3>
+        <p className="sw-n">{list.length} soutien{list.length > 1 ? "s" : ""} font grandir la station, œuvre après œuvre.</p>
       </div>
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-        {supporters.map((p) => {
-          const ws = wallStyle(p.tier_id);
-          return (
-            <div key={p.id} data-testid={`supporter-${p.id}`} className="flex flex-col items-center text-center">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden flex items-center justify-center relative" style={{ border: `2px solid ${ws.color}`, background: "var(--bg-secondary)" }}>
-                {p.avatar
-                  ? <img src={p.avatar} alt={p.name} className="w-full h-full object-cover" />
-                  : <span className="font-display text-2xl" style={{ color: ws.color }}>{(p.name || "?")[0].toUpperCase()}</span>}
-                <span className="absolute -bottom-1 -right-1 w-6 h-6 flex items-center justify-center rounded-full" style={{ background: ws.color, border: "2px solid var(--bg-primary)" }}>
-                  <ws.Icon size={11} style={{ color: "#0a0a0a" }} />
-                </span>
+      {groups.map((g, gi) => (
+        <div key={g.id} className={"sw-tier" + (gi === 0 && groups.length > 1 ? " top" : "")} style={{ "--c": g.color }}>
+          <p className="sw-tier-h"><g.Icon size={13} /> {g.name} <i>{g.people.length}</i></p>
+          <div className="sw-grid">
+            {g.people.map((p) => (
+              <div key={p.id} className="sw-p" data-testid={`supporter-${p.id}`} title={`${p.name} · ${g.name}`} onClick={() => nav(`/membres#m-${p.id}`)} {...pressMenu(supMenu(p, nav))}>
+                <Avatar p={p} color={g.color} />
+                <span className="sw-name">{p.name || "Anonyme"}</span>
               </div>
-              <p className="mt-2 text-xs font-semibold truncate w-full" style={{ color: "var(--text-primary)" }}>{p.name || "Anonyme"}</p>
-              <span className="text-[10px] uppercase tracking-wide" style={{ color: ws.color }}>{p.tier_name}</span>
-            </div>
-          );
-        })}
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Le bloc Soutien de l'accueil : une rangée de portraits qui se chevauchent, le nombre, et un clic vers la page Soutien
+export function SupportersStrip({ max = 9 }) {
+  const nav = useNavigate();
+  const { list, style } = useSupporters();
+  if (list.length === 0) return null;
+  const shown = list.slice(0, max);
+  return (
+    <div className="sw-strip" data-testid="supporters-strip">
+      <div className="sw-stack">
+        {shown.map((p) => <span key={p.id} title={`${p.name} · ${p.tier_name}`} onClick={(e) => { e.stopPropagation(); nav(`/membres#m-${p.id}`); }} {...pressMenu(supMenu(p, nav))}><Avatar p={p} color={style(p.tier_id).color} /></span>)}
+        {list.length > max && <span className="sw-more" onClick={() => nav("/soutien")}>+{list.length - max}</span>}
       </div>
+      <p><b>{list.length} soutien{list.length > 1 ? "s" : ""}</b> font déjà vivre la station{shown[0] ? <> — dont <b>{shown[0].name}</b>{shown[1] ? <>, <b>{shown[1].name}</b></> : null}</> : null}.</p>
     </div>
   );
 }
@@ -75,7 +115,7 @@ export function FicheSupport({ membershipActive }) {
           </>
         )}
       </div>
-      <SupportersWall compact />
+      <SupportersWall compact eyebrow="✦ Cette œuvre existe grâce à" title="Ils la soutiennent" />
     </div>
   );
 }

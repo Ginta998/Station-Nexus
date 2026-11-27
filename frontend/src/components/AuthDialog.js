@@ -32,8 +32,8 @@ export default function AuthDialog() {
   const fld = { background: "var(--bg-primary)", border: "1px solid var(--border-c)", color: "var(--text-primary)", borderRadius: "var(--radius-base)" };
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} onClick={closeAuth} data-testid="auth-dialog">
-      <div className="w-full max-w-md p-6 md:p-7" style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-c)", borderRadius: "18px", boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }} onClick={(e) => e.stopPropagation()}>
+    <div className="nx-ov fixed inset-0 z-[90] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} onClick={closeAuth} data-testid="auth-dialog">
+      <div className="nx-ov-panel w-full max-w-md p-6 md:p-7" style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-c)", borderRadius: "18px", boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between mb-1">
           <h2 className="font-display text-2xl" style={{ color: "var(--text-primary)" }}>{mode === "register" ? "Créer un compte" : "Se connecter"}</h2>
           <button data-testid="auth-close" onClick={closeAuth} style={{ color: "var(--text-secondary)" }}><IoClose size={22} /></button>

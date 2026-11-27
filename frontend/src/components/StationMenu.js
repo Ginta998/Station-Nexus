@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { NxIcon } from "@/lib/icons";
 import { createPortal } from "react-dom";
 import AmbientMixer from "@/components/AmbientMixer";
 import { useAmbient, setAmbientMuted } from "@/lib/ambient";
 import { useQuery } from "@tanstack/react-query";
-import { IoEyeOutline, IoLibraryOutline, IoShareSocialOutline } from "react-icons/io5";
+import { IoEyeOutline, IoLibraryOutline, IoShareSocialOutline, IoChevronDown } from "react-icons/io5";
 import { IoSettingsOutline, IoAddOutline, IoVolumeHigh, IoVolumeMute, IoPersonCircle, IoMenu, IoClose, IoPeople, IoMegaphone, IoLogInOutline, IoLogOutOutline, IoExpand, IoContract, IoSparklesOutline, IoPlanetOutline, IoChatbubbles, IoCalendarOutline, IoMusicalNotes, IoMusicalNote, IoRepeat, IoShuffle, IoListOutline, IoPlaySkipForward } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -44,7 +45,7 @@ export function SoundBtn({ btn: bstyle = btn, up = false, className }) {
     <div className="relative">
       <button data-testid="sound-btn" onClick={() => { sfx("nav"); setOpen((o) => !o); }} title="Musique / ambiance"
         className={className ? className + (playing ? " on" : "") : "p-2.5 border transition-colors"} style={className ? undefined : { ...bstyle, color: playing ? "var(--brand)" : "var(--on-media-2)" }}>
-        {playing ? <span className="sx-eq"><i /><i /><i /><i /></span> : (muted ? <IoVolumeMute size={18} /> : <IoMusicalNotes size={18} />)}
+        {playing ? <span className="sx-eq"><i /><i /><i /><i /></span> : (muted ? <NxIcon name="muet"><IoVolumeMute size={18} /></NxIcon> : <NxIcon name="son"><IoMusicalNotes size={18} /></NxIcon>)}
       </button>
       {open && (<>
         <div className="fixed inset-0 z-[60]" onClick={() => setOpen(false)} />
@@ -101,7 +102,7 @@ function MuteBtn() {
   return (
     <button data-testid="mute-toggle" onClick={() => { toggleMute(); sfx("nav"); }} title="Couper le son"
       className="p-2.5 border transition-colors" style={{ ...btn, color: muted ? "var(--on-media-2)" : "var(--brand)" }}>
-      {muted ? <IoVolumeMute size={18} /> : <IoVolumeHigh size={18} />}
+      {muted ? <NxIcon name="muet"><IoVolumeMute size={18} /></NxIcon> : <NxIcon name="volume"><IoVolumeHigh size={18} /></NxIcon>}
     </button>
   );
 }
@@ -124,7 +125,7 @@ function FsBtn({ style }) {
   return (
     <button data-testid="fullscreen-toggle" onClick={toggleFs} title={isFs ? "Quitter le plein écran" : "Plein écran"}
       className="p-2.5 border transition-colors" style={{ ...btn, ...style, color: isFs ? "var(--brand)" : "var(--on-media)" }}>
-      {isFs ? <IoContract size={18} /> : <IoExpand size={18} />}
+      {isFs ? <NxIcon name="reduire"><IoContract size={18} /></NxIcon> : <NxIcon name="plein"><IoExpand size={18} /></NxIcon>}
     </button>
   );
 }
@@ -143,6 +144,12 @@ export default function StationMenu({ onAdd, onProfile, trigger }) {
   const { unread: chatUnreadCount } = useChat() || { unread: { total: 0 } };
   const salonUnread = chatUnreadCount?.total || 0;
   const [menuOpen, setMenuOpen] = useState(false);
+  // Le menu défile : une petite flèche en bas tant qu'il reste des choses plus bas
+  const listRef = useRef(null); const [more, setMore] = useState(false);
+  const checkMore = () => { const l = listRef.current; setMore(!!l && l.scrollHeight - l.scrollTop - l.clientHeight > 12); };
+  useEffect(() => { if (!menuOpen) return undefined; const t = setTimeout(checkMore, 80); window.addEventListener("resize", checkMore); return () => { clearTimeout(t); window.removeEventListener("resize", checkMore); }; }, [menuOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Nexus OS › Menu : « Ouvrir le menu pour voir » le tiroir avec ses réglages
+  useEffect(() => { const o = () => setMenuOpen(true); window.addEventListener("nx-open-menu", o); return () => window.removeEventListener("nx-open-menu", o); }, []);
   const { data: journalAll = [] } = useQuery({ queryKey: ["journal", isAdmin], queryFn: () => listJournal() });
   const unread = journalAll.filter((e) => e.published).filter((a) => !seenAnnouncements.includes(a.id)).length;
   const go = (p) => { sfx("select"); setMenuOpen(false); nav(p); };
@@ -151,18 +158,18 @@ export default function StationMenu({ onAdd, onProfile, trigger }) {
   const openProfile = () => { setMenuOpen(false); if (onProfile) onProfile(); else nav("/parametres"); };
 
   const menuItems = [
-    { label: "Journal de bord", sub: "COULISSES & NOUVEAUTÉS", icon: <IoMegaphone size={18} />, badge: unread, onClick: () => go("/journal") },
-    { label: "Partager", sub: "CARTES · STORIES · MESSAGES", icon: <IoShareSocialOutline size={18} />, onClick: () => go("/partager") },
-    { label: "Mon étagère", sub: "CE QUE TU AS LU", icon: <IoLibraryOutline size={18} />, onClick: () => go("/etagere") },
-    { label: "Planning de sortie", sub: "UNE SORTIE CHAQUE DIMANCHE", icon: <IoCalendarOutline size={18} />, onClick: () => go("/planning") },
-    { label: "Salon", sub: "DISCUTE EN DIRECT", icon: <IoChatbubbles size={18} />, badge: salonUnread, onClick: () => go("/salon") },
-    { label: "Membres", sub: "LA COMMUNAUTÉ", icon: <IoPeople size={18} />, onClick: () => go("/membres") },
-    { label: "Soutien", sub: "FAIS GRANDIR LA STATION", icon: <IoSparklesOutline size={18} />, onClick: () => go("/soutien") },
-    { label: "À propos", sub: "LA STATION", icon: <IoPlanetOutline size={18} />, onClick: () => go("/a-propos") },
-    { label: "Paramètres", sub: "COMPTE · THÈME · AMBIANCE", icon: <IoSettingsOutline size={18} />, onClick: () => go("/parametres") },
-    ...(isAdmin && onAdd ? [{ label: "Créer une création", sub: "MODE CRÉATION", icon: <IoAddOutline size={18} />, onClick: () => { setMenuOpen(false); onAdd(); } }] : []),
-    ...(isAdmin ? [{ label: "Portail · Atelier", sub: "TON ESPACE DE CRÉATION", icon: <IoPlanetOutline size={18} />, onClick: () => go("/atelier") }] : []),
-    ...(realAdmin ? [{ label: spectator ? "Revenir en admin" : "Voir comme un visiteur", sub: spectator ? "MODE SPECTATEUR ACTIF" : "MODE SPECTATEUR", icon: <IoEyeOutline size={18} />, onClick: () => { sfx("select"); setMenuOpen(false); setSpectator(!spectator); } }] : []),
+    { label: "Journal de bord", sub: "COULISSES & NOUVEAUTÉS", icon: <NxIcon name="journal"><IoMegaphone size={18} /></NxIcon>, badge: unread, onClick: () => go("/journal") },
+    { label: "Partager", sub: "CARTES · STORIES · MESSAGES", icon: <NxIcon name="partager"><IoShareSocialOutline size={18} /></NxIcon>, onClick: () => go("/partager") },
+    { label: "Mon étagère", sub: "CE QUE TU AS LU", icon: <NxIcon name="etagere"><IoLibraryOutline size={18} /></NxIcon>, onClick: () => go("/etagere") },
+    { label: "Planning de sortie", sub: "UNE SORTIE CHAQUE DIMANCHE", icon: <NxIcon name="planning"><IoCalendarOutline size={18} /></NxIcon>, onClick: () => go("/planning") },
+    { label: "Salon", sub: "DISCUTE EN DIRECT", icon: <NxIcon name="salon"><IoChatbubbles size={18} /></NxIcon>, badge: salonUnread, onClick: () => go("/salon") },
+    { label: "Membres", sub: "LA COMMUNAUTÉ", icon: <NxIcon name="membres"><IoPeople size={18} /></NxIcon>, onClick: () => go("/membres") },
+    { label: "Soutien", sub: "FAIS GRANDIR LA STATION", icon: <NxIcon name="soutien"><IoSparklesOutline size={18} /></NxIcon>, onClick: () => go("/soutien") },
+    { label: "À propos", sub: "LA STATION", icon: <NxIcon name="apropos"><IoPlanetOutline size={18} /></NxIcon>, onClick: () => go("/a-propos") },
+    { label: "Paramètres", sub: "COMPTE · THÈME · AMBIANCE", icon: <NxIcon name="parametres"><IoSettingsOutline size={18} /></NxIcon>, onClick: () => go("/parametres") },
+    ...(isAdmin && onAdd ? [{ label: "Créer une création", sub: "MODE CRÉATION", icon: <NxIcon name="creer"><IoAddOutline size={18} /></NxIcon>, onClick: () => { setMenuOpen(false); onAdd(); } }] : []),
+    ...(isAdmin ? [{ label: "Portail · Atelier", sub: "TON ESPACE DE CRÉATION", icon: <NxIcon name="apropos"><IoPlanetOutline size={18} /></NxIcon>, onClick: () => go("/atelier") }] : []),
+    ...(realAdmin ? [{ label: spectator ? "Revenir en admin" : "Voir comme un visiteur", sub: spectator ? "MODE SPECTATEUR ACTIF" : "MODE SPECTATEUR", icon: <NxIcon name="voir"><IoEyeOutline size={18} /></NxIcon>, onClick: () => { sfx("select"); setMenuOpen(false); setSpectator(!spectator); } }] : []),
   ];
 
   return (
@@ -171,7 +178,7 @@ export default function StationMenu({ onAdd, onProfile, trigger }) {
       <button data-testid="mobile-menu-btn" onClick={() => { sfx("nav"); setMenuOpen(true); }}
           className="relative flex items-center gap-1.5 px-4 py-2.5 font-semibold text-sm transition-transform hover:scale-105 flex-shrink-0"
           style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>
-          <IoMenu size={18} /> Menu
+          <NxIcon name="menu"><IoMenu size={18} /></NxIcon> <span className="sx-menu-lbl">Menu</span>
           {(unread > 0 || salonUnread > 0) && <span data-testid="notif-badge-mobile" className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold rounded-full" style={{ background: "#fff", color: "var(--brand)" }}>{(unread + salonUnread) > 9 ? "9+" : (unread + salonUnread)}</span>}
         </button>
       )}
@@ -201,7 +208,7 @@ export default function StationMenu({ onAdd, onProfile, trigger }) {
               <span className="ar">→</span>
             </button>
 
-            <div className="sx-menu-list">
+            <div className="sx-menu-list" ref={listRef} onScroll={checkMore}>
               {menuItems.map((m, i) => (
                 <button key={m.label} className="sx-menu-card" style={{ animationDelay: `${0.08 + i * 0.045}s` }} onClick={m.onClick}>
                   <span className="mc-ic">{m.icon}</span>
@@ -213,6 +220,7 @@ export default function StationMenu({ onAdd, onProfile, trigger }) {
               ))}
             </div>
 
+            {more && <button className="sx-menu-more" onClick={() => listRef.current?.scrollBy({ top: listRef.current.clientHeight * 0.7, behavior: "smooth" })} aria-label="Voir la suite du menu" data-testid="menu-more"><IoChevronDown size={18} /></button>}
             <div className="sx-menu-foot">
               {user ? (
                 <button className="sx-menu-auth" onClick={() => { setMenuOpen(false); logout(); }}><IoLogOutOutline size={16} /> Se déconnecter</button>
@@ -222,7 +230,7 @@ export default function StationMenu({ onAdd, onProfile, trigger }) {
               <div className="sx-menu-ctrls">
                 <MuteBtn />
                 <FsBtn />
-                <TextSizeButton btnStyle={btn} dropUp />
+                <TextSizeButton btnStyle={btn} dropUp align="left" />
               </div>
             </div>
           </aside>

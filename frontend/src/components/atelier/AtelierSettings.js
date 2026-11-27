@@ -1,5 +1,7 @@
+import { chercherVille } from "@/lib/meteo";
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { NxIcon, useAtelierIconPack, setAtelierIconPack } from "@/lib/icons";
 import { IoMusicalNotes, IoKeypadOutline, IoDownloadOutline, IoTrashOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { uploadJournalImage } from "@/lib/api";
@@ -47,6 +49,7 @@ function PortalAmbience({ at, onUpload }) {
 }
 
 export default function AtelierSettings({ at, openBrains }) {
+  const atPack = useAtelierIconPack();
   const THEMES = useThemeList();
   const [studio, setStudio] = useState(false);
   const { theme, setTheme, sfx, musicVolume, setMusicVolume, uiVolume, setUiVolume, muted, toggleMute, muteSfx, muteMusic, toggleSfx, toggleMusic } = useApp();
@@ -79,7 +82,7 @@ export default function AtelierSettings({ at, openBrains }) {
       <header className="at-head"><p className="at-eyebrow mono">// RÉGLAGES</p><h1>Réglages de l'Atelier</h1></header>
       {studio && createPortal(<ThemeStudio onClose={() => setStudio(false)} />, document.body)}
       <div className="at-panel">
-        <div className="at-panel-h"><h2>Thème du pont</h2><button className="at-btn" onClick={() => setStudio(true)} data-testid="open-theme-studio">Atelier de thèmes</button></div>
+        <div className="at-panel-h"><h2>Thème du pont</h2><button className="at-btn" onClick={() => setStudio(true)} data-testid="open-theme-studio">Nexus OS</button></div>
         <p className="at-sub">Les thèmes de la Station habillent aussi l'Atelier. La musique d'ambiance se règle avec le bouton ♪ en haut (lecteur et musiques de la Station).</p>
         <div className="at-themes" data-testid="atelier-themes">
           {THEMES.map((t) => (
@@ -90,9 +93,21 @@ export default function AtelierSettings({ at, openBrains }) {
           ))}
         </div>
       </div>
+      <MeteoPanel at={at} />
       <div className="at-panel">
         <div className="at-panel-h"><h2>Google Agenda sur le pont</h2></div>
         <label className="at-check"><input type="checkbox" checked={at.config.gcal_pont !== false} onChange={(e) => at.saveConfig({ gcal_pont: e.target.checked })} data-testid="atelier-gcal-pont" /> Afficher l'encart Google Agenda sur le Pont</label>
+      </div>
+      <div className="at-panel" data-testid="atelier-icons">
+        <div className="at-panel-h"><h2>Icônes de l'Atelier</h2></div>
+        <p className="at-sub">Le dessin des icônes du dock (Pont, Drive, Salon…). Packs d'artistes, crédités dans Paramètres › Apparence.</p>
+        <div className="at-inline">
+          {[["", "Comme le thème", null], ["orig", "D'origine", null], ["arrondi", "Arrondi", "at-pont"], ["pixel", "Pixel", "at-pont"], ["cyber", "Cyber", "at-pont"], ["carnet", "Carnet", "at-pont"], ["8bit", "8-bit", "at-pont"], ["bloc", "Bloc", "at-pont"], ["hud", "HUD", "at-pont"], ["hexa", "Hexa", "at-pont"]].map(([k, l]) => (
+            <button key={k || "o"} className={"at-btn" + (atPack === k ? "" : " ghost")} onClick={() => setAtelierIconPack(k)} data-testid={`atelier-icons-${k || "origine"}`}>
+              {k && <NxIcon pack={k} name="at-salon" size={16} />} {l}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="at-panel">
         <div className="at-panel-h"><h2>Format des couvertures (PC)</h2></div>
@@ -202,6 +217,25 @@ function BunnyMobileSetting() {
       {[["bar", "Dans la barre du bas"], ["hide", "Bulle qui se cache au défilement"], ["float", "Bulle classique"]].map(([k, l]) => (
         <button key={k} className={"at-btn" + (v === k ? "" : " ghost")} onClick={() => pick(k)} data-testid={`bunny-mobile-${k}`}>{l}</button>
       ))}
+    </div>
+  );
+}
+
+// Météo du Pont : la ville se cherche par son nom (Open-Meteo), rien n'est demandé au navigateur
+function MeteoPanel({ at }) {
+  const m = at.config.meteo || {};
+  const [q, setQ] = useState(""); const [res, setRes] = useState(null); const [busy, setBusy] = useState(false);
+  const find = async (e) => { e?.preventDefault(); if (!q.trim()) return; setBusy(true); try { setRes(await chercherVille(q.trim())); } catch (_) { setRes([]); } setBusy(false); };
+  return (
+    <div className="at-panel" data-testid="atelier-meteo-panel">
+      <div className="at-panel-h"><h2>Météo sur le Pont</h2></div>
+      <p className="at-hint">{m.lat ? <>Ville : <b>{m.ville}</b>{m.region ? ` (${m.region})` : ""}. Seul toi la vois, sous l'horloge du Pont.</> : "Choisis ta ville : la météo du jour s'affiche sous l'horloge du Pont. Seul toi la vois."}</p>
+      <form className="at-meteo-find" onSubmit={find}>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Nom de la ville, ex. Paris" data-testid="atelier-meteo-q" />
+        <button className="at-btn" disabled={busy} data-testid="atelier-meteo-search">{busy ? "…" : "Chercher"}</button>
+      </form>
+      {res && (res.length ? <div className="at-meteo-res">{res.map((v) => <button key={`${v.lat},${v.lon}`} type="button" className="at-btn ghost" onClick={() => { at.saveConfig({ meteo: v }); setRes(null); setQ(""); }}>{v.ville} <small>{v.region}</small></button>)}</div> : <p className="at-hint">Aucune ville trouvée.</p>)}
+      {m.lat && <label className="at-check"><input type="checkbox" checked={!m.off} onChange={(e) => at.saveConfig({ meteo: { ...m, off: !e.target.checked } })} data-testid="atelier-meteo-on" /> Afficher la météo sur le Pont</label>}
     </div>
   );
 }

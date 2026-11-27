@@ -115,6 +115,14 @@ export default function CosmicBunny() {
   const [tipsOff, setTipsOff] = useState(() => localStorage.getItem("sx_cb_tips_off") === "1");
   const [ctxKey, setCtxKey] = useState(null); // reader (modal) override
   const [open, setOpen] = useState(false);
+  // Pendant qu'on fait défiler, le lapin s'efface sur le côté pour ne pas couvrir le texte ; il revient à l'arrêt
+  const [away, setAway] = useState(false);
+  useEffect(() => {
+    let t = 0;
+    const on = () => { setAway(true); clearTimeout(t); t = setTimeout(() => setAway(false), 1300); };
+    window.addEventListener("scroll", on, { capture: true, passive: true });
+    return () => { window.removeEventListener("scroll", on, { capture: true }); clearTimeout(t); };
+  }, []);
   const [idx, setIdx] = useState(0);
   const [bounce, setBounce] = useState(false);
   const [pose, setPoseState] = useState("neutral");
@@ -194,7 +202,7 @@ export default function CosmicBunny() {
   const spriteSrc = customImg || `/cosmic-bunny/${pose}.png`;
 
   return (
-    <div className={`cb-root ${onHome ? "cb-home" : ""}`} data-testid="cosmic-bunny">
+    <div className={`cb-root ${onHome ? "cb-home" : ""}${away && !open ? " cb-away" : ""}`} data-testid="cosmic-bunny">
       {open && tips.length > 0 && (
         <div className="cb-bubble" data-testid="cb-bubble">
           <button className="cb-close" onClick={closeTips} data-testid="cb-close" aria-label="Fermer les conseils"><IoClose size={18} /></button>

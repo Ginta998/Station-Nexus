@@ -84,6 +84,27 @@ async def _storage_get(path):
         return r.content, r.headers.get("Content-Type", "application/octet-stream")
 
 
+def ranged(request: Optional[Request], content: bytes, ct: str, headers: Optional[dict] = None) -> Response:
+    """Fichier audio ou vidéo avec lecture par morceaux (Range) : sans elle, avancer dans une musique
+    la fait repartir du début dans la plupart des navigateurs."""
+    total = len(content)
+    h = {"Accept-Ranges": "bytes", **(headers or {})}
+    rh = request.headers.get("range") if request is not None else None
+    if rh:
+        m = re.match(r"bytes=(\d*)-(\d*)", rh.strip())
+        if m and (m.group(1) or m.group(2)):
+            if m.group(1):
+                start = int(m.group(1)); end = int(m.group(2)) if m.group(2) else total - 1
+            else:  # « bytes=-500 » : les 500 derniers octets
+                start = max(0, total - int(m.group(2))); end = total - 1
+            end = min(end, total - 1)
+            if start >= total or start > end:
+                return Response(status_code=416, headers={"Content-Range": f"bytes */{total}", **h})
+            return Response(content=content[start:end + 1], status_code=206, media_type=ct,
+                            headers={**h, "Content-Range": f"bytes {start}-{end}/{total}", "Content-Length": str(end - start + 1)})
+    return Response(content=content, media_type=ct, headers=h)
+
+
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
 REPLY_TO_EMAIL = os.environ.get('REPLY_TO_EMAIL')
@@ -172,6 +193,9 @@ class Creation(BaseModel):
     world_style: Optional[str] = ""
     reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
     object_format: Optional[str] = ""  # objet sur les étagères : livre, vhs, vinyle ("" = selon l'œuvre)
+    univers: Optional[str] = ""        # univers (monde) qui regroupe plusieurs œuvres ; page /univers/<nom>
+    jaquette: Dict[str, Any] = Field(default_factory=dict)  # jaquette propre à l\'œuvre (tranche, bande du haut, titre sur l\'image)
+    credits: List[Dict[str, Any]] = Field(default_factory=list)  # qui a travaillé sur l'œuvre : [{ name, role, link }]
     reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
     units_cols: Optional[int] = 0      # vignettes de chapitres par ligne sur ordinateur (0 = automatique, 1 à 5)
     units_cols_phone: Optional[int] = 0  # vignettes par ligne sur téléphone (0 = automatique, 1 à 3)
@@ -232,6 +256,9 @@ class CreationInput(BaseModel):
     world_style: Optional[str] = ""
     reader_format: Optional[str] = ""  # habillage du lecteur en Nexus : livre, vhs, vinyle ("" = selon l'œuvre)
     object_format: Optional[str] = ""  # objet sur les étagères : livre, vhs, vinyle ("" = selon l'œuvre)
+    univers: Optional[str] = ""        # univers (monde) qui regroupe plusieurs œuvres ; page /univers/<nom>
+    jaquette: Dict[str, Any] = Field(default_factory=dict)  # jaquette propre à l\'œuvre (tranche, bande du haut, titre sur l\'image)
+    credits: List[Dict[str, Any]] = Field(default_factory=list)  # qui a travaillé sur l'œuvre : [{ name, role, link }]
     reader_look: Optional[str] = ""    # thème de page du lecteur (ambiances d'Alexandrie : gothique, washi…) ("" = selon le thème du monde)
     units_cols: Optional[int] = 0      # vignettes de chapitres par ligne sur ordinateur (0 = automatique, 1 à 5)
     units_cols_phone: Optional[int] = 0  # vignettes par ligne sur téléphone (0 = automatique, 1 à 3)
@@ -381,7 +408,11 @@ class SiteSettings(BaseModel):
     default_ambience_id: Optional[str] = ""
     default_play_mode: str = "loop"           # loop | sequence | shuffle (jukebox)
     experience: str = "nexus"                  # expérience de la station publique, choisie par l'admin pour tout le monde
+    univers_info: Dict[str, Any] = Field(default_factory=dict)  # Nexus OS : description de chaque univers (clé = nom), modifiable par l'admin
     default_theme: str = "abysse"
+    theme_hasard: List[str] = Field(default_factory=list)
+    jaquette: Dict[str, Any] = Field(default_factory=dict)  # style de jaquette commun à toutes les œuvres
+    # Nexus OS : thèmes tirés au hasard à chaque visite (si le visiteur n'a pas choisi)
     default_poster_desktop: str = "compact"   # taille des affiches par défaut sur PC
     default_poster_mobile: str = "compact"    # taille des affiches par défaut sur mobile
     default_scale_desktop: str = "normal"     # taille de l'interface (aA) par défaut sur PC
@@ -871,11 +902,11 @@ async def upload_audio(cid: str, file: UploadFile = File(..., _admin=Depends(req
 
 
 @api_router.get("/creations/{cid}/audio")
-async def stream_audio(cid: str):
+async def stream_audio(cid: str, request: Request):
     media = await db.media.find_one({"creation_id": cid}, {"_id": 0})
     if not media:
         raise HTTPException(404, "Aucune ambiance")
-    return Response(content=base64.b64decode(media["data"]), media_type=media.get("content_type", "audio/mpeg"))
+    return ranged(request, base64.b64decode(media["data"]), media.get("content_type", "audio/mpeg"))
 
 
 @api_router.delete("/creations/{cid}/audio")
@@ -911,19 +942,7 @@ async def stream_video(cid: str, request: Request, kind: str = "film"):
     if not rec:
         raise HTTPException(404, "Aucune vidéo")
     content, ct = await _storage_get(rec["storage_path"])
-    ct = rec.get("content_type", ct)
-    total = len(content)
-    range_header = request.headers.get("range")
-    if range_header:
-        m = re.match(r"bytes=(\d+)-(\d*)", range_header)
-        if m:
-            start = int(m.group(1))
-            end = int(m.group(2)) if m.group(2) else total - 1
-            end = min(end, total - 1)
-            chunk = content[start:end + 1]
-            headers = {"Content-Range": f"bytes {start}-{end}/{total}", "Accept-Ranges": "bytes", "Content-Length": str(len(chunk))}
-            return Response(content=chunk, status_code=206, media_type=ct, headers=headers)
-    return Response(content=content, media_type=ct, headers={"Accept-Ranges": "bytes"})
+    return ranged(request, content, rec.get("content_type", ct))
 
 
 @api_router.delete("/creations/{cid}/video")
@@ -949,11 +968,11 @@ async def upload_reading_audio(cid: str, file: UploadFile = File(..., _admin=Dep
 
 
 @api_router.get("/creations/{cid}/reading-audio")
-async def stream_reading_audio(cid: str):
+async def stream_reading_audio(cid: str, request: Request):
     media = await db.reading_media.find_one({"creation_id": cid}, {"_id": 0})
     if not media:
         raise HTTPException(404, "Aucune musique de lecture")
-    return Response(content=base64.b64decode(media["data"]), media_type=media.get("content_type", "audio/mpeg"))
+    return ranged(request, base64.b64decode(media["data"]), media.get("content_type", "audio/mpeg"))
 
 
 @api_router.delete("/creations/{cid}/reading-audio")
@@ -990,11 +1009,11 @@ async def upload_chapter_audio(cid: str, chid: str, file: UploadFile = File(...,
 
 
 @api_router.get("/creations/{cid}/chapters/{chid}/audio")
-async def stream_chapter_audio(cid: str, chid: str):
+async def stream_chapter_audio(cid: str, chid: str, request: Request):
     media = await db.chapter_media.find_one({"creation_id": cid, "chapter_id": chid}, {"_id": 0})
     if not media:
         raise HTTPException(404, "Aucune musique de chapitre")
-    return Response(content=base64.b64decode(media["data"]), media_type=media.get("content_type", "audio/mpeg"))
+    return ranged(request, base64.b64decode(media["data"]), media.get("content_type", "audio/mpeg"))
 
 
 @api_router.delete("/creations/{cid}/chapters/{chid}/audio")
@@ -1026,7 +1045,7 @@ async def list_assets(cid: str):
 
 
 @api_router.get("/assets/{aid}")
-async def get_asset(aid: str, dl: int = 0):
+async def get_asset(aid: str, request: Request, dl: int = 0):
     a = await db.media_assets.find_one({"id": aid}, {"_id": 0})
     if not a:
         raise HTTPException(404, "Média introuvable")
@@ -1034,8 +1053,7 @@ async def get_asset(aid: str, dl: int = 0):
     if dl:
         safe = (a.get("name") or "dossier").replace('"', "")
         headers["Content-Disposition"] = f'attachment; filename="{safe}"'
-    return Response(content=base64.b64decode(a["data"]), media_type=a.get("content_type", "application/octet-stream"),
-                    headers=headers)
+    return ranged(request, base64.b64decode(a["data"]), a.get("content_type", "application/octet-stream"), headers)
 
 
 @api_router.delete("/assets/{aid}")
@@ -1179,6 +1197,8 @@ async def site_manifest():
         "name": "Station Nexus", "short_name": "Station Nexus",
         "description": s.get("site_description") or DEFAULT_SITE_DESCRIPTION,
         "start_url": "/", "display": "standalone", "orientation": "any",
+        # « Partager vers Station Nexus » depuis l'appli YouTube (ou n'importe quelle appli) : la vidéo arrive dans le Salon
+        "share_target": {"action": "/partage", "method": "GET", "params": {"title": "title", "text": "text", "url": "url"}},
         "background_color": "#04060d", "theme_color": "#04060d",
         "icons": [
             {"src": f"/api/site/icon?size=192&v={v}", "sizes": "192x192", "type": "image/png", "purpose": "any"},
@@ -1247,11 +1267,11 @@ async def upload_ambience_audio(aid: str, file: UploadFile = File(..., _admin=De
 
 
 @api_router.get("/ambiences/{aid}/audio")
-async def stream_ambience_audio(aid: str):
+async def stream_ambience_audio(aid: str, request: Request):
     media = await db.ambience_media.find_one({"ambience_id": aid}, {"_id": 0})
     if not media:
         raise HTTPException(404, "Aucun audio")
-    return Response(content=base64.b64decode(media["data"]), media_type=media.get("content_type", "audio/mpeg"))
+    return ranged(request, base64.b64decode(media["data"]), media.get("content_type", "audio/mpeg"))
 
 
 @api_router.delete("/ambiences/{aid}")
@@ -1741,11 +1761,11 @@ async def upload_intro_video(file: UploadFile = File(..., _admin=Depends(require
 
 
 @api_router.get("/intro/video")
-async def stream_intro_video():
+async def stream_intro_video(request: Request):
     media = await db.intro_media.find_one({"key": "intro"}, {"_id": 0})
     if not media:
         raise HTTPException(404, "Aucune vidéo d'intro")
-    return Response(content=base64.b64decode(media["data"]), media_type=media.get("content_type", "video/mp4"))
+    return ranged(request, base64.b64decode(media["data"]), media.get("content_type", "video/mp4"))
 
 
 @api_router.delete("/intro/video")
@@ -3013,12 +3033,13 @@ async def journal_upload(file: UploadFile = File(...), _admin=Depends(require_ad
 
 
 @api_router.get("/journal-files/{fid}")
-async def journal_file(fid: str):
+async def journal_file(fid: str, request: Request):
     f = await db.journal_files.find_one({"id": fid}, {"_id": 0})
     if not f:
         raise HTTPException(404, "Fichier introuvable")
     data, ct = await _storage_get(f["path"])
-    return Response(content=data, media_type=f.get("content_type") or ct, headers={"Cache-Control": "public, max-age=31536000, immutable"})
+    # musiques et vidéos importées (Radio, journal) : lecture par morceaux, pour pouvoir avancer sans repartir du début
+    return ranged(request, data, f.get("content_type") or ct, {"Cache-Control": "public, max-age=31536000, immutable"})
 
 
 async def _migrate_announcements_to_journal():
@@ -3427,6 +3448,10 @@ async def public_yt_search(q: str):
     return await yt_search_core(q)
 
 api_router.include_router(build_calendar_router(db, require_admin))
+from live_site import build_live_router  # noqa: E402
+api_router.include_router(build_live_router(db, require_admin, get_current_user))
+from arcade import build_arcade_router  # noqa: E402
+api_router.include_router(build_arcade_router(db, require_admin, _storage_put, _storage_get, OBJ_APP_NAME))
 api_router.include_router(build_legal_router(db, get_current_user, require_admin, _send_email, _mail_html, _public_user,
                                              _subscribe_email, _cancel_subscription_now, rate_limit, _site_url))
 app.include_router(api_router)

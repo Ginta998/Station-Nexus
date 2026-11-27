@@ -1,5 +1,7 @@
+import Cadran from "@/components/nexus/Cadran";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { NxIcon } from "@/lib/icons";
 import { useQuery } from "@tanstack/react-query";
 import { IoPersonCircle, IoExpand, IoContract } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
@@ -49,15 +51,16 @@ export default function TopBar({ onAdd, onProfile }) {
             className="relative hidden md:flex items-center gap-1.5 pl-1.5 pr-4 py-1.5 border transition-transform hover:scale-105 text-sm font-medium" style={btn}>
             {profile?.avatar
               ? <img src={profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover" style={{ border: "1px solid var(--brand)" }} />
-              : <IoPersonCircle size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }} />}
+              : <NxIcon name="profil" size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }}><IoPersonCircle size={24} style={{ color: profile ? "var(--brand)" : "var(--on-media-2)" }} /></NxIcon>}
             <span className="hidden sm:inline max-w-[90px] truncate">{profile?.name || "Profil"}</span>
             <Dot n={unread} />
           </button>
         )}
+        <Cadran />
         <SoundBtn btn={btn} />
         <button data-testid="fullscreen-toggle" onClick={toggleFs} title={isFs ? "Quitter le plein écran" : "Plein écran"}
           className="p-2.5 border transition-colors" style={{ ...btn, color: isFs ? "var(--brand)" : "var(--on-media)" }}>
-          {isFs ? <IoContract size={18} /> : <IoExpand size={18} />}
+          {isFs ? <NxIcon name="reduire"><IoContract size={18} /></NxIcon> : <NxIcon name="plein"><IoExpand size={18} /></NxIcon>}
         </button>
         <TextSizeButton btnStyle={btn} />
 

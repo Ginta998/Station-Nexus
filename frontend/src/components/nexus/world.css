@@ -1152,7 +1152,7 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
 @media (max-width:760px){.nw-ulist .nw-u-adm{top:6px;left:6px;right:auto;transform:none}.nw-u-ab{min-width:28px;height:28px}}
 /* 0.23 · Grille réglée dans l'atelier : 1 à 5 vignettes par ligne (sur ordinateur) */
 @media (min-width:761px){
-  .nw-ugrid.fixed{grid-template-columns:repeat(var(--cols),minmax(0,1fr))}
+  .nw-ugrid.colsfix{grid-template-columns:repeat(var(--cols),minmax(0,1fr))}
   .nw-ugrid.c1 .nw-u-t small,.nw-ugrid.c2 .nw-u-t small{-webkit-line-clamp:4;font-size:14px}
   .nw-ugrid.c1 .nw-u-t b,.nw-ugrid.c2 .nw-u-t b{font-size:1.25em}
   .nw-ugrid.c1 .nw-u-img{aspect-ratio:21/9}
@@ -1160,7 +1160,7 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
 }
 /* 0.24 · Grille réglée pour le téléphone : 1 à 3 vignettes par ligne ; à 1 par ligne, le résumé s'affiche */
 @media (max-width:760px){
-  .nw-ugrid.pfixed{grid-template-columns:repeat(var(--pcols),minmax(0,1fr))}
+  .nw-ugrid.pcolsfix{grid-template-columns:repeat(var(--pcols),minmax(0,1fr))}
   .nw-ugrid.p1 .nw-u-t small{display:-webkit-box;-webkit-line-clamp:3}
   .nw-ugrid.p3 .nw-u-t b{font-size:.85em}.nw-ugrid.p3 .nw-u-n{font-size:20px}
 }
@@ -1601,3 +1601,27 @@ body:has(.ax-reader) [data-testid="page-writer"],body:has(.nw) [data-testid="pag
   .ws-vhs .nw-stage{background:transparent;border:0}
   .ws-vhs .nw-stage::after{background:repeating-linear-gradient(0deg,rgba(0,0,0,.12) 0 1px,transparent 1px 4px)}
 }
+
+/* Téléphone, grande taille de texte : la barre d'outils ne déborde plus (Quitter en icône, retour à la ligne),
+   le titre du fil d'Ariane passe sur deux lignes au lieu d'être coupé */
+@media (max-width:480px){
+  .nw-tools{flex-wrap:wrap;row-gap:6px;gap:5px}
+  .nw-tools button,.nw-back{width:32px;height:32px}
+  .nw-tools .nw-quit{width:32px;padding:0;justify-content:center}
+  .nw-tools .nw-quit span{display:none}
+  .nw-crumbs{white-space:normal}
+  .nw-crumbs .here{max-width:none;white-space:normal;text-align:left;line-height:1.35}
+}
+/* Trait : les boutons du menu ont une ombre noire décalée, on leur laisse de l'air */
+.ws-trait .nw-menu{gap:12px}
+.ws-trait .nw-tools{padding:0 4px 4px 0}
+@media (max-width:760px){.ws-trait .nw-menu{gap:14px}.ws-trait .nw-menu button{min-height:42px}.ws-trait .nw-title{font-size:clamp(30px,9vw,46px)}}
+/* Trait : l'étiquette de l'image dépasse en haut ; on lui laisse la place pour qu'elle ne soit pas coupée.
+   Le bloc « Reprendre / Dernière sortie » respire sous le menu (les ombres décalées des boutons le collaient). */
+.ws-trait .ht-art{margin-top:22px}
+.ws-trait .nw-resume{margin-top:30px!important}
+@media (max-width:760px){.ws-trait .nw-resume{margin-top:26px!important}}
+/* Trait : les cartes Reprendre / Dernière sortie respirent entre le menu (ombres de 4 px) et les commentaires */
+.ws-trait .h-trait .nw-quick{margin-top:34px;gap:16px}
+.ws-trait .h-trait{padding-bottom:64px}
+@media (max-width:760px){.ws-trait .h-trait .nw-quick{margin-top:30px}.ws-trait .h-trait{padding-bottom:58px}}

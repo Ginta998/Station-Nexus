@@ -9,7 +9,7 @@ export const WORLD_STYLES = {
   dock: "Shibuya", panorama: "Hangar", sommaire: "Gazette",
 };
 // Masqués : gardés (une œuvre qui les utilise les garde), mais rangés à part dans l'atelier
-export const WORLD_MASKED = ["trait"];
+export const WORLD_MASKED = [];
 // Anciennes ambiances (avant la 0.17) : on les ramène vers les nouvelles
 const LEGACY = { manga: "hero", vinyle: "eve", roman: "yorha" };
 export function worldStyleOf(item, catLabel = "") {

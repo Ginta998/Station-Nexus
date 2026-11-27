@@ -58,8 +58,8 @@ export default function ShareMenu({ item, cardRef, prominent, className, style, 
         <button data-testid={testid} onClick={() => { sfx("nav"); setOpen(true); }} className="p-2.5 border" style={btn}><IoShareSocial size={18} /></button>
       )}
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setOpen(false)} data-testid="share-menu">
-          <div className="w-full sm:max-w-sm border" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} onClick={(e) => e.stopPropagation()}>
+        <div className="nx-ov fixed inset-0 z-50 flex items-end sm:items-center justify-center" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setOpen(false)} data-testid="share-menu">
+          <div className="nx-ov-panel w-full sm:max-w-sm border" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: "var(--border-c)" }}>
               <span className="font-display text-lg" style={{ color: "var(--text-primary)" }}>Partager</span>
               <button onClick={() => setOpen(false)} style={{ color: "var(--text-secondary)" }}><IoClose size={20} /></button>

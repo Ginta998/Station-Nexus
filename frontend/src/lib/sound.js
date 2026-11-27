@@ -408,9 +408,10 @@ export function playPageTurn(kind = "livre", dir = 1) {
     for (let i = 0; i < 11; i++) noise(c, d, { at: 0.02 + r() * 0.42, dur: 0.004 + r() * 0.005, gain: 0.015 + r() * 0.035, f: 2200 + r() * 3200, q: 1.5 });
     return;
   }
-  // papier : la feuille se soulève, glisse, retombe
-  band(c, d, { dur: 0.3, gain: 0.06, from: 650, to: 3400, q: 0.8, attack: 0.07 });
-  band(c, d, { at: 0.05, dur: 0.22, gain: 0.02, from: 4200, to: 7000, type: "highpass", attack: 0.05 });
-  for (let i = 0; i < 4; i++) noise(c, d, { at: 0.03 + r() * 0.2, dur: 0.006 + r() * 0.006, gain: 0.012 + r() * 0.015, f: 4200 + r() * 2200, q: 2 });
-  tone(c, d, { f: 140, f2: 70, at: 0.25, dur: 0.07, gain: 0.025, attack: 0.004, lp: 400 });
+  // papier : la feuille se soulève, glisse, retombe. Rien d'aigu ni d'instantané au départ (le « clic strident »
+  // venait des petits grains aigus sans montée) : tout entre en douceur et reste dans le médium.
+  band(c, d, { at: 0.012, dur: 0.3, gain: 0.055, from: 600, to: 2800, q: 0.8, attack: 0.09 });
+  band(c, d, { at: 0.08, dur: 0.2, gain: 0.01, from: 3000, to: 4600, type: "highpass", attack: 0.07 });
+  for (let i = 0; i < 3; i++) noise(c, d, { at: 0.1 + r() * 0.15, dur: 0.012 + r() * 0.008, gain: 0.006 + r() * 0.006, f: 1800 + r() * 1200, q: 1.4, attack: 0.004 });
+  tone(c, d, { f: 140, f2: 70, at: 0.25, dur: 0.07, gain: 0.022, attack: 0.008, lp: 400 });
 }

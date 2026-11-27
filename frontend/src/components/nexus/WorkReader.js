@@ -39,11 +39,11 @@ export function bookOfCreation(item, { unitKey, catLabel, format, locked, look }
     const blocks = htmlToAlexBlocks(unitHtml(u));
     map.push(i); chapters.push({ title: unitKey ? u.title || `${word} ${i + 1}` : "", blocks: blocks.length ? blocks : [{ t: "p", x: "Ce texte est encore vide." }] });
   });
-  if (held) chapters.push({ title: "La suite", blocks: [{ t: "box", label: "RÉSERVÉ", x: "Les chapitres suivants se débloquent avec l'achat de l'œuvre ou l'abonnement : « Débloquer », dans le menu de l'œuvre." }] });
+  if (held) chapters.push({ title: "La suite", blocks: [{ t: "box", label: "RÉSERVÉ", x: `Les chapitres suivants se débloquent avec l'achat de l'œuvre ou l'abonnement : « Débloquer », dans le menu de l'œuvre.${item.buy_url ? " Tu peux aussi commander le livre : le lien est juste en dessous." : ""}` }] });
   return {
     map,
     book: { id: `sn:${item.id}:${unitKey || "texte"}`, title: item.title, sub: item.tagline || "", room: "station", roomLabel: catLabel || "Station", type: "recit", about: item.synopsis || "",
-      cote: `SN-${String((item.order ?? 0) + 1).padStart(3, "0")}`, format, house: "STATION NEXUS", chapters, words: words(chapters), links: [], ...(look ? { look: { theme: look } } : {}) },
+      cote: `SN-${String((item.order ?? 0) + 1).padStart(3, "0")}`, format, house: "STATION NEXUS", chapters, words: words(chapters), links: item.buy_url ? [{ label: "Commander le livre", url: item.buy_url, note: "chez l'éditeur ou le vendeur" }] : [], ...(look ? { look: { theme: look } } : {}) },
   };
 }
 // Entrée du journal de bord → livre d'Alexandrie

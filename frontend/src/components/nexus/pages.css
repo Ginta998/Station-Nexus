@@ -1,0 +1,23 @@
+/* Nexus OS · les autres pages (pas l'accueil, ni l'Atelier, ni les mondes des œuvres). */
+html:not([data-route="accueil"]):not([data-route="atelier"]):not([data-route="oeuvre"])[data-pg-panneaux] :is([style*="background: var(--bg-secondary)"],.jr-card){transition:background .3s}
+html:not([data-route="accueil"]):not([data-route="atelier"]):not([data-route="oeuvre"])[data-pg-panneaux="verre"] :is([style*="background: var(--bg-secondary)"],.jr-card){
+  background:linear-gradient(180deg,color-mix(in srgb,var(--bg-secondary) 78%,transparent),color-mix(in srgb,var(--bg-secondary) 62%,transparent))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 24px 50px -34px rgba(0,0,0,.7)!important}
+html:not([data-route="accueil"]):not([data-route="atelier"]):not([data-route="oeuvre"])[data-pg-panneaux="papier"] :is([style*="background: var(--bg-secondary)"],.jr-card){
+  --text-primary:#2b241d;--text-secondary:#6b5f52;--border-c:rgba(43,36,29,.18);color:#2b241d;
+  background:radial-gradient(rgba(43,36,29,.05) 1px,transparent 1.2px) 0 0/4px 4px,linear-gradient(180deg,#f7f1e6,#efe6d6)!important;box-shadow:0 26px 50px -34px rgba(0,0,0,.75)!important;border-color:rgba(43,36,29,.18)!important}
+html:not([data-route="accueil"]):not([data-route="atelier"]):not([data-route="oeuvre"])[data-pg-panneaux="plein"] :is([style*="background: var(--bg-secondary)"],.jr-card){
+  background:var(--bg-secondary)!important;border:1px solid color-mix(in srgb,var(--brand) 30%,var(--border-c))!important;box-shadow:0 18px 40px -26px rgba(0,0,0,.8)!important}
+/* titres de page */
+html:not([data-route="accueil"]):not([data-route="atelier"]):not([data-route="oeuvre"])[data-pg-titres="geant"] #root h1:not(.sx-header *){font-size:clamp(44px,9vw,110px)!important;line-height:.92!important;letter-spacing:-.015em}
+html:not([data-route="accueil"]):not([data-route="atelier"]):not([data-route="oeuvre"])[data-pg-titres="centre"] #root h1:not(.sx-header *){text-align:center;margin-left:auto;margin-right:auto}
+html:not([data-route="accueil"]):not([data-route="atelier"]):not([data-route="oeuvre"])[data-pg-titres="barre"] #root h1:not(.sx-header *){display:flex;align-items:center;gap:16px}
+html:not([data-route="accueil"]):not([data-route="atelier"]):not([data-route="oeuvre"])[data-pg-titres="barre"] #root h1:not(.sx-header *)::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--brand),transparent)}
+/* passage d'une page à l'autre : rien ne bouge sous le pied, un voile passe ou la page apparaît */
+html[data-pg-transition="fondu"][data-pt-run] #root{animation:ptFade .55s ease both}
+@keyframes ptFade{from{opacity:0}}
+.nx-pt-ov{position:fixed;inset:0;z-index:9000;pointer-events:none;opacity:0;background:var(--brand)}
+html[data-pt-run] .nx-pt-ov.pt-voile{animation:ptVeil .75s cubic-bezier(.7,0,.2,1) both}
+@keyframes ptVeil{0%{opacity:1;clip-path:inset(0 0 0 0)}100%{opacity:1;clip-path:inset(0 0 0 100%)}}
+html[data-pt-run] .nx-pt-ov.pt-iris{background:var(--bg-primary);animation:ptIris .75s cubic-bezier(.6,0,.2,1) both}
+@keyframes ptIris{0%{opacity:1;clip-path:circle(150% at 50% 50%)}100%{opacity:1;clip-path:circle(0% at 50% 50%)}}
+@media (prefers-reduced-motion:reduce){html[data-pt-run] #root,html[data-pt-run] .nx-pt-ov{animation:none!important}}

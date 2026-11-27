@@ -25,6 +25,8 @@ export const atelierApi = {
   config: () => get("/atelier/config"),
   ytTitles: (ids) => get(`/atelier/yt-titles?ids=${ids}`),
   ytPlaylist: (l) => get(`/atelier/yt-playlist?list=${l}`),
+  ytSync: (b) => send("post", "/atelier/yt-sync", b || {}),
+  ytUnsync: () => send("delete", "/atelier/yt-sync"),
   setConfig: (b) => send("put", "/atelier/config", b),
   createUniverse: (b) => send("post", "/atelier/universes", b),
   updateUniverse: (id, b) => send("put", `/atelier/universes/${id}`, b),
@@ -245,6 +247,7 @@ export function useAtelier() {
       patch((d) => ({ ...d, links: up(d.links || [], doc) }));
       return doc;
     },
+    async reload() { await qc.invalidateQueries({ queryKey: ["atelier"] }); },
     async removeLink(id) { await atelierApi.deleteLink(id); patch((d) => ({ ...d, links: (d.links || []).filter((x) => x.id !== id) })); },
     async saveItem(it) {
       const doc = await atelierApi.updateItem(it.id, pickItem({ media: [], ...it }));

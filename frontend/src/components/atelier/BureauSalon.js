@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSel, SelBtn, BulkBar } from "@/components/atelier/Bulk";
-import { IoAdd, IoTrashOutline, IoPlay, IoContractOutline, IoCloudUploadOutline, IoOpenOutline, IoClose, IoListOutline, IoArrowUp, IoArrowDown, IoCreateOutline, IoLinkOutline } from "react-icons/io5";
+import { IoAdd, IoTrashOutline, IoPlay, IoContractOutline, IoCloudUploadOutline, IoOpenOutline, IoClose, IoListOutline, IoArrowUp, IoArrowDown, IoCreateOutline, IoLinkOutline, IoLogoYoutube, IoRefresh } from "react-icons/io5";
 import { toast } from "sonner";
 import { DEFAULT_APPS, toEmbed, popOut } from "@/lib/embed";
 import { atelierApi } from "@/lib/atelier";
@@ -102,6 +102,42 @@ const ORDER_KEY = "nexus-salon-order";
 const DEFAULT_ORDER = ["playlists", "watch", "video", "listen", "integrations"];
 const loadPls = (fallback) => { try { const v = JSON.parse(localStorage.getItem(PL_KEY) || "null"); if (Array.isArray(v)) return v; } catch (_) {} return Array.isArray(fallback) ? fallback : []; };
 const loadOrder = () => { try { const v = JSON.parse(localStorage.getItem(ORDER_KEY) || "null"); if (Array.isArray(v)) return [...v.filter((k) => DEFAULT_ORDER.includes(k)), ...DEFAULT_ORDER.filter((k) => !v.includes(k))]; } catch (_) {} return DEFAULT_ORDER; };
+
+// YouTube → Salon : une playlist YouTube synchronisée. Tu enregistres une vidéo dans ta playlist « Station »
+// (depuis l'appli YouTube, un appui) ; en ouvrant le Salon, elle y est déjà, avec son titre, dans une playlist du même nom.
+function YtSync({ at, onPlaylists }) {
+  const sync = at.config?.yt_sync;
+  const [url, setUrl] = useState(""); const [busy, setBusy] = useState(false); const [st, setSt] = useState(sync || null);
+  const run = async (body, quiet) => {
+    setBusy(true);
+    try {
+      const r = await atelierApi.ytSync(body); await at.reload(); const cfg = await atelierApi.config(); onPlaylists(cfg.playlists || []); setSt(cfg.yt_sync || null);
+      if (!quiet || r.added) toast.success(r.added ? `${r.added} nouvelle${r.added > 1 ? "s" : ""} vidéo${r.added > 1 ? "s" : ""} de « ${r.name} »` : `« ${r.name} » est à jour`);
+      setUrl("");
+    } catch (e) { if (!quiet) toast.error(e?.response?.data?.detail || "Synchronisation impossible"); }
+    finally { setBusy(false); }
+  };
+  // en ouvrant le Salon : une synchro discrète si la dernière date de plus de 10 minutes
+  useEffect(() => { if (sync?.list && (!sync.last || Date.now() - new Date(sync.last).getTime() > 10 * 60 * 1000)) run({}, true); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const stop = async () => { if (!(await labConfirm("Arrêter la synchronisation ? Les vidéos déjà ajoutées restent dans le Salon."))) return; await atelierApi.ytUnsync(); setSt(null); toast.success("Synchronisation arrêtée"); };
+  if (st?.list) return (
+    <div className="sx-ytsync on" data-testid="salon-ytsync">
+      <IoLogoYoutube size={20} />
+      <span><b>Synchronisé avec « {st.name} »</b><small className="mono">{st.count || 0} VIDÉOS · {st.last ? "VÉRIFIÉ À " + new Date(st.last).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : ""}</small></span>
+      <button className="at-btn" onClick={() => run({}, false)} disabled={busy} data-testid="salon-ytsync-now"><IoRefresh size={14} /> {busy ? "…" : "Synchroniser"}</button>
+      <button className="at-btn ghost" onClick={stop}>Arrêter</button>
+    </div>
+  );
+  return (
+    <form className="sx-ytsync" onSubmit={(e) => { e.preventDefault(); if (url.trim()) run({ list: url.trim() }, false); }} data-testid="salon-ytsync">
+      <IoLogoYoutube size={20} />
+      <span><b>Une playlist YouTube qui remplit le Salon toute seule</b><small>Crée une playlist « Station » (non répertoriée) et enregistre-y tes vidéos. Colle son lien une fois : chaque nouvelle vidéo arrive ici avec son titre. (« À regarder plus tard » est privée : YouTube ne la montre à aucune application.)</small></span>
+      <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://youtube.com/playlist?list=…" data-testid="salon-ytsync-url" />
+      <button className="at-btn" type="submit" disabled={busy || !url.trim()} data-testid="salon-ytsync-go">{busy ? "…" : "Synchroniser"}</button>
+      <button className="at-btn ghost" type="button" disabled={busy || !url.trim()} onClick={() => run({ list: url.trim(), keep: false }, false)} title="Importe toutes les vidéos d'une playlist, sans la suivre ensuite">Importer une fois</button>
+    </form>
+  );
+}
 
 // Le Salon : ton Netflix / Apple TV personnel — vidéos, playlists, intégrations de sites. File d'attente + enchaînement auto.
 export function SalonView({ at, launch, mini }) {
@@ -293,6 +329,7 @@ export function SalonView({ at, launch, mini }) {
         </header>
       )}
 
+      <YtSync at={at} onPlaylists={(pl) => { setPlaylists(pl); try { localStorage.setItem(PL_KEY, JSON.stringify(pl)); } catch (_) {} }} />
       <YtSearch at={at} launch={launch} />
       <form className="at-tadd" onSubmit={add} data-testid="atelier-salon-add">
         <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Lien YouTube, Spotify, Twitch, un site web à parcourir…" data-testid="atelier-salon-url" />

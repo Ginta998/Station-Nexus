@@ -10,6 +10,11 @@ import ItemCard from "@/components/atelier/ItemCard";
 import { TaskRow, TaskQuickAdd } from "@/components/atelier/TasksView";
 import BunnyBriefing from "@/components/atelier/BunnyBriefing";
 import AlexandrieHome from "@/components/atelier/AlexandrieHome";
+import ArcadeHome from "@/components/atelier/ArcadeHome";
+import { meteoDe, meteoOf } from "@/lib/meteo";
+import { pressMenu } from "@/components/atelier/ContextMenu";
+import { useApp } from "@/context/AppContext";
+import { isPortrait } from "@/lib/portraits";
 
 const greet = (h) => (h < 5 ? "Bonne nuit" : h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir");
 const ytId = (u = "") => (u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
@@ -25,6 +30,24 @@ function PontClock() {
     <div className="at-clock" data-testid="atelier-clock">
       <b>{hh}<span className="sep">:</span>{mm}</b>
       <small className="mono">{date.toUpperCase()} · AN {t.getFullYear() + 2000}</small>
+    </div>
+  );
+}
+
+// La météo du jour, sous l'horloge du Pont (ville réglée dans Réglages de l'Atelier)
+function PontMeteo({ at, go }) {
+  const m = at.config?.meteo; const [d, setD] = useState(null); const [err, setErr] = useState(false);
+  const load = (force) => { if (!m?.lat) return; setErr(false); meteoDe(m, force).then(setD).catch(() => setErr(true)); };
+  useEffect(() => { load(false); const t = setInterval(() => load(false), 20 * 60000); return () => clearInterval(t); }, [m?.lat, m?.lon]); // eslint-disable-line
+  if (m?.off) return null;
+  const menu = pressMenu(() => ({ title: "Météo", entries: [{ label: "Actualiser", onClick: () => load(true) }, { label: m?.lat ? "Changer de ville" : "Choisir la ville", onClick: () => go?.({ name: "settings" }) }, ...(m?.lat ? [{ label: "Masquer la météo", onClick: () => at.saveConfig({ meteo: { ...m, off: true } }) }] : [])] }));
+  if (!m?.lat) return <button type="button" className="at-meteo none" onClick={() => go?.({ name: "settings" })} {...menu} data-testid="atelier-meteo">Météo : choisis ta ville</button>;
+  if (!d) return <div className="at-meteo" {...menu} data-testid="atelier-meteo"><small className="mono">{err ? "MÉTÉO INDISPONIBLE" : "MÉTÉO…"}</small></div>;
+  const w = meteoOf(d.code, d.jour); const I = w.Icon;
+  return (
+    <div className={"at-meteo k-" + w.kind} title={`${m.ville} · ${w.label}`} {...menu} data-testid="atelier-meteo">
+      <I size={26} /><b>{d.temp}°</b>
+      <span><small className="mono">{m.ville.toUpperCase()}</small><small>{w.label} · {d.min}° / {d.max}°</small></span>
     </div>
   );
 }
@@ -55,7 +78,8 @@ function ItemBig({ it, at, onClick, testid }) {
 }
 
 // Bandeau héros — univers vedette cinématographique, rotatif, à sa couleur
-function PontHero({ active, last, lastU, open, go, stats, subTxt }) {
+function PontHero({ at, active, last, lastU, open, go, stats, subTxt }) {
+  const { profile } = useApp(); const first = (profile?.name || "Brichel").trim().split(/\s+/)[0] || "Brichel";
   const [i, setI] = useState(0);
   useEffect(() => {
     if (active.length < 2) return;
@@ -75,10 +99,10 @@ function PontHero({ active, last, lastU, open, go, stats, subTxt }) {
       <div className="at-hero-content">
         <div className="at-hero-top">
           <p className="at-eyebrow mono">// PONT DE COMMANDEMENT · STATION NEXUS</p>
-          <PontClock />
+          <div className="at-hero-time"><PontClock /><PontMeteo at={at} go={go} /></div>
         </div>
         <div className="at-hero-mid">
-          <h1>{greet(new Date().getHours())}, Brichel.</h1>
+          <h1 className={profile?.avatar ? "with-av" : ""}>{profile?.avatar && <img className={"at-hero-av" + (isPortrait(profile.avatar) ? " px" : "")} src={profile.avatar} alt="" data-testid="atelier-avatar" />}<span>{greet(new Date().getHours())}, {first}.</span></h1>
           <p className="at-sub">{subTxt}</p>
           <div className="at-hero-cta">
             {last && <button className="at-btn big" onClick={() => open(last.id)} data-testid="atelier-hero-resume"><IoPlay size={16} /> Reprendre</button>}
@@ -114,9 +138,10 @@ export default function QuartierView({ at, go, open, launch }) {
   const oeuvres = useMemo(() => at.items.filter(isOeuvre), [at.items]);
   const pinnedOeuvres = useMemo(() => oeuvres.filter((o) => o.pinned), [oeuvres]);
   const pinnedUnis = useMemo(() => at.universes.filter((u) => u.pinned), [at.universes]);
-  const pins = useMemo(() => at.items.filter((i) => i.pinned && !isOeuvre(i) && !isFolder(i) && !isTemplate(i)), [at.items]);
+  const pins = useMemo(() => at.items.filter((i) => i.pinned && !isOeuvre(i) && !isFolder(i) && !isTemplate(i) && !i.fields?.alexandrie), [at.items]);
   const openItem = (it) => (isOeuvre(it) ? go({ name: "oeuvre", id: it.id }) : open(it.id));
-  const [last, ...recent] = at.items.filter((i) => !isOeuvre(i) && !isFolder(i) && !isTemplate(i) && !i.pinned);
+  // les livres d'Alexandrie ont leur propre rangée (« Reprendre à Alexandrie ») : pas ici, où ils s'ouvriraient dans l'éditeur
+  const [last, ...recent] = at.items.filter((i) => !isOeuvre(i) && !isFolder(i) && !isTemplate(i) && !i.pinned && !i.fields?.alexandrie);
   const words = useMemo(() => stripHtml(at.items.map((i) => i.content).join(" ")).split(" ").filter(Boolean).length, [at.items]);
   const active = useMemo(() => {
     const seen = new Set(); const out = at.universes.filter((u) => u.pinned);
@@ -142,7 +167,7 @@ export default function QuartierView({ at, go, open, launch }) {
   const mobRecent = [...at.items].filter((i) => !isFolder(i)).sort((a, b) => (b.updated_at || "").localeCompare(a.updated_at || "")).slice(0, 4);
   return (
     <section className="at-view at-pont" data-testid="atelier-home">
-      <PontHero active={pinnedUnis.length ? pinnedUnis : active} last={last} lastU={lastU} open={open} go={go} stats={stats} subTxt={subTxt} />
+      <PontHero at={at} active={pinnedUnis.length ? pinnedUnis : active} last={last} lastU={lastU} open={open} go={go} stats={stats} subTxt={subTxt} />
 
       <form className="at-capture" onSubmit={capture} data-testid="atelier-capture">
         <textarea rows={1} value={idea} onChange={(e) => setIdea(e.target.value)} placeholder="Une idée traverse le pont ? Capture-la…"
@@ -250,6 +275,10 @@ export default function QuartierView({ at, go, open, launch }) {
       <section className="at-salon-sec" data-testid="atelier-home-alexandrie">
         <SectionHead eye="// LECTURE" title="Reprendre à Alexandrie" link="La bibliothèque" onLink={() => go({ name: "alexandrie" })} />
         <AlexandrieHome at={at} go={go} />
+      </section>
+      <section className="at-salon-sec" data-testid="atelier-home-arcade">
+        <SectionHead eye="// JEU" title="Reprendre ma partie" link="La salle d'arcade" onLink={() => go({ name: "arcade" })} />
+        <ArcadeHome go={go} />
       </section>
     </section>
   );

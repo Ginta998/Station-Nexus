@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { BOOKS, ROOMS, TYPES } from "@/data/alexandrie";
+import { ROOMS, TYPES } from "@/data/alexandrie";
+import { useAlexCatalog } from "@/lib/alexLive";
 import { mergeCovers } from "@/data/alexandrie/covers";
 import "@/components/atelier/alexandrie.css";
 
 // Sur le Pont : reprendre une lecture, ou en commencer une. Un clic ouvre le livre à la bonne page.
 const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (_) { return d; } };
 export default function AlexandrieHome({ at, go }) {
+  const { books: BOOKS } = useAlexCatalog();
   const prog = read("nx-alex-progress", {});
   const [bad, setBad] = useState({});
   const covers = mergeCovers(read("nx-alex-covers", {}), at.config?.alexandrie?.covers, bad);

@@ -6,6 +6,7 @@ import { atelierApi, imgSrc } from "@/lib/atelier";
 import { useApp } from "@/context/AppContext";
 import { playLaunch, getLaunchSound, useLaunchSync } from "@/lib/launchSound";
 import { pressMenu } from "@/components/atelier/ContextMenu";
+import { launchDuration } from "@/components/nexus/launchTiming";
 import Box3D from "@/components/nexus/Box3D";
 import { Face } from "@/components/atelier/AlexCore";
 import { vidOf } from "@/components/atelier/Cinema";
@@ -44,7 +45,7 @@ export default function VhsShelf({ at, launch, links = [] }) {
     else if (r.kind === "serie") launch({ title: r.eps[k]?.title || r.title, url: r.eps[k].url, queue: r.eps.map((e) => ({ title: e.title, url: e.url })), qi: k });
     else launch({ title: r.title, url: r.url });
   };
-  useEffect(() => { if (!going) return; const t = setTimeout(() => start(going), 1700); return () => clearTimeout(t); }, [going]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!going) return; const t = setTimeout(() => start(going), launchDuration()); return () => clearTimeout(t); }, [going]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const box = (r) => ({ id: r.id, title: r.title || "Sans titre", sub: r.kind === "serie" ? (r.eps?.length ? `${r.eps.length} épisodes` : "Playlist") : (r.year || "Film"), format: "vhs", emblem: r.kanji || (r.kind === "serie" ? "連" : "映"), cote: r.kind === "serie" ? "SÉRIE" : "FILM", roomLabel: "Salon", house: "VIDÉOTHÈQUE" });
   const menuFor = (r) => () => ({ title: r.title, entries: [
@@ -75,7 +76,7 @@ export default function VhsShelf({ at, launch, links = [] }) {
       {going && createPortal(
         <div className="nx-launchfx f-vhs vh-go" onClick={() => start(going)} role="status" aria-label={`Lecture de ${going.title}`} data-testid="vhs-launch">
           <i className="nx-lf-glow" aria-hidden="true" />
-          <div className="nx-lf-obj"><Box3D b={box(going)} cover={coverOf(going)} /></div>
+          <div className="nx-lf-obj"><Box3D b={box(going)} cover={coverOf(going)} open /></div>
           <p className="nx-lf-t"><span className="mono">▶ PLAY</span>{going.title}</p>
           <small className="mono nx-lf-skip">TOUCHE OU CLIC POUR PASSER</small>
         </div>, document.body

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { useThemeState, themeDef, cssVars, fontHref, keySound } from "@/lib/themeStore";
 import { imgSrc } from "@/lib/atelier";
@@ -6,6 +7,12 @@ import { LOCAL_FONTS } from "@/lib/localFonts";
 import { setAmbientLayers } from "@/lib/ambient";
 import "@/components/themeRuntime.css";
 import CursorFx from "@/components/CursorFx";
+import SceneCompose from "@/components/SceneCompose";
+import MouseFx from "@/components/MouseFx";
+import "@/components/nexus/menu.css";
+import { useLumiere, useDecorCourant } from "@/lib/lumiere";
+import "@/components/nexus/perf.css";
+import "@/components/nexus/pages.css";
 
 const ytId = (u) => (u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || [])[1];
 
@@ -49,6 +56,70 @@ export default function ThemeRuntime() {
     }
   }, [d, isAdmin]);
 
+  // Lumière du décor : fixée par le thème
+  const lum = useLumiere(theme, d?.lumiere || "");
+  const decorNow = useDecorCourant(theme, d?.bg?.type === "compose" ? d?.bg?.layers : null);
+  useEffect(() => { const el = document.documentElement; if (d?.bg?.type === "compose" && lum !== "jour") el.setAttribute("data-lumiere", lum); else el.removeAttribute("data-lumiere"); }, [lum, d?.bg?.type]);
+
+  // Nexus OS : le cadre (menu) et le mouvement de la page, posés en attributs sur <html> pour toute l'app
+  const loc = useLocation();
+  const pages = d?.pages || {};
+  const menu = d?.menu || {}; const fen = d?.fenetres || {}; const anim = d?.anim || {}; const tune = d?.bg?.type === "scene" ? d?.bg?.tune || {} : {};
+  useEffect(() => {
+    const el = document.documentElement;
+    const attrs = { "data-pg-panneaux": pages.panneaux, "data-pg-titres": pages.titres, "data-pg-transition": pages.transition, "data-menu-pos": menu.pos, "data-menu-mat": menu.mat, "data-icones": menu.icones, "data-cadre": menu.cadre, "data-tiroir": menu.tiroir, "data-tiroir-pos": menu.tiroir_pos, "data-voile": menu.voile, "data-ov-mat": fen.mat, "data-ov-voile": fen.voile, "data-ov-anim": fen.anim, "data-defile": anim.defile === "sections" ? "sections" : "", "data-parallaxe": anim.parallaxe, "data-lancement": anim.lancement };
+    Object.entries(attrs).forEach(([k, v]) => (v ? el.setAttribute(k, v) : el.removeAttribute(k)));
+    // Réglage de la scène d'origine : teinte, saturation, lumière, intensité
+    const f = [tune.teinte ? `hue-rotate(${tune.teinte}deg)` : "", tune.sat != null && tune.sat !== 100 ? `saturate(${tune.sat}%)` : "", tune.lum != null && tune.lum !== 100 ? `brightness(${tune.lum}%)` : ""].filter(Boolean).join(" ");
+    if (f) el.style.setProperty("--scene-f", f); else el.style.removeProperty("--scene-f");
+    if (tune.op != null && tune.op !== 100) el.style.setProperty("--scene-o", tune.op / 100); else el.style.removeProperty("--scene-o");
+  }, [pages.panneaux, pages.titres, pages.transition, menu.pos, menu.mat, menu.icones, menu.cadre, menu.tiroir, menu.tiroir_pos, menu.voile, fen.mat, fen.voile, fen.anim, anim.defile, anim.parallaxe, anim.lancement, tune.teinte, tune.sat, tune.lum, tune.op]);
+  // Taille du titre du thème en haut de l'accueil (bloc En-tête), en % : réglable dans Nexus OS › Blocs
+  const tt = d?.titre_taille;
+  useEffect(() => { const el = document.documentElement; if (tt && tt !== 100) el.style.setProperty("--nx-titre", tt / 100); else el.style.removeProperty("--nx-titre"); }, [tt]);
+  // La page affichée (accueil, journal, oeuvre…) : les réglages « Pages » ne touchent ni l'accueil, ni l'Atelier, ni les mondes des œuvres
+  const first = useRef(true);
+  useEffect(() => {
+    const el = document.documentElement; const seg = loc.pathname.split("/")[1] || "accueil";
+    el.setAttribute("data-route", seg);
+    // Filet de sécurité : hors d'une œuvre, aucun voile de lancement ni passage de page ne doit rester posé sur l'écran
+    const safe = setTimeout(() => { if (seg !== "oeuvre") document.getElementById("nx-veil")?.remove(); el.removeAttribute("data-pt-run"); if (!document.querySelector(".uvw-win,[role=dialog],.nx-launchfx")) document.body.style.overflow = ""; }, 1400);
+    if (first.current) { first.current = false; return () => clearTimeout(safe); }
+    if (!pages.transition) return () => clearTimeout(safe);
+    el.setAttribute("data-pt-run", ""); const t = setTimeout(() => el.removeAttribute("data-pt-run"), 760);
+    return () => { clearTimeout(t); clearTimeout(safe); el.removeAttribute("data-pt-run"); };
+  }, [loc.pathname]); // eslint-disable-line
+  // Vitesse de la scène d'origine : on règle la cadence de ses animations
+  useEffect(() => {
+    const r = (tune.vit ?? 100) / 100; if (r === 1) return undefined;
+    const apply = () => document.querySelectorAll(".cosmic-bg").forEach((n) => n.getAnimations?.({ subtree: true }).forEach((a) => { a.playbackRate = r; }));
+    apply(); const t = setInterval(apply, 2500);
+    return () => { clearInterval(t); document.querySelectorAll(".cosmic-bg").forEach((n) => n.getAnimations?.({ subtree: true }).forEach((a) => { a.playbackRate = 1; })); };
+  }, [tune.vit]);
+  // Fluidité du défilement : pendant qu'on fait défiler, les animations en boucle du décor se mettent en pause
+  // (c'est elles qui coûtent le plus, surtout au téléphone) et reprennent 0,2 s après l'arrêt.
+  // Les animations d'apparition (qui ne tournent qu'une fois) continuent : rien ne reste invisible.
+  useEffect(() => {
+    let t = 0; let held = null;
+    const stop = () => { (held || []).forEach((a) => { try { a.play(); } catch (_) { /* déjà retirée */ } }); held = null; };
+    const onScroll = () => {
+      if (!held) { try { held = document.getAnimations().filter((a) => a.playState === "running" && a.effect?.getTiming?.().iterations === Infinity); held.forEach((a) => a.pause()); } catch (_) { held = []; } }
+      clearTimeout(t); t = setTimeout(stop, 200);
+    };
+    window.addEventListener("scroll", onScroll, { capture: true, passive: true });
+    return () => { window.removeEventListener("scroll", onScroll, { capture: true }); clearTimeout(t); stop(); };
+  }, []);
+  // Parallaxe : quelques éléments seulement bougent (on ne touche pas aux variables de toute la page, trop coûteux)
+  useEffect(() => {
+    if (!anim.parallaxe) return undefined;
+    const pf = anim.parallaxe === "forte" ? 0.4 : 0.18;
+    const T = [[".sx-exp .hb-cinema .cn-media", 1], [".sx-exp .hb-affiche .af-kj", -1], [".sx-exp .vp-img", 0.6], [".sx-exp .cinehead .ct-title", 0.5], [".sx-exp .sx-soutien .sk", -0.15], [".nx-univ-page .uv-bg", 0.5]];
+    let raf = 0;
+    const paint = () => { raf = 0; const y = Math.min(window.scrollY, 2400); T.forEach(([q, k]) => document.querySelectorAll(q).forEach((n) => { n.style.translate = `0 ${(y * pf * k).toFixed(1)}px`; })); };
+    const on = () => { if (!raf) raf = requestAnimationFrame(paint); };
+    paint(); window.addEventListener("scroll", on, { passive: true });
+    return () => { window.removeEventListener("scroll", on); if (raf) cancelAnimationFrame(raf); T.forEach(([q]) => document.querySelectorAll(q).forEach((n) => { n.style.translate = ""; })); };
+  }, [anim.parallaxe]);
   useEffect(() => { setAmbientLayers(d?.ambient || []); }, [JSON.stringify(d?.ambient || [])]); // eslint-disable-line
   useEffect(() => { if (d?.ambience_id) selectAmbience(d.ambience_id); }, [theme, d?.ambience_id]); // eslint-disable-line
 
@@ -63,23 +134,27 @@ export default function ThemeRuntime() {
   }, [d, muted, uiVolume]);
 
   if (!d) return null;
+  const pt = pages.transition && pages.transition !== "fondu" ? <div className={"nx-pt-ov pt-" + pages.transition} aria-hidden="true" /> : null;
   const b = d.bg || {};
   const cfx = d.cursor_fx && d.cursor_fx !== "none" ? <CursorFx type={d.cursor_fx} color={d.colors?.brand} layer="station" /> : null;
-  if (!b.type && !d.fx) return cfx;
+  if (!b.type && !d.fx && !d.souris) return <>{cfx}{pt}</>;
   const yt = b.type === "video" && ytId(b.url || "");
-  return (
+  return (<>
     <div className="nx-tlayer" aria-hidden="true" data-testid="theme-runtime-layer">
       {cfx}
+      {b.type === "compose" && <SceneCompose layers={decorNow ? { ...b.layers, decor: decorNow } : b.layers} mouse={d.souris === "profondeur"} />}
       {b.type === "gradient" && <div className="nx-tbg" style={{ background: `linear-gradient(${b.angle ?? 160}deg,${(b.g || []).join(",")})` }} />}
       {b.type === "image" && b.url && <div className="nx-tbg" style={{ backgroundImage: `url(${imgSrc(b.url)})`, filter: b.blur ? `blur(${b.blur}px)` : undefined }} />}
       {b.type === "video" && b.url && (yt
         ? <iframe className="nx-tbg nx-tyt" src={`https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&controls=0&loop=1&playlist=${yt}&playsinline=1&rel=0`} title="fond" allow="autoplay" referrerPolicy="strict-origin-when-cross-origin" />
         : <video className="nx-tbg" src={imgSrc(b.url)} autoPlay muted loop playsInline />)}
-      {b.type && b.type !== "scene" && <div className="nx-tdim" style={{ opacity: (b.dim ?? 30) / 100 }} />}
+      {b.type && b.type !== "scene" && b.type !== "compose" && <div className="nx-tdim" style={{ opacity: (b.dim ?? 30) / 100 }} />}
       {d.fx?.fog > 0 && <div className="nx-fog" style={{ opacity: d.fx.fog / 100, "--fc": d.fx_color || "#fff" }}><i /><i /></div>}
       <ThemeFx fx={d.fx || {}} color={d.fx_color || "#ffffff"} />
+      {d.souris && <MouseFx type={d.souris} color={d.fx_color || d.colors?.brand} />}
     </div>
-  );
+    {pt}
+  </>);
 }
 
 function ThemeFx({ fx, color }) {
@@ -92,10 +167,16 @@ function ThemeFx({ fx, color }) {
     const size = () => { W = c.width = window.innerWidth; H = c.height = window.innerHeight; };
     size(); window.addEventListener("resize", size);
     const R = Math.random; const P = [];
+    const coarse = window.matchMedia("(pointer:coarse)").matches; const dens = coarse ? 0.5 : 1;
+    // une lueur dessinée une fois, réutilisée pour chaque particule (bien plus léger qu'un dégradé par particule)
+    const spr = document.createElement("canvas"); spr.width = spr.height = 64; { const x = spr.getContext("2d"); const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, color); gr.addColorStop(1, "transparent"); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); }
     const add = (type, n) => { for (let i = 0; i < n; i++) P.push({ type, x: R() * W, y: R() * H, r: R(), v: R(), p: R() * 6.28 }); };
-    Object.entries(fx).forEach(([k, v]) => { if (k !== "fog" && v > 0) add(k, Math.round(v * ({ stars: 2, rain: 2.4, snow: 1.4, particles: 0.8, petals: 0.5, embers: 0.8, fireflies: 0.5 }[k] || 1))); });
+    Object.entries(fx).forEach(([k, v]) => { if (k !== "fog" && v > 0) add(k, Math.round(dens * v * ({ stars: 2, rain: 2.4, snow: 1.4, particles: 0.8, petals: 0.5, embers: 0.8, fireflies: 0.5 }[k] || 1))); });
     if (!P.length) return () => window.removeEventListener("resize", size);
+    let last = 0;
     const draw = (t) => {
+      if (coarse && t - last < 30) { raf = requestAnimationFrame(draw); return; } last = t;
+      if (document.hidden) { raf = requestAnimationFrame(draw); return; }
       g.clearRect(0, 0, W, H);
       for (const q of P) {
         const k = q.type;
@@ -108,7 +189,7 @@ function ThemeFx({ fx, color }) {
         else { q.x += Math.sin(t / 2000 + q.p) * 0.6; q.y += Math.cos(t / 2400 + q.p) * 0.5; }
         const a = k === "fireflies" ? Math.max(0, Math.sin(t / 900 + q.p)) : 0.4 + q.r * 0.6;
         const rad = (k === "embers" ? 1.5 : 2) + q.r * 2.5;
-        g.globalAlpha = a; const gr = g.createRadialGradient(q.x, q.y, 0, q.x, q.y, rad * 3); gr.addColorStop(0, color); gr.addColorStop(1, "transparent"); g.fillStyle = gr; g.beginPath(); g.arc(q.x, q.y, rad * 3, 0, 6.28); g.fill();
+        g.globalAlpha = a; g.drawImage(spr, q.x - rad * 3, q.y - rad * 3, rad * 6, rad * 6);
       }
       g.globalAlpha = 1;
       if (!reduceMotion) raf = requestAnimationFrame(draw);

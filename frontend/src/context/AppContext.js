@@ -1,5 +1,5 @@
 import { THEMES } from "@/lib/themes";
-import { useThemeState, baseOf, themeDef, isCustomKey } from "@/lib/themeStore";
+import { useThemeState, baseOf, sceneOf, themeDef, isCustomKey, isOsKey } from "@/lib/themeStore";
 import { useAuth } from "@/context/AuthContext";
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { audioUrl, ambienceUrl, readingAudioUrl, getSettings, upsertProfile, listAmbiences } from "@/lib/api";
@@ -43,7 +43,7 @@ function fadeTo(audio, target, ms, onDone) {
 
 export function AppProvider({ children }) {
   const rawTheme = localStorage.getItem(LS.theme);
-  const storedTheme = THEMES.some((t) => t.key === rawTheme) || isCustomKey(rawTheme) ? rawTheme : null;
+  const storedTheme = THEMES.some((t) => t.key === rawTheme) || isCustomKey(rawTheme) || isOsKey(rawTheme) ? rawTheme : null;
   const [theme, setThemeState] = useState(() => storedTheme || "abysse");
   // admin = uniquement le compte administrateur connecté
   const { user: authUser } = useAuth();
@@ -188,7 +188,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => { localStorage.removeItem(LS.pin); }, []);
   const tstate = useThemeState();
-  useEffect(() => { document.documentElement.setAttribute("data-theme", baseOf(theme)); }, [theme, tstate]);
+  useEffect(() => { const el = document.documentElement; el.setAttribute("data-theme", baseOf(theme)); el.setAttribute("data-scene", sceneOf(theme)); }, [theme, tstate]);
   // non-looping reading tracks (music cues) reset the UI when they finish
   useEffect(() => {
     const a = cardAudio.current; if (!a) return;
@@ -267,7 +267,11 @@ export function AppProvider({ children }) {
       if (!needAmb && !needTheme && !needPosterD && !needPosterM && !needMode) return;
       if (needMode && ["loop", "sequence", "shuffle"].includes(s?.default_play_mode)) setPlayModeState(s.default_play_mode);
       if (needAmb && s?.default_ambience_id) setAmbienceId(s.default_ambience_id);
-      if (needTheme && (THEMES.some((t) => t.key === s?.default_theme) || isCustomKey(s?.default_theme))) setThemeState(s.default_theme);
+      // Mode « au hasard » : à chaque visite, un des thèmes choisis par l'admin (tant que le visiteur n'en a pas choisi un lui-même)
+      const okT = (k) => THEMES.some((t) => t.key === k) || isCustomKey(k) || isOsKey(k);
+      const pool = (s?.theme_hasard || []).filter(okT);
+      if (needTheme && pool.length > 1) setThemeState(pool[Math.floor(Math.random() * pool.length)]);
+      else if (needTheme && okT(s?.default_theme)) setThemeState(s.default_theme);
       if (needPosterD && s?.default_poster_desktop) { setPosterDesktopState(s.default_poster_desktop); if (!isPhoneNow()) setPosterSizeState(s.default_poster_desktop); }
       if (needPosterM && s?.default_poster_mobile) { setPosterMobileState(s.default_poster_mobile); if (isPhoneNow()) setPosterSizeState(s.default_poster_mobile); }
     }).catch(() => {});

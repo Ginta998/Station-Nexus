@@ -311,7 +311,7 @@ export default function RichTextEditor({ value, onChange, placeholder = "Écris 
       <div className="relative">
         <Btn testid="rte-image" title="Insérer une image ici" onClick={() => toggle("image")}>{busy ? "…" : <IoImageOutline size={16} />}</Btn>
         {menu === "image" && <ImageMenu onFile={() => { setMenu(null); imgInput.current?.click(); }} onUrl={insertImageUrl} onFull={() => { setMenu(null); setArtPick(true); }} />}
-        {artPick && <CoverDialog b={{ id: "rte", title: title || eyebrow || "Artwork", room: "cinema", format: "livre" }} current="" onSave={(u) => { setArtPick(false); if (u) insertImageUrl(u); }} onClose={() => setArtPick(false)} />}
+        {artPick && <CoverDialog b={{ id: "rte", title: title || eyebrow || "Artwork", room: "cinema", format: "livre" }} current="" multi onSaveMany={(us) => { setArtPick(false); us.forEach((u) => insertImageUrl(u)); }} onSave={(u) => { setArtPick(false); if (u) insertImageUrl(u); }} onClose={() => setArtPick(false)} />}
       </div>
       <div className="relative">
         <Btn testid="rte-youtube" title="Insérer une vidéo YouTube" onClick={() => toggle("yt")}><IoLogoYoutube size={16} /></Btn>

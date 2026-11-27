@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { IoArrowBack, IoCloudUploadOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
+import { IoArrowBack, IoCloudUploadOutline, IoExpandOutline, IoContractOutline, IoChevronUp, IoChevronDown, IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
+import { OBJ_REPOS, OBJ_SURVOL, ETAGERES, HAB, MENU, FENETRES, ANIM, PAGES, resolveBlocs, toRaw, blocOf } from "@/lib/blocs";
+import { ASTRES, DEFAULT_LAYERS } from "@/components/SceneCompose";
+import { DECORS, FAMILLES } from "@/lib/decors";
+import { SOURIS } from "@/components/MouseFx";
+import { LUM_MODES, DECOR_MODES, decorList } from "@/lib/lumiere";
+import { pressMenu } from "@/components/atelier/ContextMenu";
 import { imgSrc } from "@/lib/atelier";
 import { toast } from "sonner";
 import { THEMES } from "@/lib/themes";
@@ -23,18 +29,18 @@ export function readBuiltin(key) {
   return out;
 }
 
-const TABS = [["colors", "Couleurs"], ["type", "Typo"], ["shape", "Formes"], ["bg", "Fond"], ["fx", "Effets"], ["sound", "Sons"], ["info", "Réglages"]];
+const TABS = [["blocs", "Blocs"], ["pages", "Pages"], ["menu", "Menu"], ["mouv", "Mouvement"], ["colors", "Couleurs"], ["type", "Typo"], ["shape", "Formes"], ["bg", "Fond"], ["fx", "Effets"], ["sound", "Sons"], ["info", "Réglages"]];
 const COLORS = [["bg", "Fond"], ["bg2", "Surfaces"], ["brand", "Accent"], ["brand2", "Accent 2"], ["text", "Texte"], ["text2", "Texte doux"], ["border", "Bordures"]];
 
 export default function ThemeEditor({ initial, onCancel, onSaved }) {
   const [t, setT] = useState(initial);
-  const [tab, setTab] = useState("colors");
+  const [tab, setTab] = useState("blocs");
   useEffect(() => { setDraft(t); }, [t]);
   const set = (patch) => setT((o) => ({ ...o, ...patch }));
   const sub = (k, patch) => setT((o) => ({ ...o, [k]: { ...(o[k] || {}), ...patch } }));
   const [full, setFull] = useState(false);
   const [peek, setPeek] = useState(false);
-  if (peek) return <button className="ts-back" onClick={() => setPeek(false)} data-testid="theme-peek-back"><IoArrowBack size={16} /> Retour à l'atelier de thèmes</button>;
+  if (peek) return <button className="ts-back" onClick={() => setPeek(false)} data-testid="theme-peek-back"><IoArrowBack size={16} /> Retour à Nexus OS</button>;
   return (
     <aside className={"ts-panel" + (full ? " full" : "")} data-testid="theme-editor">
       <div className="ts-col">
@@ -50,6 +56,15 @@ export default function ThemeEditor({ initial, onCancel, onSaved }) {
       <p className="ts-live mono">● APERÇU EN DIRECT SUR TOUTE L'APP</p>
       <nav className="ts-tabs">{TABS.map(([k, l]) => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)} data-testid={`theme-tab-${k}`}>{l}</button>)}</nav>
       <div className="ts-scroll">
+        {tab === "blocs" && <BlocsTab t={t} set={set} />}
+        {tab === "pages" && <OptsTab t={t} set={set} k="pages" opts={PAGES} hint="Les autres pages de la Station : Journal, Planning, Soutien, À propos, univers. Les pages des œuvres gardent leur propre monde." />}
+        {tab === "menu" && <>
+          <OptsTab t={t} set={set} k="menu" opts={MENU} hint="Le cadre de la Station, sur toutes les pages : la barre (place, matière, icônes, boutons) et le tiroir qui s'ouvre avec le bouton Menu (matière, apparition, voile)." />
+          <button className="ts-btn ghost" onClick={() => window.dispatchEvent(new CustomEvent("nx-open-menu"))} data-testid="theme-menu-try">Ouvrir le menu pour voir</button>
+          <h4 className="ts-sub">Fenêtres</h4>
+          <OptsTab t={t} set={set} k="fenetres" opts={FENETRES} hint="Les fenêtres qui s'ouvrent par-dessus la Station : profil, connexion, partage, lecture, planning." />
+        </>}
+        {tab === "mouv" && <OptsTab t={t} set={set} k="anim" opts={ANIM} hint="Comment la page bouge : le défilement, la profondeur, et l'entrée dans une œuvre. Les entrées de chaque bloc se règlent dans l'onglet Blocs." />}
         {tab === "colors" && <ColorsTab t={t} sub={sub} />}
         {tab === "type" && <TypeTab t={t} set={set} />}
         {tab === "shape" && <ShapeTab t={t} set={set} />}
@@ -146,11 +161,132 @@ function ShapeTab({ t, set }) {
   </>);
 }
 
+// Nexus OS : l'accueil en blocs. Ordre, blocs affichés, présentation et habillage de chacun, comportement des objets.
+const Seg2 = ({ o, value, onPick, tid }) => <div className="ts-seg ts-wrap">{o.map(([v, l]) => <button key={v} className={(value || "") === v ? "on" : ""} onClick={() => onPick(v)} data-testid={tid ? `${tid}-${v || "def"}` : undefined}>{l}</button>)}</div>;
+function BlocsTab({ t, set }) {
+  const r = resolveBlocs(t.blocs || {});
+  const [open, setOpen] = useState(null);
+  const save = (p) => set({ blocs: toRaw({ ...r, ...p }) });
+  const move = (k, d) => { const o = [...r.order]; const i = o.indexOf(k); const j = d === "first" ? 0 : d === "last" ? o.length - 1 : i + d; if (j < 0 || j >= o.length || j === i) return; o.splice(i, 1); o.splice(j, 0, k); save({ order: o }); };
+  const toggle = (k) => { const off = new Set(r.off); off.has(k) ? off.delete(k) : off.add(k); save({ off }); };
+  const pick = (k, v) => save({ v: { ...r.v, [k]: v } });
+  const hab = (k, h, v) => save({ hab: { ...r.hab, [k]: { ...r.hab[k], [h]: v } } });
+  const habAll = (h, v) => save({ hab: Object.fromEntries(r.order.map((k) => [k, { ...r.hab[k], [h]: v }])) });
+  const menu = (k) => () => { const b = blocOf(k); const hidden = r.off.has(k); return { title: b.label, entries: [
+    { label: "Monter", onClick: () => move(k, -1) }, { label: "Descendre", onClick: () => move(k, 1) },
+    { label: "Mettre en premier", onClick: () => move(k, "first") }, { label: "Mettre en dernier", onClick: () => move(k, "last") }, "-",
+    { label: hidden ? "Afficher ce bloc" : "Masquer ce bloc", onClick: () => toggle(k) },
+    { label: open === k ? "Fermer l'habillage" : "Habillage du bloc…", onClick: () => setOpen(open === k ? null : k) },
+    ...(k === "entete" ? [{ label: "Titre plus petit", onClick: () => set({ titre_taille: Math.max(40, (t.titre_taille ?? 100) - 15) }) }, { label: "Titre plus grand", onClick: () => set({ titre_taille: Math.min(160, (t.titre_taille ?? 100) + 15) }) }] : []),
+    ...(b.v.length > 1 ? ["-", ...b.v.map(([v, l]) => ({ label: (r.v[k] === v ? "● " : "") + l, onClick: () => pick(k, v) }))] : []),
+  ] }; };
+  return (<>
+    <p className="ts-hint">L'accueil de la Station, bloc par bloc. Change l'ordre, masque ce qui ne sert pas, choisis la présentation de chaque bloc et son habillage. Clic droit sur un bloc pour plus d'actions.</p>
+    <div className="ts-bls">{r.order.map((k, i) => { const b = blocOf(k); const hidden = r.off.has(k); const cur = b.v.find(([v]) => v === r.v[k]) || b.v[0]; const h = r.hab[k] || {}; const nh = Object.values(h).filter(Boolean).length; return (
+      <div key={k} className={"ts-bl" + (hidden ? " off" : "")} {...pressMenu(menu(k))} data-testid={`theme-bloc-${k}`}>
+        <div className="ts-bl-h">
+          <span className="ts-bl-k">{b.kj}</span><b>{b.label}</b>
+          <button onClick={() => move(k, -1)} disabled={i === 0} title="Monter"><IoChevronUp size={15} /></button>
+          <button onClick={() => move(k, 1)} disabled={i === r.order.length - 1} title="Descendre"><IoChevronDown size={15} /></button>
+          <button onClick={() => toggle(k)} title={hidden ? "Afficher" : "Masquer"} data-testid={`theme-bloc-toggle-${k}`}>{hidden ? <IoEyeOffOutline size={15} /> : <IoEyeOutline size={15} />}</button>
+        </div>
+        {!hidden && <>
+          {b.v.length > 1 && <><div className="ts-seg ts-bl-v ts-wrap">{b.v.map(([v, l]) => <button key={v} className={r.v[k] === v ? "on" : ""} onClick={() => pick(k, v)} data-testid={`theme-bloc-${k}-${v}`}>{l}</button>)}</div>
+            <small className="ts-bl-d">{cur[2]}</small></>}
+          {k === "entete" && <Range label="Taille du titre" min={40} max={160} unit="%" value={t.titre_taille ?? 100} onChange={(v) => set({ titre_taille: v })} />}
+          <button className="ts-bl-more" onClick={() => setOpen(open === k ? null : k)} data-testid={`theme-bloc-hab-${k}`}>{open === k ? "Fermer l'habillage" : `Habillage${nh ? ` · ${nh} réglage${nh > 1 ? "s" : ""}` : ""}`}</button>
+          {open === k && <div className="ts-hab">{Object.entries(HAB).map(([hk, { label, o }]) => (
+            <div key={hk} className="ts-hab-r"><span>{label}</span><Seg2 o={o} value={h[hk]} onPick={(v) => hab(k, hk, v)} tid={`theme-hab-${k}-${hk}`} /></div>))}
+          </div>}
+        </>}
+      </div>); })}
+    </div>
+    <h4 className="ts-sub">Pour tous les blocs d'un coup</h4>
+    <div className="ts-hab">{["fond", "titre", "entree"].map((hk) => <div key={hk} className="ts-hab-r"><span>{HAB[hk].label}</span><Seg2 o={HAB[hk].o} value={r.order.every((k) => (r.hab[k]?.[hk] || "") === (r.hab[r.order[0]]?.[hk] || "")) ? r.hab[r.order[0]]?.[hk] : "~"} onPick={(v) => habAll(hk, v)} /></div>)}</div>
+    <h4 className="ts-sub">Objets</h4>
+    <p className="ts-hint">Les livres, cassettes et disques : rayons, accès rapide, vitrines, une en affiche.</p>
+    <Field label="Au repos"><Seg2 o={OBJ_REPOS} value={r.repos} onPick={(v) => save({ repos: v })} tid="theme-repos" /></Field>
+    <Field label="Au survol"><Seg2 o={OBJ_SURVOL} value={r.survol} onPick={(v) => save({ survol: v })} tid="theme-survol" /></Field>
+    <Field label="Étagères des rayons"><Seg2 o={ETAGERES} value={r.etagere} onPick={(v) => save({ etagere: v })} tid="theme-etagere" /></Field>
+    <button className="ts-btn ghost ts-reset" onClick={() => set({ blocs: undefined })}>Revenir à l'accueil d'origine</button>
+  </>);
+}
+// Menu et Mouvement : une liste de réglages à choix
+function OptsTab({ t, set, k, opts, hint }) {
+  const cur = t[k] || {};
+  return (<>
+    <p className="ts-hint">{hint}</p>
+    {Object.entries(opts).map(([ok, { label, o }]) => <Field key={ok} label={label}><Seg2 o={o} value={cur[ok]} onPick={(v) => set({ [k]: { ...cur, [ok]: v } })} tid={`theme-${k}-${ok}`} /></Field>)}
+  </>);
+}
+
+// Scène composée : chaque calque se règle séparément
+function ComposeEditor({ L, put }) {
+  const a = { ...DEFAULT_LAYERS.astre, ...(L.astre || {}) };
+  const sky = L.ciel || DEFAULT_LAYERS.ciel;
+  const [fam, setFam] = useState(() => DECORS.find((d) => d.id === L.decor)?.fam || "ete");
+  const coll = decorList(L);
+  const toggleCol = (id) => { const cur = (L.decors || []).filter((x) => x !== L.decor); put({ decors: cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id] }); };
+  return (<>
+    <p className="ts-hint">Un décor peint à la main, en calques qui bougent en profondeur, ou un simple ciel en dégradé. Par-dessus : un astre et l'atmosphère. Les particules se règlent dans l'onglet Effets.</p>
+    <h4 className="ts-sub">Décor</h4>
+    <Seg2 o={[...FAMILLES, ["", "Ciel seul"]]} value={L.decor ? fam : ""} onPick={(v) => { if (!v) put({ decor: "" }); else { setFam(v); if (!L.decor || DECORS.find((d) => d.id === L.decor)?.fam !== v) put({ decor: DECORS.find((d) => d.fam === v)?.id || "" }); } }} tid="theme-decor-fam" />
+    {L.decor && <div className="ts-decors">{DECORS.filter((d) => d.fam === fam).map((d) => { const inCol = coll.includes(d.id); return (
+      <div key={d.id} className={"ts-decor" + (L.decor === d.id ? " on" : "") + (inCol ? " col" : "")}>
+        <button onClick={() => put({ decor: d.id })} title={d.label} data-testid={`theme-decor-${d.id}`} {...pressMenu(() => ({ title: d.label, entries: [{ label: "Décor principal", onClick: () => put({ decor: d.id }) }, { label: inCol ? "Retirer de la collection" : "Ajouter à la collection", onClick: () => toggleCol(d.id) }] }))}>
+          <img src={d.thumb} alt="" /><span>{d.label.split(" · ")[1] || d.label}</span>
+        </button>
+        {L.decor !== d.id && <button className="ts-decor-add" onClick={() => toggleCol(d.id)} title={inCol ? "Retirer de la collection" : "Ajouter à la collection du thème"} aria-label={inCol ? "Retirer de la collection" : "Ajouter à la collection"} data-testid={`theme-decor-col-${d.id}`}>{inCol ? "✓" : "+"}</button>}
+      </div>); })}</div>}
+    {L.decor && <>
+      <h4 className="ts-sub">Collection du thème {coll.length > 1 ? `· ${coll.length} décors` : ""}</h4>
+      <p className="ts-hint">Un thème peut porter plusieurs décors : touche « + » sur une miniature (ou clic droit) pour l'ajouter. Le thème garde ses couleurs, sa typo et ses blocs ; seul le décor change.</p>
+      {coll.length > 1 && <div className="ts-coll">{coll.map((id) => { const d = DECORS.find((x) => x.id === id); return d && (
+        <span key={id} className={id === L.decor ? "on" : ""}><img src={d.thumb} alt="" title={d.label} onClick={() => put({ decor: id })} />{id !== L.decor && <button onClick={() => toggleCol(id)} aria-label={`Retirer ${d.label}`}>×</button>}</span>); })}</div>}
+      {coll.length > 1 && <>
+        <Seg2 o={DECOR_MODES} value={L.decorMode || ""} onPick={(v) => put({ decorMode: v })} tid="theme-decor-mode" />
+        {L.decorMode === "minutes" && <Range label="Changer toutes les" min={1} max={60} unit=" min" value={L.decorMin ?? 10} onChange={(v) => put({ decorMin: v })} />}
+        <p className="ts-hint">{({ "": "Fixe : le décor principal (encadré). Le public peut quand même en choisir un autre si tu le permets.", visite: "Chaque visiteur tombe sur un décor de la collection à chaque visite.", minutes: "Les décors se succèdent en fondu.", heure: "Un décor par moment de la journée, dans l'ordre de la collection : matin (6 h), journée (11 h), crépuscule (18 h), nuit (21 h). Le cadran de l'accueil suit les mêmes moments." })[L.decorMode || ""]}</p>
+        <label className="ts-check"><input type="checkbox" checked={L.decorPublic !== false} onChange={(e) => put({ decorPublic: e.target.checked })} data-testid="theme-decor-public" /> Le public peut choisir le décor (pastille sur l'accueil)</label>
+      </>}
+    </>}
+    {L.decor ? <>
+      <Range label="Teinte" min={0} max={360} unit="°" value={L.teinte ?? 0} onChange={(v) => put({ teinte: v })} />
+      <Range label="Lumière" min={30} max={150} unit="%" value={L.lum ?? 100} onChange={(v) => put({ lum: v })} />
+      <Range label="Saturation" min={0} max={180} unit="%" value={L.sat ?? 100} onChange={(v) => put({ sat: v })} />
+    </> : <>
+      <h4 className="ts-sub">Ciel</h4>
+      {[0, 1, 2].map((i) => <Color key={i} label={["Haut", "Milieu", "Horizon"][i]} value={sky[i]} onChange={(v) => { const c = [...sky]; c[i] = v; put({ ciel: c }); }} />)}
+    </>}
+    <h4 className="ts-sub">Astre</h4>
+    <Seg2 o={ASTRES} value={a.f} onPick={(v) => put({ astre: { ...a, f: v } })} tid="theme-astre" />
+    {a.f && <><Color label="Couleur" value={a.c} onChange={(v) => put({ astre: { ...a, c: v } })} />
+      <Range label="Position" value={a.x} onChange={(v) => put({ astre: { ...a, x: v } })} unit="%" />
+      <Range label="Hauteur" value={a.y} onChange={(v) => put({ astre: { ...a, y: v } })} unit="%" />
+      <Range label="Taille" min={30} max={420} value={a.t} onChange={(v) => put({ astre: { ...a, t: v } })} unit="px" />
+      <Range label="Halo" value={a.h} onChange={(v) => put({ astre: { ...a, h: v } })} unit="%" /></>}
+    <h4 className="ts-sub">Atmosphère</h4>
+    {[["nuages", "Nuages qui passent"], ["brume", "Brume"], ["rayons", "Rayons de lumière"], ["grain", "Grain"], ["vignette", "Vignette"]].map(([k, l]) => <Range key={k} label={l} value={L[k] ?? 0} onChange={(v) => put({ [k]: v })} unit="%" />)}
+  </>);
+}
+
 function BgTab({ t, sub, set }) {
   const b = t.bg || {};
   return (<>
-    <div className="ts-seg">{[["scene", "Scène"], ["gradient", "Dégradé"], ["image", "Image"], ["video", "Vidéo"]].map(([v, l]) => <button key={v} className={b.type === v ? "on" : ""} onClick={() => sub("bg", { type: v })} data-testid={`theme-bg-${v}`}>{l}</button>)}</div>
-    {b.type === "scene" && <Field label="Scène animée d'un thème d'origine"><select value={t.base} onChange={(e) => set({ base: e.target.value })}>{THEMES.map((x) => <option key={x.key} value={x.key}>{x.kanji} {x.name}</option>)}</select></Field>}
+    <div className="ts-seg ts-wrap">{[["scene", "Scène"], ["compose", "Décor"], ["gradient", "Dégradé"], ["image", "Image"], ["video", "Vidéo"]].map(([v, l]) => <button key={v} className={b.type === v ? "on" : ""} onClick={() => sub("bg", v === "compose" && !b.layers ? { type: v, layers: DEFAULT_LAYERS } : { type: v })} data-testid={`theme-bg-${v}`}>{l}</button>)}</div>
+    {b.type === "scene" && <>
+      <Field label="Scène animée d'un thème d'origine"><select value={b.scene || t.base} onChange={(e) => sub("bg", { scene: e.target.value })} data-testid="theme-scene">{THEMES.map((x) => <option key={x.key} value={x.key}>{x.kanji} {x.name}</option>)}</select></Field>
+      <h4 className="ts-sub">Régler la scène</h4>
+      {[["teinte", "Teinte", 0, 360, "°", 0], ["sat", "Saturation", 0, 200, "%", 100], ["lum", "Lumière", 30, 160, "%", 100], ["op", "Présence", 0, 100, "%", 100], ["vit", "Vitesse", 20, 300, "%", 100]].map(([k, l, mn, mx, u, d]) =>
+        <Range key={k} label={l} min={mn} max={mx} unit={u} value={b.tune?.[k] ?? d} onChange={(v) => sub("bg", { tune: { ...(b.tune || {}), [k]: v } })} />)}
+      {b.tune && <button className="ts-btn ghost ts-reset" onClick={() => sub("bg", { tune: undefined })}>Remettre la scène d'origine</button>}
+    </>}
+    {b.type === "compose" && <ComposeEditor L={{ ...DEFAULT_LAYERS, ...(b.layers || {}) }} put={(p) => sub("bg", { layers: { ...DEFAULT_LAYERS, ...(b.layers || {}), ...p } })} />}
+    {b.type === "compose" && <>
+      <h4 className="ts-sub">Lumière</h4>
+      <p className="ts-hint">Le même décor au jour, à l'aube, à l'heure dorée ou la nuit. Pour que la Station change avec le moment de la journée, mets plusieurs décors dans la collection, en mode « Suit l'heure ».</p>
+      <Seg2 o={LUM_MODES} value={t.lumiere === "heure" ? "" : t.lumiere || ""} onPick={(v) => set({ lumiere: v })} tid="theme-lumiere" />
+    </>}
     {b.type === "gradient" && <>
       <div className="ts-grads">{GRADIENTS.map((g) => <button key={g.join()} style={{ background: `linear-gradient(160deg,${g.join(",")})` }} onClick={() => sub("bg", { g })} />)}</div>
       {[0, 1, 2].map((i) => <Color key={i} label={`Teinte ${i + 1}`} value={(b.g || [])[i]} onChange={(v) => { const g = [...(b.g || ["#000", "#333", "#666"])]; g[i] = v; sub("bg", { g }); }} />)}
@@ -161,7 +297,10 @@ function BgTab({ t, sub, set }) {
       <Upload accept={b.type === "image" ? "image/*" : "video/*"} onDone={(url) => sub("bg", { url })} label={b.type === "image" ? "Importer une image" : "Importer une vidéo"} />
       {b.type === "image" && <Range label="Flou de l'image" value={b.blur ?? 0} max={30} unit="px" onChange={(v) => sub("bg", { blur: v })} />}
     </>}
-    {b.type !== "scene" && <Range label="Voile sombre" value={b.dim ?? 30} max={90} unit="%" onChange={(v) => sub("bg", { dim: v })} />}
+    {b.type !== "scene" && b.type !== "compose" && <Range label="Voile sombre" value={b.dim ?? 30} max={90} unit="%" onChange={(v) => sub("bg", { dim: v })} />}
+    <h4 className="ts-sub">Réaction à la souris</h4>
+    <p className="ts-hint">Sur n'importe quel fond. « Profondeur » fait suivre la souris aux calques d'un décor.</p>
+    <Seg2 o={SOURIS} value={t.souris} onPick={(v) => set({ souris: v })} tid="theme-souris" />
   </>);
 }
 

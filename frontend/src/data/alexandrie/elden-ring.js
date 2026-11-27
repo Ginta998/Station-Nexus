@@ -17,6 +17,8 @@ Tu arrives dans l'Entre-terre comme un mort qu'on a rappelé. Tu es un Sans-écl
 
 @art 4
 
+>* Arise now, ye Tarnished. Ye dead, who yet live. | Elden Ring, ouverture
+
 @yt K_03kFqWfqs | Elden Ring (2022), bande-annonce de l'histoire.
 
 Autour de toi, tout est après. Les châteaux sont tenus par des fous, les soldats montent la garde devant des portes que plus personne n'attaque, un arbre de lumière haut comme le ciel domine un pays où rien ne meurt tout à fait et où rien ne naît plus. Quelque chose s'est cassé, il y a longtemps, et le monde continue par habitude.
@@ -28,7 +30,7 @@ Ce livre remet cette cassure dans l'ordre. Je donne les noms en français couran
 
 Elden Ring est développé par FromSoftware et édité par Bandai Namco en 2022. Il est dirigé par Hidetaka Miyazaki. Pour la première fois, le studio fait appel à un écrivain extérieur : George R. R. Martin, l'auteur du Trône de fer, a écrit l'histoire ancienne de l'Entre-terre, celle qui s'est passée avant le jeu. Miyazaki et son équipe ont écrit le jeu lui-même par-dessus.
 
-@art g 2
+@art contour g 2
 
 La musique est signée Tsukasa Saitoh, Shoi Miyazawa, Yuka Kitamura, Tai Tomisawa, Yoshimi Kudo et Soma Tanizaki. L'extension Shadow of the Erdtree est sortie en 2024.
 
@@ -50,7 +52,7 @@ Le jeu s'est vendu à plus de vingt millions d'exemplaires. C'est le plus grand 
 
 L'Entre-terre est faite de régions très différentes, et chacune raconte un morceau de l'histoire.
 
-@art 5
+@art pleine g 9
 
 **Nécrolimbe**, où l'on arrive, est une terre verte, paisible en apparence, dominée par le château de Voilorage, tenu par Godrick le Greffé, un demi-dieu faible qui coud sur son corps les membres de ses ennemis pour paraître plus fort.
 
@@ -70,7 +72,7 @@ Sous la terre, il y a d'autres mondes : des rivières souterraines sous un ciel 
 
 L'Entre-terre n'a pas toujours été dorée. Le jeu laisse voir, sous l'ordre présent, plusieurs mondes plus anciens.
 
-@art g 3
+@art contour gauche g 3
 
 Il y eut un âge des dragons. Dans une cité qui s'effrite au milieu d'une tempête hors du temps, Farum Azula, un dragon à plusieurs têtes attend encore le retour de son dieu. Il s'appelle Placidusax, et le jeu le dit clairement : il fut Seigneur d'Elden avant qu'il y ait un Arbre. Son dieu est parti. Lui est resté.
 
@@ -98,7 +100,7 @@ Voilà le socle de toute l'histoire, et il est établi : l'Ordre d'or est né d'
 
 Qu'est-ce que le Cercle d'Elden ? Oublie l'idée d'un bijou. C'est la loi du monde, sous la forme d'un entrelacs de runes. Celui qui le porte en lui fixe les règles de la réalité : ce qui vit, ce qui meurt, ce qui est permis.
 
-@art g 1 | Le réceptacle.
+@art contour g 1 | Le réceptacle.
 
 Marika en devient le réceptacle. Elle règne depuis une capitale bâtie au pied de l'Arbre-Monde, et son premier époux est un guerrier nommé Godfrey. Avec lui, elle soumet tout. Les géants de feu, dont la flamme pouvait brûler l'Arbre, sont exterminés jusqu'au dernier, et le dernier est maudit à garder sa forge pour l'éternité.
 
@@ -114,7 +116,7 @@ La seconde : quand Godfrey a gagné sa dernière bataille et qu'il ne reste plus
 
 Au nord, un royaume résiste : celui de la reine Rennala, à l'académie de Raya Lucaria, où l'on étudie les étoiles et la lune. Marika envoie contre elle un champion aux cheveux rouges, Radagon. Deux guerres, pas de vainqueur. Radagon et Rennala tombent amoureux, se marient, et les deux royaumes font la paix. Ils ont trois enfants : Radahn, Rykard et Ranni.
 
-@art g 4
+@art contour gauche g 4
 
 Puis, quand Godfrey est exilé, Radagon quitte Rennala sans un mot et monte à la capitale pour devenir le second époux de Marika. Rennala en perd la raison. Tu la trouves berçant un œuf d'ambre dans une bibliothèque, entourée d'étudiants qui rampent.
 
@@ -146,7 +148,7 @@ Ce qui est établi, c'est la suite. Marika, quand son fils meurt, brise le Cercl
 
 Pourquoi l'a-t-elle fait ? Par chagrin, dit la version que l'on raconte. Par dessein, pensent ceux qui se souviennent qu'elle avait préparé le retour des exilés. Les deux se tiennent, et le jeu te laisse choisir.
 
-@art g 5
+@art contour g 5
 
 Radagon, dans le même corps, tente de réparer l'anneau à coups de marteau. Il échoue. Pour ce crime, Marika est emprisonnée à l'intérieur de l'Arbre. C'est là que tu la trouveras : un torse de pierre fendu, suspendu à une rune.
 
@@ -178,7 +180,7 @@ Sens la logique de l'ensemble. La déesse avait ôté la mort pour bâtir son or
 
 Sous l'Entre-terre, dans des grottes immenses, on trouve des cités en ruine sous un ciel d'étoiles. Ce ciel est faux : un plafond de pierre où brillent des lumières. On les appelle les cités éternelles, et elles appartenaient à un peuple disparu, les Nox.
 
-@art g 6
+@art contour gauche g 6
 
 Les Nox ont tenté, il y a très longtemps, de créer leur propre Seigneur, sans l'accord de la Volonté suprême. Pour les punir, elle les a enfouis sous la terre et leur a retiré le ciel. Ils ont continué à vivre dans le noir, en fabriquant des étoiles, et en cherchant à la fois à imiter la vie et à défier les dieux. C'est à eux qu'on doit le Miroir d'imitation, une larme d'argent qui prend la forme de qui la regarde.
 
@@ -204,7 +206,7 @@ C'est cette quête qui mène à la fin de l'âge des Étoiles, celle où Ranni e
 
 Comme dans tous les jeux de Miyazaki, les personnages secondaires portent des histoires aussi fortes que les grandes. Quelques-unes, parmi des dizaines.
 
-@art 9
+@art pleine g 10
 
 **Alexandre le Poing de fer** est une jarre de guerrier. Littéralement : une grande jarre de terre, vivante, qui parle avec une bonne humeur inébranlable. On le trouve coincé dans le sol, et il faut le sortir de là. Ces jarres sont remplies des restes de grands guerriers, et Alexandre veut devenir le plus grand de tous. On le croise sans cesse au fil du voyage, toujours enthousiaste, toujours en quête de combats. À la fin, au bout du monde, il te demande un dernier duel, pour éprouver sa valeur. Quand il se brise, il te parle avec fierté et sans rancune. C'est un des adieux les plus touchants du jeu.
 
@@ -220,7 +222,7 @@ Et il y a les autres : un homme qui coud des vêtements et rêve d'être beau, u
 
 Dans l'Arbre, le corps de pierre se relève. C'est Radagon qui se bat, pas Marika : le fidèle défend jusqu'au bout la loi que sa propre moitié a brisée. Quand il tombe, la Bête d'Elden sort de lui, faite d'étoiles et d'or. Tu affrontes l'anneau lui-même.
 
-@art g 7
+@art contour g 7
 
 Puis tu te tiens devant ce qui reste de la reine, et tu choisis quel monde vient après. Le jeu offre six fins. Elles valent d'être comprises, car chacune est une réponse à la question que pose toute l'histoire : que fait-on d'un ordre qui a échoué ?
 
@@ -270,7 +272,7 @@ Regarde le parallèle. Marika a bâti un monde sans mort après avoir vu mourir 
 
 Trois choses, pour toi qui écris des mondes.
 
-@art g 8
+@art contour gauche g 8
 
 La première : un monde se raconte par ce qui manque. Le personnage principal de cette histoire, Marika, n'a pas une seule scène. Tu ne la vois que brisée. Tout ce que tu sais d'elle vient de ce qu'elle a laissé : des paroles gravées, un village, des enfants abîmés. Et c'est pour cela qu'elle obsède. Un personnage absent dont tout porte la trace est plus grand que celui qu'on te montre.
 

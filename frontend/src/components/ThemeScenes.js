@@ -59,7 +59,7 @@ export function LaboScene() {
   useEffect(() => {
     let raf = 0;
     const mv = (e) => {
-      const t = document.documentElement.dataset.theme; if (t !== "labo" && t !== "laboclair") return;
+      const t = document.documentElement.dataset.scene; if (t !== "labo" && t !== "laboclair") return;
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => { const n = el.current; if (!n) return;
         n.style.setProperty("--mx", toCss(e.clientX) + "px"); n.style.setProperty("--my", toCss(e.clientY) + "px");

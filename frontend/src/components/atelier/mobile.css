@@ -141,3 +141,10 @@
   .at-drive-new{flex:1}
   .at-drive-acts .at-seg{flex:0 0 auto}
 }
+
+/* Ton portrait de profil dans l'Atelier : à côté du logo et du bonjour du Pont */
+.at-brand-av{width:34px;height:34px;flex:none;border-radius:10px;object-fit:cover;border:1px solid color-mix(in srgb,var(--brand) 50%,var(--border-c));box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.at-hero-mid h1.with-av{display:flex;align-items:center;gap:.4em}
+.at-hero-av{width:1.25em;height:1.25em;flex:none;border-radius:.22em;object-fit:cover;border:2px solid color-mix(in srgb,var(--brand) 60%,transparent);box-shadow:0 8px 30px rgba(0,0,0,.45)}
+:is(.at-brand-av,.at-hero-av).px{image-rendering:pixelated}
+@media (max-width:640px){.at-brand-av{width:30px;height:30px;border-radius:8px}}

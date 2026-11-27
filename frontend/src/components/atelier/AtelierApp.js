@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { IoPlanetOutline, IoFileTrayOutline, IoCheckboxOutline, IoSettingsOutline, IoExitOutline, IoSearch, IoGridOutline, IoExpandOutline, IoContractOutline, IoLibraryOutline, IoMailOutline, IoStatsChartOutline } from "react-icons/io5";
+import { NxIcon, useAtelierIconPack } from "@/lib/icons";
 import { useApp } from "@/context/AppContext";
+import { isPortrait } from "@/lib/portraits";
 import { useAtelier } from "@/lib/atelier";
 import { SoundBtn } from "@/components/StationMenu";
 import QuartierView from "@/components/atelier/QuartierView";
@@ -37,6 +39,8 @@ import { useLabFx } from "@/components/atelier/labFx";
 import { TextSizeButton } from "@/components/TextSizeButton";
 import { LabDialogHost } from "@/components/atelier/LabDialog";
 import Alexandrie from "@/components/atelier/Alexandrie";
+import ArcadeView from "@/components/atelier/ArcadeView";
+import { IoGameControllerOutline } from "react-icons/io5";
 import JournalView from "@/components/atelier/JournalView";
 import NewsletterView from "@/components/atelier/NewsletterView";
 import StatsView from "@/components/atelier/StatsView";
@@ -57,10 +61,11 @@ const Dock = ({ icon, label, sub, on, onClick, testid, color, kanji, badge, drop
 const soundBtn = { borderColor: "var(--line)", borderRadius: "10px", color: "var(--text-primary)", background: "transparent" };
 
 function FsBtn() {
+  const fp = useAtelierIconPack();
   const [fs, setFs] = useState(typeof document !== "undefined" && !!document.fullscreenElement);
   useEffect(() => { const h = () => setFs(!!document.fullscreenElement); document.addEventListener("fullscreenchange", h); return () => document.removeEventListener("fullscreenchange", h); }, []);
   const toggle = () => { try { if (document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen)?.call(document); else { const el = document.documentElement; (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el); } } catch (_) {} };
-  return <button className="at-icon at-fs" onClick={toggle} title={fs ? "Quitter le plein écran" : "Plein écran"} data-testid="atelier-fullscreen">{fs ? <IoContractOutline size={17} /> : <IoExpandOutline size={17} />}</button>;
+  return <button className="at-icon at-fs" onClick={toggle} title={fs ? "Quitter le plein écran" : "Plein écran"} data-testid="atelier-fullscreen">{fs ? <NxIcon pack={fp || undefined} name="reduire" size={18}><IoContractOutline size={17} /></NxIcon> : <NxIcon pack={fp || undefined} name="plein" size={18}><IoExpandOutline size={17} /></NxIcon>}</button>;
 }
 
 function ShipClock() {
@@ -70,8 +75,9 @@ function ShipClock() {
 }
 
 export default function AtelierApp({ onLeave }) {
-  const { sfx } = useApp();
+  const { sfx, profile } = useApp();
   const at = useAtelier();
+  const atPack = useAtelierIconPack();
   const [view, setView] = useState({ name: "home" });
   const [editing, setEditing] = useState(null);
   const [viewing, setViewing] = useState(null);
@@ -151,7 +157,7 @@ export default function AtelierApp({ onLeave }) {
     const onKey = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
     window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const crumb = { home: "PONT DE COMMANDEMENT", universes: "NEXUS DRIVE", templates: "BIBLIOTHÈQUE", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", alexandrie: "ALEXANDRIE", oeuvre: "ŒUVRE", devlog: "DEV & PATCH NOTES" }[view.name] || (cur?.name || "").toUpperCase();
+  const crumb = { home: "PONT DE COMMANDEMENT", universes: "NEXUS DRIVE", templates: "BIBLIOTHÈQUE", inbox: "INBOX", tasks: "COCKPIT", settings: "RÉGLAGES", bureau: "BUREAU NUMÉRIQUE", salon: "SALON", radio: "RADIO NEXUS", alexandrie: "ALEXANDRIE", arcade: "NEXUS ARCADE", oeuvre: "ŒUVRE", devlog: "DEV & PATCH NOTES" }[view.name] || (cur?.name || "").toUpperCase();
 
   useLabFx(view.name + (view.id || ""), sfx);
 
@@ -159,7 +165,7 @@ export default function AtelierApp({ onLeave }) {
     <div className={"at-app cov-" + (at.config.cover_ratio || "std") + " bnm-" + bnMode + (scrolling ? " is-scrolling" : "") + (radio.pl && !radioMini ? " has-radio" : "") + (menuOpen ? " menu-open" : "") + (navHub ? " nav-hub" : "")} data-testid="atelier-app">
       <div className="at-hudlines" aria-hidden="true" />
       <header className="at-top">
-        <div className="at-brand" onClick={() => go({ name: "home" })} role="button" style={{ cursor: "pointer" }} data-testid="atelier-logo-home"><b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
+        <div className="at-brand" onClick={() => go({ name: "home" })} role="button" style={{ cursor: "pointer" }} data-testid="atelier-logo-home">{profile?.avatar && <img className={"at-brand-av" + (isPortrait(profile.avatar) ? " px" : "")} src={profile.avatar} alt="" data-testid="atelier-brand-avatar" />}<b>工房</b><span><em>ATELIER NEXUS</em><small className="mono">// {crumb}</small></span></div>
         <button className="at-search" onClick={() => { sfx("nav"); setPalette(true); }} data-testid="atelier-search-open"><IoSearch size={15} /><span>Rechercher un univers, une fiche, une scène…</span><kbd className="mono">Ctrl K</kbd></button>
         <div className="at-top-r">
           <ShipClock />
@@ -167,8 +173,8 @@ export default function AtelierApp({ onLeave }) {
           <SoundBtn btn={soundBtn} />
           <TextSizeButton className="at-icon at-aa" />
           <FsBtn />
-          <button className="at-icon" onClick={() => go({ name: "settings" })} title="Réglages de l'Atelier" data-testid="atelier-settings-top"><IoSettingsOutline size={17} /></button>
-          <button className="at-icon" onClick={() => { sfx("back"); onLeave(); }} title="Retour à la Station" data-testid="atelier-leave-top"><IoExitOutline size={17} /></button>
+          <button className="at-icon" onClick={() => go({ name: "settings" })} title="Réglages de l'Atelier" data-testid="atelier-settings-top"><NxIcon pack={atPack || undefined} name="at-reglages" size={18}><IoSettingsOutline size={17} /></NxIcon></button>
+          <button className="at-icon" onClick={() => { sfx("back"); onLeave(); }} title="Retour à la Station" data-testid="atelier-leave-top"><NxIcon pack={atPack || undefined} name="at-quitter" size={18}><IoExitOutline size={17} /></NxIcon></button>
           <button className={"at-burger" + (menuOpen ? " on" : "")} onClick={() => { sfx("nav"); setMenuOpen((o) => !o); }} title="Menu" aria-label="Menu" data-testid="atelier-menu-toggle"><i /><i /><i /></button>
         </div>
       </header>
@@ -179,30 +185,31 @@ export default function AtelierApp({ onLeave }) {
           <div className="at-dock-head">
             <button className="at-dock-toggle" onClick={toggleDock} title={dockOpen ? "Replier le menu" : "Déployer le menu"} aria-label="Replier ou déployer le menu" data-testid="atelier-dock-toggle">{dockOpen ? "‹‹" : "››"}</button>
           </div>
-          <Dock icon={<IoPlanetOutline size={18} />} label="Pont" sub="POSTE DE COMMANDEMENT" on={view.name === "home"} onClick={() => go({ name: "home" })} testid="atelier-nav-home" />
-          <Dock icon={<IoGridOutline size={18} />} label="Nexus Drive" sub="MONDES, ŒUVRES & FICHIERS" on={view.name === "universes" || view.name === "universe" || view.name === "oeuvre"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
-          <Dock icon={<IoLibraryOutline size={18} />} label="Templates" sub="BIBLIOTHÈQUE" on={view.name === "templates"} onClick={() => go({ name: "templates" })} testid="atelier-nav-templates" />
-          <Dock icon={<IoFileTrayOutline size={18} />} label="Inbox" sub="IDÉES EN VRAC" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" drop={dropToUniverse(at, null)} />
-          <Dock icon={<IoCheckboxOutline size={18} />} label="Cockpit" sub="MES TÂCHES" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
-          <Dock icon={<IoAppsOutline size={18} />} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-pont"><IoPlanetOutline size={18} /></NxIcon>} label="Pont" sub="POSTE DE COMMANDEMENT" on={view.name === "home"} onClick={() => go({ name: "home" })} testid="atelier-nav-home" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-drive"><IoGridOutline size={18} /></NxIcon>} label="Nexus Drive" sub="MONDES, ŒUVRES & FICHIERS" on={view.name === "universes" || view.name === "universe" || view.name === "oeuvre"} onClick={() => go({ name: "universes" })} testid="atelier-nav-universes" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-templates"><IoLibraryOutline size={18} /></NxIcon>} label="Templates" sub="BIBLIOTHÈQUE" on={view.name === "templates"} onClick={() => go({ name: "templates" })} testid="atelier-nav-templates" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-inbox"><IoFileTrayOutline size={18} /></NxIcon>} label="Inbox" sub="IDÉES EN VRAC" badge={inbox.length} on={view.name === "inbox"} onClick={() => go({ name: "inbox" })} testid="atelier-nav-inbox" drop={dropToUniverse(at, null)} />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-cockpit"><IoCheckboxOutline size={18} /></NxIcon>} label="Cockpit" sub="MES TÂCHES" badge={at.tasks.filter((t) => !t.done).length} on={view.name === "tasks"} onClick={() => go({ name: "tasks" })} testid="atelier-nav-tasks" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-bureau"><IoAppsOutline size={18} /></NxIcon>} label="Bureau" sub="MES OUTILS À BORD" on={view.name === "bureau"} onClick={() => go({ name: "bureau" })} testid="atelier-nav-bureau" />
           <Dock icon={<PiRabbit size={18} />} label="Bunny" sub="MON COPILOTE" on={bunny} onClick={() => { sfx("select"); setBunny((b) => !b); }} testid="atelier-nav-bunny" />
-          <Dock icon={<IoFilmOutline size={18} />} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
-          <Dock icon={<IoJournalOutline size={17} />} label="Journal de bord" sub="MES COULISSES PUBLIQUES" on={view.name === "journal"} onClick={() => go({ name: "journal" })} testid="atelier-nav-journal" />
-          <Dock icon={<IoStatsChartOutline size={17} />} label="Tes chiffres" sub="CE QUI MARCHE" on={view.name === "stats"} onClick={() => go({ name: "stats" })} testid="atelier-nav-stats" />
-          <Dock icon={<IoMailOutline size={17} />} label="Newsletter" sub="LETTRE AUX ABONNÉS" on={view.name === "newsletter"} onClick={() => go({ name: "newsletter" })} testid="atelier-nav-newsletter" />
-          <Dock icon={<IoPubIcon size={17} />} label="Publication" sub="ATELIER → STATION" on={view.name === "publish"} onClick={() => go({ name: "publish" })} testid="atelier-nav-publish" />
-          <Dock icon={<IoGitNetworkOutline size={17} />} label="Réseau narratif" sub="QUI EST RELIÉ À QUOI" on={view.name === "network"} onClick={() => go({ name: "network" })} testid="atelier-nav-network" />
-          <Dock icon={<IoBookOutline size={17} />} label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
-          <Dock icon={<IoRadioOutline size={18} />} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
-          <Dock icon={<IoMoonOutline size={17} />} label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-salon"><IoFilmOutline size={18} /></NxIcon>} label="Salon" sub="MON NETFLIX PERSO" on={view.name === "salon"} onClick={() => go({ name: "salon" })} testid="atelier-nav-salon" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-journal"><IoJournalOutline size={17} /></NxIcon>} label="Journal de bord" sub="MES COULISSES PUBLIQUES" on={view.name === "journal"} onClick={() => go({ name: "journal" })} testid="atelier-nav-journal" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-stats"><IoStatsChartOutline size={17} /></NxIcon>} label="Tes chiffres" sub="CE QUI MARCHE" on={view.name === "stats"} onClick={() => go({ name: "stats" })} testid="atelier-nav-stats" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-newsletter"><IoMailOutline size={17} /></NxIcon>} label="Newsletter" sub="LETTRE AUX ABONNÉS" on={view.name === "newsletter"} onClick={() => go({ name: "newsletter" })} testid="atelier-nav-newsletter" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-publication"><IoPubIcon size={17} /></NxIcon>} label="Publication" sub="ATELIER → STATION" on={view.name === "publish"} onClick={() => go({ name: "publish" })} testid="atelier-nav-publish" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-reseau"><IoGitNetworkOutline size={17} /></NxIcon>} label="Réseau narratif" sub="QUI EST RELIÉ À QUOI" on={view.name === "network"} onClick={() => go({ name: "network" })} testid="atelier-nav-network" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-alexandrie"><IoBookOutline size={17} /></NxIcon>} label="Alexandrie" sub="MA BIBLIOTHÈQUE" on={view.name === "alexandrie"} onClick={() => go({ name: "alexandrie" })} testid="atelier-nav-alexandrie" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-radio"><IoRadioOutline size={18} /></NxIcon>} label="Radio" sub="MA RADIO NEXUS" on={view.name === "radio"} onClick={() => go({ name: "radio" })} testid="atelier-nav-radio" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-arcade"><IoGameControllerOutline size={18} /></NxIcon>} label="Arcade" sub="MA LUDOTHÈQUE" on={view.name === "arcade"} onClick={() => go({ name: "arcade" })} testid="atelier-nav-arcade" />
+          <Dock icon={<NxIcon pack={atPack || undefined} name="at-focus"><IoMoonOutline size={17} /></NxIcon>} label="Focus" sub="ESPACE IMMERSIF" on={focusMode} onClick={() => { sfx("select"); setFocusMode(true); }} testid="atelier-nav-focus" />
           {pinned.length > 0 && <div className="at-dock-sep mono">ÉPINGLÉS</div>}
           <div className="at-dock-unis">
             {pinned.map((u) => <Dock key={u.id} kanji={u.kanji || u.name[0]} color={u.color} label={u.name} on={view.id === u.id} onClick={() => go({ name: "universe", id: u.id })} testid={`atelier-nav-universe-${u.id}`} drop={dropToUniverse(at, u.id)} />)}
           </div>
           <div className="at-dock-foot">
-            <Dock icon={<IoCodeSlashOutline size={17} />} label="Dev" sub="BACKLOG · PATCH NOTES" on={view.name === "devlog"} onClick={() => go({ name: "devlog" })} testid="atelier-nav-devlog" />
-            <Dock icon={<IoSettingsOutline size={18} />} label="Réglages" sub="COMPTE · THÈME" on={view.name === "settings"} onClick={() => go({ name: "settings" })} testid="atelier-nav-settings" />
-            <Dock icon={<IoExitOutline size={18} />} label="Station" sub="RETOUR PUBLIC" onClick={() => { sfx("back"); onLeave(); }} testid="atelier-leave" />
+            <Dock icon={<NxIcon pack={atPack || undefined} name="at-dev"><IoCodeSlashOutline size={17} /></NxIcon>} label="Dev" sub="BACKLOG · PATCH NOTES" on={view.name === "devlog"} onClick={() => go({ name: "devlog" })} testid="atelier-nav-devlog" />
+            <Dock icon={<NxIcon pack={atPack || undefined} name="at-reglages"><IoSettingsOutline size={18} /></NxIcon>} label="Réglages" sub="COMPTE · THÈME" on={view.name === "settings"} onClick={() => go({ name: "settings" })} testid="atelier-nav-settings" />
+            <Dock icon={<NxIcon pack={atPack || undefined} name="at-quitter"><IoExitOutline size={18} /></NxIcon>} label="Station" sub="RETOUR PUBLIC" onClick={() => { sfx("back"); onLeave(); }} testid="atelier-leave" />
           </div>
         </aside>
 
@@ -226,6 +233,7 @@ export default function AtelierApp({ onLeave }) {
           {view.name === "salon" && <SalonView {...ctx} launch={launch} mini={(s) => setMini(s)} />}
           {view.name === "radio" && <RadioView radio={radio} />}
           {view.name === "alexandrie" && <Alexandrie {...ctx} radio={radio} room={view.room} book={view.book} />}
+          {view.name === "arcade" && <ArcadeView start={view.play ? { id: view.play, resume: view.resume, t: view.t } : null} />}
           {view.name === "newsletter" && <NewsletterView />}
           {view.name === "stats" && <StatsView />}
           {view.name === "journal" && <JournalView key={view.edit || "j"} initialEdit={view.edit ?? null} />}

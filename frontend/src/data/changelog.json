@@ -1,6 +1,505 @@
 {
-  "version": "0.54.2",
+  "version": "0.69.0",
   "patches": [
+    {
+      "v": "0.69.0",
+      "date": "2026-11-27",
+      "title": "Les crédits des créations",
+      "groups": {
+        "Nouveau": [
+          "Créations : un onglet Crédits dans l'éditeur (ou clic droit › Crédits…). Un rôle en un geste (Illustrations, Écriture, Couverture, Musique, Montage, Voix, Animation, « Avec l'aimable autorisation de »…), le nom, et un lien facultatif (Instagram, site) qui rend le nom cliquable. L'ordre se change avec les flèches.",
+          "Dans le monde de l'œuvre, une entrée Générique : les rôles et les noms, comme à la fin d'un film. Sur la fiche de l'œuvre (accueil), une ligne courte : « Illustrations · Camila Ramos »."
+        ],
+        "Changé": [
+          "Serveur : la création garde ses crédits (à republier sur Emergent)."
+        ]
+      }
+    },
+    {
+      "v": "0.68.1",
+      "date": "2026-11-27",
+      "title": "L'ouverture animée depuis la fenêtre d'un univers",
+      "groups": {
+        "Corrigé": [
+          "Fenêtre d'un univers : toucher une création lance de nouveau l'ouverture animée (l'objet, l'étui s'il en a un), et plus seulement le son. L'animation passait sous la fenêtre."
+        ]
+      }
+    },
+    {
+      "v": "0.68.0",
+      "date": "2026-11-27",
+      "title": "Une seule jaquette : les reliures deviennent des modèles comme les autres",
+      "groups": {
+        "Nouveau": [
+          "Jaquette et reliure (clic droit, sur les livres d'Alexandrie comme sur tes créations) : une rangée Reliure à côté des modèles. Sept reliures : Gaufrée, Dorée, Cuir de nuit, et quatre nouvelles : Toile (titre estampé, planche collée), Grimoire (coins et fermoirs de métal), Japonaise (couture apparente, titre sur étiquette verticale), Art déco (éventail doré, cadre à gradins).",
+          "Toute la jaquette s'applique aux reliures : la couleur habille la matière (cuir, toile, papier), l'encre colore les dorures et le titre, la police du titre, sa place (haut, milieu, bas), la couleur du cartouche de la tranche. Une Dorée bleu nuit et argent, c'est possible.",
+          "Étui et reflet deviennent deux options de la même fenêtre."
+        ],
+        "Changé": [
+          "« Édition reliée… » et « Édition collector… » disparaissent du clic droit : tout passe par « Jaquette et reliure… ». Les livres et œuvres déjà reliés gardent leur reliure."
+        ]
+      }
+    },
+    {
+      "v": "0.67.1",
+      "date": "2026-11-27",
+      "title": "Le clic droit s'ouvre de nouveau là où tu cliques",
+      "groups": {
+        "Corrigé": [
+          "Clic droit (ou appui long) sur la page d'accueil de la Station : le menu s'ouvrait très bas, parfois sous l'écran. Il s'ouvre de nouveau sous le doigt, ou en tiroir en bas sur téléphone."
+        ]
+      }
+    },
+    {
+      "v": "0.67.0",
+      "date": "2026-11-27",
+      "title": "Éditions reliées, vitrine collector et pages qui deviennent des œuvres",
+      "groups": {
+        "Nouveau": [
+          "Alexandrie : l'édition reliée, livre par livre (clic droit › Édition reliée…). Trois couvertures : gaufrée blanche avec une fenêtre en arche sur l'illustration, dorée à la feuille avec quatre vitraux, ou cuir de nuit aux dorures au trait. Un reflet suit la souris ou l'inclinaison du téléphone. La tranche devient une tranche à médaillons (emblème, cartouche du titre, nombre de chapitres en chiffres romains).",
+          "L'étui : rangé dans son étui sombre aux dorures au trait, le livre en sort à l'ouverture.",
+          "Créations : l'édition collector, œuvre par œuvre (clic droit › Édition collector…). Elle apparaît dans le monde de l'œuvre : le livre relié tourne lentement, son étui debout à côté, on le fait tourner au doigt, avec un bouton Soutenir.",
+          "Lecture : des pages qui deviennent des œuvres. « @art pleine g 4 » met l'illustration sur toute la page ; « @art contour g 3 » (ou « contour gauche ») fait épouser au texte la silhouette de l'image ; « >* réplique | qui la dit » est une citation à l'ancienne, centrée et ornée. En lecture de nuit et sur les cassettes, les illustrations s'illuminent comme une encre phosphorescente.",
+          "Dark Souls, Elden Ring et Bloodborne utilisent déjà ces mises en page (silhouettes, pleines pages, une réplique d'ouverture)."
+        ],
+        "Changé": [
+          "Un livre relié a une page de titre encadrée de filets dorés et des fleurons sous les titres de chapitres ; ses citations passent toutes à l'ancienne."
+        ]
+      }
+    },
+    {
+      "v": "0.66.7",
+      "date": "2026-11-27",
+      "title": "Menu qui respire au téléphone, ton portrait dans l'Atelier",
+      "groups": {
+        "Nouveau": [
+          "Atelier : ton portrait de profil à côté du logo et du bonjour du Pont (prénom repris de ton profil)."
+        ],
+        "Changé": [
+          "Menu au téléphone : il défile de haut en bas au lieu d'écraser ses lignes. Chaque carte garde sa hauteur, un peu plus d'air entre elles, et une petite flèche en bas tant qu'il reste des choses plus bas (un toucher fait descendre)."
+        ],
+        "Corrigé": [
+          "Menu : la fenêtre « Taille de l'interface » ne sort plus coupée à gauche, elle s'ouvre dans le menu."
+        ]
+      }
+    },
+    {
+      "v": "0.66.6",
+      "date": "2026-11-27",
+      "title": "Défilement fluide sur tous les thèmes",
+      "groups": {
+        "Changé": [
+          "Défilement nettement plus fluide sur tous les thèmes, surtout au téléphone : les animations en boucle du décor se mettent en pause pendant qu'on fait défiler, et les animations d'arrivée (couvertures d'Alexandrie, lettres du slogan, chapitres, Atelier) ne laissent plus de calques 3D ou flous derrière elles une fois finies. Au passage, le survol des couvertures d'Alexandrie remarche."
+        ]
+      }
+    },
+    {
+      "v": "0.66.5",
+      "date": "2026-11-27",
+      "title": "Reprendre ma partie depuis le Pont",
+      "groups": {
+        "Nouveau": [
+          "Pont : une section « Reprendre ma partie » sous Alexandrie. Les trois derniers jeux lancés (capture de la dernière partie, sinon la boîte), un geste et la partie reprend là où tu l'as laissée."
+        ]
+      }
+    },
+    {
+      "v": "0.66.4",
+      "date": "2026-11-27",
+      "title": "Artwork dès l'ajout d'un jeu, thème Trait qui respire, Trait de retour dans les ambiances",
+      "groups": {
+        "Nouveau": [
+          "Arcade : choisir l'artwork d'un jeu au moment de l'ajouter. Dans « Mes fichiers », chaque jeu a sa vignette (recherche SteamGridDB, lien, fichier, Ctrl V) et « Trouver les artworks » les cherche tous d'un coup. Même chose dans « Par un lien »."
+        ],
+        "Changé": [
+          "Thème Trait : plus d'espace entre le menu, les cartes Reprendre / Dernière sortie et le bouton Commentaires.",
+          "Trait revient dans les ambiances d'origine des mondes (il n'est plus rangé dans les masquées).",
+          "Inside : complété au-delà de 2 000 mots (la fabrication, la fille de l'eau, Limbo et Inside côte à côte)."
+        ]
+      }
+    },
+    {
+      "v": "0.66.3",
+      "date": "2026-11-27",
+      "title": "Alexandrie : Akira, Silent Hill 2 et Inside racontés en entier",
+      "groups": {
+        "Changé": [
+          "Akira : réécrit à la manière de Dead Space : les auteurs, le Tokyo d'après l'explosion, toute l'histoire du manga dans l'ordre jusqu'à la fin, puis le film et ce qu'il a changé.",
+          "Silent Hill 2 : le premier jeu en contexte, tout le chemin de James dans l'ordre (Wood Side, Blue Creek, Rosewater, Brookhaven, la prison, le lac, l'hôtel), le bestiaire, ce qui décide de ta fin, Born from a Wish, la refonte de 2024 et le film de 2026.",
+          "Inside : la forêt, la ferme, la ville qui défile, l'onde de choc, l'eau, la fuite de la Masse, et ce qu'est devenu le studio."
+        ],
+        "Corrigé": [
+          "Alexandrie : « Mis à jour récemment » mesure maintenant le texte vraiment changé, pas le nombre de lignes. Un livre court réécrit en entier y apparaît enfin."
+        ]
+      }
+    },
+    {
+      "v": "0.66.2",
+      "date": "2026-11-27",
+      "title": "Boîtes de jeu qui ont vécu, thème Trait aéré, nouvelles versions installées d'office",
+      "groups": {
+        "Nouveau": [
+          "Arcade : chaque boîte a son caractère : usure qui grandit avec le temps de jeu, éraflures, pli, coin écrasé sur les cartons bien joués, tranche passée au soleil, code-barres, autocollants (prix en francs, Occasion, Version française, Club Nexus, mot écrit à la main). Un jeu jamais lancé est encore sous blister.",
+          "Alexandrie : les nouvelles versions déjà validées (Les Rois des ombres, Lumumba, Guru, Robespierre) remplacent toutes seules une ancienne copie, images et vidéos gardées, ancienne copie dans l'historique."
+        ],
+        "Changé": [
+          "Thème Trait : l'étiquette de l'image n'est plus coupée en haut, le bloc Reprendre respire sous le menu.",
+          "Aperçu : plus de fausse ancienne copie de Lumumba et Robespierre."
+        ]
+      }
+    },
+    {
+      "v": "0.66.1",
+      "date": "2026-11-26",
+      "title": "Arcade en boîtes de collection, taille aA vérifiée, défilement plus fluide",
+      "groups": {
+        "Nouveau": [
+          "Arcade : les jeux sont rangés en boîtes de collection en 3D (face, tranche, dessus) : boîte carton pour Game Boy, GBA et salon, boîtier plastique Mega Drive, boîtier DS, boîtier de CD PlayStation, affiche de borne. La tranche porte la couleur de la console et le titre."
+        ],
+        "Changé": [
+          "Icônes HUD redessinées sans cadre : plus grandes, plus lisibles.",
+          "Taille de l'interface (aA) vérifiée de Petit à Écran géant, au téléphone et à l'ordinateur : la barre du haut tient sur une ligne (Menu en icône, plein écran masqué aux très petites largeurs), le Pont de l'Atelier ne déborde plus.",
+          "Univers au téléphone : la barre d'outils ne déborde plus (Quitter en icône, retour à la ligne), le titre du fil d'Ariane passe sur deux lignes ; thème Trait : boutons du menu plus espacés, titre proportionné.",
+          "Cosmic Bunny s'efface sur le côté pendant qu'on fait défiler, puis revient.",
+          "Défilement plus fluide (Heure mauve et thèmes à décor) : brume et nuages sans flou en direct, réglages de lumière posés sur les images du décor, carte de vision sans verre en temps réel, blocs hors écran dessinés seulement à l'approche."
+        ]
+      }
+    },
+    {
+      "v": "0.66.0",
+      "date": "2026-11-26",
+      "title": "Nexus OS : tiroir du menu, voiles et fenêtres ; Alexandrie : mis à jour récemment",
+      "groups": {
+        "Nouveau": [
+          "Nexus OS › Menu : le tiroir du menu change de matière (Techno, Verre, Papier, Plein, Minimal) et d'apparition (glisse du côté, tombe du haut, s'ouvre au centre, plein écran). En haut, au centre et en plein écran, les entrées se rangent en grille.",
+          "Nexus OS › Menu : le voile derrière le menu (Flou, Sombre, Trame, Rien), et un bouton « Ouvrir le menu pour voir ».",
+          "Nexus OS › Fenêtres : la matière, le voile et l'apparition des fenêtres de la Station (profil, connexion, partage, lecture, planning, boîtes de dialogue).",
+          "Alexandrie : section « Mis à jour récemment » sur le plan des salles, avec les livres dont le texte a vraiment changé (Les Rois des ombres, Lumumba, Guru, Robespierre…), la date, « Grande mise à jour » ou « Nouvelle version à installer », et une pastille « Nouveau pour toi » tant que tu ne l'as pas ouvert. Clic droit : lire, voir dans sa salle, marquer comme vu."
+        ],
+        "Changé": [
+          "Nexus OS › Menu › Icônes : les packs 8-bit, Bloc, HUD et Hexa sont proposés.",
+          "La date de mise à jour d'un livre ne compte que les vrais changements de texte (les envois groupés ne la décalent plus)."
+        ]
+      }
+    },
+    {
+      "v": "0.65.0",
+      "date": "2026-11-26",
+      "title": "Nexus Arcade : douze consoles, recherche, catalogue libre et guide",
+      "groups": {
+        "Nouveau": [
+          "Douze consoles dans l'Arcade : Game Boy, Game Boy Color, Game Boy Advance, NES, Super Nintendo, Mega Drive, Master System, Game Gear, Nintendo DS, PlayStation, Nintendo 64 (expérimental) et Arcade. La console est reconnue à l'extension du fichier.",
+          "Une section par console, avec son badge et sa couleur, et une étagère en carrousel 3D : le jeu au centre s'avance et montre sa barre d'actions (jouer, reprendre, sauvegardes, fiche, plus).",
+          "Chaque console a son support sur l'étagère : cartouche GBA, cartouche Game Boy au coin coupé, grosse cartouche de salon, boîtier Mega Drive, carte DS, boîtier de CD, affiche de borne.",
+          "Chaque famille a sa console de lancement (dessins originaux) : portable horizontale, portable verticale, double écran, téléviseur et console de salon, lecteur de disque, borne d'arcade avec sa pièce.",
+          "Nouveau menu « Ajouter des jeux » : Mes fichiers (plusieurs à la fois, console détectée), Par un lien (Drive, Dropbox), Catalogue libre (Homebrew Hub : homebrews GB, GBC, GBA, NES avec leur licence, installés en un clic) et Jeux officiels.",
+          "Jeux officiels : cherche n'importe quel jeu (SteamGridDB et Wikipédia), choisis sa jaquette et sa console, et range-le dans ta ludothèque sans fichier. Tu ajoutes ensuite ta propre copie depuis sa fiche, par fichier ou par lien.",
+          "Recherche dans la ludothèque, filtres (favoris, en cours, terminés, sans fichier), tri (A-Z, joués récemment, temps de jeu, derniers ajoutés) et onglets par console.",
+          "Fiche du jeu en carte de collection : numéro #NX, tampon (nouveau, en cours, terminé, culte, sans fichier), temps de jeu, statut, notes.",
+          "Le guide de l'Arcade : ce qui tourne, ce qui ne tourne pas, comment apporter un jeu, formats, sauvegardes, manettes, téléphone, dépannage, crédits.",
+          "Clic droit : sous-menus Console, Coque et Statut."
+        ],
+        "Changé": [
+          "Dropbox : un lien de partage est transformé en téléchargement direct par le serveur.",
+          "Les crédits citent EmulatorJS, les émulateurs libretro et Homebrew Hub."
+        ]
+      }
+    },
+    {
+      "v": "0.64.0",
+      "date": "2026-11-26",
+      "title": "Nexus Arcade : ta ludothèque Game Boy Advance",
+      "groups": {
+        "Nouveau": [
+          "Nexus Arcade, un nouvel espace de l'Atelier (menu et lanceur sur téléphone) : tes jeux Game Boy Advance en cartouches 3D sur une étagère. Un clic, la cartouche glisse dans la console, l'écran s'allume et le jeu démarre en plein écran (EmulatorJS).",
+          "Ajouter un jeu : fichier .gba (ou .gb, .gbc, .zip, .7z) envoyé en morceaux avec une barre d'avancement, glisser-déposer accepté ; ou depuis un lien (Google Drive, Dropbox…), que le serveur télécharge lui-même.",
+          "Jeux de test : trois homebrews gratuits sous licence libre (Butano Fighter, Raven X, Arcade Mania) installés en un clic pour essayer la console, les manettes et les sauvegardes.",
+          "En jeu : clavier (touches modifiables), manette Bluetooth ou USB, boutons tactiles sur téléphone.",
+          "Sauvegardes sur ta Station : la sauvegarde du jeu part au serveur dès qu'elle change ; quatre emplacements (Auto, 1, 2, 3) avec une capture d'écran ; « Reprendre » relance ta dernière partie sur n'importe quel appareil. Si deux appareils sauvegardent en même temps, tu choisis laquelle garder ; l'avant-dernière reste récupérable.",
+          "Temps de jeu sur chaque cartouche. Clic droit (ou appui long) : lancer, reprendre, sauvegardes, artwork SteamGridDB, renommer, favori, couleur de la coque, retirer.",
+          "Icône Arcade dans les huit packs d'icônes."
+        ],
+        "Changé": [
+          "Explorer : la vue « Arcade » de l'accueil s'appelle désormais « Vitrine », pour ne pas la confondre avec Nexus Arcade."
+        ]
+      }
+    },
+    {
+      "v": "0.63.1",
+      "date": "2026-11-26",
+      "title": "Une vraie cassette, deux packs d'icônes futuristes",
+      "groups": {
+        "Nouveau": [
+          "Deux packs d'icônes futuristes composés pour la Station : HUD (tracés Lucide dans un viseur d'écran tête haute) et Hexa (glyphes MingCute dans une cellule hexagonale à circuits). Ville néon et Unité 2B en HUD, Boulevard néon et Grand fond en Hexa ; au choix pour tous les thèmes et l'Atelier."
+        ],
+        "Changé": [
+          "La cassette dans le boîtier ressemble à une vraie VHS : coque noire aux bords striés, deux fenêtres de bobine (moyeu blanc, bande enroulée qui tourne), étiquette T-120 au milieu avec le titre, le bandeau VIDEO CASSETTE et les bandes de couleur."
+        ]
+      }
+    },
+    {
+      "v": "0.63.0",
+      "date": "2026-11-26",
+      "title": "Supprimer un thème, modèles en scènes animées, jaquettes VHS, deux packs d'icônes",
+      "groups": {
+        "Nouveau": [
+          "Supprimer n'importe quel thème, même d'origine (Nexus OS ou classique) : il quitte toutes les listes ; la Corbeille, en bas de Nexus OS, le remet d'un clic.",
+          "Huit modèles sur les scènes animées des thèmes classiques : Glacier éternel, Grand fond (Abysse), Champs Élysées (Elysium), Supernova, Unité 2B (YoRHa), Château flottant (Aincrad), Frontière, Hélios.",
+          "Jaquettes de cassette : styles propres aux VHS (Vidéoclub, Boîtier noir, Clamshell, Location, Collector) et six modèles (Vidéoclub 90, Boîtier noir, Clamshell, Collector, Science-fiction 80, Horreur). Les styles de livre (cuir, toile, poche) ne s'appliquent plus aux cassettes.",
+          "Deux packs d'icônes : 8-bit (Pixelarticons, Gerrit Halfmann, MIT) et Bloc (Pixel Icon Library, HackerNoon). Les huit packs sont répartis entre tous les thèmes et modèles."
+        ],
+        "Changé": [
+          "La une en Affiche vit dans un écran : cadre sombre, reflet de verre, voyant, titre à taille humaine ; elle n'est plus collée bord à bord."
+        ]
+      }
+    },
+    {
+      "v": "0.62.1",
+      "date": "2026-11-26",
+      "title": "Actualiser Alexandrie, menu de l'Atelier réparé, thèmes clairs",
+      "groups": {
+        "Nouveau": [
+          "Alexandrie › Actualiser : prend la dernière version des livres sur GitHub (branche main) sans republier ni mettre à jour la Station. Un livre plus récent remplace l'ancien, un nouveau livre arrive sur les rayons. Clic droit : revenir aux livres de la Station."
+        ],
+        "Corrigé": [
+          "Le menu de l'Atelier au téléphone (Tes espaces) ne se chevauche plus avec la note rapide ni avec la barre du bas.",
+          "Les icônes de l'Atelier (menu du téléphone, barre du haut, dock) suivent le pack du thème ; Réglages de l'Atelier › Icônes garde « D'origine » ou un pack au choix.",
+          "Thèmes clairs : extraits des fiches de l'Atelier, onglets et formulaires lisibles ; Grand Large et Heure mauve n'ont plus de décor de nuit qui noyait le titre ; le titre du thème a un halo de la couleur du fond."
+        ],
+        "Changé": [
+          "Le cadran montre aussi l'heure au téléphone (sauf avec le pack Texte, pour ne rien pousser)."
+        ]
+      }
+    },
+    {
+      "v": "0.62.0",
+      "date": "2026-11-26",
+      "title": "Soutiens visibles, modèles de jaquette, icônes sur tous les thèmes",
+      "groups": {
+        "Nouveau": [
+          "Les soutiens se voient : une rangée de portraits dans le bloc Soutien de l'accueil, un mur par palier (le plus haut en premier) sur la page Soutien et sur la fiche des œuvres. Clic droit sur un soutien : voir son profil, lui écrire, son Instagram.",
+          "Modèles de jaquette en un clic : Collection poche, Cinémathèque, Manga, Pulp, Reliure cuir, Minimal, Néon, Cassette. On affine ensuite (style, couleurs, police, bande, titre).",
+          "« Modifier la jaquette… » au clic droit des livres, cassettes et disques, à l'accueil et dans l'Explorer (admin), et dans Alexandrie pour tous les formats."
+        ],
+        "Changé": [
+          "Les thèmes d'origine portent un pack d'icônes d'artiste (Arrondi, Pixel, Cyber, Carnet), partagé entre plusieurs thèmes.",
+          "Le cadran devient une simple icône : aube, soleil, couchant ou lune ; l'heure s'ajoute sur écran large (clic droit : icône seule).",
+          "Décor et Thèmes : deux petites tuiles côte à côte au téléphone.",
+          "Un seul robot animé dans les portraits 1-bit."
+        ],
+        "Corrigé": [
+          "La recherche et les tuiles ne dépassent plus de l'écran avec une police large ; la barre du haut tient au téléphone avec le pack Texte.",
+          "Membres : arriver depuis un soutien descend jusqu'à sa carte et l'allume."
+        ]
+      }
+    },
+    {
+      "v": "0.61.1",
+      "date": "2026-11-26",
+      "title": "Portraits qui défilent, cadran en haut, titre réglable",
+      "groups": {
+        "Corrigé": [
+          "La fenêtre du profil défile au téléphone comme sur ordinateur : on atteint tous les portraits et le bouton Enregistrer reste visible."
+        ],
+        "Changé": [
+          "Pixel devient trois familles : Aventuriers (18), Bestiaire (28) et Rétro (17).",
+          "Le cadran passe en haut, à côté du bouton Menu, en petit ; la barre de recherche retrouve sa place.",
+          "Le titre géant du thème en haut de l'accueil est plus petit, et réglable : Nexus OS › Blocs › En-tête › Taille du titre (clic droit : plus petit, plus grand).",
+          "Crédits : les héros 32 px sont de GabrielaTot ; le lien des portraits Game Boy de JJ99 est ajouté."
+        ]
+      }
+    },
+    {
+      "v": "0.61.0",
+      "date": "2026-11-26",
+      "title": "Cadran, modèles vivants, portraits sous licence commerciale",
+      "groups": {
+        "Nouveau": [
+          "Cadran à l'accueil : l'heure et un petit disque de 24 h qui passe du matin (6 h) à la journée (11 h), au crépuscule (18 h) puis à la nuit (21 h). Clic droit : afficher les secondes.",
+          "Huit modèles Nexus OS qui ne copient plus les dix thèmes : Côte sauvage, Col des neiges, Boulevard néon, Grandes vacances, Mer de nuages (leurs décors suivent le cadran), Terres lointaines et Avant l'orage (un décor au hasard à chaque visite), Archipel (une île toutes les six minutes). Chacun a ses particules, son effet de souris, ses icônes, son lancement, ses blocs et ses sons.",
+          "Météo sur le Pont de l'Atelier, sous l'horloge (seulement pour toi) : la ville se choisit dans Réglages de l'Atelier › Météo sur le Pont. Clic droit : actualiser, changer de ville, masquer.",
+          "Nouvelles familles de portraits : Noir (gleolite), 1-bit (JJ99, avec des robots animés de Digx7), et dans Pixel les cinq portraits à lunettes de Fritzenko et douze héros 32 px."
+        ],
+        "Changé": [
+          "Recherche, cadran, décor et thèmes forment une barre d'outils plus grande à l'accueil, trois grosses tuiles au téléphone.",
+          "La lumière ne suit plus l'heure et ne se change plus depuis l'accueil : seul le décor change avec le moment de la journée. La lumière reste un réglage fixe du thème (Nexus OS › Fond › Lumière).",
+          "Les portraits SFCP (Pop, Gravure, Écran) sont retirés : leur licence interdit l'usage commercial. Frau Knurrkater demande d'être contactée pour un usage commercial, ses portraits ne sont pas repris.",
+          "Choix du portrait : plus de « voir plus », chaque famille montre tous ses portraits, avec leur nombre sur l'onglet ; Cosmic Bunny se retire pendant le choix.",
+          "Les crédits passent tout en bas de Paramètres › Apparence, sous Accessibilité."
+        ],
+        "Corrigé": [
+          "En partant d'un modèle, l'en-tête de l'accueil affichait le nom d'un autre thème tant que le nouveau n'était pas enregistré."
+        ]
+      }
+    },
+    {
+      "v": "0.60.0",
+      "date": "2026-11-26",
+      "title": "Portraits de profil, icônes d'artistes, crédits",
+      "groups": {
+        "Nouveau": [
+          "Portraits de profil : en créant ou en modifiant son profil, chacun choisit un portrait parmi quatre familles (Pop, Gravure, Écran, Pixel), ou garde sa photo. Le portrait s'allume dans l'animation d'arrivée, avant « Ravi de te retrouver » ; il suit au menu, au Salon et chez les Membres.",
+          "Icônes d'artistes pour le menu, le grand menu et l'Atelier : Arrondi, Pixel, Cyber et Carnet (des objets de carnet de donjon choisis pour évoquer chaque rubrique : un feu de camp pour le Salon, un coffre pour l'étagère…). Elles prennent la couleur du thème.",
+          "L'Atelier a son propre réglage d'icônes (Réglages de l'Atelier › Icônes de l'Atelier).",
+          "Crédits : Paramètres › Apparence › Crédits nomme chaque artiste, son pack, sa licence et son lien."
+        ],
+        "Corrigé": [
+          "Le sélecteur de thèmes de l'accueil ne déborde plus sur ordinateur."
+        ]
+      }
+    },
+    {
+      "v": "0.59.0",
+      "date": "2026-11-26",
+      "title": "Collections de décors, jaquettes, YouTube → Salon, icônes dessinées",
+      "groups": {
+        "Nouveau": [
+          "Collection de décors : un thème porte plusieurs décors (Nexus OS › Fond › « + » sur une miniature). Il garde ses couleurs, sa typo et ses blocs ; le décor est fixe, change à chaque visite, toutes les X minutes ou suit l'heure. Le public choisit son décor avec la pastille « Décor » de l'accueil.",
+          "Jaquettes : dans Paramètres › Thèmes › Jaquettes des œuvres, le style commun à toutes les œuvres (tranche, bande du haut LIVRE / SÉRIE / FILM, titre sur l'image placé automatiquement là où il reste lisible, couleurs, typo). Chaque œuvre peut s'en écarter dans sa fiche (« Jaquette de l'œuvre »).",
+          "YouTube → Salon : colle une fois le lien d'une playlist YouTube (non répertoriée) ; chaque vidéo que tu y enregistres arrive dans le Salon avec son titre, dans une playlist du même nom. « Importer une fois » pour une playlist entière.",
+          "« Partager › Station Nexus » depuis l'appli YouTube (Station installée sur le téléphone) : la vidéo arrive dans le Salon.",
+          "Trois packs d'icônes dessinés à la main pour le menu : Néon (tubes lumineux), Encre (pinceau), Pixel (16 × 16). Mêmes icônes, autre univers, dans la couleur du thème."
+        ],
+        "Corrigé": [
+          "Le titre des tranches n'est plus mangé par l'image du haut : il commence toujours dessous et rapetisse s'il est trop long."
+        ]
+      }
+    },
+    {
+      "v": "0.58.0",
+      "date": "2026-11-26",
+      "title": "Nexus OS : lumières du décor, sons refaits, objets en 3D",
+      "groups": {
+        "Nouveau": [
+          "Lumière du décor : le même décor au jour, à l'aube, à l'heure dorée ou la nuit. Le thème peut suivre l'heure (la Station change toute seule au fil de la journée), et le public choisit avec une pastille sur l'accueil, sans remplir le menu des thèmes.",
+          "Thèmes au hasard : dans Paramètres › Thèmes, coche au moins deux thèmes (icône mélange) ; chaque visiteur qui n'a pas choisi le sien tombe sur l'un d'eux à chaque visite.",
+          "Voir l'objet en 3D : clic droit ou appui long sur une œuvre, « Voir l'objet en 3D », et on le fait tourner du doigt ou à la souris (face, tranche, dos, dessus).",
+          "Aperçu fidèle dans l'éditeur : « Voir comme le lecteur » (et « Comme le lecteur » en écrivant un chapitre) ouvre le vrai lecteur, au format que verra le public (livre aux pages qui tournent, VHS, vinyle), avec le brouillon.",
+          "Icônes du menu : les mêmes icônes dans d'autres dessins (fines, légères, épaisses, pleines, deux tons), y compris dans le grand menu.",
+          "Admin : clic droit / appui long sur une œuvre des blocs → Modifier la création, Mettre à la une."
+        ],
+        "Amélioré": [
+          "Sons d'ambiance refaits de zéro, en stéréo : pluie (rideau doux et gouttes une à une), orage (craquement puis grondement qui roule), ruisseau (murmure et bulles), vagues (qui montent, se brisent et se retirent), feu de bois (grondement sourd et braises qui éclatent), vent vraiment doux.",
+          "L'entrée dans une œuvre retrouve son animation d'origine (l'objet pivote vers toi, un reflet passe), puis il s'ouvre.",
+          "La cassette VHS remplit son boîtier, avec une étiquette imprimée (titre, univers, numéro, durée).",
+          "Alexandrie et la Vidéothèque utilisent la même boîte qui s'ouvre.",
+          "L'effet Laboratoire à la souris est enfin celui de la scène : le quadrillage s'allume autour du pointeur (aussi au doigt).",
+          "Accès rapide lisible : chaque œuvre a sa propre étiquette nette ; au téléphone, deux objets et demi tiennent dans l'écran.",
+          "Décors moins zoomés au téléphone. La une « Affiche » prend tout l'écran.",
+          "Carte d'embarquement, Vision et Soutien prennent leur place sur ordinateur. Jaquettes de la Vidéothèque plus grandes.",
+          "Lune de sang devient Akatsuki.",
+          "Vidéo intégrée : son image et un bouton lecture ; si l'intégration échoue, une carte propre avec « Voir sur YouTube » au lieu d'un écran blanc."
+        ],
+        "Corrigé": [
+          "Avancer dans une musique ou une vidéo importée ne la remet plus au début (lecture par morceaux sur tous les fichiers)."
+        ]
+      }
+    },
+    {
+      "v": "0.57.1",
+      "date": "2026-11-26",
+      "title": "Nexus OS : l'objet s'ouvre vraiment, et la Station respire au téléphone",
+      "groups": {
+        "Nouveau": [
+          "Entrer dans une œuvre, d'où que ce soit (rayons, la une, l'accès rapide, une fenêtre ou une page d'univers, la bibliothèque, le planning, le journal, une annonce, les recommandations) : on voit toujours l'objet s'ouvrir avant d'arriver dans son monde.",
+          "L'objet s'ouvre pour de vrai : la couverture du livre tourne sur sa charnière et découvre la page de titre ; le boîtier VHS s'ouvre et la cassette se soulève, bobines qui tournent ; le vinyle sort de sa pochette et se met à tourner.",
+          "Deux nouvelles entrées dans une œuvre : « On le feuillette » (les pages tournent une à une) et « Il s'éjecte » (la cassette, le disque ou la page de titre sort de l'objet et vient vers toi).",
+          "12 nouveaux décors : la ferme en été, les falaises, la ville ocre, la ville à minuit, la plaine d'hiver, les icebergs, et six variantes de lumière (le pic la nuit, l'heure dorée, la baie à l'aube, la plage la nuit, la montagne à l'aube, les nuages dorés).",
+          "Menu : trois nouveaux styles d'icônes (traits fins, symboles, runes) et le choix des boutons : avec cadre, sans cadre, ou ronds."
+        ],
+        "Amélioré": [
+          "Au téléphone, le décor n'est plus étiré jusqu'à n'être que des pixels : il garde sa taille en bas de l'écran et son ciel est prolongé au-dessus.",
+          "Au téléphone, les univers en accordéon deviennent une rangée de grandes cartes qu'on fait glisser du doigt ; un appui ouvre l'univers.",
+          "Nexus OS en pleine page tient enfin dans l'écran de l'ordinateur, quelle que soit la taille de l'interface choisie."
+        ],
+        "Corrigé": [
+          "Le défilement doux est retiré : il faisait saccader certains thèmes et défiler la page toute seule (Grand Large, Lanterne, Hotaru, Marée d'ambre…).",
+          "Modifier un thème en direct depuis l'accueil ne fait plus disparaître le contenu des blocs.",
+          "La une « Cinéma » est retirée, et les sons d'ambiance des thèmes (orage, pluie…) aussi.",
+          "Un filet de sécurité retire tout voile de lancement ou de passage de page resté à l'écran en revenant sur la Station."
+        ]
+      }
+    },
+    {
+      "v": "0.57.0",
+      "date": "2026-11-26",
+      "title": "Nexus OS : décors peints, souris, fenêtres d'univers",
+      "groups": {
+        "Nouveau": [
+          "Décors peints à la main : 31 décors en calques (été, nuages, océans, hiver, villes, forêt, désert, sommet). Les calques bougent en profondeur quand on défile et, si on le choisit, quand on bouge la souris. Les nuages dérivent doucement.",
+          "Réaction à la souris, sur n'importe quel thème : Laboratoire (la grille, le halo et les axes qui suivent le pointeur), Lampe, Profondeur, Lucioles qui s'écartent, Ondes au clic.",
+          "10 thèmes Nexus OS montrent ce que la Station sait faire : Lanterne, Grand Large, Heure mauve, Citadelle de givre, Lune de sang, Dernière séance, Ville néon, Hotaru, Protocole, Marée d'ambre. Les anciens thèmes sont masqués ; l'œil, dans Nexus OS, les réaffiche.",
+          "Nexus OS s'ouvre aussi depuis les Paramètres (Apparence › Thèmes).",
+          "Onglet Pages : les autres pages (Journal, Planning, Soutien, À propos…) prennent l'habillage du thème : panneaux en verre, papier ou plein, titres géants, centrés ou barrés, et passage d'une page à l'autre (fondu, voile, iris).",
+          "Fenêtre d'univers : un clic sur un univers ouvre une fenêtre avec le monde en grand, sa description (modifiable par l'admin) et toutes ses créations posées en objets.",
+          "Les objets posés (accès rapide, vitrines, une en affiche, univers) ont du volume : on voit leur tranche et leur épaisseur.",
+          "L'entrée dans une œuvre se fait toujours autour de l'objet : il s'ouvre, il tourne sur lui-même, on entre dedans, ou il vient vers toi."
+        ],
+        "Amélioré": [
+          "Fluidité : sur un téléphone simulé (processeur ralenti 4 fois), les thèmes Nexus OS défilent maintenant entre 35 et 51 images par seconde, plus vite que l'ancien thème Abysse (27). Avant, certains tombaient à 11.",
+          "Ce qui alourdissait : les objets qui se balançaient en continu sur tous les rayons (ils ne bougent plus qu'au survol, et seulement quand leur bloc est à l'écran), le flou en temps réel du verre, les mélanges de couleurs plein écran (grain, rayons, menu transparent), et les entrées en rideau et en flou (retirées).",
+          "Le décor s'affiche en une seule image ; ses calques ne se séparent qu'avec « Profondeur », à la souris, sur ordinateur.",
+          "Au téléphone : moitié moins de particules, à 30 images par seconde, et pas de halo ni de lampe (il n'y a pas de pointeur).",
+          "Vitrines : le fond du verre n'est plus transparent. Une encadrée : la fiche colle au cadre sur téléphone.",
+          "Les silhouettes dessinées (château, montagnes en pique…) sont remplacées par les décors peints."
+        ]
+      }
+    },
+    {
+      "v": "0.56.0",
+      "date": "2026-11-25",
+      "title": "Nexus OS : composer sa Station",
+      "groups": {
+        "Nouveau": [
+          "L'atelier de thèmes devient Nexus OS. Un thème compose maintenant toute la Station : les blocs de l'accueil, le menu, le mouvement de la page et le décor, en plus des couleurs et des polices.",
+          "Onglet Blocs : l'ordre, les blocs affichés et la présentation de chacun. La une (écran, encadrée, affiche plein écran, cinéma avec la bande-annonce muette), le compte à rebours (carte, géant, bandeau), l'accès rapide (cartes, comptoir, vitrines, carnet), les univers (accordéon, galerie), le journal de bord (cartes, liste, polaroïds), la vision (manifeste, citation, lettre), la carte d'embarquement (billet, carte de membre) et le soutien (appel, lettre, bandeau).",
+          "Habillage de chaque bloc : largeur (colonne ou plein écran), fond (verre, surface, couleur, papier), style du titre (géant, kanji, barré, centré), entrée au défilement (fondu, glisse, rideau, zoom, flou) et espacement. Un réglage peut s'appliquer à tous les blocs d'un coup.",
+          "Objets : comportement au repos (balancement, flottement, incliné) et au survol (s'éclaire, tourne, bascule), aussi sur les rayons. Les étagères changent de matière : bois, verre, métal, papier ou aucune.",
+          "Onglet Menu : en haut, fixé en haut, sur le côté avec le programme des sections et la progression, ou en dock en bas ; en verre, plein, papier ou transparent ; icônes en traits, en kanji ou en texte.",
+          "Onglet Mouvement : défilement libre, section par section ou amorti, parallaxe légère ou forte, et l'entrée dans une œuvre (l'objet s'ouvre, rideau, fondu au noir, plongée).",
+          "Fond « Composée » : un décor par calques. Ciel en trois couleurs, soleil, lune ou planète, une silhouette au loin et une au premier plan (collines, montagnes, forêt, ville, château, torii, mer, dunes), nuages, brume, rayons de lumière, grain et vignette.",
+          "Les scènes d'origine se règlent : teinte, saturation, lumière, présence et vitesse.",
+          "Huit nouveaux modèles complets : Ciel d'été, Salon feutré, Brume du matin, Royaume, Terres maudites, Séance, Pluie sur Néo-Tokyo, Forêt aux lucioles.",
+          "Univers : un nouveau champ dans l'éditeur d'œuvre regroupe les œuvres d'un même monde. Chaque univers a sa page, avec ses œuvres posées comme des objets.",
+          "Nexus OS s'ouvre aussi depuis l'accueil : bouton Thèmes, puis Nexus OS (admin)."
+        ],
+        "Corrigé": [
+          "Fond « Scène » : la scène choisie s'applique enfin, même en retouchant un thème d'origine.",
+          "L'en-tête de l'accueil affiche bien le nom d'un thème personnalisé dès qu'il est choisi."
+        ]
+      }
+    },
+    {
+      "v": "0.55.0",
+      "date": "2026-11-25",
+      "title": "La station se met à jour depuis GitHub, Alexandrie retrouve ses livres",
+      "groups": {
+        "Nouveau": [
+          "Paramètres › Mises à jour (admin) : les versions de l'interface publiées sur GitHub, avec leurs nouveautés. Pour chacune : Tester (pour toi seul), Mettre en ligne (pour tout le monde), Revenir à celle-ci.",
+          "Plus besoin de republier sur Emergent pour l'interface : une nouvelle version arrive dans les Paramètres une minute après l'envoi sur GitHub. Le serveur, lui, reste sur Emergent.",
+          "Garde-fous : une version qui ne démarre pas est écartée et la station revient à la version Emergent ; une version qui demande un serveur plus récent ne se lance pas ; si GitHub ne répond pas, la station garde la dernière version connue.",
+          "Secours : stationexus.store/?socle ouvre toujours la version Emergent, ?normal revient au fonctionnement habituel. En mode test, un bandeau « Version de test » permet d'en sortir.",
+          "Nexus Arcade, côté serveur : jeux envoyés en morceaux de 8 Mo (jusqu'à 4 Go), installation depuis un lien (Google Drive…), sauvegardes en jeu et instantanées avec la version précédente en secours et la gestion des conflits entre appareils, temps de jeu. Réservé à l'admin.",
+          "Alexandrie : chaque livre a sa date de mise à jour ; quand une version plus récente arrive et que tu as ta propre copie, un badge « Nouvelle version » propose de la prendre (tes images et vidéos sont gardées) ou de garder la tienne.",
+          "Alexandrie : importer plusieurs fichiers .txt, .md ou Word (.docx) d'un coup, « Coller à la suite » morceau par morceau, et le brouillon gardé si la fenêtre se ferme.",
+          "Alexandrie : habiller la tranche d'un livre (style classique, cuir, toile, poche ou moderne, couleur, encre, police) ; toutes les tranches ont une inscription en tête.",
+          "Alexandrie : clic droit (ou appui long) sur une image du livre pour la changer, la remplacer par une adresse ou la retirer.",
+          "Station : en admin, clic droit (ou appui long) sur une création pour la modifier ou la mettre à la une.",
+          "Lecteur vertical : l'image floutée en fond, les infos de l'épisode à gauche, la liste des épisodes à droite, un vrai bouton Fermer, et glisser vers le haut ou le bas pour changer d'épisode.",
+          "Recherche d'artworks : vignettes plus grandes, un bouton « Utiliser cette image » toujours visible (fini la touche Entrée sur téléphone), et plusieurs images d'un coup pour les moodboards.",
+          "Un site qui refuse de s'afficher dans la Station montre une carte (image, titre, résumé) avec « Ouvrir à côté », au lieu d'une page blanche."
+        ],
+        "Corrigé": [
+          "« Quitter l'univers » ramène au menu principal de la Station.",
+          "Le bouton « Commander » revient dans le monde d'une œuvre (menu et écran Débloquer), et à la fin des chapitres libres.",
+          "Avancer dans une musique ou une vidéo envoyée sur la Station ne la fait plus repartir du début (lecture par morceaux côté serveur).",
+          "La bande-annonce passe par le lecteur de la Station et coupe la musique d'ambiance.",
+          "Grille de chapitres réglée sur 1 à 5 colonnes : elle ne déborde plus de sa zone (un nom de classe entrait en conflit avec la mise en page).",
+          "Les livres d'Alexandrie ne s'ouvrent plus dans l'éditeur du Nexus Drive et n'apparaissent plus dans le Drive ni dans « Reprendre » du Pont.",
+          "Tourner une page : plus de petit clic aigu au départ."
+        ]
+      }
+    },
     {
       "v": "0.54.2",
       "date": "2026-11-19",

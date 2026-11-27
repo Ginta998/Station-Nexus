@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// le lanceur (public/index.html) donne l'adresse du serveur : une version publiée depuis GitHub n'a pas la sienne
+const BACKEND_URL = typeof window !== "undefined" && typeof window.__NX_BACKEND === "string" ? window.__NX_BACKEND : process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
 export const api = axios.create({ baseURL: API, timeout: 20000 });
 

@@ -26,5 +26,68 @@
     <body>
         <noscript>Vous devez activer JavaScript pour utiliser Station Nexus.</noscript>
         <div id="root"></div>
+        <% if (!htmlWebpackPlugin.options.inject) { %>
+        <script>
+        /* Lanceur de la Station : démarre la version Emergent (le socle) ou la version publiée depuis GitHub.
+           ?socle : forcer la version Emergent · ?normal : revenir au fonctionnement normal.
+           Une version qui ne démarre pas est écartée et la station revient au socle. */
+        (function () {
+          var S = <%= JSON.stringify({ js: htmlWebpackPlugin.files.js, css: htmlWebpackPlugin.files.css }) %>;
+          var B = "%REACT_APP_BACKEND_URL%"; if (B.charAt(0) === "%") B = "";
+          window.__NX_BACKEND = B;
+          var ls = null, ss = null; try { ls = window.localStorage; ss = window.sessionStorage; } catch (e) {}
+          function get(k, d) { try { var v = ls.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+          function put(k, v) { try { if (v == null) ls.removeItem(k); else ls.setItem(k, JSON.stringify(v)); } catch (e) {} }
+          var q = location.search, m;
+          try {
+            if (/[?&]socle(=|&|$)/.test(q)) ss.setItem("nx_socle", "1");
+            if ((m = /[?&]version=([\w.-]+)/.exec(q))) ss.setItem("nx_test", m[1]);
+            if (/[?&]normal(=|&|$)/.test(q)) { ss.removeItem("nx_socle"); ss.removeItem("nx_test"); }
+          } catch (e) {}
+          var forceSocle = false, test = null;
+          try { forceSocle = ss.getItem("nx_socle") === "1"; test = ss.getItem("nx_test"); } catch (e) {}
+          var bad = get("nx_live_bad", []), started = false;
+          function fail(e) {
+            if (e.test) { try { ss.removeItem("nx_test"); } catch (x) {} }
+            else { bad.push(e.version); put("nx_live_bad", bad.slice(-10)); put("nx_live", null); }
+            location.reload();
+          }
+          function boot(e) {
+            if (started) return; started = true;
+            var base = e ? B + e.base : "";
+            window.__NX_LIVE = e ? { version: e.version, base: base, test: !!e.test, built_at: e.built_at || "" } : null;
+            (e ? e.css : S.css).forEach(function (h) { var l = document.createElement("link"); l.rel = "stylesheet"; l.href = e ? base + h : h; document.head.appendChild(l); });
+            (e ? e.js : S.js).forEach(function (h) {
+              var t = document.createElement("script"); t.src = e ? base + h : h; t.async = false;
+              if (e) t.onerror = function () { fail(e); };
+              document.head.appendChild(t);
+            });
+            if (e) setTimeout(function () { if (!window.__NX_BOOTED) fail(e); }, 20000);
+          }
+          if (forceSocle) return boot(null);
+          var cached = get("nx_live", null);
+          if (cached && bad.indexOf(cached.version) >= 0) cached = null;
+          var tok = null; try { tok = ls.getItem("sx_token"); } catch (e) {}
+          // Version déjà connue : démarrage immédiat, la vérification ne sert qu'à la prochaine visite.
+          if (cached && !test) boot(cached);
+          try {
+            var x = new XMLHttpRequest();
+            x.open("GET", B + "/api/site/live" + (test ? "?test=" + encodeURIComponent(test) : ""));
+            if (tok) x.setRequestHeader("Authorization", "Bearer " + tok);
+            x.timeout = 3000;
+            x.onload = function () {
+              var r = null; try { r = JSON.parse(x.responseText); } catch (e) {}
+              if (x.status !== 200 || !r) return boot(cached);
+              var live = r.live && bad.indexOf(r.live.version) < 0 ? r.live : null;
+              put("nx_live", live);
+              if (r.test) { r.test.test = true; return boot(r.test); }
+              boot(live);
+            };
+            x.onerror = x.ontimeout = function () { boot(test ? null : cached); };
+            x.send();
+          } catch (e) { boot(cached); }
+        })();
+        </script>
+<% } %>
     </body>
 </html>

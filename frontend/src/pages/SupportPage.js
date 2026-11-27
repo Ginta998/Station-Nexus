@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { confirmCheckout } from "@/components/CheckoutConfirm";
+import { SupportersWall } from "@/components/SupportersWall";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -164,35 +165,8 @@ export default function SupportPage() {
 
         {active && !edit && <p className="mt-6 text-sm" style={{ color: "var(--brand)" }}>✓ Tu es abonné — merci pour ton soutien ! Gère ton abonnement depuis <button onClick={() => nav("/bibliotheque")} className="underline">ta bibliothèque</button>.</p>}
 
-        {/* Mur des soutiens */}
-        {!edit && supporters.length > 0 && (
-          <div className="mt-16" data-testid="supporters-wall">
-            <div className="text-center mb-8">
-              <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "var(--brand)" }}>✦ Mur des soutiens</p>
-              <h2 className="font-display text-3xl md:text-4xl mb-2">Merci à nos soutiens 💛</h2>
-              <p className="text-sm md:text-base" style={{ color: "var(--text-secondary)" }}>Ces voyageurs font grandir la station, œuvre après œuvre.</p>
-            </div>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-              {supporters.map((p) => {
-                const ws = wallStyle(p.tier_id);
-                return (
-                  <div key={p.id} data-testid={`supporter-${p.id}`} className="flex flex-col items-center text-center">
-                    <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center relative" style={{ border: `2px solid ${ws.color}`, background: "var(--bg-secondary)" }}>
-                      {p.avatar
-                        ? <img src={p.avatar} alt={p.name} className="w-full h-full object-cover" />
-                        : <span className="font-display text-2xl" style={{ color: ws.color }}>{(p.name || "?")[0].toUpperCase()}</span>}
-                      <span className="absolute -bottom-1 -right-1 w-6 h-6 flex items-center justify-center rounded-full" style={{ background: ws.color, border: "2px solid var(--bg-primary)" }}>
-                        <ws.Icon size={11} style={{ color: "#0a0a0a" }} />
-                      </span>
-                    </div>
-                    <p className="mt-2 text-xs font-semibold truncate w-full" style={{ color: "var(--text-primary)" }}>{p.name || "Anonyme"}</p>
-                    <span className="text-[10px] uppercase tracking-wide" style={{ color: ws.color }}>{p.tier_name}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {/* Mur des soutiens : le même composant que sur les fiches et l'accueil */}
+        {!edit && <div className="mt-16"><SupportersWall eyebrow="✦ Mur des soutiens" title="Merci à nos soutiens" /></div>}
       </div>
     </div>
   );

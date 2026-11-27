@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
+import { NxIcon } from "@/lib/icons";
 import { UI_SCALES } from "@/lib/uiScale";
 
 const SIZES = { petit: 11, normal: 13, grand: 15, xl: 18, max: 21, ultra: 25 };
 const SCALES = UI_SCALES.map((s) => ({ ...s, size: SIZES[s.v] }));
 
-export function TextSizeButton({ btnStyle, dropUp, className = "" }) {
+export function TextSizeButton({ btnStyle, dropUp, className = "", align = "right" }) {
   const { textScale, setTextScale, sfx } = useApp();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -22,13 +23,13 @@ export function TextSizeButton({ btnStyle, dropUp, className = "" }) {
         title="Taille de l'interface" aria-label="Taille de l'interface"
         className={className || "px-2.5 py-2.5 border transition-transform hover:scale-105 flex items-end gap-0.5 leading-none"}
         style={btnStyle}>
-        <span className="font-display" style={{ fontSize: 12 }}>A</span>
-        <span className="font-display" style={{ fontSize: 18 }}>A</span>
+        <NxIcon name="taille" size={18}><span className="font-display" style={{ fontSize: 12 }}>A</span>
+        <span className="font-display" style={{ fontSize: 18 }}>A</span></NxIcon>
       </button>
 
       {open && (
         <div data-testid="text-size-menu"
-          className={`absolute right-0 z-50 p-2 border min-w-[230px] whitespace-nowrap ${dropUp ? "bottom-full mb-2" : "mt-2"}`}
+          className={`absolute ${align === "left" ? "left-0" : "right-0"} z-50 p-2 border min-w-[230px] max-w-[calc(100vw-32px)] whitespace-nowrap ${dropUp ? "bottom-full mb-2" : "mt-2"}`}
           style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)", boxShadow: "0 10px 40px rgba(0,0,0,0.5)" }}>
           <p className="text-[10px] uppercase tracking-widest px-2 pb-1.5" style={{ color: "var(--text-secondary)" }}>Taille de l'interface</p>
           {SCALES.map((s) => {

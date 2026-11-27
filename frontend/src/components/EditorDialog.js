@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import VersionHistory from "@/components/VersionHistory";
 import { IoSearch, IoClose, IoCloudUploadOutline, IoTrashOutline, IoAddOutline, IoMusicalNotes, IoImageOutline, IoBookOutline, IoCreateOutline, IoChevronUp, IoChevronDown, IoEyeOutline, IoTimeOutline, IoFilmOutline, IoLinkOutline, IoGameControllerOutline, IoInformationCircleOutline, IoListOutline, IoReaderOutline, IoCheckmark, IoArrowBack, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 import { toast } from "sonner";
-import { createCreation, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset, assetUrl, createJournalEntry } from "@/lib/api";
+import { createCreation, listCreations, updateCreation, uploadAudio, deleteAudio, uploadReadingAudio, deleteReadingAudio, getCreationFull, uploadChapterAudio, deleteChapterAudio, uploadVideo, deleteVideo, uploadAsset, assetUrl, createJournalEntry } from "@/lib/api";
 import PageWriter from "@/components/PageWriter";
 import { WORLD_STYLES, WORLD_MASKED, worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { THEMES as BOOK_LOOKS, THEME_INFO as BOOK_LOOK_INFO } from "@/data/alexandrie/looks";
-import { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
-import { CoverDialog } from "@/components/atelier/AlexCore";
+import WorkReader, { LOOK_OF_WORLD } from "@/components/nexus/WorkReader";
+import { fmtOfCreation } from "@/components/nexus/NexusHome";
+import { CoverDialog, SpineDialog } from "@/components/atelier/AlexCore";
+import { kindOfCreation, mergeJaq, useJaqDefault } from "@/lib/jaquette";
 import { useWorldThemes, deleteWorldTheme } from "@/lib/worldThemes";
 import WorldThemeLab from "@/components/nexus/WorldThemeLab";
 import "@/components/editor.css";
@@ -19,8 +22,9 @@ import "@/components/editor.css";
 */
 
 const empty = {
+  univers: "",
   title: "", kanji: "", category: "livres", tagline: "", synopsis: "",
-  poster: "", accent: "", world_style: "", reader_format: "", reader_look: "", units_cols: 0, units_cols_phone: 0, bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [],
+  poster: "", accent: "", world_style: "", reader_format: "", reader_look: "", units_cols: 0, units_cols_phone: 0, bg_image: "", bg_blur: 32, bg_dim: 0.55, gallery: [], embeds: [], credits: [],
   launch_type: "reader", launch_label: "Lancer",
   launch_content: "", launch_url: "", film_url: "", video_ratio: "", trailer_url: "", buy_url: "", chapter_display: "button", chapter_size: "md", button_size: "md", unit_label: "", unit_display: "movix", episodes: [], chapters: [], coming_soon: false, release_month: "", release_year: "", order: 0, is_paid: false, price_eur: 0, free_chapters: 0, status: "",
   intention_enabled: false, intention_title: "Intentions de l'auteur", intention_text: "", intention_images: [], intention_file_id: "", intention_file_name: "",
@@ -46,8 +50,9 @@ const LAUNCH = [
   ["info", "Info", "Présentation seulement", IoInformationCircleOutline],
 ];
 const SECTIONS = [
-  ["id", "Identité"], ["world", "Monde"], ["themes", "Thèmes"], ["content", "Contenu"], ["media", "Médias"], ["sound", "Son"], ["publish", "Publication"],
+  ["id", "Identité"], ["world", "Monde"], ["themes", "Thèmes"], ["content", "Contenu"], ["media", "Médias"], ["credits", "Crédits"], ["sound", "Son"], ["publish", "Publication"],
 ];
+export const CREDIT_ROLES = ["Illustrations", "Écriture", "Couverture", "Musique", "Montage", "Voix", "Animation", "Avec l'aimable autorisation de", "Réalisation", "Scénario", "Couleurs", "Lettrage", "Traduction", "Correction", "Image", "Son", "Inspiration"];
 const SWATCHES = ["#e8473f", "#f99e1a", "#e3c48d", "#3fbf7f", "#2bb3c0", "#4d8dff", "#9b6bff", "#f2f2f2"];
 
 const unitHtml = (u) => (u.rich ? (u.content || "") : (u.content ? u.content.split(/\n{2,}/).map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("") : ""));
@@ -149,6 +154,8 @@ function longPress(fn) {
 
 export default function EditorDialog({ open, onClose, initial, categories = [], onSaved, onPeek, cover: coverHint, section }) {
   const myThemes = useWorldThemes();
+  const [jaqOpen, setJaqOpen] = useState(false); const jaqDef = useJaqDefault();
+  const [lecteur, setLecteur] = useState(null); // aperçu fidèle : le vrai lecteur, avec le brouillon
   const [wsAsk, setWsAsk] = useState(null); // la carte de monde dont les actions sont ouvertes (appui long)
   const [hidden, setHidden] = useState(readHidden);
   const setHid = (l) => { setHidden(l); try { localStorage.setItem(HID_KEY, JSON.stringify(l)); } catch (_) {} };
@@ -204,6 +211,9 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   };
   useEffect(() => { const h = (e) => keyRef.current?.(e); window.addEventListener("keydown", h, true); return () => window.removeEventListener("keydown", h, true); }, []);
 
+  // Les univers déjà utilisés, proposés pendant la saisie
+  const { data: allCreations = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations(), enabled: !!open });
+  const universList = useMemo(() => [...new Set(allCreations.map((c) => (c.univers || "").trim()).filter(Boolean))].sort(), [allCreations]);
   if (!open) return null;
   const isEdit = Boolean(initial && initial.id);
   const upd = (fn) => { setDirty(true); setForm(fn); };
@@ -238,6 +248,11 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
   const addEmbed = () => set("embeds", [...(form.embeds || []), { platform: "youtube", url: "", label: "" }]);
   const updEmbed = (i, k, v) => set("embeds", form.embeds.map((e, x) => (x === i ? { ...e, [k]: v } : e)));
   const delEmbed = (i) => set("embeds", form.embeds.filter((_, x) => x !== i));
+  // Crédits : qui a travaillé sur l'œuvre (ou l'artiste dont on utilise le travail)
+  const addCredit = (role = "") => set("credits", [...(form.credits || []), { name: "", role, link: "" }]);
+  const updCredit = (i, k, v) => set("credits", (form.credits || []).map((c, x) => (x === i ? { ...c, [k]: v } : c)));
+  const delCredit = (i) => set("credits", (form.credits || []).filter((_, x) => x !== i));
+  const moveCredit = (i, d) => { const l = [...(form.credits || [])]; const j = i + d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; set("credits", l); };
 
   const save = async () => {
     if (saving) return;
@@ -305,7 +320,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
     ["Contenu", units ? units.length > 0 : form.launch_type === "film" ? !!(form.film_url || form.has_film || filmFile) : form.launch_type === "link" ? !!form.launch_url : form.launch_type === "reader" ? !!form.launch_content : true, "content"],
     ["Fond du monde", !!(form.bg_image && form.bg_image.length > 4) || !!form.has_bg, "world"],
   ];
-  const count = { content: units ? units.length : null, media: (form.gallery || []).length + (form.embeds || []).length + (form.trailer_url || form.has_trailer || trailerFile ? 1 : 0) };
+  const count = { credits: (form.credits || []).filter((c) => c.name?.trim()).length || null, content: units ? units.length : null, media: (form.gallery || []).length + (form.embeds || []).length + (form.trailer_url || form.has_trailer || trailerFile ? 1 : 0) };
   const cover = form.poster && form.poster.length > 4 ? form.poster : coverHint || null;
   const bgPrev = form.bg_image && form.bg_image.length > 4 ? form.bg_image : cover;
 
@@ -375,6 +390,8 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
               <Field label="Catégorie"><select className="rl-in" data-testid="editor-category" value={form.category} onChange={(e) => set("category", e.target.value)}>{categories.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}</select></Field>
               <Field label="Emblème" hint="Un caractère, sur la tranche et la couverture."><input className="rl-in mono" data-testid="editor-kanji" maxLength={3} value={form.kanji} onChange={(e) => set("kanji", e.target.value)} /></Field>
             </div>
+            <Field label="Univers" hint="Le monde de l'œuvre. Les œuvres du même univers sont regroupées sur l'accueil et sur la page de l'univers."><input className="rl-in" list="nx-univers-list" data-testid="editor-univers" value={form.univers || ""} onChange={(e) => set("univers", e.target.value)} placeholder="Ex. Les Fonctionnaires de la Mort" />
+              <datalist id="nx-univers-list">{universList.map((u) => <option key={u} value={u} />)}</datalist></Field>
           </div>
         </div>
         <Field label="Résumé" hint={`${form.synopsis.length} caractères — 300 à 500, c'est l'idéal pour la notice.`} wide><textarea className="rl-in" rows={5} data-testid="editor-synopsis" value={form.synopsis} onChange={(e) => set("synopsis", e.target.value)} /></Field>
@@ -472,6 +489,9 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           <Field label="Texte du bouton"><input className="rl-in" data-testid="editor-launch-label" value={form.launch_label} onChange={(e) => set("launch_label", e.target.value)} placeholder="Lancer" /></Field>
           {units && <Field label="Nom de la liste" hint="Chapitres, Tomes, Saisons…"><input className="rl-in" data-testid="editor-unit-label" value={form.unit_label || ""} onChange={(e) => set("unit_label", e.target.value)} placeholder={form.launch_type === "episodes" ? "Épisodes" : "Chapitres"} /></Field>}
         </div>
+        <Field label="Jaquette de l'œuvre" hint="Par défaut, le style commun de la Station (Paramètres › Thèmes › Jaquettes). Ici, cette œuvre peut s'en écarter : tranche, bande du haut, titre sur l'image.">
+          <button type="button" className="rl-btn" onClick={() => setJaqOpen(true)} data-testid="editor-jaquette">{form.jaquette && Object.keys(form.jaquette).length ? "Jaquette personnalisée · modifier" : "Personnaliser la jaquette"}</button>
+        </Field>
         <Field label="Objet (expérience Nexus)" hint="Comment l'œuvre apparaît sur les étagères. Auto : selon le type de l'œuvre."><Seg value={form.object_format || ""} onChange={(v) => set("object_format", v)} options={[["", "Auto"], ["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]]} testid="editor-object-format" /></Field>
         <Field label="Lecture (expérience Nexus)" hint="Comment le texte se lit, indépendamment de l'objet : un livre peut se lire comme une VHS. Auto : comme l'objet."><Seg value={form.reader_format || ""} onChange={(v) => set("reader_format", v)} options={[["", "Auto"], ["livre", "Livre"], ["vhs", "VHS"], ["vinyle", "Vinyle"]]} testid="editor-reader-format" /></Field>
         {(units || form.launch_type === "reader") && (
@@ -528,6 +548,27 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
           </div>
         ))}
         <p className="rl-sub"><b>Making of</b><span>Il se compose depuis le journal de bord : chaque entrée liée à l'œuvre y apparaît, intentions comprises.</span></p>
+      </>
+    ),
+    credits: (
+      <>
+        <p className="rl-sub"><b>Crédits</b><span>Qui a travaillé sur l'œuvre, ou l'artiste dont tu utilises le travail. Ils s'affichent dans le monde de l'œuvre (Générique) et sur sa fiche.</span></p>
+        <div className="rl-cr-quick">{CREDIT_ROLES.slice(0, 8).map((r) => <button type="button" key={r} className="rl-chip" onClick={() => addCredit(r)} data-testid={`editor-credit-quick-${r}`}><IoAddOutline /> {r}</button>)}</div>
+        <datalist id="rl-credit-roles">{CREDIT_ROLES.map((r) => <option key={r} value={r} />)}</datalist>
+        {(form.credits || []).length === 0 && <p className="rl-empty">Touche un rôle pour l'ajouter, par exemple « Illustrations », puis écris le nom. Un lien (Instagram, site) rend le nom cliquable.</p>}
+        {(form.credits || []).map((c, i) => (
+          <div key={i} className="rl-credit" data-testid={`editor-credit-${i}`}>
+            <input className="rl-in" list="rl-credit-roles" value={c.role || ""} onChange={(e) => updCredit(i, "role", e.target.value)} placeholder="Rôle (Illustrations, Musique…)" />
+            <input className="rl-in" value={c.name || ""} onChange={(e) => updCredit(i, "name", e.target.value)} placeholder="Nom" autoFocus={!c.name} data-testid={`editor-credit-name-${i}`} />
+            <input className="rl-in" value={c.link || ""} onChange={(e) => updCredit(i, "link", e.target.value)} placeholder="Lien (facultatif) : instagram.com/…, site…" />
+            <span className="rl-cr-acts">
+              <button type="button" className="rl-ico" onClick={() => moveCredit(i, -1)} disabled={i === 0} aria-label="Monter">↑</button>
+              <button type="button" className="rl-ico" onClick={() => moveCredit(i, 1)} disabled={i === (form.credits || []).length - 1} aria-label="Descendre">↓</button>
+              <button type="button" className="rl-ico danger" onClick={() => delCredit(i)} aria-label="Retirer"><IoTrashOutline /></button>
+            </span>
+          </div>
+        ))}
+        <button type="button" className="rl-btn" onClick={() => addCredit("")} data-testid="editor-credit-add"><IoAddOutline /> Ajouter une personne</button>
       </>
     ),
     sound: (
@@ -620,6 +661,7 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
             {cover ? <img src={cover} alt="" /> : <span className="rl-card-ph">{form.kanji || "?"}</span>}
             <div><small>{catLabel}</small><b>{form.title || "Sans titre"}</b>{units && <span>{units.length} {form.launch_type === "chapters" ? "chapitre(s)" : "épisode(s)"}</span>}</div>
           </div>
+          {(units?.length > 0 || form.launch_content) && <button type="button" className="rl-btn" style={{ width: "100%", marginBottom: 14 }} onClick={() => setLecteur({ key: units?.length ? (form.launch_type === "episodes" ? "episodes" : "chapters") : null, start: 0 })} data-testid="editor-reader-preview"><IoEyeOutline /> Voir comme le lecteur</button>}
           <p className="rl-lbl">PRÊT À PUBLIER</p>
           <ul className="rl-check">
             {checks.map(([l, ok, s]) => <li key={l} className={ok ? "ok" : ""}><button type="button" onClick={() => setSec(s)}><i>{ok ? <IoCheckmark /> : ""}</i>{l}</button></li>)}
@@ -646,11 +688,20 @@ export default function EditorDialog({ open, onClose, initial, categories = [], 
 
       {pick && <CoverDialog b={{ id: "sn-" + (form.id || "new"), title: form.title || pick.label, room: /manga|anime/i.test(catLabel) ? "manga" : form.launch_type === "game" ? "jeux" : "cinema", format: form.launch_type === "game" || form.launch_type === "episodes" ? "vhs" : /musique|music|album/i.test(catLabel) ? "vinyle" : "livre" }}
         current={pick.cur && pick.cur.length > 4 && !/^data:/.test(pick.cur) ? pick.cur : ""} onSave={(u) => { if (u) pick.put(u); setPick(null); }} onClose={() => setPick(null)} />}
+      {jaqOpen && <SpineDialog b={{ id: "jaq-" + (form.id || "nouveau"), title: form.title || "Sans titre", sub: form.tagline || "", format: fmtOfCreation(form, catLabel), kind: kindOfCreation(form, fmtOfCreation(form, catLabel)), roomLabel: catLabel || "Station", cote: "SN-000", house: "STATION NEXUS", emblem: form.kanji, spine: mergeJaq(jaqDef, form.jaquette) }}
+        cover={cover} current={form.jaquette && Object.keys(form.jaquette).length ? form.jaquette : null} heading="JAQUETTE DE L'ŒUVRE" note="Ce que tu changes ici ne vaut que pour cette œuvre ; le reste suit le style commun de la Station." resetLabel="Revenir au style de la Station"
+        onSave={(v) => { set("jaquette", v || {}); setJaqOpen(false); }} onClose={() => setJaqOpen(false)} />}
+      {lecteur && (() => {
+        const fmt = ["livre", "vhs", "vinyle"].includes(form.reader_format) ? form.reader_format : ({ vinyle: "vinyle", vhs: "vhs" })[fmtOfCreation(form, catLabel)] || "livre";
+        return <div style={{ position: "fixed", inset: 0, zIndex: 4000 }} data-testid="editor-reader"><WorkReader key={lecteur.key + ":" + lecteur.start} item={{ ...form, id: "apercu-" + (form.id || "nouveau") }} unitKey={lecteur.key} catLabel={catLabel} format={fmt}
+          look={form.reader_look || LOOK_OF_WORLD[worldStyleOf(form, catLabel)] || "didone"} cover={cover} startUnit={lecteur.start} onClose={() => setLecteur(null)} /></div>;
+      })()}
       {wUnit && (
         <PageWriter kicker={`${form.title || "Création"} · ${writing.key === "episodes" ? "Épisode" : "Chapitre"} ${writing.i + 1}`}
           title={wUnit.title} onTitle={(v) => updUnit({ title: v })}
           html={unitHtml(wUnit)} onHtml={(v) => updUnit({ content: v, rich: true })} image={wUnit.image}
           creationId={isEdit ? initial.id : form.id} onClose={() => setWriting(null)} onSave={save} saving={saving} saveLabel="Enregistrer la création"
+          onReader={() => setLecteur({ key: writing.key, start: writing.i })}
           note="« Retour » garde ton texte dans l'atelier ; « Enregistrer la création » le sauvegarde définitivement." />
       )}
     </>

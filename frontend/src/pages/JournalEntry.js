@@ -56,7 +56,7 @@ export default function JournalEntry() {
         <h1 className="jr-title font-display" data-testid="journal-entry-title">{e.title}</h1>
         {e.subtitle && <p className="jr-sub">{e.subtitle}</p>}
         {crea && (
-          <button className="jr-crea" onClick={() => { sfx("select"); nav(`/oeuvre/${crea.id}`); }} data-testid="journal-entry-creation">
+          <button className="jr-crea" onClick={() => { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id: crea.id } })); }} data-testid="journal-entry-creation">
             {crea.has_poster && <img src={posterUrl(crea.id, crea.updated_at, 160)} alt="" />}
             <span><small className="mono">CRÉATION LIÉE</small>{crea.title}</span>
           </button>

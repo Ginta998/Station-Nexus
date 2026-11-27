@@ -1,0 +1,13 @@
+.mfx{position:absolute;inset:0;pointer-events:none}
+/* Laboratoire : le quadrillage s'allume autour du pointeur, dans la couleur du thème (la même lumière que la scène Laboratoire) */
+.mfx-labo .spot{position:absolute;inset:0;background:radial-gradient(300px circle at var(--mx,-999px) var(--my,-999px),color-mix(in srgb,var(--brand) 80%,transparent),transparent 72%);
+  -webkit-mask-image:linear-gradient(#000 1px,transparent 1px),linear-gradient(90deg,#000 1px,transparent 1px);-webkit-mask-size:48px 48px;mask-image:linear-gradient(#000 1px,transparent 1px),linear-gradient(90deg,#000 1px,transparent 1px);mask-size:48px 48px}
+.mfx-labo .glow{position:absolute;inset:0;background:radial-gradient(520px circle at var(--mx,-999px) var(--my,-999px),color-mix(in srgb,var(--text-primary) 6%,transparent),transparent 70%)}
+/* Lampe : pénombre, et une lumière qui suit */
+.mfx-lampe{background:radial-gradient(300px circle at var(--mx) var(--my),transparent 0,rgba(0,0,0,.25) 45%,rgba(0,0,0,.78) 100%)}
+@media (pointer:coarse){.mfx-lampe{background:radial-gradient(70vmax circle at var(--mx) var(--my),transparent 0,rgba(0,0,0,.6) 100%)}}
+/* Ondes au clic */
+.mfx-ondes i{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:1.5px solid var(--brand);animation:mfxRipple 1.2s cubic-bezier(.2,.8,.2,1) forwards}
+.mfx-ondes i::after{content:"";position:absolute;inset:-1.5px;border-radius:50%;border:1px solid var(--brand);animation:mfxRipple 1.2s .15s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes mfxRipple{from{transform:scale(1);opacity:.9}to{transform:scale(18);opacity:0}}
+.mfx-lucioles{width:100%;height:100%}

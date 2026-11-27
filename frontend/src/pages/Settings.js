@@ -1,10 +1,11 @@
 import { FAVICONS, faviconPng } from "@/lib/favicons";
 import { LAUNCH_SOUNDS, LAUNCH_FORMATS, getLaunchSound, setStationLaunchSounds, playLaunch, useLaunchSync } from "@/lib/launchSound";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { createPortal } from "react-dom";
 import { MyData, ReportsAdmin, LegalInfoAdmin } from "@/components/PrivacyTools";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { IoArrowBack, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoArrowUp, IoArrowDown, IoImageOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline , IoDocumentTextOutline } from "react-icons/io5";
+import { IoArrowBack, IoCheckmarkCircle, IoAddOutline, IoTrashOutline, IoCloudUploadOutline, IoPlay, IoDownloadOutline, IoVolumeMute, IoVolumeHigh, IoStar, IoStarOutline, IoShuffle, IoArrowUp, IoArrowDown, IoImageOutline, IoColorPaletteOutline, IoMusicalNotes, IoPersonOutline, IoShieldHalfOutline , IoDocumentTextOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { useThemeList, baseOf as baseOfTheme } from "@/lib/themeStore";
 import { UI_SCALES } from "@/lib/uiScale";
@@ -22,14 +23,20 @@ import {
   listSubscribers, deleteSubscriber, getSettings, updateSettings, api, API,
   uploadIntroVideo, deleteIntroVideo,
   listAnnouncements, createAnnouncement, deleteAnnouncement, listCreations, emailStatus,
-  getLibrary, getMembershipPlan, pushTest, downloadBackup } from "@/lib/api";
+  getLibrary, getMembershipPlan, pushTest, downloadBackup, posterUrl } from "@/lib/api";
+import { SpineDialog } from "@/components/atelier/AlexCore";
+import { kindOfCreation } from "@/lib/jaquette";
+import { CREDITS } from "@/data/credits";
+import { IoArrowForward } from "react-icons/io5";
 import { pushSupported, getPermission, getNotifPref, getSoundPref, setSoundPref, enablePush, updatePref, disablePush, isSubscribed } from "@/lib/push";
 import { IoPhonePortraitOutline, IoSaveOutline, IoSparkles, IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
 import Celebration from "@/components/Celebration";
 import { StartupSetting } from "@/components/Startup";
+import LiveUpdates from "@/components/LiveUpdates";
 import { TOUR_STEPS } from "@/lib/tourSteps";
 import "@/components/editor.css";
 import { EXPERIENCES, useExperience, setExperience, worldAmbientAuto, setWorldAmbientAuto } from "@/lib/experience";
+const ThemeStudio = lazy(() => import("@/components/ThemeStudio"));
 
 const fs = { background: "var(--bg-primary)", color: "var(--text-primary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
 const Section = ({ title, extra, children }) => (
@@ -859,6 +866,24 @@ function TourTextsManager({ settings, refetch }) {
   );
 }
 
+// Jaquettes de la Station : le style commun à toutes les œuvres (tranche, bande du haut, titre sur l'image).
+// Chaque œuvre peut s'en écarter dans sa fiche (Contenu › Jaquette).
+function JaquetteEntry({ siteSettings, refetch }) {
+  const [open, setOpen] = useState(false);
+  const { data: all = [] } = useQuery({ queryKey: ["creations"], queryFn: () => listCreations() });
+  const ex = all.find((c) => c.has_poster) || all[0];
+  const b = { id: "jaq-station", title: ex?.title || "Titre de l'œuvre", sub: ex?.tagline || "", format: "livre", kind: kindOfCreation(ex || {}), roomLabel: "Station", cote: "SN-001", house: "STATION NEXUS", spine: siteSettings?.jaquette };
+  const save = async (v) => { await updateSettings({ ...siteSettings, jaquette: v || {} }); toast.success(v ? "Jaquettes de la Station enregistrées" : "Jaquettes d'origine"); refetch(); setOpen(false); };
+  return (<>
+    <button type="button" className="w-full flex items-center justify-between gap-3 p-4 border mb-3 text-left" style={{ borderColor: "var(--border-c)", background: "var(--bg-secondary)", borderRadius: "var(--radius-base)" }} onClick={() => setOpen(true)} data-testid="settings-open-jaquette">
+      <span><span className="block font-semibold" style={{ color: "var(--text-primary)" }}>Jaquettes des œuvres</span>
+        <span className="block text-sm" style={{ color: "var(--text-secondary)" }}>Le style commun : tranche, bande du haut (LIVRE, SÉRIE, FILM…), titre sur l'image. Une œuvre peut s'en écarter dans sa fiche.</span></span>
+      <IoArrowForward />
+    </button>
+    {open && <SpineDialog b={b} cover={ex?.has_poster ? posterUrl(ex.id, ex.updated_at, 480) : ""} current={siteSettings?.jaquette && Object.keys(siteSettings.jaquette).length ? siteSettings.jaquette : null} heading="JAQUETTES DE LA STATION" note="S'applique à toutes les œuvres, sauf à celles qui ont leur propre jaquette." resetLabel="Jaquettes d'origine" onSave={save} onClose={() => setOpen(false)} />}
+  </>);
+}
+
 export default function Settings() {
   const THEMES = useThemeList();
   const nav = useNavigate();
@@ -867,6 +892,8 @@ export default function Settings() {
     posterDesktop, posterMobile, setPosterSizeFor, textDesktop, textMobile, setTextScaleFor, layout, setLayout } = useApp();
   const { data: siteSettings, refetch: refetchSite } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const defTheme = siteSettings?.default_theme || "abysse";
+  const hasard = siteSettings?.theme_hasard || [];
+  const toggleHasard = async (k) => { const n = hasard.includes(k) ? hasard.filter((x) => x !== k) : [...hasard, k]; await updateSettings({ ...siteSettings, theme_hasard: n }); toast.success(n.includes(k) ? "Ajouté au tirage au hasard" : "Retiré du tirage au hasard"); refetchSite(); };
   const setDefaultTheme = async (k) => { await updateSettings({ ...siteSettings, default_theme: k }); toast.success("Thème par défaut défini"); refetchSite(); };
   const setDefaultPoster = async (phone, v) => { await updateSettings({ ...siteSettings, [phone ? "default_poster_mobile" : "default_poster_desktop"]: v }); toast.success("Taille d'affiche par défaut mise à jour ✓"); refetchSite(); };
 
@@ -896,6 +923,7 @@ export default function Settings() {
     { key: "compte", label: "Compte", icon: <IoPersonOutline size={15} /> },
     { key: "legal", label: "Légal", icon: <IoDocumentTextOutline size={15} /> },
     { key: "admin", label: "Admin", icon: <IoShieldHalfOutline size={15} />, admin: true },
+    { key: "maj", label: "Mises à jour", icon: <IoCloudUploadOutline size={15} />, admin: true },
   ];
   const tabs = TABS.filter((t) => !t.admin || isAdmin);
   const ti = Math.max(0, tabs.findIndex((t) => t.key === tab));
@@ -945,6 +973,11 @@ export default function Settings() {
         )}
 
         <Section title="Thèmes" extra={`— ${THEMES.length} ambiances`}>
+          {isAdmin && <NexusOsEntry />}
+          {isAdmin && <JaquetteEntry siteSettings={siteSettings} refetch={refetchSite} />}
+          {isAdmin && <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }} data-testid="theme-hasard-hint">
+            <IoStarOutline style={{ display: "inline", verticalAlign: "-2px" }} /> thème par défaut · <IoShuffle style={{ display: "inline", verticalAlign: "-2px" }} /> au hasard : coche au moins deux thèmes et chaque visiteur (qui n'a pas choisi le sien) tombe sur l'un d'eux à chaque visite.
+            {hasard.length > 1 ? ` Tirage actif : ${hasard.length} thèmes.` : hasard.length === 1 ? " Coches-en encore un pour lancer le tirage." : ""}</p>}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="theme-grid">
             {THEMES.map((t) => {
               const active = theme === t.key;
@@ -956,6 +989,13 @@ export default function Settings() {
                       onClick={(e) => { e.stopPropagation(); setDefaultTheme(t.key); }}
                       className="absolute top-2 right-2 cursor-pointer" style={{ color: defTheme === t.key ? "var(--brand)" : "var(--text-secondary)" }}>
                       {defTheme === t.key ? <IoStar size={16} /> : <IoStarOutline size={16} />}
+                    </span>
+                  )}
+                  {isAdmin && (
+                    <span role="button" data-testid={`theme-hasard-${t.key}`} title={hasard.includes(t.key) ? "Retirer du tirage au hasard" : "Ajouter au tirage au hasard"}
+                      onClick={(e) => { e.stopPropagation(); toggleHasard(t.key); }}
+                      className="absolute top-2 right-8 cursor-pointer" style={{ color: hasard.includes(t.key) ? "var(--brand)" : "var(--text-secondary)", opacity: hasard.includes(t.key) ? 1 : 0.55 }}>
+                      <IoShuffle size={16} />
                     </span>
                   )}
                   <div className="flex items-center gap-1.5 mb-3">{t.swatch.map((c, i) => <span key={i} className="w-5 h-5 rounded-full border" style={{ background: c, borderColor: "rgba(255,255,255,0.15)" }} />)}</div>
@@ -1006,6 +1046,20 @@ export default function Settings() {
               <span className="text-sm" style={{ color: "var(--text-primary)" }}>Réduire les animations <span className="block text-xs" style={{ color: "var(--text-secondary)" }}>Confort / économie de batterie</span></span>
               <input type="checkbox" checked={reduceMotion} onChange={(e) => setReduceMotion(e.target.checked)} style={{ accentColor: "var(--brand)", width: 18, height: 18 }} />
             </label>
+        </Section>
+
+        <Section title="Crédits" extra="— les artistes derrière l'apparence">
+          <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>Portraits, icônes et décors de la Station viennent d'artistes qui partagent leur travail. Merci à eux.</p>
+          <div className="grid gap-2" data-testid="credits">
+            {CREDITS.map((c) => (
+              <div key={c.what} className="p-3 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
+                <div className="text-[10px] uppercase tracking-widest mb-1" style={{ color: "var(--brand)" }}>{c.what}</div>
+                <div className="font-semibold" style={{ color: "var(--text-primary)" }}>{c.by}</div>
+                <div className="text-sm" style={{ color: "var(--text-secondary)" }}>{c.pack} · {c.license}{c.note ? ` · ${c.note}` : ""}</div>
+                {c.url && <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-xs underline" style={{ color: "var(--text-secondary)" }}>{c.url.replace(/^https?:\/\//, "")}</a>}
+              </div>
+            ))}
+          </div>
         </Section>
 
         </>)}
@@ -1090,6 +1144,12 @@ export default function Settings() {
           {isAdmin && <TourTextsManager settings={siteSettings} refetch={refetchSite} />}
         </Section>
         </>)}
+
+        {isAdmin && tab === "maj" && (
+          <Section title="Mises à jour" extra="— les versions de la station publiées depuis GitHub">
+            <LiveUpdates />
+          </Section>
+        )}
 
         {isAdmin && tab === "admin" && (<>
         <Section title="Sauvegarde" extra="— toute ta station dans un fichier">
@@ -1269,6 +1329,20 @@ function BackupBox() {
         <IoDownloadOutline /> {busy ? "Préparation…" : "Télécharger la sauvegarde"}
       </button>
       <p className="text-xs mt-2" style={{ color: "var(--text-secondary)" }}>Conseil : une fois par mois, et avant chaque grosse mise à jour.</p>
+    </div>
+  );
+}
+
+
+// Nexus OS : l'éditeur qui compose la Station (blocs, menu, mouvement, décor, couleurs…), ouvert depuis les Paramètres
+function NexusOsEntry() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 p-4 mb-4 border" style={{ background: "var(--bg-secondary)", borderColor: "color-mix(in srgb,var(--brand) 45%,var(--border-c))", borderRadius: "var(--radius-base)" }} data-testid="settings-nexus-os">
+      <span><span className="block font-display text-xl" style={{ color: "var(--text-primary)" }}>Nexus OS</span>
+        <span className="block text-sm" style={{ color: "var(--text-secondary)" }}>Compose la Station : blocs de l'accueil, menu, mouvement, décor, souris, couleurs et polices.</span></span>
+      <button onClick={() => setOpen(true)} className="px-4 py-2.5 font-semibold text-sm" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }} data-testid="settings-open-nexus-os">Ouvrir Nexus OS</button>
+      {open && createPortal(<Suspense fallback={null}><ThemeStudio onClose={() => setOpen(false)} /></Suspense>, document.body)}
     </div>
   );
 }

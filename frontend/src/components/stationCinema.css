@@ -11,3 +11,23 @@
 @media (max-width:640px){.st-cine.vert .st-cine-box{width:100vw;height:100dvh;aspect-ratio:auto}}
 body.st-cine-open{overflow:hidden}
 .st-cine iframe,.st-cine video{background:#000}
+/* Vertical (réels) : l'image floutée en fond, les infos à gauche, les épisodes à droite, un vrai bouton Fermer */
+.st-cine-bg{position:absolute;inset:-40px;background:#000 center/cover no-repeat;filter:blur(38px) brightness(.38) saturate(1.2);transform:scale(1.1)}
+.st-cine.vert .st-cine-box{position:relative;z-index:1}
+.st-cine-info{position:absolute;left:clamp(16px,4vw,64px);bottom:clamp(24px,8vh,96px);width:min(340px,calc(50vw - 28vh - 40px));z-index:1;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.st-cine-info .mono{font-size:11px;letter-spacing:.16em;opacity:.72;margin:0 0 6px}
+.st-cine-info .st-ci-work{opacity:.9}
+.st-cine-info h2{margin:0 0 10px;font-size:clamp(20px,2.2vw,30px);line-height:1.15;text-wrap:balance}
+.st-cine-info .st-ci-d{margin:0 0 14px;font-size:14px;line-height:1.5;opacity:.85;max-height:9em;overflow:hidden}
+.st-cine-info .st-ci-hint{font-size:10px;opacity:.5}
+.st-cine-list{position:absolute;right:clamp(16px,3vw,48px);top:72px;bottom:24px;width:min(300px,calc(50vw - 28vh - 40px));z-index:1;overflow:auto;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin}
+.st-cine-list button{display:flex;gap:10px;align-items:center;padding:6px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.35);color:#fff;text-align:left;cursor:pointer;border-radius:8px;backdrop-filter:blur(6px)}
+.st-cine-list button.on{border-color:#fff;background:rgba(255,255,255,.14)}
+.st-cine-list .th{flex:0 0 54px;height:96px;border-radius:5px;background:#222 center/cover no-repeat;position:relative;display:grid;place-items:end center}
+.st-cine-list .th em{font-style:normal;font-size:8px;letter-spacing:.1em;background:#fff;color:#000;padding:2px 4px;margin-bottom:4px}
+.st-cine-list .tx{display:flex;flex-direction:column;gap:3px;min-width:0}
+.st-cine-list .tx small{font-size:10px;opacity:.6}
+.st-cine-list .tx b{font-size:13px;font-weight:600;line-height:1.3}
+.st-cine-x{position:absolute;top:16px;right:16px;z-index:3;display:inline-flex;align-items:center;gap:6px;padding:8px 14px 8px 10px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(0,0,0,.5);color:#fff;font-size:13px;cursor:pointer;backdrop-filter:blur(6px)}
+@media (max-width:1000px){.st-cine-info,.st-cine-list{display:none}}
+@media (max-width:640px){.st-cine-x span{display:none}.st-cine-x{top:calc(10px + env(safe-area-inset-top,0px));right:10px;padding:8px}}

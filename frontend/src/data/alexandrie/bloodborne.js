@@ -17,6 +17,8 @@ Avant d'entrer à Yharnam, il faut que tu saches comment ce jeu raconte, parce q
 
 @art 4
 
+>* Fear the old blood. | Maître Willem, Bloodborne
+
 @yt G203e1HhixY | Bloodborne (2015), la bande-annonce qui l'a révélé.
 
 Il ne raconte pas. Tu te réveilles sur une table d'opération, on t'a transfusé un sang inconnu, tu as signé un contrat dont tu ne te souviens pas, et quelqu'un te dit de partir à la chasse. Personne ne t'expliquera rien de plus. L'histoire est en morceaux : une phrase dans la description d'une arme, une note clouée sur un mur, l'emplacement d'un cadavre, le nom d'une musique.
@@ -30,7 +32,7 @@ Je vais donc faire quelque chose d'un peu contraire à l'esprit du jeu : remettr
 
 Bloodborne est développé par FromSoftware, à Tokyo, et coproduit avec Japan Studio, le studio japonais de Sony, qui l'édite sur PlayStation 4 en mars 2015. Le producteur côté Sony est Masaaki Yamagiwa. L'extension, The Old Hunters, sort en novembre de la même année.
 
-@art g 2
+@art contour g 2
 
 Il est dirigé par Hidetaka Miyazaki. Son parcours est inhabituel : il n'est entré dans le jeu vidéo qu'à vingt-neuf ans, après un premier métier dans l'informatique de gestion. Chez FromSoftware, il a pris en main un projet en difficulté, Demon's Souls, déjà en collaboration avec Japan Studio, puis a créé Dark Souls. Bloodborne arrive entre Dark Souls et Dark Souls III. C'est le premier jeu où il quitte la fantasy médiévale pour un XIXe siècle gothique.
 
@@ -56,7 +58,7 @@ Savoir, dans Bloodborne, est littéralement dangereux.
 
 Tout commence sous terre.
 
-@art 5
+@art pleine g 10
 
 Bien avant Yharnam, il y avait là une autre civilisation, les Pthumériens. Ils ont laissé un labyrinthe immense de tombes et de calices. Ces gens gardaient quelque chose : le sommeil d'êtres que le jeu appelle les Grands, les *Great Ones*.
 
@@ -70,7 +72,7 @@ Les Pthumériens ont eu une reine, Yharnam, qui a donné son nom à la ville. Tu
 
 Sous Yharnam, le jeu cache un monde entier, presque optionnel : les donjons des calices. On y descend par des rituels, en posant sur un autel une coupe ancienne, un calice, et des ingrédients rares. Chaque rituel ouvre un labyrinthe de tombes, de couloirs et de salles de pierre, qui s'enfoncent de plus en plus profondément.
 
-@art g 3
+@art contour gauche g 3
 
 Ces labyrinthes sont ceux des Pthumériens. On y croise leurs descendants, des êtres très grands, très maigres, aux gestes lents, qui gardent encore les lieux. On y croise des gardiens, des prêtres, des bêtes. Et au fond du plus profond d'entre eux, la reine Yharnam elle-même, celle qui pleure, son ventre ensanglanté, que tu reverras ailleurs, dans les derniers lieux du jeu.
 
@@ -102,7 +104,7 @@ Tous ces êtres ont une chose en commun, et c'est l'un des rares faits que le je
 
 Des siècles plus tard, des savants descendent dans le labyrinthe. Ils viennent d'une université bâtie au bord d'un lac, Byrgenwerth. Leur maître s'appelle Willem.
 
-@art g 4
+@art contour g 4
 
 Ils trouvent en bas deux choses. La preuve que les Grands existent. Et un sang, le vieux sang, qui a des pouvoirs prodigieux.
 
@@ -134,7 +136,7 @@ Un quartier entier, le Vieux Yharnam, a été brûlé avec ses habitants pour ar
 
 Yharnam n'est pas une ville avec une seule Église et quelques chasseurs. C'est un réseau de groupes, d'écoles, d'ateliers, qui se surveillent et se haïssent. On les découvre par les vêtements, les armes, les tombes.
 
-@art g 1 | Les branches de la chasse.
+@art contour gauche g 1 | Les branches de la chasse.
 
 **L'Atelier.** Les premiers chasseurs ne viennent pas de l'Église. Ils viennent de l'atelier de Gehrman, le premier chasseur. Ses armes sont celles qu'on te donne au début : la scie, la hache, la canne. Ce sont des outils de travail, pratiques, brutaux. Ses élèves, dont Dame Maria, chassaient les bêtes bien avant que l'Église ne fasse de la chasse une institution.
 
@@ -156,7 +158,7 @@ Chaque groupe a sa vérité. Aucun ne s'est demandé ce que ses recherches coût
 
 Au nord de Yharnam, au bout d'un lac gelé, il y a un château qu'on n'atteint qu'en carrosse, sur invitation : Cainhurst. Une noblesse ancienne y vivait, raffinée, cruelle, qui buvait du sang dans des coupes de cristal.
 
-@art g 5
+@art contour g 5
 
 Selon les descriptions du jeu, un savant de Byrgenwerth, un traître, a apporté à Cainhurst un sang interdit. Les nobles s'en sont nourris et sont devenus les Vilains, les *Vilebloods*. Pour l'Église, c'était un blasphème : quelqu'un d'autre possédait le secret du sang. Elle a envoyé contre eux une troupe de chasseurs fanatiques, les Exécuteurs, menés par Martyr Logarius. Ils ont massacré le château.
 
@@ -182,7 +184,7 @@ On comprend que l'Église, qui se présentait comme une religion de guérison, a
 
 Il faut maintenant que je te raconte le crime originel. Le jeu le cache dans son extension, et tu ne le trouves qu'à la toute fin.
 
-@art g 6
+@art contour gauche g 6
 
 Un jour, la mer rejette sur une côte le corps d'une Grande, Kos. Elle est morte, ou mourante, et elle porte un enfant. Les habitants d'un hameau de pêcheurs la vénèrent.
 
@@ -200,7 +202,7 @@ Derrière elle, sur la grève, près du cadavre de Kos, quelque chose rampe hors
 
 Reviens à la ville. Quand tu sors de la clinique, c'est la nuit de la chasse, et quelque chose ne va pas : elle ne finit pas.
 
-@art 9
+@art pleine g 11
 
 Voici pourquoi. Une autre branche de savants, l'école de Mensis, a voulu obtenir une audience avec un Grand. Ils y sont parvenus, par un rituel qui les a tous tués. Leurs corps sont assis en cercle dans un village caché, leurs esprits partis dans un cauchemar où leur chef, Micolash, court en riant et supplie qu'on lui accorde des yeux. Leur rituel a fait descendre la lune. Il tourne autour de l'enfant Mergo, dont la nourrice garde le berceau.
 
@@ -214,7 +216,7 @@ Le jeu que tu croyais jouer, une histoire de loups-garous, n'était que le voile
 
 Quand la lune devient rouge, un village jusque-là inaccessible s'ouvre : Yahar'gul, le village invisible, celui de l'école de Mensis. On y entre souvent malgré soi, enlevé par un de leurs serviteurs, et l'on se réveille dans une cellule.
 
-@art g 7
+@art contour g 7
 
 Yahar'gul est un cauchemar de pierre. Des ruelles en pente, des cages, des prisonniers, des chasseurs de l'école qui portent sur la tête une cage de fer, comme pour enfermer leur propre esprit. Au sommet, sur une place, des cloches sonnent, et un être monstrueux descend d'une falaise : le Réincarné, un amas de corps fondus ensemble, né d'un de leurs rituels.
 
@@ -254,7 +256,7 @@ Tu le retrouves une dernière fois, tout près du but, blessé à mort. Il te co
 
 Dès le début, dans tes notes, il y a une phrase que ton personnage semble avoir écrite lui-même avant de tout oublier : cherche le sang pâle pour dépasser la chasse.
 
-@art g 8
+@art contour gauche g 8
 
 On ne sait pas ce qu'est le sang pâle. Tout le jeu est une enquête là-dessus. Et la réponse la plus partagée vient d'une note trouvée bien plus tard, qui s'exclame devant un ciel de sang pâle. Le ciel de la fin, avec sa lune immense et blanche, celui que le rituel de Mensis a fait descendre.
 
@@ -276,7 +278,7 @@ Pourquoi la Présence fait-elle cela ? Ici, on interprète. La lecture la plus r
 
 Il y a une histoire d'amour dans Bloodborne, et elle n'est jamais racontée. Elle se devine.
 
-@art g 9
+@art contour g 9
 
 Gehrman a formé les premiers chasseurs. Parmi ses élèves, il y avait Maria, une femme que bien des indices rattachent à la noblesse de Cainhurst, élégante, redoutable, qui maniait une lame double faite d'une épée et d'une dague. Elle était au village de pêcheurs. Elle a vu ce qu'on y a fait. Elle a jeté son arme dans un puits. Et elle est morte, seule, dans une tour d'horloge.
 

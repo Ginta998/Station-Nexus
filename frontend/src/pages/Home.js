@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { listCreations, listCategories, deleteCreation, getMembershipPlan, getSettings, updateSettings, posterUrl, bgUrl, listAnnouncements, listJournal, listJournalCategories, mediaUrl } from "@/lib/api";
 import { fmtDate as fmtJournalDate } from "@/components/journal/JournalParts";
 import HomeVision from "@/components/HomeVision";
-import { useThemeList } from "@/lib/themeStore";
+import { useThemeList, useThemeState } from "@/lib/themeStore";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useEntitlements } from "@/lib/useEntitlements";
@@ -19,7 +19,16 @@ import ProfileDialog from "@/components/ProfileDialog";
 import HomeCountdown from "@/components/HomeCountdown";
 import HomeCustomizer from "@/components/home/HomeCustomizer";
 import NexusHome from "@/components/nexus/NexusHome";
+import { ContextMenuHost, pressMenu } from "@/components/atelier/ContextMenu";
 import { useExperience } from "@/lib/experience";
+import { useBlocs, blocOf } from "@/lib/blocs";
+import HomeBloc, { UneAffiche, setBlocAdmin } from "@/components/nexus/HomeBlocs";
+import LumierePastille from "@/components/nexus/LumierePastille";
+import { SupportersStrip } from "@/components/SupportersWall";
+import SectionRail from "@/components/nexus/SectionRail";
+import UniversWindow from "@/components/nexus/UniversWindow";
+import { createPortal } from "react-dom";
+const ThemeStudio = lazy(() => import("@/components/ThemeStudio"));
 
 /* ---------- Compte à rebours vers la prochaine sortie (dim. 20h) ---------- */
 function nextSunday() {
@@ -67,7 +76,13 @@ function Poster({ it, idx, catLabel, soon, isAdmin, featured, onOpen, onEdit, on
     ? { backgroundImage: `url(${img})` }
     : { "--c1": `hsl(${hue} 52% 30%)`, "--c2": `hsl(${(hue + 36) % 360} 58% 11%)` };
   return (
-    <article className="poster" onClick={onOpen}>
+    <article className="poster" onClick={onOpen} {...(isAdmin ? pressMenu(() => ({ title: it.title, entries: [
+      { label: "Ouvrir", icon: <IoPlay size={14} />, onClick: onOpen },
+      { label: "Modifier la création", icon: <IoCreateOutline size={14} />, onClick: onEdit },
+      { label: featured ? "Retirer de la une" : "Mettre à la une", icon: featured ? <IoStar size={14} /> : <IoStarOutline size={14} />, onClick: onFeature },
+      "-",
+      { label: "Supprimer", icon: <IoTrashOutline size={14} />, danger: true, onClick: onDelete },
+    ] })) : {})}>
       <div className={"art" + (img ? " pimg" : "")} style={style}>
         <span className="pm">{String(idx).padStart(3, "0")}</span>
         <span className="pt a" />
@@ -125,11 +140,38 @@ export default function Home() {
   const [arcSel, setArcSel] = useState(0);
   const [openJ, setOpenJ] = useState(null);
   const [themeOpen, setThemeOpen] = useState(false);
+  const [studioOpen, setStudioOpen] = useState(false);
+  const [univOpen, setUnivOpen] = useState(""); // fenêtre d'un univers
+  useEffect(() => { const h = (e) => { sfx("select"); setUnivOpen(e.detail?.name || ""); }; window.addEventListener("nx-univers", h); return () => window.removeEventListener("nx-univers", h); }, []); // eslint-disable-line // Nexus OS (admin) ouvert par-dessus l'accueil
   const experience = useExperience();
+  // Nexus OS : le thème choisit l'ordre des blocs de l'accueil, ceux qu'il montre et leur présentation
+  const blocs = useBlocs();
+  // Sans les rayons Nexus à l'écran (accueil classique, ou bloc Explorer masqué), les objets des blocs ouvrent l'œuvre ici
+  const noNexus = experience !== "nexus" || blocs.off.has("explorer");
+  const sxRef = useRef(null);
+  // Blocs déjà apparus (.vu) et blocs à l'écran (.ecran) : gardés ici pour que React ne les efface pas quand le thème change en direct
+  const seenRef = useRef(new Set()); const visRef = useRef(new Set());
+  // Entrées au défilement : chaque bloc reçoit .vu quand il arrive à l'écran
+  const habKey = JSON.stringify([blocs.order, [...blocs.off], blocs.hab]);
+  useEffect(() => {
+    const root = sxRef.current; if (!root) return;
+    const els = [...root.querySelectorAll('.nb[class*="nb-in-"]:not(.vu)')]; if (!els.length) return;
+    if (!("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("vu")); return; }
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("vu"); seenRef.current.add(e.target.dataset.bloc); io.unobserve(e.target); } }), { rootMargin: "0px 0px -12% 0px", threshold: 0.05 });
+    els.forEach((e) => io.observe(e)); return () => io.disconnect();
+  }, [habKey]);
+  // Un bloc hors de l'écran met ses animations en pause (classe .ecran quand il est visible)
+  useEffect(() => {
+    const root = sxRef.current; if (!root || !("IntersectionObserver" in window)) return undefined;
+    const io = new IntersectionObserver((es) => es.forEach((e) => { e.target.classList.toggle("ecran", e.isIntersecting); if (e.isIntersecting) visRef.current.add(e.target.dataset.bloc); else visRef.current.delete(e.target.dataset.bloc); }), { rootMargin: "120px 0px" });
+    root.querySelectorAll(".nb").forEach((e) => io.observe(e)); return () => io.disconnect();
+  }, [habKey, all.length]);
 
   const requireProfile = () => { if (!user) { toast.info("Crée un compte pour sauvegarder ton profil partout."); openAuth(); } else setProfileOpen(true); };
   useEffect(() => { document.body.classList.toggle("sx-picking", themeOpen); return () => document.body.classList.remove("sx-picking"); }, [themeOpen]);
-  const themeMeta = useMemo(() => THEMES.find((t) => t.key === theme) || THEMES[0], [theme]);
+  // Le thème en cours d'édition (pas encore enregistré) n'est pas dans la liste : on prend son brouillon
+  const themeDraft = useThemeState().draft;
+  const themeMeta = useMemo(() => THEMES.find((t) => t.key === theme) || (themeDraft?.key === theme ? themeDraft : null) || THEMES[0], [theme, THEMES, themeDraft]);
   const catLabelByKey = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c.label])), [cats]);
   const catKanjiByKey = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c.kanji])), [cats]);
   // LA UNE = uniquement les créations étoilées (multi). Compat : ancien champ unique.
@@ -139,6 +181,7 @@ export default function Home() {
     return settings?.featured_creation_id ? [settings.featured_creation_id] : [];
   }, [settings]);
   const isFeatured = (id) => featuredIds.includes(id);
+  const featuredIdsR = useRef(featuredIds); featuredIdsR.current = featuredIds;
   const featuredId = featuredIds[0] || "";
   const isSoon = (it) => it.category === "avenir";
 
@@ -198,7 +241,7 @@ export default function Home() {
     if (editorOpen || view !== "arcade" || experience === "nexus") return;
     if (e.key === "ArrowRight") { e.preventDefault(); sfx("nav"); setArcSel((i) => Math.min(i + 1, arcItems.length - 1)); }
     else if (e.key === "ArrowLeft") { e.preventDefault(); sfx("nav"); setArcSel((i) => Math.max(i - 1, 0)); }
-    else if (e.key === "Enter" && arcCur) { sfx("select"); nav(`/oeuvre/${arcCur.id}`); }
+    else if (e.key === "Enter" && arcCur) { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id: arcCur.id } })); }
   }, [editorOpen, view, arcItems.length, arcCur, sfx, nav, experience]);
   useEffect(() => { window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [onKey]);
 
@@ -210,9 +253,12 @@ export default function Home() {
 
   // actions
   const pushRecent = (id) => { try { const r = JSON.parse(localStorage.getItem("sx_recent") || "[]"); const nx = [id, ...r.filter((x) => x !== id)].slice(0, 8); localStorage.setItem("sx_recent", JSON.stringify(nx)); } catch (_) {} };
-  const open = (id) => { pushRecent(id); if (experience === "nexus" && all.some((c) => c.id === id)) { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id } })); return; } sfx("select"); nav(`/oeuvre/${id}`); };
+  const open = (id) => { pushRecent(id); if (all.some((c) => c.id === id)) { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id } })); return; } sfx("select"); nav(`/oeuvre/${id}`); };
   const openCreate = () => { setEditing(null); setEditorOpen(true); };
-  const openEditItem = (it) => { setEditing(it); setEditorOpen(true); };
+  const [editSec, setEditSec] = useState("");
+  const openEditItem = (it, sec = "") => { setEditing(it); setEditSec(sec); setEditorOpen(true); };
+  // les objets des blocs (accès rapide, univers…) ont aussi Modifier et Mettre à la une au clic droit, pour l'admin
+  useEffect(() => { setBlocAdmin(isAdmin ? { edit: (it, sec) => openEditItem(it, sec), feature: (it) => setFeaturedItemR.current?.(it), featured: (id) => featuredIdsR.current.includes(id) } : null); return () => setBlocAdmin(null); }, [isAdmin]); // eslint-disable-line react-hooks/exhaustive-deps
   const doDeleteItem = async (it) => {
     if (!it || !window.confirm(`Supprimer « ${it.title} » ?`)) return;
     await deleteCreation(it.id); toast.success("Supprimé"); refetch();
@@ -228,6 +274,8 @@ export default function Home() {
     toast.success(on ? "Retirée de la une" : "⭐ Mise à la une ✓");
     refetchSettings();
   };
+  const setFeaturedItemR = useRef(null); setFeaturedItemR.current = setFeaturedItem;
+
   const ambiance = (it) => { try { sfx("select"); if (playAmbient && it) playAmbient(it.id); } catch (_) {} };
 
   // ---- Carte : positions des catégories autour d'un centre ----
@@ -275,13 +323,16 @@ export default function Home() {
         {/* RECHERCHE */}
         <div className="sx-search">
           <button type="button" className="field sx-search-open" onClick={() => { sfx("nav"); setSearchOpen(true); }} data-testid="home-search-open">
-            <IoSearch size={14} style={{ color: "var(--text-secondary)" }} />
+            <IoSearch size={18} style={{ color: "var(--brand)" }} />
             <span>Rechercher une œuvre, un chapitre, le journal…</span>
             <kbd>Ctrl K</kbd>
           </button>
-          <button className="sbtn" data-testid="home-theme-toggle" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }}>
-            <IoColorPaletteOutline size={14} style={{ marginRight: 5 }} /> Thèmes
-          </button>
+          <div className="sx-tools">
+            <LumierePastille theme={theme} />
+            <button className="sbtn sx-tool" data-testid="home-theme-toggle" onClick={() => { sfx("nav"); setThemeOpen((v) => !v); }} aria-expanded={themeOpen}>
+              <IoColorPaletteOutline size={20} /><span><b>Thèmes</b><small>{THEMES.length} au choix</small></span>
+            </button>
+          </div>
           {themeOpen && (
             <>
               <div style={{ position: "fixed", inset: 0, zIndex: 89 }} onClick={() => setThemeOpen(false)} />
@@ -293,6 +344,7 @@ export default function Home() {
                     <span className="kj">{t.kanji}</span>
                   </button>
                 ))}
+                {isAdmin && <button type="button" className="sx-tpk sx-tpk-os" onClick={() => { sfx("select"); setThemeOpen(false); setStudioOpen(true); }} data-testid="home-open-nexus-os"><span className="nm">Nexus OS</span><span className="kj">→</span></button>}
               </div>
             </>
           )}
@@ -300,13 +352,277 @@ export default function Home() {
 
         {/* VIEW TOGGLE */}
         <div className="vtog">
-          {[["rails", experience === "nexus" ? "⊞ Rayons" : "⊞ Rails"], ["map", "✦ Carte"], ["arcade", "▶ Arcade"]].map(([v, label]) => (
+          {[["rails", experience === "nexus" ? "⊞ Rayons" : "⊞ Rails"], ["map", "✦ Carte"], ["arcade", "▶ Vitrine"]].map(([v, label]) => (
             <button key={v} aria-pressed={view === v} onClick={() => { sfx("nav"); setView(v); }}>{label}</button>
           ))}
         </div>
 
   </>);
 
+
+  // Les blocs de l'accueil (Nexus OS) : chacun est rendu à sa place selon l'ordre du thème
+  const heroCat = hero ? `${catLabelByKey[hero.category] || hero.category || "Station"}${isFeatured(hero.id) ? " · À la une" : ""}` : "";
+  const heroAdmin = hero && (
+              <div className="hero-admin">
+                  <button onClick={(e) => { e.stopPropagation(); setFeaturedItem(hero); }}>{isFeatured(hero.id) ? <IoStar size={14} /> : <IoStarOutline size={14} />} {isFeatured(hero.id) ? "Retirer de la une" : "Mettre à la une"}</button>
+                  <button onClick={(e) => { e.stopPropagation(); openEditItem(hero); }}><IoCreateOutline size={14} /> Modifier</button>
+                </div>
+  );
+  const S = {
+    entete: (<>
+          {/* CINEHEAD */}
+          <div className="cinehead">
+            <span className="ck">// STATION NEXUS</span>
+            <h2 className="ct-title">{(themeMeta.name || "STATION").toUpperCase()}</h2>
+            <span className="ctag" key={theme} data-testid="home-theme-tagline">{[...(themeMeta.tagline || "")].map((c, i) => <span key={i} className="ctag-ch" style={{ animationDelay: `${i * 35}ms` }}>{c === " " ? "\u00a0" : c}</span>)}</span>
+          </div>
+    </>),
+    une: (<>
+          {/* LA UNE */}
+          {hero && blocs.v.une === "affiche" && <UneAffiche hero={hero} all={all} cats={cats} catLabel={heroCat} onOpen={() => open(hero.id)} onAmbiance={() => ambiance(hero)} admin={isAdmin && heroAdmin} />}
+          {hero && (blocs.v.une === "ecran" || blocs.v.une === "cadre") && (
+            <section className={"hero" + (blocs.v.une === "cadre" ? " une-cadre" : "")}>
+              <div className={"viewport" + (heroImg ? " himg" : "")} onClick={() => open(hero.id)}
+                style={{ background: `radial-gradient(85% 120% at 74% 6%, var(--glow), transparent 55%), linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))` }}>
+                {heroes.map((h, i) => {
+                  const im = h.has_bg ? bgUrl(h.id, h.updated_at) : (h.has_poster ? posterUrl(h.id, h.updated_at, 900) : null);
+                  return im ? (
+                    <div key={h.id} className="vp-slot" style={{ opacity: i === heroIdx ? 1 : 0 }}>
+                      <div className="vp-blur" style={{ backgroundImage: `url(${im})` }} />
+                      <div className="vp-img" style={{ backgroundImage: `url(${im})` }} />
+                    </div>
+                  ) : null;
+                })}
+                <div className="vp-shade" />
+                <span className="idx mono">{String(heroIdx + 1).padStart(3, "0")} / {String(heroes.length).padStart(2, "0")}</span>
+                <span className="tick t1" /><span className="tick t2" />
+                {!heroImg && <div className="ring" />}
+                {!heroImg && <div className="k2">{hero.kanji || themeMeta.kanji}</div>}
+                <div className="scan" />
+                <div className="hdots">
+                  {heroes.map((_, i) => (
+                    <i key={i} className={i === heroIdx ? "on" : ""} onClick={(e) => { e.stopPropagation(); sfx("nav"); setHeroIdx(i); }} />
+                  ))}
+                </div>
+              </div>
+              <div className="hmeta herofade" key={hero.id}>
+                <div className="cat mono"><b>{catLabelByKey[hero.category] || hero.category || "STATION"}</b>{isFeatured(hero.id) ? " · À LA UNE" : ""}</div>
+                <h1>{hero.title}</h1>
+                <p>{hero.tagline || hero.synopsis || ""}</p>
+                <div className="herobtns">
+                  <span className="btn p" onClick={() => open(hero.id)}>Entrer dans l'univers <span className="ar">→</span></span>
+                  <span className="btn s" onClick={() => ambiance(hero)}><span className="ar">▷</span> Ambiance</span>
+                </div>
+                {memberPlan?.enabled && !membershipActive && (
+                  <div className="herobtns">
+                    <span className="btn s" onClick={() => { sfx("select"); nav("/soutien"); }} style={{ borderColor: "var(--accent)", color: "var(--accent)" }}>
+                      Soutiens la station <IoArrowForward size={15} />
+                    </span>
+                  </div>
+                )}
+                {isAdmin && heroAdmin}
+              </div>
+            </section>
+          )}
+    </>),
+    sortie: (<>
+          {/* PROCHAINE SORTIE */}
+          {nextDrop && (
+            <section className="sx-drop">
+              <div className="drop" onClick={() => open(nextDrop.id)}>
+                <div className={"dpos" + (nextDrop.has_poster ? " bimg" : "")} style={nextDrop.has_poster ? { backgroundImage: `url(${posterUrl(nextDrop.id, nextDrop.updated_at, 360)})` } : undefined}>
+                  {!nextDrop.has_poster && <span className="dk">{nextDrop.kanji || themeMeta.kanji}</span>}
+                  <span className="pst">{isSoon(nextDrop) ? "À VENIR" : "À LA UNE"}</span>
+                </div>
+                <div className="dinfo">
+                  <div className="dl mono">// PROCHAINE SORTIE · DIM. 20H</div>
+                  <div className="dt">{nextDrop.title}</div>
+                  <div className="ds">{nextDrop.tagline || nextDrop.synopsis || ""}</div>
+                  <div className="cd"><Countdown /></div>
+                  <span className="notify" onClick={(e) => { e.stopPropagation(); sfx("select"); nav("/planning"); }}>⊕ Préviens-moi</span>
+                </div>
+              </div>
+            </section>
+          )}
+    </>),
+    rapide: <HomeBloc k="rapide" v={blocs.v.rapide} all={all} cats={cats} featured={featuredIds} />,
+    explorer: (<>
+          {/* REPRENDRE */}
+          {experience !== "nexus" && blocs.off.has("rapide") && resumeItems.length > 0 && (
+            <section className="sx-resume">
+              <div className="seclabel"><div className="lt"><h2>Reprendre</h2><span className="kj">続</span></div></div>
+              <div className="resume">
+                {resumeItems.map((it) => (
+                  <article key={it.id} className="rcard" onClick={() => open(it.id)}>
+                    <div className={"rv2" + (it.has_poster ? " bimg" : "")} style={it.has_poster ? { backgroundImage: `url(${posterUrl(it.id, it.updated_at, 360)})` } : undefined}><span className="play">▶</span></div>
+                    <div className="ri"><div className="rt">{it.title}</div><div className="rs mono">{(catLabelByKey[it.category] || "").toUpperCase()}</div></div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* NEXUS : accès rapide + rayons d'objets à la place de l'explorateur classique */}
+          {experience === "nexus" && <NexusHome hideQuick={!blocs.off.has("rapide")} all={all} cats={cats} settings={settings} query={query} view={view} toolbar={explorerBar} onEditItem={isAdmin ? openEditItem : undefined} onFeature={isAdmin ? setFeaturedItem : undefined} isFeatured={isFeatured} />}
+
+          {experience !== "nexus" && (<>
+          {explorerBar}
+
+          {isLoading && <div className="empty">Chargement…</div>}
+          {!isLoading && filtered.length === 0 && <div className="empty">Aucune création{query ? " pour cette recherche." : "."}</div>}
+
+          {/* ---------- RAILS ---------- */}
+          {view === "rails" && (
+            <div>
+              {rails.map((r) => (
+                <section className="rail" key={r.key}>
+                  <div className="seclabel">
+                    <div className="lt"><h2>{r.label}</h2><span className="kj">{r.kanji}</span></div>
+                    <span className="all mono">{r.items.length} ŒUVRE{r.items.length > 1 ? "S" : ""}</span>
+                  </div>
+                  <div className="scroller">
+                    {r.items.map((it) => (
+                      <Poster key={it.id} it={it} idx={++gi} catLabel={r.label} soon={isSoon(it)} isAdmin={isAdmin}
+                        featured={isFeatured(it.id)} onOpen={() => open(it.id)}
+                        onEdit={() => openEditItem(it)} onDelete={() => doDeleteItem(it)} onFeature={() => setFeaturedItem(it)} />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+
+          {/* ---------- CARTE ---------- */}
+          {view === "map" && (
+            <div>
+              <div className="seclabel" style={{ marginTop: 14 }}>
+                <div className="lt"><span className="mono" style={{ fontSize: 9.5, letterSpacing: ".14em", color: "var(--faint)" }}>// CHOISIS UN SECTEUR</span></div>
+              </div>
+              <div className="const">
+                <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+                  {mapNodes.filter((n) => n.key !== "__all__").map((n) => (
+                    <line key={n.key} x1="50%" y1="50%" x2={`${n.x}%`} y2={`${n.y}%`} stroke="var(--border-c)" strokeWidth="1" />
+                  ))}
+                </svg>
+                {mapNodes.map((n) => (
+                  <div key={n.key} className={"cnode" + (mapCat === n.key ? " sel" : "")}
+                    onClick={() => { sfx("select"); setMapCat(n.key); }}
+                    style={{ position: "absolute", left: `${n.x}%`, top: `${n.y}%`, transform: "translate(-50%,-50%)", cursor: "pointer", textAlign: "center" }}>
+                    <div className="cdisc">{n.kanji}</div>
+                    <div className="cnm">{n.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mapres">
+                <div className="scroller">
+                  {mapItems.map((it) => (
+                    <Poster key={it.id} it={it} idx={++gi} catLabel={catLabelByKey[it.category]} soon={isSoon(it)} isAdmin={isAdmin}
+                      featured={isFeatured(it.id)} onOpen={() => open(it.id)}
+                      onEdit={() => openEditItem(it)} onDelete={() => doDeleteItem(it)} onFeature={() => setFeaturedItem(it)} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ---------- ARCADE ---------- */}
+          {view === "arcade" && (
+            <div className="arc">
+              <div className="arc-filters">
+                {[{ key: "__all__", label: "Tout" }, ...cats].map((c) => (
+                  <button key={c.key} className={"arc-chip" + (arcCat === c.key ? " on" : "")} onClick={() => { sfx("nav"); setArcCat(c.key); }}>{c.label}</button>
+                ))}
+              </div>
+              <div className="arc-stage">
+                {arcCur && <div className="arc-bgblur" key={"b" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at, 160)})` }} />}
+                {arcCur && <div className="arc-bgimg" key={"i" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at, 900)})` }} />}
+                <div className="arc-shade" />
+                <div className="arc-info">
+                  <div className="arc-k mono">◆ {arcCur ? (catKanjiByKey[arcCur.category] || themeMeta.kanji) : themeMeta.kanji}</div>
+                  <h2>{arcCur ? arcCur.title : "—"}</h2>
+                  <div className="arc-sub">{arcCur ? `${(catLabelByKey[arcCur.category] || "").toUpperCase()} · ${arcCur.tagline || ""}` : "Aucune affiche dans ce secteur"}</div>
+                  {arcCur && <span className="arc-play" onClick={() => open(arcCur.id)}><IoPlay size={14} style={{ marginRight: 6 }} /> Ouvrir</span>}
+                </div>
+              </div>
+              <div className="arc-railwrap">
+                <button className="arc-nav prev" aria-label="Précédent" onClick={() => { sfx("nav"); setArcSel((i) => Math.max(0, i - 1)); }}>‹</button>
+                <div className="arc-rail" ref={arcRailRef}>
+                  {arcItems.map((it, i) => (
+                    <div key={it.id} className={"arc-tile" + (i === arcSel ? " on" : "")}
+                      style={{ backgroundImage: `url(${posterUrl(it.id, it.updated_at, 360)})` }}
+                      onClick={() => { sfx("nav"); setArcSel(i); }} />
+                  ))}
+                </div>
+                <button className="arc-nav next" aria-label="Suivant" onClick={() => { sfx("nav"); setArcSel((i) => Math.min(arcItems.length - 1, i + 1)); }}>›</button>
+              </div>
+            </div>
+          )}
+
+          </>)}
+    </>),
+    univers: <HomeBloc k="univers" v={blocs.v.univers} all={all} cats={cats} featured={featuredIds} />,
+    journal: (<>
+          {/* ---------- JOURNAL DE BORD ---------- */}
+          <section className="sx-journal">
+            <div className="seclabel"><div className="lt"><h2>Journal de bord</h2><span className="kj">録</span></div><span className="all mono" data-testid="home-journal-all" onClick={() => { sfx("nav"); nav("/journal"); }}>TOUT VOIR →</span></div>
+            <div className="bts" data-testid="home-journal">
+              {homeJournal.length ? homeJournal.map((e) => {
+                const c = journalCats.find((k) => k.id === e.category_id);
+                return (
+                  <article key={e.id} className="btc" data-testid={`home-journal-${e.id}`} onClick={() => openJournal(e)}>
+                    <div className={"bv" + (e.cover ? " bimg" : "")} style={e.cover ? { backgroundImage: `url(${mediaUrl(e.cover)})`, backgroundSize: "cover", backgroundPosition: "center" } : { "--c1": c?.color || "#2b3a60", "--c2": "#0a1020" }}><span className="tag">{(c?.name || "JOURNAL").toUpperCase()}</span></div>
+                    <div className="bi"><div className="bt">{e.title}</div><div className="bs">{fmtJournalDate(e.date).toUpperCase()}</div></div>
+                  </article>
+                );
+              }) : JOURNAL_SECTIONS.map((s) => (
+                <article key={s.title} className="btc" onClick={() => { sfx("select"); nav(s.route); }}>
+                  <div className="bv" style={{ "--c1": s.c1, "--c2": s.c2 }}><span className="tag">{s.tag}</span></div>
+                  <div className="bi"><div className="bt">{s.title}</div><div className="bs">{s.sub}</div></div>
+                </article>
+              ))}
+            </div>
+          </section>
+    </>),
+    vision: <HomeVision />,
+    embarquement: (<>
+          {/* ---------- CARTE D'EMBARQUEMENT ---------- */}
+          <section className="sx-pass-wrap">
+            <div className="seclabel"><div className="lt"><h2>Carte d'embarquement</h2><span className="kj">搭乗</span></div></div>
+            <div className="boarding" data-testid="home-boarding-pass" onClick={() => { sfx("select"); if (!user) openAuth("register"); else setProfileOpen(true); }}>
+              <div className="bp-main">
+                <div className="bp-k mono">STATION NEXUS · EMBARQUEMENT</div>
+                <div className="bp-name">{membershipActive ? "Membre à bord" : "Explorateur libre"}</div>
+                <div className="bp-subline mono">{membershipActive ? "ACCÈS COMPLET À TOUS LES UNIVERS" : "ACCÈS LIBRE · SOUTIENS POUR EMBARQUER"}</div>
+                <div className="bp-row">
+                  <div className="bp-c"><b>{all.length}</b><span>UNIVERS</span></div>
+                  <div className="bp-c"><b>{cats.length}</b><span>SECTEURS</span></div>
+                  <div className="bp-c"><b>DIM·20H</b><span>SORTIES</span></div>
+                </div>
+              </div>
+              <div className="bp-stub">
+                <div className="bp-k mono">PORTE</div>
+                <div className="bp-gate">{membershipActive ? "A1" : "—"}</div>
+                <span className="bp-cta">{!user ? "Créer mon compte" : "Mon profil"} <IoArrowForward size={14} /></span>
+              </div>
+            </div>
+          </section>
+    </>),
+    soutien: (<>
+          {/* ---------- SOUTIEN À LA STATION ---------- */}
+          <section className="sx-soutien">
+            <div className="sk" aria-hidden="true">{themeMeta.kanji}</div>
+            <div className="eyebrow mono">// SOUTIEN</div>
+            <h2>Fais vivre <br />la station</h2>
+            <p className="slead">Ton soutien ne finance pas une plateforme. Il finance la suite : les prochaines œuvres, les chapitres à venir, et le temps de créer librement.</p>
+            <SupportersStrip />
+            <span className="s-cta" onClick={() => { sfx("select"); nav("/soutien"); }}>Soutiens la station <IoArrowForward size={16} /></span>
+          </section>
+    </>),
+  };
+  const shownBlocs = blocs.order.filter((k) => !blocs.off.has(k));
+  // Habillage du bloc : présentation, largeur, fond, titre, entrée, espace
+  const nbCls = (k) => { const h = blocs.hab[k] || {}; return ["nb", "nb-" + k, "nb-v-" + blocs.v[k], h.largeur && "nb-w-" + h.largeur, h.fond && "nb-f-" + h.fond, h.titre && "nb-t-" + h.titre, h.entree && "nb-in-" + h.entree, h.espace && "nb-s-" + h.espace, seenRef.current.has(k) && "vu", visRef.current.has(k) && "ecran"].filter(Boolean).join(" "); };
+  const sxCls = "sx-exp" + (blocs.repos ? " ob-r-" + blocs.repos : "") + (blocs.survol ? " ob-h-" + blocs.survol : "") + (blocs.etagere ? " et-" + blocs.etagere : "");
 
   return (
     <div style={{ minHeight: "calc(100vh / var(--uiz, 1))", background: "transparent", color: "var(--text-primary)", position: "relative" }}>
@@ -316,256 +632,18 @@ export default function Home() {
       {tapeId && <JournalOverlay id={tapeId} onClose={() => setTapeId("")} />}
       <HomeCountdown />
 
-      <div className="sx-exp">
-        {/* CINEHEAD */}
-        <div className="cinehead">
-          <span className="ck">// STATION NEXUS</span>
-          <h2 className="ct-title">{(themeMeta.name || "STATION").toUpperCase()}</h2>
-          <span className="ctag" key={theme} data-testid="home-theme-tagline">{[...(themeMeta.tagline || "")].map((c, i) => <span key={i} className="ctag-ch" style={{ animationDelay: `${i * 35}ms` }}>{c === " " ? "\u00a0" : c}</span>)}</span>
-        </div>
-
-        {/* LA UNE */}
-        {hero && (
-          <section className="hero">
-            <div className={"viewport" + (heroImg ? " himg" : "")} onClick={() => open(hero.id)}
-              style={{ background: `radial-gradient(85% 120% at 74% 6%, var(--glow), transparent 55%), linear-gradient(160deg, var(--bg-secondary), var(--bg-primary))` }}>
-              {heroes.map((h, i) => {
-                const im = h.has_bg ? bgUrl(h.id, h.updated_at) : (h.has_poster ? posterUrl(h.id, h.updated_at, 900) : null);
-                return im ? (
-                  <div key={h.id} className="vp-slot" style={{ opacity: i === heroIdx ? 1 : 0 }}>
-                    <div className="vp-blur" style={{ backgroundImage: `url(${im})` }} />
-                    <div className="vp-img" style={{ backgroundImage: `url(${im})` }} />
-                  </div>
-                ) : null;
-              })}
-              <div className="vp-shade" />
-              <span className="idx mono">{String(heroIdx + 1).padStart(3, "0")} / {String(heroes.length).padStart(2, "0")}</span>
-              <span className="tick t1" /><span className="tick t2" />
-              {!heroImg && <div className="ring" />}
-              {!heroImg && <div className="k2">{hero.kanji || themeMeta.kanji}</div>}
-              <div className="scan" />
-              <div className="hdots">
-                {heroes.map((_, i) => (
-                  <i key={i} className={i === heroIdx ? "on" : ""} onClick={(e) => { e.stopPropagation(); sfx("nav"); setHeroIdx(i); }} />
-                ))}
-              </div>
-            </div>
-            <div className="hmeta herofade" key={hero.id}>
-              <div className="cat mono"><b>{catLabelByKey[hero.category] || hero.category || "STATION"}</b>{isFeatured(hero.id) ? " · À LA UNE" : ""}</div>
-              <h1>{hero.title}</h1>
-              <p>{hero.tagline || hero.synopsis || ""}</p>
-              <div className="herobtns">
-                <span className="btn p" onClick={() => open(hero.id)}>Entrer dans l'univers <span className="ar">→</span></span>
-                <span className="btn s" onClick={() => ambiance(hero)}><span className="ar">▷</span> Ambiance</span>
-              </div>
-              {memberPlan?.enabled && !membershipActive && (
-                <div className="herobtns">
-                  <span className="btn s" onClick={() => { sfx("select"); nav("/soutien"); }} style={{ borderColor: "var(--accent)", color: "var(--accent)" }}>
-                    Soutiens la station <IoArrowForward size={15} />
-                  </span>
-                </div>
-              )}
-              {isAdmin && (
-                <div className="hero-admin">
-                  <button onClick={(e) => { e.stopPropagation(); setFeaturedItem(hero); }}>{isFeatured(hero.id) ? <IoStar size={14} /> : <IoStarOutline size={14} />} {isFeatured(hero.id) ? "Retirer de la une" : "Mettre à la une"}</button>
-                  <button onClick={(e) => { e.stopPropagation(); openEditItem(hero); }}><IoCreateOutline size={14} /> Modifier</button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* PROCHAINE SORTIE */}
-        {nextDrop && (
-          <section className="sx-drop">
-            <div className="drop" onClick={() => open(nextDrop.id)}>
-              <div className={"dpos" + (nextDrop.has_poster ? " bimg" : "")} style={nextDrop.has_poster ? { backgroundImage: `url(${posterUrl(nextDrop.id, nextDrop.updated_at, 360)})` } : undefined}>
-                {!nextDrop.has_poster && <span className="dk">{nextDrop.kanji || themeMeta.kanji}</span>}
-                <span className="pst">{isSoon(nextDrop) ? "À VENIR" : "À LA UNE"}</span>
-              </div>
-              <div className="dinfo">
-                <div className="dl mono">// PROCHAINE SORTIE · DIM. 20H</div>
-                <div className="dt">{nextDrop.title}</div>
-                <div className="ds">{nextDrop.tagline || nextDrop.synopsis || ""}</div>
-                <div className="cd"><Countdown /></div>
-                <span className="notify" onClick={(e) => { e.stopPropagation(); sfx("select"); nav("/planning"); }}>⊕ Préviens-moi</span>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* REPRENDRE */}
-        {experience !== "nexus" && resumeItems.length > 0 && (
-          <section className="sx-resume">
-            <div className="seclabel"><div className="lt"><h2>Reprendre</h2><span className="kj">続</span></div></div>
-            <div className="resume">
-              {resumeItems.map((it) => (
-                <article key={it.id} className="rcard" onClick={() => open(it.id)}>
-                  <div className={"rv2" + (it.has_poster ? " bimg" : "")} style={it.has_poster ? { backgroundImage: `url(${posterUrl(it.id, it.updated_at, 360)})` } : undefined}><span className="play">▶</span></div>
-                  <div className="ri"><div className="rt">{it.title}</div><div className="rs mono">{(catLabelByKey[it.category] || "").toUpperCase()}</div></div>
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* NEXUS : accès rapide + rayons d'objets à la place de l'explorateur classique */}
-        {experience === "nexus" && <NexusHome all={all} cats={cats} settings={settings} query={query} view={view} toolbar={explorerBar} />}
-
-        {experience !== "nexus" && (<>
-        {explorerBar}
-
-        {isLoading && <div className="empty">Chargement…</div>}
-        {!isLoading && filtered.length === 0 && <div className="empty">Aucune création{query ? " pour cette recherche." : "."}</div>}
-
-        {/* ---------- RAILS ---------- */}
-        {view === "rails" && (
-          <div>
-            {rails.map((r) => (
-              <section className="rail" key={r.key}>
-                <div className="seclabel">
-                  <div className="lt"><h2>{r.label}</h2><span className="kj">{r.kanji}</span></div>
-                  <span className="all mono">{r.items.length} ŒUVRE{r.items.length > 1 ? "S" : ""}</span>
-                </div>
-                <div className="scroller">
-                  {r.items.map((it) => (
-                    <Poster key={it.id} it={it} idx={++gi} catLabel={r.label} soon={isSoon(it)} isAdmin={isAdmin}
-                      featured={isFeatured(it.id)} onOpen={() => open(it.id)}
-                      onEdit={() => openEditItem(it)} onDelete={() => doDeleteItem(it)} onFeature={() => setFeaturedItem(it)} />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        )}
-
-        {/* ---------- CARTE ---------- */}
-        {view === "map" && (
-          <div>
-            <div className="seclabel" style={{ marginTop: 14 }}>
-              <div className="lt"><span className="mono" style={{ fontSize: 9.5, letterSpacing: ".14em", color: "var(--faint)" }}>// CHOISIS UN SECTEUR</span></div>
-            </div>
-            <div className="const">
-              <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-                {mapNodes.filter((n) => n.key !== "__all__").map((n) => (
-                  <line key={n.key} x1="50%" y1="50%" x2={`${n.x}%`} y2={`${n.y}%`} stroke="var(--border-c)" strokeWidth="1" />
-                ))}
-              </svg>
-              {mapNodes.map((n) => (
-                <div key={n.key} className={"cnode" + (mapCat === n.key ? " sel" : "")}
-                  onClick={() => { sfx("select"); setMapCat(n.key); }}
-                  style={{ position: "absolute", left: `${n.x}%`, top: `${n.y}%`, transform: "translate(-50%,-50%)", cursor: "pointer", textAlign: "center" }}>
-                  <div className="cdisc">{n.kanji}</div>
-                  <div className="cnm">{n.label}</div>
-                </div>
-              ))}
-            </div>
-            <div className="mapres">
-              <div className="scroller">
-                {mapItems.map((it) => (
-                  <Poster key={it.id} it={it} idx={++gi} catLabel={catLabelByKey[it.category]} soon={isSoon(it)} isAdmin={isAdmin}
-                    featured={isFeatured(it.id)} onOpen={() => open(it.id)}
-                    onEdit={() => openEditItem(it)} onDelete={() => doDeleteItem(it)} onFeature={() => setFeaturedItem(it)} />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ---------- ARCADE ---------- */}
-        {view === "arcade" && (
-          <div className="arc">
-            <div className="arc-filters">
-              {[{ key: "__all__", label: "Tout" }, ...cats].map((c) => (
-                <button key={c.key} className={"arc-chip" + (arcCat === c.key ? " on" : "")} onClick={() => { sfx("nav"); setArcCat(c.key); }}>{c.label}</button>
-              ))}
-            </div>
-            <div className="arc-stage">
-              {arcCur && <div className="arc-bgblur" key={"b" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at, 160)})` }} />}
-              {arcCur && <div className="arc-bgimg" key={"i" + arcCur.id} style={{ backgroundImage: `url(${posterUrl(arcCur.id, arcCur.updated_at, 900)})` }} />}
-              <div className="arc-shade" />
-              <div className="arc-info">
-                <div className="arc-k mono">◆ {arcCur ? (catKanjiByKey[arcCur.category] || themeMeta.kanji) : themeMeta.kanji}</div>
-                <h2>{arcCur ? arcCur.title : "—"}</h2>
-                <div className="arc-sub">{arcCur ? `${(catLabelByKey[arcCur.category] || "").toUpperCase()} · ${arcCur.tagline || ""}` : "Aucune affiche dans ce secteur"}</div>
-                {arcCur && <span className="arc-play" onClick={() => open(arcCur.id)}><IoPlay size={14} style={{ marginRight: 6 }} /> Ouvrir</span>}
-              </div>
-            </div>
-            <div className="arc-railwrap">
-              <button className="arc-nav prev" aria-label="Précédent" onClick={() => { sfx("nav"); setArcSel((i) => Math.max(0, i - 1)); }}>‹</button>
-              <div className="arc-rail" ref={arcRailRef}>
-                {arcItems.map((it, i) => (
-                  <div key={it.id} className={"arc-tile" + (i === arcSel ? " on" : "")}
-                    style={{ backgroundImage: `url(${posterUrl(it.id, it.updated_at, 360)})` }}
-                    onClick={() => { sfx("nav"); setArcSel(i); }} />
-                ))}
-              </div>
-              <button className="arc-nav next" aria-label="Suivant" onClick={() => { sfx("nav"); setArcSel((i) => Math.min(arcItems.length - 1, i + 1)); }}>›</button>
-            </div>
-          </div>
-        )}
-
-        </>)}
-
-        {/* ---------- JOURNAL DE BORD ---------- */}
-        <section className="sx-journal">
-          <div className="seclabel"><div className="lt"><h2>Journal de bord</h2><span className="kj">録</span></div><span className="all mono" data-testid="home-journal-all" onClick={() => { sfx("nav"); nav("/journal"); }}>TOUT VOIR →</span></div>
-          <div className="bts" data-testid="home-journal">
-            {homeJournal.length ? homeJournal.map((e) => {
-              const c = journalCats.find((k) => k.id === e.category_id);
-              return (
-                <article key={e.id} className="btc" data-testid={`home-journal-${e.id}`} onClick={() => openJournal(e)}>
-                  <div className={"bv" + (e.cover ? " bimg" : "")} style={e.cover ? { backgroundImage: `url(${mediaUrl(e.cover)})`, backgroundSize: "cover", backgroundPosition: "center" } : { "--c1": c?.color || "#2b3a60", "--c2": "#0a1020" }}><span className="tag">{(c?.name || "JOURNAL").toUpperCase()}</span></div>
-                  <div className="bi"><div className="bt">{e.title}</div><div className="bs">{fmtJournalDate(e.date).toUpperCase()}</div></div>
-                </article>
-              );
-            }) : JOURNAL_SECTIONS.map((s) => (
-              <article key={s.title} className="btc" onClick={() => { sfx("select"); nav(s.route); }}>
-                <div className="bv" style={{ "--c1": s.c1, "--c2": s.c2 }}><span className="tag">{s.tag}</span></div>
-                <div className="bi"><div className="bt">{s.title}</div><div className="bs">{s.sub}</div></div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <HomeVision />
-
-        {/* ---------- CARTE D'EMBARQUEMENT ---------- */}
-        <section className="sx-pass-wrap">
-          <div className="seclabel"><div className="lt"><h2>Carte d'embarquement</h2><span className="kj">搭乗</span></div></div>
-          <div className="boarding" data-testid="home-boarding-pass" onClick={() => { sfx("select"); if (!user) openAuth("register"); else setProfileOpen(true); }}>
-            <div className="bp-main">
-              <div className="bp-k mono">STATION NEXUS · EMBARQUEMENT</div>
-              <div className="bp-name">{membershipActive ? "Membre à bord" : "Explorateur libre"}</div>
-              <div className="bp-subline mono">{membershipActive ? "ACCÈS COMPLET À TOUS LES UNIVERS" : "ACCÈS LIBRE · SOUTIENS POUR EMBARQUER"}</div>
-              <div className="bp-row">
-                <div className="bp-c"><b>{all.length}</b><span>UNIVERS</span></div>
-                <div className="bp-c"><b>{cats.length}</b><span>SECTEURS</span></div>
-                <div className="bp-c"><b>DIM·20H</b><span>SORTIES</span></div>
-              </div>
-            </div>
-            <div className="bp-stub">
-              <div className="bp-k mono">PORTE</div>
-              <div className="bp-gate">{membershipActive ? "A1" : "—"}</div>
-              <span className="bp-cta">{!user ? "Créer mon compte" : "Mon profil"} <IoArrowForward size={14} /></span>
-            </div>
-          </div>
-        </section>
-
-        {/* ---------- SOUTIEN À LA STATION ---------- */}
-        <section className="sx-soutien">
-          <div className="sk" aria-hidden="true">{themeMeta.kanji}</div>
-          <div className="eyebrow mono">// SOUTIEN</div>
-          <h2>Fais vivre<br />la station</h2>
-          <p className="slead">Ton soutien ne finance pas une plateforme. Il finance la suite : les prochaines œuvres, les chapitres à venir, et le temps de créer librement.</p>
-          <span className="s-cta" onClick={() => { sfx("select"); nav("/soutien"); }}>Soutiens la station <IoArrowForward size={16} /></span>
-        </section>
+      <div className={sxCls} ref={sxRef}>
+        {shownBlocs.map((k) => <div key={k} className={nbCls(k)} data-bloc={k} data-label={blocOf(k).label}>{S[k]}</div>)}
       </div>
+      <SectionRail blocs={shownBlocs} root={sxRef} />
 
       </div>
 
-      {editorOpen && <Suspense fallback={null}><EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} /></Suspense>}
+      {noNexus && <ContextMenuHost />}
+      {editorOpen && <Suspense fallback={null}><EditorDialog open={editorOpen} onClose={() => setEditorOpen(false)} initial={editing} categories={cats} onSaved={refetch} section={editSec || undefined} /></Suspense>}
       <ProfileDialog open={profileOpen} onClose={() => setProfileOpen(false)} />
+      {univOpen && createPortal(<UniversWindow name={univOpen} all={all} cats={cats} onClose={() => setUnivOpen("")} />, document.body)}
+      {studioOpen && createPortal(<Suspense fallback={null}><ThemeStudio onClose={() => setStudioOpen(false)} /></Suspense>, document.body)}
       <HomeCustomizer open={customizerOpen} onClose={() => setCustomizerOpen(false)} isAdmin={isAdmin} onSaveDefault={() => {}} saving={false} />
     </div>
   );

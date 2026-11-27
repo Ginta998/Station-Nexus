@@ -1,12 +1,13 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { playPageTurn } from "@/lib/sound";
 import { createPortal } from "react-dom";
-import { IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
+import { IoBookOutline, IoArrowBack, IoArrowForward, IoClose, IoAdd, IoBookmark, IoBookmarkOutline, IoList, IoSearch, IoStar, IoStarOutline, IoOpenOutline, IoImageOutline, IoMusicalNotes, IoPlay, IoPause, IoLogoYoutube, IoCreateOutline, IoTrashOutline, IoCloudUploadOutline, IoHeart, IoHeartOutline, IoExpandOutline, IoContractOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { atelierApi } from "@/lib/atelier";
 import { uploadJournalImage } from "@/lib/api";
 import { DEFAULT_COVERS, mergeCovers, sgdbTerm } from "@/data/alexandrie/covers";
-import { IoImagesOutline, IoCheckmarkCircle, IoTimeOutline, IoClipboardOutline, IoDownloadOutline, IoPencil, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline, IoPlaySkipForward, IoListOutline, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
+import { IoRefreshOutline } from "react-icons/io5";
+import { IoImagesOutline, IoCheckmarkCircle, IoTimeOutline, IoClipboardOutline, IoDownloadOutline, IoPrintOutline, IoSwapHorizontal, IoArrowUndo, IoVolumeHighOutline, IoVolumeMuteOutline, IoGridOutline, IoLibraryOutline, IoPlaySkipForward, IoListOutline, IoVolumeHigh, IoVolumeMute, IoColorPaletteOutline } from "react-icons/io5";
 import { lookOf, WEB_FONTS, fontHref } from "@/data/alexandrie/looks";
 import { SEP, parsePaste, pasteToBook, bookToPaste, nextCote, withCote, setCatalog } from "@/data/alexandrie/paste";
 import AlexPaste from "@/components/atelier/AlexPaste";
@@ -15,23 +16,34 @@ import { Controls, Progress, Queue, thumb as ytThumb, coverOf } from "@/componen
 import { pressMenu } from "@/components/atelier/ContextMenu";
 import { labConfirm, labPrompt } from "@/components/atelier/LabDialog";
 
-import { ROOMS, TYPES, BOOKS, UPCOMING, parseBook, readingTime } from "@/data/alexandrie";
+import { ROOMS, TYPES, UPCOMING, parseBook, readingTime } from "@/data/alexandrie";
+import { useAlexCatalog, refreshLibrary, resetLibrary, liveInfo, alexCatalog } from "@/lib/alexLive";
 import { stripHtml } from "@/lib/atelier";
 import { useApp } from "@/context/AppContext";
 import { playLaunch, getLaunchSound, useLaunchSync } from "@/lib/launchSound";
 import "@/components/nexus/nexus.css";
+import "@/components/nexus/launch.css";
+import Box3D from "@/components/nexus/Box3D";
+import { launchDuration } from "@/components/nexus/launchTiming";
 import "@/components/atelier/alexandrie.css";
-import { AlexSearch, CoverDialog, Face, Grid, LS, NOEDITS, Reader, Room, asPaste, autoIllustrate, bodyEdit, bookNotes, bookToHtml, clean, errText, exportBook, fmtOf, hue, itemToBook, itemToBookRaw, normT, notesItemOf, notesOf, read, splitSrc, volLook, write, ytDel, ytIns, ytSwap } from "@/components/atelier/AlexCore";
-setCatalog(BOOKS);
+import { EtuiLaunch, edOf } from "@/components/atelier/AlexEdition";
+import { relOf } from "@/lib/jaquette";
+import { AlexSearch, CoverDialog, SpineDialog, Face, Grid, LS, NOEDITS, Reader, Room, asPaste, autoIllustrate, bareText, bodyEdit, imgSet, imgDel, bookNotes, bookToHtml, clean, keepMedia, errText, exportBook, fmtOf, hue, itemToBook, itemToBookRaw, normT, notesItemOf, notesOf, read, splitSrc, volLook, write, ytDel, ytIns, ytSwap } from "@/components/atelier/AlexCore";
+setCatalog(alexCatalog().books);
 // compatibilité : les autres fichiers importaient ces pièces d'ici
 export { Face, Rail, Reader, CoverDialog, htmlToAlexBlocks } from "@/components/atelier/AlexCore";
 
+// Nouvelles versions déjà validées par Brichel : installées sans demander par-dessus une ancienne copie
+const VALIDES = ["rois-des-ombres", "lumumba", "guru", "robespierre"];
+
 export default function Alexandrie({ at, open, radio, room: startRoom, book: startBook }) {
+  // Les livres : ceux de la Station, ou leur dernière version prise sur GitHub (Actualiser la bibliothèque)
+  const { books: BOOKS, versions: VERSIONS } = useAlexCatalog(); setCatalog(BOOKS);
   const { sfx, uiVolume = 0.6, muted } = useApp();
   useLaunchSync();
   // L'ouverture d'un livre, comme sur la station : l'objet en volume, le son de lancement, puis la lecture
   const [launching, setLaunching] = useState(null);
-  useEffect(() => { if (!launching) return undefined; const t = setTimeout(() => { setReading(launching); setLaunching(null); }, 1650); return () => clearTimeout(t); }, [launching]);
+  useEffect(() => { if (!launching) return undefined; const t = setTimeout(() => { setReading(launching); setLaunching(null); }, launchDuration()); return () => clearTimeout(t); }, [launching]);
   const [room, setRoom] = useState(startRoom || null);
   useEffect(() => { setRoom(startRoom || null); }, [startRoom]);
   const [type, setType] = useState("all");
@@ -72,31 +84,69 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const edits = at.config?.alexandrie?.edits || NOEDITS;
   const overrides = useMemo(() => Object.fromEntries(at.items.filter((i) => i.fields?.alexandrie?.of).map((i) => [i.fields.alexandrie.of, i])), [at.items]);
   const rawOf = (b) => ({ ...b, ...(edits[b.id] || {}) });
+  // Texte « à coller » d'un livre tel qu'il est dans le code (sans ta copie)
+  const codePaste = (id) => { const raw = rawOf(BOOKS.find((x) => x.id === id)); return asPaste({ ...parseBook(raw), ...raw }); };
+  // Une copie enregistrée est-elle plus ancienne que le livre du code ? (date de mise à jour + empreinte : versions.json)
+  // Sans empreinte gardée (copies d'avant), on compare les dates et le texte sans images : une copie qui n'a fait qu'illustrer n'est pas en retard.
+  const freshOf = (b, o, base) => {
+    const V = VERSIONS[b.id]; const a = o.fields.alexandrie; if (!V) return null;
+    if (a.base) return a.base === V.hash ? null : { ...V, words: base.words };
+    if (Date.parse(V.date) <= Date.parse(o.created_at || o.updated_at || 0)) return null;
+    try { if (a.src && bareText(a.src) === bareText(codePaste(b.id))) return null; } catch (_) { /* on propose */ }
+    return { ...V, words: base.words };
+  };
   const books = useMemo(() => BOOKS.map((b) => {
-    const base = (() => { try { return parseBook(rawOf(b)); } catch (_) { return parseBook(b); } })();
+    const base0 = (() => { try { return parseBook(rawOf(b)); } catch (_) { return parseBook(b); } })();
+    const base = { ...base0, updated: VERSIONS[b.id]?.date || "" };
     const o = overrides[b.id]; if (!o) return edits[b.id] ? { ...base, edited: true } : base;
-    if (o.fields.alexandrie.src) { try { const x = pasteToBook(o.fields.alexandrie.src, { id: b.id }); return { ...base, ...x, id: b.id, cote: x.cote === "PERS." ? base.cote : x.cote, edited: true, copyId: o.id }; } catch (_) { return base; } }
-    try { const x = itemToBookRaw(o); const a = o.fields.alexandrie; return { ...base, title: o.title || base.title, sub: a.sub ?? base.sub, about: a.about ?? base.about, chapters: x.chapters, words: x.words, text: x.text, edited: true, copyId: o.id }; } catch (_) { return base; }
-  }), [edits, overrides]); // eslint-disable-line react-hooks/exhaustive-deps
+    const copy = { edited: true, copyId: o.id, copyAt: o.updated_at || o.created_at || "", fresh: freshOf(b, o, base) };
+    if (o.fields.alexandrie.src) { try { const x = pasteToBook(o.fields.alexandrie.src, { id: b.id }); return { ...base, ...x, id: b.id, cote: x.cote === "PERS." ? base.cote : x.cote, ...copy }; } catch (_) { return base; } }
+    try { const x = itemToBookRaw(o); const a = o.fields.alexandrie; return { ...base, title: o.title || base.title, sub: a.sub ?? base.sub, about: a.about ?? base.about, chapters: x.chapters, words: x.words, text: x.text, ...copy }; } catch (_) { return base; }
+  }), [edits, overrides, BOOKS]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Nouvelle version : le texte du code, avec tes images et vidéos remises chapitre par chapitre. L'ancienne copie reste dans l'historique des versions.
+  const takeNew = async (b, quiet = false) => {
+    const it = overrides[b.id]; const V = VERSIONS[b.id]; if (!it || !V) return;
+    if (!quiet && !(await labConfirm(`Remplacer ta copie de « ${b.title} » par la nouvelle version ? Tes images et tes vidéos sont gardées ; ton ancienne copie reste dans l'historique des versions.`))) return;
+    try {
+      const { text, kept } = keepMedia(codePaste(b.id), it.fields.alexandrie.src || "");
+      const { meta, body } = parsePaste(text);
+      await at.saveItem({ ...clean(it), title: meta.title || it.title, content: bookToHtml(body), fields: { ...it.fields, alexandrie: { ...it.fields.alexandrie, room: meta.room, type: meta.type, sub: meta.sub, about: meta.about, src: text, base: V.hash } } });
+      (quiet ? toast.message : toast.success)(`Nouvelle version de « ${b.title} » installée${kept ? ` · ${kept} image${kept > 1 ? "s" : ""} ou vidéo${kept > 1 ? "s" : ""} gardée${kept > 1 ? "s" : ""}` : ""}`); sfx?.("select");
+    } catch (e) { toast.error("La nouvelle version n'a pas pu être installée : " + errText(e)); }
+  };
+  // Livres dont tu as déjà validé la nouvelle version : elle remplace ta copie toute seule, une seule fois par version
+  // (images et vidéos gardées, ancienne copie dans l'historique des versions).
+  useEffect(() => {
+    books.filter((b) => b.fresh && VALIDES.includes(b.id)).forEach((b) => {
+      const k = "nx-alex-auto-" + b.id + "-" + (VERSIONS[b.id]?.hash || "");
+      try { if (localStorage.getItem(k)) return; localStorage.setItem(k, "1"); } catch (_) { return; }
+      takeNew(b, true);
+    });
+  }, [books]); // eslint-disable-line react-hooks/exhaustive-deps
+  const keepMine = async (b) => {
+    const it = overrides[b.id]; const V = VERSIONS[b.id]; if (!it || !V) return;
+    try { await at.saveItem({ ...clean(it), fields: { ...it.fields, alexandrie: { ...it.fields.alexandrie, base: V.hash } } }); toast.success("Ta version est gardée. Le badge reviendra à la prochaine mise à jour du livre."); }
+    catch (e) { toast.error("Impossible d'enregistrer ton choix : " + errText(e)); }
+  };
   // Modifier par copier-coller : le texte complet du livre (réglages + chapitres) s'ouvre dans la fenêtre de collage.
   const [paste, setPaste] = useState(null); // { text, item?, of?, title? }
   const itemOf = (b) => (b.itemId ? at.items.find((i) => i.id === b.itemId) : overrides[b.id]);
   const modifyBook = (b) => {
     const it = itemOf(b);
-    if (it && !it.fields?.alexandrie?.src) { setReading(null); open(it.id, "document"); return; } // écrit dans l'éditeur : il s'y modifie
     setReading(null);
-    setPaste({ text: it ? it.fields.alexandrie.src : asPaste(rawBook(b)), item: it, of: it ? undefined : b.id, title: b.title });
+    // un livre écrit autrefois dans l'éditeur de documents s'ouvre aussi ici : son texte est converti au format d'Alexandrie
+    const src = it ? it.fields?.alexandrie?.src || asPaste({ ...b, mine: true }) : asPaste(rawBook(b));
+    setPaste({ text: src, item: it, of: it ? undefined : b.id, title: b.title });
   };
   const rawBook = (b) => { const r = rawOf(BOOKS.find((x) => x.id === b.id) || b); return { ...b, ...r }; };
   // Illustrer automatiquement : une image par chapitre qui n'en a pas, sans doublon ; le texte s'ouvre dans la fenêtre de collage pour relecture
   const [illBusy, setIllBusy] = useState(false);
   const illustrate = async (b) => {
     const it = itemOf(b);
-    if (it && !it.fields?.alexandrie?.src) { toast.info("Ce livre s'écrit dans l'éditeur : ajoute les images depuis l'éditeur, ou copie-colle-le d'abord."); return; }
     if (illBusy) return; setIllBusy(true);
     const tid = toast.loading(`Recherche d'images pour « ${b.title} »…`);
     try {
-      const text = it ? it.fields.alexandrie.src : asPaste(rawBook(b));
+      const text = it ? it.fields?.alexandrie?.src || asPaste({ ...b, mine: true }) : asPaste(rawBook(b));
       const parsed = pasteToBook(text, { id: b.id });
       const r = await autoIllustrate(text, { ...parsed, id: b.id, room: parsed.room || b.room, format: parsed.format || b.format }, covers[b.id]);
       toast.dismiss(tid);
@@ -107,18 +157,6 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     } catch (e) { toast.dismiss(tid); toast.error("La recherche d'images a échoué : " + (e?.message || "erreur")); }
     finally { setIllBusy(false); }
   };
-  // Méthode classique : une copie du livre dans l'éditeur de documents
-  const modifyInEditor = async (b) => {
-    if (b.mine) { setReading(null); open(b.itemId); return; }
-    if (overrides[b.id]) { setReading(null); open(overrides[b.id].id); return; }
-    const raw = rawOf(BOOKS.find((x) => x.id === b.id) || b);
-    try {
-      const it = await at.createItem({ kind: "document", title: raw.title, content: bookToHtml(raw.text), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, room: b.room, type: b.type, sub: raw.sub || "", about: raw.about || "" } } });
-      if (!it?.id) throw new Error("création refusée");
-      setReading(null); open(it.id, "document");
-      toast.success("Le livre s'ouvre dans l'éditeur. Tes changements apparaîtront sur les rayons.");
-    } catch (e) { toast.error("Le livre n'a pas pu être ouvert : " + (e?.response?.data?.detail || e?.message || "erreur")); }
-  };
   // Vidéos : dans le texte collé du livre (ou sa copie), sinon dans le document de l'éditeur. Un livre du code reçoit une copie.
   const editVideos = async (b, fn, htmlFn, ok) => {
     const it = itemOf(b);
@@ -126,7 +164,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       if (it?.fields?.alexandrie?.src) { const src = fn(it.fields.alexandrie.src); await at.saveItem({ ...clean(it), content: bookToHtml(splitSrc(src).body), fields: { ...it.fields, alexandrie: { ...it.fields.alexandrie, src } } }); }
       else if (it) { const doc = new DOMParser().parseFromString(`<div>${it.content || ""}</div>`, "text/html").body.firstChild; htmlFn(doc); await at.saveItem({ ...clean(it), title: it.title || b.title, content: doc.innerHTML }); }
       else { const src = fn(asPaste(rawBook(b))); const r = rawBook(b);
-        const made = await at.createItem({ kind: "document", title: r.title, content: bookToHtml(splitSrc(src).body), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, src, room: b.room, type: b.type, sub: r.sub || "", about: r.about || "" } } });
+        const made = await at.createItem({ kind: "document", title: r.title, content: bookToHtml(splitSrc(src).body), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, src, base: VERSIONS[b.id]?.hash || "", room: b.room, type: b.type, sub: r.sub || "", about: r.about || "" } } });
         if (!made?.id) throw new Error("le serveur n'a pas créé la copie"); }
       toast.success(ok); sfx?.("select"); return true;
     } catch (e) { console.error("[Alexandrie] vidéo", e); toast.error("La vidéo n'a pas pu être modifiée : " + errText(e)); return false; }
@@ -139,6 +177,24 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     return editVideos(b, (src) => bodyEdit(src, ytIns(si, line)), (doc) => {
       const p = document.createElement("p"); const a = document.createElement("a"); a.href = `https://www.youtube.com/watch?v=${id}`; a.textContent = `▶ ${cap || "Vidéo"}`; p.appendChild(a);
       const ref = doc.childNodes[si]; if (ref) ref.after(p); else doc.appendChild(p); }, "Vidéo ajoutée à cette page"); };
+  // Modifier le texte du livre (sa copie, créée au besoin à partir du code)
+  const editSrc = async (b, fn, ok) => {
+    const it = itemOf(b);
+    try {
+      const src = fn(it ? it.fields?.alexandrie?.src || asPaste({ ...b, mine: true }) : asPaste(rawBook(b)));
+      const { meta, body } = parsePaste(src); const fa = { room: meta.room, type: meta.type, sub: meta.sub, about: meta.about };
+      if (it) await at.saveItem({ ...clean(it), content: bookToHtml(body), fields: { ...it.fields, alexandrie: { ...it.fields.alexandrie, ...fa, src } } });
+      else { const made = await at.createItem({ kind: "document", title: meta.title || b.title, content: bookToHtml(body), tags: ["alexandrie"], fields: { alexandrie: { of: b.id, ...fa, src, base: VERSIONS[b.id]?.hash || "" } } }); if (!made?.id) throw new Error("le serveur n'a pas créé la copie"); }
+      toast.success(ok); sfx?.("select"); return true;
+    } catch (e) { toast.error("Modification impossible : " + errText(e)); return false; }
+  };
+  // Images dans la lecture (clic droit) : changer par la recherche, par une adresse, ou retirer
+  const [imgFor, setImgFor] = useState(null); // { book, si, url }
+  const onImage = async (book, action, si, url) => {
+    if (action === "del") { if (await labConfirm("Retirer cette image du livre ?")) editSrc(book, (src) => bodyEdit(src, imgDel(si)), "Image retirée"); return; }
+    if (action === "url") { const u = (await labPrompt("Adresse de la nouvelle image (https://…)", url || ""))?.trim(); if (u && /^https?:\/\//.test(u)) editSrc(book, (src) => bodyEdit(src, imgSet(si, u)), "Image remplacée"); else if (u) toast.error("Ce n'est pas une adresse d'image"); return; }
+    setImgFor({ book, si, url });
+  };
   const revertEdit = async (b) => {
     if (!(await labConfirm(`Revenir au texte d'origine de « ${b.title} » ? Tes modifications seront perdues.`))) return;
     try {
@@ -151,9 +207,11 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     !upc && { id: "read", label: prog[b.id]?.page > 0 ? `Reprendre page ${prog[b.id].page + 1}` : "Lire", icon: <IoPlay size={14} />, onClick: () => openBook(b) },
     upc && { id: "wish", label: wish.includes(b.id) ? "Ne plus demander" : "Je veux le lire", icon: <IoStarOutline size={14} />, onClick: () => toggleWish(b.id) },
     upc && { id: "up-write", label: "Écrire ce livre", icon: <IoCreateOutline size={14} />, onClick: () => writeUp(b) },
-    !upc && { id: "modify", label: b.mine && !b.src ? "Écrire" : "Modifier (copier-coller)", icon: <IoCreateOutline size={14} />, onClick: () => modifyBook(b) },
-    !upc && !(b.mine && !b.src) && { id: "illustrate", label: "Illustrer automatiquement", icon: <IoImagesOutline size={14} />, onClick: () => illustrate(b) },
-    !upc && !b.mine && !b.edited && { id: "modify-ed", label: "Modifier dans l'éditeur", icon: <IoPencil size={14} />, onClick: () => modifyInEditor(b) },
+    !upc && b.fresh && { id: "take-new", label: "Prendre la nouvelle version", icon: <IoArrowUndo size={14} style={{ transform: "scaleX(-1)" }} />, onClick: () => takeNew(b) },
+    !upc && b.fresh && { id: "keep-mine", label: "Garder ma version", icon: <IoCheckmarkCircle size={14} />, onClick: () => keepMine(b) },
+    !upc && b.fresh && "-",
+    !upc && { id: "modify", label: "Modifier", icon: <IoCreateOutline size={14} />, onClick: () => modifyBook(b) },
+    !upc && { id: "illustrate", label: "Illustrer automatiquement", icon: <IoImagesOutline size={14} />, onClick: () => illustrate(b) },
     !upc && { id: "copy", label: "Copier le texte du livre", icon: <IoClipboardOutline size={14} />, onClick: () => navigator.clipboard?.writeText(asPaste(b.mine || b.edited ? b : rawBook(b))).then(() => toast.success("Texte copié : il se colle tel quel dans « Coller un livre »"), () => toast.error("La copie n'a pas marché")) },
     "-",
     !upc && { id: "st-read", label: shelf.read.includes(b.id) ? "Retirer de « Lus »" : "Marquer comme lu", icon: <IoCheckmarkCircle size={14} />, onClick: () => setStatus("read", b.id) },
@@ -161,6 +219,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     !upc && { id: "fav", label: favs.includes(b.id) ? "Retirer des coups de cœur" : "Coup de cœur", icon: favs.includes(b.id) ? <IoHeart size={14} /> : <IoHeartOutline size={14} />, onClick: () => toggleFav(b.id) },
     !upc && { id: "pdf", label: "Exporter en PDF", icon: <IoPrintOutline size={14} />, onClick: () => exportBook(b, covers[b.id], bookNotes(at, b.id, 0)) },
     "-",
+    !upc && { id: "spine", label: "Jaquette et reliure…", icon: <IoColorPaletteOutline size={14} />, onClick: () => setSpineFor(b) },
     { id: "cover", label: covers[b.id] ? "Changer l'artwork" : "Mettre un artwork", icon: <IoImageOutline size={14} />, onClick: () => setCoverFor(b) },
     covers[b.id] && { id: "uncover", label: "Retirer l'artwork", icon: <IoTrashOutline size={14} />, onClick: () => saveCover(b.id, "") },
     DEFAULT_COVERS[b.id] && covers[b.id] !== DEFAULT_COVERS[b.id] && { id: "recover", label: "Remettre l'artwork d'origine", icon: <IoArrowUndo size={14} />, onClick: () => saveCover(b.id, null) },
@@ -194,7 +253,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       if (paste.item || paste.of) {
         const src = blocks[0]; const { meta, body } = parsePaste(src); const fa = { room: meta.room, type: meta.type, sub: meta.sub, about: meta.about };
         if (paste.item) await at.saveItem({ ...clean(paste.item), title: meta.title, content: bookToHtml(body), fields: { ...paste.item.fields, alexandrie: { ...paste.item.fields.alexandrie, ...fa, src } } });
-        else { const it = await at.createItem({ kind: "document", title: meta.title, content: bookToHtml(body), tags: ["alexandrie"], fields: { alexandrie: { of: paste.of, ...fa, src } } }); if (!it?.id) throw new Error("création refusée"); }
+        else { const it = await at.createItem({ kind: "document", title: meta.title, content: bookToHtml(body), tags: ["alexandrie"], fields: { alexandrie: { of: paste.of, ...fa, src, base: VERSIONS[paste.of]?.hash || "" } } }); if (!it?.id) throw new Error("création refusée"); }
         if (blocks.length > 1) toast("Seul le premier livre a été gardé : la modification porte sur un seul volume.");
         toast.success(`« ${meta.title} » enregistré`);
       } else {
@@ -251,7 +310,7 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
           if (done.has(pl.book.id) || last[pl.book.id] !== pl) continue; done.add(pl.book.id);
           const { meta, body } = parsePaste(pl.text); const it = itemOf(pl.book); const fa = { room: meta.room, type: meta.type, sub: meta.sub, about: meta.about };
           if (it) await at.saveItem({ ...clean(it), title: meta.title, content: bookToHtml(body), fields: { ...it.fields, alexandrie: { ...it.fields.alexandrie, ...fa, src: pl.text } } });
-          else { const made = await at.createItem({ kind: "document", title: meta.title, content: bookToHtml(body), tags: ["alexandrie"], fields: { alexandrie: { of: pl.book.id, ...fa, src: pl.text } } }); if (!made?.id) throw new Error("création refusée"); }
+          else { const made = await at.createItem({ kind: "document", title: meta.title, content: bookToHtml(body), tags: ["alexandrie"], fields: { alexandrie: { of: pl.book.id, ...fa, src: pl.text, base: VERSIONS[pl.book.id]?.hash || "" } } }); if (!made?.id) throw new Error("création refusée"); }
           n++;
         } else if (pl.kind === "create") {
           const { meta } = parsePaste(pl.text); const src = meta.cote ? pl.text : withCote(pl.text, nextCote(meta.room, all));
@@ -265,6 +324,15 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
       toast.success(`${n} livre${n > 1 ? "s" : ""} mis à jour`); sfx?.("select"); setPaste(null);
     } catch (e) { console.error("[Alexandrie] lots", e); toast.error(`Lots interrompus après ${n} livre(s) : ${errText(e)}`); }
   };
+  // Actualiser la bibliothèque : seulement les livres, pris sur GitHub (pas besoin de mettre à jour toute la Station)
+  const [refreshing, setRefreshing] = useState(false);
+  const refreshBooks = async () => {
+    if (refreshing) return; setRefreshing(true);
+    try { const r = await refreshLibrary(); sfx?.("select");
+      toast.success(r.nouveaux || r.misAJour ? `Bibliothèque à jour : ${r.nouveaux ? `${r.nouveaux} nouveau${r.nouveaux > 1 ? "x" : ""} livre${r.nouveaux > 1 ? "s" : ""}` : ""}${r.nouveaux && r.misAJour ? ", " : ""}${r.misAJour ? `${r.misAJour} mis à jour` : ""}` : `Bibliothèque déjà à jour (${r.total} livres)`); }
+    catch (e) { toast.error("Actualisation impossible : " + (e?.message || "réseau")); }
+    setRefreshing(false);
+  };
   // Exporter mes livres : tous les livres écrits ou collés, et les copies modifiées, dans un seul fichier à recoller.
   const exportMine = () => {
     const list = [...books.filter((b) => b.edited), ...mine];
@@ -275,7 +343,14 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
     toast.success(`${list.length} livre${list.length > 1 ? "s" : ""} exporté${list.length > 1 ? "s" : ""}. Le fichier se recolle tel quel.`);
   };
   const mine = useMemo(() => at.items.filter((i) => i.fields?.alexandrie && !i.fields.alexandrie.of).map(itemToBook), [at.items]);
-  const all = useMemo(() => [...books, ...mine], [books, mine]);
+  // Tranches habillées (Habiller la tranche), gardées avec la bibliothèque sur le serveur
+  const spines = at.config?.alexandrie?.spines || NOEDITS;
+  // Reliures : gardées dans la jaquette du livre (spines). Les anciennes « éditions reliées » y sont reprises.
+  const editions = at.config?.alexandrie?.editions || NOEDITS;
+  const spineOf = (id) => { const e = editions[id]; const sp = spines[id]; return e?.style && !sp?.reliure ? { ...(sp || {}), reliure: e.style, etui: e.etui ? "oui" : "" } : sp; };
+  const all = useMemo(() => [...books, ...mine].map((b) => { const sp = spineOf(b.id); if (!sp) return b; const x = { ...b, spine: sp }; return relOf(sp) ? { ...x, edition: relOf(sp), format: "livre" } : x; }), [books, mine, spines, editions]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [spineFor, setSpineFor] = useState(null);
+  const saveSpine = (id, v) => { const sp = { ...spines }; if (v) sp[id] = v; else delete sp[id]; const ed = { ...editions }; delete ed[id]; at.saveConfig({ alexandrie: { ...(at.config?.alexandrie || {}), spines: sp, editions: ed } }).then(() => { toast.success(v ? "Tranche habillée" : "Tranche d'origine remise"); sfx?.("select"); }, () => toast.error("La tranche n'a pas pu être enregistrée")); setSpineFor(null); };
   // Un titre à paraître disparaît quand il est retiré, ou quand un de tes livres porte le même titre.
   // Titres à paraître ajoutés à la main (titre + sous-titre), gardés sur le serveur avec la bibliothèque
   const customUp = useMemo(() => (at.config?.alexandrie?.customUp || []).map((u) => ({ ...u, type: u.type || "recit", format: u.format || (u.room === "lore" ? "vhs" : u.room === "musique" ? "vinyle" : "livre") })), [at.config]);
@@ -291,13 +366,19 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
   const match = (b) => (type === "all" || b.type === type) && (stf === "all" || shelf[stf].includes(b.id));
   const matchUp = (b) => (type === "all" || b.type === type) && (stf === "all" || (stf === "want" && wish.includes(b.id)));
   useEffect(() => { if (!startBook) return; const b = all.find((x) => x.id === startBook); if (b) { setSel((x) => ({ ...x, [b.room]: b.id })); setReading(b); } }, [startBook]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Mis à jour récemment : les livres dont le texte a vraiment changé (versions.json › maj), du plus récent au plus ancien.
+  // « Nouveau pour toi » tant que tu ne l'as pas ouvert depuis cette mise à jour (gardé dans ce navigateur).
+  const [majSeen, setMajSeen] = useState(() => read("nx-alex-majseen", {}));
+  const seeMaj = (id) => { const V = VERSIONS[id]; if (!V?.maj) return; const n = { ...majSeen, [id]: V.maj }; setMajSeen(n); write("nx-alex-majseen", n); };
+  const isFreshMaj = (id) => { const V = VERSIONS[id]; if (!V?.maj) return false; if (majSeen[id]) return majSeen[id] < V.maj; return Date.now() - Date.parse(V.maj) < 8 * 864e5; };
+  const recentMaj = all.filter((b) => VERSIONS[b.id]?.maj).sort((a, b) => VERSIONS[b.id].maj.localeCompare(VERSIONS[a.id].maj) || (VERSIONS[b.id].car || 0) - (VERSIONS[a.id].car || 0)).slice(0, 12);
   const current = all.filter((b) => prog[b.id] && prog[b.id].page > 0 && prog[b.id].page < (prog[b.id].pages || 1) - 1).sort((a, b) => prog[b.id].at - prog[a.id].at).slice(0, 4);
   const toggleWish = (id) => { const w = wish.includes(id) ? wish.filter((x) => x !== id) : [...wish, id]; setWish(w); write(LS.wish, w); sfx?.("select"); };
-  const addBook = async (rk) => {
-    try {
-      const it = await at.createItem({ kind: "document", title: "Nouveau livre", content: "<h2>Chapitre 1</h2><p>Écris ici. Chaque titre ouvre un nouveau chapitre.</p>", tags: ["alexandrie"], fields: { alexandrie: { room: typeof rk === "string" && rk ? rk : "atelier", type: "recit" } } });
-      if (it?.id) open(it.id, "document"); else toast.error("Le livre n'a pas pu être créé");
-    } catch (e) { toast.error("Le livre n'a pas pu être créé : " + (e?.response?.data?.detail || e?.message || "erreur")); }
+  // Écrire un livre : la fenêtre d'Alexandrie s'ouvre avec un modèle (plus de détour par l'éditeur du Nexus Drive)
+  const addBook = (rk) => {
+    const room = typeof rk === "string" && rk ? rk : "atelier";
+    setReading(null);
+    setPaste({ text: `TITRE : Nouveau livre\nSALLE : ${room}\n---\n\n# Premier chapitre\n\nÉcris ici. Chaque ligne « # Titre » ouvre un nouveau chapitre.\n` });
   };
   const openBook = (b) => {
     setSearch(false);
@@ -347,12 +428,40 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
             <div className="ax-tools">{searchBtn}
               <button className="ax-ghost" onClick={() => setPaste({ text: "" })} data-testid="alex-paste-open"><IoClipboardOutline size={15} /> Coller des livres ou des lots</button>
               <button className="at-btn" onClick={() => addBook("atelier")} data-testid="alex-add"><IoAdd size={16} /> Écrire un livre</button>
+              <button className="ax-ghost" onClick={refreshBooks} disabled={refreshing} title={liveInfo() ? `Livres pris sur GitHub le ${new Date(liveInfo().at).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}` : "Prendre la dernière version des livres sur GitHub, sans republier la Station"} data-testid="alex-refresh"
+                {...pressMenu(() => ({ title: "Bibliothèque", entries: [{ label: "Actualiser la bibliothèque", onClick: refreshBooks }, ...(liveInfo() ? [{ label: "Revenir aux livres de la Station", onClick: () => resetLibrary().then(() => toast.success("Livres de la Station remis")) }] : [])] }))}>
+                <IoRefreshOutline size={15} className={refreshing ? "ax-spin" : ""} /> {refreshing ? "Actualisation…" : "Actualiser"}</button>
               <button className="ax-ghost ax-ico" onClick={exportMine} title="Exporter mes livres (un fichier texte à recoller)" aria-label="Exporter mes livres" data-testid="alex-export"><IoDownloadOutline size={15} /></button></div>
           </header>
           {current.length > 0 && (
             <div className="ax-current">
               <p className="mono">LECTURES EN COURS</p>
               <div>{current.map((b) => <button key={b.id} onClick={() => openBook(b)} style={{ "--h": b.color ?? hue(b.title) }}><b>{b.title}</b><small className="mono">PAGE {prog[b.id].page + 1} / {prog[b.id].pages}</small><span><i style={{ width: `${(prog[b.id].page / Math.max(1, prog[b.id].pages - 1)) * 100}%` }} /></span></button>)}</div>
+            </div>
+          )}
+          {recentMaj.length > 0 && (
+            <div className="ax-maj" data-testid="alex-maj">
+              <p className="mono ax-plan-t"><span>MIS À JOUR RÉCEMMENT · 更新</span><i /></p>
+              <div className="ax-maj-row">
+                {recentMaj.map((b) => { const V = VERSIONS[b.id]; const unseen = isFreshMaj(b.id); const L = volLook(b);
+                  return (
+                    <button key={b.id} className={"ax-maj-c" + (unseen ? " new" : "")} style={{ "--h": b.color ?? hue(b.title) }} data-testid={`alex-maj-${b.id}`}
+                      onClick={() => { seeMaj(b.id); openBook(b); }}
+                      {...pressMenu(() => ({ title: b.title, entries: [
+                        { label: "Lire", icon: <IoPlay size={14} />, onClick: () => { seeMaj(b.id); openBook(b); } },
+                        { label: "Voir dans sa salle", onClick: () => { setSel((x) => ({ ...x, [b.room]: b.id })); enter(b.room); } },
+                        ...(unseen ? [{ label: "Marquer comme vu", onClick: () => seeMaj(b.id) }] : []),
+                      ] }))}>
+                      <span className={"ax-maj-cv t-" + L.tone + (L.fmt === "vhs" ? " vhs" : "")} style={covers[b.id] ? { backgroundImage: `url(${covers[b.id]})` } : undefined}>{!covers[b.id] && <i>{b.emblem || "書"}</i>}</span>
+                      <span className="ax-maj-tx">
+                        <small className="mono">{V.nouveau ? "NOUVEAU" : "MIS À JOUR"} · {new Date(V.maj).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }).toUpperCase()}</small>
+                        <b>{b.title}</b>
+                        <em>{b.fresh ? "Nouvelle version à installer" : V.nouveau ? "Arrivé dans la bibliothèque" : V.car >= 12000 ? "Grande mise à jour" : "Mise à jour"}</em>
+                      </span>
+                      {unseen && <i className="ax-maj-dot mono">NOUVEAU POUR TOI</i>}
+                    </button>
+                  ); })}
+              </div>
             </div>
           )}
           {(shelf.read.length + shelf.want.length + shelf.fav.length > 0) && (() => {
@@ -405,11 +514,13 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
               <button className="at-btn" onClick={() => addBook(R.key)} data-testid="alex-add"><IoAdd size={16} /> Écrire</button>
             </div>
           </header>
-          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(matchUp)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onWriteUp={writeUp} onHideUp={hideUp} onCover={setCoverFor} onEdit={open} onModify={modifyBook} menuFor={menuFor} noteCount={(id) => notesOf(notesItemOf(at, id)).length} onNotes={(b) => { setReadNotes(true); openBook(b); }} favs={favs} onFav={toggleFav} view={view} stOf={stOf} onStatus={setStatus} />
+          <Room r={R} n={ri + 1} here={inRoom(R.key).here.filter(match)} up={inRoom(R.key).up.filter(matchUp)} selId={sel[R.key]} onSel={(id) => { sfx?.("nav"); setSel((s) => ({ ...s, [R.key]: id })); }} covers={covers} wish={wish} prog={prog} onRead={openBook} onWish={toggleWish} onWriteUp={writeUp} onHideUp={hideUp} onCover={setCoverFor} onSpine={setSpineFor} onModify={modifyBook} onTakeNew={takeNew} onKeepMine={keepMine} menuFor={menuFor} noteCount={(id) => notesOf(notesItemOf(at, id)).length} onNotes={(b) => { setReadNotes(true); openBook(b); }} favs={favs} onFav={toggleFav} view={view} stOf={stOf} onStatus={setStatus} />
         </>
       )}
       {wish.length > 0 && <p className="ax-wishes mono">★ {wish.length} TITRE{wish.length > 1 ? "S" : ""} DEMANDÉ{wish.length > 1 ? "S" : ""} : {wish.map((id) => upcoming.find((u) => u.id === id)?.title).filter(Boolean).join(" · ")}</p>}
       {hidUp.length > 0 && <p className="ax-wishes mono">{hidUp.length} TITRE{hidUp.length > 1 ? "S" : ""} À PARAÎTRE RETIRÉ{hidUp.length > 1 ? "S" : ""} · <button className="ax-linkbtn" onClick={restoreUp} data-testid="alex-up-restore">LES REMETTRE</button></p>}
+      {spineFor && <SpineDialog b={{ ...spineFor, format: fmtOf(books.find((x) => x.id === spineFor.id) || spineFor) }} current={spineOf(spineFor.id)} onSave={(v) => saveSpine(spineFor.id, v)} onClose={() => setSpineFor(null)} />}
+      {imgFor && <CoverDialog b={{ ...imgFor.book, title: imgFor.book.title }} current={imgFor.url} onClose={() => setImgFor(null)} onSave={(u) => { const f = imgFor; setImgFor(null); if (u === "") editSrc(f.book, (src) => bodyEdit(src, imgDel(f.si)), "Image retirée"); else if (u && u !== f.url) editSrc(f.book, (src) => bodyEdit(src, imgSet(f.si, u)), "Image remplacée"); }} />}
       {coverFor && <CoverDialog b={coverFor} current={covers[coverFor.id]} def={DEFAULT_COVERS[coverFor.id]} onSave={(u) => saveCover(coverFor.id, u)} onClose={() => setCoverFor(null)} />}
       {search && <AlexSearch books={all} upcoming={upcoming} onClose={() => setSearch(false)} onOpen={openBook} onGoto={(b) => { setSearch(false); setRoom(b.room); setSel((s) => ({ ...s, [b.room]: b.id })); }} />}
       {paste && <AlexPaste initial={paste.text} editing={paste.title} onSave={savePaste} planLots={paste.title ? null : planLots} onSaveLots={saveLots} onClose={() => setPaste(null)} onPreview={(b) => setReading(b)} renderCover={(b) => <Face b={b} cover={b.coverUrl || covers[b.id]} />} />}
@@ -417,19 +528,17 @@ export default function Alexandrie({ at, open, radio, room: startRoom, book: sta
         <div className={"nx-launchfx f-" + volLook(launching).fmt} onClick={() => { setReading(launching); setLaunching(null); }} role="status" aria-label={`Ouverture de ${launching.title}`} data-testid="alex-launch" style={{ zIndex: 3000 }}>
           <i className="nx-lf-glow" aria-hidden="true" />
           <div className="nx-lf-obj">
-            <div className={`nx-box f-${volLook(launching).fmt}`}><div className="nx-box-in">
-              <div className="nx-box-front"><Face b={launching} cover={covers[launching.id]} /></div>
-              <div className="nx-box-side" style={covers[launching.id] ? { backgroundImage: `url(${covers[launching.id]})` } : undefined}><span>{launching.title}</span></div>
-              <div className="nx-box-back" />
-            </div></div>
+            {edOf(launching)?.etui
+              ? <EtuiLaunch b={launching} em={launching.emblem || "書"}><Face b={launching} cover={covers[launching.id]} /></EtuiLaunch>
+              : <Box3D b={{ ...launching, format: volLook(launching).fmt, house: "ALEXANDRIE" }} cover={covers[launching.id]} open />}
           </div>
           <p className="nx-lf-t"><span className="mono">{volLook(launching).fmt === "vhs" ? "▶ PLAY" : volLook(launching).fmt === "vinyle" ? "◉ FACE A" : "OUVERTURE"}</span>{launching.title}</p>
           <small className="mono nx-lf-skip">TOUCHE OU CLIC POUR PASSER</small>
         </div>, document.body)}
       {readingBook && (readingBook.preview
         ? <Reader key={readingBook.id + readingBook.words} book={readingBook} at={null} radio={radio} cover={readingBook.coverUrl} onClose={() => { sfx?.("close"); setReading(null); }} />
-        : <Reader key={readingBook.id} book={readingBook} at={at} startNotes={readNotes} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); setReadNotes(false); }} onEdit={(id) => { setReading(null); open(id); }}
-          onCover={() => setCoverFor(readingBook)} onModify={() => modifyBook(readingBook)} onIllustrate={() => illustrate(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} onRemoveVideo={(id) => removeVideo(readingBook, id)} onAddVideo={(si, id, cap) => addVideo(readingBook, si, id, cap)}
+        : <Reader key={readingBook.id} book={readingBook} edition={edOf(readingBook)} at={at} startNotes={readNotes} radio={radio} cover={covers[readingBook.id]} onClose={() => { sfx?.("close"); setReading(null); setReadNotes(false); }}
+          onCover={() => setCoverFor(readingBook)} onModify={() => modifyBook(readingBook)} onImage={(a, si, u) => onImage(readingBook, a, si, u)} onIllustrate={() => illustrate(readingBook)} onSwap={(oldId, newId) => swapVideo(readingBook, oldId, newId)} onRemoveVideo={(id) => removeVideo(readingBook, id)} onAddVideo={(si, id, cap) => addVideo(readingBook, si, id, cap)}
           onDone={() => setStatus("read", readingBook.id, true)} />)}
     </section>
   );

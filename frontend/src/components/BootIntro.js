@@ -173,6 +173,7 @@ export default function BootIntro({ type, hasVideo, onDone, welcomeMessages }) {
             <Anim>
               {ready && (
                 <div className="gx-ready" data-testid="boot-ready">
+                  {profile?.avatar && <div className="gx-portrait" data-testid="boot-portrait"><img src={profile.avatar} alt={profile.name} /></div>}
                   {profile && <div className="gx-welcome" data-testid="boot-welcome">{welcome}</div>}
                   <button className="gx-enter" onClick={(e) => { e.stopPropagation(); finish(); }} data-testid="boot-enter">Entrer</button>
                 </div>

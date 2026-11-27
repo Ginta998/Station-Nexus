@@ -32,7 +32,10 @@ export default function CommandPalette({ at, go, open, onClose, newUniverse }) {
       const t = texts[i.id]; const p = needle ? t.indexOf(needle) : -1;
       const snip = p > (i.title || "").length ? "…" + t.slice(Math.max(0, p - 30), p + 60) + "…" : "";
       const oe = isOeuvre(i);
-      return { key: "i" + i.id, cat: oe ? "o" : "e", code: codes[i.id], kj: KINDS[i.kind]?.kanji, title: i.title || "Sans titre", sub: oe ? "ŒUVRE" : (KINDS[i.kind]?.label || "").toUpperCase(), snip, type: oe ? "Œuvre" : KINDS[i.kind]?.label, where: uname(i.universe_id) || "Inbox", date: day(i.updated_at), run: () => open(i.id) };
+      const r = { key: "i" + i.id, cat: oe ? "o" : "e", code: codes[i.id], kj: KINDS[i.kind]?.kanji, title: i.title || "Sans titre", sub: oe ? "ŒUVRE" : (KINDS[i.kind]?.label || "").toUpperCase(), snip, type: oe ? "Œuvre" : KINDS[i.kind]?.label, where: uname(i.universe_id) || "Inbox", date: day(i.updated_at), run: () => open(i.id) };
+      // un livre d'Alexandrie s'ouvre dans Alexandrie, pas dans l'éditeur de documents
+      if (i.fields?.alexandrie) Object.assign(r, { sub: "LIVRE", type: "Livre", where: "Alexandrie", run: () => go({ name: "alexandrie", book: i.fields.alexandrie.of || "item:" + i.id }) });
+      return r;
     });
     return [...unis, ...items].filter((r) => tab === "all" || r.cat === tab);
   }, [needle, at, texts, codes, go, open, tab]);

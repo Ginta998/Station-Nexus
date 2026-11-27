@@ -1,0 +1,84 @@
+/* Scène composée (Nexus OS) : calques plein écran derrière la Station */
+.scx{position:absolute;inset:0;overflow:hidden}
+.scx-sky{position:absolute;inset:0;background:var(--sky)}
+.scx-astre{position:absolute;transform:translate(-50%,-50%);border-radius:50%}
+.scx-astre i{position:absolute;inset:0;border-radius:50%}
+.scx-astre.a-soleil i{background:radial-gradient(circle at 50% 50%,#fff 0,var(--ac) 55%,color-mix(in srgb,var(--ac) 70%,#000) 100%);box-shadow:0 0 calc(120px * var(--ah)) calc(40px * var(--ah)) color-mix(in srgb,var(--ac) 75%,transparent),0 0 calc(320px * var(--ah)) calc(120px * var(--ah)) color-mix(in srgb,var(--ac) 30%,transparent)}
+.scx-astre.a-lune i{background:radial-gradient(circle at 36% 34%,#fff 0,var(--ac) 42%,color-mix(in srgb,var(--ac) 62%,#000) 100%);box-shadow:0 0 calc(80px * var(--ah)) calc(20px * var(--ah)) color-mix(in srgb,var(--ac) 45%,transparent)}
+.scx-astre.a-lune i::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 62% 58%,rgba(0,0,0,.12) 0 9%,transparent 10%),radial-gradient(circle at 40% 70%,rgba(0,0,0,.1) 0 6%,transparent 7%),radial-gradient(circle at 70% 30%,rgba(0,0,0,.08) 0 5%,transparent 6%)}
+.scx-astre.a-planete i{background:radial-gradient(circle at 34% 30%,color-mix(in srgb,var(--ac) 40%,#fff),var(--ac) 50%,color-mix(in srgb,var(--ac) 40%,#000));box-shadow:0 0 calc(70px * var(--ah)) color-mix(in srgb,var(--ac) 40%,transparent)}
+.scx-astre.a-planete::after{content:"";position:absolute;left:-38%;right:-38%;top:42%;height:16%;border-radius:50%;border:3px solid color-mix(in srgb,var(--ac) 60%,#fff);transform:rotate(-14deg);opacity:.75}
+.scx-astre{animation:scxRise 2.4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes scxRise{from{opacity:0;translate:0 40px}to{opacity:1;translate:0 0}}
+.scx-rays{position:absolute;width:220vmax;height:220vmax;transform:translate(-50%,-50%);pointer-events:none;opacity:var(--ra);background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--ac) 30%,transparent) 0 3deg,transparent 3deg 14deg);-webkit-mask:radial-gradient(closest-side,#000 0,transparent 70%);mask:radial-gradient(closest-side,#000 0,transparent 70%);}
+@keyframes scxSpin{to{rotate:360deg}}
+.scx-clouds span{position:absolute;height:90px;border-radius:999px;background:radial-gradient(closest-side,rgba(255,255,255,.75),rgba(255,255,255,0));filter:blur(8px);animation:scxDrift linear infinite;will-change:transform}
+.scx-clouds .c0{top:12%;width:520px;animation-duration:140s;animation-delay:-20s}
+.scx-clouds .c1{top:26%;width:380px;height:70px;animation-duration:110s;animation-delay:-70s;opacity:.8}
+.scx-clouds .c2{top:6%;width:300px;height:60px;animation-duration:170s;animation-delay:-120s;opacity:.7}
+.scx-clouds .c3{top:36%;width:640px;height:110px;animation-duration:200s;animation-delay:-40s;opacity:.55}
+.scx-clouds .c4{top:18%;width:260px;height:56px;animation-duration:95s;animation-delay:-10s;opacity:.65}
+@keyframes scxDrift{from{transform:translateX(-60vw)}to{transform:translateX(160vw)}}
+.scx-mist i{position:absolute;left:-20%;right:-20%;bottom:16vh;height:24vh;background:radial-gradient(60% 100% at 50% 100%,color-mix(in srgb,var(--hz) 70%,#fff),transparent 70%);filter:blur(18px);animation:scxMist 26s ease-in-out infinite alternate;will-change:transform}
+.scx-mist i+i{bottom:4vh;height:18vh;animation-duration:34s;animation-direction:alternate-reverse;opacity:.8}
+@keyframes scxMist{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+.scx-vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,transparent 45%,rgba(0,0,0,.85) 100%);pointer-events:none}
+.scx-grain{position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E")}
+@keyframes scxGrain{0%{transform:translate(0,0)}20%{transform:translate(-5%,3%)}40%{transform:translate(4%,-4%)}60%{transform:translate(-3%,5%)}80%{transform:translate(5%,-2%)}100%{transform:translate(0,0)}}
+@media (prefers-reduced-motion:reduce){.scx *{animation:none!important}}
+/* Réglage des scènes d'origine (teinte, saturation, lumière) */
+.cosmic-bg{filter:var(--scene-f,none);opacity:var(--scene-o,1)}
+
+/* Décor : une image aplatie (par défaut), ou des calques qui suivent la souris (Profondeur, ordinateur) */
+.scx-decor{position:absolute;inset:0;overflow:hidden;background:#000;--tw:calc(104vh * var(--ar))}
+.scx-flat{position:absolute;inset:0;background-size:cover;background-position:center bottom;background-repeat:no-repeat}
+.scx-decor.px .scx-flat,.scx-decor.px .scx-dl i{image-rendering:pixelated}
+.scx-dl{position:absolute;left:-5%;right:-5%;top:-2%;bottom:-2%;will-change:transform;
+  transform:translate3d(calc(var(--dx,0) * var(--k) * -40px),calc(var(--dy,0) * var(--k) * -14px),0);transition:transform .25s linear}
+.scx-dl i{position:absolute;inset:0;background-size:auto 100%;background-position:center bottom;background-repeat:repeat-x}
+/* nuages qui dérivent (calques mode Profondeur seulement) */
+.scx-dl.drift i{left:0;right:auto;width:calc(var(--tw) * 3);background-position:left bottom;animation:scxTile calc(160s + var(--i) * 30s) linear infinite}
+@keyframes scxTile{from{transform:translateX(0)}to{transform:translateX(calc(var(--tw) * -1))}}
+@media (prefers-reduced-motion:reduce){.scx-dl,.scx-dl i{animation:none!important;transform:none!important}}
+
+/* Téléphone en portrait : le décor (fait pour l'écran large) n'est plus étiré jusqu'à n'être que des pixels.
+   Il garde sa hauteur naturelle en bas de l'écran, et le ciel est prolongé au-dessus avec sa propre couleur. */
+@media (max-aspect-ratio:4/5){
+  .scx-decor{background:var(--top,#000)}
+  .scx-flat{top:auto;height:calc(100vw / var(--ar) * 1.3);background-size:auto 100%}
+  .scx-flat::before{content:"";position:absolute;left:0;right:0;top:0;height:28%;background:linear-gradient(var(--top,#000),transparent)}
+}
+
+/* Lumière du décor (jour, aube, heure dorée, nuit) : un étalonnage sur l'image et un voile coloré, sans mode de fusion (fluide) */
+.scx-decor>:is(.scx-flat,.scx-dl){transition:filter 1.6s ease}
+.scx-decor::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.6s ease,background 1.6s ease}
+html[data-lumiere="aube"] .scx-decor>:is(.scx-flat,.scx-dl){filter:saturate(.85) brightness(.95) hue-rotate(-8deg)}
+html[data-lumiere="aube"] .scx-decor::after{opacity:1;background:linear-gradient(180deg,rgba(255,150,170,.28),rgba(140,110,200,.16) 55%,rgba(60,50,110,.22))}
+html[data-lumiere="or"] .scx-decor>:is(.scx-flat,.scx-dl){filter:saturate(1.15) brightness(1.02) sepia(.18)}
+html[data-lumiere="or"] .scx-decor::after{opacity:1;background:linear-gradient(180deg,rgba(255,190,90,.26),rgba(255,120,40,.14) 60%,rgba(90,40,20,.2))}
+html[data-lumiere="nuit"] .scx-decor>:is(.scx-flat,.scx-dl){filter:brightness(.42) saturate(.65) hue-rotate(8deg)}
+html[data-lumiere="nuit"] .scx-decor::after{opacity:1;background:linear-gradient(180deg,rgba(10,20,70,.42),rgba(20,30,80,.28) 60%,rgba(4,6,20,.4))}
+html[data-lumiere="nuit"] .scx-decor{background:#0b1030}
+html[data-lumiere="aube"] .scx-decor{background-color:color-mix(in srgb,var(--top,#000) 70%,#e7a0b0)}
+html[data-lumiere="or"] .scx-decor{background-color:color-mix(in srgb,var(--top,#000) 70%,#f0b060)}
+html[data-lumiere="nuit"] .scx-astre.a-soleil{opacity:0}
+
+/* La pastille de lumière (accueil) */
+.nx-lum{display:inline-flex;align-items:center;gap:2px;padding:3px;border-radius:999px;border:1px solid var(--border-c);background:color-mix(in srgb,var(--bg-secondary) 88%,transparent)}
+.nx-lum button{width:30px;height:30px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:var(--text-secondary);font-size:15px;line-height:1;cursor:pointer}
+.nx-lum button.on{background:var(--brand);color:var(--bg-primary)}
+.nx-lum button.auto{display:flex;gap:4px;font:700 9px/1 "Space Mono",monospace;letter-spacing:.04em;width:auto;padding:0 9px;border-radius:999px}
+.scx-decor{animation:scxIn 1.4s ease both}@keyframes scxIn{from{opacity:0}}
+.nx-lum-wrap{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nx-dec{position:relative}
+.nx-dec-cur{display:inline-flex;align-items:center;gap:8px;height:38px;padding:3px 12px 3px 3px;border-radius:999px;border:1px solid var(--border-c);background:color-mix(in srgb,var(--bg-secondary) 88%,transparent);color:var(--text-primary);font:600 12px var(--font-body,sans-serif);cursor:pointer}
+.nx-dec-cur img{width:48px;height:30px;border-radius:999px;object-fit:cover;image-rendering:pixelated}
+.nx-dec-bk{position:fixed;inset:0;z-index:89}
+.nx-dec-pop{position:absolute;z-index:90;top:calc(100% + 8px);left:0;width:min(86vw,360px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px;border-radius:16px;border:1px solid var(--border-c);background:var(--bg-secondary);box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
+.nx-dec-pop button{position:relative;padding:0;border:2px solid transparent;border-radius:10px;overflow:hidden;cursor:pointer;aspect-ratio:16/9;background:#000}
+.nx-dec-pop button.on{border-color:var(--brand)}
+.nx-dec-pop img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated;display:block}
+.nx-dec-pop button span{position:absolute;left:0;right:0;bottom:0;padding:12px 7px 4px;background:linear-gradient(0deg,rgba(0,0,0,.75),transparent);color:#fff;font-size:11px;text-align:left}
+.nx-dec-pop button.auto{grid-column:1/-1;aspect-ratio:auto;min-height:36px;background:transparent;color:var(--text-primary);border:1px solid var(--border-c);font:600 12px var(--font-body,sans-serif)}
+.nx-dec-pop button.auto.on{border-color:var(--brand);color:var(--brand)}

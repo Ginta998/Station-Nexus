@@ -99,7 +99,7 @@ export default function Planning() {
 
   const openAdd = () => { sfx("nav"); setEditing(null); setEditorOpen(true); };
   const openEdit = (e) => { sfx("nav"); setEditing(e); setEditorOpen(true); };
-  const onGo = (e) => { if (e.creation_id && byId[e.creation_id]) { sfx("select"); nav(`/oeuvre/${e.creation_id}`); } };
+  const onGo = (e) => { if (e.creation_id && byId[e.creation_id]) { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id: e.creation_id } })); } };
   const onDelete = async (e) => {
     if (!window.confirm("Supprimer cette sortie du planning ?")) return;
     await deleteRoadmap(e.id); toast.success("Sortie supprimée"); refetch();
@@ -315,8 +315,8 @@ function RoadmapEditor({ initial, creations, onClose, onSaved }) {
   const Label = ({ children }) => <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "var(--text-secondary)" }}>{children}</label>;
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} onClick={onClose} data-testid="roadmap-editor">
-      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto border" style={{ ...fs, background: "var(--bg-secondary)" }} onClick={(e) => e.stopPropagation()}>
+    <div className="nx-ov fixed inset-0 z-[80] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} onClick={onClose} data-testid="roadmap-editor">
+      <div className="nx-ov-panel w-full max-w-lg max-h-[90vh] overflow-y-auto border" style={{ ...fs, background: "var(--bg-secondary)" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-3 border-b sticky top-0 z-10" style={{ borderColor: "var(--border-c)", background: "var(--bg-secondary)" }}>
           <h3 className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{initial ? "Modifier la sortie" : "Nouvelle sortie"}</h3>
           <button onClick={onClose} data-testid="roadmap-editor-close" className="p-1.5"><IoClose size={22} style={{ color: "var(--text-secondary)" }} /></button>

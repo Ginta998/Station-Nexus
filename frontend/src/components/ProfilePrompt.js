@@ -23,8 +23,8 @@ export default function ProfilePrompt({ onCreate }) {
   const openTuto = () => { localStorage.setItem("sx_profile_prompted", "1"); setDismissed(true); nav("/tutoriel"); };
 
   return (
-    <div className="fixed inset-0 z-[55] flex items-end sm:items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} data-testid="profile-prompt">
-      <div className="w-full sm:max-w-md border p-6 relative fade-up" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+    <div className="nx-ov fixed inset-0 z-[55] flex items-end sm:items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} data-testid="profile-prompt">
+      <div className="nx-ov-panel w-full sm:max-w-md border p-6 relative fade-up" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
         <button onClick={later} className="absolute top-3 right-3 p-1" style={{ color: "var(--text-secondary)" }} data-testid="profile-prompt-close"><IoClose size={20} /></button>
         <div className="flex justify-center mb-3"><IoPersonCircle size={56} style={{ color: "var(--brand)" }} /></div>
         <h3 className="font-display text-2xl text-center mb-2" style={{ color: "var(--text-primary)" }}>Bienvenue sur la Stationexus !</h3>

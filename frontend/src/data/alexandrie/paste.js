@@ -73,8 +73,8 @@ export function artDupes(body) {
   const seen = new Map(); const out = [];
   String(body || "").split("\n").forEach((l) => {
     const t = l.trim(); let k = null;
-    if (t.startsWith("@art ")) { const h = t.slice(5).split(" | ")[0].trim(); k = (/^g\b/.test(h) ? "@art g " : "@art ") + (parseInt(h.replace(/^g\s*/, ""), 10) || 1); }
-    else if (t.startsWith("@img ")) k = "@img " + t.slice(5).split(" | ")[0].trim();
+    if (t.startsWith("@art ")) { const h = t.slice(5).split(" | ")[0].trim().replace(/^(pleine|contour)(\s+gauche)?\s+/i, ""); k = (/^g\b/.test(h) ? "@art g " : "@art ") + (parseInt(h.replace(/^g\s*/, ""), 10) || 1); }
+    else if (t.startsWith("@img ")) k = "@img " + t.slice(5).split(" | ")[0].trim().replace(/^(pleine|contour)(\s+gauche)?\s+/i, "");
     if (!k) return; seen.set(k, (seen.get(k) || 0) + 1); if (seen.get(k) === 2) out.push(k.length > 60 ? k.slice(0, 57) + "…" : k);
   });
   return out;
@@ -153,6 +153,12 @@ Le texte du chapitre. Les créateurs (studio, auteurs, compositeurs) sont cités
 # Les personnages
 
 @art g 2 | Une affiche verticale (n° 2)
+
+@art contour g 3 | Le texte épouse sa silhouette (contour gauche : à gauche)
+
+@art pleine g 4 | Toute la page pour l'image
+
+>* Une réplique du jeu, à l'ancienne | Qui la dit
 
 Le texte continue après l'image.
 ` },

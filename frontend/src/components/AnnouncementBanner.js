@@ -18,7 +18,7 @@ export default function AnnouncementBanner() {
   const c = a.creation_id ? byId[a.creation_id] : null;
 
   const dismiss = () => markAnnouncementsSeen([a.id]);
-  const go = () => { markAnnouncementsSeen([a.id]); if (a.creation_id) { sfx("select"); nav(`/oeuvre/${a.creation_id}`); } };
+  const go = () => { markAnnouncementsSeen([a.id]); if (a.creation_id) { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id: a.creation_id } })); } };
 
   return (
     <div className="mx-5 md:mx-12 mt-3 flex items-center gap-3 px-3 py-2.5 border fade-up" data-testid="announcement-banner"

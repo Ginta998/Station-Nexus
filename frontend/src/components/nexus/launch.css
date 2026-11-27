@@ -1,0 +1,124 @@
+/* Lancement d'une œuvre : l'objet arrive, puis il s'ouvre vraiment.
+   Livre : la couverture tourne sur sa charnière et découvre la page de titre. Cassette : le boîtier s'ouvre et la bande se soulève.
+   Disque : le vinyle sort de sa pochette et se met à tourner. Tout en transformations : fluide aussi au téléphone. */
+.nx-lf-obj .nx-box.opening{--ld:1.45s;animation:lfShift 1s var(--ld) cubic-bezier(.5,0,.2,1) both}
+.nx-lf-obj .nx-box.opening.f-vinyle{animation-name:lfShiftV}
+@keyframes lfShift{to{translate:calc(var(--w) * .5) 0}}
+@keyframes lfShiftV{to{translate:calc(var(--w) * -.3) 0}}
+/* D'abord l'arrivée d'origine (l'objet pivote vers toi, un reflet passe sur la couverture), puis il se tourne de face et s'ouvre */
+.nx-lf-obj .nx-box.opening .nx-box-in{animation:nxTurn 1.25s cubic-bezier(.16,1,.3,1) both,lfFace .7s 1.25s cubic-bezier(.5,0,.2,1) forwards}
+@keyframes lfFace{from{transform:rotateY(14deg)}to{transform:rotateY(-10deg) rotateX(7deg)}}
+
+/* Le couvercle (la couverture) */
+.nx-box-lid{position:absolute;inset:0;transform:translateZ(calc(var(--th) / 2));transform-origin:left center;transform-style:preserve-3d}
+.nx-box-lid .nx-box-front{transform:none}
+.nx-lf-obj .nx-box.opening .nx-box-lid{animation:lfLid 1s var(--ld) cubic-bezier(.55,0,.2,1) both}
+@keyframes lfLid{to{transform:translateZ(calc(var(--th) / 2)) rotateY(-166deg)}}
+.nx-lid-in{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:2px 4px 4px 2px;
+  background:radial-gradient(rgba(255,255,255,.09) 1px,transparent 1.4px) 0 0/7px 7px,linear-gradient(90deg,color-mix(in srgb,var(--brand) 30%,#2a2118),color-mix(in srgb,var(--brand) 45%,#3a2c20) 70%,color-mix(in srgb,var(--brand) 28%,#241c15));box-shadow:inset -10px 0 18px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06)}
+.nx-box.f-vhs .nx-lid-in{background:linear-gradient(180deg,#1a1a1e,#0f0f12);box-shadow:inset 0 0 0 3px #26262b,inset 0 0 0 9px #111114,inset 0 0 30px rgba(0,0,0,.8)}
+
+/* Le dedans */
+.nx-box-inner{position:absolute;inset:0;transform:translateZ(calc(var(--th) / 2 - 3px));transform-style:preserve-3d;border-radius:2px 4px 4px 2px;overflow:visible}
+.nx-box-inner.in-livre{background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 9%),#efe6d1;box-shadow:inset -3px 0 0 #e2d6bd,inset -5px 0 0 #f3ebd9,inset -7px 0 0 #ddd0b4,0 0 0 1px rgba(0,0,0,.25)}
+.nx-bpage{position:absolute;inset:14% 12%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:#2b241d}
+.nx-bpage small{font:500 calc(8px * var(--z)) "Space Mono",monospace;letter-spacing:.3em;opacity:.6}
+.nx-bpage b{font:600 calc(24px * var(--z))/1.1 var(--ax-serif,"Cormorant Garamond",serif);overflow-wrap:anywhere}
+.nx-bpage em{font:italic calc(12px * var(--z))/1.3 var(--ax-serif,serif);opacity:.75}
+.nx-bpage::after{content:"";width:34px;height:1px;background:#2b241d;opacity:.4;order:1}
+.nx-leaf{display:none;position:absolute;inset:3px 6px 3px 0;transform-origin:left center;backface-visibility:visible;border-radius:0 3px 3px 0;
+  background:repeating-linear-gradient(180deg,transparent 0 9px,rgba(43,36,29,.16) 9px 10px) 18% 14%/66% 72% no-repeat,#f4ecdb;box-shadow:inset 8px 0 14px -8px rgba(0,0,0,.25)}
+.in-vhs{background:linear-gradient(180deg,#141417,#0b0b0d);box-shadow:inset 0 0 0 3px #222227,inset 0 0 30px rgba(0,0,0,.9)}
+/* La cassette remplit son boîtier, comme une vraie (18,7 × 10,3 cm dans un boîtier de 20,5 × 12), vue de dessus et debout :
+   coque noire aux bords striés, une fenêtre de bobine en haut et en bas (moyeu blanc, bande enroulée),
+   l'étiquette au milieu, façon T-120 : titre sur fond noir, bandeau VIDEO CASSETTE, bandes de couleur, VHS. */
+.nx-tape{position:absolute;left:5%;right:5%;top:3%;bottom:3%;border-radius:5px;display:grid;grid-template-rows:27% 1fr 27%;gap:3.5%;padding:6% 17%;
+  background:linear-gradient(90deg,#0e0e10,#1d1d21 18%,#18181b 82%,#0b0b0d);box-shadow:0 14px 28px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.09),inset 0 0 0 1px rgba(255,255,255,.05);transform-style:preserve-3d}
+.nx-tape-rib{position:absolute;top:2.5%;bottom:2.5%;width:13%;border-radius:2px;background:repeating-linear-gradient(90deg,#0a0a0c 0 1.5px,#2a2a2f 1.5px 3.2px);box-shadow:inset 0 0 6px rgba(0,0,0,.7)}
+.nx-tape-rib.l{left:2%}.nx-tape-rib.r{right:2%}
+.nx-tape-win{position:relative;display:grid;place-items:center;border-radius:12px;overflow:hidden;
+  background:radial-gradient(120% 90% at 30% 20%,rgba(255,255,255,.10),transparent 55%),#0b0b0d;box-shadow:inset 0 0 0 2px #050506,inset 0 0 0 4px #26262a,inset 0 6px 14px rgba(0,0,0,.9)}
+.nx-tape-win::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(125deg,rgba(255,255,255,.16),transparent 32%,transparent 70%,rgba(255,255,255,.06))}
+/* La bobine : la bande enroulée (brune), puis le moyeu blanc à six dents */
+.nx-tape-win i{position:relative;width:46%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,#101012 0 11%,#e9e6df 12% 36%,#bdb8ad 37% 39%,transparent 40%),repeating-conic-gradient(#e9e6df 0 10deg,transparent 10deg 60deg);
+  box-shadow:0 0 0 11px #2b211b,0 0 0 12px #3d2f26,0 0 0 13px rgba(0,0,0,.6)}
+.nx-tape-win.b i{box-shadow:0 0 0 3px #2b211b,0 0 0 4px #3d2f26,0 0 0 5px rgba(0,0,0,.6)}
+.nx-tape-lab{display:grid;grid-template-rows:1fr auto auto auto;border-radius:2px;overflow:hidden;background:#f4f3f0;color:#1c1c1e;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),0 0 0 3px #303035}
+.nx-tl-top{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:0;padding:6% 7% 5%;background:#1c1c1e;color:#f4f3f0}
+.nx-tl-top small{font:500 calc(5.5px * var(--z)) "Space Mono",monospace;letter-spacing:.22em;opacity:.55}
+.nx-tl-top b{font:700 calc(12.5px * var(--z))/1.02 "Inter","Helvetica Neue",Arial,sans-serif;letter-spacing:-.02em;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nx-tl-band{padding:2% 7%;background:#3d1f78;text-align:right}
+.nx-tl-band small{font:700 calc(6px * var(--z)) "Inter",Arial,sans-serif;letter-spacing:.04em;color:#f4f3f0}
+.nx-tl-stripes{display:grid}
+.nx-tl-stripes i{height:calc(5px * var(--z))}
+.nx-tl-stripes i:nth-child(1){background:#e8358f}.nx-tl-stripes i:nth-child(2){background:#e3002f}.nx-tl-stripes i:nth-child(3){background:#f0891a}
+.nx-tl-bot{display:flex;align-items:flex-start;justify-content:space-between;padding:5% 7%}
+.nx-tl-bot span{font:500 calc(5.5px * var(--z))/1.4 "Space Mono",monospace;letter-spacing:.1em;opacity:.6}
+.nx-tl-bot em{font:800 calc(15px * var(--z))/1 "Inter","Helvetica Neue",Arial,sans-serif;font-style:normal;letter-spacing:-.03em}
+.nx-lf-obj .nx-box.opening .nx-tape{animation:lfTape .7s calc(var(--ld) + .85s) cubic-bezier(.2,.8,.2,1) both}
+@keyframes lfTape{to{transform:translateZ(30px) translateY(-4%) rotateX(-6deg)}}
+.nx-lf-obj .nx-box.opening .nx-tape-win i{animation:lfReel 1.2s calc(var(--ld) + 1.1s) linear infinite}
+.nx-lf-obj .nx-box.opening .nx-tape-win.b i{animation-duration:.7s}
+@keyframes lfReel{to{rotate:360deg}}
+
+/* Le disque sort de sa pochette, puis tourne */
+.nx-lf-obj .nx-box.opening .ax-disc{transform:none;translate:30% 0;animation:lfDiscOut 1s var(--ld) cubic-bezier(.5,0,.2,1) both,lfDiscSpin 1.6s calc(var(--ld) + .9s) linear infinite}
+@keyframes lfDiscOut{from{translate:30% 0}to{translate:66% 0}}
+@keyframes lfDiscSpin{to{rotate:360deg}}
+
+/* Il tourne sur lui-même, puis s'ouvre */
+html[data-lancement="tour"] .nx-lf-obj .nx-box.opening{--ld:1.2s}
+html[data-lancement="tour"] .nx-lf-obj .nx-box.opening .nx-box-in{animation:lfSpin2 1.25s cubic-bezier(.2,.8,.2,1) both}
+@keyframes lfSpin2{from{transform:rotateY(-560deg) scale(.55)}to{transform:rotateY(-10deg) rotateX(7deg)}}
+/* Il vient vers toi, puis s'ouvre */
+html[data-lancement="envol"] .nx-lf-obj{animation:lfCome 1.1s cubic-bezier(.16,1,.3,1) both}
+html[data-lancement="envol"] .nx-lf-obj .nx-box.opening{--ld:.95s}
+html[data-lancement="envol"] .nx-lf-obj .nx-box.opening .nx-box-in{animation:lfTilt2 1.1s cubic-bezier(.16,1,.3,1) both}
+@keyframes lfTilt2{from{transform:rotateX(55deg) rotateY(-40deg) rotateZ(-12deg)}to{transform:rotateY(-10deg) rotateX(7deg)}}
+/* On entre dedans : il s'ouvre, puis on plonge dans ses pages (ou sa bande, ou son sillon) */
+html[data-lancement="plongee"] .nx-lf-obj{animation:nxVeil .5s ease-out both,lfDive2 .75s 2.25s cubic-bezier(.6,0,.9,.4) forwards}
+@keyframes lfDive2{to{transform:scale(6);opacity:0}}
+html[data-lancement="plongee"] .nx-launchfx .nx-lf-t{animation:nxCome .9s .15s cubic-bezier(.16,1,.3,1) both,lfFade .3s 2.2s forwards}
+@keyframes lfFade{to{opacity:0}}
+/* On le feuillette : les pages tournent une à une (livre) */
+html[data-lancement="feuillette"] .nx-leaf{display:block}
+html[data-lancement="feuillette"] .nx-lf-obj .nx-leaf{animation:lfLeaf .55s cubic-bezier(.45,0,.2,1) both}
+html[data-lancement="feuillette"] .nx-lf-obj .nx-leaf.l1{animation-delay:2.35s}
+html[data-lancement="feuillette"] .nx-lf-obj .nx-leaf.l2{animation-delay:2.6s}
+html[data-lancement="feuillette"] .nx-lf-obj .nx-leaf.l3{animation-delay:2.85s}
+@keyframes lfLeaf{to{transform:rotateY(-160deg)}}
+/* Il s'éjecte : la bande, le disque ou la page de titre sort de l'objet et vient vers toi */
+html[data-lancement="ejecte"] .nx-lf-obj .nx-box.opening .nx-tape{animation:lfTape .5s calc(var(--ld) + .8s) cubic-bezier(.2,.8,.2,1) both,lfEject .6s calc(var(--ld) + 1.05s) cubic-bezier(.6,0,.4,1) forwards}
+html[data-lancement="ejecte"] .nx-lf-obj .nx-box.opening .nx-bpage{animation:lfEject .6s calc(var(--ld) + .95s) cubic-bezier(.6,0,.4,1) forwards}
+html[data-lancement="ejecte"] .nx-lf-obj .nx-box.opening .ax-disc{animation:lfDiscOut 1s var(--ld) cubic-bezier(.5,0,.2,1) both,lfDiscSpin 1.6s calc(var(--ld) + .9s) linear infinite,lfDiscEject .65s calc(var(--ld) + 1s) cubic-bezier(.6,0,.4,1) forwards}
+@keyframes lfEject{to{translate:0 0 420px;scale:1.4;opacity:0}}
+@keyframes lfDiscEject{from{translate:66% 0}to{translate:66% 0 380px;scale:1.8;opacity:0}}
+
+/* Au téléphone : l'objet plus petit, pour qu'il tienne une fois ouvert */
+@media (max-width:640px){.nx-lf-obj{--z:.74;--zv:.56}}
+@media (prefers-reduced-motion:reduce){.nx-lf-obj *{animation:none!important}}
+
+/* Voir l'objet en 3D */
+.nx-ov{position:fixed;inset:0;z-index:3200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(70% 60% at 50% 45%,color-mix(in srgb,var(--brand) 18%,#111),#070708 80%);color:#f2efe9;animation:nxVeil .35s ease-out both}
+.nx-ov-stage{width:min(92vw,620px);height:min(62vh,560px);display:grid;place-items:center;perspective:1400px;cursor:grab;touch-action:none}
+.nx-ov-stage:active{cursor:grabbing}
+.nx-ov-obj{--z:1.1;--zv:.8}
+.nx-ov-obj .nx-box-in{transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.nx-ov-stage:active .nx-ov-obj .nx-box-in{transition:none}
+.nx-ov-obj .nx-box-front,.nx-ov-obj .nx-box-side,.nx-ov-obj .nx-box-back{backface-visibility:hidden}
+.nx-ov-t{display:flex;flex-direction:column;align-items:center;gap:6px;margin:0;text-align:center}
+.nx-ov-t b{font:600 clamp(20px,3vw,30px) var(--font-display,serif)}
+.nx-ov-t small{font-size:10px;letter-spacing:.24em;opacity:.6}
+.nx-ov-acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.nx-ov-acts button{min-height:38px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:inherit;font:600 12px var(--font-body,sans-serif);cursor:pointer;display:inline-flex;align-items:center}
+@media (max-width:640px){.nx-ov-obj{--z:.86;--zv:.62}}
+/* Les faces cachées (vues seulement quand on fait tourner l'objet) : tranche des pages, dessus, dessous */
+.nx-box-edge,.nx-box-top,.nx-box-bot{position:absolute;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.nx-box-edge{right:0;top:0;width:var(--th);height:100%;transform-origin:right center;transform:translateZ(calc(var(--th) / -2)) rotateY(90deg)}
+.nx-box-top{left:0;top:0;width:100%;height:var(--th);transform-origin:center top;transform:translateZ(calc(var(--th) / -2)) rotateX(90deg)}
+.nx-box-bot{left:0;bottom:0;width:100%;height:var(--th);transform-origin:center bottom;transform:translateZ(calc(var(--th) / -2)) rotateX(-90deg)}
+.nx-box.f-livre :is(.nx-box-edge){background:repeating-linear-gradient(90deg,#efe6d1 0 1px,#d9cdb2 1px 2px);box-shadow:inset 0 0 6px rgba(0,0,0,.25)}
+.nx-box.f-livre :is(.nx-box-top,.nx-box-bot){background:repeating-linear-gradient(180deg,#efe6d1 0 1px,#d9cdb2 1px 2px);box-shadow:inset 0 0 6px rgba(0,0,0,.25)}
+.nx-box.f-vhs :is(.nx-box-edge,.nx-box-top,.nx-box-bot){background:linear-gradient(90deg,#141417,#202025 50%,#141417)}
+.nx-box.f-vinyle :is(.nx-box-edge,.nx-box-top,.nx-box-bot){background:#d8d0bf}

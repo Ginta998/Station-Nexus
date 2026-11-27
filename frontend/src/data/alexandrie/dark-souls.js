@@ -16,6 +16,8 @@ Dark Souls est le jeu qui a donné son nom à un genre. On en parle pour sa diff
 
 @art 4
 
+>* In the Age of Ancients, the world was unformed, shrouded by fog. | Dark Souls, ouverture
+
 Comme dans Bloodborne, rien n'est dit en face. L'histoire est en morceaux, dans les descriptions d'objets, dans les répliques de personnages à moitié fous, dans l'architecture. Je vais remettre les morceaux dans l'ordre. Quand quelque chose est écrit dans le jeu, je te le dis. Quand c'est une lecture partagée par presque tous les joueurs, je te le dis aussi. Et quand c'est une hypothèse, je te préviens.
 
 Je te raconte les trois jeux, parce qu'ils forment une seule histoire : celle d'un feu qu'on ne veut pas laisser mourir.
@@ -27,7 +29,7 @@ Je te raconte les trois jeux, parce qu'ils forment une seule histoire : celle d'
 
 Dark Souls est développé par FromSoftware, un studio de Tokyo, et édité par Namco Bandai. Le premier jeu et le troisième sont dirigés par Hidetaka Miyazaki, qui avait déjà signé Demon's Souls en 2009 et qui deviendra président du studio. Le deuxième est dirigé par Tomohiro Shibuya et Yui Tanimura, pendant que Miyazaki travaillait sur Bloodborne.
 
-@art g 2
+@art contour g 2
 
 La musique du premier jeu est de Motoi Sakuraba, un vétéran du jeu vidéo japonais. Pour le troisième, c'est surtout Yuka Kitamura qui prend le relais, avec Sakuraba, Tsukasa Saitoh et Nobuyoshi Suzuki. Les combats contre Gwyn et contre l'Âme des cendres leur doivent beaucoup.
 
@@ -55,7 +57,7 @@ Et le pygmée furtif, si facilement oublié. L'introduction le nomme à peine. R
 
 Avec la puissance des âmes de seigneur, ils ont défié les dragons. Les éclairs de Gwyn ont fendu leurs écailles de pierre. Les tempêtes de feu de la Sorcière les ont brûlés. Nito a répandu sur eux la mort et la maladie. Et un dragon a trahi les siens : Seath l'Écorché, un dragon blanc né sans écailles, donc mortel, qui jalousait ses frères.
 
-@art 5
+@art pleine g 9
 
 Les dragons ont été vaincus. Ainsi commença l'âge du Feu.
 
@@ -67,7 +69,7 @@ Le pygmée furtif, lui, a disparu de l'histoire. Il avait reçu une âme particu
 
 L'âme du pygmée ne brillait pas. Elle était faite de ténèbres. Et le pygmée l'a partagée entre ses descendants. Ces descendants, ce sont les hommes. Nous.
 
-@art g 3
+@art contour gauche g 3
 
 C'est ce que révèle, à la fin du premier jeu, un serpent primordial nommé Kaathe : l'humanité est l'héritière de l'Âme sombre. Les hommes portent en eux un fragment des ténèbres. Ce que le jeu appelle l'humanité, une petite chose noire qui palpite dans ta main et que tu consommes pour redevenir humain, c'est cela.
 
@@ -91,7 +93,7 @@ Mais le feu, même ravivé, continue de faiblir. Et à mesure qu'il faiblit, un 
 
 Le Signe des ténèbres est un anneau de feu noir qui s'ouvre sur la peau. Ceux qui le portent ne meurent plus. Ils se relèvent, encore et encore, au dernier feu de camp où ils se sont arrêtés. Mais à chaque mort, ils perdent un peu de leur humanité, de leur mémoire, de leur raison. Quand il ne reste plus rien, ils deviennent des carcasses : des corps sans esprit, qui errent et attaquent tout ce qui vit.
 
-@art g 4
+@art contour g 4
 
 On les appelle les morts-vivants. On les enferme. On les envoie dans un asile au nord, pour qu'ils y attendent la fin du monde.
 
@@ -101,7 +103,7 @@ Kaathe dira, à la fin, que cette malédiction n'est pas un accident. Selon lui,
 
 Tu es un mort-vivant, enfermé dans une cellule de l'Asile du Nord. Un chevalier, Oscar d'Astora, mourant, te jette une clé. Il te parle d'une prophétie : un mort-vivant élu quittera l'Asile, partira en pèlerinage vers Lordran, la terre des anciens seigneurs, et sonnera les Cloches de l'éveil pour connaître le destin des morts-vivants.
 
-@art g 1 | L'Élu mort-vivant.
+@art contour gauche g 1 | L'Élu mort-vivant.
 
 Lordran est un pays en ruine. Tout y est vieux, effondré, abandonné par les dieux. Le Sanctuaire de Lige-Feu, où tu reviens sans cesse, est entouré de morts-vivants qui ont renoncé. L'un d'eux, assis contre un mur, se moque de toi : tu ne seras pas le premier à croire à la prophétie.
 
@@ -125,7 +127,7 @@ Mais rien de tout cela n'est vrai. Si tu frappes la princesse, elle disparaît. 
 
 Pour remplir le Réceptacle, il faut les âmes des anciens seigneurs, ou de ceux qui en ont hérité.
 
-@art g 5
+@art contour g 5
 
 Nito, au fond du Tombeau des géants, une fosse noire où l'on ne voit rien sans lumière.
 
@@ -149,7 +151,7 @@ Qui dit vrai ? Frampt, qui veut prolonger l'âge du Feu, ou Kaathe, qui veut l'�
 
 L'extension Artorias of the Abyss raconte une légende que tout Lordran connaît, et la corrige.
 
-@art g 6
+@art contour gauche g 6
 
 Les Quatre chevaliers de Gwyn étaient : Ornstein, le tueur de dragons ; Gough, l'archer géant au regard de faucon ; Ciaran, la lame silencieuse ; et Artorias, le marcheur des abîmes, qui combattait avec son grand loup gris, Sif.
 
@@ -177,7 +179,7 @@ Et Patches, une hyène sourire aux lèvres, qui te pousse dans un trou et revien
 
 Au bout du chemin, tu descends dans le Four de la Première Flamme. Tout est blanc, recouvert de cendres. Les chevaliers noirs de Gwyn t'y attendent, ceux qui ont brûlé avec lui. Et au centre, Gwyn lui-même.
 
-@art 9
+@art pleine g 10
 
 C'est un des combats finaux les plus tristes du jeu vidéo. La musique ne joue pas un thème épique, mais un air de piano lent, presque une berceuse. Le seigneur de la lumière est devenu un vieillard brûlé, qui frappe comme un fou. Il est très fort, et très fragile.
 
@@ -191,7 +193,7 @@ Si tu t'éloignes, le feu s'éteint. Les serpents s'inclinent devant toi. Tu es 
 
 Le deuxième jeu se passe longtemps après, dans un royaume nommé Drangleic, si loin qu'on ne sait plus où se trouvait Lordran. Tout a été oublié, sauf la malédiction.
 
-@art g 7
+@art contour g 7
 
 Le roi Vendrick a bâti son royaume en cherchant un moyen de briser la malédiction des morts-vivants. Il a fait la guerre aux géants venus de l'autre côté de la mer, pour leur prendre leur pouvoir. Il a épousé une reine venue de nulle part, Nashandra, qui l'a poussé à cette guerre. Nashandra est un fragment de Manus, une des ténèbres sorties de l'Abîme. Elle veut s'asseoir sur le Trône du désir, et faire venir l'âge des Ténèbres à son profit.
 
@@ -217,7 +219,7 @@ Il y a un autre fils de Gwyn, que le premier jeu ne nommait pas : son aîné, le
 
 La dernière extension, The Ringed City, va jusqu'à la toute fin du monde. Tout est cendres. Une seule ville tient encore debout, au bout du temps : la ville annelée, construite par Gwyn pour les descendants du pygmée, les premiers hommes, pour les garder loin de tout. Une de ses filles, Filianore, y dort, et son sommeil maintient l'illusion de la ville.
 
-@art g 8
+@art contour gauche g 8
 
 Un vieil esclave chevalier, Gael, cherche l'Âme sombre. Il a une raison : une petite fille, la Peintre, qui vit dans un monde peint, a besoin d'un pigment pour peindre un monde nouveau. Un monde froid, sombre, doux, où l'on pourrait vivre. Gael veut lui apporter le sang des seigneurs pygmées. Il dévore l'Âme sombre, il devient un monstre, et tu dois le tuer pour ramener le pigment.
 

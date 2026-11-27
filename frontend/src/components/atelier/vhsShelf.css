@@ -5,7 +5,7 @@
 .vh-head h3 small{margin-left:10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;font-weight:500}
 .vh-empty{max-width:640px;margin:0;padding:18px;border:1px dashed var(--at-line,rgba(255,255,255,.18));font-size:14px;line-height:1.55;opacity:.8}
 .vh-shelf{display:flex;gap:18px;overflow-x:auto;padding:6px 4px 22px;scroll-snap-type:x proximity}
-.vh-face{display:block;--z:.6;--zv:.5}
+.vh-face{display:block;--z:.84;--zv:.62}
 .vh-cover-prev.vh-face{--z:.44}
 .vh-tape{flex:none;width:auto;display:flex;flex-direction:column;gap:6px;background:none;border:0;color:inherit;text-align:left;cursor:pointer;scroll-snap-align:start;transition:transform .25s}
 .vh-tape .vh-face{border-radius:2px;box-shadow:0 10px 24px rgba(0,0,0,.45);transition:transform .25s,box-shadow .25s}
@@ -33,7 +33,7 @@
 .vh-cover>div{display:flex;flex-direction:column;gap:8px}
 .vh-up{align-self:flex-start;cursor:pointer}
 .vh-acts{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
-@media (max-width:600px){.vh-face{--z:.48}}
+@media (max-width:600px){.vh-face{--z:.64}}
 /* 0.43 · les épisodes, un par ligne, avec leur vignette ; la recherche qui les ajoute */
 .vh-src{display:flex;gap:6px}
 .vh-src button{flex:1;padding:8px 10px;border:1px solid var(--at-line,rgba(255,255,255,.18));background:none;color:inherit;font-size:13px;cursor:pointer;border-radius:2px}

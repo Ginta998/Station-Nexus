@@ -9,6 +9,7 @@ import AuthDialog from "@/components/AuthDialog";
 import Home from "@/pages/Home";
 import Detail from "@/pages/Detail";
 const Settings = lazy(() => import("@/pages/Settings"));
+const Partage = lazy(() => import("@/pages/Partage"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const Members = lazy(() => import("@/pages/Members"));
 const Journal = lazy(() => import("@/pages/Journal"));
@@ -39,10 +40,14 @@ import PortalListener from "@/components/atelier/PortalListener";
 const Atelier = lazy(() => import("@/pages/Atelier"));
 const SharedDoc = lazy(() => import("@/pages/SharedDoc"));
 const Shelf = lazy(() => import("@/pages/Shelf"));
+const Univers = lazy(() => import("@/pages/Univers"));
 const SharePage = lazy(() => import("@/pages/SharePage"));
 import CyberOverlay from "@/components/CyberOverlay";
 import CosmicBackground from "@/components/CosmicBackground";
 import ThemeRuntime from "@/components/ThemeRuntime";
+import LaunchHost from "@/components/nexus/LaunchHost";
+import JaquetteHost from "@/components/nexus/JaquetteHost";
+import ObjectViewer from "@/components/nexus/ObjectViewer";
 import { ThemeLoader } from "@/components/ThemeStudio";
 import SiteMeta from "@/components/SiteMeta";
 import GuidedTour from "@/components/GuidedTour";
@@ -133,7 +138,17 @@ function VisitHit() {
   return null;
 }
 
+// Version de test (Réglages › Mises à jour) : un bandeau pour savoir où l'on est et en sortir
+function LiveBanner() {
+  const L = typeof window !== "undefined" ? window.__NX_LIVE : null;
+  if (!L || !L.test) return null;
+  const quit = () => { try { sessionStorage.removeItem("nx_test"); } catch (_) { /* rien */ } window.location.reload(); };
+  return <div className="nx-testbar" role="status" data-testid="live-test-bar"><span>Version de test · {L.version}</span><button onClick={quit}>Quitter le test</button></div>;
+}
+
 function App() {
+  // le lanceur attend ce signal : sans lui, une version GitHub est jugée cassée et la station revient au socle
+  useEffect(() => { window.__NX_BOOTED = true; }, []);
   return (
     <div className="App">
       <AuthProvider>
@@ -142,6 +157,9 @@ function App() {
         <BrowserRouter>
           <CosmicBackground />
           <ThemeRuntime />
+          <LaunchHost />
+          <JaquetteHost />
+          <ObjectViewer />
           <ThemeLoader />
           <SiteMeta />
           <VisitHit />
@@ -150,6 +168,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/oeuvre/:id" element={<Detail />} />
+            <Route path="/univers/:nom" element={<Univers />} />
             <Route path="/parametres" element={<Settings />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/membres" element={<Members />} />
@@ -167,6 +186,7 @@ function App() {
             <Route path="/d/:token" element={<SharedDoc />} />
             <Route path="/revenus" element={<Revenue />} />
             <Route path="/salon" element={<Chat />} />
+            <Route path="/partage" element={<Partage />} />
             <Route path="/payment/success" element={<PaymentResult mode="success" />} />
             <Route path="/payment/cancel" element={<PaymentResult mode="cancel" />} />
             <Route path="/legal/:doc" element={<Legal />} />
@@ -185,6 +205,7 @@ function App() {
           <PortalListener />
           <PushClickNav />
           <GuidedTour />
+          <LiveBanner />
         </BrowserRouter>
         <CyberOverlay />
         <IntroGate />

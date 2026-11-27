@@ -194,7 +194,7 @@ export default function CosmicBackground() {
   const { theme, reduceMotion } = useApp();
   const ts = useThemeState();
   const bgType = themeDef(theme, ts)?.bg?.type;
-  const covered = !!bgType && bgType !== "scene" && !!(bgType === "gradient" || themeDef(theme, ts)?.bg?.url);
+  const covered = bgType === "compose" || (!!bgType && bgType !== "scene" && !!(bgType === "gradient" || themeDef(theme, ts)?.bg?.url));
 
   const F = useMemo(() => {
     const stars = (n, min, max) => Array.from({ length: n }, () => ({ x: rnd(0, 100), y: rnd(0, 100), s: rnd(min, max), d: rnd(0, 8) }));
@@ -235,7 +235,7 @@ export default function CosmicBackground() {
   }, []);
 
   useEffect(() => {
-    if (theme !== "singularite") { if (pupil.current) pupil.current.style.transform = ""; return; }
+    if (document.documentElement.dataset.scene !== "singularite") { if (pupil.current) pupil.current.style.transform = ""; return; }
     let ex = 0, ey = 0, raf = 0, lx = 0, ly = 0;
     const meas = () => { const e = eye.current; if (!e) return; const r = e.getBoundingClientRect(); ex = r.left + r.width / 2; ey = r.top + r.height / 2; };
     const apply = () => { raf = 0; const dx = lx - ex, dy = ly - ey, d = Math.hypot(dx, dy) || 1, m = Math.min(18, d); if (pupil.current) pupil.current.style.transform = `translate(${(dx / d * m).toFixed(1)}px,${(dy / d * m).toFixed(1)}px)`; };

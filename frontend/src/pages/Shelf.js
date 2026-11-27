@@ -25,7 +25,7 @@ export default function Shelf() {
   const by = (st) => rows.filter((x) => x.s.st === st).sort((a, b) => b.s.at - a.s.at);
   const done = by("done"), reading = by("reading"), seen = by("seen");
   const book = (c, cat) => ({ id: c.id, title: c.title, sub: c.tagline || "", format: fmtOfCreation(c, cat?.label), emblem: c.kanji || cat?.kanji || "核", cote: "SN", roomLabel: cat?.label || "Station", house: "STATION NEXUS" });
-  const open = (c) => { sfx?.("select"); nav(`/oeuvre/${c.id}`); };
+  const open = (c) => { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id: c.id } })); };
   const Obj = ({ x, children }) => (
     <div className="sh-obj">
       <button className="sh-face" onClick={() => open(x.c)} title={`Ouvrir ${x.c.title}`}><Face b={book(x.c, x.cat)} cover={x.c.has_poster ? posterUrl(x.c.id, x.c.updated_at, 480) : null} /></button>

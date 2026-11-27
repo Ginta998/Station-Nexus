@@ -98,6 +98,13 @@ let webpackConfig = {
         ],
       };
 
+      // Lanceur (public/index.html) : en production, la page choisit elle-même quels fichiers charger,
+      // ceux de cette version (le socle) ou une version plus récente publiée sur GitHub.
+      if (process.env.NODE_ENV === "production" && process.env.NX_PREVIEW !== "1") {
+        const hwp = webpackConfig.plugins.find((p) => p && p.constructor && p.constructor.name === "HtmlWebpackPlugin");
+        if (hwp) { if (hwp.userOptions) hwp.userOptions.inject = false; if (hwp.options) hwp.options.inject = false; }
+      }
+
       // Add health check plugin to webpack if enabled
       if (config.enableHealthCheck && healthPluginInstance) {
         webpackConfig.plugins.push(healthPluginInstance);

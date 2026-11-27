@@ -5,7 +5,7 @@ import uuid
 import statistics
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
@@ -79,8 +79,10 @@ class ConfigIn(BaseModel):
     radio: Optional[List[Dict[str, Any]]] = None
     alexandrie: Optional[Dict[str, Any]] = None
     backlog: Optional[List[Dict[str, Any]]] = None
+    yt_sync: Optional[Dict[str, Any]] = None
     portal_ambience: Optional[str] = None
     portal_key: Optional[str] = None
+    meteo: Optional[Dict[str, Any]] = None
 
 
 def _esc(t: str) -> str:
@@ -185,14 +187,21 @@ def build_public_files_router(db, storage_get) -> APIRouter:
     r = APIRouter(prefix="/atelier-files")
 
     @r.get("/{fid}")
-    async def get_file(fid: str):
+    async def get_file(fid: str, request: Request):
         f = await db.atelier_files.find_one({"id": fid}, {"_id": 0})
         if not f:
             raise HTTPException(404, "Fichier introuvable")
         data, ct = await storage_get(f["path"])
         disp = "inline" if (f.get("content_type") or "").split("/")[0] in ("image", "audio", "video") or f.get("content_type") == "application/pdf" else "attachment"
         name = re.sub(r'[^\w.\- ]', "_", f.get("name") or "fichier")
-        return Response(content=data, media_type=f.get("content_type") or ct, headers={"Cache-Control": "private, max-age=31536000, immutable", "Content-Disposition": f'{disp}; filename="{name}"'})
+        hdr = {"Cache-Control": "private, max-age=31536000, immutable", "Content-Disposition": f'{disp}; filename="{name}"'}
+        rh = request.headers.get("range")
+        m = re.match(r"bytes=(\d+)-(\d*)", rh or "")
+        if m and int(m.group(1)) < len(data):  # avancer dans une musique ou une vidéo sans repartir du début
+            start = int(m.group(1)); end = min(int(m.group(2)) if m.group(2) else len(data) - 1, len(data) - 1)
+            return Response(content=data[start:end + 1], status_code=206, media_type=f.get("content_type") or ct,
+                            headers={**hdr, "Accept-Ranges": "bytes", "Content-Range": f"bytes {start}-{end}/{len(data)}", "Content-Length": str(end - start + 1)})
+        return Response(content=data, media_type=f.get("content_type") or ct, headers={**hdr, "Accept-Ranges": "bytes"})
 
     return r
 
@@ -277,6 +286,46 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
     async def del_comment(iid: str, cid: str):
         await db.atelier_items.update_one({"id": iid}, {"$pull": {"share_comments": {"id": cid}}})
         return {"ok": True}
+
+    # Un site peut-il s'afficher dans la Station ? (en-têtes X-Frame-Options / CSP frame-ancestors)
+    # Sinon l'interface montre une belle carte (titre, image du site) avec « Ouvrir à côté » au lieu d'un écran blanc.
+    @r.get("/embed-check")
+    async def embed_check(url: str):
+        import httpx
+        import ipaddress
+        import socket
+        from urllib.parse import urlparse
+        u = urlparse(url.strip())
+        if u.scheme not in ("http", "https") or not u.hostname:
+            raise HTTPException(400, "Lien invalide")
+        try:
+            for info in socket.getaddrinfo(u.hostname, None):
+                ip = ipaddress.ip_address(info[4][0])
+                if ip.is_private or ip.is_loopback or ip.is_link_local:
+                    raise HTTPException(400, "Lien invalide")
+        except HTTPException:
+            raise
+        except Exception:
+            return {"embeddable": None, "title": "", "image": "", "site": u.hostname}
+        try:
+            async with httpx.AsyncClient(timeout=7, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0 (StationNexus)", "Accept-Language": "fr-FR,fr;q=0.9"}) as c:
+                res = await c.get(url)
+            xfo = res.headers.get("x-frame-options", "").lower()
+            csp = res.headers.get("content-security-policy", "").lower()
+            blocked = "deny" in xfo or "sameorigin" in xfo
+            fa = re.search(r"frame-ancestors([^;]*)", csp)
+            if fa:
+                srcs = fa.group(1).split()
+                blocked = blocked or not any(x == "*" or x.startswith("https:") and x in ("https:", "https://*") for x in srcs)
+            html = res.text[:300000] if "html" in res.headers.get("content-type", "") else ""
+            def meta(p):
+                m = re.search(r'<meta[^>]+(?:property|name)=["\']' + p + r'["\'][^>]*content=["\']([^"\']+)', html, re.I) or re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]*(?:property|name)=["\']' + p + r'["\']', html, re.I)
+                return m.group(1).strip() if m else ""
+            t = meta("og:title") or (re.search(r"<title[^>]*>(.*?)</title>", html, re.S | re.I) or [None, ""])[1]
+            return {"embeddable": not blocked and res.status_code < 400, "title": re.sub(r"\s+", " ", t or "").strip()[:140],
+                    "image": meta("og:image")[:600], "desc": meta("og:description")[:240], "site": u.hostname}
+        except Exception:
+            return {"embeddable": None, "title": "", "image": "", "site": u.hostname}
 
     @r.get("/yt-search")
     async def yt_search(q: str):
@@ -465,6 +514,100 @@ def build_atelier_router(db, require_admin, storage_put, app_name) -> APIRouter:
             html = (await c.get("https://www.youtube.com/playlist", params={"list": list})).text
         found = re.findall(r'"playlistVideoRenderer":\{"videoId":"([\w-]{11})"|"contentId":"([\w-]{11})","contentType":"LOCKUP_CONTENT_TYPE_VIDEO"', html)
         return [*dict.fromkeys(a or b for a, b in found)]
+
+    # ---- Salon : une playlist YouTube synchronisée (« Station ») ----
+    # L'admin enregistre ses vidéos dans une playlist YouTube (publique ou non répertoriée) ; la Station la relit
+    # et ajoute toute seule chaque nouvelle vidéo au Salon (titre et chaîne compris), dans une playlist du même nom.
+    # Sans clé ni connexion : la page de la playlist (jusqu'à ~100 vidéos) et son flux (les 15 dernières).
+    # « À regarder plus tard » est privée par YouTube : aucune application ne peut la lire.
+    async def _yt_playlist_items(lst: str):
+        import httpx
+        import json as _json
+        items, name = {}, ""
+        async with httpx.AsyncClient(timeout=12, headers={"Accept-Language": "fr-FR,fr;q=0.9", "User-Agent": "Mozilla/5.0"}, follow_redirects=True) as c:
+            try:
+                html = (await c.get("https://www.youtube.com/playlist", params={"list": lst})).text
+                m = re.search(r'<meta property="og:title" content="([^"]*)"', html)
+                name = (m.group(1) if m else "").replace("&#39;", "'").replace("&amp;", "&")
+                d = re.search(r"var ytInitialData = (\{.*?\});</script>", html)
+                if d:
+                    def walk(o):
+                        if isinstance(o, dict):
+                            v = o.get("playlistVideoRenderer")
+                            if v and v.get("videoId"):
+                                items.setdefault(v["videoId"], {"title": "".join(x.get("text", "") for x in v.get("title", {}).get("runs", [])),
+                                                                "author": "".join(x.get("text", "") for x in v.get("shortBylineText", {}).get("runs", []))})
+                            for x in o.values():
+                                walk(x)
+                        elif isinstance(o, list):
+                            for x in o:
+                                walk(x)
+                    walk(_json.loads(d.group(1)))
+            except Exception:
+                pass
+            try:
+                xml = (await c.get("https://www.youtube.com/feeds/videos.xml", params={"playlist_id": lst})).text
+                if not name:
+                    m = re.search(r"<title>([^<]*)</title>", xml); name = m.group(1) if m else ""
+                for e in re.findall(r"<entry>(.*?)</entry>", xml, re.S):
+                    vid = re.search(r"<yt:videoId>([\w-]{11})</yt:videoId>", e)
+                    if vid:
+                        t = re.search(r"<title>([^<]*)</title>", e); a = re.search(r"<name>([^<]*)</name>", e)
+                        items.setdefault(vid.group(1), {"title": (t.group(1) if t else "").replace("&amp;", "&").replace("&#39;", "'").replace("&quot;", '"'), "author": a.group(1) if a else ""})
+            except Exception:
+                pass
+        return name, items
+
+    @r.post("/yt-sync")
+    async def yt_sync(body: Dict[str, Any]):
+        cfg = await get_config()
+        sync = dict(cfg.get("yt_sync") or {})
+        raw = str(body.get("list") or "").strip()
+        if raw:
+            m = re.search(r"[?&]list=([\w-]{10,64})", raw)
+            lst = m.group(1) if m else raw
+            if not re.fullmatch(r"[\w-]{10,64}", lst):
+                raise HTTPException(400, "Colle le lien de la playlist (il contient « list= »)")
+            if lst in ("WL", "LL"):
+                raise HTTPException(400, "« À regarder plus tard » et « J'aime » sont privées : YouTube ne les montre à aucune application. Crée une playlist « Station » (non répertoriée).")
+            sync = {"list": lst} if body.get("keep", True) else {"list": lst, "once": True}
+        if not sync.get("list"):
+            raise HTTPException(400, "Aucune playlist à synchroniser")
+        name, items = await _yt_playlist_items(sync["list"])
+        if not items:
+            raise HTTPException(400, "Playlist vide ou privée : mets-la en « non répertoriée » ou « publique »")
+        links = await db.atelier_links.find({}, {"_id": 0, "id": 1, "url": 1}).to_list(5000)
+        have = {}
+        for l in links:
+            m = re.search(r"(?:v=|youtu\.be/|shorts/|embed/)([\w-]{11})", l.get("url") or "")
+            if m:
+                have[m.group(1)] = l["id"]
+        added, ids = 0, []
+        for vid, it in items.items():
+            if vid in have:
+                ids.append(have[vid]); continue
+            title = (it.get("title") or "").strip() or "Vidéo YouTube"
+            doc = {"id": str(uuid.uuid4()), "title": title[:200], "url": f"https://www.youtube.com/watch?v={vid}", "kind": "watch", "color": "", "cover": "", "universe_id": None,
+                   "order": 0, "author": it.get("author", ""), "from_yt": sync["list"], "created_at": now_iso()}
+            await db.atelier_links.insert_one(dict(doc)); ids.append(doc["id"]); added += 1
+        pls = list(cfg.get("playlists") or [])
+        pid = "pl-yt-" + sync["list"]
+        pname = name or sync.get("name") or "Playlist YouTube"
+        cur = next((p for p in pls if p.get("id") == pid), None)
+        if cur:
+            cur["ids"] = [*cur.get("ids", []), *[i for i in ids if i not in cur.get("ids", [])]]; cur["name"] = cur.get("name") or pname
+        else:
+            pls.append({"id": pid, "name": pname, "ids": ids, "yt": sync["list"]})
+        patch = {"playlists": pls}
+        if not sync.get("once"):
+            patch["yt_sync"] = {"list": sync["list"], "name": pname, "last": now_iso(), "count": len(items)}
+        await db.atelier_config.update_one({"_id": "main"}, {"$set": {**cfg, **patch}}, upsert=True)
+        return {"added": added, "total": len(items), "name": pname, "playlist": pid}
+
+    @r.delete("/yt-sync")
+    async def yt_unsync():
+        await db.atelier_config.update_one({"_id": "main"}, {"$unset": {"yt_sync": ""}})
+        return {"ok": True}
 
     @r.put("/config")
     async def set_config(body: ConfigIn):

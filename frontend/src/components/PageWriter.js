@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "@/components/pagewriter.css";
 import { createPortal } from "react-dom";
-import { IoArrowBack, IoSaveOutline, IoEyeOutline, IoCreateOutline } from "react-icons/io5";
+import { IoArrowBack, IoSaveOutline, IoEyeOutline, IoCreateOutline, IoBookOutline } from "react-icons/io5";
 import { useApp } from "@/context/AppContext";
 import RichTextEditor from "@/components/RichTextEditor";
 
@@ -15,7 +15,7 @@ export const WIDTHS = { narrow: "max-w-xl", normal: "max-w-2xl", wide: "max-w-4x
 
 
 // Page d'écriture plein écran : on rédige directement dans la mise en page du lecteur
-export default function PageWriter({ kicker, title, onTitle, html, onHtml, image, creationId, onClose, onSave, saving, saveLabel = "Enregistrer", note }) {
+export default function PageWriter({ kicker, title, onTitle, html, onHtml, image, creationId, onClose, onSave, saving, saveLabel = "Enregistrer", note, onReader }) {
   const { readerFont, readerWidth, sfx } = useApp();
   const [preview, setPreview] = useState(false);
   const words = String(html || "").replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
@@ -33,6 +33,8 @@ export default function PageWriter({ kicker, title, onTitle, html, onHtml, image
           <button role="radio" aria-checked={!preview} className={!preview ? "on" : ""} data-testid="page-writer-mode-write" onClick={() => setPreview(false)}><IoCreateOutline size={14} /> <span>Écrire</span></button>
           <button role="radio" aria-checked={preview} className={preview ? "on" : ""} data-testid="page-writer-mode-preview" onClick={() => setPreview(true)}><IoEyeOutline size={14} /> <span>Aperçu</span></button>
         </div>
+        {/* Aperçu fidèle : le vrai lecteur, au format que verra le public (livre qui tourne ses pages, VHS, vinyle) */}
+        {onReader && <button className="pw-b" data-testid="page-writer-reader" onClick={() => { sfx?.("select"); onReader(); }}><IoBookOutline size={15} /> <span>Comme le lecteur</span></button>}
         <button className="pw-b go" data-testid="page-writer-save" onClick={onSave} disabled={saving}><IoSaveOutline size={15} /> <span>{saving ? "Enregistrement…" : saveLabel}</span></button>
       </header>
 

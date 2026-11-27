@@ -1,0 +1,1411 @@
+[
+ {
+  "id": "ete-pic",
+  "label": "Été · le pic",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#6cc2d9"
+ },
+ {
+  "id": "ete-foret",
+  "label": "Été · le sous-bois",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#204334"
+ },
+ {
+  "id": "ete-plaine",
+  "label": "Été · la plaine",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#bad0f3"
+ },
+ {
+  "id": "ete-nuages",
+  "label": "Été · grands nuages",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#376e95"
+ },
+ {
+  "id": "ete-ciel",
+  "label": "Été · ciel ouvert",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   }
+  ],
+  "top": "#95ced8"
+ },
+ {
+  "id": "ete-orage",
+  "label": "Été · avant l'orage",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#a17a63"
+ },
+ {
+  "id": "ete-sapins",
+  "label": "Été · les sapins",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#4a8ddb"
+ },
+ {
+  "id": "nuages-rose",
+  "label": "Nuages · rose",
+  "fam": "nuages",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#627dae"
+ },
+ {
+  "id": "nuages-turquoise",
+  "label": "Nuages · nuit turquoise",
+  "fam": "nuages",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#282650"
+ },
+ {
+  "id": "nuages-lune",
+  "label": "Nuages · sous la lune",
+  "fam": "nuages",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#49495e"
+ },
+ {
+  "id": "nuages-blanc",
+  "label": "Nuages · blanc",
+  "fam": "nuages",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#3e74a5"
+ },
+ {
+  "id": "ocean-calme",
+  "label": "Océan · calme",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 288,
+  "h": 162,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#558dc0"
+ },
+ {
+  "id": "ocean-couchant",
+  "label": "Océan · couchant",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 288,
+  "h": 162,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#8aa7b2"
+ },
+ {
+  "id": "ocean-plage",
+  "label": "Océan · la plage",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 288,
+  "h": 162,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#a0c9ea"
+ },
+ {
+  "id": "ocean-baie",
+  "label": "Océan · la baie",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 288,
+  "h": 162,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#496ebd"
+ },
+ {
+  "id": "ocean-rose",
+  "label": "Océan · soir rose",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 288,
+  "h": 162,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#406aa4"
+ },
+ {
+  "id": "ocean-nuit",
+  "label": "Océan · pleine lune",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 384,
+  "h": 216,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#102452"
+ },
+ {
+  "id": "ocean-gris",
+  "label": "Océan · temps gris",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 288,
+  "h": 162,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#abb9cc"
+ },
+ {
+  "id": "hiver-lac",
+  "label": "Hiver · lac gelé",
+  "fam": "hiver",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#a2d6fd"
+ },
+ {
+  "id": "hiver-sapins",
+  "label": "Hiver · la montagne",
+  "fam": "hiver",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#65839f"
+ },
+ {
+  "id": "hiver-glace",
+  "label": "Hiver · la banquise",
+  "fam": "hiver",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#88ace8"
+ },
+ {
+  "id": "hiver-nuit",
+  "label": "Hiver · nuit",
+  "fam": "hiver",
+  "pixel": true,
+  "w": 475,
+  "h": 150,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#061027"
+ },
+ {
+  "id": "ville-nuit",
+  "label": "Ville · la nuit",
+  "fam": "ville",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#1f52b7"
+ },
+ {
+  "id": "ville-rose",
+  "label": "Ville · rose",
+  "fam": "ville",
+  "pixel": true,
+  "w": 384,
+  "h": 216,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#d896b6"
+ },
+ {
+  "id": "ville-bleue",
+  "label": "Ville · bleue",
+  "fam": "ville",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#a0dae8"
+ },
+ {
+  "id": "ville-ambre",
+  "label": "Ville · ambre",
+  "fam": "ville",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#f8bda9"
+ },
+ {
+  "id": "ville-violette",
+  "label": "Ville · néon",
+  "fam": "ville",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#ffb9ff"
+ },
+ {
+  "id": "ville-crepuscule",
+  "label": "Ville · crépuscule",
+  "fam": "ville",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#ffffff"
+ },
+ {
+  "id": "ete-maison",
+  "label": "Été · la ferme",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#b3b9c1"
+ },
+ {
+  "id": "ocean-falaises",
+  "label": "Océan · les falaises",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 384,
+  "h": 216,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#c6c8cc"
+ },
+ {
+  "id": "ville-ocre",
+  "label": "Ville · ocre",
+  "fam": "ville",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#0098db"
+ },
+ {
+  "id": "ville-minuit",
+  "label": "Ville · minuit",
+  "fam": "ville",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#5499b7"
+ },
+ {
+  "id": "hiver-plaine",
+  "label": "Hiver · la plaine",
+  "fam": "hiver",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#d3d9e2"
+ },
+ {
+  "id": "hiver-banquise",
+  "label": "Hiver · les icebergs",
+  "fam": "hiver",
+  "pixel": true,
+  "w": 1520,
+  "h": 240,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#1d6292"
+ },
+ {
+  "id": "foret-peinte",
+  "label": "Forêt peinte",
+  "fam": "peint",
+  "pixel": true,
+  "w": 760,
+  "h": 480,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#498eb9"
+ },
+ {
+  "id": "desert",
+  "label": "Désert",
+  "fam": "peint",
+  "pixel": true,
+  "w": 475,
+  "h": 300,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#3d75d5"
+ },
+ {
+  "id": "sommet",
+  "label": "Le sommet",
+  "fam": "peint",
+  "pixel": true,
+  "w": 760,
+  "h": 480,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#3a72d4"
+ },
+ {
+  "id": "ete-pic-nuit",
+  "label": "Été · le pic, la nuit",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#375f9d"
+ },
+ {
+  "id": "ete-plaine-or",
+  "label": "Été · heure dorée",
+  "fam": "ete",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#e0cfa8"
+ },
+ {
+  "id": "ocean-baie-aube",
+  "label": "Océan · la baie à l'aube",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 288,
+  "h": 162,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#6f66ce"
+ },
+ {
+  "id": "ocean-plage-nuit",
+  "label": "Océan · la plage, la nuit",
+  "fam": "ocean",
+  "pixel": true,
+  "w": 288,
+  "h": 162,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": true,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#4864ab"
+ },
+ {
+  "id": "hiver-sapins-aube",
+  "label": "Hiver · la montagne à l'aube",
+  "fam": "hiver",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": true
+   }
+  ],
+  "top": "#8d79b4"
+ },
+ {
+  "id": "nuages-blanc-or",
+  "label": "Nuages · or",
+  "fam": "nuages",
+  "pixel": true,
+  "w": 576,
+  "h": 324,
+  "layers": [
+   {
+    "drift": false,
+    "opaque": true
+   },
+   {
+    "drift": false,
+    "opaque": false
+   },
+   {
+    "drift": false,
+    "opaque": false
+   }
+  ],
+  "top": "#5a7770"
+ }
+]

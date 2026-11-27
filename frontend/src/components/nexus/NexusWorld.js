@@ -1,3 +1,6 @@
+import CollectorVitrine from "@/components/nexus/CollectorVitrine";
+import { relOf, legacyRel } from "@/lib/jaquette";
+import { creditsOf, CreditsRoll } from "@/components/nexus/Credits";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -44,7 +47,7 @@ const readView = () => { try { return localStorage.getItem(VIEW_KEY) === "list" 
 
 export default function NexusWorld(p) {
   const { item, ws, catLabel, cover, bg, making = [], trailer, launchLabel, progress, onLaunch, locked, unitLocked, onChapter, onEpisode,
-    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onEntry, sfx = () => {}, intentionUrl, toComments = 0, onEditUnit, onDeleteUnit, wt = null, onAtelier } = p;
+    current, unlock, comments, commentsCount = 0, neighbors = [], coverOf, onNeighbor, fav, onFav, onAmbient, ambientOn, onAmbientSetup, isAdmin, onEdit, onExit, onHome, onTrailer, onEntry, sfx = () => {}, intentionUrl, toComments = 0, onEditUnit, onDeleteUnit, wt = null, onAtelier } = p;
 
   const wide = useWide();
   const [view, setViewS] = useState(readView);
@@ -76,12 +79,14 @@ export default function NexusWorld(p) {
     setStack(next);
   };
   useEffect(() => { if (!leaving) return; const t = setTimeout(() => setLeaving(null), 520); return () => clearTimeout(t); }, [leaving]);
-  const push = (s) => { sfx("select"); change([...stack, { sel: 0, ...s, n: seq.current }], "f"); };
+  // La bande-annonce passe par le lecteur de la Station (et coupe la musique d'ambiance), pas par un lecteur dans le monde
+  const push = (s) => { if (s.k === "trailer" && onTrailer) { sfx("select"); onTrailer(); return; } sfx("select"); change([...stack, { sel: 0, ...s, n: seq.current }], "f"); };
   // ← et Échap remontent d'un cran ; à l'accueil du monde, ils ne font rien : on sort seulement par « Quitter l'univers »
   const pop = () => { if (stack.length === 1) return; sfx("back"); change(stack.slice(0, -1), "b"); };
   const loc = useLocation(); const navR = useNavigate();
   const exiting = useRef(false);
-  const exitWorld = () => { exiting.current = true; sfx("back"); onExit(loc.state?.nxw ? 2 : 1); };
+  // Quitter l'univers : retour au menu principal de la Station (et non à la page précédente)
+  const exitWorld = () => { exiting.current = true; sfx("back"); if (onHome) onHome(); else onExit(loc.state?.nxw ? 2 : 1); };
   // Le bouton « retour » du téléphone ou du navigateur : il remonte d'un cran dans le monde (ou ferme la lecture ouverte), sans jamais quitter
   const armed = useRef(false); const backRef = useRef(null);
   backRef.current = () => {
@@ -98,7 +103,7 @@ export default function NexusWorld(p) {
     navR(loc.pathname + (loc.search || ""), { state: { nxw: 1 } });
   }, [loc.key]); // eslint-disable-line react-hooks/exhaustive-deps
   const goto = (i) => { if (i >= stack.length - 1) return; sfx("back"); change(stack.slice(0, i + 1), "b"); };
-  const replaceAt1 = (s) => { if (stack[1]?.k === s.k && stack.length === 2) return; sfx("select"); change([stack[0], { sel: 0, ...s, n: seq.current }], "f"); };
+  const replaceAt1 = (s) => { if (s.k === "trailer" && onTrailer) { sfx("select"); onTrailer(); return; } if (stack[1]?.k === s.k && stack.length === 2) return; sfx("select"); change([stack[0], { sel: 0, ...s, n: seq.current }], "f"); };
   const setSel = (i) => setStack((st) => (st[st.length - 1].sel === i ? st : [...st.slice(0, -1), { ...st[st.length - 1], sel: i }]));
 
   // Le voile du lancement (posé par l'accueil Nexus) s'efface quand le monde est là : pas d'aperçu de la station entre les deux
@@ -117,6 +122,8 @@ export default function NexusWorld(p) {
     making.length > 0 && { k: "making", label: "Making of", desc: `${plural(making.length, "entrée", "entrées")} du journal de bord : les coulisses, les intentions, la fabrication.`, img: making.find((e) => e.cover)?.cover ? mediaUrl(making.find((e) => e.cover).cover) : null },
     item.embeds?.length > 0 && { k: "embeds", label: "Réseaux", desc: `${plural(item.embeds.length, "lien", "liens")} vers l'œuvre ailleurs.` },
     neighbors.length > 0 && { k: "neighbors", label: "Autres mondes", desc: "Passer directement dans l'univers d'une autre œuvre.", img: coverOf(neighbors[0]) },
+    creditsOf(item).length > 0 && { k: "credits", label: "Générique", desc: creditsOf(item).slice(0, 3).map((c) => `${c.role ? c.role + " : " : ""}${c.name}`).join(" · "), img: cover || bg },
+    relOf(legacyRel(item.jaquette)) && { k: "collector", label: "Édition collector", desc: "L'objet relié : sa couverture, sa tranche à médaillons, son étui. Fais-le tourner.", img: cover || bg },
     { k: "support", label: "Soutenir", desc: "Faire vivre la station : les paliers, ce qu'ils donnent, et qui soutient déjà." },
   ].filter(Boolean), [item, making, trailer, neighbors, bg, cover]); // eslint-disable-line
 
@@ -135,10 +142,12 @@ export default function NexusWorld(p) {
   const homeItems = [
     current != null && progress && { id: "resume", label: "Reprendre", sub: progress.label, desc: `Reprendre là où tu t'étais arrêté : ${progress.label.toLowerCase()}.`, go: () => openUnit(current, { resume: true }), main: true, win: units[current]?.image || cover },
     { id: "launch", label: isUnits ? (current != null && progress ? unitsLabel : startLabel) : startLabel, sub: isUnits ? plural(units.length, unitWord, unitWord + "s") : "", desc: isUnits ? `Choisir parmi ${plural(units.length, unitWord, unitWord + "s")}.` : (item.synopsis || ""), go: start, main: !(current != null && progress), win: cover || bg },
+    // Commander l'œuvre (livre papier, édition…) : le lien d'achat de la fiche
+    item.buy_url && { id: "buy", label: "Commander", sub: "", desc: "Commander l'œuvre chez l'éditeur ou le vendeur : le lien s'ouvre dans un nouvel onglet.", go: () => { sfx("select"); window.open(item.buy_url, "_blank", "noopener,noreferrer"); } },
     locked && !item.coming_soon && { id: "unlock", label: "Débloquer", sub: unlock?.price, desc: "Accès définitif à l'œuvre, ou l'abonnement pour tout le catalogue.", go: () => push({ k: "unlock" }) },
     ...sections.map((s) => ({ id: s.k, label: s.label, desc: s.desc, win: s.img, go: () => push({ k: s.k }) })),
     { id: "share", label: "Partager", desc: "Une belle carte pour une story, un post ou un message, et le lien qui montre l'affiche.", go: () => { sfx("select"); setCard({}); } },
-    { id: "quit", label: "Quitter l'univers", desc: "Revenir là où tu étais avant d'entrer dans l'œuvre.", go: exitWorld },
+    { id: "quit", label: "Quitter l'univers", desc: "Revenir au menu principal de la Station.", go: exitWorld },
   ].filter(Boolean);
 
   // ---------- chaque écran : son titre (fil d'Ariane), ses éléments (clavier) ----------
@@ -157,7 +166,7 @@ export default function NexusWorld(p) {
   };
   const titleOf = (s) => ({
     home: item.title, units: unitsLabel, gallery: "Moodboard", making: "Making of", entry: s.e?.title || "Entrée", intention: item.intention_title || "Intentions",
-    embeds: "Réseaux", comments: "Commentaires", support: "Soutenir la station", neighbors: "Autres mondes", trailer: "Bande-annonce", unlock: "Débloquer", image: `Image ${(s.i || 0) + 1} / ${s.list?.length || 1}`,
+    embeds: "Réseaux", comments: "Commentaires", support: "Soutenir la station", collector: "Édition collector", credits: "Générique", neighbors: "Autres mondes", trailer: "Bande-annonce", unlock: "Débloquer", image: `Image ${(s.i || 0) + 1} / ${s.list?.length || 1}`,
   })[s.k];
 
   const items = itemsOf(top);
@@ -469,7 +478,7 @@ export default function NexusWorld(p) {
           <button role="radio" aria-checked={view === "list"} className={view === "list" ? "on" : ""} onClick={() => setView("list")} data-testid="nw-view-list" title="Liste"><IoListOutline size={16} /><span>Liste</span></button>
         </div>
       </div>
-      <div className={view === "grid" ? "nw-ugrid" + (cols ? " fixed c" + cols : "") + (pcols ? " pfixed p" + pcols : "") : "nw-ulist"} style={view === "grid" ? { "--cols": cols || undefined, "--pcols": pcols || undefined } : undefined}>
+      <div className={view === "grid" ? "nw-ugrid" + (cols ? " colsfix c" + cols : "") + (pcols ? " pcolsfix p" + pcols : "") : "nw-ulist"} style={view === "grid" ? { "--cols": cols || undefined, "--pcols": pcols || undefined } : undefined}>
         {c.its.map((it, i) => {
           const n = ws === "yorha" ? roman(i) : String(i + 1).padStart(2, "0"); const img = it.img || cover;
           return (
@@ -571,6 +580,8 @@ export default function NexusWorld(p) {
         </div>
       );
       case "comments": return <div className="nw-read wide nw-scroll" data-testid="nw-comments">{comments}</div>;
+      case "credits": return <div className="nw-read wide nw-scroll"><CreditsRoll it={item} /></div>;
+      case "collector": return <div className="nw-read wide nw-scroll"><CollectorVitrine b={{ id: item.id, title: item.title, sub: item.tagline || "", format: "livre", edition: relOf(legacyRel(item.jaquette)), spine: legacyRel(item.jaquette), emblem: item.kanji || "核", house: (item.univers || "STATION NEXUS").toUpperCase(), cote: "SN", it: item }} cover={cover} onSupport={() => push({ k: "support" })} /></div>;
       case "support": return <WorldSupport item={item} ws={ws} isAdmin={isAdmin} unlock={locked && !item.coming_soon ? unlock : null} onComments={() => goWorldHome("cm")} onShare={() => setCard({})} onFav={onFav} fav={fav} sfx={sfx} />;
       case "unlock": return (
         <div className="nw-unlock" data-testid="nw-unlock">
@@ -580,6 +591,7 @@ export default function NexusWorld(p) {
           <div className="nw-unlock-acts">
             <button className="nw-act" disabled={unlock?.buying} onClick={unlock?.onBuy} data-testid="nw-buy">Acheter · {unlock?.price}</button>
             {unlock?.onSubscribe && <button className="nw-act ghost" disabled={unlock?.buying} onClick={() => push({ k: "support" })}>{unlock.subLabel}</button>}
+            {item.buy_url && <a className="nw-act ghost" href={item.buy_url} target="_blank" rel="noopener noreferrer" data-testid="nw-order">Commander le livre</a>}
           </div>
         </div>
       );
@@ -663,7 +675,7 @@ export default function NexusWorld(p) {
           <button onClick={() => setCard({})} title="Partager l'œuvre (carte Instagram, WhatsApp, message…)" aria-label="Partager" data-testid="nw-card"><IoShareSocialOutline size={16} /></button>
           {isAdmin && onAtelier && <button onClick={onAtelier} title="Ouvrir son œuvre dans l'atelier" aria-label="Ouvrir dans l'atelier" data-testid="detail-atelier" className="nw-at">工</button>}
           <button onClick={() => { sfx("back"); goWorldHome(); }} title="Accueil de l'œuvre" aria-label="Accueil de l'œuvre" data-testid="nw-home"><IoHomeOutline size={17} /></button>
-          <button className="nw-quit" onClick={exitWorld} title="Quitter l'univers (revenir où tu étais)" data-testid="nw-exit"><IoExitOutline size={16} /><span>Quitter l'univers</span></button>
+          <button className="nw-quit" onClick={exitWorld} title="Quitter l'univers (retour au menu principal)" data-testid="nw-exit"><IoExitOutline size={16} /><span>Quitter l'univers</span></button>
         </div>
       </header>
 

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LabHead from "@/components/LabHead";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { IoArrowBack, IoLogoInstagram, IoTrashOutline, IoHome, IoPersonAdd, IoCreateOutline, IoHeart, IoStar, IoDiamond, IoSparkles, IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { toast } from "sonner";
@@ -35,6 +35,9 @@ export default function Members() {
     if (!window.confirm(`Retirer le membre « ${p.name} » ?`)) return;
     await deleteProfile(p.id); toast.success("Membre retiré"); refetch();
   };
+  // Arrivée depuis un soutien (« Voir son profil ») : on descend jusqu'à sa carte et on l'allume
+  const { hash } = useLocation();
+  useEffect(() => { if (!hash || !list.length) return; const t = setTimeout(() => document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "center" }), 250); return () => clearTimeout(t); }, [hash, list.length]);
   const closeProfile = () => { setProfileOpen(false); setTimeout(() => refetch(), 400); };
 
   return (
@@ -69,7 +72,7 @@ export default function Members() {
             const insta = instaUrl(p.instagram);
             const ts = p.tier_name ? tierStyle(p.tier_id) : null;
             return (
-              <div key={p.id} data-testid={`member-${p.id}`} className="relative flex flex-col items-center text-center p-4 border" style={{ ...fs, background: "var(--bg-secondary)" }}>
+              <div key={p.id} id={`m-${p.id}`} data-testid={`member-${p.id}`} className={"relative flex flex-col items-center text-center p-4 border" + (hash === `#m-${p.id}` ? " mb-hl" : "")} style={{ ...fs, background: "var(--bg-secondary)" }}>
                 {isAdmin && (
                   <button onClick={() => del(p)} className="absolute top-2 right-2" style={{ color: "var(--brand)" }} data-testid={`member-del-${p.id}`}><IoTrashOutline size={15} /></button>
                 )}

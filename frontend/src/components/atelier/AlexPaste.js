@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { IoClose, IoPlay, IoCopyOutline, IoFolderOpenOutline } from "react-icons/io5";
+import { IoClose, IoPlay, IoCopyOutline, IoFolderOpenOutline, IoClipboardOutline } from "react-icons/io5";
+import { fileToText } from "@/lib/docxText";
 import { toast } from "sonner";
 import { labConfirm } from "@/components/atelier/LabDialog";
 import { ROOMS, TYPES } from "@/data/alexandrie/meta";
@@ -11,7 +12,15 @@ import { hasLots, LOT_TEMPLATE } from "@/data/alexandrie/lots";
 // Coller un livre : un bloc de texte (ou plusieurs, séparés par =====) devient un volume.
 // À droite, ce qui sera créé : couverture, salle, chapitres, et le thème qu'on peut changer en direct.
 export default function AlexPaste({ initial = "", editing, onSave, onPreview, onClose, renderCover, planLots, onSaveLots }) {
-  const [text, setText] = useState(initial);
+  // Brouillon gardé dans le navigateur : on peut coller un long livre en plusieurs fois, fermer, revenir.
+  const DRAFT = "alex-paste-draft";
+  const [text, setText] = useState(() => { if (initial || editing) return initial; try { return localStorage.getItem(DRAFT) || ""; } catch (_) { return ""; } });
+  const [restored] = useState(() => !initial && !editing && !!text);
+  useEffect(() => { if (initial || editing) return; try { if (text.trim()) localStorage.setItem(DRAFT, text); else localStorage.removeItem(DRAFT); } catch (_) { /* rien */ } }, [text]); // eslint-disable-line react-hooks/exhaustive-deps
+  const alive = useRef(true); useEffect(() => () => { alive.current = false; }, []);
+  // enregistré : le brouillon s'efface ; en cas d'échec (fenêtre toujours ouverte) il est remis
+  const dropDraft = (t) => { try { localStorage.removeItem(DRAFT); } catch (_) { /* rien */ } return () => { if (alive.current && !initial && !editing) { try { localStorage.setItem(DRAFT, t); } catch (_) { /* rien */ } } }; };
+  const append = (t) => setText((x) => (x.trim() ? `${x.replace(/\s+$/, "")}\n\n${t}` : t));
   const [busy, setBusy] = useState(false);
   const blocks = useMemo(() => text.split(SEP).map((t) => t.trim()).filter(Boolean), [text]);
   const parsed = useMemo(() => blocks.map((t, i) => { const p = parsePaste(t); return { t, p, book: pasteToBook(t, { id: `preview:${i}`, preview: true }) }; }), [blocks]);
@@ -31,13 +40,30 @@ export default function AlexPaste({ initial = "", editing, onSave, onPreview, on
     setText(TEMPLATES[k].text);
   };
   // Un fichier texte (un export, un lot préparé) se charge dans la fenêtre
-  const openFile = (e) => { const f = e.target.files?.[0]; e.target.value = ""; if (!f) return; f.text().then((t) => setText((x) => (x.trim() ? `${x.trim()}\n\n=====\n\n${t}` : t)), () => toast.error("Le fichier n'a pas pu être lu")); };
+  // Des fichiers (.txt, .md, .docx) : chacun devient un livre (séparé par =====), dans l'ordre choisi
+  const openFile = async (e) => {
+    const fs = [...(e.target.files || [])]; e.target.value = ""; if (!fs.length) return;
+    let ok = 0;
+    for (const f of fs) {
+      try { const t = (await fileToText(f)).trim(); if (!t) continue;
+        const withTitle = /^\s*titre\s*:/im.test(t) || hasLots(t) ? t : `TITRE : ${f.name.replace(/\.[^.]+$/, "")}\n---\n\n${t}`;
+        setText((x) => (x.trim() ? `${x.trim()}\n\n=====\n\n${withTitle}` : withTitle)); ok++; }
+      catch (er) { toast.error(`« ${f.name} » : ${er?.message || "lecture impossible"}`); }
+    }
+    if (ok) toast.success(ok > 1 ? `${ok} fichiers chargés` : "Fichier chargé");
+  };
+  // Coller à la suite : le presse-papiers s'ajoute à la fin, sans écraser (pratique sur téléphone, morceau par morceau)
+  const pasteMore = async () => {
+    try { const t = await navigator.clipboard.readText(); if (!t.trim()) { toast("Le presse-papiers est vide"); return; } append(t.trim()); toast.success(`${t.trim().split(/\s+/).length} mots ajoutés à la suite`); }
+    catch (_) { toast("Ton navigateur ne laisse pas lire le presse-papiers : appuie longuement à la fin du texte, puis Coller."); }
+  };
+  const clearDraft = async () => { if (!(await labConfirm("Vider la fenêtre ? Le brouillon sera effacé."))) return; setText(""); };
   const copyTpl = async (k) => { try { await navigator.clipboard.writeText(TEMPLATES[k].text); toast.success(`Modèle ${TEMPLATES[k].label} copié`); } catch (_) { toast.error("La copie n'a pas marché"); } };
   const save = async () => {
-    if (lotMode) { if (!plans.length || errors) return; setBusy(true); try { await onSaveLots(plans); } finally { setBusy(false); } return; }
+    if (lotMode) { if (!plans.length || errors) return; const back = dropDraft(text); setBusy(true); try { await onSaveLots(plans); } finally { setBusy(false); back(); } return; }
     if (!blocks.length || errors) return;
-    setBusy(true);
-    try { await onSave(blocks); } finally { setBusy(false); }
+    const back = dropDraft(text); setBusy(true);
+    try { await onSave(blocks); } finally { setBusy(false); back(); }
   };
   const copyLotTpl = async () => { try { await navigator.clipboard.writeText(LOT_TEMPLATE); toast.success("Modèle de lot copié"); } catch (_) { toast.error("La copie n'a pas marché"); } };
   return createPortal(
@@ -48,9 +74,11 @@ export default function AlexPaste({ initial = "", editing, onSave, onPreview, on
           <div className="ax-pd-tpl"><span className="mono">MODÈLES</span>{Object.entries(TEMPLATES).map(([k, v]) => (
             <span key={k} className="ax-pd-tb"><button onClick={() => pickTemplate(k)} data-testid={`alex-tpl-${k}`}>{v.label}</button><button onClick={() => copyTpl(k)} title={`Copier le modèle ${v.label}`} aria-label={`Copier le modèle ${v.label}`}><IoCopyOutline size={12} /></button></span>))}
             {planLots && <span className="ax-pd-tb"><button onClick={() => (text.trim() ? copyLotTpl() : setText(LOT_TEMPLATE))} title="Un lot met à jour un livre existant" data-testid="alex-tpl-lot">Lot</button><button onClick={copyLotTpl} title="Copier le modèle de lot" aria-label="Copier le modèle de lot"><IoCopyOutline size={12} /></button></span>}</div>
-          <label className="ax-pd-file" title="Ouvrir un fichier texte (export, lot de livres)"><IoFolderOpenOutline size={15} /><span>Fichier</span><input type="file" accept=".txt,.md,text/plain" onChange={openFile} data-testid="alex-paste-file" /></label>
+          <button className="ax-pd-file" onClick={pasteMore} title="Ajouter le presse-papiers à la fin du texte" data-testid="alex-paste-more"><IoClipboardOutline size={15} /><span>Coller à la suite</span></button>
+          <label className="ax-pd-file" title="Importer des fichiers : .txt, .md ou Word (.docx), plusieurs à la fois"><IoFolderOpenOutline size={15} /><span>Importer</span><input type="file" multiple accept=".txt,.md,.docx,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={openFile} data-testid="alex-paste-file" /></label>
           <button className="ax-pd-x" onClick={onClose} aria-label="Fermer"><IoClose size={20} /></button>
         </header>
+        {restored && <p className="ax-pd-draft mono" data-testid="alex-paste-draft">BROUILLON REPRIS · {text.trim().split(/\s+/).length} MOTS <button onClick={clearDraft}>Vider</button></p>}
         <div className="ax-pd-body">
           <textarea value={text} onChange={(e) => setText(e.target.value)} spellCheck={false} autoFocus={!initial}
             placeholder={"Colle ici le bloc d'un livre.\n\nPlusieurs livres d'un coup : sépare-les par une ligne =====\n\nDes lots (mises à jour de livres existants) : chaque lot commence par une ligne LOT : titre ou identifiant du livre.\n\nPas de bloc sous la main ? Choisis un modèle en haut."} data-testid="alex-paste-text" />

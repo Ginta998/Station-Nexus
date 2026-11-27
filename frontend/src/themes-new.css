@@ -23,28 +23,28 @@
   --radius-base:2px; --border-width:1px; --shadow-1:0 10px 30px rgba(0,0,0,.45); --scrim:rgba(10,15,11,.62);
   --font-display:"Cormorant Garamond",serif; --font-body:"Work Sans",sans-serif; --display-transform:uppercase; --display-style:normal; --display-spacing:.12em;
 }
-html[data-theme="aincrad"] .s-aincrad,html[data-theme="aincradnight"] .s-aincrad,html[data-theme="frontiere"] .s-frontiere,html[data-theme="terra"] .s-terra{display:block}
-html[data-theme="aincrad"] .comets,html[data-theme="frontiere"] .comets,html[data-theme="terra"] .comets{display:none}
-html[data-theme="aincrad"] .cb-stars,html[data-theme="aincrad"] .cb-nebula,html[data-theme="frontiere"] .cb-stars,html[data-theme="terra"] .cb-stars{opacity:0}
-html[data-theme="aincrad"] .cb-halo{opacity:.12}
-html[data-theme="frontiere"] .cb-nebula,html[data-theme="terra"] .cb-nebula{opacity:.15}
+html[data-scene="aincrad"] .s-aincrad,html[data-scene="aincradnight"] .s-aincrad,html[data-scene="frontiere"] .s-frontiere,html[data-scene="terra"] .s-terra{display:block}
+html[data-scene="aincrad"] .comets,html[data-scene="frontiere"] .comets,html[data-scene="terra"] .comets{display:none}
+html[data-scene="aincrad"] .cb-stars,html[data-scene="aincrad"] .cb-nebula,html[data-scene="frontiere"] .cb-stars,html[data-scene="terra"] .cb-stars{opacity:0}
+html[data-scene="aincrad"] .cb-halo{opacity:.12}
+html[data-scene="frontiere"] .cb-nebula,html[data-scene="terra"] .cb-nebula{opacity:.15}
 
 /* --- Aincrad : ciel, nuages, château flottant, anneaux de menu --- */
 .s-aincrad .sky{position:absolute;inset:0;background:linear-gradient(180deg,#8ec9f5 0%,#c3e3fb 42%,#eef6fd 70%,#f6f0e4 100%)}
-html[data-theme="aincradnight"] .s-aincrad .sky{background:radial-gradient(60% 45% at 72% 22%,rgba(57,168,255,.18),transparent 70%),linear-gradient(180deg,#02050d 0%,#071428 55%,#0c1c33 100%)}
+html[data-scene="aincradnight"] .s-aincrad .sky{background:radial-gradient(60% 45% at 72% 22%,rgba(57,168,255,.18),transparent 70%),linear-gradient(180deg,#02050d 0%,#071428 55%,#0c1c33 100%)}
 .s-aincrad .moon{display:none;position:absolute;top:12%;left:9%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 40% 38%,#fffaf0,#dce8f5 60%,#a9bfd8);box-shadow:0 0 80px 20px rgba(190,220,255,.25)}
-html[data-theme="aincradnight"] .s-aincrad .moon{display:block}
+html[data-scene="aincradnight"] .s-aincrad .moon{display:block}
 .s-aincrad .cloud{position:absolute;height:90px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0));filter:blur(6px);animation:aiCloud linear infinite}
-html[data-theme="aincradnight"] .s-aincrad .cloud{background:radial-gradient(closest-side,rgba(90,130,190,.32),transparent);filter:blur(10px)}
+html[data-scene="aincradnight"] .s-aincrad .cloud{background:radial-gradient(closest-side,rgba(90,130,190,.32),transparent);filter:blur(10px)}
 @keyframes aiCloud{from{transform:translateX(-30vw)}to{transform:translateX(130vw)}}
 @keyframes aiWin{0%,100%{opacity:.5}50%{opacity:1}}
 .s-aincrad .rings{position:absolute;inset:0;pointer-events:none}
 .s-aincrad .rings b{position:absolute;border-radius:50%;border:1.5px solid rgba(255,255,255,.75);box-shadow:0 0 14px rgba(47,155,232,.35),inset 0 0 14px rgba(47,155,232,.25);animation:aiRing ease-in-out infinite}
-html[data-theme="aincradnight"] .s-aincrad .rings b{border-color:rgba(57,168,255,.6);box-shadow:0 0 16px rgba(57,168,255,.5)}
+html[data-scene="aincradnight"] .s-aincrad .rings b{border-color:rgba(57,168,255,.6);box-shadow:0 0 16px rgba(57,168,255,.5)}
 .s-aincrad .rings b::before{content:"";position:absolute;inset:22%;border-radius:50%;border:1px dashed rgba(240,138,28,.6);animation:cbxSpin 18s linear infinite}
 @keyframes aiRing{0%,100%{transform:scale(.92);opacity:.35}50%{transform:scale(1.05);opacity:.85}}
 .s-aincrad .hud{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.55)),repeating-linear-gradient(90deg,rgba(47,155,232,.08) 0 1px,transparent 1px 60px)}
-html[data-theme="aincradnight"] .s-aincrad .hud{background:linear-gradient(180deg,transparent,rgba(5,10,22,.85)),repeating-linear-gradient(90deg,rgba(57,168,255,.08) 0 1px,transparent 1px 60px)}
+html[data-scene="aincradnight"] .s-aincrad .hud{background:linear-gradient(180deg,transparent,rgba(5,10,22,.85)),repeating-linear-gradient(90deg,rgba(57,168,255,.08) 0 1px,transparent 1px 60px)}
 
 /* --- Frontière : crépuscule, crêtes, machine colossale au long cou, braises --- */
 .s-frontiere .sky{position:absolute;inset:0;background:radial-gradient(50% 40% at 30% 62%,rgba(255,170,80,.55),transparent 70%),linear-gradient(180deg,#1a0b10 0%,#5a1a16 34%,#c2471d 58%,#f39a3d 70%,#2a120c 100%)}

@@ -1,7 +1,10 @@
+import { openJaquette } from "@/components/nexus/JaquetteHost";
+import { CreditLine } from "@/components/nexus/Credits";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { playLaunch, getLaunchSound, useLaunchSync } from "@/lib/launchSound";
+import { useLaunchSync } from "@/lib/launchSound";
+import { useJaqDefault, mergeJaq, edOfIt, kindOfCreation } from "@/lib/jaquette";
 import { useNavigate } from "react-router-dom";
-import { IoPlay, IoClose, IoMusicalNotes, IoLinkOutline, IoDocumentTextOutline, IoArrowUndo } from "react-icons/io5";
+import { IoColorPaletteOutline, IoPlay, IoClose, IoMusicalNotes, IoLinkOutline, IoDocumentTextOutline, IoArrowUndo, IoCreateOutline, IoStar, IoStarOutline } from "react-icons/io5";
 import { toast } from "sonner";
 import { posterUrl, bgUrl, updateCreation } from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
@@ -38,24 +41,24 @@ function progressOf(it) {
   return null;
 }
 
-// Expérience Nexus : les créations en objets, avec les trois manières de regarder de l'accueil (rayons, carte, arcade).
+// Expérience Nexus : les créations en objets, avec les trois manières de regarder de l'accueil (rayons, carte, vitrine).
 // La barre d'outils (recherche, thèmes, choix de la vue) est celle de l'accueil, passée telle quelle.
-export default function NexusHome({ all = [], cats = [], settings, query = "", view = "rails", toolbar }) {
+export default function NexusHome({ all = [], cats = [], settings, query = "", view = "rails", toolbar, onEditItem, onFeature, isFeatured, hideQuick = false }) {
   useLaunchSync();
   const nav = useNavigate();
   const { sfx, playAmbient, isAdmin, favorites = [], uiVolume = 0.6, muted } = useApp();
   const qc = useQueryClient();
   const [sel, setSel] = useState(null);       // œuvre choisie : sa notice est ouverte
-  const [launch, setLaunch] = useState(null);
   const [mapCat, setMapCat] = useState("__all__");
   const [arcCat, setArcCat] = useState("__all__");
   const catOf = useMemo(() => Object.fromEntries(cats.map((c) => [c.key, c])), [cats]);
   const sortedCats = useMemo(() => [...cats].sort((a, b) => (a.order || 0) - (b.order || 0)), [cats]);
 
+  const jd = useJaqDefault();
   const books = useMemo(() => [...all].sort((a, b) => (a.order || 0) - (b.order || 0)).map((it, i) => {
     const c = catOf[it.category];
-    return { id: it.id, it, title: it.title || "Sans titre", sub: it.tagline || "", format: fmtOfCreation(it, c?.label), emblem: it.kanji || c?.kanji || "核", cote: `SN-${String(i + 1).padStart(3, "0")}`, roomLabel: c?.label || "Station", house: "STATION NEXUS", up: it.category === "avenir" };
-  }), [all, catOf]);
+    return { id: it.id, it, title: it.title || "Sans titre", sub: it.tagline || "", format: fmtOfCreation(it, c?.label), emblem: it.kanji || c?.kanji || "核", cote: `SN-${String(i + 1).padStart(3, "0")}`, roomLabel: c?.label || "Station", house: "STATION NEXUS", up: it.category === "avenir", kind: kindOfCreation(it, fmtOfCreation(it, c?.label)), spine: mergeJaq(jd, it.jaquette), ...edOfIt(it, jd) };
+  }), [all, catOf, jd]);
   const covers = useMemo(() => Object.fromEntries(all.filter((x) => x.has_poster).map((x) => [x.id, posterUrl(x.id, x.updated_at, 480)])), [all]);
   const shown = useMemo(() => { const s = query.trim().toLowerCase(); return s ? books.filter(({ it }) => `${it.title} ${it.tagline || ""} ${it.synopsis || ""}`.toLowerCase().includes(s)) : books; }, [books, query]);
   const shelves = useMemo(() => sortedCats.map((c) => ({ ...c, list: shown.filter((x) => x.it.category === c.key) })).filter((s) => s.list.length), [sortedCats, shown]);
@@ -74,28 +77,20 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
   const cur = sel && books.find((x) => x.id === sel);
   const arcCur = (cur && arcList.includes(cur) && cur) || arcList[0];
   const pick = (id) => { sfx?.("nav"); setSel(id); };
-  const remember = (id) => { const r = readJ("sx_recent") || []; try { localStorage.setItem("sx_recent", JSON.stringify([id, ...r.filter((x) => x !== id)].slice(0, 8))); } catch (_) {} };
   // Seul l'accès rapide reprend la lecture ; partout ailleurs (rayons, carte, arcade) on entre dans l'univers, sur son accueil.
-  const quickR = useRef(false);
-  const go = useCallback((x) => {
-    setLaunch(null);
-    // Un voile reste posé le temps que le monde se charge : on ne revoit pas la station entre la pochette et l'entrée
-    if (!document.getElementById("nx-veil")) { const v = document.createElement("div"); v.id = "nx-veil"; v.setAttribute("aria-hidden", "true"); document.body.appendChild(v); setTimeout(() => v.remove(), 4000); }
-    nav(`/oeuvre/${x.id}`, { state: quickR.current && progressOf(x.it)?.resume ? { resume: true } : undefined });
-  }, [nav]);
-  // Pendant l'animation de lancement, on charge déjà les grandes images du monde (affiche, fond) : il arrive sans à-coup
-  const preload = (x) => { try { [posterUrl(x.id, x.it.updated_at), x.it.has_bg ? bgUrl(x.id, x.it.updated_at) : null].filter(Boolean).forEach((u) => { const im = new Image(); im.decoding = "async"; im.src = u; im.decode?.().catch(() => {}); }); } catch (_) {} };
-  const start = useCallback((x, quick = false) => { if (!x) return; preload(x); quickR.current = quick; sfx?.("select"); remember(x.id); playLaunch(muted ? 0 : uiVolume, getLaunchSound(x.format === "vhs" || x.format === "vinyle" ? x.format : "livre")); if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return go(x); setLaunch(x); }, [sfx, go]); // eslint-disable-line react-hooks/exhaustive-deps
-  // Ailleurs sur l'accueil (la une, la prochaine sortie…) : on entre avec la même animation que depuis les rayons
-  useEffect(() => { const h = (ev) => { const x = books.find((b) => b.id === ev.detail?.id); if (x) start(x, !!ev.detail?.quick); }; window.addEventListener("nx-start", h); return () => window.removeEventListener("nx-start", h); }, [books, start]);
-  const [leaving, setLeaving] = useState(false);
-  useEffect(() => { if (!launch) return; setLeaving(false); const a = setTimeout(() => setLeaving(true), 1500); const t = setTimeout(() => go(launch), 1820); return () => { clearTimeout(a); clearTimeout(t); }; }, [launch, go]);
+  // Le lancement (l'objet qui s'ouvre, puis l'entrée dans le monde) est celui de toute la Station : LaunchHost.
+  const start = useCallback((x, quick = false) => { if (!x) return; window.dispatchEvent(new CustomEvent("nx-start", { detail: { id: x.id, quick } })); }, []);
   useEffect(() => { setSel(null); }, [view]);
 
   const menuFor = (x) => () => ({ title: x.title, entries: [
     { label: "Lancer", icon: <IoPlay size={14} />, onClick: () => start(x) },
     { label: "Voir la notice", icon: <IoDocumentTextOutline size={14} />, onClick: () => pick(x.id) },
     playAmbient && { label: "Écouter l'ambiance", icon: <IoMusicalNotes size={14} />, onClick: () => playAmbient(x.id) },
+    isAdmin && x.it && onEditItem && "-",
+    isAdmin && x.it && { label: "Jaquette et reliure…", icon: <IoColorPaletteOutline size={14} />, onClick: () => openJaquette({ id: x.id, b: x, cover: covers[x.id] }) },
+    isAdmin && x.it && onEditItem && { label: "Modifier la création", icon: <IoCreateOutline size={14} />, onClick: () => onEditItem(x.it) },
+    isAdmin && x.it && onEditItem && { label: "Crédits…", icon: <IoCreateOutline size={14} />, onClick: () => onEditItem(x.it, "credits") },
+    isAdmin && x.it && onFeature && { label: isFeatured?.(x.id) ? "Retirer de la une" : "Mettre à la une", icon: isFeatured?.(x.id) ? <IoStar size={14} /> : <IoStarOutline size={14} />, onClick: () => onFeature(x.it) },
     isAdmin && { label: "Mettre de face (en tête du rayon)", icon: <IoArrowUndo size={14} />, onClick: () => toFront(x) },
     "-",
     { label: "Copier le lien", icon: <IoLinkOutline size={14} />, onClick: () => { navigator.clipboard?.writeText(`${window.location.origin}/oeuvre/${x.id}`).catch(() => {}); toast.success("Lien copié"); } },
@@ -115,7 +110,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
   useEffect(() => {
     const k = (e) => {
       if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName) || e.target?.isContentEditable || document.querySelector(".at-ctx-wrap,[role=dialog]")) return;
-      if (launch) { if (e.key === "Escape" || e.key === "Enter" || e.key === " ") { e.preventDefault(); go(launch); } return; }
+      if (document.querySelector(".nx-launchfx")) return;
       if (view === "arcade") {
         const i = arcList.indexOf(arcCur);
         if (e.key === "ArrowRight" && arcList[i + 1]) { e.preventDefault(); pick(arcList[i + 1].id); }
@@ -145,6 +140,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
       <h3>{x.title}</h3>
       {x.sub && <p className="sub">{x.sub}</p>}
       {x.it.synopsis && <p className="ab">{x.it.synopsis}</p>}
+      <CreditLine it={x.it} />
       {progressOf(x.it) && <p className="mono nx-prog">{progressOf(x.it).label}<span className="nx-qbar"><i style={{ width: `${Math.round(progressOf(x.it).ratio * 100)}%` }} /></span></p>}
       <div className="ax-acts">
         <button className="at-btn" onClick={() => start(x)} data-testid="nx-launch"><IoPlay size={14} /> {x.up ? "Découvrir" : "Lancer"}</button>
@@ -154,7 +150,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
     </div>
   );
   const objGrid = (list) => (
-    <div className="ax-grid nx-grid">
+    <div className="ax-grid nx-xgrid">
       {list.map((x, i) => (
         <button key={x.id} className={"ax-gc" + (x.id === sel ? " on" : "") + (x.up ? " up" : "")} style={{ animationDelay: `${Math.min(i, 30) * 22}ms` }} onClick={() => (x.id === sel ? start(x) : pick(x.id))} onDoubleClick={() => start(x)} {...pressMenu(menuFor(x))} data-testid={`nx-gc-${x.id}`}>
           <Face b={x} cover={covers[x.id]} upcoming={x.up} />
@@ -166,7 +162,7 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
 
   return (
     <div className="nx-root ax-view" data-testid="nexus-home">
-      {quick.length > 0 && !query && (
+      {!hideQuick && quick.length > 0 && !query && (
         <section className="nx-quick" data-testid="nx-quick">
           <div className="seclabel"><div className="lt"><h2>Accès rapide</h2><span className="kj">続</span></div></div>
           <div className="nx-qrow">
@@ -261,14 +257,6 @@ export default function NexusHome({ all = [], cats = [], settings, query = "", v
       )}
       <p className="mono nx-keys" aria-hidden="true">← → CHOISIR · {view === "rails" ? "↑ ↓ CHANGER DE RAYON · " : ""}ENTRÉE LANCER · ÉCHAP FERMER · CLIC DROIT ACTIONS</p>
 
-      {launch && (
-        <div className={"nx-launchfx f-" + launch.format + (leaving ? " out" : "")} onClick={() => go(launch)} data-testid="nx-launchfx" role="status" aria-label={`Lancement de ${launch.title}`}>
-          <i className="nx-lf-glow" aria-hidden="true" />
-          <div className="nx-lf-obj"><Box3D b={launch} cover={covers[launch.id]} /></div>
-          <p className="nx-lf-t"><span className="mono">{launch.format === "vhs" ? "▶ PLAY" : launch.format === "vinyle" ? "◉ FACE A" : "OUVERTURE"}</span>{launch.title}</p>
-          <small className="mono nx-lf-skip">TOUCHE OU CLIC POUR PASSER</small>
-        </div>
-      )}
       <ContextMenuHost />
     </div>
   );

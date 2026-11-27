@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { IoClose, IoOpenOutline, IoContractOutline, IoExpandOutline, IoPlayForward, IoPlayBack, IoDesktopOutline } from "react-icons/io5";
 import { toEmbed, popOut, toScreen } from "@/lib/embed";
 import { imgSrc, useMediaClaim } from "@/lib/atelier";
+import { api } from "@/lib/api";
 import Cinema, { isYouTube } from "@/components/atelier/Cinema";
 import { toCss } from "@/lib/uiScale";
 
@@ -9,8 +10,37 @@ const POS = "nx-pos:";
 const getPos = (url) => { try { return Math.floor(+localStorage.getItem(POS + url) || 0); } catch (_) { return 0; } };
 const setPos = (url, t) => { try { if (t > 5) localStorage.setItem(POS + url, String(Math.floor(t))); } catch (_) {} };
 
+// Un site qui ne se laisse pas afficher : une vraie carte (image du site, titre, résumé) et « Ouvrir à côté »,
+// au lieu d'une page blanche. Le serveur regarde d'abord si le site accepte d'être intégré.
+function EmbedCard({ url, info, provider, onTry }) {
+  const host = (url.match(/^https?:\/\/(?:www\.)?([^/]+)/) || [])[1] || provider || "";
+  return (
+    <div className="at-embed-card" data-testid="atelier-embed-card" style={info?.image ? { "--ec-img": `url("${info.image.replace(/"/g, "%22")}")` } : undefined}>
+      <div className="at-ec-bg" aria-hidden="true" />
+      <div className="at-ec-in">
+        <img className="at-ec-fav" src={`https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(host)}`} alt="" onError={(ev) => { ev.currentTarget.style.display = "none"; }} />
+        <p className="mono at-ec-site">{host.toUpperCase()}</p>
+        <h3>{info?.title || host}</h3>
+        {info?.desc && <p className="at-ec-desc">{info.desc}</p>}
+        <p className="at-ec-why">{info === undefined ? "Vérification du site…" : info?.embeddable === false ? "Ce site refuse de s'afficher à l'intérieur d'un autre : il s'ouvre à côté, la Station reste ouverte." : "Ce site s'ouvre dans sa propre fenêtre."}</p>
+        <div className="at-ec-acts">
+          <button className="at-btn" onClick={() => popOut(url)} data-testid="atelier-embed-open"><IoOpenOutline size={15} /> Ouvrir {host ? `« ${host} »` : "le site"}</button>
+          {onTry && info?.embeddable !== false && <button className="at-btn ghost" onClick={onTry}>Essayer ici quand même</button>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function EmbedFrame({ url, onEnded }) {
   const e = toEmbed(url);
+  // Site inconnu (« peut-être ») : on demande au serveur avant d'afficher quoi que ce soit
+  const [check, setCheck] = useState(undefined); const [force, setForce] = useState(false);
+  useEffect(() => {
+    if (!e?.maybe) return undefined; let off = false; setCheck(undefined); setForce(false);
+    api.get("/atelier/embed-check", { params: { url } }).then((r) => { if (!off) setCheck(r.data); }, () => { if (!off) setCheck(null); });
+    return () => { off = true; };
+  }, [url]); // eslint-disable-line react-hooks/exhaustive-deps
   const fr = useRef(null);
   const [start] = useState(() => getPos(url));
   const isYt = e?.provider === "YouTube" && !!e.src;
@@ -24,13 +54,8 @@ export function EmbedFrame({ url, onEnded }) {
     window.addEventListener("message", on); return () => window.removeEventListener("message", on);
   }, [isYt, url, onEnded]);
   if (!e) return <div className="at-embed-msg"><p>Lien invalide.</p></div>;
-  if (e.blocked) return (
-    <div className="at-embed-msg" data-testid="atelier-embed-blocked">
-      <b>{e.provider}</b>
-      <p>Ce service interdit l'affichage à l'intérieur d'un autre site. On l'ouvre dans une fenêtre à côté, la Station reste ouverte.</p>
-      <button className="at-btn" onClick={() => popOut(url)} data-testid="atelier-embed-popout"><IoOpenOutline size={15} /> Ouvrir à côté</button>
-    </div>
-  );
+  if (e.blocked) return <EmbedCard url={url} provider={e.provider} info={{ embeddable: false, title: e.provider }} />;
+  if (e.maybe && !force && !(check && check.embeddable === true)) return <EmbedCard url={url} provider={e.provider} info={check} onTry={check !== undefined && check?.embeddable !== false ? () => setForce(true) : undefined} />;
   return (
     <div className={`at-embed r-${e.ratio}`} data-testid="atelier-embed">
       {e.video ? <video src={imgSrc(e.video)} controls autoPlay playsInline onLoadedMetadata={(ev) => { if (start) ev.target.currentTime = start; }} onTimeUpdate={(ev) => setPos(url, ev.target.currentTime)} onEnded={() => { try { localStorage.removeItem(POS + url); } catch (_) {} onEnded?.(); }} /> : e.audio ? <audio src={imgSrc(e.audio)} controls autoPlay onEnded={onEnded} /> :

@@ -3,11 +3,12 @@ import {
   IoPlanetOutline, IoGridOutline, IoLibraryOutline, IoCheckboxOutline, IoAppsOutline,
   IoFilmOutline, IoRadioOutline, IoMoonOutline, IoFileTrayOutline, IoSparklesOutline,
   IoCodeSlashOutline, IoSettingsOutline, IoClose, IoCreateOutline,
-  IoArrowForward, IoAddOutline, IoAppsSharp, IoBookOutline, IoJournalOutline, IoCloudUploadOutline, IoGitNetworkOutline, IoMailOutline, IoStatsChartOutline } from "react-icons/io5";
+  IoArrowForward, IoAddOutline, IoAppsSharp, IoBookOutline, IoJournalOutline, IoCloudUploadOutline, IoGitNetworkOutline, IoMailOutline, IoStatsChartOutline, IoGameControllerOutline } from "react-icons/io5";
 import { PiRabbit } from "react-icons/pi";
 import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
 import { SoundBtn } from "@/components/StationMenu";
+import { NxIcon, useAtelierIconPack } from "@/lib/icons";
 
 // Styles de boutons du hub (le reste suit le thème de la Station).
 export const HUB_SKINS = ["glossy", "glass", "neon", "aurore", "encre", "prisme"];
@@ -16,6 +17,7 @@ export const HUB_SKINS = ["glossy", "glass", "neon", "aurore", "encre", "prisme"
 // Rien n'est reconstruit : chaque tuile appelle la navigation go() déjà en place.
 export default function MobileLauncher({ ctx, view, onLeave, onBunny, onFocus, onSearch, bunny, focusMode }) {
   const { sfx } = useApp();
+  const atPack = useAtelierIconPack(); // "" : le pack du thème
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [warp, setWarp] = useState(null);
@@ -35,24 +37,25 @@ export default function MobileLauncher({ ctx, view, onLeave, onBunny, onFocus, o
   const inbox = ctx.at.items.filter((i) => !i.universe_id && !i.fields?.template && !i.fields?.alexandrie).length;
   const activeK = focusMode ? "focus" : bunny ? "bunny" : view.name === "home" ? "home" : view.name;
   const SPACES = [
-    { k: "home", label: "Pont", c: "#dcbd82", Icon: IoPlanetOutline, act: () => ctx.go({ name: "home" }) },
-    { k: "universes", label: "Nexus Drive", c: "#64cad8", Icon: IoGridOutline, act: () => ctx.go({ name: "universes" }) },
-    { k: "templates", label: "Templates", c: "#b98cff", Icon: IoLibraryOutline, act: () => ctx.go({ name: "templates" }) },
-    { k: "tasks", label: "Cockpit", c: "#6ad98c", Icon: IoCheckboxOutline, act: () => ctx.go({ name: "tasks" }) },
-    { k: "bureau", label: "Bureau", c: "#ff9f68", Icon: IoAppsOutline, act: () => ctx.go({ name: "bureau" }) },
-    { k: "salon", label: "Salon", c: "#ff6b9d", Icon: IoFilmOutline, act: () => ctx.go({ name: "salon" }) },
-    { k: "radio", label: "Radio", c: "#5fb0d9", Icon: IoRadioOutline, act: () => ctx.go({ name: "radio" }) },
-    { k: "journal", label: "Journal", c: "#e9b04d", Icon: IoJournalOutline, act: () => ctx.go({ name: "journal" }) },
-    { k: "stats", label: "Chiffres", c: "#8ab4f8", Icon: IoStatsChartOutline, act: () => ctx.go({ name: "stats" }) },
-    { k: "newsletter", label: "Newsletter", c: "#f28b82", Icon: IoMailOutline, act: () => ctx.go({ name: "newsletter" }) },
-    { k: "network", label: "Réseau", c: "#8fd3ff", Icon: IoGitNetworkOutline, act: () => ctx.go({ name: "network" }) },
-    { k: "publish", label: "Publication", c: "#7bd88f", Icon: IoCloudUploadOutline, act: () => ctx.go({ name: "publish" }) },
-    { k: "alexandrie", label: "Alexandrie", c: "#d9b98c", Icon: IoBookOutline, act: () => ctx.go({ name: "alexandrie" }) },
-    { k: "focus", label: "Focus", c: "#c9a86a", Icon: IoMoonOutline, act: onFocus },
-    { k: "inbox", label: "Inbox", c: "#9ad0ff", Icon: IoFileTrayOutline, badge: inbox, act: () => ctx.go({ name: "inbox" }) },
+    { k: "home", ic: "at-pont", label: "Pont", c: "#dcbd82", Icon: IoPlanetOutline, act: () => ctx.go({ name: "home" }) },
+    { k: "universes", ic: "at-drive", label: "Nexus Drive", c: "#64cad8", Icon: IoGridOutline, act: () => ctx.go({ name: "universes" }) },
+    { k: "templates", ic: "at-templates", label: "Templates", c: "#b98cff", Icon: IoLibraryOutline, act: () => ctx.go({ name: "templates" }) },
+    { k: "tasks", ic: "at-cockpit", label: "Cockpit", c: "#6ad98c", Icon: IoCheckboxOutline, act: () => ctx.go({ name: "tasks" }) },
+    { k: "bureau", ic: "at-bureau", label: "Bureau", c: "#ff9f68", Icon: IoAppsOutline, act: () => ctx.go({ name: "bureau" }) },
+    { k: "salon", ic: "at-salon", label: "Salon", c: "#ff6b9d", Icon: IoFilmOutline, act: () => ctx.go({ name: "salon" }) },
+    { k: "radio", ic: "at-radio", label: "Radio", c: "#5fb0d9", Icon: IoRadioOutline, act: () => ctx.go({ name: "radio" }) },
+    { k: "journal", ic: "at-journal", label: "Journal", c: "#e9b04d", Icon: IoJournalOutline, act: () => ctx.go({ name: "journal" }) },
+    { k: "stats", ic: "at-stats", label: "Chiffres", c: "#8ab4f8", Icon: IoStatsChartOutline, act: () => ctx.go({ name: "stats" }) },
+    { k: "newsletter", ic: "at-newsletter", label: "Newsletter", c: "#f28b82", Icon: IoMailOutline, act: () => ctx.go({ name: "newsletter" }) },
+    { k: "network", ic: "at-reseau", label: "Réseau", c: "#8fd3ff", Icon: IoGitNetworkOutline, act: () => ctx.go({ name: "network" }) },
+    { k: "publish", ic: "at-publication", label: "Publication", c: "#7bd88f", Icon: IoCloudUploadOutline, act: () => ctx.go({ name: "publish" }) },
+    { k: "alexandrie", ic: "at-alexandrie", label: "Alexandrie", c: "#d9b98c", Icon: IoBookOutline, act: () => ctx.go({ name: "alexandrie" }) },
+    { k: "arcade", ic: "at-arcade", label: "Arcade", c: "#a58bff", Icon: IoGameControllerOutline, act: () => ctx.go({ name: "arcade" }) },
+    { k: "focus", ic: "at-focus", label: "Focus", c: "#c9a86a", Icon: IoMoonOutline, act: onFocus },
+    { k: "inbox", ic: "at-inbox", label: "Inbox", c: "#9ad0ff", Icon: IoFileTrayOutline, badge: inbox, act: () => ctx.go({ name: "inbox" }) },
     { k: "bunny", label: "Bunny", c: "#ffd36a", Icon: IoSparklesOutline, act: onBunny },
-    { k: "devlog", label: "Dev", c: "#8ce0b0", Icon: IoCodeSlashOutline, act: () => ctx.go({ name: "devlog" }) },
-    { k: "settings", label: "Réglages", c: "#c7b3ff", Icon: IoSettingsOutline, act: () => ctx.go({ name: "settings" }) },
+    { k: "devlog", ic: "at-dev", label: "Dev", c: "#8ce0b0", Icon: IoCodeSlashOutline, act: () => ctx.go({ name: "devlog" }) },
+    { k: "settings", ic: "at-reglages", label: "Réglages", c: "#c7b3ff", Icon: IoSettingsOutline, act: () => ctx.go({ name: "settings" }) },
   ];
 
   // Ouverture d'un espace : léger flash à la couleur de l'espace, puis navigation (court et fluide).
@@ -141,7 +144,7 @@ export default function MobileLauncher({ ctx, view, onLeave, onBunny, onFocus, o
             <div className="nx-grid">
               {SPACES.map((s) => (
                 <button key={s.k} className={"nx-cell" + (activeK === s.k ? " on" : "")} style={{ "--c": s.c }} onClick={() => launch(s)} data-testid={`hub-${s.k}`}>
-                  <span className="circle"><s.Icon size={21} />{s.badge > 0 && <span className="bdg">{s.badge}</span>}</span>
+                  <span className="circle"><NxIcon pack={atPack || undefined} name={s.ic} size={22}><s.Icon size={21} /></NxIcon>{s.badge > 0 && <span className="bdg">{s.badge}</span>}</span>
                   <small>{s.label}</small>
                 </button>
               ))}
@@ -187,9 +190,9 @@ export default function MobileLauncher({ ctx, view, onLeave, onBunny, onFocus, o
 
       <div className="nx-tools" data-testid="mobile-tools">
         <SoundBtn up btn={{ borderColor: "transparent", background: "transparent", color: "var(--text-primary)" }} />
-        <button onClick={() => { sfx("nav"); setOpen(false); ctx.go({ name: "settings" }); }} aria-label="Paramètres"><IoSettingsOutline size={20} /></button>
+        <button onClick={() => { sfx("nav"); setOpen(false); ctx.go({ name: "settings" }); }} aria-label="Paramètres"><NxIcon pack={atPack || undefined} name="at-reglages" size={21}><IoSettingsOutline size={20} /></NxIcon></button>
         <button className={"nx-menu" + (open ? " on" : "")} onClick={() => (open ? closeMenu() : openMenu())} aria-label={open ? "Fermer le menu" : "Menu"} data-testid="mobile-menu-toggle">{open ? <IoClose size={22} /> : <IoAppsSharp size={22} />}</button>
-        <button onClick={() => { setOpen(false); ctx.go({ name: "home" }); }} aria-label="Retour au Pont" data-testid="mobile-home"><IoPlanetOutline size={20} /></button>
+        <button onClick={() => { setOpen(false); ctx.go({ name: "home" }); }} aria-label="Retour au Pont" data-testid="mobile-home"><NxIcon pack={atPack || undefined} name="at-pont" size={21}><IoPlanetOutline size={20} /></NxIcon></button>
         <button onClick={() => { setOpen(false); onBunny(); }} aria-label="Cosmic Bunny" data-testid="mobile-bunny"><PiRabbit size={20} /></button>
       </div>
     </div>

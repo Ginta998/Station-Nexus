@@ -79,7 +79,8 @@ export default function DriveSpace({ at, open, importDocs, universe_id, oeuvre_i
   const setView = (v) => { setViewState(v); try { localStorage.setItem("nx-drive-view", v); } catch (_) {} };
   const sel = useSel();
 
-  const inScope = (i) => (oeuvre_id ? i.fields?.oeuvre_id === oeuvre_id : (i.universe_id === universe_id && !i.fields?.oeuvre_id));
+  // les livres d'Alexandrie vivent dans Alexandrie : ils ne s'affichent pas dans le Drive
+  const inScope = (i) => !i.fields?.alexandrie && (oeuvre_id ? i.fields?.oeuvre_id === oeuvre_id : (i.universe_id === universe_id && !i.fields?.oeuvre_id));
   const scopeFields = (extra = {}) => ({ ...(oeuvre_id ? { oeuvre_id } : {}), ...extra });
 
   const curFolder = folderId ? at.items.find((i) => i.id === folderId && isFolder(i) && inScope(i)) : null;

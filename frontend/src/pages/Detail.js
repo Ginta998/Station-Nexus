@@ -37,6 +37,37 @@ import WorldComments from "@/components/nexus/WorldComments";
 import { worldStyleOf, usePosterAccent } from "@/components/nexus/world";
 import { listJournal, getJournalEntry } from "@/lib/api";
 
+// Une vidéo intégrée : d'abord son image et un bouton lecture (léger) ; la vidéo ne se charge qu'au clic.
+// Si l'intégration échoue (vidéo retirée, privée, interdite d'intégration), une belle carte avec un bouton pour l'ouvrir ailleurs.
+function EmbedYT({ i, src, url, label }) {
+  const id = (src.match(/embed\/([\w-]{11})/) || [])[1];
+  const [play, setPlay] = useState(false); const [bad, setBad] = useState(!id);
+  const box = { borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" };
+  if (bad) return (
+    <div className="aspect-video w-full overflow-hidden border flex flex-col items-center justify-center gap-3 text-center p-6" style={{ ...box, background: "radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--brand) 22%, transparent), transparent 60%), var(--bg-secondary)" }} data-testid={`embed-${i}`}>
+      <IoLogoYoutube size={38} style={{ color: "var(--brand)" }} />
+      <b className="font-display text-lg" style={{ color: "var(--text-primary)" }}>{label || "La vidéo ne se lit pas ici"}</b>
+      <span className="text-sm" style={{ color: "var(--text-secondary)", maxWidth: 420 }}>Son auteur ne permet pas de la regarder en dehors de YouTube. Elle s'ouvre là-bas, dans un nouvel onglet.</span>
+      <a href={url} target="_blank" rel="noopener noreferrer" className="px-4 py-2 font-semibold" style={{ background: "var(--brand)", color: "var(--bg-primary)", borderRadius: "var(--radius-base)" }}>Voir sur YouTube</a>
+    </div>
+  );
+  if (!play) return (
+    <button type="button" className="aspect-video w-full overflow-hidden border relative block" style={{ ...box, background: "#000" }} onClick={() => setPlay(true)} data-testid={`embed-${i}`} aria-label={`Lire ${label || "la vidéo"}`}>
+      <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" className="w-full h-full object-cover" style={{ opacity: 0.85 }} onLoad={(e) => { if (e.currentTarget.naturalWidth <= 120) setBad(true); }} onError={() => setBad(true)} />
+      <span className="absolute inset-0 grid place-items-center"><span style={{ width: 68, height: 68, borderRadius: "50%", display: "grid", placeItems: "center", background: "var(--brand)", color: "var(--bg-primary)" }}><IoPlay size={28} /></span></span>
+      {label && <span className="absolute left-3 bottom-3 px-2 py-1 text-sm" style={{ background: "rgba(0,0,0,.6)", color: "#fff", borderRadius: 6 }}>{label}</span>}
+    </button>
+  );
+  return (
+    <div className="w-full" data-testid={`embed-${i}`}>
+      <div className="aspect-video w-full overflow-hidden border" style={box}>
+        <iframe src={src + (src.includes("?") ? "&" : "?") + "autoplay=1"} title={label || "YouTube"} className="w-full h-full" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+      </div>
+      <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 mt-2 text-sm" style={{ color: "var(--text-secondary)" }}><IoOpenOutline size={14} /> La vidéo ne se lance pas ? L'ouvrir sur YouTube</a>
+    </div>
+  );
+}
+
 export default function Detail() {
   const { id } = useParams();
   const nav = useNavigate();
@@ -275,8 +306,8 @@ export default function Detail() {
       {gateOpen && <LaunchGate onClose={() => setGateOpen(false)} />}
 
       {readerOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(4px)" }} data-testid="reader-modal">
-          <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto border p-8" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
+        <div className="nx-ov fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(4px)" }} data-testid="reader-modal">
+          <div className="nx-ov-panel w-full max-w-2xl max-h-[85vh] overflow-y-auto border p-8" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display text-2xl" style={{ color: "var(--text-primary)" }}>{item.title}</h2>
               <button data-testid="reader-close" onClick={() => setReaderOpen(false)} style={{ color: "var(--text-secondary)" }}><IoClose size={24} /></button>
@@ -301,7 +332,7 @@ export default function Detail() {
         // les épisodes qui ont une vidéo, à la suite : « Épisode suivant » et compte à rebours
         const eps = (item.episodes || []).map((e, i) => ({ e, i })).filter((x) => canStationPlay(x.e.url) && !x.e.content);
         const start = Math.max(0, eps.findIndex((x) => x.i === epPlay));
-        return <StationCinema queue={eps.map((x) => ({ url: x.e.url, title: x.e.title || `Épisode ${x.i + 1}`, image: x.e.image || "" }))} start={start}
+        return <StationCinema queue={eps.map((x) => ({ url: x.e.url, title: x.e.title || `Épisode ${x.i + 1}`, image: x.e.image || "", desc: x.e.description || "" }))} start={start} info={{ work: item.title }}
           vertical={item.video_ratio === "9:16" ? true : item.video_ratio === "16:9" ? false : undefined}
           onIndex={(k) => { const ix = eps[k]?.i; if (ix != null) { hit("play", { creation_id: item.id, unit_index: ix, unit_id: item.episodes[ix]?.id || "" }); markSeen(item.id); try { localStorage.setItem("sx_eplast_" + item.id, String(ix)); } catch (_) {} } }}
           onClose={() => setEpPlay(null)} />;
@@ -337,7 +368,7 @@ export default function Detail() {
         <NexusWorld key={item.id} onAtelier={() => openInAtelier(nav, item.id)} item={view} ws={wsNow} wt={wtNow && (editorOpen || workRead || quickEdit) ? { ...wtNow, cursor: "none" } : wtNow} catLabel={catLabel} style={accNow ? { "--brand": accNow } : undefined}
           cover={viewCover} bg={viewBg}
           box={{ id: item.id, title: view.title, sub: view.tagline || "", format: fmtOfCreation(view, catLabel), emblem: view.kanji || "核", cote: "SN", roomLabel: catLabel || "Station", house: "STATION NEXUS" }}
-          making={making} trailer={trailerSource}
+          making={making} trailer={trailerSource} onTrailer={() => { stopAmbient(); setCinemaKind("trailer"); }}
           launchLabel={item.launch_label && item.launch_label !== "Lancer" ? item.launch_label : "Lancer"} onLaunch={() => (item.launch_type === "reader" && item.launch_content ? (sfx("select"), setWorkRead({ unitKey: null })) : launch())}
           current={current} progress={progress}
           locked={isPaidLocked} unitLocked={(i) => item.launch_type === "chapters" && chapterLocked(item, i)}
@@ -597,11 +628,7 @@ export default function Detail() {
                 <div className="space-y-4">
                   {item.embeds.map((em, i) => {
                     const yt = em.platform === "youtube" ? ytEmbed(em.url) : null;
-                    if (yt) return (
-                      <div key={i} className="aspect-video w-full overflow-hidden border" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }} data-testid={`embed-${i}`}>
-                        <iframe src={yt} title={em.label || "YouTube"} className="w-full h-full" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
-                      </div>
-                    );
+                    if (yt) return <EmbedYT key={i} i={i} src={yt} url={em.url} label={em.label} />;
                     return (
                       <a key={i} href={em.url} target="_blank" rel="noopener noreferrer" onClick={() => sfx("nav")} data-testid={`embed-${i}`}
                         className="flex items-center gap-2 px-4 py-3 border font-medium" style={{ ...btn, background: "var(--bg-secondary)" }}>
@@ -665,7 +692,7 @@ export default function Detail() {
                   {recommendations.map((r) => {
                     const rimg = r.has_poster || (r.poster && r.poster.length > 4);
                     return (
-                      <button key={r.id} data-testid={`reco-${r.id}`} onClick={() => { sfx("select"); nav(`/oeuvre/${r.id}`); }}
+                      <button key={r.id} data-testid={`reco-${r.id}`} onClick={() => { window.dispatchEvent(new CustomEvent("nx-start", { detail: { id: r.id } })); }}
                         className="flex-shrink-0 w-28 sm:w-32 text-left transition-transform hover:scale-105">
                         <div className="w-full aspect-[2/3] overflow-hidden border relative" style={{ borderColor: "var(--border-c)", borderRadius: "var(--radius-base)" }}>
                           {rimg ? <img src={r.poster && r.poster.length > 4 ? r.poster : posterUrl(r.id, r.updated_at, 360)} alt={r.title} loading="lazy" className="w-full h-full object-cover" /> : (

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { IoClose, IoCloudUploadOutline, IoPersonCircle, IoTrashOutline, IoLogOutOutline, IoCloudDoneOutline, IoSyncOutline, IoLogInOutline } from "react-icons/io5";
+import PortraitPicker from "@/components/PortraitPicker";
 import { toast } from "sonner";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -18,6 +19,8 @@ export default function ProfileDialog({ open, onClose }) {
   useEffect(() => {
     if (open) { setName(profile?.name || user?.name || ""); setAvatar(profile?.avatar || user?.avatar || ""); setInstagram(profile?.instagram || ""); }
   }, [open]); // eslint-disable-line
+  // Bunny se met en retrait pendant qu'on choisit son portrait : il ne cache plus la grille au téléphone
+  useEffect(() => { if (!open) return; document.body.classList.add("nx-profile-open"); return () => document.body.classList.remove("nx-profile-open"); }, [open]);
 
   if (!open) return null;
   const isEdit = !!profile;
@@ -43,14 +46,15 @@ export default function ProfileDialog({ open, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} data-testid="profile-dialog" onClick={onClose}>
-      <div className="w-full max-w-md border" style={{ ...fs, background: "var(--bg-secondary)" }} onClick={(e) => e.stopPropagation()}>
+    <div className="nx-ov fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }} data-testid="profile-dialog" onClick={onClose}>
+      <div className="nx-ov-panel w-full max-w-md border flex flex-col" style={{ ...fs, background: "var(--bg-secondary)", maxHeight: "calc((100dvh - 32px) / var(--uiz, 1))" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: "var(--border-c)" }}>
           <h2 className="font-display text-xl" style={{ color: "var(--text-primary)" }}>{isEdit ? "Mon profil" : "Créer mon profil"}</h2>
           <button data-testid="profile-close" onClick={onClose} className="p-1" style={{ color: "var(--text-secondary)" }}><IoClose size={22} /></button>
         </div>
 
-        <div className="p-5 space-y-4">
+        {/* Le contenu défile (portraits compris) ; l'en-tête et les boutons restent visibles */}
+        <div className="p-5 space-y-4 overflow-y-auto overscroll-contain min-h-0 flex-1" style={{ WebkitOverflowScrolling: "touch" }} data-testid="profile-scroll">
           {user ? (
             <div data-testid="profile-sync-ok" className="flex items-start gap-2.5 px-3 py-2.5 border" style={{ borderColor: "var(--brand)", borderRadius: "var(--radius-base)", background: "color-mix(in srgb, var(--brand) 12%, transparent)" }}>
               <IoCloudDoneOutline size={20} style={{ color: "var(--brand)", flexShrink: 0, marginTop: 1 }} />
@@ -88,6 +92,8 @@ export default function ProfileDialog({ open, onClose }) {
               {avatar && <button onClick={() => setAvatar("")} className="text-xs" style={{ color: "var(--brand)" }} data-testid="profile-photo-remove"><IoTrashOutline /></button>}
             </div>
           </div>
+
+          <PortraitPicker value={avatar} onPick={setAvatar} />
 
           <div><Label>Nom du profil</Label>
             <input data-testid="profile-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={30} placeholder="Ton pseudo" className="w-full px-3 py-2 border outline-none" style={fs} /></div>
