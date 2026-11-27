@@ -1,0 +1,94 @@
+{
+ "versions": [
+  {
+   "version": "0.69.0-20261127-0339",
+   "built_at": "2026-11-27T03:40:35.592808+00:00",
+   "base_commit": "4686e67",
+   "requires_api": 2,
+   "js": [
+    "static/js/main.0f96b6a9.js"
+   ],
+   "css": [
+    "static/css/main.71e4eeaf.css"
+   ],
+   "notes": [
+    "Les crédits des créations",
+    "Créations : un onglet Crédits dans l'éditeur (ou clic droit › Crédits…). Un rôle en un geste (Illustrations, Écriture, Couverture, Musique, Montage, Voix, Animation, « Avec l'aimable autorisation de »…), le nom, et un lien facultatif (Instagram, site) qui rend le nom cliquable. L'ordre se change ave",
+    "Dans le monde de l'œuvre, une entrée Générique : les rôles et les noms, comme à la fin d'un film. Sur la fiche de l'œuvre (accueil), une ligne courte : « Illustrations · Camila Ramos ».",
+    "Serveur : la création garde ses crédits (à republier sur Emergent)."
+   ]
+  },
+  {
+   "version": "0.68.1-20261127-0235",
+   "built_at": "2026-11-27T02:36:08.212519+00:00",
+   "base_commit": "23d3c97",
+   "requires_api": 2,
+   "js": [
+    "static/js/main.0a5b299d.js"
+   ],
+   "css": [
+    "static/css/main.e5869548.css"
+   ],
+   "notes": [
+    "L'ouverture animée depuis la fenêtre d'un univers",
+    "Fenêtre d'un univers : toucher une création lance de nouveau l'ouverture animée (l'objet, l'étui s'il en a un), et plus seulement le son. L'animation passait sous la fenêtre."
+   ]
+  },
+  {
+   "version": "0.68.0-20261127-0222",
+   "built_at": "2026-11-27T02:23:14.750738+00:00",
+   "base_commit": "acdb613",
+   "requires_api": 2,
+   "js": [
+    "static/js/main.d0c391f7.js"
+   ],
+   "css": [
+    "static/css/main.e5869548.css"
+   ],
+   "notes": [
+    "Une seule jaquette : les reliures deviennent des modèles comme les autres",
+    "Jaquette et reliure (clic droit, sur les livres d'Alexandrie comme sur tes créations) : une rangée Reliure à côté des modèles. Sept reliures : Gaufrée, Dorée, Cuir de nuit, et quatre nouvelles : Toile (titre estampé, planche collée), Grimoire (coins et fermoirs de métal), Japonaise (couture apparent",
+    "Toute la jaquette s'applique aux reliures : la couleur habille la matière (cuir, toile, papier), l'encre colore les dorures et le titre, la police du titre, sa place (haut, milieu, bas), la couleur du cartouche de la tranche. Une Dorée bleu nuit et argent, c'est possible.",
+    "Étui et reflet deviennent deux options de la même fenêtre.",
+    "« Édition reliée… » et « Édition collector… » disparaissent du clic droit : tout passe par « Jaquette et reliure… ». Les livres et œuvres déjà reliés gardent leur reliure."
+   ]
+  },
+  {
+   "version": "0.67.1-20261127-0213",
+   "built_at": "2026-11-27T02:13:45.100983+00:00",
+   "base_commit": "3dfb5b2",
+   "requires_api": 2,
+   "js": [
+    "static/js/main.89312136.js"
+   ],
+   "css": [
+    "static/css/main.4ccde3bc.css"
+   ],
+   "notes": [
+    "Le clic droit s'ouvre de nouveau là où tu cliques",
+    "Clic droit (ou appui long) sur la page d'accueil de la Station : le menu s'ouvrait très bas, parfois sous l'écran. Il s'ouvre de nouveau sous le doigt, ou en tiroir en bas sur téléphone."
+   ]
+  },
+  {
+   "version": "0.67.0-20261127-0209",
+   "built_at": "2026-11-27T02:10:29.316106+00:00",
+   "base_commit": "594bbbe",
+   "requires_api": 2,
+   "js": [
+    "static/js/main.904a843b.js"
+   ],
+   "css": [
+    "static/css/main.92df0cea.css"
+   ],
+   "notes": [
+    "Éditions reliées, vitrine collector et pages qui deviennent des œuvres",
+    "Alexandrie : l'édition reliée, livre par livre (clic droit › Édition reliée…). Trois couvertures : gaufrée blanche avec une fenêtre en arche sur l'illustration, dorée à la feuille avec quatre vitraux, ou cuir de nuit aux dorures au trait. Un reflet suit la souris ou l'inclinaison du téléphone. La tr",
+    "L'étui : rangé dans son étui sombre aux dorures au trait, le livre en sort à l'ouverture.",
+    "Créations : l'édition collector, œuvre par œuvre (clic droit › Édition collector…). Elle apparaît dans le monde de l'œuvre : le livre relié tourne lentement, son étui debout à côté, on le fait tourner au doigt, avec un bouton Soutenir.",
+    "Lecture : des pages qui deviennent des œuvres. « @art pleine g 4 » met l'illustration sur toute la page ; « @art contour g 3 » (ou « contour gauche ») fait épouser au texte la silhouette de l'image ; « >* réplique | qui la dit » est une citation à l'ancienne, centrée et ornée. En lecture de nuit et ",
+    "Dark Souls, Elden Ring et Bloodborne utilisent déjà ces mises en page (silhouettes, pleines pages, une réplique d'ouverture).",
+    "Un livre relié a une page de titre encadrée de filets dorés et des fleurons sous les titres de chapitres ; ses citations passent toutes à l'ancienne."
+   ]
+  }
+ ]
+}
